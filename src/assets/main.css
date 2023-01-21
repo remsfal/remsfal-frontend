@@ -30,3 +30,12 @@ img {
 .p-card-content-header {
     font-weight: bold;
 }
+
+/* Header Menu */
+.p-menubar .p-menubar-root-list {
+    align-items: end;
+    margin-left: auto;
+}
+.p-menubar .p-menubar-button {
+    margin-left: auto;
+}

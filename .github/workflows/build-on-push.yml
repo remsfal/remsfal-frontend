@@ -1,0 +1,33 @@
+# Simple workflow for building vue js app for production
+name: Build Vue.js App
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Allow one concurrent deployment
+concurrency:
+  group: "frontend"
+  cancel-in-progress: true
+
+jobs:
+  # Single build job
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: npm install
+        # The `npm ci` command can only install with an existing package-lock.json
+        # run: npm ci
+      - name: Build project
+        run: npm run build
