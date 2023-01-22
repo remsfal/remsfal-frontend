@@ -4,7 +4,9 @@ import VueAxios from 'vue-axios'
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config';
+import Menu from 'primevue/menu';
 import Menubar from 'primevue/menubar';
+import Sidebar from 'primevue/sidebar';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
@@ -22,7 +24,9 @@ app.use(PrimeVue)
 // Install Axios for RESTful Webservice calls
 app.use(VueAxios, axios)
 // Add primefaces components
+app.component('Menu', Menu)
 app.component('Menubar', Menubar)
+app.component('Sidebar', Sidebar)
 app.component('InputText', InputText)
 app.component('Button', Button)
 

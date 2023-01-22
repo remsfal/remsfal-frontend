@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 export default {
   data() {
     const HOST = import.meta.env.VITE_BACKEND_HOST;

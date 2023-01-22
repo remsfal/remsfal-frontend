@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import ProjectService from "@/services/ProjectService";
 
 export default {
