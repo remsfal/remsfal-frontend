@@ -74,19 +74,6 @@ export default class AuthenticationService {
     return `${rootUrl}?${qs.toString()}`;
   }
 
-  private getTokenInfo(): Promise<TokenInfo> {
-    return axios
-      .get("https://oauth2.googleapis.com/tokeninfo", {
-        params: { access_token: this.accessToken },
-      })
-      .then((response) => response.data)
-      .then((tokenInfo) => {
-        console.log("Access Token is valid and has the following info:");
-        console.log("%j", tokenInfo);
-        return tokenInfo as TokenInfo; // cast to TokenInfo
-      });
-  }
-
   private refreshToken(): void {
     console.log("Authentication is required...");
     let authUrl = AuthenticationService.getGoogleAuthUrl();
