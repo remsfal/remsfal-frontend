@@ -13,19 +13,30 @@ export default class AuthenticationService {
   private readonly tokenPromise: Promise<void | object>;
 
   private constructor() {
-    let uri = window.location.hash.replace("#","?");
+    // let uri = window.location.search.substring(1);
+    let uri = window.location.hash.replace("#", "?");
     let params = new URLSearchParams(uri);
-    if(params.get("access_token") == null) {
-        this.refreshToken();
+    if (params.get("access_token") == null) {
+      // redirect to google in order to get a new token
+      this.refreshToken();
     } else {
-        window.location.hash = '';
+      // remove token from URL
+      window.location.hash = "";
     }
-    this.accessToken = params.get("access_token") ?? '';
-    // Add id_token extraction
-    this.idToken = params.get("id_token") ?? '';
+    this.accessToken = params.get("access_token") ?? "";
+    this.idToken = params.get("id_token") ?? "";
     console.log("JWT ID Token: ", this.idToken);
-
+    this.tokenPromise = this.getTokenInfo()
+      .then((tokenInfo) => {
+        this.refreshTimeout = setTimeout(
+          this.refreshToken,
+          tokenInfo.expires_in * 1000
+        );
+        return tokenInfo;
+      })
+      .catch(() => this.refreshToken());
   }
+
   private getUserInfo(): Promise<object> {
     return axios
       .get("https://www.googleapis.com/oauth2/v3/userinfo", {
@@ -73,7 +84,18 @@ export default class AuthenticationService {
     const qs = new URLSearchParams(options);
     return `${rootUrl}?${qs.toString()}`;
   }
-
+  private getTokenInfo(): Promise<object> {
+    return axios
+      .get("https://oauth2.googleapis.com/tokeninfo", {
+        params: { access_token: this.accessToken },
+      })
+      .then((response) => response.data)
+      .then((tokenInfo) => {
+        console.log("Access Token is valid and has the following info:");
+        console.log("%j", tokenInfo);
+        return tokenInfo;
+      });
+  }
   private refreshToken(): void {
     console.log("Authentication is required...");
     let authUrl = AuthenticationService.getGoogleAuthUrl();
