@@ -61,6 +61,9 @@ export default class AuthenticationService {
   public getAccessToken(): string {
     return this.accessToken;
   }
+  public getIdToken(): string {
+    return this.idToken;
+  }
 
   public getUserId(): Promise<void | object> {
     return this.tokenPromise.then((tokenInfo) => tokenInfo.sub);

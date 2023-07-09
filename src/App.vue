@@ -19,7 +19,8 @@ export default {
     return {
       userId: '',
       userEmail: '',
-      accessToken: ''
+      accessToken: '',
+      idToken: ''
     }
   },
   userService: null,
@@ -29,8 +30,9 @@ export default {
     // authenticate with Google
     this.authenticationService = AuthenticationService.getInstance();
     this.accessToken = this.authenticationService.getAccessToken();
+    this.idToken = this.authenticationService.getIdToken();
     // init backend services
-    this.userService = new UserService(this.accessToken);
+    this.userService = new UserService(this.idToken);
     this.projectService = new ProjectService();
     // update user info
     this.authenticationService.getUserId()
