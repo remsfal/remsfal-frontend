@@ -2,8 +2,6 @@ import axios from 'axios'
 
 export default class AuthenticationService {
   private static instance: AuthenticationService;
-
-  private readonly accessToken: string;
   private readonly idToken: string;
 
   // @ts-ignore
@@ -15,7 +13,6 @@ export default class AuthenticationService {
   private constructor() {
     // let uri = window.location.search.substring(1);
     let uri = window.location.hash.replace("#", "?");
-    console.log('uri: ' + uri)
     let params = new URLSearchParams(uri);
     if (params.get("access_token") == null) {
       // redirect to google in order to get a new token
@@ -27,7 +24,6 @@ export default class AuthenticationService {
     this.accessToken = params.get("access_token") ?? "";
     this.idToken = params.get("id_token") ?? "";
     console.log("JWT ID Token: ", this.idToken);
-    this.getUserInfo();
     this.tokenPromise = this.getTokenInfo()
       .then((tokenInfo) => {
         this.refreshTimeout = setTimeout(

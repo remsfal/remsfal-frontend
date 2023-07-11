@@ -7,9 +7,11 @@ export default class UserService {
     private readonly url : string = this.host + '/api/v1/users';
 
     private readonly idToken: string;
+    private readonly accessToken: string;
 
-    public constructor(idToken: string) {
+    public constructor(idToken: string, accessToken: string) {
         this.idToken = idToken;
+        this.accessToken = accessToken;
     }
 
     authenticate(userId : string) : void {
