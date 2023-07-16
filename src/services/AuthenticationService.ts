@@ -36,8 +36,9 @@ export default class AuthenticationService {
   }
 
   private getUserInfo(): Promise<object> {
+    const userInfoUrl = import.meta.env.VITE_GOOGLE_USER_INFO_URL;
     return axios
-      .get("https://www.googleapis.com/oauth2/v3/userinfo", {
+      .get(userInfoUrl, {
         headers: { Authorization: `Bearer ${this.accessToken}` },
       })
       .then((response) => response.data)
@@ -86,8 +87,10 @@ export default class AuthenticationService {
     return `${rootUrl}?${qs.toString()}`;
   }
   private getTokenInfo(): Promise<object> {
+    const tokenInfoUrl = import.meta.env.VITE_GOOGLE_TOKEN_INFO_URL;
+
     return axios
-      .get("https://oauth2.googleapis.com/tokeninfo", {
+      .get(tokenInfoUrl, {
         params: { access_token: this.accessToken },
       })
       .then((response) => response.data)
