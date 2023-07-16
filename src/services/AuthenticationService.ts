@@ -24,6 +24,19 @@ export default class AuthenticationService {
     this.accessToken = params.get("access_token") ?? "";
     this.idToken = params.get("id_token") ?? "";
     console.log("JWT ID Token: ", this.idToken);
+
+    // Call getUserInfo here
+    this.userInfoPromise = this.getUserInfo()
+      .then((userInfo) => {
+        console.log("User Info: ", userInfo);
+        // You can do something with userInfo here or in the then of this promise where you call it
+        return userInfo;
+      })
+      .catch((error) => {
+        console.error("Failed to get user info:", error);
+        // Decide what to do when it fails
+      });
+
     this.tokenPromise = this.getTokenInfo()
       .then((tokenInfo) => {
         this.refreshTimeout = setTimeout(
@@ -37,14 +50,16 @@ export default class AuthenticationService {
 
   private getUserInfo(): Promise<object> {
     const userInfoUrl = import.meta.env.VITE_GOOGLE_USER_INFO_URL;
+    console.log("User Info URL: ", userInfoUrl);
+    const responseType = "id_token token";
+
     return axios
       .get(userInfoUrl, {
         headers: { Authorization: `Bearer ${this.accessToken}` },
+        params: { response_type: responseType },
       })
       .then((response) => response.data)
       .then((userInfo) => {
-        console.log("User Info:");
-        console.log("%j", userInfo);
         return userInfo;
       });
   }
