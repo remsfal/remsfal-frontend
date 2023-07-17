@@ -1,91 +1,124 @@
 import axios from 'axios'
 
 export default class AuthenticationService {
+  private static instance: AuthenticationService;
+  private readonly idToken: string;
 
-    private static instance: AuthenticationService;
+  // @ts-ignore
+  private refreshTimeout;
 
-    private readonly accessToken: string;
+  // @ts-ignore
+  private readonly tokenPromise: Promise<void | object>;
 
-    // @ts-ignore
-    private refreshTimeout;
+  private constructor() {
+    // let uri = window.location.search.substring(1);
+    let uri = window.location.hash.replace("#", "?");
+    let params = new URLSearchParams(uri);
+    if (params.get("access_token") == null) {
+      // redirect to google in order to get a new token
+      this.refreshToken();
+    } else {
+      // remove token from URL
+      window.location.hash = "";
+    }
+    this.accessToken = params.get("access_token") ?? "";
+    this.idToken = params.get("id_token") ?? "";
+    console.log("JWT ID Token: ", this.idToken);
 
-    // @ts-ignore
-    private readonly tokenPromise: Promise<void | object>;
+    // Call getUserInfo here
+    this.userInfoPromise = this.getUserInfo()
+      .then((userInfo) => {
+        console.log("User Info: ", userInfo);
+        // You can do something with userInfo here or in the then of this promise where you call it
+        return userInfo;
+      })
+      .catch((error) => {
+        console.error("Failed to get user info:", error);
+        // Decide what to do when it fails
+      });
 
-    private constructor() {
-        // let uri = window.location.search.substring(1);
-        let uri = window.location.hash.replace("#","?");
-        let params = new URLSearchParams(uri);
-        if(params.get("access_token") == null) {
-            // redirect to google in order to get a new token
-            this.refreshToken();
-        } else {
-            // remove token from URL
-            window.location.hash = '';
-        }
-        this.accessToken = params.get("access_token") ?? '';
-        this.tokenPromise = this.getTokenInfo()
-            .then((tokenInfo) => {
-                this.refreshTimeout = setTimeout(this.refreshToken, tokenInfo.expires_in * 1000);
-                return tokenInfo;
-            })
-            .catch(() => this.refreshToken())
+    this.tokenPromise = this.getTokenInfo()
+      .then((tokenInfo) => {
+        this.refreshTimeout = setTimeout(
+          this.refreshToken,
+          tokenInfo.expires_in * 1000
+        );
+        return tokenInfo;
+      })
+      .catch(() => this.refreshToken());
+  }
+
+  private getUserInfo(): Promise<object> {
+    const userInfoUrl = import.meta.env.VITE_GOOGLE_USER_INFO_URL;
+    console.log("User Info URL: ", userInfoUrl);
+    const responseType = "id_token token";
+
+    return axios
+      .get(userInfoUrl, {
+        headers: { Authorization: `Bearer ${this.accessToken}` },
+        params: { response_type: responseType },
+      })
+      .then((response) => response.data)
+      .then((userInfo) => {
+        return userInfo;
+      });
+  }
+
+  public static getInstance(): AuthenticationService {
+    if (!AuthenticationService.instance) {
+      AuthenticationService.instance = new AuthenticationService();
     }
 
-    public static getInstance(): AuthenticationService {
-        if (!AuthenticationService.instance) {
-            AuthenticationService.instance = new AuthenticationService();
-        }
+    return AuthenticationService.instance;
+  }
 
-        return AuthenticationService.instance;
-    }
+  public getAccessToken(): string {
+    return this.accessToken;
+  }
+  public getIdToken(): string {
+    return this.idToken;
+  }
 
-    public getAccessToken() : string {
-        return this.accessToken;
-    }
+  public getUserId(): Promise<void | object> {
+    return this.tokenPromise.then((tokenInfo) => tokenInfo.sub);
+  }
 
-    public getUserId() : Promise<void | object> {
-        return this.tokenPromise
-            .then(tokenInfo => tokenInfo.sub);
-    }
+  public getUserEmail(): Promise<void | object> {
+    return this.tokenPromise.then((tokenInfo) => tokenInfo.email);
+  }
 
-    public getUserEmail() : Promise<void | object> {
-        return this.tokenPromise
-            .then(tokenInfo => tokenInfo.email);
-    }
+  private static getGoogleAuthUrl(): string {
+    const rootUrl = import.meta.env.VITE_GOOGLE_OAUTH_AUTH_URL;
+    const options = {
+      response_type: "token id_token",
+      client_id: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID,
+      redirect_uri: import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URL,
+      scope: ["openid", "profile", "email"].join(" "),
+      // the state can be used for additional query parameter
+      // state: 'any state to have after the redirect'
+    };
 
-    private static getGoogleAuthUrl() :string {
-        const rootUrl = import.meta.env.VITE_GOOGLE_OAUTH_AUTH_URL;
-        const options = {
-            response_type: 'token',
-            client_id: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID,
-            redirect_uri: import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URL,
-            scope: [
-                'openid', 'profile', 'email'
-            ].join(' ')
-            // the state can be used for additional query parameter
-            // state: 'any state to have after the redirect'
-        };
+    const qs = new URLSearchParams(options);
+    return `${rootUrl}?${qs.toString()}`;
+  }
+  private getTokenInfo(): Promise<object> {
+    const tokenInfoUrl = import.meta.env.VITE_GOOGLE_TOKEN_INFO_URL;
 
-        const qs = new URLSearchParams(options);
-        return `${rootUrl}?${qs.toString()}`;
-    }
-
-    private getTokenInfo() :Promise<object> {
-        return axios.get('https://oauth2.googleapis.com/tokeninfo',
-            { params: { access_token: this.accessToken } })
-            .then((response) => response.data)
-            .then(tokenInfo => {
-                console.log("Access Token is valid and has the following info:");
-                console.log('%j', tokenInfo)
-                return tokenInfo
-            });
-    }
-
-    private refreshToken() :void {
-        console.log("Authentication is required...");
-        let authUrl = AuthenticationService.getGoogleAuthUrl();
-        console.log("Redirect to: " + authUrl);
-        window.location.href = authUrl;
-    }
+    return axios
+      .get(tokenInfoUrl, {
+        params: { access_token: this.accessToken },
+      })
+      .then((response) => response.data)
+      .then((tokenInfo) => {
+        console.log("Access Token is valid and has the following info:");
+        console.log("%j", tokenInfo);
+        return tokenInfo;
+      });
+  }
+  private refreshToken(): void {
+    console.log("Authentication is required...");
+    let authUrl = AuthenticationService.getGoogleAuthUrl();
+    console.log("Redirect to: " + authUrl);
+    window.location.href = authUrl;
+  }
 }

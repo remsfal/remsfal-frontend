@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from "vue-router";
 import HeaderMenu from "@/components/HeaderMenu.vue";
 </script>
 
 <template>
-  <HeaderMenu :userEmail="userEmail"/>
+  <HeaderMenu :userEmail="userEmail" />
 
-  <RouterView @projectCreated="onProjectCreated"/>
+  <RouterView @projectCreated="onProjectCreated" />
 </template>
 
 <script lang="ts">
@@ -17,10 +17,11 @@ import ProjectService from "@/services/ProjectService";
 export default {
   data() {
     return {
-      userId: '',
-      userEmail: '',
-      accessToken: ''
-    }
+      userId: "",
+      userEmail: "",
+      accessToken: "",
+      idToken: "",
+    };
   },
   userService: null,
   projectService: null,
@@ -29,23 +30,24 @@ export default {
     // authenticate with Google
     this.authenticationService = AuthenticationService.getInstance();
     this.accessToken = this.authenticationService.getAccessToken();
+    this.idToken = this.authenticationService.getIdToken();
     // init backend services
-    this.userService = new UserService(this.accessToken);
+    this.userService = new UserService(this.idToken, this.accessToken);
     this.projectService = new ProjectService();
     // update user info
-    this.authenticationService.getUserId()
-        .then(userId => {
-          this.userId = userId;
-          // authenticate at backend
-          this.userService.authenticate(userId);
-        });
-    this.authenticationService.getUserEmail()
-        .then(userEmail => this.userEmail = userEmail);
+    this.authenticationService.getUserId().then((userId) => {
+      this.userId = userId;
+      // authenticate at backend
+      this.userService.authenticate(userId);
+    });
+    this.authenticationService
+      .getUserEmail()
+      .then((userEmail) => (this.userEmail = userEmail));
   },
   methods: {
     onProjectCreated() {
       console.log("Project created event");
-    }
-  }
+    },
+  },
 };
 </script>
