@@ -16,8 +16,8 @@ export default class AuthenticationService {
 
     // Wrap everything in a Promise
     this.tokenReadyPromise = new Promise((resolve) => {
-      if (savedToken !== null) {
-        console.log("token from LocalStorage", typeof savedToken);
+      if (savedToken !== null && !window.location.href.includes("id_token")) {
+        console.log("token from LocalStorage", savedToken);
         this.getTokenInfo(savedToken)
           .then((tokenInfo) => {
             if (this.isTokenExpired(tokenInfo)) {

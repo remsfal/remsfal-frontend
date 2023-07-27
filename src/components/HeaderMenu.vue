@@ -62,19 +62,19 @@ export default {
           label: 'Abmelden',
           icon: 'pi pi-fw pi-sign-out',
           command: () => this.handleLogoutClick(),
-          visible: this.showLoggedIn,
+
         },
         {
           label: 'Registrieren',
           icon: 'pi pi-fw pi-user-plus',
           command: () => this.openRegister(),
-          visible: !this.showLoggedIn,
+
         },
         {
           label: 'Log-In',
           icon: 'pi pi-fw pi-sign-in',
           command: () => this.handleLoginClick(),
-          visible: !this.showLoggedIn,
+
         },
 
       ]
