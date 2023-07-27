@@ -8,6 +8,7 @@
           </div>
         </template>
       </Menubar>
+      <Modal></Modal>
     </header>
   </div>
 </template>
@@ -24,6 +25,7 @@ export default {
   props: {
     userEmail: String,
     projects: Array,
+    showLoggedIn: Boolean
   },
   data() {
     return {
@@ -59,8 +61,22 @@ export default {
         {
           label: 'Abmelden',
           icon: 'pi pi-fw pi-sign-out',
-          url: 'https://remsfal.de'
-        }
+          command: () => this.handleLogoutClick(),
+          visible: this.showLoggedIn,
+        },
+        {
+          label: 'Registrieren',
+          icon: 'pi pi-fw pi-user-plus',
+          command: () => this.openRegister(),
+          visible: !this.showLoggedIn,
+        },
+        {
+          label: 'Log-In',
+          icon: 'pi pi-fw pi-sign-in',
+          command: () => this.handleLoginClick(),
+          visible: !this.showLoggedIn,
+        },
+
       ]
     };
   },
@@ -69,7 +85,6 @@ export default {
   },
   methods: {
     updateProjectItems() {
-      console.log("update item ");
       this.items[0].items =
           [
             {
@@ -91,7 +106,16 @@ export default {
               to: {name: 'Project', params: { projectId: "2" }}
             }
           ]
-    }
+    },
+  handleLoginClick() {
+    this.$emit('clickedLogin');
+  },
+    handleLogoutClick() {
+    this.$emit('clickedLogout');
+  },
+    openRegister() {
+    this.$emit('clickedRegister');
+  }
   }
 };
 </script>

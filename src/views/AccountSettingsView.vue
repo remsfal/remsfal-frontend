@@ -11,7 +11,7 @@ export default {
   userService: null,
   created() {
     // init backend services
-    this.userService = new UserService(AuthenticationService.getInstance().getAccessToken());
+    this.userService = new UserService(AuthenticationService.getInstance().getIdToken());
     console.log("Service initialized");
   }
 };

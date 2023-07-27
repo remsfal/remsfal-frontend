@@ -39,3 +39,49 @@ img {
 .p-menubar .p-menubar-button {
     margin-left: auto;
 }
+
+/* Main Button Class */
+.button {
+    padding: 15px 25px;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Green Button */
+.button.green {
+    color: white;
+    background-color: #2e6021;
+    box-shadow: 0 5px #173313;
+}
+
+.button.green:hover {
+    background-color: #45a049;
+}
+
+/* Grey Button */
+.button.grey {
+    color: white;
+    background-color: #495057;
+    box-shadow: 0 5px #7A7A7A;
+}
+
+.button.grey:hover {
+    background-color: #909090;
+}
+
+/* Beige Button */
+.button.beige {
+    color: #495057;
+    background-color: #F5F5DC;
+    box-shadow: 0 5px #C3C3A2;
+    color: #000;
+}
+
+.button.beige:hover {
+    background-color: #E8E8D0;
+}
