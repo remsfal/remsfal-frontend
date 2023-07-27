@@ -9,19 +9,18 @@ import Modal from "@/components/Modal.vue";
     :userEmail="userEmail"
     :loggedIn="loggedIn"
     @clickedLogout="logout()"
-    @clickedRegister="openRegister()"
-    @clickedLogin="login()"
+    @clickedLogin="openModal()"
   />
   <RouterView @projectCreated="onProjectCreated" />
   <Modal
-    :isOpen="showRegisterModal"
-    :bodyText="'Durch die Anmeldung stimmst Du unser Datenschutzerklärung zu.'"
+    :isOpen="showModal"
+    :bodyText="'Durch die Anmeldung bzw. Registrerung stimmst Du unser Datenschutzerklärung zu.'"
     :linkText="'Datenschutzerklärung'"
     :linkHref="'/data-protection'"
     :buttonText="'Mit Google Anmelden'"
-    :headingText="'Registrierung'"
-    @closeModal="showRegisterModal = false"
-    @pressedButton="register()"
+    :headingText="'Anmeldung/Registrierung'"
+    @closeModal="showModal = false"
+    @pressedButton="authenticate()"
   ></Modal>
 </template>
 
@@ -36,7 +35,7 @@ export default {
       userId: "",
       userEmail: "",
       idToken: "",
-      showRegisterModal: false,
+      showModal: false,
       loggedIn: false,
     };
   },
@@ -46,9 +45,7 @@ export default {
   created() {
     console.log("App created");
     // authenticate user if id_token is present in localStorage or URL contains auth params
-        if (
-      window.location.href.includes("register")
-    ) {
+    if (window.location.href.includes("register")) {
     }
     if (
       window.location.href.includes("id_token") ||
@@ -61,16 +58,9 @@ export default {
     onProjectCreated() {
       console.log("Project created event");
     },
-    login() {
-      console.log("Login button clicked");
-      this.authenticate();
-    },
-    openRegister() {
+    openModal() {
       console.log("Register button clicked");
-      this.showRegisterModal = true;
-    },
-    register() {
-      this.authenticate("register");
+      this.showModal = true;
     },
     logout() {
       console.log("Logout button clicked");
@@ -78,22 +68,24 @@ export default {
       window.location.href = "./";
     },
 
-async authenticate() {
+    async authenticate() {
       // authenticate with Google
       this.authenticationService = AuthenticationService.getInstance();
-      await this.authenticationService.whenTokenReady(); // <=== wait for the token to be ready
+      await this.authenticationService.whenTokenReady();
       this.idToken = this.authenticationService.getIdToken();
-      // Wait for the userId Promise to resolve
+      this.userEmail = await this.authenticationService.getUserEmail();
       this.userId = await this.authenticationService.getUserId();
-      console.log("userId: " + this.userId);
-      if (this.userId !== "") {
-        this.loggedIn = true;
-        console.log("user currently logged in: " + this.loggedIn);
-      }
+      // Wait for the userId Promise to resolve
+      console.log("userId: " + this.userId, "emnail", this.userEmail);
       this.userService = new UserService(this.idToken);
       this.projectService = new ProjectService();
-      this.userEmail = await this.authenticationService.getUserEmail();
-      this.userService.authenticate(this.userId);
+      this.userService = new UserService(this.idToken);
+      try {
+        let isAuthenticated = await this.userService.authenticate();
+        this.loggedIn = isAuthenticated; // Set loggedIn status based on authenticated status
+      } catch (error) {
+        console.log("Failed to authenticate user: " + error);
+      }
     },
   },
 };

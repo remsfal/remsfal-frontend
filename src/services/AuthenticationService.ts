@@ -41,6 +41,8 @@ export default class AuthenticationService {
         console.log("Getting token from URL");
 
         let uri = window.location.hash.replace("#", "?");
+        window.location.href = "";
+
         let params = new URLSearchParams(uri);
         if (params.get("id_token") == null) {
           this.refreshToken();
@@ -97,7 +99,7 @@ export default class AuthenticationService {
       .then((tokenInfo) => {
         console.log("Access Token is valid and has the following info:");
         console.log(tokenInfo);
-
+        this.tokenPromise = Promise.resolve(tokenInfo);
         return tokenInfo;
       });
   }
@@ -114,12 +116,22 @@ export default class AuthenticationService {
     return this.idToken;
   }
 
-  public getUserId(): Promise<void | object> {
-    return this.tokenPromise.then((tokenInfo) => tokenInfo.sub);
+  public async getUserId(): Promise<void | string> {
+    return await this.tokenPromise.then((tokenInfo) => {
+      if (!tokenInfo) {
+        throw new Error("Token info is not initialized");
+      }
+      return tokenInfo.sub;
+    });
   }
 
-  public getUserEmail(): Promise<void | object> {
-    return this.tokenPromise.then((tokenInfo) => tokenInfo.email);
+  public async getUserEmail(): Promise<void | string> {
+    return await this.tokenPromise.then((tokenInfo) => {
+      if (!tokenInfo) {
+        throw new Error("Token info is not initialized");
+      }
+      return tokenInfo.email;
+    });
   }
 
   private static getGoogleAuthUrl(): string {

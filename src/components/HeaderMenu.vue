@@ -68,12 +68,7 @@ export default {
       ],
       loggedOutItems: [
         {
-          label: "Registrieren",
-          icon: "pi pi-fw pi-user-plus",
-          command: () => this.openRegister(),
-        },
-        {
-          label: "Log-In",
+          label: "Anmeldung",
           icon: "pi pi-fw pi-sign-in",
           command: () => this.handleLoginClick(),
         },
@@ -118,9 +113,6 @@ export default {
     },
     handleLogoutClick() {
       this.$emit("clickedLogout");
-    },
-    openRegister() {
-      this.$emit("clickedRegister");
     },
   },
   watch: {
