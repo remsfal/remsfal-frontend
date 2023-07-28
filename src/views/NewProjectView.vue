@@ -12,14 +12,23 @@ export default {
     this.projectService = new ProjectService();
   },
   methods: {
-    onButtonCreate() {
-      this.projectService.createProject(this.project_title)
-          .then(data => router.push({ name: 'ProjectSelection', params: { projectId: data.id  }}))
-          .finally(() => this.$emit('projectCreated'));
-    }
+onButtonCreate() {
+  this.projectService.createProject(this.project_title)
+      .then(data => {
+        if(data && data.hasOwnProperty('id')) {
+          this.$router.push({ name: 'ProjectSelection', params: { projectId: data.id }});
+        } else {
+          // handle the case where data is undefined or doesn't have an id
+          console.log("Unexpected data: ", data);
+        }
+      })
+      .finally(() => this.$emit('projectCreated'));
+}
+
   }
 }
 </script>
+
 
 <template>
   <main>

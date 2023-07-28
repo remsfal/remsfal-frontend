@@ -6,6 +6,7 @@ import Modal from "@/components/Modal.vue";
 
 <template>
   <HeaderMenu
+    :projects ="projects"
     :userEmail="userEmail"
     :loggedIn="loggedIn"
     @clickedLogout="logout()"
@@ -37,6 +38,8 @@ export default {
       idToken: "",
       showModal: false,
       loggedIn: false,
+  projects: Array,
+
     };
   },
   userService: null,
@@ -78,8 +81,12 @@ export default {
       // Wait for the userId Promise to resolve
       console.log("userId: " + this.userId, "emnail", this.userEmail);
       this.userService = new UserService(this.idToken);
-      this.projectService = new ProjectService();
-      this.userService = new UserService(this.idToken);
+      this.projectService = new ProjectService(this.idToken);
+this.projectService.getProjects().then((data) => {
+  this.projects = data;
+  console.log("projects", data);
+  this.projects = data;
+});
       try {
         let isAuthenticated = await this.userService.authenticate();
         this.loggedIn = isAuthenticated; // Set loggedIn status based on authenticated status

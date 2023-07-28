@@ -21,12 +21,17 @@
 </style>
 
 <script lang="ts">
+import ProjectService from "@/services/ProjectService";
+import AuthenticationService from "@/services/AuthenticationService";
+
 export default {
   props: {
     userEmail: String,
     projects: Array,
     loggedIn: Boolean,
   },
+  projectService: null,
+
   data() {
     return {
       selectedProject: "Projekt auswählen",
@@ -57,14 +62,13 @@ export default {
               icon: "pi pi-fw pi-users",
               to: { name: "AccountContacts" },
             },
-                    {
-          label: "Abmelden",
-          icon: "pi pi-fw pi-sign-out",
-          command: () => this.handleLogoutClick(),
-        },
+            {
+              label: "Abmelden",
+              icon: "pi pi-fw pi-sign-out",
+              command: () => this.handleLogoutClick(),
+            },
           ],
         },
-
       ],
       loggedOutItems: [
         {
@@ -77,32 +81,34 @@ export default {
   },
   mounted() {
     this.updateProjectItems();
+    this.projectService = new ProjectService(
+      AuthenticationService.getInstance().getIdToken()
+    );
+
+    this.projectService.getProjects().then((data) => {
+      this.projects = data;
+      console.log("projects", data);
+    });
   },
   methods: {
     updateProjectItems() {
       console.log("currentloggedIn", this.loggedIn);
+      let projectItems = [];
+      projectItems.push({
+        label: "Neues Projekt",
+        icon: "pi pi-fw pi-plus",
+        to: { name: "NewProject" },
+      });
       if (this.loggedIn) {
         this.items = this.loggedInItems;
-        this.items[0].items = [
-          {
-            label: "Neues Projekt",
-            icon: "pi pi-fw pi-plus",
-            to: { name: "NewProject" },
-          },
-          {
-            separator: true,
-          },
-          {
-            label: "Mein Super Projekt Berliner Str. 12, 13507 Berlin",
+        for (let project of this.projects) {
+          projectItems.push({
+            label: project.title,
             icon: "pi pi-fw pi-external-link",
-            to: { name: "Project", params: { projectId: "1" } },
-          },
-          {
-            label: "Noch ein besseres Projekt Berliner Str. 15, 13507 Berlin",
-            icon: "pi pi-fw pi-external-link",
-            to: { name: "Project", params: { projectId: "2" } },
-          },
-        ];
+            to: { name: "Project", params: { projectId: project.id } },
+          });
+        }
+        this.items[0].items = projectItems;
       }
       if (!this.loggedIn) {
         this.items = this.loggedOutItems;

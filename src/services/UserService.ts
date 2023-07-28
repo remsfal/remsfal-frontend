@@ -1,17 +1,17 @@
 import axios from 'axios'
+import AuthenticationService from "@/services/AuthenticationService";
 
 export default class UserService {
   private readonly host: string = import.meta.env.VITE_BACKEND_HOST;
 
   private readonly url: string = this.host + "/api/v1/users";
+  private authenticated: boolean = false;
 
   private readonly idToken: string;
 
-  private authenticated: boolean = false;
   public constructor(idToken: string) {
     this.idToken = idToken;
   }
-
   // rest of the code...
   authenticate(): Promise<boolean> {
     return new Promise((resolve, reject) => {
