@@ -1,20 +1,27 @@
 <script setup lang="ts">
 defineProps<{
-  projectId: string
+  projectId: string;
 }>();
 </script>
 
 <template>
-  <Sidebar v-model:visible="visibleLeft" modal="false" showCloseIcon="false">
-    Content
-    <Menu :model="items" />
-  </Sidebar>
+  <div v-if="authorized">
+    <Sidebar v-model:visible="visibleLeft" modal="false" showCloseIcon="false">
+      Content
+      <Menu :model="items" />
+    </Sidebar>
 
-  <main>
-  <div class="about">
-    <h1>This is an example project {{ projectId }} page</h1>
+    <main>
+      <div class="about">
+        <h1>This is an example project {{ projectId }} page</h1>
+      </div>
+    </main>
   </div>
-  </main>
+  <div v-else>
+        <h1>You do not have the necessary rights to access this resource.</h1>
+
+
+  </div>
 </template>
 
 <style>
@@ -28,23 +35,44 @@ defineProps<{
 </style>
 
 <script lang="ts">
-export default {
+import { defineComponent } from "vue";
+import ProjectService from "@/services/ProjectService";
+import AuthenticationService from "@/services/AuthenticationService";
+
+export default defineComponent({
+  props: {
+    projectId: {
+      type: String,
+      required: true,
+    },
+    authorized: {
+      type: Boolean,
+    },
+  },
   data() {
     return {
       visibleLeft: true,
       items: [
-        {
-          label: 'Options',
-          items: [{label: 'New', icon: 'pi pi-fw pi-plus', command:() => {} },
-            {label: 'Delete', icon: 'pi pi-fw pi-trash', url: 'https://www.primetek.com.tr'}]
-        },
-        {
-          label: 'Account',
-          items: [{label: 'Options', icon: 'pi pi-fw pi-cog', to: '/options'},
-            {label: 'Sign Out', icon: 'pi pi-fw pi-power-off', to: '/logout'} ]
-        }
-      ]
+        /* menu items */
+      ],
+      project: null,
+      isAuthorized: this.authorized // Copy prop to local data property
+    };
+  },
+  async created() {
+    try {
+      const projectService = new ProjectService(AuthenticationService.getInstance().getIdToken());
+      const project = await projectService.getProject(this.projectId);
+      this.project = project;
+      this.isAuthorized = true; // Update local data property, not the prop
+
+    } catch (error) {
+      console.error(`Failed to fetch the project: ${error}`);
+      if(error==='403'){
+        this.isAuthorized = false; // Update local data property, not the prop
+      }
     }
-  }
-}
+  },
+});
+
 </script>

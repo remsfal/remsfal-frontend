@@ -21,8 +21,6 @@
 </style>
 
 <script lang="ts">
-import ProjectService from "@/services/ProjectService";
-import AuthenticationService from "@/services/AuthenticationService";
 
 export default {
   props: {
@@ -81,14 +79,6 @@ export default {
   },
   mounted() {
     this.updateProjectItems();
-    this.projectService = new ProjectService(
-      AuthenticationService.getInstance().getIdToken()
-    );
-
-    this.projectService.getProjects().then((data) => {
-      this.projects = data;
-      console.log("projects", data);
-    });
   },
   methods: {
     updateProjectItems() {

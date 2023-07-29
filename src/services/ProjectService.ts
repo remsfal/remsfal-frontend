@@ -33,4 +33,19 @@ export default class ProjectService {
       })
       .catch((error) => console.error(error));
   }
+  getProject(projectId: string) {
+console.log("getProject ", projectId , " ", this.idToken);
+    return axios
+      .get(`${this.url}/${projectId}`, {
+        headers: { Authorization: `Bearer ${this.idToken}` },
+      })
+      .then((response) => {
+        console.log("project returned", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error(error.request.status);
+        throw error.request.status; // This will allow error to be caught where getProject is called
+      });
+  }
 }
