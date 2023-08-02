@@ -1,13 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ProjectSelectionView from '@/views/ProjectSelectionView.vue'
+import DataProtectionView from "@/views/DataProtectionView.vue";
+import ImprintView from "@/views/ImprintView.vue";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/",
-      name: "ProjectSelection",
-      component: ProjectSelectionView,
+      path: "/imprint",
+      name: "Imprint",
+      component: ImprintView,
+    },
+    {
+      path: "/data-protection",
+      name: "DataProtection",
+      component: DataProtectionView,
     },
     {
       path: "/register",

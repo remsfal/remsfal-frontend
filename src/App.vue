@@ -2,6 +2,8 @@
 import { RouterLink, RouterView } from "vue-router";
 import HeaderMenu from "@/components/HeaderMenu.vue";
 import Modal from "@/components/Modal.vue";
+import Footer from "@/components/Footer.vue";
+
 </script>
 
 <template>
@@ -23,6 +25,7 @@ import Modal from "@/components/Modal.vue";
     @closeModal="showModal = false"
     @pressedButton="authenticate()"
   ></Modal>
+  <Footer></Footer>
 </template>
 
 <script lang="ts">
