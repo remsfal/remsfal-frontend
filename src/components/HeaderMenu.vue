@@ -65,6 +65,11 @@ export default {
               icon: "pi pi-fw pi-sign-out",
               command: () => this.handleLogoutClick(),
             },
+                        {
+              label: "Konto löschen",
+              icon: "pi pi-fw pi-trash",
+              command: () => this.handleDeleteClick(),
+            },
           ],
         },
       ],
@@ -89,20 +94,27 @@ export default {
         icon: "pi pi-fw pi-plus",
         to: { name: "NewProject" },
       });
-      if (this.loggedIn) {
-        this.items = this.loggedInItems;
-        for (let project of this.projects) {
-          projectItems.push({
-            label: project.title,
-            icon: "pi pi-fw pi-external-link",
-            to: { name: "Project", params: { projectId: project.id } },
-          });
-        }
-        this.items[0].items = projectItems;
-      }
+  this.items = this.loggedInItems;
+
+if (this.loggedIn && Array.isArray(this.projects)) {
+  const projectItems = [];
+
+  for (let project of this.projects) {
+    projectItems.push({
+      label: project.title,
+      icon: "pi pi-fw pi-external-link",
+      to: { name: "Project", params: { projectId: project.id } },
+    });
+  }
+
+  this.items[0].items = projectItems;
+}
+
       if (!this.loggedIn) {
         this.items = this.loggedOutItems;
       }
+    },
+    updateHeaderMenuItems() {
     },
     handleLoginClick() {
       this.$emit("clickedLogin");
@@ -110,11 +122,15 @@ export default {
     handleLogoutClick() {
       this.$emit("clickedLogout");
     },
+        handleDeleteClick() {
+      this.$emit("clickedDelete");
+    },
   },
   watch: {
     loggedIn: function (newVal, oldVal) {
       console.log("loggedIn changed from", oldVal, "to", newVal);
       this.updateProjectItems();
+      this.updateHeaderMenuItems();
     },
   },
 };

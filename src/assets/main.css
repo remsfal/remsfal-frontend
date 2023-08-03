@@ -58,10 +58,20 @@ img {
     background-color: #2e6021;
     box-shadow: 0 5px #173313;
 }
-
 .button.green:hover {
     background-color: #45a049;
 }
+.button.red {
+    color: white;
+    background-color: #ff0000;
+    box-shadow: 0 5px #a30000;
+}
+
+.button.red:hover {
+    background-color: #ff4d4d;
+}
+
+
 
 /* Grey Button */
 .button.grey {

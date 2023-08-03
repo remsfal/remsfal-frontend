@@ -43,10 +43,14 @@ export default class UserService {
       })
       .then((response) => console.log(response));
   }
-
-  deleteUser(id) {
-    return axios
-      .delete(`${this.url}/${id}`)
-      .then((response) => console.log(response));
-  }
+deleteUser(id) {
+  return axios
+    .delete(`${this.url}/${id}`, {
+      headers: {
+        Authorization: `Bearer ${this.idToken}`,
+      }
+    })
+    .then((response) => console.log(response))
+    .catch((error) => console.error(error));
+}
 }

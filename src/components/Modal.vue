@@ -9,7 +9,8 @@
           <h2>{{ headingText }}</h2>
           <p>{{  bodyText }}</p>
           <!-- Display the dynamic link text -->
-          <button v-if="buttonText" @click="pressedButton" class="button green">{{ buttonText }}</button>
+          <button v-if="buttonText" @click="pressedButton" :class="`button ${buttonColor}`">{{ buttonText }}</button>
+
           <div><a v-if="linkText && linkHref" class="link" :href="linkHref">{{ linkText }}</a>
 </div>
         </div>
@@ -27,7 +28,8 @@ const props = defineProps({
   linkHref: String,
   buttonText: String,
   headingText: String,
-  bodyText: String
+  bodyText: String,
+  buttonColor: String,
 });
 
 const isOpen = toRef(props, 'isOpen');

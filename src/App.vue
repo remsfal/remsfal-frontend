@@ -3,16 +3,16 @@ import { RouterLink, RouterView } from "vue-router";
 import HeaderMenu from "@/components/HeaderMenu.vue";
 import Modal from "@/components/Modal.vue";
 import Footer from "@/components/Footer.vue";
-
 </script>
 
 <template>
   <HeaderMenu
-    :projects ="projects"
+    :projects="projects"
     :userEmail="userEmail"
     :loggedIn="loggedIn"
     @clickedLogout="logout()"
     @clickedLogin="openModal()"
+    @clickedDelete="openDeleteModal()"
   />
   <RouterView @projectCreated="onProjectCreated" />
   <Modal
@@ -22,8 +22,18 @@ import Footer from "@/components/Footer.vue";
     :linkHref="'/data-protection'"
     :buttonText="'Mit Google Anmelden'"
     :headingText="'Anmeldung/Registrierung'"
+    :buttonColor="'green'"
     @closeModal="showModal = false"
     @pressedButton="authenticate()"
+  ></Modal>
+  <Modal
+    :isOpen="showDeleteModal"
+    :bodyText="'Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.'"
+    :buttonText="'Konto löschen'"
+    :headingText="'Konto löschen'"
+    :buttonColor="'red'"
+    @closeModal="showDeleteModal = false"
+    @pressedButton="deleteAccount()"
   ></Modal>
   <Footer></Footer>
 </template>
@@ -40,9 +50,9 @@ export default {
       userEmail: "",
       idToken: "",
       showModal: false,
+      showDeleteModal: false,
       loggedIn: false,
-  projects: Array,
-
+      projects: Array,
     };
   },
   userService: null,
@@ -65,11 +75,27 @@ export default {
       console.log("Project created event");
     },
     openModal() {
-      console.log("Register button clicked");
       this.showModal = true;
     },
+    openDeleteModal() {
+      this.showDeleteModal = true;
+    },
+    deleteAccount() {
+      console.log("deleteUser");
+    try {
+      // Call the deleteAccount() method from the OriginalClass
+      this.userService.deleteUser(this.userId).then((data) => {
+        console.log("deleteUser", data);
+        this.logout();
+      })
+        .catch((error) => {});
+      // this.logout();
+    } catch (error) {
+      console.error("Error occurred while deleting account.", error);
+    }
+      // this.logout();
+    },
     logout() {
-      console.log("Logout button clicked");
       localStorage.removeItem("remsfal/id_token");
       window.location.href = "./";
     },
@@ -85,11 +111,18 @@ export default {
       console.log("userId: " + this.userId, "emnail", this.userEmail);
       this.userService = new UserService(this.idToken);
       this.projectService = new ProjectService(this.idToken);
-this.projectService.getProjects().then((data) => {
-  this.projects = data;
-  console.log("projects", data);
-  this.projects = data;
-});
+      this.projectService.getProjects().then((data) => {
+        this.projects = data;
+        console.log("projects", data);
+        this.projects = data;
+      })
+        .catch((error) => {
+    // Handle the error here
+    console.error("An error occurred while fetching projects:", error);
+    // You may want to initialize this.projects to an empty array or handle the error differently
+    this.projects = [];
+  });
+      
       try {
         let isAuthenticated = await this.userService.authenticate();
         this.loggedIn = isAuthenticated; // Set loggedIn status based on authenticated status
