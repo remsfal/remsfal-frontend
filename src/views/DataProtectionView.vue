@@ -4,7 +4,9 @@ export default {};
 
 <template>
   <main>
-    <h1 style="padding-top: 10%">Datenschutzerklärung</h1>
+<div class="parent">
+  <div>
+    <h1 style="">Datenschutzerklärung</h1>
     <h2>1. Datenschutz Überblick</h2>
     <h3>Allgemeine Hinweise</h3>
     <p>
@@ -261,8 +263,20 @@ export default {};
       rechtliche Regelungen, insbesondere gesetzliche Aufbewahrungsfristen,
       werden davon nicht beeinflusst.
     </p>
-
+</div>
+</div>
   </main>
 </template>
 
-<style></style>
+<style>
+.parent {
+  max-height: 100vh;
+  padding-top: 10%;
+  padding-bottom: 10%;
+  overflow: scroll;
+}
+.parent::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+</style>

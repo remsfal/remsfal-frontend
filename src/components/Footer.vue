@@ -21,7 +21,7 @@ export default {
 .footer {
   background-color: rgb(248, 249, 250);
   padding: 20px;
-  position: sticky;
+  position: absolute;
   bottom: 0;
   width: 100%;
 }
