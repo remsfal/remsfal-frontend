@@ -7,7 +7,6 @@ import Footer from "@/components/Footer.vue";
 
 <template>
   <HeaderMenu
-    :projects="projects"
     :userEmail="userEmail"
     :loggedIn="loggedIn"
     @clickedLogout="logout()"
@@ -113,7 +112,7 @@ export default {
       this.projectService = new ProjectService(this.idToken);
       this.projectService.getProjects().then((data) => {
         this.projects = data;
-        console.log("projects", data);
+        console.log("projects after auth", data);
         this.projects = data;
       })
         .catch((error) => {
