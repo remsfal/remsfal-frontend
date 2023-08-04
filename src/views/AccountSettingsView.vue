@@ -20,6 +20,7 @@ export default {
   },
   deleteAccount(){
     console.log('deleteUSer');
+    this.$emit('deleteAccount');
   }
 };
 </script>
@@ -28,16 +29,6 @@ export default {
   <main>
   <div class="about">
     <h1>This is an account settings page for {{ this.userEmail }}</h1>
-
-    <button @click="showModal=true" class="button red">Delete Account</button>
-  <Modal
-    :isOpen="showModal"
-    :bodyText="'Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.'"
-    :buttonText="'Konto löschen'"
-    :headingText="'Konto löschen'"
-    @closeModal="showModal = false"
-    @pressedButton="deleteAccount()"
-  ></Modal>
 
   </div>
   </main>
