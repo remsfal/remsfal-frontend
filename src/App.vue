@@ -109,18 +109,6 @@ export default {
       // Wait for the userId Promise to resolve
       console.log("userId: " + this.userId, "emnail", this.userEmail);
       this.userService = new UserService(this.idToken);
-      this.projectService = new ProjectService(this.idToken);
-      this.projectService.getProjects().then((data) => {
-        this.projects = data;
-        console.log("projects after auth", data);
-        this.projects = data;
-      })
-        .catch((error) => {
-    // Handle the error here
-    console.error("An error occurred while fetching projects:", error);
-    // You may want to initialize this.projects to an empty array or handle the error differently
-    this.projects = [];
-  });
       
       try {
         let isAuthenticated = await this.userService.authenticate();

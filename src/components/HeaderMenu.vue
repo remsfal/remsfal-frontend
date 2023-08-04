@@ -21,14 +21,16 @@
 </style>
 
 <script lang="ts">
+import AuthenticationService from "@/services/AuthenticationService";
+import ProjectService from "@/services/ProjectService";
 
 export default {
   props: {
     userEmail: String,
-    projects: Array,
     loggedIn: Boolean,
   },
   projectService: null,
+  projects: [],
 
   data() {
     return {
@@ -65,7 +67,7 @@ export default {
               icon: "pi pi-fw pi-sign-out",
               command: () => this.handleLogoutClick(),
             },
-                        {
+            {
               label: "Konto löschen",
               icon: "pi pi-fw pi-trash",
               command: () => this.handleDeleteClick(),
@@ -86,46 +88,58 @@ export default {
     this.updateProjectItems();
   },
   methods: {
-    updateProjectItems() {
+    async updateProjectItems() {
+      const authenticationService = AuthenticationService.getInstance();
+      await authenticationService.whenTokenReady();
+      const idToken = authenticationService.getIdToken();
+      const projectService = new ProjectService(idToken);
+      projectService
+        .getProjects()
+        .then((data) => {
+          const projectItems = [
+            {
+              label: "Neues Projekt",
+              icon: "pi pi-fw pi-plus",
+              to: { name: "NewProject" },
+            },
+          ];
+
+          for (let project of data) {
+            projectItems.push({
+              label: project.title,
+              icon: "pi pi-fw pi-external-link",
+              to: { name: "Project", params: { projectId: project.id } },
+            });
+          }
+
+          this.items[0].items = projectItems;
+        })
+        .catch((error) => {
+          // Handle the error here
+          console.error("An error occurred while fetching projects:", error);
+          // You may want to initialize this.projects to an empty array or handle the error differently
+          this.projects = [];
+        });
       let projectItems = [];
       projectItems.push({
         label: "Neues Projekt",
         icon: "pi pi-fw pi-plus",
         to: { name: "NewProject" },
       });
-  this.items = this.loggedInItems;
-
-if (this.loggedIn && Array.isArray(this.projects)) {
-  const projectItems = [            {
-              label: "Neues Projekt",
-              icon: "pi pi-fw pi-plus",
-              to: { name: "NewProject" },
-            }];
-
-  for (let project of this.projects) {
-    projectItems.push({
-      label: project.title,
-      icon: "pi pi-fw pi-external-link",
-      to: { name: "Project", params: { projectId: project.id } },
-    });
-  }
-
-  this.items[0].items = projectItems;
-}
+      this.items = this.loggedInItems;
 
       if (!this.loggedIn) {
         this.items = this.loggedOutItems;
       }
     },
-    updateHeaderMenuItems() {
-    },
+    updateHeaderMenuItems() {},
     handleLoginClick() {
       this.$emit("clickedLogin");
     },
     handleLogoutClick() {
       this.$emit("clickedLogout");
     },
-        handleDeleteClick() {
+    handleDeleteClick() {
       this.$emit("clickedDelete");
     },
   },
