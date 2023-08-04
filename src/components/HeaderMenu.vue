@@ -87,7 +87,6 @@ export default {
   },
   methods: {
     updateProjectItems() {
-      console.log("currentloggedIn", this.loggedIn);
       let projectItems = [];
       projectItems.push({
         label: "Neues Projekt",
@@ -97,7 +96,11 @@ export default {
   this.items = this.loggedInItems;
 
 if (this.loggedIn && Array.isArray(this.projects)) {
-  const projectItems = [];
+  const projectItems = [            {
+              label: "Neues Projekt",
+              icon: "pi pi-fw pi-plus",
+              to: { name: "NewProject" },
+            }];
 
   for (let project of this.projects) {
     projectItems.push({
@@ -128,7 +131,6 @@ if (this.loggedIn && Array.isArray(this.projects)) {
   },
   watch: {
     loggedIn: function (newVal, oldVal) {
-      console.log("loggedIn changed from", oldVal, "to", newVal);
       this.updateProjectItems();
       this.updateHeaderMenuItems();
     },

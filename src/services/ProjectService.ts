@@ -12,10 +12,11 @@ export default class ProjectService {
     this.idToken = idToken;
   }
   createProject(title: string) {
+    console.log(`Bearer ${this.idToken}`);
     return axios
       .post(
         `${this.url}`,
-        { title: "i" },
+        { title: title },
         { headers: { Authorization: `Bearer ${this.idToken}` } }
       )
       .then((response) => console.log(response))
@@ -34,7 +35,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
   getProject(projectId: string) {
-console.log("getProject ", projectId , " ", this.idToken);
+    console.log("getProject ", projectId, " ", this.idToken);
     return axios
       .get(`${this.url}/${projectId}`, {
         headers: { Authorization: `Bearer ${this.idToken}` },
@@ -44,6 +45,8 @@ console.log("getProject ", projectId , " ", this.idToken);
         return response.data;
       })
       .catch((error) => {
+        console.log("project retreival error", error.request.status);
+
         console.error(error.request.status);
         throw error.request.status; // This will allow error to be caught where getProject is called
       });

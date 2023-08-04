@@ -1,29 +1,40 @@
 <script lang="ts">
 import ProjectService from "@/services/ProjectService";
+import AuthenticationService from "@/services/AuthenticationService";
+import Modal from "@/components/Modal.vue";
+
 
 export default {
+    components: {
+    Modal
+  },
   data() {
     return {
-      project_title: ''
+      project_title: '',
+      showModal: false,
     }
   },
   projectService: null,
   created() {
-    this.projectService = new ProjectService();
+    this.projectService = new ProjectService(AuthenticationService.getInstance().getIdToken());
   },
   methods: {
 onButtonCreate() {
-  this.projectService.createProject(this.project_title)
+  console.log("onButtonCreate");
+  this.showModal = true;
+},
+  createProject(project_title) {
+    // Now project_title will contain the value emitted from the outputValue event
+    this.projectService.createProject(project_title)
       .then(data => {
         if(data && data.hasOwnProperty('id')) {
           this.$router.push({ name: 'ProjectSelection', params: { projectId: data.id }});
         } else {
-          // handle the case where data is undefined or doesn't have an id
           console.log("Unexpected data: ", data);
         }
       })
       .finally(() => this.$emit('projectCreated'));
-}
+  }
 
   }
 }
@@ -32,6 +43,16 @@ onButtonCreate() {
 
 <template>
   <main>
+      <Modal
+    :isOpen="showModal"
+    :bodyText="'Wie soll das Projekt heißen?'"
+    :buttonText="' + Projekt Erstellen'"
+    :headingText="'Projekt Erstellen'"
+    :buttonColor="'green'"
+    :hasInput="true"
+    @closeModal="showModal = false"
+    @outputValue="createProject"
+  ></Modal>
   <div class="card">
     <div class="grid p-fluid">
       <div class="field col-12 md:col-4">
@@ -47,6 +68,7 @@ onButtonCreate() {
         <div />
         <Button @click="$router.push({ name: 'ProjectSelection' })" label="Abbrechen" icon="pi pi-times" iconPos="left"/>
       </div>
+      
     </div>
   </div>
   </main>

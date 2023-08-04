@@ -7,12 +7,29 @@
             <i class="pi pi-fw pi-times" @click="closeModal"></i>
           </div>
           <h2>{{ headingText }}</h2>
-          <p>{{  bodyText }}</p>
-          <!-- Display the dynamic link text -->
-          <button v-if="buttonText" @click="pressedButton" :class="`button ${buttonColor}`">{{ buttonText }}</button>
+          <p>{{ bodyText }}</p>
+          <input v-if="hasInput" v-model="inputValue" />
 
-          <div><a v-if="linkText && linkHref" class="link" :href="linkHref">{{ linkText }}</a>
-</div>
+          <button
+            v-if="buttonText && showButton"
+            @click="outputValue"
+            :class="`button ${buttonColor}`"
+          >
+            {{ buttonText }}
+          </button>
+                    <button
+            v-if="!hasInput"
+            @click="pressedButton"
+            :class="`button ${buttonColor}`"
+          >
+            {{ buttonText }}
+          </button>
+
+          <div>
+            <a v-if="linkText && linkHref" class="link" :href="linkHref">{{
+              linkText
+            }}</a>
+          </div>
         </div>
       </div>
     </teleport>
@@ -20,8 +37,8 @@
 </template>
 
 <script setup>
-import { toRef } from "vue";
-// Pass the dynamic link text and href as props
+import { ref, watchEffect, toRef } from "vue";
+
 const props = defineProps({
   isOpen: Boolean,
   linkText: String,
@@ -30,39 +47,55 @@ const props = defineProps({
   headingText: String,
   bodyText: String,
   buttonColor: String,
+  hasInput: Boolean
 });
 
-const isOpen = toRef(props, 'isOpen');
-const linkText = toRef(props, 'linkText');
-const linkHref = toRef(props, 'linkHref');
-const buttonText = toRef(props, 'buttonText');
-const headingText = toRef(props, 'headingText');
-const bodyText = toRef(props, 'bodyText');
+const isOpen = toRef(props, "isOpen");
+const linkText = toRef(props, "linkText");
+const linkHref = toRef(props, "linkHref");
+const buttonText = toRef(props, "buttonText");
+const headingText = toRef(props, "headingText");
+const bodyText = toRef(props, "bodyText");
+const buttonColor = toRef(props, "buttonColor");
+const hasInput = toRef(props, "hasInput");
+const inputValue = ref("");
+const showButton = ref(false); 
 
-
-// Emit closeModal event when clicking on close button
-const emit = defineEmits(['closeModal', 'pressedButton']);
+const emit = defineEmits(["closeModal", "pressedButton", "outputValue"]);
 
 const closeModal = () => {
-  emit('closeModal');
+  emit("closeModal");
 };
 
 const pressedButton = () => {
-  emit('pressedButton');
+  emit("pressedButton");
 };
+
+const outputValue = () => {
+  emit("outputValue", inputValue.value); // emitting the inputValue
+};
+
+watchEffect(() => {
+  if(inputValue.value.trim().length > 0){
+    showButton.value = true;
+  } else{
+    showButton.value = false;
+  }
+});
 </script>
+
 <style>
-.root{
+.root {
   position: relative;
 }
-.close{
+.close {
   display: flex;
   cursor: pointer;
   justify-content: end;
   align-items: end;
   align-self: flex-end;
 }
-.link{
+.link {
   cursor: pointer;
   color: #007bff;
   text-decoration: underline;
@@ -80,7 +113,7 @@ const pressedButton = () => {
   color: #495057;
 }
 .modal > div {
-    width: 50%;
+  width: 50%;
   height: 50%;
   background-color: white;
   padding: 30px;
@@ -90,8 +123,7 @@ const pressedButton = () => {
   align-items: center;
 }
 .modal > div > * {
-    margin-bottom: 30px;
-    text-align: center;
+  margin-bottom: 30px;
+  text-align: center;
 }
-
 </style>
