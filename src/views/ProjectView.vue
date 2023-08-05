@@ -1,7 +1,12 @@
 <script setup lang="ts">
 defineProps<{
   projectId: string;
-  projectName:string;
+  siteId: string;
+  buildingId: string;
+  apartmentId: string;
+  garageId: string;
+  propertyId: string;
+  projectName: string;
 }>();
 </script>
 
@@ -26,6 +31,16 @@ defineProps<{
       :hasInput="true"
       @closeModal="showSiteModal = false"
       @outputValue="createSite"
+    ></Modal>
+    <Modal
+      :isOpen="showBuildingModal"
+      :bodyText="'Wie soll das Gebäude heißen?'"
+      :buttonText="' + Gebäude Erstellen'"
+      :headingText="'Gebäude Erstellen'"
+      :buttonColor="'green'"
+      :hasInput="true"
+      @closeModal="showBuildingModal = false"
+      @outputValue="createBuilding"
     ></Modal>
     <Modal
       :isOpen="showGarageModal"
@@ -55,44 +70,61 @@ defineProps<{
             + Grundstück
           </button>
         </h1>
-        <div class="property">
-          <h2>Grundstück 1</h2>
+        <div
+          v-for="(property, index) in properties"
+          :key="index"
+          class="property"
+        >
+          <h2>{{ property.title }}</h2>
           <div class="site">
             <h2 class="section">
-              Baustellen<button class="button green" @click="showSiteModal=true">
+              Baustellen
+              <button
+                class="button green"
+                @click="showSiteModalFunction(property.id)"
+              >
                 + Baustelle
               </button>
             </h2>
-            <h3>Baustelle 1</h3>
-            <h3 class="section">
-              Wohnungen/ Garagen<button
+            <div v-for="(site, index) in property.sites">
+              <h3>{{ site.title }}</h3>
+            </div>
+            <h2 class="section">
+              Gebäude
+              <button
                 class="button green"
-                @click="showApartmentModal=true"
+                @click="showBuildingModalFunction(property.id)"
               >
-                + Wohnung</button
-              ><button class="button green" @click="showGarageModal=true">+ Garage</button>
-            </h3>
-            <div class="apartment">
-              <p>Apartment 1</p>
-            </div>
-            <div class="apartment">
-              <p>Apartment 2</p>
-            </div>
-          </div>
-          <div class="site">
-            <h3>Site 2</h3>
-            <div class="apartment">
-              <p>Apartment 1</p>
-            </div>
-          </div>
-        </div>
-        <div class="property">
-          <h2>Property 2</h2>
-          <div class="site">
-            <h3>Site 1</h3>
-            <div class="apartment">
-              <p>Apartment 1</p>
-              <p>Garage 3</p>
+                + Gebäude
+              </button>
+            </h2>
+            <div v-for="(building, index) in property.buildings">
+              <h3>{{ building.title }}</h3>
+              <h3 class="section">
+                Wohnungen/ Garagen<button
+                  class="button green"
+                  @click="showApartmentModalFunction(building.id, property.id)"
+                >
+                  + Wohnung
+                </button>
+              </h3>
+              <div
+                v-for="(apartment, index) in building.apartments"
+                class="apartment"
+              >
+                <p>{{ apartment.title }}</p>
+              </div>
+              <h3 class="section">
+                <button
+                  class="button green"
+              @click="showGarageModalFunction(building.id, property.id)"
+                >
+                  + Garage
+                </button>
+              </h3>
+              <div v-for="(garage, index) in building.garages" class="garage">
+                <p>{{ garage.title }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -109,6 +141,12 @@ defineProps<{
 .content-wrapper {
   padding: 10%;
 }
+.property {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
 .section {
   width: 200px;
   color: aqua;
@@ -140,18 +178,65 @@ export default defineComponent({
       isAuthorized: false,
       showPropertyModal: false,
       showSiteModal: false,
+      showBuildingModal: false,
       showApartmentModal: false,
       showGarageModal: false,
+      siteId: null,
+      buildingId: null,
+      apartmentId: null,
+      garageId: null,
+      propertyId: null,
+      projectName: null,
     };
   },
+  projectService: null,
+  properties: [],
+
   async created() {
     try {
-      const authService = AuthenticationService().getInstance();
-await authService.initialize();
-      const projectService = new ProjectService(authService.getIdToken());
-      const project = await projectService.getProject(this.projectId);
+      const authenticationService = AuthenticationService.getInstance();
+      await authenticationService.whenTokenReady();
+      const idToken = authenticationService.getIdToken();
+      this.projectService = new ProjectService(idToken);
+      const project = await this.projectService.getProject(this.projectId);
+      this.properties = await this.projectService.getProperties(this.projectId);
+      for (let property of this.properties) {
+        console.log("property", property.id);
+        let propertySites = await this.projectService.getSites(
+          this.projectId,
+          property.id
+        );
+        property.sites = propertySites;
+        let propertyBuildings = await this.projectService.getBuildings(
+          this.projectId,
+          property.id
+        );
+        property.buildings = Array.isArray(propertyBuildings)
+          ? propertyBuildings
+          : [];
+
+        for (let building of property.buildings) {
+          let buildingApartments = await this.projectService.getApartments(
+            this.projectId,
+            property.id,
+            building.id
+          );
+          building.apartments = buildingApartments;
+          console.log("buildingap", building.apartments);
+
+          let buildingGarages = await this.projectService.getGarages(
+            this.projectId,
+            property.id,
+            building.id
+          );
+          building.garages = buildingGarages;
+          console.log("buildinggarages", building.garages);
+        }
+      }
+
+      console.log("properties", this.properties);
       this.project = project;
-      console.log("project", project.title)
+      console.log("project", project.title);
       this.isAuthorized = true; // Update local data property, not the prop
     } catch (error) {
       console.error(`Failed to fetch the project: ${error}`);
@@ -161,77 +246,107 @@ await authService.initialize();
     }
   },
   methods: {
+    showSiteModalFunction(propertyId) {
+      this.propertyId = propertyId;
+      this.showSiteModal = true;
+    },
+    showBuildingModalFunction(propertyId) {
+      console.log("propertyId ", propertyId);
+
+      this.propertyId = propertyId;
+      this.showBuildingModal = true;
+    },
+    showGarageModalFunction(buildingId, propertyId) {
+      this.propertyId = propertyId;
+      this.buildingId = buildingId;
+      this.showGarageModal = true;
+    },
+    showApartmentModalFunction(buildingId, propertyId) {
+      console.log("buildingId ", buildingId);
+      this.propertyId = propertyId;
+      this.buildingId = buildingId;
+      this.showApartmentModal = true;
+    },
     openAddPropertyModal() {
       console.log("addProperty");
       this.showPropertyModal = true;
     },
-    createProperty(property_title) {
-      event;
+    async createProperty(property_title) {
       console.log("property title", property_title);
-      this.projectService
-        .createPrpperty(project_title)
-        .then((data) => {
-          if (data && data.hasOwnProperty("id")) {
-            this.$router.push({
-              name: "ProjectSelection",
-              params: { projectId: data.id },
-            });
-          } else {
-            console.log("Unexpected data: ", data);
-          }
-        })
-        .finally(() => this.$emit("projectCreated"));
+      try {
+        const data = await this.projectService.createProperty(
+          property_title,
+          this.projectId
+        );
+        console.log("propertydata : ", data);
+        // Add newly created property to the list
+        this.properties.push(data);
+      } catch (error) {
+        console.error("Failed to create property:", error);
+      }
     },
-    createSite(property_title) {
-      event;
-      console.log("property title", property_title);
-      this.projectService
-        .createPrpperty(project_title)
-        .then((data) => {
-          if (data && data.hasOwnProperty("id")) {
-            this.$router.push({
-              name: "ProjectSelection",
-              params: { projectId: data.id },
-            });
-          } else {
-            console.log("Unexpected data: ", data);
-          }
-        })
-        .finally(() => this.$emit("projectCreated"));
+    async createSite(site_title) {
+      console.log("site title", site_title);
+      try {
+        const data = await this.projectService.createSite(
+          site_title,
+          this.projectId,
+          this.propertyId
+        );
+        console.log("sitedata : ", data);
+        // Add newly created site to the list
+        this.sites.push(data);
+      } catch (error) {
+        console.error("Failed to create site:", error);
+      }
     },
-    createGarage(property_title) {
-      event;
-      console.log("property title", property_title);
-      this.projectService
-        .createPrpperty(project_title)
-        .then((data) => {
-          if (data && data.hasOwnProperty("id")) {
-            this.$router.push({
-              name: "ProjectSelection",
-              params: { projectId: data.id },
-            });
-          } else {
-            console.log("Unexpected data: ", data);
-          }
-        })
-        .finally(() => this.$emit("projectCreated"));
+    async createBuilding(building_title) {
+      console.log("building title", building_title);
+      try {
+        const data = await this.projectService.createBuilding(
+          building_title,
+          this.projectId,
+          this.propertyId,
+          this.siteId
+        );
+        console.log("building data: ", data);
+        // Add newly created building to the list
+        this.buildings.push(data);
+      } catch (error) {
+        console.error("Failed to create building:", error);
+      }
     },
-    createApartment(property_title) {
-      event;
-      console.log("property title", property_title);
-      this.projectService
-        .createPrpperty(project_title)
-        .then((data) => {
-          if (data && data.hasOwnProperty("id")) {
-            this.$router.push({
-              name: "ProjectSelection",
-              params: { projectId: data.id },
-            });
-          } else {
-            console.log("Unexpected data: ", data);
-          }
-        })
-        .finally(() => this.$emit("projectCreated"));
+    async createApartment(apartment_title) {
+      console.log("apartment title", apartment_title);
+      try {
+        const data = await this.projectService.createApartment(
+          apartment_title,
+          this.projectId,
+          this.propertyId,
+          this.buildingId
+        );
+        console.log("apartmentdata : ", data);
+        // Add newly created apartment to the list
+        this.apartments.push(data);
+      } catch (error) {
+        console.error("Failed to create apartment:", error);
+      }
+    },
+    async createGarage(garage_title) {
+      console.log("garage title", garage_title);
+      try {
+        const data = await this.projectService.createGarage(
+          garage_title,
+          this.projectId,
+          this.propertyId,
+          this.buildingId
+        );
+        console.log("garagedata : ", data);
+        // Add newly created garage to the list
+        this.garages.push(data);
+      } catch (error) {
+        console.error("Failed to create garage:", error);
+      }
     },
   },
 });

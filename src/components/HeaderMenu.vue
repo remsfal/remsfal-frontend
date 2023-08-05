@@ -89,6 +89,8 @@ export default {
   },
   methods: {
     async updateProjectItems() {
+  console.log('loggedIn is', this.loggedIn)
+  if(this.loggedIn){
       const authenticationService = AuthenticationService.getInstance();
       await authenticationService.whenTokenReady();
       const idToken = authenticationService.getIdToken();
@@ -127,7 +129,7 @@ export default {
         to: { name: "NewProject" },
       });
       this.items = this.loggedInItems;
-
+}
       if (!this.loggedIn) {
         this.items = this.loggedOutItems;
       }
