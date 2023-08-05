@@ -31,14 +31,14 @@ defineProps<{
         'Consultant',
         'Lessee',
       ]"
-      :bodyText="'Gebe die Email-Adresse des Nutzers ein, den du hinzufügen möchtest. Wenn es den Nutzer gibt, wird er hinzugefügt.'"
-      :buttonText="' + Nutzer hinzufügen'"
-      :headingText="'Nutzer hinzufügen'"
-      :buttonColor="'green'"
+      :bodyText="'Ändere die Rolle des Nutzers in dem Projekt'"
+      :buttonText="'Nutzerrolle ändern'"
+      :headingText="'Nutzerrolle ändern'"
+      :buttonColor="'orange'"
       :hasSelect="true"
       :hasInput="true"
       @closeModal="showEditUserModal = false"
-      @pressedButton="addUser"
+      @pressedButton="editUser"
     ></Modal>
     <Modal
       :isOpen="showAddUserModal"
@@ -122,7 +122,7 @@ defineProps<{
             <span>{{ member.role }}</span>
 
             <span
-              @click="showEditUserModalFunction(member.role)"
+              @click="showEditUserModalFunction(member)"
               class="checkmark pi pi-fw pi-pencil"
             ></span>
             <span
@@ -461,7 +461,7 @@ export default defineComponent({
         const data = await this.projectService.addMember(
           this.projectId,
           email,
-          "PROPRIETOR"
+          role.toUpperCase()
         );
         console.log("sitedata : ", data);
         // Add newly created site to the list
@@ -470,9 +470,31 @@ export default defineComponent({
         console.error("Failed to create site:", error);
       }
     },
-    showEditUserModalFunction(role) {
-      this.role = role;
-      this.showAddEditUserModal = true;
+        async editUser(userObj) {
+      console.log("addUSerRol");
+
+      try {
+        const role = userObj.select;
+        console.log("addUSerRol", role)
+        const data = await this.projectService.updateMember(
+          this.projectId,
+          this.memberId,
+          role.toUpperCase(),
+          this.email
+
+        );
+        console.log("sitedata : ", data);
+        // Add newly created site to the list
+        this.sites.push(data);
+      } catch (error) {
+        console.error("Failed to create site:", error);
+      }
+    },
+    showEditUserModalFunction(member) {
+      this.role = member.role;
+      this.email = member.email;
+      this.memberId = member.id;
+      this.showEditUserModal = true;
     },
     showDeleteUserModalFunction(memberId) {
       this.memberId = memberId;

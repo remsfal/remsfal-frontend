@@ -92,14 +92,13 @@ img {
     background-color: #909090;
 }
 
-/* Beige Button */
-.button.beige {
-    color: #495057;
-    background-color: #F5F5DC;
-    box-shadow: 0 5px #C3C3A2;
-    color: #000;
+/* Dark Orange Button */
+.button.orange {
+    color: #fff;
+    background-color: #FF8C00; /* Dark orange background */
+    box-shadow: 0 5px #E87500; /* Darker orange shadow */
 }
 
-.button.beige:hover {
-    background-color: #E8E8D0;
+.button.orange:hover {
+    background-color: #E86C00; /* Slightly darker orange on hover */
 }

@@ -201,12 +201,14 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  updateMember(projectId, memberId, projectMemberInfo) {
-    console.log("updateProjectMember", projectId, memberId);
+  updateMember(projectId, memberId, role, email) {
+    console.log("updateProjectMember", projectId, email, role);
     return axios
       .patch(
         `${this.url}/${projectId}/members/${memberId}`,
-        projectMemberInfo,
+        { role: role,
+        id: memberId,
+        email: email  },
         {
           headers: { Authorization: `Bearer ${this.idToken}` },
         }
@@ -218,8 +220,13 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  deleteMember(projectId, memberId) {
-    console.log("deleteProjectMember", projectId, memberId);
+  deleteMember(projectId, email, role) {
+    console.log("deleteProjectMember", projectId, email, role);
+
+    const payload = {
+      email: email,
+      role: role,
+    };
     return axios
       .delete(`${this.url}/${projectId}/members/${memberId}`, {
         headers: { Authorization: `Bearer ${this.idToken}` },
