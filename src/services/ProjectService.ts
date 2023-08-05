@@ -116,12 +116,9 @@ export default class ProjectService {
   getBuildings(projectId: string, propertyId: string, siteId: string) {
     console.log("getProperties ", this.idToken);
     return axios
-      .get(
-        `${this.url}/${projectId}/properties/${propertyId}/buildings`,
-        {
-          headers: { Authorization: `Bearer ${this.idToken}` },
-        }
-      )
+      .get(`${this.url}/${projectId}/properties/${propertyId}/buildings`, {
+        headers: { Authorization: `Bearer ${this.idToken}` },
+      })
       .then((response) => {
         console.log("properties returned", response.data);
         return response.data;
@@ -144,11 +141,7 @@ export default class ProjectService {
       .then((response) => console.log(response))
       .catch((error) => console.error(error));
   }
-  getApartments(
-    projectId: string,
-    propertyId: string,
-    buildingId: string
-  ) {
+  getApartments(projectId: string, propertyId: string, buildingId: string) {
     console.log("getProperties ", this.idToken);
     return axios
       .get(
@@ -179,11 +172,7 @@ export default class ProjectService {
       .then((response) => console.log(response))
       .catch((error) => console.error(error));
   }
-  getGarages(
-    projectId: string,
-    propertyId: string,
-    buildingId: string
-  ) {
+  getGarages(projectId: string, propertyId: string, buildingId: string) {
     console.log("getProperties ", this.idToken);
     return axios
       .get(
@@ -194,6 +183,68 @@ export default class ProjectService {
       )
       .then((response) => {
         console.log("properties returned", response.data);
+        return response.data;
+      })
+      .catch((error) => console.error(error));
+  }
+
+  getMembers(projectId: string) {
+    console.log("getProperties ", this.idToken);
+    return axios
+      .get(`${this.url}/${projectId}/members`, {
+        headers: { Authorization: `Bearer ${this.idToken}` },
+      })
+      .then((response) => {
+        console.log("properties returned", response.data);
+        return response.data;
+      })
+      .catch((error) => console.error(error));
+  }
+
+  updateMember(projectId, memberId, projectMemberInfo) {
+    console.log("updateProjectMember", projectId, memberId);
+    return axios
+      .patch(
+        `${this.url}/${projectId}/members/${memberId}`,
+        projectMemberInfo,
+        {
+          headers: { Authorization: `Bearer ${this.idToken}` },
+        }
+      )
+      .then((response) => {
+        console.log("member updated", response.data);
+        return response.data;
+      })
+      .catch((error) => console.error(error));
+  }
+
+  deleteMember(projectId, memberId) {
+    console.log("deleteProjectMember", projectId, memberId);
+    return axios
+      .delete(`${this.url}/${projectId}/members/${memberId}`, {
+        headers: { Authorization: `Bearer ${this.idToken}` },
+      })
+      .then((response) => {
+        console.log("member deleted");
+        return response.data;
+      })
+      .catch((error) => console.error(error));
+  }
+
+  addMember(projectId, email, role) {
+    console.log("addMember", projectId);
+
+    const payload = {
+      email: email,
+      role: role,
+    };
+
+    return axios
+      .post(`${this.url}/${projectId}/members`, payload, {
+        headers: { Authorization: `Bearer ${this.idToken}` },
+      })
+      .then((response) => {
+        console.log("member added", response.data);
         return response.data;
       })
       .catch((error) => console.error(error));

@@ -19,14 +19,42 @@ defineProps<{
       :headingText="'Nutzer entfernen'"
       :buttonColor="'red'"
       @closeModal="showDeleteUserModal = false"
-      @pressedButton="deleteUser()"
+      @pressedButton="deleteUser(userEmail)"
     ></Modal>
     <Modal
-      :isOpen="showAddUserModal"
+      :isOpen="showEditUserModal"
+      :options="[
+        'Proprietor',
+        'Manager',
+        'Lessor',
+        'Caretaker',
+        'Consultant',
+        'Lessee',
+      ]"
       :bodyText="'Gebe die Email-Adresse des Nutzers ein, den du hinzufügen möchtest. Wenn es den Nutzer gibt, wird er hinzugefügt.'"
       :buttonText="' + Nutzer hinzufügen'"
       :headingText="'Nutzer hinzufügen'"
       :buttonColor="'green'"
+      :hasSelect="true"
+      :hasInput="true"
+      @closeModal="showEditUserModal = false"
+      @outputValue="addUser"
+    ></Modal>
+    <Modal
+      :isOpen="showAddUserModal"
+      :options="[
+        'Proprietor',
+        'Manager',
+        'Lessor',
+        'Caretaker',
+        'Consultant',
+        'Lessee',
+      ]"
+      :bodyText="'Gebe die Email-Adresse des Nutzers ein, den du hinzufügen möchtest. Wenn es den Nutzer gibt, wird er hinzugefügt.'"
+      :buttonText="' + Nutzer hinzufügen'"
+      :headingText="'Nutzer hinzufügen'"
+      :buttonColor="'green'"
+      :hasSelect="true"
       :hasInput="true"
       @closeModal="showAddUserModal = false"
       @outputValue="addUser"
@@ -38,6 +66,7 @@ defineProps<{
       :headingText="'Grundstück Erstellen'"
       :buttonColor="'green'"
       :hasInput="true"
+      :hasSelect="false"
       @closeModal="showPropertyModal = false"
       @outputValue="createProperty"
     ></Modal>
@@ -88,63 +117,16 @@ defineProps<{
           Nutzer<span @click="showAddUserModal = true" class="add"> + </span>
         </h1>
         <div class="user-wrapper">
-          <div class="user">
-            <div>nilstleo01@gmail.com</div>
-            <span
-              v-bind:class="{
-                activeRole: activeRole === 'Proprietor',
-                inactiveRole: activeRole !== 'Proprietor',
-              }"
-              v-on:click="changeActiveRole"
-              >Proprietor</span
-            >
-            <span
-              v-bind:class="{
-                activeRole: activeRole === 'Manager',
-                inactiveRole: activeRole !== 'Manager',
-              }"
-              v-on:click="changeActiveRole"
-              >Manager</span
-            >
-            <span
-              v-bind:class="{
-                activeRole: activeRole === 'Lessor',
-                inactiveRole: activeRole !== 'Lessor',
-              }"
-              v-on:click="changeActiveRole"
-              >Lessor</span
-            >
-            <span
-              v-bind:class="{
-                activeRole: activeRole === 'Caretaker',
-                inactiveRole: activeRole !== 'Caretaker',
-              }"
-              v-on:click="changeActiveRole"
-              >Caretaker</span
-            >
-            <span
-              v-bind:class="{
-                activeRole: activeRole === 'Consultant',
-                inactiveRole: activeRole !== 'Consultant',
-              }"
-              v-on:click="changeActiveRole"
-              >Consultant</span
-            >
-            <span
-              v-bind:class="{
-                activeRole: activeRole === 'Lessee',
-                inactiveRole: activeRole !== 'Lessee',
-              }"
-              v-on:click="changeActiveRole"
-              >Lessee</span
-            >
+          <div v-for="(member, index) in members" :key="index" class="user">
+            <div>{{ member.email }}</div>
+            <span>{{ member.role }}</span>
 
             <span
-              v-if="changedActiveRole"
-              class="checkmark pi pi-fw pi-check"
+              @click="showEditUserModalFunction(member.role)"
+              class="checkmark pi pi-fw pi-pencil"
             ></span>
             <span
-              @click="showDeleteUserModal = true"
+              @click="showDeleteUserModalFunction(member.id)"
               class="checkmark pi pi-fw pi-trash"
             ></span>
           </div>
@@ -270,12 +252,14 @@ defineProps<{
 }
 .user {
   display: flex;
+  padding-top: 10px;
   align-items: center;
   gap: 20px;
   color: #495057;
 }
 .user-wrapper {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
@@ -376,6 +360,7 @@ export default defineComponent({
       activeRole: "Manager",
       showPropertyModal: false,
       showDeleteUserModal: false,
+      showEditUserModal: false,
       showAddUserModal: false,
       showSiteModal: false,
       showBuildingModal: false,
@@ -383,14 +368,17 @@ export default defineComponent({
       showGarageModal: false,
       siteId: null,
       buildingId: null,
+      email: null,
       apartmentId: null,
       garageId: null,
+      memberId: null,
       propertyId: null,
       projectName: null,
     };
   },
   projectService: null,
   properties: [],
+  members: [],
 
   async created() {
     try {
@@ -399,6 +387,11 @@ export default defineComponent({
       const idToken = authenticationService.getIdToken();
       this.projectService = new ProjectService(idToken);
       const project = await this.projectService.getProject(this.projectId);
+      const members = await this.projectService.getMembers(this.projectId);
+      this.members = Array.isArray(members) ? members : [];
+      console.log("members", members.members);
+      this.members = members.members;
+
       const properties = await this.projectService.getProperties(
         this.projectId
       );
@@ -452,8 +445,39 @@ export default defineComponent({
     }
   },
   methods: {
-    deleteUser() {},
-    addUser() {},
+    async deleteUser() {
+      const data = await this.projectService.deleteMember(
+        this.projectId,
+        this.memberId
+      );
+    },
+    async addUser(userObj) {
+      console.log('addUSerRol')
+
+      try {
+              const email = userObj.text
+      const role = userObj.select
+      console.log('addUSerRol', role, 'email', email)
+        const data = await this.projectService.addMember(
+          this.projectId,
+          email,
+          "PROPRIETOR"
+        );
+        console.log("sitedata : ", data);
+        // Add newly created site to the list
+        this.sites.push(data);
+      } catch (error) {
+        console.error("Failed to create site:", error);
+      }
+    },
+      showEditUserModalFunction(role) {
+      this.role = role;
+      this.showAddEditUserModal = true;
+    },
+    showDeleteUserModalFunction(memberId) {
+      this.memberId = memberId;
+      this.showDeleteUserModal = true;
+    },
     changeActiveRole(event) {
       console.log("event", event.target.innerHTML);
       this.activeRole = event.target.innerHTML;

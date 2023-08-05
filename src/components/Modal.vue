@@ -9,16 +9,18 @@
           <h2>{{ headingText }}</h2>
           <p>{{ bodyText }}</p>
           <input v-if="hasInput" v-model="inputValue" />
+          <select v-if="hasSelect" v-model="selectValue" name="options" id="options">
+            <option value="" selected disabled>Select an option</option>
+            <option
+              v-for="(option, index) in options"
+              :key="index"
+              :value="option"
+            >
+              {{ option }}
+            </option>
+          </select>
 
-          <button
-            v-if="buttonText && showButton"
-            @click="outputValue"
-            :class="`button ${buttonColor}`"
-          >
-            {{ buttonText }}
-          </button>
-                    <button
-            v-if="!hasInput"
+          <button v-if="showButton" class="button green"
             @click="pressedButton"
             :class="`button ${buttonColor}`"
           >
@@ -37,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, toRef } from "vue";
+import { ref, watchEffect, toRef, onMounted } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,
@@ -47,7 +49,9 @@ const props = defineProps({
   headingText: String,
   bodyText: String,
   buttonColor: String,
-  hasInput: Boolean
+  hasInput: Boolean,
+  hasSelect: Boolean,
+  options: Array,
 });
 
 const isOpen = toRef(props, "isOpen");
@@ -58,8 +62,11 @@ const headingText = toRef(props, "headingText");
 const bodyText = toRef(props, "bodyText");
 const buttonColor = toRef(props, "buttonColor");
 const hasInput = toRef(props, "hasInput");
+const hasSelect = toRef(props, "hasSelect");
 const inputValue = ref("");
-const showButton = ref(false); 
+const selectValue = ref("");
+const showButton = ref(true);
+const options = toRef(props, "options");
 
 const emit = defineEmits(["closeModal", "pressedButton", "outputValue"]);
 
@@ -72,15 +79,34 @@ const pressedButton = () => {
 };
 
 const outputValue = () => {
-  emit("outputValue", inputValue.value); // emitting the inputValue
+  if(hasInput && !hasSelect){
+    emit("outputValue", inputValue.value);
+  }
+  if(hasInput && hasSelect){
+    emit("outputValue", {text: inputValue.value, select: selectValue.value});
+  }
 };
-
 watchEffect(() => {
-  if(inputValue.value.trim().length > 0){
+  console.log('inputValue', inputValue.value, 'showButton', showButton.value, 'selectValue', selectValue.value)
+  console.log('hasInput', hasInput.value, 'hasSelect', hasSelect.value)
+
+if(hasInput.value && !hasSelect.value){
+  if (inputValue.value.trim().length > 0) {
     showButton.value = true;
-  } else{
+  } else {
     showButton.value = false;
   }
+  
+}
+
+if(hasInput.value && hasSelect.value){
+
+  if (inputValue.value.trim().length > 0 && selectValue.value.trim().length > 0 ) {
+    showButton.value = true;
+  } else {
+    showButton.value = false;
+  }
+}
 });
 </script>
 
