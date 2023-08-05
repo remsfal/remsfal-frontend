@@ -36,7 +36,6 @@ defineProps<{
       :headingText="'Nutzerrolle ändern'"
       :buttonColor="'orange'"
       :hasSelect="true"
-      :hasInput="true"
       @closeModal="showEditUserModal = false"
       @pressedButton="editUser"
     ></Modal>
@@ -116,12 +115,15 @@ defineProps<{
         <h1 class="section">
           Nutzer<span @click="showAddUserModal = true" class="add"> + </span>
         </h1>
+        <p class="section">Hier kannst du als Manager andere Nutzer hinzufügen, entfernen und ihre Projektrollen ändern.</p>
         <div class="user-wrapper">
-          <div v-for="(member, index) in members" :key="index" class="user">
+          <div v-for="(member, index) in members" :key="index" >
+            <div class="user"  v-if="member.role != 'MANAGER'">
             <div>{{ member.email }}</div>
             <span>{{ member.role }}</span>
 
             <span
+
               @click="showEditUserModalFunction(member)"
               class="checkmark pi pi-fw pi-pencil"
             ></span>
@@ -130,6 +132,7 @@ defineProps<{
               class="checkmark pi pi-fw pi-trash"
             ></span>
           </div>
+        </div>
         </div>
         <h1 class="section">
           Grundstücke<span class="add" @click="openAddPropertyModal"> + </span>
@@ -470,12 +473,10 @@ export default defineComponent({
         console.error("Failed to create site:", error);
       }
     },
-        async editUser(userObj) {
-      console.log("addUSerRol");
+        async editUser(role) {
 
       try {
-        const role = userObj.select;
-        console.log("addUSerRol", role)
+        console.log("edUSerRol", role)
         const data = await this.projectService.updateMember(
           this.projectId,
           this.memberId,

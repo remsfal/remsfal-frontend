@@ -83,6 +83,9 @@ const pressedButton = () => {
   if(hasInput.value && !hasSelect.value){
     emit("pressedButton", inputValue.value);
   }
+    if(!hasInput.value && hasSelect.value){
+    emit("pressedButton", selectValue.value);
+  }
   if(hasInput.value && hasSelect.value){
     emit("pressedButton", {text: inputValue.value, select: selectValue.value});
   }
@@ -90,6 +93,16 @@ const pressedButton = () => {
 watchEffect(() => {
   console.log('inputValue', inputValue.value, 'showButton', showButton.value, 'selectValue', selectValue.value)
   console.log('hasInput', hasInput.value, 'hasSelect', hasSelect.value)
+
+if(hasSelect.value && !hasInput.value){
+console.log('selectValue2', selectValue.value)
+  if (selectValue.value.trim().length > 0) {
+    showButton.value = true;
+  } else {
+    showButton.value = false;
+  }
+  
+}
 
 if(hasInput.value && !hasSelect.value){
   if (inputValue.value.trim().length > 0) {
