@@ -38,7 +38,7 @@ defineProps<{
       :hasSelect="true"
       :hasInput="true"
       @closeModal="showEditUserModal = false"
-      @outputValue="addUser"
+      @pressedButton="addUser"
     ></Modal>
     <Modal
       :isOpen="showAddUserModal"
@@ -57,7 +57,7 @@ defineProps<{
       :hasSelect="true"
       :hasInput="true"
       @closeModal="showAddUserModal = false"
-      @outputValue="addUser"
+      @pressedButton="addUser"
     ></Modal>
     <Modal
       :isOpen="showPropertyModal"
@@ -68,7 +68,7 @@ defineProps<{
       :hasInput="true"
       :hasSelect="false"
       @closeModal="showPropertyModal = false"
-      @outputValue="createProperty"
+      @pressedButton="createProperty"
     ></Modal>
     <Modal
       :isOpen="showSiteModal"
@@ -78,7 +78,7 @@ defineProps<{
       :buttonColor="'green'"
       :hasInput="true"
       @closeModal="showSiteModal = false"
-      @outputValue="createSite"
+      @pressedButton="createSite"
     ></Modal>
     <Modal
       :isOpen="showBuildingModal"
@@ -88,7 +88,7 @@ defineProps<{
       :buttonColor="'green'"
       :hasInput="true"
       @closeModal="showBuildingModal = false"
-      @outputValue="createBuilding"
+      @pressedButton="createBuilding"
     ></Modal>
     <Modal
       :isOpen="showGarageModal"
@@ -98,7 +98,7 @@ defineProps<{
       :buttonColor="'green'"
       :hasInput="true"
       @closeModal="showGarageModal = false"
-      @outputValue="createGarage"
+      @pressedButton="createGarage"
     ></Modal>
     <Modal
       :isOpen="showApartmentModal"
@@ -108,7 +108,7 @@ defineProps<{
       :buttonColor="'green'"
       :hasInput="true"
       @closeModal="showApartmentModal = false"
-      @outputValue="createApartment"
+      @pressedButton="createApartment"
     ></Modal>
     <div v-if="isAuthorized" class="content-wrapper">
       <div class="project">
@@ -452,12 +452,12 @@ export default defineComponent({
       );
     },
     async addUser(userObj) {
-      console.log('addUSerRol')
+      console.log("addUSerRol");
 
       try {
-              const email = userObj.text
-      const role = userObj.select
-      console.log('addUSerRol', role, 'email', email)
+        const email = userObj.text;
+        const role = userObj.select;
+        console.log("addUSerRol", role, "email", email);
         const data = await this.projectService.addMember(
           this.projectId,
           email,
@@ -470,7 +470,7 @@ export default defineComponent({
         console.error("Failed to create site:", error);
       }
     },
-      showEditUserModalFunction(role) {
+    showEditUserModalFunction(role) {
       this.role = role;
       this.showAddEditUserModal = true;
     },

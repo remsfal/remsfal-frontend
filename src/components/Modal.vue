@@ -68,22 +68,23 @@ const selectValue = ref("");
 const showButton = ref(true);
 const options = toRef(props, "options");
 
-const emit = defineEmits(["closeModal", "pressedButton", "outputValue"]);
+const emit = defineEmits(["closeModal", "pressedButton"]);
 
 const closeModal = () => {
   emit("closeModal");
 };
 
 const pressedButton = () => {
-  emit("pressedButton");
-};
-
-const outputValue = () => {
-  if(hasInput && !hasSelect){
-    emit("outputValue", inputValue.value);
+  console.log("presedButton", hasInput.value, hasSelect.value);
+  if(!hasInput.value && !hasSelect.value){
+    emit("pressedButton");
   }
-  if(hasInput && hasSelect){
-    emit("outputValue", {text: inputValue.value, select: selectValue.value});
+
+  if(hasInput.value && !hasSelect.value){
+    emit("pressedButton", inputValue.value);
+  }
+  if(hasInput.value && hasSelect.value){
+    emit("pressedButton", {text: inputValue.value, select: selectValue.value});
   }
 };
 watchEffect(() => {
