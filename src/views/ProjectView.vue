@@ -13,6 +13,25 @@ defineProps<{
 <template>
   <main>
     <Modal
+      :isOpen="showDeleteUserModal"
+      :bodyText="'Bist du sicher, dass du den Nutzer aus dem Projekt löschen möchtest? Der Nutzer wird daraufhin kein zugriff mehr auf das Projekt haben.'"
+      :buttonText="'Nutzer entfernen'"
+      :headingText="'Nutzer entfernen'"
+      :buttonColor="'red'"
+      @closeModal="showDeleteUserModal = false"
+      @pressedButton="deleteUser()"
+    ></Modal>
+    <Modal
+      :isOpen="showAddUserModal"
+      :bodyText="'Gebe die Email-Adresse des Nutzers ein, den du hinzufügen möchtest. Wenn es den Nutzer gibt, wird er hinzugefügt.'"
+      :buttonText="' + Nutzer hinzufügen'"
+      :headingText="'Nutzer hinzufügen'"
+      :buttonColor="'green'"
+      :hasInput="true"
+      @closeModal="showAddUserModal = false"
+      @outputValue="addUser"
+    ></Modal>
+    <Modal
       :isOpen="showPropertyModal"
       :bodyText="'Wie soll das Grundstück heißen?'"
       :buttonText="' + Grundstück Erstellen'"
@@ -64,66 +83,153 @@ defineProps<{
     ></Modal>
     <div v-if="isAuthorized" class="content-wrapper">
       <div class="project">
-        <h1>{{ project.title }}</h1>
+        <h1 class="section">{{ project.title }}</h1>
         <h1 class="section">
-          Grundstücke<button class="button green" @click="openAddPropertyModal">
-            + Grundstück
-          </button>
+          Nutzer<span @click="showAddUserModal = true" class="add"> + </span>
         </h1>
-        <div
-          v-for="(property, index) in properties"
-          :key="index"
-          class="property"
-        >
-          <h2>{{ property.title }}</h2>
-          <div class="site">
-            <h2 class="section">
-              Baustellen
-              <button
-                class="button green"
-                @click="showSiteModalFunction(property.id)"
-              >
-                + Baustelle
-              </button>
-            </h2>
-            <div v-for="(site, index) in property.sites">
-              <h3>{{ site.title }}</h3>
-            </div>
-            <h2 class="section">
-              Gebäude
-              <button
-                class="button green"
-                @click="showBuildingModalFunction(property.id)"
-              >
-                + Gebäude
-              </button>
-            </h2>
-            <div v-for="(building, index) in property.buildings">
-              <h3>{{ building.title }}</h3>
-              <h3 class="section">
-                Wohnungen/ Garagen<button
-                  class="button green"
-                  @click="showApartmentModalFunction(building.id, property.id)"
-                >
-                  + Wohnung
-                </button>
-              </h3>
-              <div
-                v-for="(apartment, index) in building.apartments"
-                class="apartment"
-              >
-                <p>{{ apartment.title }}</p>
-              </div>
-              <h3 class="section">
-                <button
-                  class="button green"
-              @click="showGarageModalFunction(building.id, property.id)"
-                >
-                  + Garage
-                </button>
-              </h3>
-              <div v-for="(garage, index) in building.garages" class="garage">
-                <p>{{ garage.title }}</p>
+        <div class="user-wrapper">
+          <div class="user">
+            <div>nilstleo01@gmail.com</div>
+            <span
+              v-bind:class="{
+                activeRole: activeRole === 'Proprietor',
+                inactiveRole: activeRole !== 'Proprietor',
+              }"
+              v-on:click="changeActiveRole"
+              >Proprietor</span
+            >
+            <span
+              v-bind:class="{
+                activeRole: activeRole === 'Manager',
+                inactiveRole: activeRole !== 'Manager',
+              }"
+              v-on:click="changeActiveRole"
+              >Manager</span
+            >
+            <span
+              v-bind:class="{
+                activeRole: activeRole === 'Lessor',
+                inactiveRole: activeRole !== 'Lessor',
+              }"
+              v-on:click="changeActiveRole"
+              >Lessor</span
+            >
+            <span
+              v-bind:class="{
+                activeRole: activeRole === 'Caretaker',
+                inactiveRole: activeRole !== 'Caretaker',
+              }"
+              v-on:click="changeActiveRole"
+              >Caretaker</span
+            >
+            <span
+              v-bind:class="{
+                activeRole: activeRole === 'Consultant',
+                inactiveRole: activeRole !== 'Consultant',
+              }"
+              v-on:click="changeActiveRole"
+              >Consultant</span
+            >
+            <span
+              v-bind:class="{
+                activeRole: activeRole === 'Lessee',
+                inactiveRole: activeRole !== 'Lessee',
+              }"
+              v-on:click="changeActiveRole"
+              >Lessee</span
+            >
+
+            <span
+              v-if="changedActiveRole"
+              class="checkmark pi pi-fw pi-check"
+            ></span>
+            <span
+              @click="showDeleteUserModal = true"
+              class="checkmark pi pi-fw pi-trash"
+            ></span>
+          </div>
+        </div>
+        <h1 class="section">
+          Grundstücke<span class="add" @click="openAddPropertyModal"> + </span>
+        </h1>
+        <div class="property-wrapper">
+          <div v-for="(property, index) in properties" :key="index">
+            <div class="property-card">
+              <h2 class="section">{{ property.title }}</h2>
+              <div class="site">
+                <h3 class="section">
+                  Baustellen
+                  <span class="add" @click="showSiteModalFunction(property.id)"
+                    >+
+                  </span>
+                </h3>
+                <div class="site-building-wrapper">
+                  <div v-for="(site, index) in property.sites">
+                    <div class="site-building-card">
+                      <h4 class="section">
+                        {{ site.title }}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <h3 class="section">
+                  Gebäude
+                  <span
+                    class="add"
+                    @click="showBuildingModalFunction(property.id)"
+                  >
+                    +
+                  </span>
+                </h3>
+                <div class="site-building-wrapper">
+                  <div v-for="(building, index) in property.buildings">
+                    <div class="site-building-card">
+                      <h4 class="section">building.title</h4>
+
+                      <h5 class="section">
+                        Wohnungen<span
+                          class="add"
+                          @click="
+                            showApartmentModalFunction(building.id, property.id)
+                          "
+                        >
+                          +
+                        </span>
+                      </h5>
+                      <div
+                        v-for="(apartment, index) in building.apartments"
+                        class="apartment"
+                      >
+                        <div class="garage-apartment-card">
+                          <h6 class="section">
+                            {{ apartment.title }}
+                          </h6>
+                        </div>
+                      </div>
+                      <h5 class="section">
+                        Garage
+                        <span
+                          class="add"
+                          @click="
+                            showGarageModalFunction(building.id, property.id)
+                          "
+                        >
+                          +
+                        </span>
+                      </h5>
+                      <div
+                        v-for="(garage, index) in building.garages"
+                        class="garage"
+                      >
+                        <div class="garage-apartment-card">
+                          <h6 class="section">
+                            {{ garage.title }}
+                          </h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -141,17 +247,107 @@ defineProps<{
 .content-wrapper {
   padding: 10%;
 }
-.property {
+.property-wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
+}
+.property-card {
+  padding: 20px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Apply shadow */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition */
+}
+
+.property-card:hover {
+  transform: scale(1.1); /* Increase size by 10% */
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Apply shadow */
+}
+
+.site-building-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  color: #495057;
+}
+.user-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+.site-building-card {
+  border-radius: 10px; /* adjust as needed */
+
+  height: 100%;
+  width: 100%;
+}
+
+.garage-apartment-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 20px;
+}
+.garage-apartment-card {
+  height: 100%;
+  width: 100%;
 }
 
 .section {
-  width: 200px;
-  color: aqua;
+  color: #495057;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+h1.section {
+  color: #123456;
+  font-size: 32px;
+}
+
+h2.section {
+  color: #654321;
+  font-size: 28px;
+}
+
+h3.section {
+  color: #567890;
+  font-size: 24px;
+}
+
+h4.section {
+  color: #098765;
+  font-size: 20px;
+}
+
+h5.section {
+  color: #678901;
+  font-size: 16px;
+}
+h6.section {
+  color: #6c757d;
+  font-size: 12px;
+}
+.activeRole {
+  cursor: pointer;
+  border: 2px solid #123456;
+  border-radius: 5px;
+  padding: 5px;
+}
+.inactiveRole {
+  cursor: pointer;
+  border: 2px solid gray;
+  border-radius: 5px;
+  padding: 5px;
+}
+.checkmark {
+  cursor: pointer;
 }
 </style>
 
@@ -176,7 +372,11 @@ export default defineComponent({
       ],
       project: null,
       isAuthorized: false,
+      changedActiveRole: false,
+      activeRole: "Manager",
       showPropertyModal: false,
+      showDeleteUserModal: false,
+      showAddUserModal: false,
       showSiteModal: false,
       showBuildingModal: false,
       showApartmentModal: false,
@@ -199,13 +399,17 @@ export default defineComponent({
       const idToken = authenticationService.getIdToken();
       this.projectService = new ProjectService(idToken);
       const project = await this.projectService.getProject(this.projectId);
-      this.properties = await this.projectService.getProperties(this.projectId);
+      const properties = await this.projectService.getProperties(
+        this.projectId
+      );
+      this.properties = Array.isArray(properties) ? properties : [];
       for (let property of this.properties) {
         console.log("property", property.id);
         let propertySites = await this.projectService.getSites(
           this.projectId,
           property.id
         );
+        property.sites = Array.isArray(propertySites) ? property.sites : [];
         property.sites = propertySites;
         let propertyBuildings = await this.projectService.getBuildings(
           this.projectId,
@@ -221,7 +425,9 @@ export default defineComponent({
             property.id,
             building.id
           );
-          building.apartments = buildingApartments;
+          building.apartments = Array.isArray(buildingApartments)
+            ? building.apartments
+            : [];
           console.log("buildingap", building.apartments);
 
           let buildingGarages = await this.projectService.getGarages(
@@ -246,6 +452,13 @@ export default defineComponent({
     }
   },
   methods: {
+    deleteUser() {},
+    addUser() {},
+    changeActiveRole(event) {
+      console.log("event", event.target.innerHTML);
+      this.activeRole = event.target.innerHTML;
+      this.changedActiveRole = true;
+    },
     showSiteModalFunction(propertyId) {
       this.propertyId = propertyId;
       this.showSiteModal = true;

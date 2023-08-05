@@ -61,6 +61,14 @@ img {
 .button.green:hover {
     background-color: #45a049;
 }
+
+.add {
+    margin-left:10%;
+    cursor: pointer;
+}
+.add:hover {
+    color: #45a049;
+}
 .button.red {
     color: white;
     background-color: #ff0000;
