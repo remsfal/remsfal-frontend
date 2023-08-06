@@ -25,7 +25,7 @@ export default class AuthenticationService {
                 "LocalStorage Token expired, retrieving new Token",
                 savedToken
               );
-              this.refreshToken();
+              this.retreiveToken();
             } else {
               this.idToken = savedToken;
               console.log("Saved JWT ID Token", this.idToken);
@@ -35,7 +35,7 @@ export default class AuthenticationService {
           })
           .catch((error) => {
             console.error(error);
-            this.refreshToken();
+            this.retreiveToken();
           });
       } else if (window.location.href.includes("id_token")) {
         console.log("Getting token from URL");
@@ -45,7 +45,7 @@ export default class AuthenticationService {
 
         let params = new URLSearchParams(uri);
         if (params.get("id_token") == null) {
-          this.refreshToken();
+          this.retreiveToken();
         } else {
           // remove token from URL
           window.location.hash = "";
@@ -62,7 +62,7 @@ export default class AuthenticationService {
       } else {
         // Get token from Google
         console.log("Getting token from Google");
-        this.refreshToken();
+        this.retreiveToken();
       }
     });
   }
@@ -70,7 +70,7 @@ export default class AuthenticationService {
     return this.tokenReadyPromise;
   }
 
-  private setTimeToGetRefreshToken(idToken: string) {
+  private setTimeToGetNewToken(idToken: string) {
     this.tokenPromise = this.getTokenInfo(idToken).then((tokenInfo) => {
       console.log("Token expires in " + tokenInfo.expires_in + " seconds");
       this.refreshTimeout = setTimeout(
@@ -140,7 +140,7 @@ export default class AuthenticationService {
       response_type: "id_token",
       client_id: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID,
       redirect_uri: import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URL,
-      scope: ["openid", "profile", "email"].join(" "),
+      scope: ["openid", "email"].join(" "),
       // the state can be used for additional query parameter
       // state: 'any state to have after the redirect'
     };
@@ -148,7 +148,7 @@ export default class AuthenticationService {
     const qs = new URLSearchParams(options);
     return `${rootUrl}?${qs.toString()}`;
   }
-  private refreshToken(): void {
+  private retreiveToken(): void {
     console.log("Authentication is required...");
     let authUrl = AuthenticationService.getGoogleAuthUrl();
     console.log("Redirect to: " + authUrl);

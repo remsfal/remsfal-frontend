@@ -19,7 +19,7 @@ defineProps<{
       :headingText="'Nutzer entfernen'"
       :buttonColor="'red'"
       @closeModal="showDeleteUserModal = false"
-      @pressedButton="deleteUser(userEmail)"
+      @pressedButton="deleteUser()"
     ></Modal>
     <Modal
       :isOpen="showEditUserModal"
@@ -113,53 +113,58 @@ defineProps<{
       <div class="project">
         <h1 class="section">{{ project.title }}</h1>
         <h1 class="section">
-          Nutzer<span @click="showAddUserModal = true" class="add"> + </span>
+          Nutzer<span @click="showAddUserModal = true" v-if="isRoleAuthorized(userRole, createMemberRoles)" class="add"> + </span>
         </h1>
-        <p class="section">Hier kannst du als Manager andere Nutzer hinzufügen, entfernen und ihre Projektrollen ändern.</p>
+        <p v-if="isRoleAuthorized(userRole, createMemberRoles)" class="section">
+          Hier kannst du als Manager andere Nutzer hinzufügen, entfernen und
+          ihre Projektrollen ändern.
+        </p>
         <div class="user-wrapper">
-          <div v-for="(member, index) in members" :key="index" >
-            <div class="user"  v-if="member.role != 'MANAGER'">
-            <div>{{ member.email }}</div>
-            <span>{{ member.role }}</span>
+          <div v-if="isRoleAuthorized(userRole, getMembersRoles)" v-for="(member, index) in members" :key="index">
+            <div class="user" v-if="member.role != 'MANAGER'">
+              <div>{{ member.email }}</div>
+              <span>{{ member.role }}</span>
 
-            <span
-
-              @click="showEditUserModalFunction(member)"
-              class="checkmark pi pi-fw pi-pencil"
-            ></span>
-            <span
-              @click="showDeleteUserModalFunction(member.id)"
-              class="checkmark pi pi-fw pi-trash"
-            ></span>
+              <span
+              v-if="isRoleAuthorized(userRole, updateMemberRoles)"
+                @click="showEditUserModalFunction(member)"
+                class="checkmark pi pi-fw pi-pencil"
+              ></span>
+              <span
+              v-if="isRoleAuthorized(userRole, deleteMemberRoles)"
+                @click="showDeleteUserModalFunction(member.id)"
+                class="checkmark pi pi-fw pi-trash"
+              ></span>
+            </div>
           </div>
         </div>
-        </div>
-        <h1 class="section">
-          Grundstücke<span class="add" @click="openAddPropertyModal"> + </span>
+        <h1 v-if="isRoleAuthorized(userRole, getPropertiesRoles)" class="section">
+          Grundstücke<span v-if="isRoleAuthorized(userRole, createPropertyRoles)" class="add" @click="openAddPropertyModal"> + </span>
         </h1>
         <div class="property-wrapper">
           <div v-for="(property, index) in properties" :key="index">
             <div class="property-card">
               <h2 class="section">{{ property.title }}</h2>
               <div class="site">
-                <h3 class="section">
+                <h3 v-if="isRoleAuthorized(userRole, getSitesRoles)" class="section">
                   Baustellen
-                  <span class="add" @click="showSiteModalFunction(property.id)"
+                  <span v-if="isRoleAuthorized(userRole, createSiteRoles)" class="add" @click="showSiteModalFunction(property.id)"
                     >+
                   </span>
                 </h3>
-                <div class="site-building-wrapper">
+                <div v-if="isRoleAuthorized(userRole, getSitesRoles)" class="site-building-wrapper">
                   <div v-for="(site, index) in property.sites">
                     <div class="site-building-card">
-                      <h4 class="section">
+                      <h4 v-if="isRoleAuthorized(userRole, getSitesRoles)" class="section">
                         {{ site.title }}
                       </h4>
                     </div>
                   </div>
                 </div>
-                <h3 class="section">
+                <h3 v-if="isRoleAuthorized(userRole, getBuildingsRoles)" class="section">
                   Gebäude
                   <span
+                  v-if="isRoleAuthorized(userRole, createBuildingRoles)"
                     class="add"
                     @click="showBuildingModalFunction(property.id)"
                   >
@@ -167,12 +172,12 @@ defineProps<{
                   </span>
                 </h3>
                 <div class="site-building-wrapper">
-                  <div v-for="(building, index) in property.buildings">
+                  <div v-if="isRoleAuthorized(userRole, getBuildingsRoles)" v-for="(building, index) in property.buildings">
                     <div class="site-building-card">
-                      <h4 class="section">building.title</h4>
+                      <h4 class="section">{{ building.title }}</h4>
 
-                      <h5 class="section">
-                        Wohnungen<span
+                      <h5 v-if="isRoleAuthorized(userRole, getApartmentsRoles)" class="section">
+                        Wohnungen<span v-if="isRoleAuthorized(userRole, createApartmentRoles)"
                           class="add"
                           @click="
                             showApartmentModalFunction(building.id, property.id)
@@ -184,6 +189,7 @@ defineProps<{
                       <div
                         v-for="(apartment, index) in building.apartments"
                         class="apartment"
+                        v-if="isRoleAuthorized(userRole, getApartmentsRoles)"
                       >
                         <div class="garage-apartment-card">
                           <h6 class="section">
@@ -191,18 +197,19 @@ defineProps<{
                           </h6>
                         </div>
                       </div>
-                      <h5 class="section">
+                      <h5 v-if="isRoleAuthorized(userRole, getGaragesRoles)" class="section">
                         Garage
                         <span
                           class="add"
                           @click="
                             showGarageModalFunction(building.id, property.id)
                           "
+                          v-if="isRoleAuthorized(userRole, createGarageRoles)"
                         >
                           +
                         </span>
                       </h5>
-                      <div
+                      <div v-if="isRoleAuthorized(userRole, getGaragesRoles)"
                         v-for="(garage, index) in building.garages"
                         class="garage"
                       >
@@ -229,113 +236,7 @@ defineProps<{
 </template>
 
 <style>
-.content-wrapper {
-  padding: 10%;
-}
-.property-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-.property-card {
-  padding: 20px;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Apply shadow */
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition */
-}
 
-.property-card:hover {
-  transform: scale(1.1); /* Increase size by 10% */
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Apply shadow */
-}
-
-.site-building-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-.user {
-  display: flex;
-  padding-top: 10px;
-  align-items: center;
-  gap: 20px;
-  color: #495057;
-}
-.user-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-}
-.site-building-card {
-  border-radius: 10px; /* adjust as needed */
-
-  height: 100%;
-  width: 100%;
-}
-
-.garage-apartment-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-
-  gap: 20px;
-}
-.garage-apartment-card {
-  height: 100%;
-  width: 100%;
-}
-
-.section {
-  color: #495057;
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  align-items: center;
-}
-h1.section {
-  color: #123456;
-  font-size: 32px;
-}
-
-h2.section {
-  color: #654321;
-  font-size: 28px;
-}
-
-h3.section {
-  color: #567890;
-  font-size: 24px;
-}
-
-h4.section {
-  color: #098765;
-  font-size: 20px;
-}
-
-h5.section {
-  color: #678901;
-  font-size: 16px;
-}
-h6.section {
-  color: #6c757d;
-  font-size: 12px;
-}
-.activeRole {
-  cursor: pointer;
-  border: 2px solid #123456;
-  border-radius: 5px;
-  padding: 5px;
-}
-.inactiveRole {
-  cursor: pointer;
-  border: 2px solid gray;
-  border-radius: 5px;
-  padding: 5px;
-}
-.checkmark {
-  cursor: pointer;
-}
 </style>
 
 <script lang="ts">
@@ -377,6 +278,57 @@ export default defineComponent({
       memberId: null,
       propertyId: null,
       projectName: null,
+      userRole: null,
+      createApartmentRoles: ["MANAGER", "PROPRIETOR", "LESSOR"],
+      getApartmentsRoles: [
+        "MANAGER",
+        "PROPRIETOR",
+        "LESSOR",
+        "CONSULTANT",
+        "CARETAKER",
+        "LESSEE",
+      ],
+      createBuildingRoles: ["MANAGER", "PROPRIETOR"],
+      getBuildingsRoles: [
+        "MANAGER",
+        "PROPRIETOR",
+        "LESSOR",
+        "CONSULTANT",
+        "CARETAKER",
+        "LESSEE",
+      ],
+
+      createGarageRoles: ["MANAGER", "PROPRIETOR", "LESSOR"],
+      getGaragesRoles: [
+        "MANAGER",
+        "PROPRIETOR",
+        "LESSOR",
+        "CONSULTANT",
+        "CARETAKER",
+        "LESSEE",
+      ],
+      createSiteRoles: ["MANAGER", "PROPRIETOR"],
+      getSitesRoles: ["MANAGER", "PROPRIETOR", "CONSULTANT", "CARETAKER"],
+      getMembersRoles: [
+        "MANAGER",
+        "PROPRIETOR",
+        "LESSOR",
+        "CONSULTANT",
+        "CARETAKER",
+        "LESSEE",
+      ],
+      createMemberRoles: ["MANAGER"],
+      updateMemberRoles: ["MANAGER"],
+      deleteMemberRoles: ["MANAGER"],
+      createPropertyRoles: ["MANAGER", "PROPRIETOR"],
+      getPropertiesRoles: [
+        "MANAGER",
+        "PROPRIETOR",
+        "LESSOR",
+        "CONSULTANT",
+        "CARETAKER",
+        "LESSEE",
+      ],
     };
   },
   projectService: null,
@@ -389,6 +341,8 @@ export default defineComponent({
       await authenticationService.whenTokenReady();
       const idToken = authenticationService.getIdToken();
       this.projectService = new ProjectService(idToken);
+      this.userRole = await this.projectService.getRole(this.projectId);
+      console.log("user ", this.userRole);
       const project = await this.projectService.getProject(this.projectId);
       const members = await this.projectService.getMembers(this.projectId);
       this.members = Array.isArray(members) ? members : [];
@@ -416,15 +370,11 @@ export default defineComponent({
           : [];
 
         for (let building of property.buildings) {
-          let buildingApartments = await this.projectService.getApartments(
+          building.apartments = await this.projectService.getApartments(
             this.projectId,
             property.id,
             building.id
           );
-          building.apartments = Array.isArray(buildingApartments)
-            ? building.apartments
-            : [];
-          console.log("buildingap", building.apartments);
 
           let buildingGarages = await this.projectService.getGarages(
             this.projectId,
@@ -449,6 +399,7 @@ export default defineComponent({
   },
   methods: {
     async deleteUser() {
+      console.log("deleteUser", this.memberId);
       const data = await this.projectService.deleteMember(
         this.projectId,
         this.memberId
@@ -473,16 +424,14 @@ export default defineComponent({
         console.error("Failed to create site:", error);
       }
     },
-        async editUser(role) {
-
+    async editUser(role) {
       try {
-        console.log("edUSerRol", role)
+        console.log("edUSerRol", role);
         const data = await this.projectService.updateMember(
           this.projectId,
           this.memberId,
           role.toUpperCase(),
           this.email
-
         );
         console.log("sitedata : ", data);
         // Add newly created site to the list
@@ -527,10 +476,18 @@ export default defineComponent({
       this.buildingId = buildingId;
       this.showApartmentModal = true;
     },
+    isRoleAuthorized(role, roles) {
+      console.log("role", role, "roles", roles);
+      if (roles.includes(role)) {
+        return true;
+      }
+      return false;
+    },
     openAddPropertyModal() {
       console.log("addProperty");
       this.showPropertyModal = true;
     },
+
     async createProperty(property_title) {
       console.log("property title", property_title);
       try {

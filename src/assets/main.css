@@ -102,3 +102,110 @@ img {
 .button.orange:hover {
     background-color: #E86C00; /* Slightly darker orange on hover */
 }
+.content-wrapper {
+  padding: 10%;
+}
+.property-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.property-card {
+  padding: 20px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Apply shadow */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition */
+}
+
+.property-card:hover {
+  transform: scale(1.1); /* Increase size by 10% */
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Apply shadow */
+}
+
+.site-building-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.user {
+  display: flex;
+  padding-top: 10px;
+  align-items: center;
+  gap: 20px;
+  color: #495057;
+}
+.user-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+.site-building-card {
+  border-radius: 10px; /* adjust as needed */
+
+  height: 100%;
+  width: 100%;
+}
+
+.garage-apartment-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 20px;
+}
+.garage-apartment-card {
+  height: 100%;
+  width: 100%;
+}
+
+.section {
+  color: #495057;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+h1.section {
+  color: #123456;
+  font-size: 32px;
+}
+
+h2.section {
+  color: #654321;
+  font-size: 28px;
+}
+
+h3.section {
+  color: #567890;
+  font-size: 24px;
+}
+
+h4.section {
+  color: #098765;
+  font-size: 20px;
+}
+
+h5.section {
+  color: #678901;
+  font-size: 16px;
+}
+h6.section {
+  color: #6c757d;
+  font-size: 12px;
+}
+.activeRole {
+  cursor: pointer;
+  border: 2px solid #123456;
+  border-radius: 5px;
+  padding: 5px;
+}
+.inactiveRole {
+  cursor: pointer;
+  border: 2px solid gray;
+  border-radius: 5px;
+  padding: 5px;
+}
+.checkmark {
+  cursor: pointer;
+}

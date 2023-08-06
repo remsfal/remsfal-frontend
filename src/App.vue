@@ -105,9 +105,8 @@ export default {
       await this.authenticationService.whenTokenReady();
       this.idToken = this.authenticationService.getIdToken();
       this.userEmail = await this.authenticationService.getUserEmail();
-      this.userId = await this.authenticationService.getUserId();
       // Wait for the userId Promise to resolve
-      console.log("userId: " + this.userId, "emnail", this.userEmail);
+      console.log( "emnail", this.userEmail);
       this.userService = new UserService(this.idToken);
       
       try {

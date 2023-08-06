@@ -12,27 +12,26 @@ export default class UserService {
   public constructor(idToken: string) {
     this.idToken = idToken;
   }
-  // rest of the code...
-  authenticate(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      axios
+  authenticate(){
+    return axios
         .get(`${this.url}/authenticate`, {
           headers: {
             Authorization: `Bearer ${this.idToken}`,
           },
         })
         .then((response) => {
-          console.log("Authentication succeeded: " + response);
+          const responseString = JSON.stringify(response.data);
+          console.log("Authentication successful: " + responseString);
           this.authenticated = true;
-          resolve(this.authenticated); // Resolve promise with authenticated status
+          return this.authenticated;
+
         })
         .catch((error) => {
           console.log("Authentication failed: " + error);
           this.authenticated = false;
-
-          reject(error); // Reject promise with error
+        console.error(error.request.status);
+        throw error.request.status;
         });
-    });
   }
 
   updateUser(id, name, email) {
@@ -43,14 +42,14 @@ export default class UserService {
       })
       .then((response) => console.log(response));
   }
-deleteUser(id) {
-  return axios
-    .delete(`${this.url}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${this.idToken}`,
-      }
-    })
-    .then((response) => console.log(response))
-    .catch((error) => console.error(error));
-}
+  deleteUser(id) {
+    return axios
+      .delete(`${this.url}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${this.idToken}`,
+        },
+      })
+      .then((response) => console.log(response))
+      .catch((error) => console.error(error));
+  }
 }

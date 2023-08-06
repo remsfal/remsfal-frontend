@@ -51,6 +51,23 @@ export default class ProjectService {
         throw error.request.status; // This will allow error to be caught where getProject is called
       });
   }
+  getRole(projectId: string) {
+    console.log("getRole ", projectId, " ", this.idToken);
+    return axios
+      .get(`${this.url}/${projectId}/role`, {
+        headers: { Authorization: `Bearer ${this.idToken}` },
+      })
+      .then((response) => {
+        console.log("role returned", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.log("role retreival error", error.request.status);
+
+        console.error(error.request.status);
+        throw error.request.status; // This will allow error to be caught where getProject is called
+      });
+  }
   createProperty(title: string, projectId: string) {
     console.log(`Bearer ${this.idToken}`);
     return axios
@@ -206,9 +223,7 @@ export default class ProjectService {
     return axios
       .patch(
         `${this.url}/${projectId}/members/${memberId}`,
-        { role: role,
-        id: memberId,
-        email: email  },
+        { role: role, id: memberId, email: email },
         {
           headers: { Authorization: `Bearer ${this.idToken}` },
         }
@@ -220,13 +235,8 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  deleteMember(projectId, email, role) {
-    console.log("deleteProjectMember", projectId, email, role);
-
-    const payload = {
-      email: email,
-      role: role,
-    };
+  deleteMember(projectId, memberId) {
+    console.log("deleteProjectMember", projectId, memberId);
     return axios
       .delete(`${this.url}/${projectId}/members/${memberId}`, {
         headers: { Authorization: `Bearer ${this.idToken}` },
