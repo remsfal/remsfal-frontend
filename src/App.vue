@@ -58,7 +58,6 @@ export default {
   projectService: null,
   authenticationService: null,
   created() {
-    console.log("App created");
     // authenticate user if id_token is present in localStorage or URL contains auth params
     if (window.location.href.includes("register")) {
     }
@@ -71,7 +70,6 @@ export default {
   },
   methods: {
     onProjectCreated() {
-      console.log("Project created event");
     },
     openModal() {
       this.showModal = true;
@@ -84,7 +82,6 @@ export default {
     try {
       // Call the deleteAccount() method from the OriginalClass
       this.userService.deleteUser(this.userId).then((data) => {
-        console.log("deleteUser", data);
         this.logout();
       })
         .catch((error) => {});

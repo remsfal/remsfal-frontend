@@ -28,7 +28,6 @@ export default class AuthenticationService {
               this.retreiveToken();
             } else {
               this.idToken = savedToken;
-              console.log("Saved JWT ID Token", this.idToken);
               this.tokenPromise = this.getTokenInfo(this.idToken);
               resolve();
             }

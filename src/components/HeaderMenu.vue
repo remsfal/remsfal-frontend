@@ -89,7 +89,6 @@ export default {
   },
   methods: {
     async updateProjectItems() {
-  console.log('loggedIn is', this.loggedIn)
   if(this.loggedIn){
       const authenticationService = AuthenticationService.getInstance();
       await authenticationService.whenTokenReady();

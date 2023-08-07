@@ -116,7 +116,7 @@ defineProps<{
           Nutzer<span @click="showAddUserModal = true" v-if="isRoleAuthorized(userRole, createMemberRoles)" class="add"> + </span>
         </h1>
         <p v-if="isRoleAuthorized(userRole, createMemberRoles)" class="section">
-          Hier kannst du als Manager andere Nutzer hinzufügen, entfernen und
+          Hier kannst du als Verwalter andere Nutzer hinzufügen, entfernen und
           ihre Projektrollen ändern.
         </p>
         <div class="user-wrapper">
