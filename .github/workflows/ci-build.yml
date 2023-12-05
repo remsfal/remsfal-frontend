@@ -1,0 +1,71 @@
+name: "CI Build"
+
+on:
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request_target:
+  workflow_dispatch:
+
+jobs:
+  lts-build:
+    name: "Node.js 20 LTS Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
+        # The `npm ci` command can only install with an existing package-lock.json
+        # run: npm ci
+      - name: Build with Vite (build)
+        run: npm run build
+  latest-build:
+    name: "Node.js 21 Latest Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js 21
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21.x'
+      - name: Install dependencies
+        run: npm install
+        # The `npm ci` command can only install with an existing package-lock.json
+        # run: npm ci
+      - name: Build with Vite (build)
+        run: npm run build
+  sonar-cloud-analysis:
+    name: "Sonar Cloud Build"
+    runs-on: ubuntu-latest
+    # dependabot should not have SONAR_TOKEN
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
+        # The `npm ci` command can only install with an existing package-lock.json
+        # run: npm ci
+      - name: Build with Coverage Information (build)
+        run: npm run build
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
