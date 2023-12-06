@@ -1,66 +1,105 @@
-import axios from 'axios'
+import axios from "axios";
 
 export default class AuthenticationService {
   private static instance: AuthenticationService;
-  private readonly idToken: string;
+  private idToken: string;
 
   // @ts-ignore
   private refreshTimeout;
 
   // @ts-ignore
-  private readonly tokenPromise: Promise<void | object>;
+  private tokenPromise: Promise<void | object>;
 
   private constructor() {
-    // let uri = window.location.search.substring(1);
-    let uri = window.location.hash.replace("#", "?");
-    let params = new URLSearchParams(uri);
-    if (params.get("access_token") == null) {
-      // redirect to google in order to get a new token
-      this.refreshToken();
-    } else {
-      // remove token from URL
-      window.location.hash = "";
-    }
-    this.accessToken = params.get("access_token") ?? "";
-    this.idToken = params.get("id_token") ?? "";
-    console.log("JWT ID Token: ", this.idToken);
+    this.idToken = "";
+    const savedToken = localStorage.getItem("remsfal/id_token");
 
-    // Call getUserInfo here
-    this.userInfoPromise = this.getUserInfo()
-      .then((userInfo) => {
-        console.log("User Info: ", userInfo);
-        // You can do something with userInfo here or in the then of this promise where you call it
-        return userInfo;
-      })
-      .catch((error) => {
-        console.error("Failed to get user info:", error);
-        // Decide what to do when it fails
-      });
+    // Wrap everything in a Promise
+    this.tokenReadyPromise = new Promise((resolve) => {
+      if (savedToken !== null && !window.location.href.includes("id_token")) {
+        console.log("token from LocalStorage", savedToken);
+        this.getTokenInfo(savedToken)
+          .then((tokenInfo) => {
+            if (this.isTokenExpired(tokenInfo)) {
+              console.log(
+                "LocalStorage Token expired, retrieving new Token",
+                savedToken
+              );
+              this.retreiveToken();
+            } else {
+              this.idToken = savedToken;
+              this.tokenPromise = this.getTokenInfo(this.idToken);
+              resolve();
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            this.retreiveToken();
+          });
+      } else if (window.location.href.includes("id_token")) {
+        console.log("Getting token from URL");
 
-    this.tokenPromise = this.getTokenInfo()
-      .then((tokenInfo) => {
-        this.refreshTimeout = setTimeout(
-          this.refreshToken,
-          tokenInfo.expires_in * 1000
+        let uri = window.location.hash.replace("#", "?");
+        window.location.href = "";
+
+        let params = new URLSearchParams(uri);
+        if (params.get("id_token") == null) {
+          this.retreiveToken();
+        } else {
+          // remove token from URL
+          window.location.hash = "";
+        }
+        this.idToken = params.get("id_token") ?? "";
+        localStorage.setItem("remsfal/id_token", this.idToken);
+        this.tokenPromise = this.getTokenInfo(this.idToken).then(
+          (tokenInfo) => {
+            resolve();
+          }
         );
-        return tokenInfo;
-      })
-      .catch(() => this.refreshToken());
+
+        console.log("obtained new Token: ", this.idToken);
+      } else {
+        // Get token from Google
+        console.log("Getting token from Google");
+        this.retreiveToken();
+      }
+    });
+  }
+  public whenTokenReady(): Promise<void> {
+    return this.tokenReadyPromise;
   }
 
-  private getUserInfo(): Promise<object> {
-    const userInfoUrl = import.meta.env.VITE_GOOGLE_USER_INFO_URL;
-    console.log("User Info URL: ", userInfoUrl);
-    const responseType = "id_token token";
+  private setTimeToGetNewToken(idToken: string) {
+    this.tokenPromise = this.getTokenInfo(idToken).then((tokenInfo) => {
+      console.log("Token expires in " + tokenInfo.expires_in + " seconds");
+      this.refreshTimeout = setTimeout(
+        this.refreshToken,
+        tokenInfo.expires_in * 1000
+      );
+      return tokenInfo;
+    });
+  }
+
+  private isTokenExpired(tokenInfo: any): boolean {
+    console.log("Checking if token is expired...");
+    const currentTimestamp = Math.floor(Date.now() / 1000); // Unix timestamp
+    return tokenInfo.exp <= currentTimestamp;
+  }
+
+  private getTokenInfo(idToken: string): Promise<any> {
+    const tokenInfoUrl = import.meta.env.VITE_GOOGLE_TOKEN_INFO_URL;
+
+    const url = `${tokenInfoUrl}?id_token=${idToken.toString()}`;
+    console.log("Getting token info...", url, idToken);
 
     return axios
-      .get(userInfoUrl, {
-        headers: { Authorization: `Bearer ${this.accessToken}` },
-        params: { response_type: responseType },
-      })
+      .get(url)
       .then((response) => response.data)
-      .then((userInfo) => {
-        return userInfo;
+      .then((tokenInfo) => {
+        console.log("Access Token is valid and has the following info:");
+        console.log(tokenInfo);
+        this.tokenPromise = Promise.resolve(tokenInfo);
+        return tokenInfo;
       });
   }
 
@@ -72,28 +111,35 @@ export default class AuthenticationService {
     return AuthenticationService.instance;
   }
 
-  public getAccessToken(): string {
-    return this.accessToken;
-  }
   public getIdToken(): string {
     return this.idToken;
   }
 
-  public getUserId(): Promise<void | object> {
-    return this.tokenPromise.then((tokenInfo) => tokenInfo.sub);
+  public async getUserId(): Promise<void | string> {
+    return await this.tokenPromise.then((tokenInfo) => {
+      if (!tokenInfo) {
+        throw new Error("Token info is not initialized");
+      }
+      return tokenInfo.sub;
+    });
   }
 
-  public getUserEmail(): Promise<void | object> {
-    return this.tokenPromise.then((tokenInfo) => tokenInfo.email);
+  public async getUserEmail(): Promise<void | string> {
+    return await this.tokenPromise.then((tokenInfo) => {
+      if (!tokenInfo) {
+        throw new Error("Token info is not initialized");
+      }
+      return tokenInfo.email;
+    });
   }
 
   private static getGoogleAuthUrl(): string {
     const rootUrl = import.meta.env.VITE_GOOGLE_OAUTH_AUTH_URL;
     const options = {
-      response_type: "token id_token",
+      response_type: "id_token",
       client_id: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID,
       redirect_uri: import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URL,
-      scope: ["openid", "profile", "email"].join(" "),
+      scope: ["openid", "email"].join(" "),
       // the state can be used for additional query parameter
       // state: 'any state to have after the redirect'
     };
@@ -101,21 +147,7 @@ export default class AuthenticationService {
     const qs = new URLSearchParams(options);
     return `${rootUrl}?${qs.toString()}`;
   }
-  private getTokenInfo(): Promise<object> {
-    const tokenInfoUrl = import.meta.env.VITE_GOOGLE_TOKEN_INFO_URL;
-
-    return axios
-      .get(tokenInfoUrl, {
-        params: { access_token: this.accessToken },
-      })
-      .then((response) => response.data)
-      .then((tokenInfo) => {
-        console.log("Access Token is valid and has the following info:");
-        console.log("%j", tokenInfo);
-        return tokenInfo;
-      });
-  }
-  private refreshToken(): void {
+  private retreiveToken(): void {
     console.log("Authentication is required...");
     let authUrl = AuthenticationService.getGoogleAuthUrl();
     console.log("Redirect to: " + authUrl);
