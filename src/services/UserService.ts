@@ -2,9 +2,7 @@ import axios from 'axios'
 import AuthenticationService from "@/services/AuthenticationService";
 
 export default class UserService {
-  private readonly host: string = import.meta.env.VITE_BACKEND_HOST;
-
-  private readonly url: string = this.host + "/api/v1/users";
+  private readonly url: string = "/api/v1/users";
   private authenticated: boolean = false;
 
   private readonly idToken: string;
@@ -34,7 +32,7 @@ export default class UserService {
         });
   }
 
-  updateUser(id, name, email) {
+  updateUser(id: string, name: string, email: string) {
     return axios
       .patch(`${this.url}/${id}`, {
         user_name: name,
@@ -42,7 +40,7 @@ export default class UserService {
       })
       .then((response) => console.log(response));
   }
-  deleteUser(id) {
+  deleteUser(id: string) {
     return axios
       .delete(`${this.url}/${id}`, {
         headers: {

@@ -1,9 +1,8 @@
 <script lang="ts">
 export default {
   data() {
-    const HOST = import.meta.env.VITE_BACKEND_HOST;
     return {
-      project_title: import.meta.env.VITE_BACKEND_HOST
+      project_title: "Just a Test"
     }
   }
 }

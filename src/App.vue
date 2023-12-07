@@ -42,6 +42,8 @@ import AuthenticationService from "@/services/AuthenticationService";
 import UserService from "@/services/UserService";
 import ProjectService from "@/services/ProjectService";
 
+let userService: UserService;
+
 export default {
   data() {
     return {
@@ -54,7 +56,7 @@ export default {
       projects: Array,
     };
   },
-  userService: null,
+  // userService: null,
   projectService: null,
   authenticationService: null,
   created() {
@@ -81,7 +83,7 @@ export default {
       console.log("deleteUser");
     try {
       // Call the deleteAccount() method from the OriginalClass
-      this.userService.deleteUser(this.userId).then((data) => {
+      userService.deleteUser(this.userId).then((data) => {
         this.logout();
       })
         .catch((error) => {});

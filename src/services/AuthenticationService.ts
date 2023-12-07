@@ -10,6 +10,8 @@ export default class AuthenticationService {
   // @ts-ignore
   private tokenPromise: Promise<void | object>;
 
+  private tokenReadyPromise: Promise<void | object>;
+
   private constructor() {
     this.idToken = "";
     const savedToken = localStorage.getItem("remsfal/id_token");
@@ -65,7 +67,7 @@ export default class AuthenticationService {
       }
     });
   }
-  public whenTokenReady(): Promise<void> {
+  public whenTokenReady(): Promise<void | object> {
     return this.tokenReadyPromise;
   }
 

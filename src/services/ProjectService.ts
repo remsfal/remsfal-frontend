@@ -3,9 +3,8 @@ import AuthenticationService from "@/services/AuthenticationService";
 
 export default class ProjectService {
   private authenticationService: any;
-  private readonly host: string = import.meta.env.VITE_BACKEND_HOST;
 
-  private readonly url: string = this.host + "/api/v1/projects";
+  private readonly url: string = "/api/v1/projects";
   private readonly idToken: string;
 
   public constructor(idToken: string) {
@@ -218,7 +217,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  updateMember(projectId, memberId, role, email) {
+  updateMember(projectId: string, memberId: string, role: string, email: string) {
     console.log("updateProjectMember", projectId, email, role);
     return axios
       .patch(
@@ -235,7 +234,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  deleteMember(projectId, memberId) {
+  deleteMember(projectId: string, memberId: string) {
     console.log("deleteProjectMember", projectId, memberId);
     return axios
       .delete(`${this.url}/${projectId}/members/${memberId}`, {
@@ -248,7 +247,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  addMember(projectId, email, role) {
+  addMember(projectId: string, email: string, role: string) {
     console.log("addMember", projectId);
 
     const payload = {
