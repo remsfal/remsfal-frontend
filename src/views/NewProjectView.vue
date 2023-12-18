@@ -1,6 +1,5 @@
 <script lang="ts">
 import ProjectService from "@/services/ProjectService";
-import AuthenticationService from "@/services/AuthenticationService";
 import Modal from "@/components/Modal.vue";
 
 export default {

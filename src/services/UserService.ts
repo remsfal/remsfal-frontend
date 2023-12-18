@@ -1,53 +1,54 @@
 import axios from 'axios'
-import AuthenticationService from "@/services/AuthenticationService";
+
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    registeredDate: string;
+    lastLoginDate: string;
+}
 
 export default class UserService {
-  private readonly url: string = "/api/v1/users";
-  private authenticated: boolean = false;
+    private readonly url: string = "/api/v1/user";
 
-  private readonly idToken: string;
+    getUser(): Promise<User> {
+        return axios
+            .get(`${this.url}`)
+            .then((response) => {
+                let user: User = response.data;
+                console.log("GET user: " + user);
+                return user;
+            })
+            .catch((error) => {
+                console.error("GET user failed: " + error);
+            });
+    }
 
-  public constructor(idToken: string) {
-    this.idToken = idToken;
-  }
-  authenticate(){
-    return axios
-        .get(`${this.url}/authenticate`, {
-          headers: {
-            Authorization: `Bearer ${this.idToken}`,
-          },
-        })
-        .then((response) => {
-          const responseString = JSON.stringify(response.data);
-          console.log("Authentication successful: " + responseString);
-          this.authenticated = true;
-          return this.authenticated;
+    updateUser(name: string): Promise<User> {
+        return axios
+            .patch(`${this.url}`, {
+                name: name,
+            })
+            .then((response) => {
+                let user: User = response.data;
+                console.log("PATCH user: " + user);
+                return user;
+            })
+            .catch((error) => {
+                console.error("PATCH user failed: " + error);
+            });
+    }
 
-        })
-        .catch((error) => {
-          console.log("Authentication failed: " + error);
-          this.authenticated = false;
-        console.error(error.request.status);
-        throw error.request.status;
-        });
-  }
-
-  updateUser(id: string, name: string, email: string) {
-    return axios
-      .patch(`${this.url}/${id}`, {
-        user_name: name,
-        user_email: email,
-      })
-      .then((response) => console.log(response));
-  }
-  deleteUser(id: string) {
-    return axios
-      .delete(`${this.url}/${id}`, {
-        headers: {
-          Authorization: `Bearer ${this.idToken}`,
-        },
-      })
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error));
-  }
+    deleteUser(): Promise<boolean> {
+        return axios
+            .delete(`${this.url}`)
+            .then(() => {
+                console.log("DELETE user");
+                return true;
+            })
+            .catch((error) => {
+                console.error("DELETE user failed: " + error);
+                return false;
+            });
+    }
 }

@@ -38,11 +38,8 @@ import Footer from "@/components/Footer.vue";
 </template>
 
 <script lang="ts">
-import AuthenticationService from "@/services/AuthenticationService";
 import UserService from "@/services/UserService";
-import ProjectService from "@/services/ProjectService";
-
-let userService: UserService;
+import {useUserSessionStore} from "@/stores/userSession";
 
 export default {
   data() {
@@ -58,17 +55,10 @@ export default {
   },
   // userService: null,
   projectService: null,
-  authenticationService: null,
   created() {
-    // authenticate user if id_token is present in localStorage or URL contains auth params
-    if (window.location.href.includes("register")) {
-    }
-    if (
-      window.location.href.includes("id_token") ||
-      localStorage.getItem("remsfal/id_token") !== null
-    ) {
-      this.authenticate();
-    }
+    console.log("created !!!: ");
+    const sessionStore = useUserSessionStore();
+    sessionStore.refreshSessionState();
   },
   methods: {
     onProjectCreated() {
@@ -97,26 +87,7 @@ export default {
       localStorage.removeItem("remsfal/id_token");
       window.location.href = "./";
     },
-
-    async authenticate() {
-      // authenticate with Google
-      this.authenticationService = AuthenticationService.getInstance();
-      await this.authenticationService.whenTokenReady();
-      this.idToken = this.authenticationService.getIdToken();
-      this.userEmail = await this.authenticationService.getUserEmail();
-      // Wait for the userId Promise to resolve
-      console.log( "emnail", this.userEmail);
-      this.userService = new UserService(this.idToken);
-      
-      try {
-        let isAuthenticated = await this.userService.authenticate();
-        this.loggedIn = isAuthenticated; // Set loggedIn status based on authenticated status
-      } catch (error) {
-        console.log("Failed to authenticate user: " + error);
-      }
-    },
   },
 };
 </script>
 
-<style></style>

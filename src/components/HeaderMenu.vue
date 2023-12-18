@@ -21,15 +21,15 @@
 </style>
 
 <script lang="ts">
-import AuthenticationService from "@/services/AuthenticationService";
 import ProjectService from "@/services/ProjectService";
+
+let projectService: ProjectService;
 
 export default {
   props: {
     userEmail: String,
     loggedIn: Boolean,
   },
-  projectService: null,
   projects: [],
 
   data() {
@@ -85,14 +85,13 @@ export default {
     };
   },
   mounted() {
-    this.updateProjectItems();
+    console.log("mounted !!!: ");
+
+//    this.updateProjectItems();
   },
   methods: {
     async updateProjectItems() {
   if(this.loggedIn){
-      const authenticationService = AuthenticationService.getInstance();
-      await authenticationService.whenTokenReady();
-      const idToken = authenticationService.getIdToken();
       const projectService = new ProjectService(idToken);
       projectService
         .getProjects()

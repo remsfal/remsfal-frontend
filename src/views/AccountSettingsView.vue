@@ -1,5 +1,4 @@
 <script lang="ts">
-import AuthenticationService from "@/services/AuthenticationService";
 import UserService from "@/services/UserService";
 import Modal from '@/components/Modal.vue';
 

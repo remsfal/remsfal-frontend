@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import App from './App.vue'
@@ -16,7 +17,10 @@ import 'primeflex/primeflex.min.css'
 import 'primeicons/primeicons.css';
 import './assets/main.css'
 
+const pinia = createPinia()
 const app = createApp(App)
+// Install Pinia
+app.use(pinia)
 // Install Router for SPA
 app.use(router)
 // Make PrimeVue available throughout the project
