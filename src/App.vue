@@ -56,7 +56,7 @@ export default {
   // userService: null,
   projectService: null,
   created() {
-    console.log("created !!!: ");
+    console.log("App created!");
     const sessionStore = useUserSessionStore();
     sessionStore.refreshSessionState();
   },
