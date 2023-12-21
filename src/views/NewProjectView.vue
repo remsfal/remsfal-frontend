@@ -14,9 +14,7 @@ export default {
   },
   projectService: null,
   created() {
-    this.projectService = new ProjectService(
-      AuthenticationService.getInstance().getIdToken()
-    );
+    console.log("created");
   },
   methods: {
     onButtonCreate() {
@@ -24,8 +22,9 @@ export default {
       this.showModal = true;
     },
     createProject(project_title) {
+      const projectService = new ProjectService();
       // Now project_title will contain the value emitted from the pressedButton event
-      this.projectService
+      projectService
         .createProject(project_title)
         .then((data) => {
           if (data && data.hasOwnProperty("id")) {

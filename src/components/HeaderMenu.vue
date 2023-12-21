@@ -20,13 +20,12 @@
 </style>
 
 <script lang="ts">
+import { useRouter } from 'vue-router'
 import {useUserSessionStore} from "@/stores/userSession";
-import ProjectService from "@/services/ProjectService";
-import {state} from "vue-tsc/out/shared";
+import UserService from "@/services/UserService";
+import ProjectService, {Project, ProjectList} from "@/services/ProjectService";
 
-let projectService: ProjectService;
-
-let projects: [];
+const router = useRouter();
 let selectedProject: "Projekt auswählen";
 let userEmail: string;
 
@@ -68,7 +67,7 @@ export default {
             {
               label: "Konto löschen",
               icon: "pi pi-fw pi-trash",
-              command: () => this.handleDeleteClick(),
+              command: () => this.deleteAccount(),
             },
           ],
         },
@@ -98,73 +97,48 @@ export default {
     logout(): void {
       window.location.pathname = "/api/v1/authentication/logout";
     },
-    updateLoginState(email:string) {
+    updateLoginState(email: string) {
       if (email !== null) {
         userEmail = email;
         this.items = this.loggedInItems;
-//      this.updateProjectItems();
+        this.updateProjectItems();
       } else {
         this.items = this.loggedOutItems;
       }
     },
     updateProjectItems() {
-      if (this.loggedIn) {
-        const projectService = new ProjectService(idToken);
-        projectService
-            .getProjects()
-            .then((data) => {
-              const projectItems = [
-                {
-                  label: "Neues Projekt",
-                  icon: "pi pi-fw pi-plus",
-                  to: {name: "NewProject"},
-                },
-              ];
+      const projectService = new ProjectService();
+      projectService.getProjects()
+          .then((projectList: ProjectList) => {
+            const projectItems = [
+              {
+                label: "Neues Projekt",
+                icon: "pi pi-fw pi-plus",
+                to: {name: "NewProject", params: {projectId: "default"}},
+              },
+            ];
 
-              for (let project of data) {
-                projectItems.push({
-                  label: project.title,
-                  icon: "pi pi-fw pi-external-link",
-                  to: {name: "Project", params: {projectId: project.id}},
-                });
-              }
+            for (let project: Project of projectList.projects) {
+              projectItems.push({
+                label: project.title,
+                icon: "pi pi-fw pi-external-link",
+                to: {name: "Project", params: {projectId: project.id}},
+              });
+            }
 
-              this.items[0].items = projectItems;
-            })
-            .catch((error) => {
-              // Handle the error here
-              console.error("An error occurred while fetching projects:", error);
-              // You may want to initialize this.projects to an empty array or handle the error differently
-              this.projects = [];
-            });
-        let projectItems = [];
-        projectItems.push({
-          label: "Neues Projekt",
-          icon: "pi pi-fw pi-plus",
-          to: {name: "NewProject"},
-        });
-        this.items = this.loggedInItems;
-      }
-      if (!this.loggedIn) {
-        this.items = this.loggedOutItems;
-      }
+            this.items[0].items = projectItems;
+          })
+          .catch((error) => {
+            // Handle the error here
+            console.error("An error occurred while fetching projects:", error);
+          });
+      this.items = this.loggedInItems;
     },
-    updateHeaderMenuItems() {
-    },
-    handleLoginClick() {
-      this.$emit("clickedLogin");
-    },
-    handleLogoutClick() {
-      this.$emit("clickedLogout");
-    },
-    handleDeleteClick() {
-      this.$emit("clickedDelete");
-    },
-  },
-  watch: {
-    loggedIn: function (newVal, oldVal) {
-      this.updateProjectItems();
-      this.updateHeaderMenuItems();
+    deleteAccount() {
+      const userService = new UserService();
+      userService.deleteUser()
+          .then(() => this.logout())
+          .catch(() => console.error("Unable to delete this account!"))
     },
   },
 };

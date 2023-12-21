@@ -20,7 +20,7 @@
     "pinia": "^2.1.7",
     "primeflex": "^3.3.0",
     "primeicons": "^5.0.0",
-    "primevue": "^3.17.0",
+    "primevue": ">=3.22.0 < 3.30.0",
     "vue": "^3.3.11",
     "vue-axios": "^3.5.0",
     "vue-router": "^4.2.5"

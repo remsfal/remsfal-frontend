@@ -11,31 +11,31 @@ interface User {
 export default class UserService {
     private readonly url: string = "/api/v1/user";
 
-    getUser(): Promise<User> {
+    getUser(): Promise<User | void> {
         return axios
             .get(`${this.url}`)
             .then((response) => {
                 let user: User = response.data;
-                console.log("GET user: " + user);
+                console.log("GET user:", user);
                 return user;
             })
             .catch((error) => {
-                console.error("GET user failed: " + error);
+                console.error("GET user failed:", error);
             });
     }
 
-    updateUser(name: string): Promise<User> {
+    updateUser(name: string): Promise<User | void> {
         return axios
             .patch(`${this.url}`, {
                 name: name,
             })
             .then((response) => {
                 let user: User = response.data;
-                console.log("PATCH user: " + user);
+                console.log("PATCH user:", user);
                 return user;
             })
             .catch((error) => {
-                console.error("PATCH user failed: " + error);
+                console.error("PATCH user failed:", error);
             });
     }
 
@@ -47,7 +47,7 @@ export default class UserService {
                 return true;
             })
             .catch((error) => {
-                console.error("DELETE user failed: " + error);
+                console.error("DELETE user failed:", error);
                 return false;
             });
     }
