@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect, toRef, onMounted } from "vue";
+import { ref, watchEffect, toRef, defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,

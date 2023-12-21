@@ -1,15 +1,3 @@
-<script setup lang="ts">
-defineProps<{
-  projectId: string;
-  siteId: string;
-  buildingId: string;
-  apartmentId: string;
-  garageId: string;
-  propertyId: string;
-  projectName: string;
-}>();
-</script>
-
 <template>
   <main>
     <Modal
@@ -240,9 +228,18 @@ defineProps<{
 </style>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, defineProps } from "vue";
 import ProjectService from "@/services/ProjectService";
-import Modal from "@/components/Modal.vue";
+
+defineProps<{
+  projectId: string;
+  siteId: string;
+  buildingId: string;
+  apartmentId: string;
+  garageId: string;
+  propertyId: string;
+  projectName: string;
+}>();
 
 export default defineComponent({
   props: {
@@ -336,10 +333,7 @@ export default defineComponent({
 
   async created() {
     try {
-      const authenticationService = AuthenticationService.getInstance();
-      await authenticationService.whenTokenReady();
-      const idToken = authenticationService.getIdToken();
-      this.projectService = new ProjectService(idToken);
+      this.projectService = new ProjectService();
       this.userRole = await this.projectService.getRole(this.projectId);
       console.log("user ", this.userRole);
       const project = await this.projectService.getProject(this.projectId);

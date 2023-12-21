@@ -1,26 +1,16 @@
 <script lang="ts">
-import UserService from "@/services/UserService";
-import Modal from '@/components/Modal.vue';
-
+import {useUserSessionStore} from "@/stores/userSession";
 
 export default {
   data() {
     return {
-      userEmail: '',
-      showModal: true,
+      userEmail: ''
     }
   },
-  userService: null,
-  async created() {
-    // init backend services
-    this.userService = await new UserService(AuthenticationService.getInstance().getIdToken());
-    this.userEmail = await
-    AuthenticationService.getInstance().getUserEmail();
+  onMounted() {
+    const sessionStore = useUserSessionStore();
+    this.userEmail = sessionStore.userEmail;
   },
-  deleteAccount(){
-    console.log('deleteUSer');
-    this.$emit('deleteAccount');
-  }
 };
 </script>
 
