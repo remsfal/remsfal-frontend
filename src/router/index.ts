@@ -23,7 +23,7 @@ const router = createRouter({
       component: ProjectSelectionView,
     },
     {
-      path: "/login",
+      path: "/projects",
       name: "ProjectSelection",
       component: ProjectSelectionView,
     },

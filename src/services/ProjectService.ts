@@ -23,14 +23,18 @@ export default class ProjectService {
             .catch((error) => console.error("GET projects failed:", error));
     }
 
-    createProject(title: string) {
+    createProject(title: string): Promise<Project | void> {
         return axios
             .post(
                 `${this.url}`,
                 {title: title},
             )
-            .then((response) => console.log(response))
-            .catch((error) => console.error(error));
+            .then((response) => {
+                let project: Project = response.data;
+                console.log("POST create project:", project);
+                return project;
+            })
+            .catch((error) => console.error("POST create project failed:", error));
     }
 
     getProject(projectId: string) {

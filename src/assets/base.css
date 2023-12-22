@@ -87,6 +87,7 @@ header {
 main {
   min-height: 70vh;
   padding: 0px 100px;
+  margin-top: 80px;
 }
 
 footer {

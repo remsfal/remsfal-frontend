@@ -4,7 +4,7 @@ import {useUserSessionStore} from "@/stores/userSession";
 export default {
   data() {
     return {
-      userEmail: ''
+      userEmail: null as String
     }
   },
   onMounted() {
@@ -17,7 +17,7 @@ export default {
 <template>
   <main>
   <div class="about">
-    <h1>This is an account settings page for {{ this.userEmail }}</h1>
+    <h1>This is an account settings page for {{ userEmail }}</h1>
 
   </div>
   </main>

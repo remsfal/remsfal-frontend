@@ -17,7 +17,6 @@ import Footer from "@/components/Footer.vue";
     :headingText="'Anmeldung/Registrierung'"
     :buttonColor="'green'"
     @closeModal="showModal = false"
-    @pressedButton="authenticate()"
   ></Modal>
   <Modal
     :isOpen="showDeleteModal"
@@ -26,7 +25,6 @@ import Footer from "@/components/Footer.vue";
     :headingText="'Konto löschen'"
     :buttonColor="'red'"
     @closeModal="showDeleteModal = false"
-    @pressedButton="deleteAccount()"
   ></Modal>
   <Footer></Footer>
 </template>

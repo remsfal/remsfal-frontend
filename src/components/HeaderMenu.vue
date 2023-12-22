@@ -20,12 +20,10 @@
 </style>
 
 <script lang="ts">
-import { useRouter } from 'vue-router'
 import {useUserSessionStore} from "@/stores/userSession";
 import UserService from "@/services/UserService";
-import ProjectService, {Project, ProjectList} from "@/services/ProjectService";
+import ProjectService, {type Project, type ProjectList} from "@/services/ProjectService";
 
-const router = useRouter();
 let selectedProject: "Projekt auswählen";
 let userEmail: string;
 
