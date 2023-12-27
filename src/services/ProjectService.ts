@@ -12,18 +12,17 @@ export interface ProjectList {
 export default class ProjectService {
     private readonly url: string = "/api/v1/projects";
 
-    getProjects(): Promise<ProjectList | void> {
+    getProjects(): Promise<ProjectList> {
         return axios
             .get(`${this.url}`)
             .then((response) => {
                 let projectList: ProjectList = response.data;
                 console.log("GET projects:", projectList);
                 return projectList;
-            })
-            .catch((error) => console.error("GET projects failed:", error));
+            });
     }
 
-    createProject(title: string): Promise<Project | void> {
+    createProject(title: string): Promise<Project> {
         return axios
             .post(
                 `${this.url}`,
@@ -33,8 +32,7 @@ export default class ProjectService {
                 let project: Project = response.data;
                 console.log("POST create project:", project);
                 return project;
-            })
-            .catch((error) => console.error("POST create project failed:", error));
+            });
     }
 
     getProject(projectId: string) {

@@ -20,17 +20,25 @@
 </style>
 
 <script lang="ts">
-import {useUserSessionStore} from "@/stores/userSession";
+import {useUserSessionStore, type UserInfo} from "@/stores/userSession";
 import UserService from "@/services/UserService";
 import ProjectService, {type Project, type ProjectList} from "@/services/ProjectService";
+import {type MenuItem} from "primevue/menuitem";
 
 let selectedProject: "Projekt auswählen";
 let userEmail: string;
 
+const defaultItems: MenuItem[] = [
+  {
+    label: "Anmeldung",
+    icon: "pi pi-fw pi-sign-in",
+  },
+]
+
 export default {
   data() {
     return {
-      items: [],
+      items: defaultItems,
       loggedInItems: [
         {
           label: () => selectedProject,
@@ -83,10 +91,10 @@ export default {
     console.log("Init header menu.");
     const sessionStore = useUserSessionStore();
     sessionStore.$subscribe((mutation, state) => {
-      this.updateLoginState(state.userEmail);
+      this.updateLoginState(state.user);
     })
     // And update the initial state
-    this.updateLoginState(sessionStore.userEmail);
+    this.updateLoginState(sessionStore.user);
   },
   methods: {
     login(): void {
@@ -95,9 +103,9 @@ export default {
     logout(): void {
       window.location.pathname = "/api/v1/authentication/logout";
     },
-    updateLoginState(email: string) {
-      if (email !== null) {
-        userEmail = email;
+    updateLoginState(user: UserInfo | null) {
+      if (user !== null) {
+        userEmail = user.email;
         this.items = this.loggedInItems;
         this.updateProjectItems();
       } else {
@@ -108,15 +116,15 @@ export default {
       const projectService = new ProjectService();
       projectService.getProjects()
           .then((projectList: ProjectList) => {
-            const projectItems = [
+            const projectItems: MenuItem[] = [
               {
                 label: "Neues Projekt",
                 icon: "pi pi-fw pi-plus",
-                to: {name: "NewProject", params: {projectId: "default"}},
+                to: {name: "NewProject"},
               },
             ];
 
-            for (let project: Project of projectList.projects) {
+            for (let project of projectList.projects) {
               projectItems.push({
                 label: project.title,
                 icon: "pi pi-fw pi-external-link",
@@ -124,7 +132,12 @@ export default {
               });
             }
 
-            this.items[0].items = projectItems;
+            const projectMenu: MenuItem = {
+                label: () => selectedProject,
+                icon: "pi pi-fw pi-home",
+                items: projectItems,
+              };
+            this.items[0] = projectMenu;
           })
           .catch((error) => {
             // Handle the error here

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import LandingPageView from '@/views/LandingPageView.vue'
 import ProjectSelectionView from '@/views/ProjectSelectionView.vue'
 import DataProtectionView from "@/views/DataProtectionView.vue";
 import ImprintView from "@/views/ImprintView.vue";
@@ -7,6 +8,11 @@ import ImprintView from "@/views/ImprintView.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/",
+      name: "LandingPage",
+      component: LandingPageView,
+    },
     {
       path: "/imprint",
       name: "Imprint",
