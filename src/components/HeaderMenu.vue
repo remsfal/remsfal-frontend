@@ -23,7 +23,8 @@
 import {useUserSessionStore, type UserInfo} from "@/stores/userSession";
 import UserService from "@/services/UserService";
 import ProjectService, {type Project, type ProjectList} from "@/services/ProjectService";
-import {type MenuItem} from "primevue/menuitem";
+// workaround of https://github.com/primefaces/primevue/issues/3498
+import type {MenuItem} from "@/../node_modules/primevue/menuitem/MenuItem"
 
 let selectedProject: "Projekt auswählen";
 let userEmail: string;
@@ -133,10 +134,10 @@ export default {
             }
 
             const projectMenu: MenuItem = {
-                label: () => selectedProject,
-                icon: "pi pi-fw pi-home",
-                items: projectItems,
-              };
+              label: () => selectedProject,
+              icon: "pi pi-fw pi-home",
+              items: projectItems,
+            };
             this.items[0] = projectMenu;
           })
           .catch((error) => {

@@ -28,8 +28,12 @@ jobs:
         run: npm install
         # The `npm ci` command can only install with an existing package-lock.json
         # run: npm ci
+      - name: Test with Vitest and Cypress (test)
+        run: npm run test
       - name: Build with Vite (build)
         run: npm run build
+      - name: Check style with ESLint (lint)
+        run: npm run lint
   latest-build:
     name: "Node.js 21 Latest Build"
     runs-on: ubuntu-latest
@@ -44,8 +48,12 @@ jobs:
         run: npm install
         # The `npm ci` command can only install with an existing package-lock.json
         # run: npm ci
+      - name: Test with Vitest and Cypress (test)
+        run: npm run test
       - name: Build with Vite (build)
         run: npm run build
+      - name: Check style with ESLint (lint)
+        run: npm run lint
   sonar-cloud-analysis:
     name: "Sonar Cloud Build"
     runs-on: ubuntu-latest
@@ -62,8 +70,8 @@ jobs:
         run: npm install
         # The `npm ci` command can only install with an existing package-lock.json
         # run: npm ci
-      - name: Build with Coverage Information (build)
-        run: npm run build
+      - name: Test with Coverage Information (coverage)
+        run: npm run coverage
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:

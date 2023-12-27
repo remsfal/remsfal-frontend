@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import HeaderMenu from "@/components/HeaderMenu.vue";
-import Modal from "@/components/Modal.vue";
+import Modal from "@/components/LeoModal.vue";
 import Footer from "@/components/Footer.vue";
 </script>
 

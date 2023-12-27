@@ -15,7 +15,7 @@ export default class UserService {
         return axios
             .get(`${this.url}`)
             .then((response) => {
-                let user: User = response.data;
+                const user: User = response.data;
                 console.log("GET user:", user);
                 return user;
             })
@@ -30,7 +30,7 @@ export default class UserService {
                 name: name,
             })
             .then((response) => {
-                let user: User = response.data;
+                const user: User = response.data;
                 console.log("PATCH user:", user);
                 return user;
             })

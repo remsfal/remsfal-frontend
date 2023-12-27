@@ -11,13 +11,6 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  build: {
-    rollupOptions: {
-      external: [
-        /^primevue:*/
-      ]
-    }
-  },
   server: {
     // https://vitejs.dev/config/server-options.html
     strictPort: true,

@@ -28,10 +28,10 @@ app.use(PrimeVue)
 // Install Axios for RESTful Webservice calls
 app.use(VueAxios, axios)
 // Add primefaces components
-app.component('Menu', Menu)
-app.component('Menubar', Menubar)
-app.component('Sidebar', Sidebar)
-app.component('InputText', InputText)
-app.component('Button', Button)
+app.component('PrimeMenu', Menu)
+app.component('PrimeMenubar', Menubar)
+app.component('PrimeSidebar', Sidebar)
+app.component('PrimeInputText', InputText)
+app.component('PrimeButton', Button)
 
 app.mount('#app')

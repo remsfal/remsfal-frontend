@@ -16,7 +16,7 @@ export default class ProjectService {
         return axios
             .get(`${this.url}`)
             .then((response) => {
-                let projectList: ProjectList = response.data;
+                const projectList: ProjectList = response.data;
                 console.log("GET projects:", projectList);
                 return projectList;
             });
@@ -29,7 +29,7 @@ export default class ProjectService {
                 {title: title},
             )
             .then((response) => {
-                let project: Project = response.data;
+                const project: Project = response.data;
                 console.log("POST create project:", project);
                 return project;
             });
