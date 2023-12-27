@@ -30,6 +30,8 @@ jobs:
         # run: npm ci
       - name: Run Unit Test with Vitest (test)
         run: npm run test:unit
+      - name: Build with Vite (build)
+        run: npm run build
       - name: Run E2E Test with Cypress (test)
         uses: cypress-io/github-action@v6
         with:
@@ -37,11 +39,9 @@ jobs:
           install: false
           # start the server and wait for it
           start: npm run preview http://localhost:4173
-          wait-on: 'http://localhost:4173'
+          wait-on: 'http://localhost:4173/index.html'
           # wait for 3 minutes for the server to respond
           wait-on-timeout: 180
-      - name: Build with Vite (build)
-        run: npm run build
       - name: Check style with ESLint (lint)
         run: npm run lint
   latest-build:
@@ -60,6 +60,8 @@ jobs:
         # run: npm ci
       - name: Run Unit Test with Vitest (test)
         run: npm run test:unit
+      - name: Build with Vite (build)
+        run: npm run build
       - name: Run E2E Test with Cypress (test)
         uses: cypress-io/github-action@v6
         with:
@@ -70,8 +72,6 @@ jobs:
           wait-on: 'http://localhost:4173'
           # wait for 3 minutes for the server to respond
           wait-on-timeout: 180
-      - name: Build with Vite (build)
-        run: npm run build
       - name: Check style with ESLint (lint)
         run: npm run lint
   sonar-cloud-analysis:
