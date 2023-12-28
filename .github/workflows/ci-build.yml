@@ -38,7 +38,7 @@ jobs:
           # we have already installed all dependencies above
           install: false
           # start the server and wait for it
-          start: npm run preview http://localhost:4173
+          start: npm run preview
           wait-on: 'http://localhost:4173/index.html'
           # wait for 3 minutes for the server to respond
           wait-on-timeout: 180
@@ -68,7 +68,7 @@ jobs:
           # we have already installed all dependencies above
           install: false
           # start the server and wait for it
-          start: npm run preview http://localhost:4173
+          start: npm run preview
           wait-on: 'http://localhost:4173'
           # wait for 3 minutes for the server to respond
           wait-on-timeout: 180
