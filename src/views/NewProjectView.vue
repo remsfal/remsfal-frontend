@@ -1,99 +1,51 @@
 <script lang="ts">
-import ProjectService from "@/services/ProjectService";
-import AuthenticationService from "@/services/AuthenticationService";
-import Modal from "@/components/Modal.vue";
+import ProjectService, {type Project} from "@/services/ProjectService";
 
 export default {
-  components: {
-    Modal,
-  },
   data() {
     return {
-      project_title: "",
-      showModal: false,
+      projectTitle: "",
+      errorMessage: "Der Projekttitel darf nicht mehr als 250 Zeichen lang sein",
     };
   },
-  projectService: null,
-  created() {
-    this.projectService = new ProjectService(
-      AuthenticationService.getInstance().getIdToken()
-    );
-  },
   methods: {
-    onButtonCreate() {
-      console.log("onButtonCreate");
-      this.showModal = true;
-    },
-    createProject(project_title) {
+    createProject() {
+
+      const projectService = new ProjectService();
       // Now project_title will contain the value emitted from the pressedButton event
-      this.projectService
-        .createProject(project_title)
-        .then((data) => {
-          if (data && data.hasOwnProperty("id")) {
-            this.$router.push({
-              name: "ProjectSelection",
-              params: { projectId: data.id },
-            });
-          } else {
-            console.log("Unexpected data: ", data);
-          }
+      projectService
+        .createProject(this.projectTitle)
+        .then((newProject: Project) => {
+          console.info("new project has been created: " + newProject);
+          this.$router.push({name: "Project", params: {projectId: newProject.id}});
         })
-        .finally(() => this.$emit("projectCreated"));
     },
+    abort() {
+      this.$router.push({name: "ProjectSelection"})
+    }
   },
 };
 </script>
 
 <template>
   <main>
-    <Modal
-      :isOpen="showModal"
-      :bodyText="'Wie soll das Projekt heißen?'"
-      :buttonText="' + Projekt Erstellen'"
-      :headingText="'Projekt Erstellen'"
-      :buttonColor="'green'"
-      :hasInput="true"
-      @closeModal="showModal = false"
-      @pressedButton="createProject"
-    ></Modal>
-    <div class="card">
-      <div class="grid p-fluid">
-        <div class="field col-12 md:col-4">
-          <div class="p-inputgroup">
-            <span class="p-inputgroup-addon">
-              <i class="pi pi-home"></i>
+    <div class="card flex justify-content-center">
+      <!-- form @submit="onSubmit" class="flex flex-column gap-2"-->
+      <form @submit.prevent="createProject" class="flex flex-column gap-2">
+            <span class="p-float-label">
+                <InputText id="value" v-model="projectTitle" type="text" :class="{ 'p-invalid': errorMessage }" aria-describedby="text-error" />
+                <label for="value">Projekttitel</label>
             </span>
-            <InputText v-model="project_title" placeholder="Projekt Titel" />
-          </div>
-        </div>
-        <div class="col-12 md:col-4">
-          <Button
-            @click="onButtonCreate"
-            label="Erstellen"
-            icon="pi pi-plus"
-            iconPos="left"
-          />
-          <div />
-          <Button
-            @click="$router.push({ name: 'ProjectSelection' })"
+        <small class="p-error" id="text-error">{{ errorMessage || '&nbsp;' }}</small>
+        <Button type="submit" label="Erstellen" icon="pi pi-plus" iconPos="left"/>
+        <Button
+            @click="abort"
+            type="reset"
             label="Abbrechen"
             icon="pi pi-times"
             iconPos="left"
-          />
-        </div>
-      </div>
+        />
+      </form>
     </div>
   </main>
 </template>
-
-<style>
-@media (min-width: 1024px) {
-  .about {
-    color: #495057;
-
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-</style>

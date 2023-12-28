@@ -4,11 +4,10 @@
       <Menubar :model="items">
         <template #start>
           <div @click="$router.push('/')">
-            <img alt="logo" src="@/assets/logo.png" height="30" class="logo" />
+            <img alt="logo" src="@/assets/logo.png" height="30" class="logo"/>
           </div>
         </template>
       </Menubar>
-      <Modal></Modal>
     </header>
   </div>
 </template>
@@ -21,56 +20,61 @@
 </style>
 
 <script lang="ts">
-import AuthenticationService from "@/services/AuthenticationService";
-import ProjectService from "@/services/ProjectService";
+import {useUserSessionStore, type UserInfo} from "@/stores/userSession";
+import UserService from "@/services/UserService";
+import ProjectService, {type Project, type ProjectList} from "@/services/ProjectService";
+// workaround of https://github.com/primefaces/primevue/issues/3498
+import type {MenuItem} from "@/../node_modules/primevue/menuitem/MenuItem"
+
+let selectedProject: "Projekt auswählen";
+let userEmail: string;
+
+const defaultItems: MenuItem[] = [
+  {
+    label: "Anmeldung",
+    icon: "pi pi-fw pi-sign-in",
+  },
+]
 
 export default {
-  props: {
-    userEmail: String,
-    loggedIn: Boolean,
-  },
-  projectService: null,
-  projects: [],
-
   data() {
     return {
-      selectedProject: "Projekt auswählen",
-      items: [],
+      items: defaultItems,
       loggedInItems: [
         {
-          label: () => this.selectedProject,
+          label: () => selectedProject,
           icon: "pi pi-fw pi-home",
           items: [
             {
               label: "Neues Projekt",
               icon: "pi pi-fw pi-plus",
-              to: { name: "NewProject" },
+              to: {name: "NewProject"},
             },
           ],
         },
         {
-          label: () => this.userEmail,
+          label: () => userEmail,
           icon: "pi pi-fw pi-user",
           items: [
             {
               label: "Kontoeinstellungen",
               icon: "pi pi-fw pi-user-edit",
-              to: { name: "AccountSettings" },
+              to: {name: "AccountSettings"},
             },
             {
               label: "Meine Kontakte",
               icon: "pi pi-fw pi-users",
-              to: { name: "AccountContacts" },
+              to: {name: "AccountContacts"},
             },
             {
               label: "Abmelden",
               icon: "pi pi-fw pi-sign-out",
-              command: () => this.handleLogoutClick(),
+              command: () => this.logout(),
             },
             {
               label: "Konto löschen",
               icon: "pi pi-fw pi-trash",
-              command: () => this.handleDeleteClick(),
+              command: () => this.deleteAccount(),
             },
           ],
         },
@@ -79,75 +83,74 @@ export default {
         {
           label: "Anmeldung",
           icon: "pi pi-fw pi-sign-in",
-          command: () => this.handleLoginClick(),
+          command: () => this.login(),
         },
       ],
     };
   },
   mounted() {
-    this.updateProjectItems();
+    console.log("Init header menu.");
+    const sessionStore = useUserSessionStore();
+    sessionStore.$subscribe((mutation, state) => {
+      this.updateLoginState(state.user);
+    })
+    // And update the initial state
+    this.updateLoginState(sessionStore.user);
   },
   methods: {
-    async updateProjectItems() {
-  if(this.loggedIn){
-      const authenticationService = AuthenticationService.getInstance();
-      await authenticationService.whenTokenReady();
-      const idToken = authenticationService.getIdToken();
-      const projectService = new ProjectService(idToken);
-      projectService
-        .getProjects()
-        .then((data) => {
-          const projectItems = [
-            {
-              label: "Neues Projekt",
-              icon: "pi pi-fw pi-plus",
-              to: { name: "NewProject" },
-            },
-          ];
-
-          for (let project of data) {
-            projectItems.push({
-              label: project.title,
-              icon: "pi pi-fw pi-external-link",
-              to: { name: "Project", params: { projectId: project.id } },
-            });
-          }
-
-          this.items[0].items = projectItems;
-        })
-        .catch((error) => {
-          // Handle the error here
-          console.error("An error occurred while fetching projects:", error);
-          // You may want to initialize this.projects to an empty array or handle the error differently
-          this.projects = [];
-        });
-      let projectItems = [];
-      projectItems.push({
-        label: "Neues Projekt",
-        icon: "pi pi-fw pi-plus",
-        to: { name: "NewProject" },
-      });
-      this.items = this.loggedInItems;
-}
-      if (!this.loggedIn) {
+    login(): void {
+      window.location.pathname = "/api/v1/authentication/login";
+    },
+    logout(): void {
+      window.location.pathname = "/api/v1/authentication/logout";
+    },
+    updateLoginState(user: UserInfo | null) {
+      if (user !== null) {
+        userEmail = user.email;
+        this.items = this.loggedInItems;
+        this.updateProjectItems();
+      } else {
         this.items = this.loggedOutItems;
       }
     },
-    updateHeaderMenuItems() {},
-    handleLoginClick() {
-      this.$emit("clickedLogin");
+    updateProjectItems() {
+      const projectService = new ProjectService();
+      projectService.getProjects()
+          .then((projectList: ProjectList) => {
+            const projectItems: MenuItem[] = [
+              {
+                label: "Neues Projekt",
+                icon: "pi pi-fw pi-plus",
+                to: {name: "NewProject"},
+              },
+            ];
+
+            for (let project of projectList.projects) {
+              projectItems.push({
+                label: project.title,
+                icon: "pi pi-fw pi-external-link",
+                to: {name: "Project", params: {projectId: project.id}},
+              });
+            }
+
+            const projectMenu: MenuItem = {
+              label: () => selectedProject,
+              icon: "pi pi-fw pi-home",
+              items: projectItems,
+            };
+            this.items[0] = projectMenu;
+          })
+          .catch((error) => {
+            // Handle the error here
+            console.error("An error occurred while fetching projects:", error);
+          });
+      this.items = this.loggedInItems;
     },
-    handleLogoutClick() {
-      this.$emit("clickedLogout");
-    },
-    handleDeleteClick() {
-      this.$emit("clickedDelete");
-    },
-  },
-  watch: {
-    loggedIn: function (newVal, oldVal) {
-      this.updateProjectItems();
-      this.updateHeaderMenuItems();
+    deleteAccount() {
+      const userService = new UserService();
+      userService.deleteUser()
+          .then(() => this.logout())
+          .catch(() => console.error("Unable to delete this account!"))
     },
   },
 };

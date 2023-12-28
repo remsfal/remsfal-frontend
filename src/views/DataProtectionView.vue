@@ -1,7 +1,3 @@
-<script lang="ts">
-export default {};
-</script>
-
 <template>
   <main>
     <div class="parent" style="padding-top: 10%; color: #6c757d">

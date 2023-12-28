@@ -1,0 +1,99 @@
+name: "CI Build"
+
+on:
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request_target:
+  workflow_dispatch:
+
+jobs:
+  lts-build:
+    name: "Node.js 20 LTS Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
+        # The `npm ci` command can only install with an existing package-lock.json
+        # run: npm ci
+      - name: Run Unit Test with Vitest (test)
+        run: npm run test:unit
+      - name: Build with Vite (build)
+        run: npm run build
+      - name: Run E2E Test with Cypress (test)
+        uses: cypress-io/github-action@v6
+        with:
+          # we have already installed all dependencies above
+          install: false
+          # start the server and wait for it
+          start: npm run preview
+          wait-on: 'http://localhost:4173/index.html'
+          # wait for 3 minutes for the server to respond
+          wait-on-timeout: 180
+      - name: Check style with ESLint (lint)
+        run: npm run lint
+  latest-build:
+    name: "Node.js 21 Latest Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js 21
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21.x'
+      - name: Install dependencies
+        run: npm install
+        # The `npm ci` command can only install with an existing package-lock.json
+        # run: npm ci
+      - name: Run Unit Test with Vitest (test)
+        run: npm run test:unit
+      - name: Build with Vite (build)
+        run: npm run build
+      - name: Run E2E Test with Cypress (test)
+        uses: cypress-io/github-action@v6
+        with:
+          # we have already installed all dependencies above
+          install: false
+          # start the server and wait for it
+          start: npm run preview
+          wait-on: 'http://localhost:4173'
+          # wait for 3 minutes for the server to respond
+          wait-on-timeout: 180
+      - name: Check style with ESLint (lint)
+        run: npm run lint
+  sonar-cloud-analysis:
+    name: "Sonar Cloud Build"
+    runs-on: ubuntu-latest
+    # dependabot should not have SONAR_TOKEN
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
+        # The `npm ci` command can only install with an existing package-lock.json
+        # run: npm ci
+      - name: Test with Coverage Information (coverage)
+        run: npm run coverage
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

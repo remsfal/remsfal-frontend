@@ -38,8 +38,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref, watchEffect, toRef, onMounted } from "vue";
+<script lang="ts" setup>
+import { ref, watchEffect, toRef, defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,
