@@ -4,12 +4,12 @@ import {useUserSessionStore} from "@/stores/userSession";
 export default {
   data() {
     return {
-      userEmail: String
+      userEmail: ""
     }
   },
   onMounted() {
     const sessionStore = useUserSessionStore();
-    this.userEmail = sessionStore.user?.email;
+    this.userEmail = sessionStore.user?.email!;
   },
 };
 </script>
