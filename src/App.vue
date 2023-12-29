@@ -1,32 +1,31 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
+import {RouterView} from "vue-router";
 import HeaderMenu from "@/components/HeaderMenu.vue";
 import Modal from "@/components/LeoModal.vue";
-import Footer from "@/components/Footer.vue";
+import Footer from "@/components/FooterMenu.vue";
 </script>
 
 <template>
   <HeaderMenu />
-  <RouterView @projectCreated="onProjectCreated" />
+  <RouterView />
   <Modal
-    :isOpen="showModal"
-    :bodyText="'Durch die Anmeldung bzw. Registrierung stimmst Du unser Datenschutzerklärung zu.'"
-    :linkText="'Datenschutzerklärung'"
-    :linkHref="'/data-protection'"
-    :buttonText="'Mit Google Anmelden'"
-    :headingText="'Anmeldung/Registrierung'"
-    :buttonColor="'green'"
-    @closeModal="showModal = false"
+      :isOpen="showModal"
+      :bodyText="'Durch die Anmeldung bzw. Registrierung stimmst Du unser Datenschutzerklärung zu.'"
+      :linkText="'Datenschutzerklärung'"
+      :linkHref="'/data-protection'"
+      :buttonText="'Mit Google Anmelden'"
+      :headingText="'Anmeldung/Registrierung'"
+      :buttonColor="'green'"
+      @closeModal="showModal = false"
   ></Modal>
   <Modal
-    :isOpen="showDeleteModal"
-    :bodyText="'Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.'"
-    :buttonText="'Konto löschen'"
-    :headingText="'Konto löschen'"
-    :buttonColor="'red'"
-    @closeModal="showDeleteModal = false"
+      :isOpen="showDeleteModal"
+      :bodyText="'Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.'"
+      :buttonText="'Konto löschen'"
+      :headingText="'Konto löschen'"
+      :buttonColor="'red'"
+      @closeModal="showDeleteModal = false"
   ></Modal>
-  <Footer></Footer>
 </template>
 
 <script lang="ts">
@@ -50,8 +49,6 @@ export default {
     sessionStore.refreshSessionState();
   },
   methods: {
-    onProjectCreated() {
-    },
     openModal() {
       this.showModal = true;
     },

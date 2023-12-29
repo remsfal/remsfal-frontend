@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LandingPageView from '@/views/LandingPageView.vue'
+import LegalNoticeView from "@/views/LegalNoticeView.vue";
+import PrivacyView from "@/views/PrivacyView.vue";
 import ProjectSelectionView from '@/views/ProjectSelectionView.vue'
-import DataProtectionView from "@/views/DataProtectionView.vue";
-import ImprintView from "@/views/ImprintView.vue";
 
 
 const router = createRouter({
@@ -14,14 +14,14 @@ const router = createRouter({
       component: LandingPageView,
     },
     {
-      path: "/imprint",
-      name: "Imprint",
-      component: ImprintView,
+      path: "/legal-notice",
+      name: "LegalNotice",
+      component: LegalNoticeView,
     },
     {
-      path: "/data-protection",
-      name: "DataProtection",
-      component: DataProtectionView,
+      path: "/privacy",
+      name: "Privacy",
+      component: PrivacyView,
     },
     {
       path: "/register",

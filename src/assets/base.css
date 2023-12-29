@@ -86,15 +86,18 @@ header {
 
 main {
   min-height: 70vh;
-  padding: 0px 100px;
-  margin-top: 80px;
+  padding-top: 100px;
+  padding-right: 100px;
+  padding-bottom: 0px;
+  padding-left: 100px;
 }
 
 footer {
   background-color: var(--color-background-soft);
   color: var(--color-text);
-  padding: 0 100px;
-  margin-top: 3em;
+  padding: 10px 100px;
+  display: flex;
+  justify-content: center;
 }
 
 @media screen and (max-width: 1024px) {

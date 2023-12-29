@@ -5,6 +5,7 @@ import VueAxios from 'vue-axios'
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config';
+import Card from 'primevue/card';
 import Menu from 'primevue/menu';
 import Menubar from 'primevue/menubar';
 import Sidebar from 'primevue/sidebar';
@@ -28,6 +29,7 @@ app.use(PrimeVue)
 // Install Axios for RESTful Webservice calls
 app.use(VueAxios, axios)
 // Add primefaces components
+app.component('PrimeCard', Card)
 app.component('PrimeMenu', Menu)
 app.component('PrimeMenubar', Menubar)
 app.component('PrimeSidebar', Sidebar)
