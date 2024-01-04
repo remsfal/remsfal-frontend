@@ -1,7 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import BaseLayout from "@/views/templates/FullscreenViewLayout.vue";
 import Card from 'primevue/card';
-
 </script>
 
 <template>
