@@ -47,13 +47,13 @@ import Card from 'primevue/card';
             Darüber hinaus haben Sie das Recht auf Datenübertragbarkeit.
             Sie haben weiter das Recht, sich bei einer Aufsichtsbehörde über die Verarbeitung zu
             beschweren. Eine Liste der entsprechenden Behörden finden Sie unter:
-            <a href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html" target="_blank">
+            <a href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html" target="_blank" rel="noopener">
               https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html
             </a>.
           </p>
         </template>
         <template #footer>
-          <a href="https://opr.vc/docs/allgemein/dse_einleitung/" target="_blank">
+          <a href="https://opr.vc/docs/allgemein/dse_einleitung/" target="_blank" rel="noopener">
             open privacy by opr.vc
           </a>
         </template>
@@ -104,7 +104,7 @@ import Card from 'primevue/card';
           <p>
             Weitere Details und Informationen zu Widerspruchs- und Beseitigungsmöglichkeiten gegenüber
             dem Hochschulrechenzentrum der HTW Berlin finden Sie unter:
-            <a href="https://www.htw-berlin.de/datenschutz/" target="_blank">
+            <a href="https://www.htw-berlin.de/datenschutz/" target="_blank" rel="noopener">
               https://www.htw-berlin.de/datenschutz/
             </a>
           </p>
