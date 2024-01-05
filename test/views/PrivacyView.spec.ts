@@ -1,10 +1,9 @@
 import { describe, test, expect } from 'vitest'
+import { mount } from '@vue/test-utils'
+import PrivacyView from '@/views/PrivacyView.vue'
+import router from '@/router'
 import PrimeVue from 'primevue/config';
-import router from '../../router'
 import Card from 'primevue/card';
-
-import { shallowMount, mount } from '@vue/test-utils'
-import PrivacyView from '../PrivacyView.vue'
 
 describe('PrivacyView', () => {
   test('The view is rendered properly', async () => {

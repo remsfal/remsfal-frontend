@@ -1,8 +1,7 @@
 import { describe, test, expect } from 'vitest'
-
 import { mount } from '@vue/test-utils'
 import router from "@/router"
-import FooterMenu from '../FooterMenu.vue'
+import FooterMenu from '@/components/FooterMenu.vue'
 
 describe('FooterMenu', () => {
   test('renders properly', async () => {
