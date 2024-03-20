@@ -1,0 +1,95 @@
+<script setup>
+import AppSidebar from './ProjectSidebar.vue';
+
+</script>
+
+<template>
+  <main>
+        <div class="layout-sidebar">
+            <app-sidebar></app-sidebar>
+        </div>
+        <div class="layout-main-container">
+            <div class="layout-main">
+                <router-view></router-view>
+            </div>
+        </div>
+        <div class="layout-mask"></div>
+  </main>
+</template>
+
+<style lang="scss" scoped>
+@media screen and (min-width: 1960px) {
+  .layout-main {
+    width: 1504px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+}
+
+@media (min-width: 992px) {
+  .layout-static {
+      .layout-main-container {
+        margin-left: 300px;
+      }
+
+      &.layout-static-inactive {
+        .layout-sidebar {
+          transform: translateX(-100%);
+          left: 0;
+        }
+
+        .layout-main-container {
+          margin-left: 0;
+          padding-left: 2rem;
+        }
+      }
+    }
+
+    .layout-mask {
+      display: none;
+    }
+}
+
+@media (max-width: 991px) {
+  .blocked-scroll {
+    overflow: hidden;
+  }
+
+    .layout-main-container {
+      margin-left: 0;
+      padding-left: 2rem;
+    }
+
+    .layout-sidebar {
+      transform: translateX(-100%);
+      left: 0;
+      top: 0;
+      height: 100vh;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .layout-mask {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 998;
+      width: 100%;
+      height: 100%;
+      background-color: var(--maskbg);
+    }
+
+    .layout-mobile-active {
+      .layout-sidebar {
+        transform: translateX(0);
+      }
+
+      .layout-mask {
+        display: block;
+        animation: fadein .2s;
+      }
+    }
+}
+</style>
