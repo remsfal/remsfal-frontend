@@ -3,7 +3,6 @@ import Menubar from 'primevue/menubar';
 </script>
 
 <template>
-  <div>
     <header>
       <Menubar :model="items">
         <template #start>
@@ -13,7 +12,6 @@ import Menubar from 'primevue/menubar';
         </template>
       </Menubar>
     </header>
-  </div>
 </template>
 
 <style scoped>
@@ -133,7 +131,7 @@ export default {
               projectItems.push({
                 label: project.title,
                 icon: "pi pi-fw pi-external-link",
-                to: {name: "Project", params: {projectId: project.id}},
+                to: {name: "ProjectDashboard", params: {projectId: project.id}},
               });
             }
 

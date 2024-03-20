@@ -1,8 +1,9 @@
-import {createRouter, createWebHistory} from 'vue-router'
-import LandingPageView from '@/views/LandingPageView.vue'
+import {createRouter, createWebHistory} from 'vue-router';
+import LandingPageView from '@/views/LandingPageView.vue';
 import LegalNoticeView from "@/views/LegalNoticeView.vue";
+import ProjectLayout from '@/layout/ProjectLayout.vue';
 import PrivacyView from "@/views/PrivacyView.vue";
-import ProjectSelectionView from '@/views/ProjectSelectionView.vue'
+import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 
 const routes = [
     {
@@ -38,14 +39,6 @@ const routes = [
         component: () => import("@/views/NewProjectView.vue"),
     },
     {
-        path: "/project/:projectId",
-        name: "Project",
-        props: true,
-        // route level code-splitting
-        // which is lazy-loaded when the route is visited.
-        component: () => import("@/views/ProjectView.vue"),
-    },
-    {
         path: "/account-settings",
         name: "AccountSettings",
         // route level code-splitting
@@ -58,6 +51,18 @@ const routes = [
         // route level code-splitting
         // which is lazy-loaded when the route is visited.
         component: () => import("@/views/AccountContactsView.vue"),
+    },
+    {
+        path: "/project",
+        component: ProjectLayout,
+        children: [
+            {
+                path: '/project/:projectId/',
+                name: 'ProjectDashboard',
+                props: true,
+                component: () => import('@/views/ProjectView.vue')
+            }
+        ]
     },
 ];
 
