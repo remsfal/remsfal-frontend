@@ -17,7 +17,7 @@
 FROM nginx:stable
 
 RUN apt-get update && apt-get upgrade -y \
-    && apt-get install -y \
+    && apt-get --no-install-recommends install -y \
     curl \
     htop  \
     vim  \
