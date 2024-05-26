@@ -16,12 +16,15 @@
 ####
 FROM nginx:stable
 
-COPY dist /usr/share/nginx/html
-COPY docker/nginx /etc/nginx
-
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
     curl \
     htop  \
     vim  \
     && rm -rf /var/lib/apt/lists/*
+
+# copy config as root
+COPY docker/nginx /etc/nginx
+
+USER nginx
+COPY dist /usr/share/nginx/html
