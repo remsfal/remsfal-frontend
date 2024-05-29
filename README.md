@@ -1,4 +1,6 @@
 # remsfal-frontend
+[![License](https://img.shields.io/github/license/remsfal/remsfal-frontend)](https://github.com/remsfal/remsfal-frontend/blob/main/LICENSE)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/remsfal/remsfal-frontend)
 
 This template should help get you started developing with Vue 3 in Vite.
 
