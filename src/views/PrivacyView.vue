@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import BaseLayout from "@/views/templates/FullscreenViewLayout.vue";
 import Card from 'primevue/card';
 </script>
 
 <template>
-  <BaseLayout>
+  <div class="grid">
     <div class="col-12">
       <Card>
         <template #title>
@@ -114,5 +113,5 @@ import Card from 'primevue/card';
         </template>
       </Card>
     </div>
-  </BaseLayout>
+  </div>
 </template>

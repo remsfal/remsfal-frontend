@@ -2,14 +2,13 @@
 import { computed, watch, ref } from 'vue';
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
-import AppSidebar from './AppSidebar.vue';
 import { useLayout } from '@/layout/composables/layout';
 
 const { layoutConfig, layoutState, isSidebarActive, setFullscreen } = useLayout();
 
 const outsideClickListener = ref(null);
 
-setFullscreen(false);
+setFullscreen(true);
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
@@ -60,16 +59,13 @@ const isOutsideClicked = (event) => {
 <template>
     <div class="layout-wrapper" :class="containerClass">
         <app-topbar></app-topbar>
-        <div class="layout-sidebar">
-            <app-sidebar></app-sidebar>
-        </div>
         <div class="layout-main-container">
           <main>
             <div class="layout-main">
-                <router-view></router-view>
+                  <router-view></router-view>
             </div>
           </main>
-            <app-footer></app-footer>
+          <app-footer></app-footer>
         </div>
         <div class="layout-mask"></div>
     </div>

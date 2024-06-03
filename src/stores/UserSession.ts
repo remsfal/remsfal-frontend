@@ -18,10 +18,10 @@ export const useUserSessionStore = defineStore('user-session', {
                 .get("/api/v1/user")
                 .then((response) => {
                     this.user = response.data;
-                    console.log("Active user session: " + this.user);
+                    console.log("Active user session: ", this.user);
                 })
                 .catch((error) => {
-                    console.log("Invalid user session: " + error);
+                    console.log("Invalid user session: ", error);
                     if (401 === error.response.status) {
                         this.user = null;
                     }

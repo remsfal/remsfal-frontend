@@ -5,9 +5,9 @@ import Modal from "@/components/LeoModal.vue";
 </script>
 
 <template>
-  <HeaderMenu />
+  <!--HeaderMenu / -->
   <RouterView />
-  <Modal
+  <!--Modal
       :isOpen="showModal"
       :bodyText="'Durch die Anmeldung bzw. Registrierung stimmst Du unser Datenschutzerklärung zu.'"
       :linkText="'Datenschutzerklärung'"
@@ -24,11 +24,12 @@ import Modal from "@/components/LeoModal.vue";
       :headingText="'Konto löschen'"
       :buttonColor="'red'"
       @closeModal="showDeleteModal = false"
-  ></Modal>
+  ></Modal -->
 </template>
 
 <script lang="ts">
-import {useUserSessionStore} from "@/stores/userSession";
+import {useUserSessionStore} from "@/stores/UserSession";
+import {useProjectStore} from "@/stores/ProjectStore";
 
 export default {
   data() {
@@ -46,6 +47,8 @@ export default {
     console.log("App created!");
     const sessionStore = useUserSessionStore();
     sessionStore.refreshSessionState();
+    const projectStore = useProjectStore();
+    projectStore.refreshProjectList();
   },
   methods: {
     openModal() {
