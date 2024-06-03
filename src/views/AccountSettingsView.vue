@@ -28,7 +28,7 @@ export default {
 
 <template>
     <div class="grid">
-    <h1>This is an account settings page for {{ userEmail }}</h1>
+    <h1>This is ä account settings page for {{ userEmail }}</h1>
 
   </div>
 </template>

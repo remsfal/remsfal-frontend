@@ -1,6 +1,3 @@
-<script setup>
-</script>
-
 <template>
   <footer>
     <div class="layout-footer">
@@ -10,4 +7,3 @@
     </div>
   </footer>
 </template>
-<style lang="scss" scoped></style>

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, watch, ref } from 'vue';
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
@@ -6,7 +6,7 @@ import { useLayout } from '@/layout/composables/layout';
 
 const { layoutConfig, layoutState, isSidebarActive, setFullscreen } = useLayout();
 
-const outsideClickListener = ref(null);
+const outsideClickListener = ref<EventListenerOrEventListenerObject | null>(null);
 
 setFullscreen(true);
 
@@ -20,19 +20,19 @@ watch(isSidebarActive, (newVal) => {
 
 const containerClass = computed(() => {
     return {
-        'layout-theme-light': layoutConfig.darkTheme.value === 'light',
-        'layout-theme-dark': layoutConfig.darkTheme.value === 'dark',
+        'layout-theme-light': !layoutConfig.darkTheme.value,
+        'layout-theme-dark': layoutConfig.darkTheme.value,
         'layout-overlay': layoutConfig.menuMode.value === 'overlay',
         'layout-static': layoutConfig.menuMode.value === 'static',
         'layout-static-inactive': layoutState.staticMenuDesktopInactive.value && layoutConfig.menuMode.value === 'static',
         'layout-overlay-active': layoutState.overlayMenuActive.value,
         'layout-mobile-active': layoutState.staticMenuMobileActive.value,
-        'p-ripple-disabled': layoutConfig.ripple.value === false
+        'p-ripple-disabled': !layoutConfig.ripple.value
     };
 });
 const bindOutsideClickListener = () => {
     if (!outsideClickListener.value) {
-        outsideClickListener.value = (event) => {
+        outsideClickListener.value = (event:Event) => {
             if (isOutsideClicked(event)) {
                 layoutState.overlayMenuActive.value = false;
                 layoutState.staticMenuMobileActive.value = false;
@@ -44,15 +44,16 @@ const bindOutsideClickListener = () => {
 };
 const unbindOutsideClickListener = () => {
     if (outsideClickListener.value) {
-        document.removeEventListener('click', outsideClickListener);
+        document.removeEventListener('click', outsideClickListener.value, undefined);
         outsideClickListener.value = null;
     }
 };
-const isOutsideClicked = (event) => {
+const isOutsideClicked = (event:Event) => {
     const sidebarEl = document.querySelector('.layout-sidebar');
     const topbarEl = document.querySelector('.layout-menu-button');
 
-    return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
+    return !(sidebarEl!.isSameNode(event.target as Node) || sidebarEl!.contains(event.target as Node)
+          || topbarEl!.isSameNode(event.target as Node) || topbarEl!.contains(event.target as Node));
 };
 </script>
 

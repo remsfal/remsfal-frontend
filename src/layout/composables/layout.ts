@@ -7,7 +7,7 @@ const layoutConfig = reactive({
     menuMode: 'static',
     theme: 'aura-light-green',
     scale: 14,
-    activeMenuItem: null,
+    activeMenuItem: undefined,
     fullscreen: true
 });
 
@@ -21,16 +21,16 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
-    const setFullscreen = (fullscreen) => {
+    const setFullscreen = (fullscreen:boolean) => {
         layoutConfig.fullscreen = fullscreen;
         layoutState.staticMenuDesktopInactive = fullscreen;
     };
 
-    const setScale = (scale) => {
+    const setScale = (scale:number) => {
         layoutConfig.scale = scale;
     };
 
-    const setActiveMenuItem = (item) => {
+    const setActiveMenuItem = (item:any) => {
         layoutConfig.activeMenuItem = item.value || item;
     };
 

@@ -11,7 +11,7 @@ const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
 const projectStore = useProjectStore();
 
-const outsideClickListener = ref(null);
+const outsideClickListener = ref<EventListenerOrEventListenerObject | null>(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
 
@@ -60,7 +60,7 @@ const topbarMenuClasses = computed(() => {
 
 const bindOutsideClickListener = () => {
     if (!outsideClickListener.value) {
-        outsideClickListener.value = (event) => {
+        outsideClickListener.value = (event:Event) => {
             if (isOutsideClicked(event)) {
                 topbarMenuActive.value = false;
             }
@@ -70,17 +70,18 @@ const bindOutsideClickListener = () => {
 };
 const unbindOutsideClickListener = () => {
     if (outsideClickListener.value) {
-        document.removeEventListener('click', outsideClickListener);
+        document.removeEventListener('click', outsideClickListener.value);
         outsideClickListener.value = null;
     }
 };
-const isOutsideClicked = (event) => {
+const isOutsideClicked = (event:Event) => {
     if (!topbarMenuActive.value) return;
 
     const sidebarEl = document.querySelector('.layout-topbar-menu');
     const topbarEl = document.querySelector('.layout-topbar-menu-button');
 
-    return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
+    return !(sidebarEl!.isSameNode(event.target as Node) || sidebarEl!.contains(event.target as Node)
+          || topbarEl!.isSameNode(event.target as Node) || topbarEl!.contains(event.target as Node));
 };
 </script>
 

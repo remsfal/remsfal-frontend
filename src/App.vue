@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {RouterView} from "vue-router";
-import HeaderMenu from "@/components/HeaderMenu.vue";
 import Modal from "@/components/LeoModal.vue";
 </script>
 
