@@ -108,11 +108,6 @@ import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 
-//import 'primevue/resources/themes/saga-green/theme.css';
-//import 'primevue/resources/primevue.min.css';
-//import 'primeflex/primeflex.min.css'
-//import 'primeicons/primeicons.css';
-
 import '@/assets/styles.scss';
 
 const pinia = createPinia()
@@ -136,6 +131,8 @@ app.directive('badge', BadgeDirective);
 app.directive('styleclass', StyleClass);
 
 // Add primefaces components
+/* eslint-disable vue/multi-word-component-names */
+/* eslint-disable vue/no-reserved-component-names */
 app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);
 app.component('AutoComplete', AutoComplete);
