@@ -16,8 +16,8 @@ export default {
       projectService
         .createProject(this.projectTitle)
         .then((newProject: Project) => {
-          console.info("new project has been created: " + newProject);
-          this.$router.push({name: "Project", params: {projectId: newProject.id}});
+          console.info("new project has been created: ", newProject);
+          this.$router.push({name: "ProjectDashboard", params: {projectId: newProject.id}});
         })
     },
     abort() {
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <template>
-  <main>
+  <div class="grid">
     <div class="card flex justify-content-center">
       <!-- form @submit="onSubmit" class="flex flex-column gap-2"-->
       <form @submit.prevent="createProject" class="flex flex-column gap-2">
@@ -47,5 +47,5 @@ export default {
         />
       </form>
     </div>
-  </main>
+  </div>
 </template>

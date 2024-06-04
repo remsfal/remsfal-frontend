@@ -1,5 +1,7 @@
 <script lang="ts">
-import {useUserSessionStore} from "@/stores/userSession";
+import {useUserSessionStore} from "@/stores/UserSession";
+import UserService from "@/services/UserService";
+//import Modal from "@/components/LeoModal.vue";
 
 export default {
   data() {
@@ -11,29 +13,44 @@ export default {
     const sessionStore = useUserSessionStore();
     this.userEmail = sessionStore.user?.email!;
   },
+  methods: {
+    logout(): void {
+      window.location.pathname = "/api/v1/authentication/logout";
+    },
+    deleteAccount() {
+      const userService = new UserService();
+      userService.deleteUser()
+          .then(() => this.logout())
+          .catch(() => console.error("Unable to delete this account!"))
+    },
+  }
 };
 </script>
 
 <template>
-  <main>
-  <div class="about">
-    <h1>This is an account settings page for {{ userEmail }}</h1>
+    <div class="grid">
+    <h1>This is ä account settings page for {{ userEmail }}</h1>
+      <!--Modal
+          :isOpen="showModal"
+          :bodyText="'Durch die Anmeldung bzw. Registrierung stimmst Du unser Datenschutzerklärung zu.'"
+          :linkText="'Datenschutzerklärung'"
+          :linkHref="'/data-protection'"
+          :buttonText="'Mit Google Anmelden'"
+          :headingText="'Anmeldung/Registrierung'"
+          :buttonColor="'green'"
+          @closeModal="showModal = false"
+      ></Modal>
+      <Modal
+          :isOpen="showDeleteModal"
+          :bodyText="'Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.'"
+          :buttonText="'Konto löschen'"
+          :headingText="'Konto löschen'"
+          :buttonColor="'red'"
+          @closeModal="showDeleteModal = false"
+      ></Modal -->
 
   </div>
-  </main>
 </template>
 
 <style>
-  .about {
-  padding-top: 10%;
-  }
-@media (min-width: 1024px) {
-  .about {
-    color: #495057;
-
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
 </style>

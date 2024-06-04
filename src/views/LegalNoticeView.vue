@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import BaseLayout from "@/views/templates/FullscreenViewLayout.vue";
 </script>
 
 <template>
-  <BaseLayout>
-    <div class="col-12">
-      <PrimeCard>
+  <div class="grid">
+    <div class="col-6">
+      <Card>
         <template #title>
           Impressum
         </template>
@@ -19,10 +18,10 @@ import BaseLayout from "@/views/templates/FullscreenViewLayout.vue";
             Deutschland<br />
           </p>
         </template>
-      </PrimeCard>
+      </Card>
     </div>
-    <div class="col-12">
-      <PrimeCard>
+    <div class="col-6">
+      <Card>
         <template #title>
           Kontakt
         </template>
@@ -37,7 +36,7 @@ import BaseLayout from "@/views/templates/FullscreenViewLayout.vue";
             Prof. Dr.-Ing. Alexander Stanik, info@remsfal.de
           </p>
         </template>
-      </PrimeCard>
+      </Card>
     </div>
-  </BaseLayout>
+  </div>
 </template>

@@ -14,8 +14,7 @@ export default {
 </script>
 
 <template>
-  <main>
-  <div class="about">
+  <div class="grid">
     <h1>This is the {{ project_title }}.</h1>
     <!-- Generated with https://developers.google.com/identity/branding-guidelines?hl=de -->
     <button class="gsi-material-button" @click="login">
@@ -35,19 +34,9 @@ export default {
       </div>
     </button>
   </div>
-  </main>
 </template>
 
 <style>
-@media (min-width: 1024px) {
-  .about {
-    color: #495057;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-
 .gsi-material-button {
   -moz-user-select: none;
   -webkit-user-select: none;
