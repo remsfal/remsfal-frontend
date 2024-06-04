@@ -76,5 +76,3 @@ const isOutsideClicked = (event:Event) => {
     </div>
     <Toast />
 </template>
-
-<style lang="scss" scoped></style>

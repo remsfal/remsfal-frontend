@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
 import LegalNoticeView from "@/views/LegalNoticeView.vue";
 import ProjectLayout from '@/layout/ProjectLayout.vue';

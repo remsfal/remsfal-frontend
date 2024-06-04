@@ -1,5 +1,5 @@
-import {defineStore} from 'pinia'
-import ProjectService, {type Project, type ProjectList} from "@/services/ProjectService";
+import { defineStore } from 'pinia'
+import ProjectService, { type ProjectList } from "@/services/ProjectService";
 
 export const useProjectStore = defineStore('project-store', {
     state: () => {

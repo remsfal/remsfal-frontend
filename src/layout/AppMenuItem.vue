@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, watch } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 
 const route = useRoute();
 
-const { layoutConfig, layoutState, setActiveMenuItem, onMenuToggle } = useLayout();
+const { layoutState, setActiveMenuItem, onMenuToggle } = useLayout();
 
 const props = defineProps({
     item: {
@@ -31,18 +31,8 @@ const itemKey = ref<string | undefined>(undefined);
 
 onBeforeMount(() => {
     itemKey.value = props.parentItemKey ? props.parentItemKey + '-' + props.index : String(props.index);
-
-//    const activeItem = layoutConfig.activeMenuItem.value;
-
-//    isActiveMenu.value = activeItem === itemKey.value || activeItem !== null ? activeItem.startsWith(itemKey.value + '-') : false;
 });
 
-/*watch(
-    () => layoutConfig.activeMenuItem.value,
-    (newVal) => {
-        isActiveMenu.value = newVal === itemKey.value || newVal.startsWith(itemKey.value + '-');
-    }
-);*/
 const itemClick = (event:Event, item:any) => {
     if (item.disabled) {
         event.preventDefault();

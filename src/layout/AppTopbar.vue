@@ -2,9 +2,9 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
-import {useUserSessionStore} from "@/stores/UserSession";
-import {useProjectStore} from "@/stores/ProjectStore";
-import type {DropdownChangeEvent} from "primevue/dropdown";
+import { useUserSessionStore } from "@/stores/UserSession";
+import { useProjectStore } from "@/stores/ProjectStore";
+import type { DropdownChangeEvent } from "primevue/dropdown";
 
 
 const { layoutConfig, onMenuToggle } = useLayout();
