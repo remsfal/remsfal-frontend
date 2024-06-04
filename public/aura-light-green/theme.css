@@ -47,29 +47,7 @@
   --highlight-text-color: #047857;
   --p-anchor-gutter: 2px;
   color-scheme: light;
-}
-
-:root {
   --p-focus-ring-color: var(--primary-color);
-}
-
-@font-face {
-  font-family: "Inter var";
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: normal;
-  font-named-instance: "Regular";
-  src: url("./fonts/Inter-roman.var.woff2?v=3.19") format("woff2");
-}
-@font-face {
-  font-family: "Inter var";
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: italic;
-  font-named-instance: "Italic";
-  src: url("./fonts/Inter-italic.var.woff2?v=3.19") format("woff2");
-}
-:root {
   --blue-50:#f5f9ff;
   --blue-100:#d0e1fd;
   --blue-200:#abc9fb;
@@ -190,6 +168,21 @@
   --primary-700:#0b825a;
   --primary-800:#096647;
   --primary-900:#064a34;
+}
+
+@font-face {
+  font-family: "Inter var";
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+  src: url("./fonts/Inter-roman.var.woff2?v=3.19") format("woff2");
+}
+@font-face {
+  font-family: "Inter var";
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: italic;
+  src: url("./fonts/Inter-italic.var.woff2?v=3.19") format("woff2");
 }
 
 .p-editor-container .p-editor-toolbar {
@@ -316,14 +309,6 @@
     user-select: none;
   }
 
-  .p-component-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-
   .p-unselectable-text {
     user-select: none;
   }
@@ -349,10 +334,21 @@
     border: none;
     cursor: pointer;
     user-select: none;
+    font-family: var(--font-family);
+    font-feature-settings: var(--font-feature-settings, normal);
+    font-size: 1rem;
+    border-radius: 6px;
+    outline-color: transparent;
   }
 
   .p-link:disabled {
     cursor: default;
+  }
+
+  .p-link:focus-visible {
+    outline: 1px solid var(--p-focus-ring-color);
+    outline-offset: 2px;
+    box-shadow: none;
   }
 
   /* Non vue overlay animations */
@@ -424,6 +420,11 @@
   }
 
   .p-component-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.4);
     transition-duration: 0.2s;
   }
@@ -447,19 +448,6 @@
   .p-icon {
     width: 1rem;
     height: 1rem;
-  }
-
-  .p-link {
-    font-family: var(--font-family);
-    font-feature-settings: var(--font-feature-settings, normal);
-    font-size: 1rem;
-    border-radius: 6px;
-    outline-color: transparent;
-  }
-  .p-link:focus-visible {
-    outline: 1px solid var(--p-focus-ring-color);
-    outline-offset: 2px;
-    box-shadow: none;
   }
 
   .p-component-overlay-enter {
@@ -522,6 +510,11 @@
     overflow: auto;
     top: 0;
     left: 0;
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
   }
 
   .p-autocomplete-items {
@@ -631,13 +624,6 @@
     border-color: #f87171;
   }
 
-  .p-autocomplete-panel {
-    background: #ffffff;
-    color: #334155;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  }
   .p-autocomplete-panel .p-autocomplete-items {
     padding: 0.25rem 0.25rem;
   }
@@ -715,6 +701,11 @@
 
   .p-datepicker {
     width: auto;
+    padding: 0.75rem;
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
   }
 
   .p-datepicker-inline {
@@ -756,6 +747,44 @@
   .p-datepicker table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 1rem;
+    margin: 0.5rem 0 0 0;
+  }
+  .p-datepicker table th {
+    padding: 0.25rem;
+  }
+  .p-datepicker table th > span {
+    width: 2rem;
+    height: 2rem;
+  }
+  .p-datepicker table td {
+    padding: 0.25rem;
+  }
+  .p-datepicker table td > span {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
+    border: 1px solid transparent;
+    outline-color: transparent;
+  }
+  .p-datepicker table td > span.p-highlight {
+    color: #047857;
+    background: #ecfdf5;
+  }
+  .p-datepicker table td > span:focus {
+    outline: 1px solid var(--p-focus-ring-color);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .p-datepicker table td.p-datepicker-today > span {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-color: transparent;
+  }
+  .p-datepicker table td.p-datepicker-today > span.p-highlight {
+    color: #047857;
+    background: #ecfdf5;
   }
 
   .p-datepicker td > span {
@@ -835,13 +864,6 @@
     border-color: #94a3b8;
   }
 
-  .p-datepicker {
-    padding: 0.75rem;
-    background: #ffffff;
-    color: #334155;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-  }
   .p-datepicker:not(.p-datepicker-inline) {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -899,46 +921,6 @@
   }
   .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-month {
     margin-right: 0.5rem;
-  }
-  .p-datepicker table {
-    font-size: 1rem;
-    margin: 0.5rem 0 0 0;
-  }
-  .p-datepicker table th {
-    padding: 0.25rem;
-  }
-  .p-datepicker table th > span {
-    width: 2rem;
-    height: 2rem;
-  }
-  .p-datepicker table td {
-    padding: 0.25rem;
-  }
-  .p-datepicker table td > span {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
-    border: 1px solid transparent;
-    outline-color: transparent;
-  }
-  .p-datepicker table td > span.p-highlight {
-    color: #047857;
-    background: #ecfdf5;
-  }
-  .p-datepicker table td > span:focus {
-    outline: 1px solid var(--p-focus-ring-color);
-    outline-offset: 2px;
-    box-shadow: none;
-  }
-  .p-datepicker table td.p-datepicker-today > span {
-    background: #e2e8f0;
-    color: #0f172a;
-    border-color: transparent;
-  }
-  .p-datepicker table td.p-datepicker-today > span.p-highlight {
-    color: #047857;
-    background: #ecfdf5;
   }
   .p-datepicker .p-datepicker-buttonbar {
     padding: 0.5rem 0 0 0;
@@ -1063,6 +1045,22 @@
     display: inline-flex;
     cursor: pointer;
     user-select: none;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
+    border-radius: 6px;
+    outline-color: transparent;
+  }
+
+  .p-cascadeselect:not(.p-disabled):hover {
+    border-color: #94a3b8;
+  }
+
+  .p-cascadeselect:not(.p-disabled).p-focus {
+    outline: 1px solid var(--p-focus-ring-color);
+    outline-offset: -1px;
+    box-shadow: none;
+    border-color: #94a3b8;
   }
 
   .p-cascadeselect-trigger {
@@ -1149,22 +1147,6 @@
     transition: opacity 150ms;
   }
 
-  .p-cascadeselect {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
-    border-radius: 6px;
-    outline-color: transparent;
-  }
-  .p-cascadeselect:not(.p-disabled):hover {
-    border-color: #94a3b8;
-  }
-  .p-cascadeselect:not(.p-disabled).p-focus {
-    outline: 1px solid var(--p-focus-ring-color);
-    outline-offset: -1px;
-    box-shadow: none;
-    border-color: #94a3b8;
-  }
   .p-cascadeselect.p-variant-filled {
     background-color: #f8fafc;
   }
@@ -1244,6 +1226,8 @@
     display: inline-flex;
     user-select: none;
     vertical-align: bottom;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
   .p-checkbox-input {
@@ -1256,10 +1240,6 @@
     align-items: center;
   }
 
-  .p-checkbox {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
   .p-checkbox .p-checkbox-input {
     appearance: none;
     position: absolute;
@@ -1460,6 +1440,20 @@
     cursor: pointer;
     position: relative;
     user-select: none;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
+    border-radius: 6px;
+    outline-color: transparent;
+  }
+  .p-dropdown:not(.p-disabled):hover {
+    border-color: #94a3b8;
+  }
+  .p-dropdown:not(.p-disabled).p-focus {
+    outline: 1px solid var(--p-focus-ring-color);
+    outline-offset: -1px;
+    box-shadow: none;
+    border-color: #94a3b8;
   }
 
   .p-dropdown-clear-icon {
@@ -1502,6 +1496,11 @@
     position: absolute;
     top: 0;
     left: 0;
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
   }
 
   .p-dropdown-items-wrapper {
@@ -1550,22 +1549,6 @@
     width: 1%;
   }
 
-  .p-dropdown {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
-    border-radius: 6px;
-    outline-color: transparent;
-  }
-  .p-dropdown:not(.p-disabled):hover {
-    border-color: #94a3b8;
-  }
-  .p-dropdown:not(.p-disabled).p-focus {
-    outline: 1px solid var(--p-focus-ring-color);
-    outline-offset: -1px;
-    box-shadow: none;
-    border-color: #94a3b8;
-  }
   .p-dropdown.p-variant-filled {
     background: #f8fafc;
   }
@@ -1607,13 +1590,6 @@
     border-color: #f87171;
   }
 
-  .p-dropdown-panel {
-    background: #ffffff;
-    color: #334155;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  }
   .p-dropdown-panel .p-dropdown-header {
     padding: 0.5rem 0.5rem 0 0.5rem;
     border-bottom: 0 none;
@@ -1755,6 +1731,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #ffffff;
+    color: #64748b;
+    border-top: 1px solid #cbd5e1;
+    border-left: 1px solid #cbd5e1;
+    border-bottom: 1px solid #cbd5e1;
+    padding: 0.5rem 0.75rem;
+    min-width: 2.5rem;
   }
 
   .p-inputgroup .p-float-label {
@@ -1771,15 +1754,6 @@
     width: 1%;
   }
 
-  .p-inputgroup-addon {
-    background: #ffffff;
-    color: #64748b;
-    border-top: 1px solid #cbd5e1;
-    border-left: 1px solid #cbd5e1;
-    border-bottom: 1px solid #cbd5e1;
-    padding: 0.5rem 0.75rem;
-    min-width: 2.5rem;
-  }
   .p-inputgroup-addon:last-child {
     border-right: 1px solid #cbd5e1;
   }
