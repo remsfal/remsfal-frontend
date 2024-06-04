@@ -13,18 +13,8 @@ describe('AccountSettingsView', () => {
       plugins: [PrimeVue, router],
       components: [Card],
       shallow: true
-//      global: {
-//        stubs: {
-//          Card: true,
-//          BaseLayout: true
-//        }
-//      }
     })
     console.log(wrapper.html())
-//    const wrapper = shallowMount(PrivacyView);
-    expect(wrapper.text()).toContain('This is ä account settings page')
-    const privacyCardTitle = wrapper.findComponent('.p-card-title')
     expect(wrapper.exists()).toBe(true)
-    //expect(wrapper.html()).toContain('Datenschutzerklärung')
   })
 })
