@@ -26,9 +26,10 @@ export default defineComponent({
 
 <template>
   <div class="grid">
-    <h1>Project List</h1>
     <div class="col-12">
       <div class="card">
+      <h5>Projekt Übersicht</h5>
+
         <DataTable
             :value="projectList"
             rowGroupMode="subheader"
