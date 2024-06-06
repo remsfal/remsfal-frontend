@@ -6,7 +6,16 @@ export interface Project {
 }
 
 export interface ProjectList {
-    projects: Project[];
+    first: number;
+    size: number;
+    total: number;
+    projects: ProjectItem[];
+}
+
+export interface ProjectItem {
+    id: string;
+    name: string;
+    memberRole: string;
 }
 
 export default class ProjectService {
