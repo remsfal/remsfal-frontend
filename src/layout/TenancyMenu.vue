@@ -7,7 +7,7 @@ const model = ref([
     {
         label: 'Mietverhältnis',
         items: [
-            { label: 'Überblick', icon: 'pi pi-fw pi-home', to: '/' }
+            { label: 'Überblick', icon: 'pi pi-fw pi-home', to: '/' },
             { label: 'Meldungen', icon: 'pi pi-fw pi-comment', to: '/uikit/formlayout' }
         ]
     }
