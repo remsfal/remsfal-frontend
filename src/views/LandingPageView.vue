@@ -6,8 +6,8 @@ export default {
     }
   },
   methods: {
-    login(): void {
-      window.location.pathname = "/api/v1/authentication/login";
+    login(route): void {
+      window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
     },
   }
 }
@@ -17,7 +17,7 @@ export default {
   <div class="grid">
     <h1>This is the {{ project_title }}.</h1>
     <!-- Generated with https://developers.google.com/identity/branding-guidelines?hl=de -->
-    <button class="gsi-material-button" @click="login">
+    <button class="gsi-material-button" @click="login('/projects')">
       <div class="gsi-material-button-state"></div>
       <div class="gsi-material-button-content-wrapper">
         <div class="gsi-material-button-icon">

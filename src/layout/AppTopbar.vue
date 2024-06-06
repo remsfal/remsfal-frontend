@@ -48,8 +48,8 @@ const logout = () => {
   window.location.pathname = "/api/v1/authentication/logout";
 };
 
-const login = () => {
-  window.location.pathname = "/api/v1/authentication/login";
+const login = (route) => {
+  window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
 };
 
 const topbarMenuClasses = computed(() => {
@@ -117,7 +117,7 @@ const isOutsideClicked = (event:Event) => {
                 <i class="pi pi-sign-out"></i>
                 <span>Abmelden</span>
             </button>
-            <button v-if="sessionStore.user == null" @click="login()" class="p-link layout-topbar-button">
+            <button v-if="sessionStore.user == null" @click="login('/projects')" class="p-link layout-topbar-button">
                 <i class="pi pi-sign-in"></i>
                 <span>Anmelden</span>
             </button>
