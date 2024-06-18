@@ -1,5 +1,15 @@
 {  "extends": [
   "stylelint-config-standard",
   "stylelint-config-recommended-vue"
-  ]
+],
+  "rules": {
+    "alpha-value-notation": "number",
+    "property-no-vendor-prefix": [true, {
+      "ignoreProperties": ["user-select", "appearance", "border-radius", "box-sizing", "transition",
+        "box-shadow", "flex-flow", "flex-grow", "flex-wrap", "align-items", "flex-direction" ]
+    }],
+    "no-descending-specificity": null,
+    "no-duplicate-selectors": null,
+    "number-max-precision": 5
+  }
 }
