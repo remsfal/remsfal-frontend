@@ -23,7 +23,7 @@ export default class ProjectService {
 
     getProjects(): Promise<ProjectList> {
         return axios
-            .get(`${this.url}`)
+            .get(`${this.url}?limit=100`)
             .then((response) => {
                 const projectList: ProjectList = response.data;
                 console.log("GET projects:", projectList);
