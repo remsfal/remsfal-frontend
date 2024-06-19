@@ -44,8 +44,8 @@ export default {
 </script>
 
 <template>
-  <div class="grid align-items-center justify-content-center mt-5">
-    <div class="card flex">
+  <div class="grid align-items-center justify-content-center">
+    <div class="card flex mt-5">
       <form
         @submit.prevent="createProject"
         class="flex flex-column gap-2 w-23rem"
