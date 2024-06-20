@@ -10,6 +10,9 @@
     }],
     "no-descending-specificity": null,
     "no-duplicate-selectors": null,
-    "number-max-precision": 5
+    "number-max-precision": 5,
+    "no-empty-source": null,
+    "custom-property-pattern": null,
+    "at-rule-no-unknown": null
   }
 }
