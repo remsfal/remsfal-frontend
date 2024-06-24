@@ -84,7 +84,8 @@ export default {
 <template>
   <div class="grid">
     <h1>Account Settings for {{ userProfile.email }}</h1>
-    <Card>
+    <div class="cardContainer">
+      <Card>
         <template #title>
         <h4>Meine Daten</h4>
       </template>
@@ -162,32 +163,36 @@ export default {
         </div>
       </template>
     </Card>
+    </div>
+
     <Card>
       <template #content>
         <div v-if="userProfile">
           <div v-if="!editMode">
             <div class='buttons-container'>
-              <Button icon="pi pi-user-edit" class='edit-button' @click="toggleEditMode" label="Bearbeiten" />
-              <div class='delete Button'>
-                <Button icon="pi pi-trash" severity="danger" aria-label="Cancel" class='delete-button'
+              <Button type="button" icon="pi pi-user-edit" class='edit-button' @click="toggleEditMode" label="Bearbeiten" />
+              <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" class='edit-button'
                   label="Konto löschen" @click="visible = true" />
+            </div>
+              <div class='delete Button'>
                 <Dialog v-model:visible="visible" maximizable modal header=" " :style="{ width: '50rem' }"
                   :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-                  <p class="m-0">
-                    Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.
-                  </p>
-                  <Button icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount"
-                    label="Konto wirklich löschen" />
-                  <Button icon="pi pi-times" class="cancelButton" severity="secondary" aria-label="Cancel"
+                  <p>Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.</p>
+                  <div class='buttons-container'>
+                    <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount"
+                    label="Konto wirklich löschen" class='delete-button' />
+                  <Button type="button" icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
                     @click="visible = false" label="Abbrechen" />
+                  </div>
                 </Dialog>
               </div>
-            </div>
           </div>
           <div v-else>
-            <Button type="button" label="Speichern" icon="pi pi-check" @click="saveProfile" />
-            <Button icon="pi pi-times" class="cancelButton" severity="secondary" aria-label="Cancel"
+            <div class='buttons-container'>
+              <Button type="button" label="Speichern" icon="pi pi-check" @click="saveProfile" class='save-button' />
+              <Button icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
               @click="toggleEditMode" label="Abbrechen" />
+            </div>
           </div>
         </div>
       </template>
@@ -221,6 +226,18 @@ export default {
   gap: 20px;
 }
 
+.cardContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .cardContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
 h1 {
   font-size: 24px;
 }
@@ -235,22 +252,6 @@ input {
   margin-left: 10px;
 }
 
-.buttons-container {
-  display: flex;
-  width: 100%;
-}
-
-.edit-button,
-.delete-button {
-  flex: 1;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  font-size: 16px;
-}
-
 .editInputs {
   display: flex;
   flex-direction: column;
@@ -263,6 +264,17 @@ input {
 
 .title {
   padding-bottom: 50px;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0; /* Adjust padding as necessary */
+}
+
+.edit-button, .delete-button, .cancel-button, .save-button {
+  flex: 1;
 }
 
 </style>
