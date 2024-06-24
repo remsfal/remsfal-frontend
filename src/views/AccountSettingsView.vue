@@ -85,7 +85,9 @@ export default {
   <div class="grid">
     <h1>Account Settings for {{ userProfile.email }}</h1>
     <Card>
-      <template #title>Meine Daten</template>
+        <template #title>
+        <h4>Meine Daten</h4>
+      </template>
       <template #content>
         <div v-if="userProfile">
           <div v-if="!editMode">
@@ -96,10 +98,74 @@ export default {
             <p><strong>Email:</strong> {{ userProfile.email }}</p>
             <p><strong>Registered Date:</strong> {{ userProfile.registeredDate }}</p>
             <p><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
+          </div>
+          <div v-else>
+            <div class="editInputs">
+              <FloatLabel>
+                <InputText id="firstname" v-model="editedFirstName" />
+                <label for="firstname">Vorname</label>
+              </FloatLabel>
+              <FloatLabel>
+                <InputText id="lastname" v-model="editedLastName" />
+                <label for="lastname">Nachname</label>
+              </FloatLabel>
+              <FloatLabel>
+                <InputText id="businessPhoneNumber" v-model="editedBusinessPhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
+              </FloatLabel>
+              <FloatLabel>
+                <InputText id="mobilePhoneNumber" v-model="editedMobilePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                <label for="mobilePhoneNumber">Handynummer</label>
+              </FloatLabel>
+              <FloatLabel>
+                <InputText id="privatePhoneNumber" v-model="editedPrivatePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                <label for="privatePhoneNumber">Private Telefonnummer</label>
+              </FloatLabel>
+            </div>
+          </div>
+        </div>
+      </template>
+    </Card>
+    <Card>
+      <template #title>
+        <h4>Meine Adresse</h4>
+      </template>
+      <template #content>
+        <div v-if="userProfile">
+          <div v-if="!editMode">
             <p v-if="userProfile.address"><strong>Straße</strong> {{ userProfile.address.street }}</p>
             <p v-if="userProfile.address"><strong>Postleitzahl</strong> {{ userProfile.address.zip }}</p>
             <p v-if="userProfile.address"><strong>Stadt</strong> {{ userProfile.address.city }}</p>
             <p v-if="userProfile.address"><strong>Land</strong> {{ userProfile.address.countryCode }}</p>
+          </div>
+          <div v-else>
+            <div class="editInputs">
+              <FloatLabel>
+                <InputText id="street" v-model="editedStreet" />
+                <label for="street">Straße</label>
+              </FloatLabel>
+              <FloatLabel>
+                <InputText id="zip" v-model="editedZip" />
+                <label for="zip">Postleitzahl</label>
+              </FloatLabel>
+              <FloatLabel>
+                <InputText id="city" v-model="editedCity" />
+                <label for="city">Stadt</label>
+              </FloatLabel>
+              <FloatLabel>
+                <InputText id="coutryCode" v-model="editedCountryCode" />
+                <label for="coutryCode">Länderkürzel</label>
+              </FloatLabel>
+            </div>
+
+          </div>
+        </div>
+      </template>
+    </Card>
+    <Card>
+      <template #content>
+        <div v-if="userProfile">
+          <div v-if="!editMode">
             <div class='buttons-container'>
               <Button icon="pi pi-user-edit" class='edit-button' @click="toggleEditMode" label="Bearbeiten" />
               <div class='delete Button'>
@@ -108,8 +174,7 @@ export default {
                 <Dialog v-model:visible="visible" maximizable modal header=" " :style="{ width: '50rem' }"
                   :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                   <p class="m-0">
-                    Möchtest du dein Konto wirklich löschen? Wenn das Konto gelöscht wird, dann werden alle Daten
-                    entfernt und sind nicht mehr wieder herstellbar.
+                    Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.
                   </p>
                   <Button icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount"
                     label="Konto wirklich löschen" />
@@ -120,42 +185,6 @@ export default {
             </div>
           </div>
           <div v-else>
-            <FloatLabel>
-              <InputText id="firstname" v-model="editedFirstName" />
-              <label for="firstname">Vorname</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="lastname" v-model="editedLastName" />
-              <label for="lastname">Nachname</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="businessPhoneNumber" v-model="editedBusinessPhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
-              <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="mobilePhoneNumber" v-model="editedMobilePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
-              <label for="mobilePhoneNumber">Handynummer</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="privatePhoneNumber" v-model="editedPrivatePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
-              <label for="privatePhoneNumber">Private Telefonnummer</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="street" v-model="editedStreet" />
-              <label for="street">Straße</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="zip" v-model="editedZip" />
-              <label for="zip">Postleitzahl</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="city" v-model="editedCity" />
-              <label for="city">Stadt</label>
-            </FloatLabel>
-            <FloatLabel>
-              <InputText id="coutryCode" v-model="editedCountryCode" />
-              <label for="coutryCode">Länderkürzel</label>
-            </FloatLabel>
             <Button type="button" label="Speichern" icon="pi pi-check" @click="saveProfile" />
             <Button icon="pi pi-times" class="cancelButton" severity="secondary" aria-label="Cancel"
               @click="toggleEditMode" label="Abbrechen" />
@@ -221,4 +250,19 @@ input {
   padding: 10px;
   font-size: 16px;
 }
+
+.editInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.editInputs label {
+  padding-left: 10px; /* Adjust this value to set the desired padding */
+}
+
+.title {
+  padding-bottom: 50px;
+}
+
 </style>
