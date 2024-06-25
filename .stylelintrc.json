@@ -13,6 +13,7 @@
     "number-max-precision": 5,
     "no-empty-source": null,
     "custom-property-pattern": null,
-    "at-rule-no-unknown": null
+    "at-rule-no-unknown": null,
+    "import-notation": "string"
   }
 }
