@@ -5,10 +5,12 @@ import UserService, { type User } from "@/services/UserService";
 import { defineComponent, ref } from "vue";
 
 
+
 export default {
   data() {
     return {
       userProfile: {} as User, // Das gesamte Benutzerprofil
+      editedUserProfile: {} as User,
       editedFirstName: "",
       editedBusinessPhoneNumber: "",
       editedLastName: "",
@@ -47,6 +49,7 @@ export default {
         const profile = await userService.getUser(); // Ruft das Benutzerprofil vom Server ab
         if (profile) {
           this.userProfile = profile; // Speichert das gesamte Benutzerprofil
+          this.editedUserProfile = {...profile};
         }
       } catch (error) {
         console.error("Das Benutzerprofil konnte nicht gefunden werden", error);
@@ -55,30 +58,34 @@ export default {
     toggleEditMode() {
       this.editMode = !this.editMode;
     },
+    discardChanges(){
+      this.editedUserProfile = {...this.userProfile};
+      this.toggleEditMode();
+    },
     async saveProfile() {
       try {
         const userService = new UserService();
         const address = {
-          street: this.editedStreet? this.editedStreet: this.userProfile.address.street,
-          city: this.editedCity? this.editedCity: this.userProfile.address.city,
-          zip: this.editedZip? this.editedZip: this.userProfile.address.zip,
-          province: this.editedProvince? this.editedProvince: this.userProfile.address.province,
-          countryCode: this.editedCountryCode? this.editedCountryCode: this.userProfile.address.countryCode,
+          street: this.editedStreet ? this.editedStreet : this.userProfile.address.street,
+          city: this.editedCity ? this.editedCity : this.userProfile.address.city,
+          zip: this.editedZip ? this.editedZip : this.userProfile.address.zip,
+          province: this.editedProvince ? this.editedProvince : this.userProfile.address.province,
+          countryCode: this.editedCountryCode ? this.editedCountryCode : this.userProfile.address.countryCode,
         }
         const user = {
           id: this.userProfile.id,
-          address: address, 
-          firstName: this.editedFirstName? this.editedFirstName: this.userProfile.firstName,
-          businessPhoneNumber: this.editedBusinessPhoneNumber? this.editedBusinessPhoneNumber: this.userProfile.businessPhoneNumber, 
-          lastName: this.editedLastName? this.editedLastName: this.userProfile.lastName, 
-          mobilePhoneNumber: this.editedMobilePhoneNumber? this.editedMobilePhoneNumber: this.userProfile.mobilePhoneNumber,
-          privatePhoneNumber: this.editedPrivatePhoneNumber? this.editedPrivatePhoneNumber: this.userProfile.privatePhoneNumber
+          address: address,
+          firstName: this.editedUserProfile.firstName ? this.editedUserProfile.firstName : this.userProfile.firstName,
+          businessPhoneNumber: this.editedBusinessPhoneNumber ? this.editedBusinessPhoneNumber : this.userProfile.businessPhoneNumber,
+          lastName: this.editedLastName ? this.editedLastName : this.userProfile.lastName,
+          mobilePhoneNumber: this.editedMobilePhoneNumber ? this.editedMobilePhoneNumber : this.userProfile.mobilePhoneNumber,
+          privatePhoneNumber: this.editedPrivatePhoneNumber ? this.editedPrivatePhoneNumber : this.userProfile.privatePhoneNumber
         }
         const updatedUser = await userService.updateUser(user);
         updatedUser ? this.userProfile = updatedUser : null;
         this.toggleEditMode();
-      } catch (error) {
-        console.error("Das Benutzerprofil konnte nicht geupdated werden!", error);
+      } catch (e) {
+        console.error("Das Benutzerprofil konnte nicht geupdated werden!", e);
       }
     },
     logout(): void {
@@ -97,131 +104,135 @@ export default {
 
 <template>
   <div class="grid">
-    <h1>Account Settings for {{ userProfile.email }}</h1>
+    <h1>Mein Benutzerprofil</h1>
     <div class="cardContainer">
       <Card>
         <template #title>
-        <h4>Meine Daten</h4>
-      </template>
-      <template #content>
-        <div v-if="userProfile">
-          <div v-if="!editMode">
-            <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }} {{ userProfile.lastName }}</p>
-            <p v-if="userProfile.businessPhoneNumber"><strong>Geschäftliche Telefonnummer:</strong> {{ userProfile.businessPhoneNumber }}</p>
-            <p v-if="userProfile.mobilePhoneNumber"><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}</p>
-            <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong> {{ userProfile.privatePhoneNumber }}</p>
-            <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
-            <p v-if="userProfile.registeredDate"><strong>Registered Date:</strong> {{ userProfile.registeredDate }}</p>
-            <p v-if="userProfile.lastLoginDate"><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
-          </div>
-          <div v-else>
-            <div class="editInputs">
-              <FloatLabel>
-                <InputText id="firstname" v-model="editedFirstName" />
-                <label for="firstname">Vorname</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText id="lastname" v-model="editedLastName" />
-                <label for="lastname">Nachname</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText id="businessPhoneNumber" v-model="editedBusinessPhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
-                <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText id="mobilePhoneNumber" v-model="editedMobilePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
-                <label for="mobilePhoneNumber">Handynummer</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText id="privatePhoneNumber" v-model="editedPrivatePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
-                <label for="privatePhoneNumber">Private Telefonnummer</label>
-              </FloatLabel>
+          <h4>Meine Daten</h4>
+        </template>
+        <template #content>
+          <div v-if="userProfile">
+            <div v-if="!editMode">
+              <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }}
+                {{ userProfile.lastName }}</p>
+              <p v-if="userProfile.businessPhoneNumber"><strong>Geschäftliche Telefonnummer:</strong> {{
+                userProfile.businessPhoneNumber }}</p>
+              <p v-if="userProfile.mobilePhoneNumber"><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}
+              </p>
+              <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong> {{
+                userProfile.privatePhoneNumber }}</p>
+              <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
+              <p v-if="userProfile.registeredDate"><strong>Registered Date:</strong> {{ userProfile.registeredDate }}
+              </p>
+              <p v-if="userProfile.lastLoginDate"><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
             </div>
-          </div>
-        </div>
-      </template>
-    </Card>
-    <Card>
-      <template #title>
-        <h4>Meine Adresse</h4>
-      </template>
-      <template #content>
-        <div v-if="userProfile">
-          <div v-if="!editMode">
-            <p v-if="userProfile.address?.street"><strong>Straße:</strong> {{ userProfile.address.street }}</p>
-            <p v-if="userProfile.address?.zip"><strong>Postleitzahl:</strong> {{ userProfile.address.zip }}</p>
-            <p v-if="userProfile.address?.city"><strong>Stadt:</strong> {{ userProfile.address.city }}</p>
-            <p v-if="userProfile.address?.countryCode"><strong>Land:</strong> {{ userProfile.address.countryCode }}</p>
-          </div>
-          <div v-else>
-            <div class="editInputs">
-              <FloatLabel>
-                <InputText id="street" v-model="editedStreet" />
-                <label for="street">Straße</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText id="zip" v-model="editedZip" />
-                <label for="zip">Postleitzahl</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText id="city" v-model="editedCity" class="countryCode"/>
-                <label for="city">Stadt</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText id="province" v-model="editedProvince" />
-                <label for="province">Bundesland</label>
-              </FloatLabel>
-              <div class="country">
-                <select id="countryCode" v-model="editedCountryCode" class="selectCountry">
-                  <option disabled value="">Land</option>
-                  <option v-for="country in countries" :key="country.code" :value="country.code">
-                    {{ country.name }}
-                  </option>
-                </select>
+            <div v-else>
+              <div class="editInputs">
                 <FloatLabel>
-                  <InputText id="countryCodeInput" v-model="editedCountryCode" />
-                  <label for="countryCodeInput">Länderkürzel</label>
+                  <InputText id="firstname" v-model="editedUserProfile.firstName" />
+                  <label for="firstname">Vorname</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <InputText id="lastname" v-model="editedLastName" />
+                  <label for="lastname">Nachname</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <InputText id="businessPhoneNumber" v-model="userProfile.businessPhoneNumber"
+                    pattern="^\+[1-9]\d{4,14}$" />
+                  {{ userProfile.businessPhoneNumber }}
+                  <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <InputText id="mobilePhoneNumber" v-model="editedMobilePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                  <label for="mobilePhoneNumber">Handynummer</label>
+                </FloatLabel>
+                <FloatLabel>
+                  {{ userProfile.privatePhoneNumber }}
+                  <InputText id="privatePhoneNumber" v-model="editedPrivatePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                  <label for="privatePhoneNumber">Private Telefonnummer</label>
                 </FloatLabel>
               </div>
             </div>
           </div>
-        </div>
-      </template>
-    </Card>
-    </div>
-
-    <Card>
-      <template #content>
-        <div v-if="userProfile">
-          <div v-if="!editMode">
-            <div class='buttons-container'>
-              <Button type="button" icon="pi pi-user-edit" class='edit-button' @click="toggleEditMode" label="Bearbeiten" />
-              <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" class='edit-button'
-                  label="Konto löschen" @click="visible = true" />
+        </template>
+      </Card>
+      <Card>
+        <template #title>
+          <h4>Meine Adresse</h4>
+        </template>
+        <template #content>
+          <div v-if="userProfile">
+            <div v-if="!editMode">
+              <p v-if="userProfile.address?.street"><strong>Straße:</strong> {{ userProfile.address.street }}</p>
+              <p v-if="userProfile.address?.zip"><strong>Postleitzahl:</strong> {{ userProfile.address.zip }}</p>
+              <p v-if="userProfile.address?.city"><strong>Stadt:</strong> {{ userProfile.address.city }}</p>
+              <p v-if="userProfile.address?.countryCode"><strong>Land:</strong> {{ userProfile.address.countryCode }}
+              </p>
             </div>
-              <div class='delete Button'>
-                <Dialog v-model:visible="visible" maximizable modal header=" " :style="{ width: '50rem' }"
-                  :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-                  <p>Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.</p>
-                  <div class='buttons-container'>
-                    <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount"
-                    label="Konto wirklich löschen" class='delete-button' />
-                  <Button type="button" icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
-                    @click="visible = false" label="Abbrechen" />
-                  </div>
-                </Dialog>
+            <div v-else>
+              <div class="editInputs">
+                <FloatLabel>
+                  <InputText id="street" v-model="editedStreet" />
+                  <label for="street">Straße</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <InputText id="zip" v-model="editedZip" />
+                  <label for="zip">Postleitzahl</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <InputText id="city" v-model="editedCity" class="countryCode" />
+                  <label for="city">Stadt</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <InputText id="province" v-model="editedProvince" />
+                  <label for="province">Bundesland</label>
+                </FloatLabel>
+                <div class="country">
+                  <select id="countryCode" v-model="editedCountryCode" class="selectCountry">
+                    <option disabled value="">Land</option>
+                    <option v-for="country in countries" :key="country.code" :value="country.code">
+                      {{ country.name }}
+                    </option>
+                  </select>
+                  <FloatLabel>
+                    <InputText id="countryCodeInput" v-model="editedCountryCode" />
+                    <label for="countryCodeInput">Länderkürzel</label>
+                  </FloatLabel>
+                </div>
               </div>
-          </div>
-          <div v-else>
-            <div class='buttons-container'>
-              <Button type="button" label="Speichern" icon="pi pi-check" @click="saveProfile" class='save-button' />
-              <Button icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
-              @click="toggleEditMode" label="Abbrechen" />
             </div>
           </div>
+        </template>
+      </Card>
+    </div>
+    <div v-if="userProfile">
+      <div v-if="!editMode">
+        <div class='buttons-container'>
+          <Button type="button" icon="pi pi-user-edit" class='edit-button' @click="toggleEditMode" label="Bearbeiten" />
+          <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" class='edit-button'
+            label="Konto löschen" @click="visible = true" />
         </div>
-      </template>
-    </Card>
+        <div class='delete Button'>
+          <Dialog v-model:visible="visible" maximizable modal header=" " :style="{ width: '50rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <p>Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.</p>
+            <div class='buttons-container'>
+              <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount"
+                label="Konto wirklich löschen" class='delete-button' />
+              <Button type="button" icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
+                @click="visible = false" label="Abbrechen" />
+            </div>
+          </Dialog>
+        </div>
+      </div>
+      <div v-else>
+        <div class='buttons-container'>
+          <Button type="button" label="Speichern" icon="pi pi-check" @click="saveProfile" class='save-button' />
+          <Button icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
+            @click="toggleEditMode" label="Abbrechen" />
+        </div>
+      </div>
+    </div>
 
   </div>
   <!--Modal
@@ -266,6 +277,12 @@ export default {
 
 @media (max-width: 768px) {
   .cardContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .buttons-container {
     grid-template-columns: 1fr;
   }
 }
@@ -315,29 +332,27 @@ input:focus {
 }
 
 .buttons-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
   justify-content: center;
   gap: 20px;
-  padding: 20px 0; /* Adjust padding as necessary */
-}
-
-.edit-button, .delete-button, .cancel-button, .save-button {
-  flex: 1;
 }
 
 .selectCountry {
   margin-left: 10px;
   box-sizing: border-box;
-  -webkit-appearance: none; /* Entfernt das native Dropdown-Styling in WebKit-Browsern */
-  -moz-appearance: none; /* Entfernt das native Dropdown-Styling in Firefox */
-  appearance: none; /* Entfernt das native Dropdown-Styling in allen Browsern */
+  -webkit-appearance: none;
+  /* Entfernt das native Dropdown-Styling in WebKit-Browsern */
+  -moz-appearance: none;
+  /* Entfernt das native Dropdown-Styling in Firefox */
+  appearance: none;
+  /* Entfernt das native Dropdown-Styling in allen Browsern */
   background: url('data:image/svg+xml;utf8,<svg fill="%23999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
   background-color: white;
   background-size: 12px 12px;
 }
 
 .countryCode {
-  width:fit-content;
+  width: fit-content;
 }
-
 </style>
