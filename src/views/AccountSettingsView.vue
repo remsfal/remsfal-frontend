@@ -2,6 +2,16 @@
 import { useUserSessionStore } from "@/stores/UserSession";
 import UserService, { type User } from "@/services/UserService";
 //import Modal from "@/components/LeoModal.vue";
+import { defineComponent, ref } from "vue";
+
+
+const countrys = ref([
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+]);
 
 export default {
   data() {
@@ -18,7 +28,20 @@ export default {
       editedProvince: "",
       editedCountryCode: "",
       editMode: false, // Modus für die Bearbeitung der Benutzerdaten
-      visible: false // Sichtbarkeit des Dialogs für Konto löschen
+      visible: false, // Sichtbarkeit des Dialogs für Konto löschen
+      countries: [
+        { name: 'Australia', code: 'AU' },
+        { name: 'Brazil', code: 'BR' },
+        { name: 'China', code: 'CN' },
+        { name: 'Egypt', code: 'EG' },
+        { name: 'France', code: 'FR' },
+        { name: 'Germany', code: 'DE' },
+        { name: 'India', code: 'IN' },
+        { name: 'Japan', code: 'JP' },
+        { name: 'Spain', code: 'ES' },
+        { name: 'United States', code: 'US' }
+      ],
+      selectedCountry: null,
     };
   },
   async mounted() {
@@ -150,15 +173,31 @@ export default {
                 <label for="zip">Postleitzahl</label>
               </FloatLabel>
               <FloatLabel>
-                <InputText id="city" v-model="editedCity" />
+                <InputText id="city" v-model="editedCity" class="countryCode"/>
                 <label for="city">Stadt</label>
               </FloatLabel>
-              <FloatLabel>
-                <InputText id="coutryCode" v-model="editedCountryCode" />
-                <label for="coutryCode">Länderkürzel</label>
-              </FloatLabel>
+              <div class="country">
+                <FloatLabel>
+                  <select id="countryCode" v-model="editedCountryCode" class="selectCountry">
+                    <option value="" disabled selected hidden>Land</option>
+                    <option value="DE">Deutschland</option>
+                    <option value="FR">Frankreich</option>
+                    <option value="IT">Italien</option>
+                    <option value="ES">Spanien</option>
+                    <option value="GB">Vereinigtes Königreich</option>
+                    <option value="US">Vereinigte Staaten</option>
+                    <option value="CA">Kanada</option>
+                    <option value="AU">Australien</option>
+                    <option value="JP">Japan</option>
+                    <option value="CN">China</option>
+                  </select>
+                </FloatLabel>
+                <FloatLabel>
+                  <InputText id="countryCodeInput" v-model="editedCountryCode" />
+                  <label for="countryCodeInput">Länderkürzel</label>
+                </FloatLabel>
+              </div>
             </div>
-
           </div>
         </div>
       </template>
@@ -232,6 +271,13 @@ export default {
   gap: 20px;
 }
 
+.country {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
 @media (max-width: 768px) {
   .cardContainer {
     grid-template-columns: 1fr;
@@ -252,6 +298,22 @@ input {
   margin-left: 10px;
 }
 
+input,
+.selectCountry {
+  padding: 6px;
+  font-size: 16px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.selectCountry:focus,
+input:focus {
+  border-color: #80bdff;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
 .editInputs {
   display: flex;
   flex-direction: column;
@@ -259,7 +321,7 @@ input {
 }
 
 .editInputs label {
-  padding-left: 10px; /* Adjust this value to set the desired padding */
+  padding-left: 10px;
 }
 
 .title {
@@ -275,6 +337,21 @@ input {
 
 .edit-button, .delete-button, .cancel-button, .save-button {
   flex: 1;
+}
+
+.selectCountry {
+  margin-left: 10px;
+  box-sizing: border-box;
+  -webkit-appearance: none; /* Entfernt das native Dropdown-Styling in WebKit-Browsern */
+  -moz-appearance: none; /* Entfernt das native Dropdown-Styling in Firefox */
+  appearance: none; /* Entfernt das native Dropdown-Styling in allen Browsern */
+  background: url('data:image/svg+xml;utf8,<svg fill="%23999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+  background-color: white;
+  background-size: 12px 12px;
+}
+
+.countryCode {
+  width:fit-content;
 }
 
 </style>
