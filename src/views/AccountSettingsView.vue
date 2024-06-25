@@ -5,14 +5,6 @@ import UserService, { type User } from "@/services/UserService";
 import { defineComponent, ref } from "vue";
 
 
-const countrys = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-]);
-
 export default {
   data() {
     return {
@@ -41,7 +33,6 @@ export default {
         { name: 'Spain', code: 'ES' },
         { name: 'United States', code: 'US' }
       ],
-      selectedCountry: null,
     };
   },
   async mounted() {
@@ -115,13 +106,13 @@ export default {
       <template #content>
         <div v-if="userProfile">
           <div v-if="!editMode">
-            <p><strong>Vorname:</strong> {{ userProfile.firstName }} {{ userProfile.lastName }}</p>
-            <p><strong>Geschäftliche Telefonnummer:</strong> {{ userProfile.businessPhoneNumber }}</p>
-            <p><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}</p>
-            <p><strong>Private Telefonnummer:</strong> {{ userProfile.privatePhoneNumber }}</p>
-            <p><strong>Email:</strong> {{ userProfile.email }}</p>
-            <p><strong>Registered Date:</strong> {{ userProfile.registeredDate }}</p>
-            <p><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
+            <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }} {{ userProfile.lastName }}</p>
+            <p v-if="userProfile.businessPhoneNumber"><strong>Geschäftliche Telefonnummer:</strong> {{ userProfile.businessPhoneNumber }}</p>
+            <p v-if="userProfile.mobilePhoneNumber"><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}</p>
+            <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong> {{ userProfile.privatePhoneNumber }}</p>
+            <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
+            <p v-if="userProfile.registeredDate"><strong>Registered Date:</strong> {{ userProfile.registeredDate }}</p>
+            <p v-if="userProfile.lastLoginDate"><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
           </div>
           <div v-else>
             <div class="editInputs">
@@ -157,10 +148,10 @@ export default {
       <template #content>
         <div v-if="userProfile">
           <div v-if="!editMode">
-            <p v-if="userProfile.address"><strong>Straße</strong> {{ userProfile.address.street }}</p>
-            <p v-if="userProfile.address"><strong>Postleitzahl</strong> {{ userProfile.address.zip }}</p>
-            <p v-if="userProfile.address"><strong>Stadt</strong> {{ userProfile.address.city }}</p>
-            <p v-if="userProfile.address"><strong>Land</strong> {{ userProfile.address.countryCode }}</p>
+            <p v-if="userProfile.address?.street"><strong>Straße:</strong> {{ userProfile.address.street }}</p>
+            <p v-if="userProfile.address?.zip"><strong>Postleitzahl:</strong> {{ userProfile.address.zip }}</p>
+            <p v-if="userProfile.address?.city"><strong>Stadt:</strong> {{ userProfile.address.city }}</p>
+            <p v-if="userProfile.address?.countryCode"><strong>Land:</strong> {{ userProfile.address.countryCode }}</p>
           </div>
           <div v-else>
             <div class="editInputs">
@@ -176,22 +167,17 @@ export default {
                 <InputText id="city" v-model="editedCity" class="countryCode"/>
                 <label for="city">Stadt</label>
               </FloatLabel>
+              <FloatLabel>
+                <InputText id="province" v-model="editedProvince" />
+                <label for="province">Bundesland</label>
+              </FloatLabel>
               <div class="country">
-                <FloatLabel>
-                  <select id="countryCode" v-model="editedCountryCode" class="selectCountry">
-                    <option value="" disabled selected hidden>Land</option>
-                    <option value="DE">Deutschland</option>
-                    <option value="FR">Frankreich</option>
-                    <option value="IT">Italien</option>
-                    <option value="ES">Spanien</option>
-                    <option value="GB">Vereinigtes Königreich</option>
-                    <option value="US">Vereinigte Staaten</option>
-                    <option value="CA">Kanada</option>
-                    <option value="AU">Australien</option>
-                    <option value="JP">Japan</option>
-                    <option value="CN">China</option>
-                  </select>
-                </FloatLabel>
+                <select id="countryCode" v-model="editedCountryCode" class="selectCountry">
+                  <option disabled value="">Land</option>
+                  <option v-for="country in countries" :key="country.code" :value="country.code">
+                    {{ country.name }}
+                  </option>
+                </select>
                 <FloatLabel>
                   <InputText id="countryCodeInput" v-model="editedCountryCode" />
                   <label for="countryCodeInput">Länderkürzel</label>
