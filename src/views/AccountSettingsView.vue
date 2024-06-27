@@ -113,17 +113,12 @@ export default {
         <template #content>
           <div v-if="userProfile">
             <div v-if="!editMode">
-              <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }}
-                {{ userProfile.lastName }}</p>
-              <p v-if="userProfile.businessPhoneNumber"><strong>Geschäftliche Telefonnummer:</strong> {{
-                userProfile.businessPhoneNumber }}</p>
-              <p v-if="userProfile.mobilePhoneNumber"><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}
-              </p>
-              <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong> {{
-                userProfile.privatePhoneNumber }}</p>
+              <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }}{{ userProfile.lastName }}</p>
+              <p v-if="userProfile.businessPhoneNumber"><strong>Geschäftliche Telefonnummer:</strong> {{userProfile.businessPhoneNumber }}</p>
+              <p v-if="userProfile.mobilePhoneNumber"><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}</p>
+              <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong> {{userProfile.privatePhoneNumber }}</p>
               <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
-              <p v-if="userProfile.registeredDate"><strong>Registered Date:</strong> {{ userProfile.registeredDate }}
-              </p>
+              <p v-if="userProfile.registeredDate"><strong>Registered Date:</strong> {{ userProfile.registeredDate }}</p>
               <p v-if="userProfile.lastLoginDate"><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
             </div>
             <div v-else>
@@ -133,22 +128,20 @@ export default {
                   <label for="firstname">Vorname</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="lastname" v-model="editedLastName" />
+                  <InputText id="lastname" v-model="editedUserProfile.lastName" />
                   <label for="lastname">Nachname</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="businessPhoneNumber" v-model="userProfile.businessPhoneNumber"
+                  <InputText id="businessPhoneNumber" v-model="editedUserProfile.businessPhoneNumber"
                     pattern="^\+[1-9]\d{4,14}$" />
-                  {{ userProfile.businessPhoneNumber }}
                   <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="mobilePhoneNumber" v-model="editedMobilePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                  <InputText id="mobilePhoneNumber" v-model="editedUserProfile.mobilePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
                   <label for="mobilePhoneNumber">Handynummer</label>
                 </FloatLabel>
                 <FloatLabel>
-                  {{ userProfile.privatePhoneNumber }}
-                  <InputText id="privatePhoneNumber" v-model="editedPrivatePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                  <InputText id="privatePhoneNumber" v-model="editedUserProfile.privatePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
                   <label for="privatePhoneNumber">Private Telefonnummer</label>
                 </FloatLabel>
               </div>
@@ -172,30 +165,30 @@ export default {
             <div v-else>
               <div class="editInputs">
                 <FloatLabel>
-                  <InputText id="street" v-model="editedStreet" />
+                  <InputText id="street" v-model="editedUserProfile.address.street" />
                   <label for="street">Straße</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="zip" v-model="editedZip" />
+                  <InputText id="zip" v-model="editedUserProfile.address.zip" />
                   <label for="zip">Postleitzahl</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="city" v-model="editedCity" class="countryCode" />
+                  <InputText id="city" v-model="editedUserProfile.address.city"/>
                   <label for="city">Stadt</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="province" v-model="editedProvince" />
+                  <InputText id="province" v-model="editedUserProfile.address.province" />
                   <label for="province">Bundesland</label>
                 </FloatLabel>
                 <div class="country">
-                  <select id="countryCode" v-model="editedCountryCode" class="selectCountry">
+                  <select id="countryCode" v-model="editedUserProfile.address.countryCode" class="selectCountry">
                     <option disabled value="">Land</option>
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                       {{ country.name }}
                     </option>
                   </select>
                   <FloatLabel>
-                    <InputText id="countryCodeInput" v-model="editedCountryCode" />
+                    <InputText id="countryCodeInput" v-model="editedUserProfile.address.countryCode" />
                     <label for="countryCodeInput">Länderkürzel</label>
                   </FloatLabel>
                 </div>
