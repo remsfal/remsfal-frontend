@@ -39,6 +39,12 @@ const onNewProjectClick = () => {
   router.push('/new-project');
 };
 
+const onHomeClick = () => {
+  topbarMenuActive.value = false;
+  projectStore.refreshProjectList()
+  router.push('/projects')
+}
+
 const onAccountSettingsClick = () => {
   topbarMenuActive.value = false;
   router.push('/account-settings');
