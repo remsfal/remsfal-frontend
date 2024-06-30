@@ -101,11 +101,12 @@ const isOutsideClicked = (event:Event) => {
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
+            <button v-if="sessionStore.user != null" @click="onHomeClick()" class="p-link layout-topbar-shortcut-button">
+              <i class="pi pi-home"></i>
+              <span>Projekte</span>
+            </button>
             <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
-                <button v-if="sessionStore.user != null" @click="router.push('/projects')" class="p-link layout-topbar-shortcut-button">
-                  <i class="pi pi-home"></i>
-                </button>
-                <Dropdown v-model="projectStore.selectedProject" :options="projectStore.projectList" @change="onProjectSelectionChange($event)" optionLabel="name" placeholder="Projekt wählen" />
+              <Dropdown v-model="projectStore.selectedProject" :options="projectStore.projectList" @change="onProjectSelectionChange($event)" optionLabel="name" placeholder="Projekt wählen" />
             </div>
             <button v-if="sessionStore.user != null" @click="onNewProjectClick()" class="p-link layout-topbar-shortcut-button">
                 <i class="pi pi-plus"></i>
