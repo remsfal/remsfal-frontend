@@ -49,8 +49,7 @@ export default defineComponent({
 
   data() {
     return {
-      projectTitle: "",
-      errorMessage: "Der Projekttitel darf nicht mehr als 250 Zeichen lang sein",
+      projectTitle: ""
     };
   },
   methods: {
@@ -107,7 +106,6 @@ export default defineComponent({
                 <InputText id="value" v-model="projectTitle" type="text" :class="{ 'p-invalid': errorMessage }" aria-describedby="text-error" />
                 <label for="value">Projekttitel</label>
             </span>
-          <small class="p-error" id="text-error">{{ errorMessage || '&nbsp;' }}</small>
           <Button type="submit" label="Erstellen" icon="pi pi-plus" iconPos="left"/>
           <Button
               @click="close"
