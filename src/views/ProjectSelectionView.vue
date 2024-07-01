@@ -1,9 +1,8 @@
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue';
+import { defineComponent, computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProjectStore } from '@/stores/ProjectStore';
-
-import ProjectService, {type Project} from "@/services/ProjectService"
+import ProjectService, { type Project } from "@/services/ProjectService";
 
 export default defineComponent({
   setup() {
@@ -11,32 +10,59 @@ export default defineComponent({
     const router = useRouter();
 
     const projectList = computed(() => {
-      const roles = {
+      const roles: Record<'PROPRIETOR' | 'MANAGER' | 'LESSOR', string> = {
         PROPRIETOR: "Eigentuemer",
         MANAGER: "Verwalter",
-        LESSOR: "Vermieter"
+        LESSOR: "Vermieter",
       };
 
-      return projectStore.projectList.map(project => ({
+      return projectStore.projectList.map((project) => ({
         ...project,
-        memberGerman: roles[project.memberRole]
+        memberGerman: roles[project.memberRole as 'PROPRIETOR' | 'MANAGER' | 'LESSOR'],
       }));
     });
 
     const onRowClick = (event: any) => {
       projectStore.setSelectedProject(event.data);
-      router.push({name: "ProjectDashboard", params: {projectId: projectStore.projectId}});
+      router.push({ name: "ProjectDashboard", params: { projectId: projectStore.projectId } });
     };
 
     const display = ref(false);
+    const projectTitle = ref("");
+    const errorMessage = ref("");
+    const maxLength = 100;
 
     const open = () => {
       display.value = true;
+      errorMessage.value = "";
+      projectTitle.value = "";
     };
 
     const close = () => {
       display.value = false;
     };
+
+    const createProject = () => {
+      const projectService = new ProjectService();
+
+      if (projectTitle.value.length > maxLength) {
+        errorMessage.value = `Der Projekttitel darf nicht mehr als ${maxLength} Zeichen lang sein`;
+        return;
+      }
+
+      projectService.createProject(projectTitle.value).then((newProject: Project) => {
+        console.info("new project has been created: ", newProject);
+        router.push({ name: "ProjectDashboard", params: { projectId: newProject.id } });
+      });
+    };
+
+    watch(projectTitle, (newVal) => {
+      if (newVal.length > maxLength) {
+        errorMessage.value = `Der Projekttitel darf nicht mehr als ${maxLength} Zeichen lang sein`;
+      } else {
+        errorMessage.value = "";
+      }
+    });
 
     return {
       projectList,
@@ -44,27 +70,10 @@ export default defineComponent({
       display,
       open,
       close,
+      projectTitle,
+      errorMessage,
+      createProject,
     };
-  },
-
-  data() {
-    return {
-      projectTitle: ""
-    };
-  },
-  methods: {
-    createProject() {
-      const projectService = new ProjectService();
-      const projectStore = useProjectStore();
-      // Now project_title will contain the value emitted from the pressedButton event
-      projectService
-          .createProject(this.projectTitle)
-          .then((newProject: Project) => {
-            console.info("new project has been created: ", newProject);
-            this.close()
-            projectStore.refreshProjectList()
-          })
-    }
   },
 });
 </script>
@@ -99,19 +108,20 @@ export default defineComponent({
           :style="{ width: '30vw' }"
           :modal="true"
       >
-        <form @submit.prevent="createProject" class="flex flex-column gap-2">
-            <span class="p-float-label">
-                <InputText id="value" v-model="projectTitle" type="text" :class="{ 'p-invalid': errorMessage }" aria-describedby="text-error" />
-                <label for="value">Projekttitel</label>
-            </span>
-          <Button type="submit" label="Erstellen" icon="pi pi-plus" iconPos="left"/>
-          <Button
-              @click="close"
-              type="reset"
-              label="Abbrechen"
-              icon="pi pi-times"
-              iconPos="left"
-          />
+        <form @submit.prevent="createProject" class="flex flex-column gap-2 w-23rem">
+          <span class="p-float-label">
+            <InputText
+                id="value"
+                v-model="projectTitle"
+                type="text"
+                :class="{ 'p-invalid': errorMessage }"
+                aria-describedby="text-error"
+            />
+            <label for="value">Projekttitel</label>
+          </span>
+          <small class="p-error" id="text-error">{{ errorMessage || "&nbsp;" }}</small>
+          <Button type="submit" label="Erstellen" icon="pi pi-plus" iconPos="left" />
+          <Button @click="close" type="reset" label="Abbrechen" icon="pi pi-times" iconPos="left" />
         </form>
       </Dialog>
     </div>
