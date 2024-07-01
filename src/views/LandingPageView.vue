@@ -6,7 +6,7 @@ export default {
     }
   },
   methods: {
-    login(route): void {
+    login(route: string): void {
       window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
     },
   }
