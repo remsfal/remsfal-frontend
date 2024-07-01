@@ -77,18 +77,16 @@ export default defineComponent({
         <DataTable
             :value="projectList"
             sortMode="single"
-            sortField="title"
-            :sortOrder="1"
             scrollable
-            scrollHeight="400px"
+            scrollHeight="500px"
             @row-click="onRowClick"
             :rowHover="true"
             :paginator="true"
             :rows="10"
         >
-          <Column field="name" header="Titel" style="min-width: 200px"></Column>
-          <Column field="id" header="Projekt-ID" style="min-width: 200px"></Column>
-          <Column field="memberGerman" header="Eigentümer Rolle" style="min-width: 200px"></Column>
+          <Column field="name" header="Titel" sortable style="min-width: 200px"></Column>
+          <Column field="id" header="Projekt-ID" sortable style="min-width: 200px"></Column>
+          <Column field="memberGerman" header="Eigentümer Rolle" sortable style="min-width: 200px"></Column>
         </DataTable>
       </div>
     </div>
