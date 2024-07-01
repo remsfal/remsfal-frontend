@@ -24,10 +24,8 @@ export default defineComponent({
     });
 
     const onRowClick = (event: any) => {
-      const projectId = event.data.id;
-      
       projectStore.setSelectedProject(event.data);
-      router.push(`/project/${projectId}`);
+      router.push({name: "ProjectDashboard", params: {projectId: projectStore.projectId}});
     };
 
     const display = ref(false);
