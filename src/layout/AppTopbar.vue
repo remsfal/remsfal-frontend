@@ -54,7 +54,7 @@ const logout = () => {
   window.location.pathname = "/api/v1/authentication/logout";
 };
 
-const login = (route) => {
+const login = (route: string) => {
   window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
 };
 
