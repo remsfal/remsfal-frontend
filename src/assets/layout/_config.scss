@@ -10,15 +10,12 @@
     top: 50%;
     right: 0;
     margin-top: -1.5rem;
-    border-top-left-radius: var(--border-radius);
-    border-bottom-left-radius: var(--border-radius);
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
     transition: background-color var(--transition-duration);
     overflow: hidden;
     cursor: pointer;
     z-index: 999;
-    box-shadow: -0.25rem 0 1rem rgba(0, 0, 0, 0.15);
+    box-shadow: -0.25rem 0 1rem rgb(0 0 0 / 0.15);
 
     i {
         font-size: 2rem;

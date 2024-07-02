@@ -61,6 +61,8 @@ jobs:
           wait-on-timeout: 180
       - name: Check style with ESLint (lint)
         run: npm run lint
+      - name: Check css with Stylelint (stylelint)
+        run: npm run stylelint
       - name: Save PR number to file for subsequently Sonar Analysis
         if: github.event_name == 'pull_request'
         env:
@@ -119,6 +121,8 @@ jobs:
           wait-on-timeout: 180
       - name: Check style with ESLint (lint)
         run: npm run lint
+      - name: Check css with Stylelint (stylelint)
+        run: npm run stylelint
   check-branches:
     name: "Check Pull Request Conditions"
     runs-on: ubuntu-latest

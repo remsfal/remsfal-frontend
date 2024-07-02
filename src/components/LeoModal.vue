@@ -125,6 +125,7 @@ if(hasInput.value && hasSelect.value){
 .root {
   position: relative;
 }
+
 .close {
   display: flex;
   cursor: pointer;
@@ -132,16 +133,18 @@ if(hasInput.value && hasSelect.value){
   align-items: end;
   align-self: flex-end;
 }
+
 .link {
   cursor: pointer;
   color: #007bff;
   text-decoration: underline;
 }
+
 .modal {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgb(0 0 0 / 0.3);
   width: 100%;
   height: 100%;
   display: flex;
@@ -149,6 +152,7 @@ if(hasInput.value && hasSelect.value){
   align-items: center;
   color: #495057;
 }
+
 .modal > div {
   width: 50%;
   height: 50%;
@@ -159,6 +163,7 @@ if(hasInput.value && hasSelect.value){
   flex-direction: column;
   align-items: center;
 }
+
 .modal > div > * {
   margin-bottom: 30px;
   text-align: center;
