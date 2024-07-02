@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
 import LegalNoticeView from "@/views/LegalNoticeView.vue";
 import ProjectLayout from '@/layout/ProjectLayout.vue';
@@ -34,24 +34,19 @@ const routes = [
             {
                 path: "/new-project",
                 name: "NewProject",
-                // route level code-splitting
-                // which is lazy-loaded when the route is visited.
                 component: () => import("@/views/NewProjectView.vue"),
             },
             {
                 path: "/account-settings",
                 name: "AccountSettings",
-                // route level code-splitting
-                // which is lazy-loaded when the route is visited.
                 component: () => import("@/views/AccountSettingsView.vue"),
             },
             {
                 path: "/account-contacts",
                 name: "AccountContacts",
-                // route level code-splitting
-                // which is lazy-loaded when the route is visited.
                 component: () => import("@/views/AccountContactsView.vue"),
-            }
+            },
+
         ]
     },
     {
@@ -63,9 +58,28 @@ const routes = [
                 name: 'ProjectDashboard',
                 props: true,
                 component: () => import('@/views/ProjectView.vue')
+            },
+            {
+                path: '/project/:projectId/tasks',
+                name: 'AllTasksOverview',
+                props: true,
+                component: () => import('@/views/TaskView.vue')
+            },
+            {
+                path: '/project/:projectId/tasks',
+                name: 'MyTasksOverview',
+                props: true,
+                component: () => import('@/views/TaskView.vue')
+            },
+            {
+                path: '/project/:projectId/tasks',
+                name: 'OpenTasksOverview',
+                props: true,
+                component: () => import('@/views/TaskView.vue')
             }
         ]
-    }
+    },
+
 ];
 
 const router = createRouter({

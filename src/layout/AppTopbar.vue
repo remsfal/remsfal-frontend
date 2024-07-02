@@ -39,6 +39,11 @@ const onNewProjectClick = () => {
   router.push('/new-project');
 };
 
+const onAllTasksClick = () => {
+  topbarMenuActive.value = false;
+  router.push({name: "AllTasksOverview", params: {projectId: projectStore.projectId}});
+};
+
 const onAccountSettingsClick = () => {
   topbarMenuActive.value = false;
   router.push('/account-settings');
