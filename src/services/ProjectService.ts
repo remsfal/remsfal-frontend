@@ -21,9 +21,9 @@ export interface ProjectItem {
 export default class ProjectService {
     private readonly url: string = "/api/v1/projects";
 
-    getProjects(): Promise<ProjectList> {
+    getProjects(limit: number = 10, offset: number = 0): Promise<ProjectList> {
         return axios
-            .get(`${this.url}`)
+            .get(`${this.url}?limit=${limit}&offset=${offset}`)
             .then((response) => {
                 const projectList: ProjectList = response.data;
                 console.log("GET projects:", projectList);
