@@ -14,17 +14,17 @@ export default {
 </script>
 
 <template>
-<h1 class="header-one">Herzlich Wilkommen bei <img src="@/assets/logo.png" alt="logo" /></h1>
+<h1 class="header-one">Herzlich Willkommen bei <img src="@/assets/logo.png" alt="logo" /></h1>
 <!-- Generated with https://developers.google.com/identity/branding-guidelines?hl=de -->
 <div class="widgets">
   <div class="info">
       <h2 class="header-two">Alles in einer Anwendung.</h2>
       <p>Mit remsfal können Sie Ihre Liegenschaften im Überblick behalten und Anliegen erfassen.
       Remsfal steht für REmote Management Services for connected FAciLities und bietet Ihnen eine Anwendung zum Überwachen, Steuern und Verwalten Ihrer Liegenschaften.
-      Es umfasst ein effektives Mängelmanagement, die Möglichkeit für eine Dokumentationsverwaltung und die Überwachung mit der Hilfe einer Fernzugriffstechnologie. <br>
+      Es umfasst ein effektives Mängelmanagement, die Möglichkeit zur Dokumentationsverwaltung und die Überwachung mithilfe einer Fernzugriffstechnologie. <br>
       Sie können sich über Ihr Google-Mail-Konto anmelden und Ihre Projekte anlegen.
       Mit der Anmeldung stimmen Sie den Nutzungs- und Datenschutzbedingungen zu. <br>
-      Mehr Informationen finden Sie auf der remsfal Website: <a href="https://remsfal.de/">remsfal.de</a>  </p>
+      Mehr Informationen finden Sie auf der remsfal-Website: <a href="https://remsfal.de/">remsfal.de</a>  </p>
       <button class="gsi-material-button" @click="login">
         <div class="gsi-material-button-state"></div>
         <div class="gsi-material-button-content-wrapper">
