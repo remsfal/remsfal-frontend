@@ -96,6 +96,20 @@ export default {
       const phonePattern = /^\+?[1-9]\d{1,14}$/;
       this.isPhoneValid = phonePattern.test(this.editedUserProfile.businessPhoneNumber);
     },
+    async getCity(){
+      const userService = new UserService();
+      const address = await userService.getCityFromZip(this.editedUserProfile.address.zip); 
+      try {
+        if (address){
+          this.editedUserProfile.address.city = address[0].city;
+          this.editedUserProfile.address.province = address[0].province;
+          this.editedUserProfile.address.countryCode = address[0].countryCode;
+        }
+      } catch (error) {
+        console.log(error);
+        alert('Please check your ZIP Code');
+      }
+    }
   }
 };
 </script>
@@ -168,7 +182,7 @@ export default {
                   <label for="street">Straße</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="zip" v-model="editedUserProfile.address.zip" />
+                  <InputText id="zip" @change="getCity" v-model="editedUserProfile.address.zip" />
                   <label for="zip">Postleitzahl</label>
                 </FloatLabel>
                 <FloatLabel>

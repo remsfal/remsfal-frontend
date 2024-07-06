@@ -1,6 +1,6 @@
 import axios from "axios";
 
-interface Adress {
+interface Address {
   street: string;
   city: string;
   zip: string;
@@ -12,7 +12,7 @@ export interface User {
   id: string;
   firstName: string;
   lastName: string;
-  address: Adress;
+  address: Address;
   mobilePhoneNumber: string;
   businessPhoneNumber: string;
   privatePhoneNumber: string;
@@ -31,6 +31,21 @@ export default class UserService {
         const user: User = response.data;
         console.log("GET user:", user);
         return user;
+      })
+      .catch((error) => {
+        console.error("GET user failed:", error);
+      });
+  }
+
+  getCityFromZip(zip: string): Promise<Address[] | void>{
+    return axios
+      .get(`/api/v1/address`, {
+        params : {'zip': zip}
+      })
+      .then((response) => {
+        const city: Address[] = response.data;
+        console.log("GET user:", city);
+        return city;
       })
       .catch((error) => {
         console.error("GET user failed:", error);
