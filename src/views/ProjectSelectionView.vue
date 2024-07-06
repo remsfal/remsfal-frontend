@@ -79,7 +79,7 @@ export default defineComponent({
           :style="{ width: '30vw' }"
           :modal="true"
       >
-        <div style="margin-top: 1.5em">
+        <div style="margin-top: 1.2em">
           <NewProjectForm @abort="close"></NewProjectForm>
         </div>
       </Dialog>
