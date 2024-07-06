@@ -44,7 +44,6 @@ export default {
 </script>
 
 <template>
-  <NewProjectComponent>
       <form
           @submit.prevent="createProject"
           class="flex flex-column gap-2 w-23rem"
@@ -76,5 +75,4 @@ export default {
             iconPos="left"
         />
       </form>
-  </NewProjectComponent>
 </template>

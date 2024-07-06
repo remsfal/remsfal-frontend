@@ -1,8 +1,7 @@
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from 'vue';
+import { defineComponent, computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProjectStore } from '@/stores/ProjectStore';
-import ProjectService, { type Project } from "@/services/ProjectService";
 import NewProjectForm from "@/components/NewProjectForm.vue";
 
 export default defineComponent({
@@ -33,8 +32,6 @@ export default defineComponent({
 
     const open = () => {
       display.value = true;
-      errorMessage.value = "";
-      projectTitle.value = "";
     };
 
     const close = () => {
