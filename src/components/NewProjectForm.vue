@@ -45,7 +45,6 @@ export default {
 
 <template>
   <NewProjectComponent>
-  <div class="card flex mt-5">
       <form
           @submit.prevent="createProject"
           class="flex flex-column gap-2 w-23rem"
@@ -77,6 +76,5 @@ export default {
             iconPos="left"
         />
       </form>
-  </div>
   </NewProjectComponent>
 </template>
