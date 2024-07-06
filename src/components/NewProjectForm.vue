@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import ProjectService, {type Project} from "@/services/ProjectService";
 
 export default defineComponent({
   data() {
@@ -11,9 +12,22 @@ export default defineComponent({
   },
   methods: {
     createProject() {
-      this.$emit('createProject', this.projectTitle);
+      const projectService = new ProjectService();
+
+      if (this.projectTitle.length > this.maxLength) return;
+
+      projectService
+          .createProject(this.projectTitle)
+          .then((newProject: Project) => {
+            console.info("new project has been created: ", newProject);
+            this.$router.push({
+              name: "ProjectDashboard",
+              params: { projectId: newProject.id },
+            });
+          });
     },
-    emitAbort() {
+    abort() {
+      this.$router.push({ name: "ProjectSelection" });
       this.$emit('abort');
     },
   },
@@ -51,7 +65,7 @@ export default defineComponent({
         iconPos="left"
     />
     <Button
-        @click="emitAbort"
+        @click="abort"
         type="reset"
         label="Abbrechen"
         icon="pi pi-times"
