@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import ProjectService, {type Project} from "@/services/ProjectService";
+import {useProjectStore} from "@/stores/ProjectStore";
 
 export default defineComponent({
   data() {
@@ -13,12 +14,14 @@ export default defineComponent({
   methods: {
     createProject() {
       const projectService = new ProjectService();
+      const projectStore = useProjectStore();
 
       if (this.projectTitle.length > this.maxLength) return;
 
       projectService
           .createProject(this.projectTitle)
           .then((newProject: Project) => {
+            projectStore.setSelectedProject(newProject);
             console.info("new project has been created: ", newProject);
             this.$router.push({
               name: "ProjectDashboard",
