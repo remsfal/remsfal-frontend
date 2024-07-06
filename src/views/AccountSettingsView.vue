@@ -11,16 +11,6 @@ export default {
     return {
       userProfile: {} as User, // Das gesamte Benutzerprofil
       editedUserProfile: {} as User,
-      editedFirstName: "",
-      editedBusinessPhoneNumber: "",
-      editedLastName: "",
-      editedMobilePhoneNumber: "",
-      editedPrivatePhoneNumber: "",
-      editedStreet: "",
-      editedCity: "",
-      editedZip: "",
-      editedProvince: "",
-      editedCountryCode: "",
       editMode: false, // Modus für die Bearbeitung der Benutzerdaten
       visible: false, // Sichtbarkeit des Dialogs für Konto löschen
       countries: [
@@ -35,6 +25,7 @@ export default {
         { name: 'Spain', code: 'ES' },
         { name: 'United States', code: 'US' }
       ],
+      isPhoneValid: true
     };
   },
   async mounted() {
@@ -56,6 +47,7 @@ export default {
       }
     },
     toggleEditMode() {
+      this.editMode? null: this.editedUserProfile = {...this.userProfile};
       this.editMode = !this.editMode;
     },
     discardChanges(){
@@ -63,29 +55,32 @@ export default {
       this.toggleEditMode();
     },
     async saveProfile() {
-      try {
+      if (this.isPhoneValid) {
+        try {
         const userService = new UserService();
         const address = {
-          street: this.editedStreet ? this.editedStreet : this.userProfile.address.street,
-          city: this.editedCity ? this.editedCity : this.userProfile.address.city,
-          zip: this.editedZip ? this.editedZip : this.userProfile.address.zip,
-          province: this.editedProvince ? this.editedProvince : this.userProfile.address.province,
-          countryCode: this.editedCountryCode ? this.editedCountryCode : this.userProfile.address.countryCode,
+          street: this.editedUserProfile.address.street ? this.editedUserProfile.address.street : this.userProfile.address.street,
+          city: this.editedUserProfile.address.city ? this.editedUserProfile.address.city : this.userProfile.address.city,
+          zip: this.editedUserProfile.address.zip ? this.editedUserProfile.address.zip : this.userProfile.address.zip,
+          province: this.editedUserProfile.address.province ? this.editedUserProfile.address.province : this.userProfile.address.province,
+          countryCode: this.editedUserProfile.address.countryCode ? this.editedUserProfile.address.countryCode : this.userProfile.address.countryCode,
         }
         const user = {
           id: this.userProfile.id,
           address: address,
           firstName: this.editedUserProfile.firstName ? this.editedUserProfile.firstName : this.userProfile.firstName,
-          businessPhoneNumber: this.editedBusinessPhoneNumber ? this.editedBusinessPhoneNumber : this.userProfile.businessPhoneNumber,
-          lastName: this.editedLastName ? this.editedLastName : this.userProfile.lastName,
-          mobilePhoneNumber: this.editedMobilePhoneNumber ? this.editedMobilePhoneNumber : this.userProfile.mobilePhoneNumber,
-          privatePhoneNumber: this.editedPrivatePhoneNumber ? this.editedPrivatePhoneNumber : this.userProfile.privatePhoneNumber
+          businessPhoneNumber: this.editedUserProfile.businessPhoneNumber ? this.editedUserProfile.businessPhoneNumber : this.userProfile.businessPhoneNumber,
+          lastName: this.editedUserProfile.lastName ? this.editedUserProfile.lastName : this.userProfile.lastName,
+          mobilePhoneNumber: this.editedUserProfile.mobilePhoneNumber ? this.editedUserProfile.mobilePhoneNumber : this.userProfile.mobilePhoneNumber,
+          privatePhoneNumber: this.editedUserProfile.privatePhoneNumber ? this.editedUserProfile.privatePhoneNumber : this.userProfile.privatePhoneNumber
         }
         const updatedUser = await userService.updateUser(user);
         updatedUser ? this.userProfile = updatedUser : null;
         this.toggleEditMode();
       } catch (e) {
         console.error("Das Benutzerprofil konnte nicht geupdated werden!", e);
+      }
+
       }
     },
     logout(): void {
@@ -96,6 +91,10 @@ export default {
       userService.deleteUser()
         .then(() => this.logout())
         .catch(() => console.error("Das Benutzerprofil konnte nicht gelöscht werden!"));
+    },
+    validatePhone() {
+      const phonePattern = /^\+?[1-9]\d{1,14}$/;
+      this.isPhoneValid = phonePattern.test(this.editedUserProfile.businessPhoneNumber);
     },
   }
 };
@@ -113,7 +112,7 @@ export default {
         <template #content>
           <div v-if="userProfile">
             <div v-if="!editMode">
-              <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }}{{ userProfile.lastName }}</p>
+              <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }} {{ userProfile.lastName }}</p>
               <p v-if="userProfile.businessPhoneNumber"><strong>Geschäftliche Telefonnummer:</strong> {{userProfile.businessPhoneNumber }}</p>
               <p v-if="userProfile.mobilePhoneNumber"><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}</p>
               <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong> {{userProfile.privatePhoneNumber }}</p>
@@ -133,7 +132,7 @@ export default {
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="businessPhoneNumber" v-model="editedUserProfile.businessPhoneNumber"
-                    pattern="^\+[1-9]\d{4,14}$" />
+                    pattern="^\+[1-9]\d{4,14}$"  @input="validatePhone" :class="{'is-invalid': !isPhoneValid}"/>
                   <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
                 </FloatLabel>
                 <FloatLabel>
@@ -347,5 +346,9 @@ input:focus {
 
 .countryCode {
   width: fit-content;
+}
+
+.is-invalid {
+  border: 2px solid red;
 }
 </style>
