@@ -1,11 +1,11 @@
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProjectStore } from '@/stores/ProjectStore';
 import NewProjectForm from "@/components/NewProjectForm.vue";
 import ProjectService from "@/services/ProjectService";
 
-interface lazyLoadEvent {
+interface LazyLoadEvent {
   first: number;
   rows: number;
 }
@@ -27,11 +27,10 @@ export default defineComponent({
     const projectService = new ProjectService();
 
     const totalRecords = ref(0);
-    const projects = ref();
     const first = ref(0);
     const lazyParams = ref<{ first: number; rows: number }>({ first: 0, rows: 10 });
 
-    const loadLazyData = (event?: lazyLoadEvent) => {
+    const loadLazyData = (event?: LazyLoadEvent) => {
       loading.value = true;
       if (event) {
         lazyParams.value = { ...lazyParams.value, first: event.first || first.value, rows: event.rows };
@@ -44,7 +43,7 @@ export default defineComponent({
       });
     };
 
-    const onPage = (event: lazyLoadEvent) => {
+    const onPage = (event: LazyLoadEvent) => {
       lazyParams.value = event;
       loadLazyData(event);
     };
@@ -69,6 +68,19 @@ export default defineComponent({
     const close = () => {
       display.value = false;
     };
+
+    const projects = computed(() => {
+      const roles = {
+        PROPRIETOR: "Eigentuemer",
+        MANAGER: "Verwalter",
+        LESSOR: "Vermieter"
+      };
+
+      return projectStore.projectList.map(project => ({
+        ...project,
+        memberGerman: roles[project.memberRole]
+      }));
+    });
 
     return {
       projects,
@@ -108,7 +120,7 @@ export default defineComponent({
         >
           <Column field="name" header="Titel" style="min-width: 200px"></Column>
           <Column field="id" header="Projekt-ID" style="min-width: 200px"></Column>
-          <Column field="memberRole" header="Eigentümer Rolle" style="min-width: 200px"></Column>
+          <Column field="memberGerman" header="Eigentümer Rolle" style="min-width: 200px"></Column>
         </DataTable>
       </div>
     </div>
