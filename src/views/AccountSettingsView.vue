@@ -54,7 +54,7 @@ export default {
       }
     },
     toggleEditMode() {
-      !this.editMode ? this.editedUserProfile = { ...this.userProfile }: null;
+      this.editedUserProfile = this.editMode ? this.editedUserProfile : { ...this.userProfile };
       this.editMode = !this.editMode;
     },
     discardChanges() {
@@ -82,7 +82,7 @@ export default {
             privatePhoneNumber: this.editedUserProfile.privatePhoneNumber ? this.editedUserProfile.privatePhoneNumber : this.userProfile.privatePhoneNumber
           }
           const updatedUser = await userService.updateUser(user);
-          updatedUser ? this.userProfile = updatedUser : null;
+          this.userProfile = updatedUser ? updatedUser : this.userProfile;
           this.toggleEditMode();
         } catch (e) {
           console.error("Das Benutzerprofil konnte nicht geupdated werden!", e);
