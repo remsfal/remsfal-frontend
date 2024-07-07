@@ -195,7 +195,7 @@ export default {
               <div class="editInputs">
                 <FloatLabel>
                   <InputText id="street" v-model="editedUserProfile.address.street" />
-                  <label for="street">Straße</label>
+                  <label for="street">Straße und Hausnummer</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="zip" @change="getCity" v-model="editedUserProfile.address.zip" />
@@ -229,33 +229,27 @@ export default {
     </div>
     <div v-if="userProfile">
       <div v-if="!editMode">
-        <div class='buttons-container'>
+        <div class='buttons-container centered-buttons'>
           <Button type="button" icon="pi pi-user-edit" class='edit-button' @click="toggleEditMode" label="Bearbeiten" />
-          <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" class='edit-button'
-            label="Konto löschen" @click="visible = true" />
+          <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" class='edit-button' label="Konto löschen" @click="visible = true" />
         </div>
         <div class='delete Button'>
-          <Dialog v-model:visible="visible" maximizable modal header=" " :style="{ width: '50rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+          <Dialog v-model:visible="visible" maximizable modal header=" " :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <p>Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.</p>
-            <div class='buttons-container'>
-              <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount"
-                label="Konto wirklich löschen" class='delete-button' />
-              <Button type="button" icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
-                @click="visible = false" label="Abbrechen" />
+            <div class='buttons-container centered-buttons'>
+              <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount" label="Konto wirklich löschen" class='delete-button' />
+              <Button type="button" icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel" @click="visible = false" label="Abbrechen" />
             </div>
           </Dialog>
         </div>
       </div>
       <div v-else>
-        <div class='buttons-container'>
+        <div class='buttons-container centered-buttons'>
           <Button type="button" label="Speichern" icon="pi pi-check" @click="saveProfile" class='save-button' />
-          <Button icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
-            @click="toggleEditMode" label="Abbrechen" />
+          <Button icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel" @click="toggleEditMode" label="Abbrechen" />
         </div>
       </div>
     </div>
-
   </div>
   <!--Modal
           :isOpen="showModal"
@@ -381,4 +375,10 @@ input:focus {
 .is-invalid {
   border: 2px solid red;
 }
+
+.centered-buttons {
+  display: flex;
+  justify-content: center;
+}
+
 </style>
