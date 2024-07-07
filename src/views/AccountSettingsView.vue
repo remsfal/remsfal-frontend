@@ -3,7 +3,7 @@ import { useUserSessionStore } from "@/stores/UserSession";
 import UserService, { type User } from "@/services/UserService";
 //import Modal from "@/components/LeoModal.vue";
 
-interface phoneValid {
+interface PhoneValid {
   businessPhoneNumber: boolean,
   mobilePhoneNumber: boolean,
   privatePhoneNumber: boolean
@@ -32,7 +32,7 @@ export default {
         businessPhoneNumber: true,
         mobilePhoneNumber: true,
         privatePhoneNumber: true
-      } as phoneValid
+      } as PhoneValid
     };
   },
   async mounted() {
@@ -102,7 +102,7 @@ export default {
     },
     validatePhone(phoneCategory: string) {
       const phonePattern = /^\+?[1-9]\d{1,14}$/;
-      this.isPhoneValid[phoneCategory as keyof phoneValid] = phonePattern.test(this.editedUserProfile[phoneCategory as keyof phoneValid]);
+      this.isPhoneValid[phoneCategory as keyof PhoneValid] = phonePattern.test(this.editedUserProfile[phoneCategory as keyof PhoneValid]);
     },
     async getCity() {
       const userService = new UserService();
