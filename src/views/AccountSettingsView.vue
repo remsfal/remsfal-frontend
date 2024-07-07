@@ -2,9 +2,12 @@
 import { useUserSessionStore } from "@/stores/UserSession";
 import UserService, { type User } from "@/services/UserService";
 //import Modal from "@/components/LeoModal.vue";
-import { defineComponent, ref } from "vue";
 
-
+interface phoneValid {
+  businessPhoneNumber: boolean,
+  mobilePhoneNumber: boolean,
+  privatePhoneNumber: boolean
+}
 
 export default {
   data() {
@@ -25,7 +28,11 @@ export default {
         { name: 'Spain', code: 'ES' },
         { name: 'United States', code: 'US' }
       ],
-      isPhoneValid: true
+      isPhoneValid: {
+        businessPhoneNumber: true,
+        mobilePhoneNumber: true,
+        privatePhoneNumber: true
+      } as phoneValid
     };
   },
   async mounted() {
@@ -40,47 +47,48 @@ export default {
         const profile = await userService.getUser(); // Ruft das Benutzerprofil vom Server ab
         if (profile) {
           this.userProfile = profile; // Speichert das gesamte Benutzerprofil
-          this.editedUserProfile = {...profile};
+          this.editedUserProfile = { ...profile };
         }
       } catch (error) {
         console.error("Das Benutzerprofil konnte nicht gefunden werden", error);
       }
     },
     toggleEditMode() {
-      this.editMode? null: this.editedUserProfile = {...this.userProfile};
+      this.editMode ? null : this.editedUserProfile = { ...this.userProfile };
       this.editMode = !this.editMode;
     },
-    discardChanges(){
-      this.editedUserProfile = {...this.userProfile};
+    discardChanges() {
+      this.editedUserProfile = { ...this.userProfile };
       this.toggleEditMode();
     },
     async saveProfile() {
-      if (this.isPhoneValid) {
+      if (Object.values(this.isPhoneValid).every(Boolean)) {
         try {
-        const userService = new UserService();
-        const address = {
-          street: this.editedUserProfile.address.street ? this.editedUserProfile.address.street : this.userProfile.address.street,
-          city: this.editedUserProfile.address.city ? this.editedUserProfile.address.city : this.userProfile.address.city,
-          zip: this.editedUserProfile.address.zip ? this.editedUserProfile.address.zip : this.userProfile.address.zip,
-          province: this.editedUserProfile.address.province ? this.editedUserProfile.address.province : this.userProfile.address.province,
-          countryCode: this.editedUserProfile.address.countryCode ? this.editedUserProfile.address.countryCode : this.userProfile.address.countryCode,
+          const userService = new UserService();
+          const address = {
+            street: this.editedUserProfile.address.street ? this.editedUserProfile.address.street : this.userProfile.address.street,
+            city: this.editedUserProfile.address.city ? this.editedUserProfile.address.city : this.userProfile.address.city,
+            zip: this.editedUserProfile.address.zip ? this.editedUserProfile.address.zip : this.userProfile.address.zip,
+            province: this.editedUserProfile.address.province ? this.editedUserProfile.address.province : this.userProfile.address.province,
+            countryCode: this.editedUserProfile.address.countryCode ? this.editedUserProfile.address.countryCode : this.userProfile.address.countryCode,
+          }
+          const user = {
+            id: this.userProfile.id,
+            address: address,
+            firstName: this.editedUserProfile.firstName ? this.editedUserProfile.firstName : this.userProfile.firstName,
+            businessPhoneNumber: this.editedUserProfile.businessPhoneNumber ? this.editedUserProfile.businessPhoneNumber : this.userProfile.businessPhoneNumber,
+            lastName: this.editedUserProfile.lastName ? this.editedUserProfile.lastName : this.userProfile.lastName,
+            mobilePhoneNumber: this.editedUserProfile.mobilePhoneNumber ? this.editedUserProfile.mobilePhoneNumber : this.userProfile.mobilePhoneNumber,
+            privatePhoneNumber: this.editedUserProfile.privatePhoneNumber ? this.editedUserProfile.privatePhoneNumber : this.userProfile.privatePhoneNumber
+          }
+          const updatedUser = await userService.updateUser(user);
+          updatedUser ? this.userProfile = updatedUser : null;
+          this.toggleEditMode();
+        } catch (e) {
+          console.error("Das Benutzerprofil konnte nicht geupdated werden!", e);
         }
-        const user = {
-          id: this.userProfile.id,
-          address: address,
-          firstName: this.editedUserProfile.firstName ? this.editedUserProfile.firstName : this.userProfile.firstName,
-          businessPhoneNumber: this.editedUserProfile.businessPhoneNumber ? this.editedUserProfile.businessPhoneNumber : this.userProfile.businessPhoneNumber,
-          lastName: this.editedUserProfile.lastName ? this.editedUserProfile.lastName : this.userProfile.lastName,
-          mobilePhoneNumber: this.editedUserProfile.mobilePhoneNumber ? this.editedUserProfile.mobilePhoneNumber : this.userProfile.mobilePhoneNumber,
-          privatePhoneNumber: this.editedUserProfile.privatePhoneNumber ? this.editedUserProfile.privatePhoneNumber : this.userProfile.privatePhoneNumber
-        }
-        const updatedUser = await userService.updateUser(user);
-        updatedUser ? this.userProfile = updatedUser : null;
-        this.toggleEditMode();
-      } catch (e) {
-        console.error("Das Benutzerprofil konnte nicht geupdated werden!", e);
-      }
-
+      } else {
+        alert('Bitte überprüfen Sie Ihre Telefonnummern!')
       }
     },
     logout(): void {
@@ -92,22 +100,22 @@ export default {
         .then(() => this.logout())
         .catch(() => console.error("Das Benutzerprofil konnte nicht gelöscht werden!"));
     },
-    validatePhone() {
+    validatePhone(phoneCategory: string) {
       const phonePattern = /^\+?[1-9]\d{1,14}$/;
-      this.isPhoneValid = phonePattern.test(this.editedUserProfile.businessPhoneNumber);
+      this.isPhoneValid[phoneCategory as keyof phoneValid] = phonePattern.test(this.editedUserProfile[phoneCategory as keyof phoneValid]);
     },
-    async getCity(){
+    async getCity() {
       const userService = new UserService();
-      const address = await userService.getCityFromZip(this.editedUserProfile.address.zip); 
+      const address = await userService.getCityFromZip(this.editedUserProfile.address.zip);
       try {
-        if (address){
+        if (address) {
           this.editedUserProfile.address.city = address[0].city;
           this.editedUserProfile.address.province = address[0].province;
           this.editedUserProfile.address.countryCode = address[0].countryCode;
         }
       } catch (error) {
         console.log(error);
-        alert('Please check your ZIP Code');
+        alert('Bitte überprüfen Sie Ihre Postleitzahl!');
       }
     }
   }
@@ -126,12 +134,17 @@ export default {
         <template #content>
           <div v-if="userProfile">
             <div v-if="!editMode">
-              <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }} {{ userProfile.lastName }}</p>
-              <p v-if="userProfile.businessPhoneNumber"><strong>Geschäftliche Telefonnummer:</strong> {{userProfile.businessPhoneNumber }}</p>
-              <p v-if="userProfile.mobilePhoneNumber"><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}</p>
-              <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong> {{userProfile.privatePhoneNumber }}</p>
+              <p v-if="userProfile.firstName || userProfile.lastName"><strong>Name:</strong> {{ userProfile.firstName }}
+                {{ userProfile.lastName }}</p>
+              <p v-if="userProfile.businessPhoneNumber"><strong>Geschäftliche Telefonnummer:</strong>
+                {{ userProfile.businessPhoneNumber }}</p>
+              <p v-if="userProfile.mobilePhoneNumber"><strong>Handynummer:</strong> {{ userProfile.mobilePhoneNumber }}
+              </p>
+              <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong>
+                {{ userProfile.privatePhoneNumber }}</p>
               <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
-              <p v-if="userProfile.registeredDate"><strong>Registered Date:</strong> {{ userProfile.registeredDate }}</p>
+              <p v-if="userProfile.registeredDate"><strong>Registered Date:</strong> {{ userProfile.registeredDate }}
+              </p>
               <p v-if="userProfile.lastLoginDate"><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
             </div>
             <div v-else>
@@ -146,15 +159,18 @@ export default {
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="businessPhoneNumber" v-model="editedUserProfile.businessPhoneNumber"
-                    pattern="^\+[1-9]\d{4,14}$"  @input="validatePhone" :class="{'is-invalid': !isPhoneValid}"/>
+                    @change="() => validatePhone('businessPhoneNumber')"
+                    :class="{ 'is-invalid': !isPhoneValid.businessPhoneNumber }" />
                   <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="mobilePhoneNumber" v-model="editedUserProfile.mobilePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                  <InputText id="mobilePhoneNumber" v-model="editedUserProfile.mobilePhoneNumber"
+                    @change="() => validatePhone('mobilePhoneNumber')" :class="{ 'is-invalid': !isPhoneValid.mobilePhoneNumber }" />
                   <label for="mobilePhoneNumber">Handynummer</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="privatePhoneNumber" v-model="editedUserProfile.privatePhoneNumber" pattern="^\+[1-9]\d{4,14}$" />
+                  <InputText id="privatePhoneNumber" v-model="editedUserProfile.privatePhoneNumber"
+                  @change="() => validatePhone('privatePhoneNumber')" :class="{ 'is-invalid': !isPhoneValid.privatePhoneNumber }" />
                   <label for="privatePhoneNumber">Private Telefonnummer</label>
                 </FloatLabel>
               </div>
@@ -186,7 +202,7 @@ export default {
                   <label for="zip">Postleitzahl</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText id="city" v-model="editedUserProfile.address.city"/>
+                  <InputText id="city" v-model="editedUserProfile.address.city" />
                   <label for="city">Stadt</label>
                 </FloatLabel>
                 <FloatLabel>
