@@ -4,11 +4,16 @@ import AccountSettingsView from '../../src/views/AccountSettingsView.vue';
 import router from '../../src/router';
 import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
+import App from '../../src/App.vue'
 
 describe('AccountSettingsView', () => {
   test('The view is rendered properly', async () => {
-    expect(AccountSettingsView).toBeTruthy();
-
+    const pinia = createPinia()
+    const app = createApp(App)
+    // Install Pinia
+    app.use(pinia)
     const wrapper = mount(AccountSettingsView, {
       plugins: [PrimeVue, router],
       components: [Card],
