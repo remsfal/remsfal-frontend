@@ -54,7 +54,7 @@ export default {
       }
     },
     toggleEditMode() {
-      this.editMode ? null : this.editedUserProfile = { ...this.userProfile };
+      !this.editMode ? this.editedUserProfile = { ...this.userProfile }: null;
       this.editMode = !this.editMode;
     },
     discardChanges() {
