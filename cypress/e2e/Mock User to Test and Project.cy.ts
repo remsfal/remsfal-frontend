@@ -2,7 +2,7 @@ describe('Mocking User and Test Project', () => {
   it('Mock User and Test Project', () => {
 
     // Stub login request
-    cy.intercept('GET', 'http://localhost:5173/api/v1/user', {
+    cy.intercept('GET', 'http://localhost:4173/api/v1/user', {
       statusCode: 200,
       body: {
         id: '756dae7c-6677-4ba3-8fb5-863bcea1b18c',
@@ -15,7 +15,7 @@ describe('Mocking User and Test Project', () => {
 
     // Other requests
     // Stub projects feature
-    cy.intercept('GET', 'http://localhost:5173/api/v1/projects', {
+    cy.intercept('GET', 'http://localhost:4173/api/v1/projects', {
       statusCode: 200,
       body: {
         first: 0,
