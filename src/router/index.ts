@@ -61,20 +61,8 @@ const routes = [
             },
             {
                 path: '/project/:projectId/tasks',
-                name: 'AllTasksOverview',
-                props: true,
-                component: () => import('@/views/TaskView.vue')
-            },
-            {
-                path: '/project/:projectId/tasks',
-                name: 'MyTasksOverview',
-                props: true,
-                component: () => import('@/views/TaskView.vue')
-            },
-            {
-                path: '/project/:projectId/tasks',
-                name: 'OpenTasksOverview',
-                props: true,
+                name: 'TaskOverview',
+                props: route => ({ projectId: route.params.projectId, owner: route.query.owner, status: route.query.status }),
                 component: () => import('@/views/TaskView.vue')
             }
         ]

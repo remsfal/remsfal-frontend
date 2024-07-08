@@ -1,27 +1,71 @@
 <script setup lang="ts">
-import {ref} from 'vue';
-import {useRoute, useRouter} from 'vue-router';
-import TaskService from '@/services/TaskService';
+import {ref, onMounted, computed, watch} from 'vue';
+import {useRoute} from 'vue-router';
+import TaskService, {Status, type TaskItem} from '@/services/TaskService';
 
-const visible = ref(false);
 const taskService = new TaskService();
-const taskTitle = ref("");
+const title = ref("");
+const description = ref("");
+const blockedBy = ref("");
+const relatedTo = ref("");
+const visible = ref(false);
+const tasks = ref<TaskItem[]>([]);
 
-const router = useRouter();
+
 const route = useRoute();
 
+defineProps<{
+  projectId: string;
+  owner?: string;
+  status?: Status;
+}>();
+
 const createTask = () => {
-  const projectId = route.params.projectId; // Get project-id from router
-  taskService.createTask(projectId, taskTitle.value)
+  const projectId = String(route.params.projectId);
+  const ownerId = String(route.query.owner);
+  taskService.createTask(projectId, title.value, description.value, ownerId, blockedBy.value, relatedTo.value)
       .then((newTask) => {
         console.log("New task created:", newTask);
         visible.value = false;
+        loadTasks();
       })
       .catch((error) => {
         console.error("Error creating task:", error);
       });
 };
+
+const loadTasks = () => {
+  const projectId = String(route.params.projectId);
+  taskService.getTasks(projectId)
+      .then((tasklist) => {
+        tasks.value = tasklist.tasks;
+      })
+      .catch((error) => {
+        console.error("Error creating task:", error);
+      });
+};
+
+onMounted(() => {
+  loadTasks();
+});
+
+watch(route, () => {
+  loadTasks();
+});
+
+// Computed Property zum Filtern der Aufgaben nach ownerId
+const ownerTasks = computed(() => {
+  const ownerId = String(route.query.owner);
+  return tasks.value.filter(task => task.owner === ownerId);
+});
+
+// Computed Property zum Filtern der Aufgaben nach Status.OPEN
+const openTasks = computed(() => {
+  return tasks.value.filter(task => task.status === Status.OPEN);
+});
+
 </script>
+
 
 <template>
   <main>
@@ -29,14 +73,13 @@ const createTask = () => {
       <div class="card flex justify-center">
         <Button label="Aufgabe erstellen" @click="visible = true"/>
         <Dialog v-model:visible="visible" modal header="Aufgabe erstellen" :style="{ width: '50rem' }">
-          <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
           <div class="flex items-center gap-4 mb-4">
             <label for="title" class="font-semibold w-24">Titel</label>
-            <InputText id="title" class="flex-auto" v-model="taskTitle" autocomplete="off"/>
+            <InputText id="title" class="flex-auto" v-model="title" autocomplete="off"/>
           </div>
           <div class="flex items-center gap-4 mb-8">
             <label for="description" class="font-semibold w-24">Beschreibung</label>
-            <InputText id="description" class="flex-auto" autocomplete="off"/>
+            <InputText id="description" class="flex-auto" v-model="description" autocomplete="off"/>
           </div>
           <div class="flex justify-end gap-2">
             <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
@@ -46,9 +89,33 @@ const createTask = () => {
       </div>
 
       <div class="individual-content">
-        <p v-if="$route.name === 'MyTasksOverview'">Dies sind meine Aufgaben. meine Id: {{ $route.query.owner }}</p>
-        <p v-else-if="$route.name === 'OpenTasksOverview'">Das sind alle offenen Aufgaben. ProjektId: {{ route.params.projectId }}</p>
-        <p v-else>Dies sind alle Aufgaben.</p>
+        <div v-if="owner">
+          <p>Dies sind meine Aufgaben. Meine Id: {{ owner }}</p>
+          <ul v-if="ownerTasks.length > 0">
+            <li v-for="task in ownerTasks" :key="task.id">
+              {{ task.title }} - {{ task.status }}
+            </li>
+          </ul>
+          <p v-else>Keine Aufgaben gefunden.</p>
+        </div>
+        <div v-else-if="status === Status.OPEN">
+          <p>Das sind alle offenen Aufgaben. Status: {{ status }}</p>
+          <ul v-if="openTasks.length > 0">
+            <li v-for="task in openTasks" :key="task.id">
+              {{ task.title }} - {{ task.status }}
+            </li>
+          </ul>
+          <p v-else>Keine offenen Aufgaben gefunden.</p>
+        </div>
+        <div v-else>
+          <p>Dies sind alle Aufgaben für das Projekt {{ projectId }}.</p>
+          <ul v-if="tasks.length > 0">
+            <li v-for="task in tasks" :key="task.id">
+              {{ task.title }} - {{ task.status }}
+            </li>
+          </ul>
+          <p v-else>Keine Aufgaben gefunden.</p>
+        </div>
       </div>
     </div>
   </main>

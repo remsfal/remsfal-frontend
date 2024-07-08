@@ -33,20 +33,20 @@ const model = ref([
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
-          router.push({ name: 'MyTasksOverview', params: { projectId }, query: { owner: sessionStore.user?.id } });
+          router.push({ name: 'TaskOverview', params: { projectId }, query: { owner: sessionStore.user?.id } });
         } },
       { label: 'Offene Aufgaben',
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
-          router.push({ name: 'OpenTasksOverview', params: { projectId }, query: { status: Status.OPEN} });
+          router.push({ name: 'TaskOverview', params: { projectId }, query: { status: Status.OPEN} });
         }},
       {
         label: 'Alle Aufgaben',
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
-          router.push({ name: 'AllTasksOverview', params: { projectId } });
+          router.push({ name: 'TaskOverview', params: { projectId } });
         }
       }
     ]

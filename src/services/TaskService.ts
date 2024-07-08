@@ -1,7 +1,4 @@
 import axios from "axios";
-import type {Project} from "@/services/ProjectService";
-import type {Ref} from "vue";
-import type {RouteLocationNormalizedLoaded, RouteParamValue} from "vue-router";
 
 export interface Task {
     id: string;
@@ -40,13 +37,13 @@ export default class TaskService {
     readonly baseUrl: string = "/api/v1/projects";
 
     //Get a list of tasks
-    getTasks(projectId: number): Promise<TaskList> {
+    getTasks(projectId: string): Promise<TaskList> {
         return axios
             .get(`${this.baseUrl}/${projectId}/tasks`)
             .then((response) => {
-                const tasktList: TaskList = response.data;
-                console.log("GET tasks:", tasktList);
-                return tasktList;
+                const taskList: TaskList = response.data;
+                console.log("GET tasks:", taskList);
+                return taskList;
             });
     }
 
@@ -67,16 +64,23 @@ export default class TaskService {
     }
 
     //Create a task
-    createTask(projectId: string | RouteParamValue[], title: string): Promise<Project> {
+    createTask(projectId: string, title: string, description: string, ownerId: string, blockedBy?: string, relatedTo?: string): Promise<Task> {
+        const newTask: Partial<Task> = {
+            title: title,
+            description: description,
+            status: Status.OPEN,
+            ownerId: ownerId,
+            created_at: new Date(),
+            blocked_by: blockedBy,
+            related_to: relatedTo,
+        };
+
         return axios
-            .post(
-                `${this.baseUrl}/${projectId}/tasks/`,
-                {title: title},
-            )
+            .post<Task>(`${this.baseUrl}/${projectId}/tasks/`, newTask)
             .then((response) => {
-                const task: Task = response.data;
-                console.log("POST create task:", task);
-                return task;
+                const createdTask: Task = response.data;
+                console.log("POST create task:", createdTask);
+                return createdTask;
             });
     }
 
