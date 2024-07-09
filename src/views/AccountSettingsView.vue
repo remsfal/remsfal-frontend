@@ -54,6 +54,21 @@ export default {
       }
     },
     toggleEditMode() {
+      // Überprüfung und Initialisierung der Adresse
+      if (!this.userProfile.address) {
+        this.userProfile.address = {
+          street: "",
+          city: "",
+          zip: "",
+          province: "",
+          countryCode: ""
+        };
+      }
+
+      if (!this.editedUserProfile.address) {
+        this.editedUserProfile.address = { ...this.userProfile.address };
+      }
+
       this.editedUserProfile = this.editMode ? this.editedUserProfile : { ...this.userProfile };
       this.editMode = !this.editMode;
     },
