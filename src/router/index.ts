@@ -5,6 +5,8 @@ import ProjectLayout from '@/layout/ProjectLayout.vue';
 import PrivacyView from "@/views/PrivacyView.vue";
 import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 import FullscreenLayout from "@/layout/FullscreenLayout.vue";
+import type {Status} from "@/services/TaskService";
+
 
 const routes = [
     {
@@ -62,8 +64,9 @@ const routes = [
             {
                 path: '/project/:projectId/tasks',
                 name: 'TaskOverview',
-                props: route => ({ projectId: route.params.projectId, owner: route.query.owner, status: route.query.status }),
+                props: true,
                 component: () => import('@/views/TaskView.vue')
+
             }
         ]
     },

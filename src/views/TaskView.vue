@@ -46,6 +46,7 @@ const loadTasks = () => {
 };
 
 onMounted(() => {
+  console.log(route.query)
   loadTasks();
 });
 
@@ -89,8 +90,8 @@ const openTasks = computed(() => {
       </div>
 
       <div class="individual-content">
-        <div v-if="owner">
-          <p>Dies sind meine Aufgaben. Meine Id: {{ owner }}</p>
+        <div v-if="route.query.owner">
+          <p>Dies sind meine Aufgaben. Meine Id: {{ route.query.owner }}</p>
           <ul v-if="ownerTasks.length > 0">
             <li v-for="task in ownerTasks" :key="task.id">
               {{ task.title }} - {{ task.status }}
@@ -98,8 +99,8 @@ const openTasks = computed(() => {
           </ul>
           <p v-else>Keine Aufgaben gefunden.</p>
         </div>
-        <div v-else-if="status === Status.OPEN">
-          <p>Das sind alle offenen Aufgaben. Status: {{ status }}</p>
+        <div v-else-if="route.query.status === Status.OPEN.toString()">
+          <p>Das sind alle offenen Aufgaben. Status: {{ route.query.status }}</p>
           <ul v-if="openTasks.length > 0">
             <li v-for="task in openTasks" :key="task.id">
               {{ task.title }} - {{ task.status }}
