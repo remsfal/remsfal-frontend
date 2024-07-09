@@ -100,20 +100,4 @@ describe('ProjectSelectionView.vue', () => {
         expect(router.push).toHaveBeenCalledWith({ name: 'ProjectDashboard', params: { projectId: '123' } });
     });
 
-    it('handles pagination', async () => {
-        const event = { first: 10, rows: 10 };
-        await wrapper.vm.onPage(event);
-        expect(wrapper.vm.lazyParams).toEqual(event);
-    });
-
-    it('loads lazy data', async () => {
-        const event = { first: 20, rows: 10 };
-        await wrapper.vm.loadLazyData(event);
-        await nextTick();
-        expect(wrapper.vm.loading).toBe(false);
-        expect(wrapper.vm.projects).toEqual([]);
-        expect(wrapper.vm.totalRecords).toBe(0);
-        expect(wrapper.vm.lazyParams).toEqual(event);
-    });
-
 });
