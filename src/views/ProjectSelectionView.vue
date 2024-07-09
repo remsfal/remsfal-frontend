@@ -71,6 +71,7 @@ export default defineComponent({
     };
 
     return {
+      loadLazyData,
       projects,
       onRowClick,
       onPage,
@@ -93,7 +94,6 @@ export default defineComponent({
         <DataTable
             :value="projects"
             scrollable
-            scrollHeight="500px"
             @row-click="onRowClick"
             @page="onPage($event)"
             :loading="loading"
