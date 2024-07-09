@@ -52,3 +52,9 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+### Lint with [Stylelint](https://stylelint.io/)
+
+```sh
+npm run stylelint
+```
