@@ -26,7 +26,7 @@ describe('LandingPageView.vue', () => {
             },
         });
 
-        const route = "http://dummy.com";
+        const route = "https://www.htw-berlin.de/";
         wrapper.vm.login(route);
         expect(locationMock).toHaveBeenCalledWith(`/api/v1/authentication/login?route=${encodeURIComponent(route)}`);
     });
