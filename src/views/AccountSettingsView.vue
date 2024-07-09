@@ -141,7 +141,7 @@ export default {
 <template>
   <div class="grid">
     <h1>Mein Benutzerprofil</h1>
-    <div class="cardContainer">
+    <div class="card-container">
       <Card>
         <template #title>
           <h4>Meine Daten</h4>
@@ -163,7 +163,7 @@ export default {
               <p v-if="userProfile.lastLoginDate"><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
             </div>
             <div v-else>
-              <div class="editInputs">
+              <div class="edit-inputs">
                 <FloatLabel>
                   <InputText id="firstname" v-model="editedUserProfile.firstName" />
                   <label for="firstname">Vorname</label>
@@ -207,7 +207,7 @@ export default {
               </p>
             </div>
             <div v-else>
-              <div class="editInputs">
+              <div class="edit-inputs">
                 <FloatLabel>
                   <InputText id="street" v-model="editedUserProfile.address.street" />
                   <label for="street">Straße und Hausnummer</label>
@@ -225,14 +225,14 @@ export default {
                   <label for="province">Bundesland</label>
                 </FloatLabel>
                 <div class="country">
-                  <select id="countryCode" v-model="editedUserProfile.address.countryCode" class="selectCountry">
+                  <select id="country-code" v-model="editedUserProfile.address.countryCode" class="select-country">
                     <option disabled value="">Land</option>
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                       {{ country.name }}
                     </option>
                   </select>
                   <FloatLabel>
-                    <InputText id="countryCodeInput" v-model="editedUserProfile.address.countryCode" />
+                    <InputText id="country-codeInput" v-model="editedUserProfile.address.countryCode" />
                     <label for="countryCodeInput">Länderkürzel</label>
                   </FloatLabel>
                 </div>
@@ -293,7 +293,7 @@ export default {
   gap: 20px;
 }
 
-.cardContainer {
+.card-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
@@ -306,13 +306,13 @@ export default {
 }
 
 
-@media (max-width: 768px) {
-  .cardContainer {
+@media (width <= 768px) {
+  .card-container {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .buttons-container {
     grid-template-columns: 1fr;
   }
@@ -333,7 +333,7 @@ input {
 }
 
 input,
-.selectCountry {
+.select-country {
   padding: 6px;
   font-size: 16px;
   border: 1px solid #ced4da;
@@ -341,20 +341,20 @@ input,
   box-sizing: border-box;
 }
 
-.selectCountry:focus,
+.select-country:focus,
 input:focus {
   border-color: #80bdff;
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 0.25);
 }
 
-.editInputs {
+.edit-inputs {
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
-.editInputs label {
+.edit-inputs label {
   padding-left: 10px;
 }
 
@@ -369,21 +369,24 @@ input:focus {
   gap: 20px;
 }
 
-.selectCountry {
+.select-country {
   margin-left: 10px;
   box-sizing: border-box;
-  -webkit-appearance: none;
+  appearance: none;
+
   /* Entfernt das native Dropdown-Styling in WebKit-Browsern */
-  -moz-appearance: none;
+  appearance: none;
+
   /* Entfernt das native Dropdown-Styling in Firefox */
   appearance: none;
+
   /* Entfernt das native Dropdown-Styling in allen Browsern */
   background: url('data:image/svg+xml;utf8,<svg fill="%23999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
   background-color: white;
   background-size: 12px 12px;
 }
 
-.countryCode {
+.country-code {
   width: fit-content;
 }
 
