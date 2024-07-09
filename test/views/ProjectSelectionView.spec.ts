@@ -1,4 +1,4 @@
-import { mount, shallowMount, VueWrapper } from '@vue/test-utils';
+import { shallowMount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 import ProjectService from '@/services/ProjectService';
