@@ -5,7 +5,7 @@ import { useProjectStore } from '@/stores/ProjectStore';
 import NewProjectForm from "@/components/NewProjectForm.vue";
 import ProjectService from "@/services/ProjectService";
 
-interface lazyLoadEvent {
+interface LazyLoadEvent {
   first: number;
   rows: number;
 }
@@ -31,7 +31,7 @@ export default defineComponent({
     const first = ref(0);
     const lazyParams = ref<{ first: number; rows: number }>({ first: 0, rows: 10 });
 
-    const loadLazyData = (event?: lazyLoadEvent) => {
+    const loadLazyData = (event?: LazyLoadEvent) => {
       loading.value = true;
       if (event) {
         lazyParams.value = { ...lazyParams.value, first: event.first || first.value, rows: event.rows };
@@ -44,7 +44,7 @@ export default defineComponent({
       });
     };
 
-    const onPage = (event: lazyLoadEvent) => {
+    const onPage = (event: LazyLoadEvent) => {
       lazyParams.value = event;
       loadLazyData(event);
     };
