@@ -1,12 +1,12 @@
-import { mount, shallowMount } from '@vue/test-utils';
+import { mount, shallowMount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 import ProjectService from '@/services/ProjectService';
 import { useRouter } from 'vue-router';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { nextTick } from 'vue';
+import { createPinia, setActivePinia } from 'pinia';
 
-// Mock the services and store
 vi.mock('@/services/ProjectService');
 vi.mock('vue-router', () => ({
     useRouter: vi.fn()
@@ -14,8 +14,6 @@ vi.mock('vue-router', () => ({
 vi.mock('@/stores/ProjectStore', () => ({
     useProjectStore: vi.fn()
 }));
-
-// Create mocks for the components
 vi.mock('primevue/datatable', () => ({
     DataTable: {
         name: 'DataTable',
@@ -42,9 +40,13 @@ vi.mock('primevue/dialog', () => ({
 }));
 
 describe('ProjectSelectionView.vue', () => {
-    let wrapper: any;
+    let wrapper: VueWrapper<any>;
 
     beforeEach(() => {
+        // Create and set Pinia instance
+        const pinia = createPinia();
+        setActivePinia(pinia);
+
         // Mock implementations
         ProjectService.mockImplementation(() => ({
             getProjects: vi.fn().mockResolvedValue({ projects: [], total: 0 })
@@ -59,7 +61,12 @@ describe('ProjectSelectionView.vue', () => {
             projectId: '123'
         });
 
-        wrapper = shallowMount(ProjectSelectionView);
+        // Mount the component with Pinia
+        wrapper = shallowMount(ProjectSelectionView, {
+            global: {
+                plugins: [pinia]
+            }
+        });
     });
 
     it('renders the view', () => {
@@ -106,7 +113,7 @@ describe('ProjectSelectionView.vue', () => {
         expect(wrapper.vm.loading).toBe(false);
         expect(wrapper.vm.projects).toEqual([]);
         expect(wrapper.vm.totalRecords).toBe(0);
-        expect(wrapper.vm.lazyParams).toEqual(event); // Check lazyParams update
+        expect(wrapper.vm.lazyParams).toEqual(event);
     });
 
 });
