@@ -1,0 +1,15 @@
+{  "extends": [
+  "stylelint-config-standard",
+  "stylelint-config-recommended-vue"
+],
+  "rules": {
+    "alpha-value-notation": "number",
+    "no-descending-specificity": null,
+    "no-duplicate-selectors": null,
+    "number-max-precision": 5,
+    "no-empty-source": null,
+    "custom-property-pattern": null,
+    "at-rule-no-unknown": null,
+    "import-notation": "string"
+  }
+}
