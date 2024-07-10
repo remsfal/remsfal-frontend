@@ -1,6 +1,6 @@
 <script lang="ts">
 import { useUserSessionStore } from "@/stores/UserSession";
-import UserService, { type User } from "@/services/UserService";
+import UserService, { type User, type Address } from "@/services/UserService";
 //import Modal from "@/components/LeoModal.vue";
 
 interface PhoneValid {
@@ -54,47 +54,37 @@ export default {
       }
     },
     toggleEditMode() {
-      // Überprüfung und Initialisierung der Adresse
-      if (!this.userProfile.address) {
-        this.userProfile.address = {
-          street: "",
-          city: "",
-          zip: "",
-          province: "",
-          countryCode: ""
-        };
-      }
-
-      if (!this.editedUserProfile.address) {
-        this.editedUserProfile.address = { ...this.userProfile.address };
-      }
-
       this.editedUserProfile = this.editMode ? this.editedUserProfile : { ...this.userProfile };
+      this.editedUserProfile.address = this.editMode ? this.editedUserProfile.address : { ...this.userProfile.address };
       this.editMode = !this.editMode;
     },
     discardChanges() {
       this.editedUserProfile = { ...this.userProfile };
+      this.editedUserProfile.address = { ...this.userProfile.address };
       this.toggleEditMode();
     },
     async saveProfile() {
-      if (Object.values(this.isPhoneValid).every(Boolean)) {
+      if (Object.values(this.isPhoneValid).every(Boolean) && this.validateAddress()) {
         try {
           const userService = new UserService();
-          const address = {
-            street: this.editedUserProfile.address.street ? this.editedUserProfile.address.street : this.userProfile.address.street,
-            city: this.editedUserProfile.address.city ? this.editedUserProfile.address.city : this.userProfile.address.city,
-            zip: this.editedUserProfile.address.zip ? this.editedUserProfile.address.zip : this.userProfile.address.zip,
-            province: this.editedUserProfile.address.province ? this.editedUserProfile.address.province : this.userProfile.address.province,
-            countryCode: this.editedUserProfile.address.countryCode ? this.editedUserProfile.address.countryCode : this.userProfile.address.countryCode,
-          }
           const user = {
             id: this.userProfile.id,
-            address: address,
             firstName: this.editedUserProfile.firstName ? this.editedUserProfile.firstName : this.userProfile.firstName,
             businessPhoneNumber: this.editedUserProfile.businessPhoneNumber ? this.editedUserProfile.businessPhoneNumber : this.userProfile.businessPhoneNumber,
             lastName: this.editedUserProfile.lastName ? this.editedUserProfile.lastName : this.userProfile.lastName,
             mobilePhoneNumber: this.editedUserProfile.mobilePhoneNumber ? this.editedUserProfile.mobilePhoneNumber : this.userProfile.mobilePhoneNumber,
             privatePhoneNumber: this.editedUserProfile.privatePhoneNumber ? this.editedUserProfile.privatePhoneNumber : this.userProfile.privatePhoneNumber
+          } as User
+
+          if (this.validateAddress()) {
+            const address = {
+              street: this.editedUserProfile.address.street ? this.editedUserProfile.address.street : this.userProfile.address.street,
+              city: this.editedUserProfile.address.city ? this.editedUserProfile.address.city : this.userProfile.address.city,
+              zip: this.editedUserProfile.address.zip ? this.editedUserProfile.address.zip : this.userProfile.address.zip,
+              province: this.editedUserProfile.address.province ? this.editedUserProfile.address.province : this.userProfile.address.province,
+              countryCode: this.editedUserProfile.address.countryCode ? this.editedUserProfile.address.countryCode : this.userProfile.address.countryCode,
+            } as Address
+            user.address = address
           }
           const updatedUser = await userService.updateUser(user);
           this.userProfile = updatedUser ? updatedUser : this.userProfile;
@@ -103,7 +93,7 @@ export default {
           console.error("Das Benutzerprofil konnte nicht geupdated werden!", e);
         }
       } else {
-        alert('Bitte überprüfen Sie Ihre Telefonnummern!')
+        alert('Bitte überprüfen Sie Ihre Eingaben!')
       }
     },
     logout(): void {
@@ -118,6 +108,14 @@ export default {
     validatePhone(phoneCategory: string) {
       const phonePattern = /^\+?[1-9]\d{1,14}$/;
       this.isPhoneValid[phoneCategory as keyof PhoneValid] = phonePattern.test(this.editedUserProfile[phoneCategory as keyof PhoneValid]);
+    },
+    validateAddress() {
+      if (Object.keys(this.editedUserProfile.address).length == 5) {
+        if (Object.values(this.editedUserProfile.address).every(value => value.length > 0)) {
+          return true;
+        }
+      }
+      return false;
     },
     async getCity() {
       const userService = new UserService();
@@ -141,7 +139,7 @@ export default {
 <template>
   <div class="grid">
     <h1>Mein Benutzerprofil</h1>
-    <div class="card-container">
+    <div class="cardContainer">
       <Card>
         <template #title>
           <h4>Meine Daten</h4>
@@ -163,7 +161,7 @@ export default {
               <p v-if="userProfile.lastLoginDate"><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
             </div>
             <div v-else>
-              <div class="edit-inputs">
+              <div class="editInputs">
                 <FloatLabel>
                   <InputText id="firstname" v-model="editedUserProfile.firstName" />
                   <label for="firstname">Vorname</label>
@@ -180,12 +178,14 @@ export default {
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="mobilePhoneNumber" v-model="editedUserProfile.mobilePhoneNumber"
-                    @change="() => validatePhone('mobilePhoneNumber')" :class="{ 'is-invalid': !isPhoneValid.mobilePhoneNumber }" />
+                    @change="() => validatePhone('mobilePhoneNumber')"
+                    :class="{ 'is-invalid': !isPhoneValid.mobilePhoneNumber }" />
                   <label for="mobilePhoneNumber">Handynummer</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="privatePhoneNumber" v-model="editedUserProfile.privatePhoneNumber"
-                  @change="() => validatePhone('privatePhoneNumber')" :class="{ 'is-invalid': !isPhoneValid.privatePhoneNumber }" />
+                    @change="() => validatePhone('privatePhoneNumber')"
+                    :class="{ 'is-invalid': !isPhoneValid.privatePhoneNumber }" />
                   <label for="privatePhoneNumber">Private Telefonnummer</label>
                 </FloatLabel>
               </div>
@@ -200,14 +200,15 @@ export default {
         <template #content>
           <div v-if="userProfile">
             <div v-if="!editMode">
-              <p v-if="userProfile.address?.street"><strong>Straße:</strong> {{ userProfile.address.street }}</p>
-              <p v-if="userProfile.address?.zip"><strong>Postleitzahl:</strong> {{ userProfile.address.zip }}</p>
-              <p v-if="userProfile.address?.city"><strong>Stadt:</strong> {{ userProfile.address.city }}</p>
-              <p v-if="userProfile.address?.countryCode"><strong>Land:</strong> {{ userProfile.address.countryCode }}
+              <p v-if="userProfile.address"><strong>Straße:</strong> {{ userProfile.address.street }}</p>
+              <p v-if="userProfile.address"><strong>Postleitzahl:</strong> {{ userProfile.address.zip }}</p>
+              <p v-if="userProfile.address"><strong>Stadt:</strong> {{ userProfile.address.city }}</p>
+              <p v-if="userProfile.address"><strong>Bundesland:</strong> {{ userProfile.address.province }}</p>
+              <p v-if="userProfile.address"><strong>Land:</strong> {{ userProfile.address.countryCode }}
               </p>
             </div>
             <div v-else>
-              <div class="edit-inputs">
+              <div class="editInputs">
                 <FloatLabel>
                   <InputText id="street" v-model="editedUserProfile.address.street" />
                   <label for="street">Straße und Hausnummer</label>
@@ -225,14 +226,14 @@ export default {
                   <label for="province">Bundesland</label>
                 </FloatLabel>
                 <div class="country">
-                  <select id="country-code" v-model="editedUserProfile.address.countryCode" class="select-country">
+                  <select id="countryCode" v-model="editedUserProfile.address.countryCode" class="selectCountry">
                     <option disabled value="">Land</option>
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                       {{ country.name }}
                     </option>
                   </select>
                   <FloatLabel>
-                    <InputText id="country-codeInput" v-model="editedUserProfile.address.countryCode" />
+                    <InputText id="countryCodeInput" v-model="editedUserProfile.address.countryCode" />
                     <label for="countryCodeInput">Länderkürzel</label>
                   </FloatLabel>
                 </div>
@@ -246,14 +247,18 @@ export default {
       <div v-if="!editMode">
         <div class='buttons-container centered-buttons'>
           <Button type="button" icon="pi pi-user-edit" class='edit-button' @click="toggleEditMode" label="Bearbeiten" />
-          <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" class='edit-button' label="Konto löschen" @click="visible = true" />
+          <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" class='edit-button'
+            label="Konto löschen" @click="visible = true" />
         </div>
         <div class='delete Button'>
-          <Dialog v-model:visible="visible" maximizable modal header=" " :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+          <Dialog v-model:visible="visible" maximizable modal header=" " :style="{ width: '50rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <p>Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.</p>
             <div class='buttons-container centered-buttons'>
-              <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount" label="Konto wirklich löschen" class='delete-button' />
-              <Button type="button" icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel" @click="visible = false" label="Abbrechen" />
+              <Button type="button" icon="pi pi-trash" severity="danger" aria-label="Cancel" @click="deleteAccount"
+                label="Konto wirklich löschen" class='delete-button' />
+              <Button type="button" icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
+                @click="visible = false" label="Abbrechen" />
             </div>
           </Dialog>
         </div>
@@ -261,7 +266,8 @@ export default {
       <div v-else>
         <div class='buttons-container centered-buttons'>
           <Button type="button" label="Speichern" icon="pi pi-check" @click="saveProfile" class='save-button' />
-          <Button icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel" @click="toggleEditMode" label="Abbrechen" />
+          <Button icon="pi pi-times" class="cancel-button" severity="secondary" aria-label="Cancel"
+            @click="toggleEditMode" label="Abbrechen" />
         </div>
       </div>
     </div>
@@ -293,7 +299,7 @@ export default {
   gap: 20px;
 }
 
-.card-container {
+.cardContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
@@ -306,13 +312,13 @@ export default {
 }
 
 
-@media (width <= 768px) {
-  .card-container {
+@media (max-width: 768px) {
+  .cardContainer {
     grid-template-columns: 1fr;
   }
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .buttons-container {
     grid-template-columns: 1fr;
   }
@@ -333,7 +339,7 @@ input {
 }
 
 input,
-.select-country {
+.selectCountry {
   padding: 6px;
   font-size: 16px;
   border: 1px solid #ced4da;
@@ -341,20 +347,20 @@ input,
   box-sizing: border-box;
 }
 
-.select-country:focus,
+.selectCountry:focus,
 input:focus {
   border-color: #80bdff;
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.edit-inputs {
+.editInputs {
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
-.edit-inputs label {
+.editInputs label {
   padding-left: 10px;
 }
 
@@ -369,19 +375,21 @@ input:focus {
   gap: 20px;
 }
 
-.select-country {
+.selectCountry {
   margin-left: 10px;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  /* Entfernt das native Dropdown-Styling in WebKit-Browsern */
+  -moz-appearance: none;
+  /* Entfernt das native Dropdown-Styling in Firefox */
   appearance: none;
-
-
   /* Entfernt das native Dropdown-Styling in allen Browsern */
   background: url('data:image/svg+xml;utf8,<svg fill="%23999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
   background-color: white;
   background-size: 12px 12px;
 }
 
-.country-code {
+.countryCode {
   width: fit-content;
 }
 
@@ -393,5 +401,4 @@ input:focus {
   display: flex;
   justify-content: center;
 }
-
 </style>

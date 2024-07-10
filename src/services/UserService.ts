@@ -1,6 +1,6 @@
 import axios from "axios";
 
-interface Address {
+export interface Address {
   street: string;
   city: string;
   zip: string;
