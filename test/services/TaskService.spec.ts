@@ -1,3 +1,5 @@
+// tests/TaskService.spec.ts
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import axios from 'axios';
 import TaskService, { Task, Status } from '../../src/services/TaskService';
@@ -91,5 +93,53 @@ describe('TaskService', () => {
         const modifiedTask = await service.modifyTask(projectId, taskId, updatedTask.title, updatedTask.description);
         expect(modifiedTask.title).toBe("Updated Task");
         expect(modifiedTask.description).toBe("Updated Description");
+    });
+
+    it('cover createTask call in component', async () => {
+        const mockTask: Task = {
+            id: "1",
+            title: "Task 1",
+            description: "Description 1",
+            status: Status.OPEN,
+            ownerId: "owner1",
+            created_at: new Date(),
+            modified_at: new Date(),
+            blocked_by: "",
+            duplicate_of: "",
+            related_to: "",
+        };
+
+        const props = {
+            projectId: 'test-project',
+            owner: 'owner1'
+        };
+
+        const title = { value: 'Task 1' };
+        const description = { value: 'Description 1' };
+        const blockedBy = { value: "" };
+        const relatedTo = { value: "" };
+        const visible = { value: true };
+
+        const loadTasks = vi.fn();
+
+        vi.spyOn(axios, 'post').mockResolvedValue({ data: mockTask });
+
+        await service.createTask(
+            props.projectId,
+            title.value,
+            description.value,
+            props.owner || "",
+            blockedBy.value,
+            relatedTo.value
+        ).then((newTask) => {
+            console.log("New task created:", newTask);
+            visible.value = false;
+            loadTasks();
+        }).catch((error) => {
+            console.error("Error creating task:", error);
+        });
+
+        expect(loadTasks).toBeCalled();
+        expect(visible.value).toBe(false);
     });
 });
