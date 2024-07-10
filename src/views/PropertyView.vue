@@ -193,27 +193,27 @@ export default {
             label="Create Property"
             icon="pi pi-check"
             @click="createProperty"
-            class="p-buttonProperty"
+            class="p-button-property"
           />
           <Button
             v-if="route.name === 'UpdateProperty'"
             label="Update Property"
             icon="pi pi-check"
             @click="updateProperty"
-            class="p-buttonProperty mr-2 mb-2"
+            class="p-button-property mr-2 mb-2"
           />
           <Button
             v-if="route.name === 'DeleteProperty'"
             label="Delete Property"
             icon="pi pi-trash"
             @click="deleteProperty"
-            class="p-buttonProperty p-button-danger mr-2 mb-2"
+            class="p-button-property p-button-danger mr-2 mb-2"
           />
           <Button
             label="Close"
             icon="pi pi-times"
             @click="close"
-            class="p-buttonProperty mr-2 mb-2"
+            class="p-button-property mr-2 mb-2"
           />
         </div>
       </div>
@@ -226,7 +226,7 @@ export default {
   text-align: right;
 }
 
-.p-buttonProperty {
+.p-button-property {
   width: auto;
 }
 </style>
