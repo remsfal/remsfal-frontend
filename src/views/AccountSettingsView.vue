@@ -180,9 +180,9 @@ export default {
               <p v-if="userProfile.privatePhoneNumber"><strong>Private Telefonnummer:</strong>
                 {{ userProfile.privatePhoneNumber }}</p>
               <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
-              <p v-if="userProfile.registeredDate"><strong>Registered Date:</strong> {{ userProfile.registeredDate }}
+              <p v-if="userProfile.registeredDate"><strong>Mitglied seit:</strong> {{ userProfile.registeredDate }}
               </p>
-              <p v-if="userProfile.lastLoginDate"><strong>Last Login Date:</strong> {{ userProfile.lastLoginDate }}</p>
+              <p v-if="userProfile.lastLoginDate"><strong>Letzter Login:</strong> {{ userProfile.lastLoginDate }}</p>
             </div>
             <div v-else>
               <div class="editInputs">
