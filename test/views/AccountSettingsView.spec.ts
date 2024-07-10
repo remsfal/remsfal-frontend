@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import AccountSettingsView from '@/views/AccountSettingsView.vue'
+import AccountSettingsView from '/../src/views/AccountSettingsView.vue'
 import router from '@/router'
 import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';

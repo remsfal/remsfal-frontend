@@ -1,7 +1,6 @@
 import {
     createRouter,
     createWebHistory,
-    type RouteLocationNormalized,
     type RouteLocationNormalizedLoaded
 } from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
@@ -10,7 +9,6 @@ import ProjectLayout from '@/layout/ProjectLayout.vue';
 import PrivacyView from "@/views/PrivacyView.vue";
 import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 import FullscreenLayout from "@/layout/FullscreenLayout.vue";
-import type {Status} from "@/services/TaskService";
 
 
 
