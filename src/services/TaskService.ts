@@ -3,7 +3,7 @@ import axios from "axios";
 export interface Task {
     id: string;
     title: string;
-    description: String;
+    description: string;
     status: Status;
     ownerId: string;
     created_at: Date;
