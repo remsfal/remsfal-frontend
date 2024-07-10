@@ -1,16 +1,17 @@
 <script lang="ts">
-import {useUserSessionStore} from "@/stores/UserSession";
+import { useUserSessionStore } from "@/stores/UserSession";
 import UserService from "@/services/UserService";
 //import Modal from "@/components/LeoModal.vue";
 
 export default {
   data() {
     return {
-      userEmail: ""
-    }
+      userEmail: "",
+    };
   },
   onMounted() {
     const sessionStore = useUserSessionStore();
+    console.log(sessionStore);
     this.userEmail = sessionStore.user?.email!;
   },
   methods: {
@@ -19,18 +20,19 @@ export default {
     },
     deleteAccount() {
       const userService = new UserService();
-      userService.deleteUser()
-          .then(() => this.logout())
-          .catch(() => console.error("Unable to delete this account!"))
+      userService
+        .deleteUser()
+        .then(() => this.logout())
+        .catch(() => console.error("Unable to delete this account!"));
     },
-  }
+  },
 };
 </script>
 
 <template>
-    <div class="grid">
+  <div class="grid">
     <h1>This is ä account settings page for {{ userEmail }}</h1>
-      <!--Modal
+    <!--Modal
           :isOpen="showModal"
           :bodyText="'Durch die Anmeldung bzw. Registrierung stimmst Du unser Datenschutzerklärung zu.'"
           :linkText="'Datenschutzerklärung'"
@@ -48,9 +50,7 @@ export default {
           :buttonColor="'red'"
           @closeModal="showDeleteModal = false"
       ></Modal -->
-
   </div>
 </template>
 
-<style>
-</style>
+<style></style>

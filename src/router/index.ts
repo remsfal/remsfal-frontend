@@ -70,6 +70,30 @@ const routes = [
         props: true,
         component: () => import("@/views/ObjectDataView.vue"),
       },
+      {
+        path: "/project/:projectId/objects/create-property",
+        name: "CreateProperty",
+        props: true,
+        component: () => import("@/views/PropertyView.vue"),
+      },
+      {
+        path: "/project/:projectId/objects/delete-property/:propertyId",
+        name: "DeleteProperty",
+        props: true,
+        component: () => import("@/views/PropertyView.vue"),
+      },
+      {
+        path: "/project/:projectId/objects/details-property/:propertyId",
+        name: "DetailsProperty",
+        props: true,
+        component: () => import("@/views/PropertyView.vue"),
+      },
+      {
+        path: "/project/:projectId/objects/update-property/:propertyId",
+        name: "UpdateProperty",
+        props: true,
+        component: () => import("@/views/PropertyView.vue"),
+      },
     ],
   },
 ];
