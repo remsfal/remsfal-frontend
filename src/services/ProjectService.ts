@@ -31,11 +31,12 @@ export interface PropertyItem {
   description: string;
   landRegisterEntry: string;
   plotArea: number;
+  effective_space: number;
   buildings?: BuildingItem[];
 }
 
 export interface BuildingItem {
-  id: string;
+  id?: string;
   propertyId: string;
   title: string;
   addressId: string;
@@ -50,7 +51,7 @@ export interface BuildingItem {
 }
 
 export interface ApartmentItem {
-  id: string;
+  id?: string;
   buildingId: string;
   title: string;
   location: string;
@@ -62,7 +63,7 @@ export interface ApartmentItem {
 }
 
 export interface GarageItem {
-  id: string;
+  id?: string;
   buildingId: string;
   title: string;
   location: string;
@@ -145,6 +146,49 @@ export default class ProjectService {
         return response.data;
       })
       .catch((error) => console.error(error));
+  }
+
+  getProperty(projectId: string, propertyId: string): Promise<PropertyItem> {
+    return axios
+      .get(`${this.url}/${projectId}/properties/${propertyId}`)
+      .then((response) => {
+        console.log("property returned", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Error getting property:", error);
+        throw error;
+      });
+  }
+
+  updateProperty(
+    projectId: string,
+    propertyId: string,
+    property: PropertyItem
+  ): Promise<PropertyItem> {
+    return axios
+      .patch(`${this.url}/${projectId}/properties/${propertyId}`, property)
+      .then((response) => {
+        console.log("property updated", response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Error updating property:", error);
+        throw error;
+      });
+  }
+
+  deleteProperty(projectId: string, propertyId: string): Promise<void> {
+    return axios
+      .delete(`${this.url}/${projectId}/properties/${propertyId}`)
+      .then((response) => {
+        console.log("property deleted");
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Error deleting property:", error);
+        throw error;
+      });
   }
 
   createSite(title: string, projectId: string, propertyId: string) {

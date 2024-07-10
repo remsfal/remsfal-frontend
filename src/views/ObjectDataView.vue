@@ -65,8 +65,9 @@ export default {
         (acc: Record<string, boolean>, property) => {
           if (property?.id) {
             acc[property.id] = true;
+
             property.buildings?.forEach((building) => {
-              expandedSubRows.value[building.id] = true;
+              if (building?.id) expandedSubRows.value[building.id] = true;
             });
           }
           return acc;
@@ -84,6 +85,18 @@ export default {
       router.push(`/project/${props.projectId}/objects/create-property`);
     };
 
+    const navigateToUpdateProperty = (propertyId: string) => {
+      router.push(
+        `/project/${props.projectId}/objects/update-property/${propertyId}`
+      );
+    };
+
+    const navigateToDeleteProperty = (propertyId: string) => {
+      router.push(
+        `/project/${props.projectId}/objects/delete-property/${propertyId}`
+      );
+    };
+
     return {
       objectData,
       isLoading,
@@ -93,6 +106,8 @@ export default {
       expandAll,
       collapseAll,
       navigateToCreateProperty,
+      navigateToUpdateProperty,
+      navigateToDeleteProperty,
     };
   },
 };
@@ -114,6 +129,7 @@ export default {
             dataKey="id"
             tableStyle="min-width: 60rem"
             scrollable
+            scrollDirection="both"
             scrollHeight="var(--custom-scroll-height)"
             class="custom-scroll-height"
           >
@@ -153,9 +169,23 @@ export default {
               :sortable="true"
             />
             <Column field="plotArea" header="Plot Area" :sortable="true" />
-            <Column headerStyle="width:4rem">
-              <template #body>
-                <Button icon="pi pi-search" />
+            <Column
+              field="effective_space"
+              header="Effective Space"
+              :sortable="true"
+            />
+            <Column frozen alignFrozen="right">
+              <template #body="slotProps">
+                <Button
+                  class="mr-2 mb-2"
+                  icon="pi pi-pencil"
+                  @click="navigateToUpdateProperty(slotProps.data.id)"
+                />
+                <Button
+                  class="mr-2 mb-2"
+                  icon="pi pi-trash"
+                  @click="navigateToDeleteProperty(slotProps.data.id)"
+                />
               </template>
             </Column>
             <template #expansion="slotProps">
@@ -202,9 +232,10 @@ export default {
                     :sortable="true"
                   />
                   <Column field="rent" header="Rent" :sortable="true" />
-                  <Column headerStyle="width:4rem">
+                  <Column frozen alignFrozen="right">
                     <template #body>
-                      <Button icon="pi pi-search" />
+                      <Button class="mr-2 mb-2" icon="pi pi-pencil" />
+                      <Button class="mr-2 mb-2" icon="pi pi-trash" />
                     </template>
                   </Column>
 
@@ -221,6 +252,8 @@ export default {
                         :value="buildingSlotProps.data.apartments"
                         dataKey="id"
                         tableStyle="min-width: 40rem"
+                        scrollable
+                        scrollDirection="both"
                       >
                         <Column
                           field="id"
@@ -254,9 +287,10 @@ export default {
                           :sortable="true"
                         />
                         <Column field="rent" header="Rent" :sortable="true" />
-                        <Column headerStyle="width:4rem">
+                        <Column frozen alignFrozen="right">
                           <template #body>
-                            <Button icon="pi pi-search" />
+                            <Button class="mr-2 mb-2" icon="pi pi-pencil" />
+                            <Button class="mr-2 mb-2" icon="pi pi-trash" />
                           </template>
                         </Column>
                       </DataTable>
@@ -276,6 +310,8 @@ export default {
                         :value="buildingSlotProps.data.garages"
                         dataKey="id"
                         tableStyle="min-width: 40rem"
+                        scrollable
+                        scrollDirection="both"
                       >
                         <Column field="id" header="GarageID" :sortable="true" />
                         <Column field="title" header="Title" :sortable="true" />
@@ -295,9 +331,14 @@ export default {
                           :sortable="true"
                         />
                         <Column field="rent" header="Rent" :sortable="true" />
-                        <Column headerStyle="width:4rem">
+                        <Column
+                          style="min-width: 200px"
+                          frozen
+                          alignFrozen="right"
+                        >
                           <template #body>
-                            <Button icon="pi pi-search" />
+                            <Button class="mr-2 mb-2" icon="pi pi-pencil" />
+                            <Button class="mr-2 mb-2" icon="pi pi-trash" />
                           </template>
                         </Column>
                       </DataTable>

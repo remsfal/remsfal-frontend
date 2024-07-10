@@ -5,19 +5,21 @@ export function generateDummyApartments(
 ): ApartmentItem[] {
   const apartments: ApartmentItem[] = [];
 
-  buildings.forEach((building, index) => {
+  buildings.forEach((building: BuildingItem, index) => {
     for (let i = 0; i < 5; i++) {
-      apartments.push({
-        id: `${building.id}-${i + 1}`,
-        buildingId: building.id,
-        title: `Apartment ${building.id}-${i + 1}`,
-        location: `Location ${building.id}-${i + 1}`,
-        description: `Description ${building.id}-${i + 1}`,
-        livingSpace: 80 * (i + 1),
-        usableSpace: 100 * (i + 1),
-        heatingSpace: 50 * (i + 1),
-        rent: 1200 * (i + 1),
-      });
+      if (building.id) {
+        apartments.push({
+          id: `${building.id}-${i + 1}`,
+          buildingId: building.id,
+          title: `Apartment ${building.id}-${i + 1}`,
+          location: `Location ${building.id}-${i + 1}`,
+          description: `Description ${building.id}-${i + 1}`,
+          livingSpace: 80 * (i + 1),
+          usableSpace: 100 * (i + 1),
+          heatingSpace: 50 * (i + 1),
+          rent: 1200 * (i + 1),
+        });
+      }
     }
   });
   return apartments;
