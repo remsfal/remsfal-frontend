@@ -109,6 +109,10 @@ export default {
         });
     };
 
+    const close = () => {
+      router.push(`/project/${props.projectId}/objects`);
+    };
+
     return {
       id,
       title,
@@ -120,6 +124,7 @@ export default {
       updateProperty,
       deleteProperty,
       fetchPropertyDetails,
+      close,
       error,
       isLoading,
       route,
@@ -179,6 +184,7 @@ export default {
             v-model="effectiveSpace"
             id="effectiveSpace"
             type="number"
+            :disabled="route.name === 'DeleteProperty'"
           />
         </div>
         <div class="field col-12 text-right">
@@ -194,14 +200,20 @@ export default {
             label="Update Property"
             icon="pi pi-check"
             @click="updateProperty"
-            class="p-buttonProperty"
+            class="p-buttonProperty mr-2 mb-2"
           />
           <Button
             v-if="route.name === 'DeleteProperty'"
             label="Delete Property"
             icon="pi pi-trash"
             @click="deleteProperty"
-            class="p-buttonProperty p-button-danger"
+            class="p-buttonProperty p-button-danger mr-2 mb-2"
+          />
+          <Button
+            label="Close"
+            icon="pi pi-times"
+            @click="close"
+            class="p-buttonProperty mr-2 mb-2"
           />
         </div>
       </div>
