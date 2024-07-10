@@ -1,4 +1,9 @@
-import {createRouter, createWebHistory} from 'vue-router';
+import {
+    createRouter,
+    createWebHistory,
+    type RouteLocationNormalized,
+    type RouteLocationNormalizedLoaded
+} from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
 import LegalNoticeView from "@/views/LegalNoticeView.vue";
 import ProjectLayout from '@/layout/ProjectLayout.vue';
@@ -6,6 +11,7 @@ import PrivacyView from "@/views/PrivacyView.vue";
 import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 import FullscreenLayout from "@/layout/FullscreenLayout.vue";
 import type {Status} from "@/services/TaskService";
+
 
 
 const routes = [
@@ -64,7 +70,11 @@ const routes = [
             {
                 path: '/project/:projectId/tasks',
                 name: 'TaskOverview',
-                props: true,
+                props: (route: RouteLocationNormalizedLoaded) => ({
+                    projectId: route.params.projectId,
+                    owner: route.query.owner,
+                    status: route.query.status
+                }),
                 component: () => import('@/views/TaskView.vue')
 
             }

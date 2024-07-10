@@ -37,6 +37,7 @@ export default class TaskService {
     readonly baseUrl: string = "/api/v1/projects";
 
     //Get a list of tasks
+    static mock: any;
     getTasks(projectId: string): Promise<TaskList> {
         return axios
             .get(`${this.baseUrl}/${projectId}/tasks`)
