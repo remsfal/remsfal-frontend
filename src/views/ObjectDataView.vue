@@ -182,7 +182,7 @@ export default {
                   @click="navigateToUpdateProperty(slotProps.data.id)"
                 />
                 <Button
-                  class="mr-2 mb-2"
+                  class="mr-2 mb-2 p-button-danger"
                   icon="pi pi-trash"
                   @click="navigateToDeleteProperty(slotProps.data.id)"
                 />
@@ -235,7 +235,10 @@ export default {
                   <Column frozen alignFrozen="right">
                     <template #body>
                       <Button class="mr-2 mb-2" icon="pi pi-pencil" />
-                      <Button class="mr-2 mb-2" icon="pi pi-trash" />
+                      <Button
+                        class="mr-2 mb-2 p-button-danger"
+                        icon="pi pi-trash"
+                      />
                     </template>
                   </Column>
 
@@ -290,7 +293,10 @@ export default {
                         <Column frozen alignFrozen="right">
                           <template #body>
                             <Button class="mr-2 mb-2" icon="pi pi-pencil" />
-                            <Button class="mr-2 mb-2" icon="pi pi-trash" />
+                            <Button
+                              class="mr-2 mb-2 p-button-danger"
+                              icon="pi pi-trash"
+                            />
                           </template>
                         </Column>
                       </DataTable>
@@ -338,7 +344,10 @@ export default {
                         >
                           <template #body>
                             <Button class="mr-2 mb-2" icon="pi pi-pencil" />
-                            <Button class="mr-2 mb-2" icon="pi pi-trash" />
+                            <Button
+                              class="mr-2 mb-2 p-button-danger"
+                              icon="pi pi-trash"
+                            />
                           </template>
                         </Column>
                       </DataTable>
