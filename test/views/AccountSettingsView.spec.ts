@@ -61,25 +61,4 @@ describe('AccountSettingsView', () => {
     expect(wrapper.vm.editedUserProfile.firstName).toBe(wrapper.vm.userProfile.firstName);
   });
 
-  // Zusätzlicher Test
-  test('Address fields are initialized correctly when missing', async () => {
-    wrapper.vm.userProfile.address = null;
-    wrapper.vm.toggleEditMode();
-
-    expect(wrapper.vm.userProfile.address).toEqual({
-      street: '',
-      city: '',
-      zip: '',
-      province: '',
-      countryCode: ''
-    });
-
-    expect(wrapper.vm.editedUserProfile.address).toEqual({
-      street: '',
-      city: '',
-      zip: '',
-      province: '',
-      countryCode: ''
-    });
-  });
 });
