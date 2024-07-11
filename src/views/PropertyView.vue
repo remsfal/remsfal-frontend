@@ -137,8 +137,12 @@ export default {
   <div class="col-12">
     <div class="card">
       <h5 v-if="route.name === 'CreateProperty'">Create New Property</h5>
-      <h5 v-if="route.name === 'UpdateProperty'">Update Property: {{ id }}</h5>
-      <h5 v-if="route.name === 'DeleteProperty'">Delete Property: {{ id }}</h5>
+      <h5 v-if="route.name === 'UpdateProperty'">
+        Update Property with ID: {{ id }}
+      </h5>
+      <h5 v-if="route.name === 'DeleteProperty'">
+        Delete Property with ID: {{ id }}
+      </h5>
       <div v-if="isLoading">Loading...</div>
       <div v-if="error">{{ error }}</div>
       <div v-if="!isLoading && !error" class="p-fluid formgrid grid">
@@ -167,6 +171,7 @@ export default {
             id="description"
             rows="4"
             :disabled="route.name === 'DeleteProperty'"
+            class="no-resize"
           />
         </div>
         <div class="field col-12 md:col-6">
@@ -193,7 +198,7 @@ export default {
             label="Create Property"
             icon="pi pi-check"
             @click="createProperty"
-            class="p-button-property"
+            class="p-button-property mr-2 mb-2"
           />
           <Button
             v-if="route.name === 'UpdateProperty'"
@@ -228,5 +233,9 @@ export default {
 
 .p-button-property {
   width: auto;
+}
+
+.no-resize {
+  resize: none;
 }
 </style>

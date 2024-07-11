@@ -176,16 +176,18 @@ export default {
             />
             <Column frozen alignFrozen="right">
               <template #body="slotProps">
-                <Button
-                  class="mr-2 mb-2"
-                  icon="pi pi-pencil"
-                  @click="navigateToUpdateProperty(slotProps.data.id)"
-                />
-                <Button
-                  class="mr-2 mb-2 p-button-danger"
-                  icon="pi pi-trash"
-                  @click="navigateToDeleteProperty(slotProps.data.id)"
-                />
+                <div class="flex justify-content-end">
+                  <Button
+                    class="mr-2 mb-2"
+                    icon="pi pi-pencil"
+                    @click="navigateToUpdateProperty(slotProps.data.id)"
+                  />
+                  <Button
+                    class="mr-2 mb-2 p-button-danger"
+                    icon="pi pi-trash"
+                    @click="navigateToDeleteProperty(slotProps.data.id)"
+                  />
+                </div>
               </template>
             </Column>
             <template #expansion="slotProps">
@@ -234,11 +236,13 @@ export default {
                   <Column field="rent" header="Rent" :sortable="true" />
                   <Column frozen alignFrozen="right">
                     <template #body>
-                      <Button class="mr-2 mb-2" icon="pi pi-pencil" />
-                      <Button
-                        class="mr-2 mb-2 p-button-danger"
-                        icon="pi pi-trash"
-                      />
+                      <div class="flex justify-content-end">
+                        <Button class="mr-2 mb-2" icon="pi pi-pencil" />
+                        <Button
+                          class="mr-2 mb-2 p-button-danger"
+                          icon="pi pi-trash"
+                        />
+                      </div>
                     </template>
                   </Column>
 
@@ -292,11 +296,13 @@ export default {
                         <Column field="rent" header="Rent" :sortable="true" />
                         <Column frozen alignFrozen="right">
                           <template #body>
-                            <Button class="mr-2 mb-2" icon="pi pi-pencil" />
-                            <Button
-                              class="mr-2 mb-2 p-button-danger"
-                              icon="pi pi-trash"
-                            />
+                            <div class="flex justify-content-end">
+                              <Button class="mr-2 mb-2" icon="pi pi-pencil" />
+                              <Button
+                                class="mr-2 mb-2 p-button-danger"
+                                icon="pi pi-trash"
+                              />
+                            </div>
                           </template>
                         </Column>
                       </DataTable>
@@ -343,11 +349,13 @@ export default {
                           alignFrozen="right"
                         >
                           <template #body>
-                            <Button class="mr-2 mb-2" icon="pi pi-pencil" />
-                            <Button
-                              class="mr-2 mb-2 p-button-danger"
-                              icon="pi pi-trash"
-                            />
+                            <div class="flex justify-content-end">
+                              <Button class="mr-2 mb-2" icon="pi pi-pencil" />
+                              <Button
+                                class="mr-2 mb-2 p-button-danger"
+                                icon="pi pi-trash"
+                              />
+                            </div>
                           </template>
                         </Column>
                       </DataTable>
