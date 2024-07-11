@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { createRouter, createMemoryHistory } from 'vue-router';
-import ProjectForm from '@/components/NewProjectForm.vue'; // update the path accordingly
-import ProjectService from '@/services/ProjectService';
+import ProjectForm from '../../src/components/NewProjectForm.vue'; // update the path accordingly
+import ProjectService from '../../src/services/ProjectService';
 import { createPinia, setActivePinia } from 'pinia'; // make sure these imports are correct
 
 vi.mock('@/services/ProjectService');

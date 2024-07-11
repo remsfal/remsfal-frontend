@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import LandingPageView from '@/views/LandingPageView.vue'; // Update this to the correct path
+import LandingPageView from '../../src/views/LandingPageView.vue';
 
 describe('LandingPageView.vue', () => {
     it('has the correct default data', () => {
@@ -13,7 +13,7 @@ describe('LandingPageView.vue', () => {
 
         // Mock window.location.href
         const locationMock = vi.fn();
-        global.window = Object.create(window);
+        global = Object.create(window);
         Object.defineProperty(window, 'location', {
             configurable: true,
             value: {
