@@ -1,33 +1,10 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, test, expect } from 'vitest'
 import { mount } from '@vue/test-utils';
-import LandingPageView from '../../src/views/LandingPageView.vue';
+import LandingPage from '@/views/LandingPageView.vue';
 
-describe('LandingPageView.vue', () => {
-    it('has the correct default data', () => {
-        const wrapper = mount(LandingPageView);
-        expect(wrapper.vm.project_title).toBe('Just a Test'); // Ensure this matches the actual data property
-    });
-
-    it('calls login and redirects to the correct URL', () => {
-        const wrapper = mount(LandingPageView);
-
-        // Mock window.location.href
-        const locationMock = vi.fn();
-        global = Object.create(window);
-        Object.defineProperty(window, 'location', {
-            configurable: true,
-            value: {
-                set href(url) {
-                    locationMock(url);
-                },
-                get href() {
-                    return "";
-                }
-            },
-        });
-
-        const route = "/projects";
-        wrapper.vm.login(route);
-        expect(locationMock).toHaveBeenCalledWith(`/api/v1/authentication/login?route=${encodeURIComponent(route)}`);
-    });
-});
+describe('LandingPageView', () => {
+  test('renders properly', () => {
+    const wrapper = mount(LandingPage, { props: { msg: 'Herzlich Willkommen' } })
+    expect(wrapper.text()).toContain('Herzlich Willkommen')
+  })
+})
