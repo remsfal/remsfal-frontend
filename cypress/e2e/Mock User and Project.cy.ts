@@ -9,7 +9,7 @@ describe('Mocking User and Test Project', () => {
         name: 'Cypress Hill',
         email: 'Cypress@Hill.de',
         registerDate: '2024-06-11',
-        lasLoginDate: '2024-06-11T15:54:23'
+        lastLoginDate: '2024-06-11T15:54:23'
       }
     });
 
