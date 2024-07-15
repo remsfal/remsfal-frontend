@@ -10,37 +10,34 @@ export default {
       type: String,
       required: true,
     },
-    propertyId: {
-      type: String,
-      required: false,
-    },
   },
   setup(props) {
     const router = useRouter();
     const route = useRoute();
     const projectService = new ProjectService();
 
-    const id = ref(props.propertyId);
+    const id = ref(route.query.propertyId || "");
     const title = ref("");
     const landRegisterEntry = ref("");
     const description = ref("");
     const effectiveSpace = ref(0);
-
     const plotArea = ref(0);
     const error = ref<string | null>(null);
     const isLoading = ref(false);
 
+    const action = ref(route.query.action || "");
+
     onMounted(() => {
-      if (route.name === "UpdateProperty" || route.name === "DeleteProperty") {
+      if (action.value === "update" || action.value === "delete") {
         fetchPropertyDetails();
       }
     });
 
     const fetchPropertyDetails = () => {
-      if (!props.propertyId) return;
+      if (!id.value) return;
       isLoading.value = true;
       projectService
-        .getProperty(props.projectId, props.propertyId)
+        .getProperty(props.projectId, id.value.toString())
         .then((property: PropertyItem) => {
           title.value = property.title;
           description.value = property.description;
@@ -78,7 +75,7 @@ export default {
     };
 
     const updateProperty = () => {
-      if (!props.propertyId) return;
+      if (!id.value) return;
       const updatedProperty: PropertyItem = {
         title: title.value,
         description: description.value,
@@ -88,7 +85,7 @@ export default {
       };
 
       projectService
-        .updateProperty(props.projectId, props.propertyId, updatedProperty)
+        .updateProperty(props.projectId, id.value.toString(), updatedProperty)
         .then(() => {
           router.push(`/project/${props.projectId}/objects`);
         })
@@ -98,9 +95,9 @@ export default {
     };
 
     const deleteProperty = () => {
-      if (!props.propertyId) return;
+      if (!id.value) return;
       projectService
-        .deleteProperty(props.projectId, props.propertyId)
+        .deleteProperty(props.projectId, id.value.toString())
         .then(() => {
           router.push(`/project/${props.projectId}/objects`);
         })
@@ -128,6 +125,7 @@ export default {
       error,
       isLoading,
       route,
+      action,
     };
   },
 };
@@ -136,13 +134,9 @@ export default {
 <template>
   <div class="col-12">
     <div class="card">
-      <h5 v-if="route.name === 'CreateProperty'">Create New Property</h5>
-      <h5 v-if="route.name === 'UpdateProperty'">
-        Update Property with ID: {{ id }}
-      </h5>
-      <h5 v-if="route.name === 'DeleteProperty'">
-        Delete Property with ID: {{ id }}
-      </h5>
+      <h5 v-if="action === 'create'">Create New Property</h5>
+      <h5 v-if="action === 'update'">Update Property with ID: {{ id }}</h5>
+      <h5 v-if="action === 'delete'">Delete Property with ID: {{ id }}</h5>
       <div v-if="isLoading">Loading...</div>
       <div v-if="error">{{ error }}</div>
       <div v-if="!isLoading && !error" class="p-fluid formgrid grid">
@@ -152,7 +146,7 @@ export default {
             v-model="title"
             id="title"
             type="text"
-            :disabled="route.name === 'DeleteProperty'"
+            :disabled="action === 'delete'"
           />
         </div>
         <div class="field col-12 md:col-6">
@@ -161,7 +155,7 @@ export default {
             v-model="landRegisterEntry"
             id="landRegisterEntry"
             type="text"
-            :disabled="route.name === 'DeleteProperty'"
+            :disabled="action === 'delete'"
           />
         </div>
         <div class="field col-12">
@@ -170,7 +164,7 @@ export default {
             v-model="description"
             id="description"
             rows="4"
-            :disabled="route.name === 'DeleteProperty'"
+            :disabled="action === 'delete'"
             class="no-resize"
           />
         </div>
@@ -180,7 +174,7 @@ export default {
             v-model="plotArea"
             id="plotArea"
             type="number"
-            :disabled="route.name === 'DeleteProperty'"
+            :disabled="action === 'delete'"
           />
         </div>
         <div class="field col-12 md:col-6">
@@ -189,26 +183,26 @@ export default {
             v-model="effectiveSpace"
             id="effectiveSpace"
             type="number"
-            :disabled="route.name === 'DeleteProperty'"
+            :disabled="action === 'delete'"
           />
         </div>
         <div class="field col-12 text-right">
           <Button
-            v-if="route.name === 'CreateProperty'"
+            v-if="action === 'create'"
             label="Create Property"
             icon="pi pi-check"
             @click="createProperty"
             class="p-button-property mr-2 mb-2"
           />
           <Button
-            v-if="route.name === 'UpdateProperty'"
+            v-if="action === 'update'"
             label="Update Property"
             icon="pi pi-check"
             @click="updateProperty"
             class="p-button-property mr-2 mb-2"
           />
           <Button
-            v-if="route.name === 'DeleteProperty'"
+            v-if="action === 'delete'"
             label="Delete Property"
             icon="pi pi-trash"
             @click="deleteProperty"
@@ -226,7 +220,7 @@ export default {
   </div>
 </template>
 
-<style scope>
+<style scoped>
 .text-right {
   text-align: right;
 }

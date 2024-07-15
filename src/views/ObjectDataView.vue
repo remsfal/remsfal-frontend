@@ -81,20 +81,11 @@ export default {
       expandedSubRows.value = {};
     };
 
-    const navigateToCreateProperty = () => {
-      router.push(`/project/${props.projectId}/objects/create-property`);
-    };
-
-    const navigateToUpdateProperty = (propertyId: string) => {
-      router.push(
-        `/project/${props.projectId}/objects/update-property/${propertyId}`
-      );
-    };
-
-    const navigateToDeleteProperty = (propertyId: string) => {
-      router.push(
-        `/project/${props.projectId}/objects/delete-property/${propertyId}`
-      );
+    const navigateToProperty = (action: string, propertyId?: string) => {
+      router.push({
+        path: `/project/${props.projectId}/objects/property`,
+        query: { action: action, propertyId: propertyId },
+      });
     };
 
     return {
@@ -105,9 +96,7 @@ export default {
       expandedSubRows,
       expandAll,
       collapseAll,
-      navigateToCreateProperty,
-      navigateToUpdateProperty,
-      navigateToDeleteProperty,
+      navigateToProperty,
     };
   },
 };
@@ -154,7 +143,7 @@ export default {
                   type="button"
                   icon="pi pi-plus"
                   label="Create New Property"
-                  @click="navigateToCreateProperty"
+                  @click="navigateToProperty('create')"
                   class="mr-2 mb-2"
                 />
               </div>
@@ -180,12 +169,12 @@ export default {
                   <Button
                     class="mr-2 mb-2"
                     icon="pi pi-pencil"
-                    @click="navigateToUpdateProperty(slotProps.data.id)"
+                    @click="navigateToProperty('update', slotProps.data.id)"
                   />
                   <Button
                     class="mr-2 mb-2 p-button-danger"
                     icon="pi pi-trash"
-                    @click="navigateToDeleteProperty(slotProps.data.id)"
+                    @click="navigateToProperty('delete', slotProps.data.id)"
                   />
                 </div>
               </template>

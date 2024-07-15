@@ -77,20 +77,8 @@ const routes = [
         component: () => import("@/views/PropertyView.vue"),
       },
       {
-        path: "/project/:projectId/objects/delete-property/:propertyId",
-        name: "DeleteProperty",
-        props: true,
-        component: () => import("@/views/PropertyView.vue"),
-      },
-      {
-        path: "/project/:projectId/objects/details-property/:propertyId",
-        name: "DetailsProperty",
-        props: true,
-        component: () => import("@/views/PropertyView.vue"),
-      },
-      {
-        path: "/project/:projectId/objects/update-property/:propertyId",
-        name: "UpdateProperty",
+        path: ":projectId/objects/property",
+        name: "Property",
         props: true,
         component: () => import("@/views/PropertyView.vue"),
       },
