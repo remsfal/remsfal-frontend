@@ -24,36 +24,46 @@ export default {
 
     const router = useRouter();
 
-    onMounted(() => {
-      projectService
-        .getProperties(props.projectId, 10, 0)
-        .then((data) => {
-          const dummyBuildings = generateDummyBuildings(data.properties);
-          const dummyApartments = generateDummyApartments(dummyBuildings);
-          const dummyGarages = generateDummyGarages(dummyBuildings);
-
-          dummyBuildings.forEach((building) => {
-            building.apartments = dummyApartments.filter(
-              (apartment) => apartment.buildingId === building.id
-            );
-            building.garages = dummyGarages.filter(
-              (garage) => garage.buildingId === building.id
-            );
-          });
-
-          objectData.value = data.properties.map((property) => {
-            return {
-              ...property,
-              buildings: dummyBuildings.filter(
-                (building) => building.propertyId === property.id
-              ),
-            };
-          });
-        })
+    function fetchProperties(projectId: string): Promise<PropertyItem[]> {
+      return projectService
+        .getProperties(projectId, 10, 0)
+        .then((data) => data.properties)
         .catch((err) => {
           error.value = `Failed to fetch object data: ${
             err.message || "Unknown error"
           }`;
+          return [];
+        });
+    }
+
+    function generateDummyData(properties: PropertyItem[]) {
+      const dummyBuildings = generateDummyBuildings(properties);
+      const dummyApartments = generateDummyApartments(dummyBuildings);
+      const dummyGarages = generateDummyGarages(dummyBuildings);
+
+      dummyBuildings.forEach((building) => {
+        building.apartments = dummyApartments.filter(
+          (apartment) => apartment.buildingId === building.id
+        );
+        building.garages = dummyGarages.filter(
+          (garage) => garage.buildingId === building.id
+        );
+      });
+
+      objectData.value = properties.map((property) => ({
+        ...property,
+        buildings: dummyBuildings.filter(
+          (building) => building.propertyId === property.id
+        ),
+      }));
+    }
+
+    onMounted(() => {
+      fetchProperties(props.projectId)
+        .then((properties) => {
+          if (properties.length > 0) {
+            generateDummyData(properties);
+          }
         })
         .finally(() => {
           isLoading.value = false;
@@ -107,7 +117,6 @@ export default {
     <div class="grid">
       <h1>Objektdaten Ansicht</h1>
       <div v-if="isLoading">Loading...</div>
-      <div v-if="error">{{ error }}</div>
       <div class="col-12" v-if="!isLoading && !error">
         <div class="card">
           <DataTable

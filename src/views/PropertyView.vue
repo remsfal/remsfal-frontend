@@ -134,9 +134,9 @@ export default {
 <template>
   <div class="col-12">
     <div class="card">
-      <h5 v-if="action === 'create'">Create New Property</h5>
-      <h5 v-if="action === 'update'">Update Property with ID: {{ id }}</h5>
-      <h5 v-if="action === 'delete'">Delete Property with ID: {{ id }}</h5>
+      <h5 v-if="action === 'create'">Erstelle Eigentum</h5>
+      <h5 v-if="action === 'update'">Update Eigentum mit ID: {{ id }}</h5>
+      <h5 v-if="action === 'delete'">Lösche Eigentum mit ID: {{ id }}</h5>
       <div v-if="isLoading">Loading...</div>
       <div v-if="error">{{ error }}</div>
       <div v-if="!isLoading && !error" class="p-fluid formgrid grid">
@@ -150,7 +150,7 @@ export default {
           />
         </div>
         <div class="field col-12 md:col-6">
-          <label for="landRegisterEntry">Land Register Entry</label>
+          <label for="landRegisterEntry">Grundbucheintrag</label>
           <InputText
             v-model="landRegisterEntry"
             id="landRegisterEntry"
@@ -159,7 +159,7 @@ export default {
           />
         </div>
         <div class="field col-12">
-          <label for="description">Description</label>
+          <label for="description">Beschreibung</label>
           <Textarea
             v-model="description"
             id="description"
@@ -168,8 +168,8 @@ export default {
             class="no-resize"
           />
         </div>
-        <div class="field col-12 md:col-6">
-          <label for="plotArea">Plot Area</label>
+        <div class="field col-10 md:col-6">
+          <label for="plotArea">Grundstücksfläche</label>
           <InputText
             v-model="plotArea"
             id="plotArea"
@@ -177,8 +177,8 @@ export default {
             :disabled="action === 'delete'"
           />
         </div>
-        <div class="field col-12 md:col-6">
-          <label for="effectiveSpace">Effective Space</label>
+        <div class="field col-10 md:col-6">
+          <label for="effectiveSpace">Nutzfläche</label>
           <InputText
             v-model="effectiveSpace"
             id="effectiveSpace"
@@ -189,27 +189,27 @@ export default {
         <div class="field col-12 text-right">
           <Button
             v-if="action === 'create'"
-            label="Create Property"
+            label="Erstellen"
             icon="pi pi-check"
             @click="createProperty"
             class="p-button-property mr-2 mb-2"
           />
           <Button
             v-if="action === 'update'"
-            label="Update Property"
+            label="Updaten"
             icon="pi pi-check"
             @click="updateProperty"
             class="p-button-property mr-2 mb-2"
           />
           <Button
             v-if="action === 'delete'"
-            label="Delete Property"
+            label="Löschen"
             icon="pi pi-trash"
             @click="deleteProperty"
             class="p-button-property p-button-danger mr-2 mb-2"
           />
           <Button
-            label="Close"
+            label="Abbrechen"
             icon="pi pi-times"
             @click="close"
             class="p-button-property mr-2 mb-2"
@@ -220,7 +220,7 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style>
 .text-right {
   text-align: right;
 }
