@@ -16,7 +16,7 @@ export const useProjectStore = defineStore('project-store', {
     actions: {
         refreshProjectList() {
             const projectService = new ProjectService();
-            projectService.getProjects()
+            projectService.getProjects(100)
                 .then((projectList: ProjectList) => {
                     this.projects = projectList.projects;
                     console.log("Refreshed project list: ", this.projects);

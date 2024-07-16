@@ -6,8 +6,8 @@ export default {
     }
   },
   methods: {
-    login(): void {
-      window.location.pathname = "/api/v1/authentication/login";
+    login(route: string): void {
+      window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
     },
   }
 }
@@ -25,7 +25,7 @@ export default {
       Sie können sich über Ihr Google-Mail-Konto anmelden und Ihre Projekte anlegen.
       Mit der Anmeldung stimmen Sie den Nutzungs- und Datenschutzbedingungen zu. <br>
       Mehr Informationen finden Sie auf der remsfal-Website: <a href="https://remsfal.de/">remsfal.de</a>  </p>
-      <button class="gsi-material-button" @click="login">
+      <button class="gsi-material-button" @click="login('/projects')">
         <div class="gsi-material-button-state"></div>
         <div class="gsi-material-button-content-wrapper">
           <div class="gsi-material-button-icon">
