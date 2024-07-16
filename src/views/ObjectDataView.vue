@@ -32,14 +32,14 @@ export default {
           const dummyApartments = generateDummyApartments(dummyBuildings);
           const dummyGarages = generateDummyGarages(dummyBuildings);
 
-          dummyBuildings.forEach((building) => {
-            building.apartments = dummyApartments.filter(
-              (apartment) => apartment.buildingId === building.id
-            );
-            building.garages = dummyGarages.filter(
-              (garage) => garage.buildingId === building.id
-            );
-          });
+          // dummyBuildings.forEach((building) => {
+          //   building.apartments = dummyApartments.filter(
+          //     (apartment) => apartment.buildingId === building.id
+          //   );
+          //   building.garages = dummyGarages.filter(
+          //     (garage) => garage.buildingId === building.id
+          //   );
+          // });
 
           objectData.value = data.properties.map((property) => {
             return {
@@ -105,7 +105,7 @@ export default {
 <template>
   <main>
     <div class="grid">
-      <h1>ObjectDataView</h1>
+      <h1>Objektdaten Ansicht</h1>
       <div v-if="isLoading">Loading...</div>
       <div v-if="error">{{ error }}</div>
       <div class="col-12" v-if="!isLoading && !error">
@@ -139,13 +139,6 @@ export default {
                     class="mr-2 mb-2"
                   />
                 </div>
-                <Button
-                  type="button"
-                  icon="pi pi-plus"
-                  label="Create New Property"
-                  @click="navigateToProperty('create')"
-                  class="mr-2 mb-2"
-                />
               </div>
             </template>
             <Column :expander="true" headerStyle="width: 3rem" />
@@ -167,27 +160,31 @@ export default {
               <template #body="slotProps">
                 <div class="flex justify-content-end">
                   <Button
-                    class="mr-2 mb-2"
                     icon="pi pi-pencil"
+                    severity="success"
+                    text
+                    raised
+                    rounded
+                    class="mb-2 mr-2"
                     @click="navigateToProperty('update', slotProps.data.id)"
                   />
+
                   <Button
-                    class="mr-2 mb-2 p-button-danger"
                     icon="pi pi-trash"
+                    severity="danger"
+                    text
+                    raised
+                    rounded
+                    class="mb-2 mr-2"
                     @click="navigateToProperty('delete', slotProps.data.id)"
                   />
                 </div>
               </template>
             </Column>
+
             <template #expansion="slotProps">
-              <div
-                v-if="
-                  slotProps.data.buildings &&
-                  slotProps.data.buildings.length > 0
-                "
-                class="p-3"
-              >
-                <h5>Buildings</h5>
+              <div class="p-3">
+                <h5>Gebäude für Eigentum: {{ slotProps.data.title }}</h5>
                 <DataTable
                   :value="slotProps.data.buildings"
                   v-model:expandedRows="expandedSubRows"
@@ -226,24 +223,33 @@ export default {
                   <Column frozen alignFrozen="right">
                     <template #body>
                       <div class="flex justify-content-end">
-                        <Button class="mr-2 mb-2" icon="pi pi-pencil" />
                         <Button
-                          class="mr-2 mb-2 p-button-danger"
+                          icon="pi pi-pencil"
+                          severity="success"
+                          text
+                          raised
+                          rounded
+                          class="mb-2 mr-2"
+                        />
+
+                        <Button
                           icon="pi pi-trash"
+                          severity="danger"
+                          text
+                          raised
+                          rounded
+                          class="mb-2 mr-2"
                         />
                       </div>
                     </template>
                   </Column>
 
                   <template #expansion="buildingSlotProps">
-                    <div
-                      v-if="
-                        buildingSlotProps.data.apartments &&
-                        buildingSlotProps.data.apartments.length > 0
-                      "
-                      class="p-3"
-                    >
-                      <h5>Apartments</h5>
+                    <div class="p-3">
+                      <h5>
+                        Apartments für Gebäude:
+                        {{ buildingSlotProps.data.title }}
+                      </h5>
                       <DataTable
                         :value="buildingSlotProps.data.apartments"
                         dataKey="id"
@@ -286,27 +292,42 @@ export default {
                         <Column frozen alignFrozen="right">
                           <template #body>
                             <div class="flex justify-content-end">
-                              <Button class="mr-2 mb-2" icon="pi pi-pencil" />
                               <Button
-                                class="mr-2 mb-2 p-button-danger"
+                                icon="pi pi-pencil"
+                                severity="success"
+                                text
+                                raised
+                                rounded
+                                class="mb-2 mr-2"
+                              />
+
+                              <Button
                                 icon="pi pi-trash"
+                                severity="danger"
+                                text
+                                raised
+                                rounded
+                                class="mb-2 mr-2"
                               />
                             </div>
                           </template>
                         </Column>
                       </DataTable>
+                      <div class="flex justify-content-end mt-4">
+                        <Button
+                          type="button"
+                          icon="pi pi-plus"
+                          label="Erstelle ein neues Apartment"
+                          class="mr-2 mb-2"
+                        />
+                      </div>
                     </div>
-                    <div v-else class="p-3">
-                      <h5>No apartments found for this building.</h5>
-                    </div>
-                    <div
-                      v-if="
-                        buildingSlotProps.data.garages &&
-                        buildingSlotProps.data.garages.length > 0
-                      "
-                      class="p-3"
-                    >
-                      <h5>Garages</h5>
+
+                    <div class="p-3">
+                      <h5>
+                        Garagen für Gebäude:
+                        {{ buildingSlotProps.data.title }}
+                      </h5>
                       <DataTable
                         :value="buildingSlotProps.data.garages"
                         dataKey="id"
@@ -339,27 +360,58 @@ export default {
                         >
                           <template #body>
                             <div class="flex justify-content-end">
-                              <Button class="mr-2 mb-2" icon="pi pi-pencil" />
                               <Button
-                                class="mr-2 mb-2 p-button-danger"
+                                icon="pi pi-pencil"
+                                severity="success"
+                                text
+                                raised
+                                rounded
+                                class="mb-2 mr-2"
+                              />
+
+                              <Button
                                 icon="pi pi-trash"
+                                severity="danger"
+                                text
+                                raised
+                                rounded
+                                class="mb-2 mr-2"
                               />
                             </div>
                           </template>
                         </Column>
                       </DataTable>
-                    </div>
-                    <div v-else class="p-3">
-                      <h5>No garages found for this building.</h5>
+                      <div class="flex justify-content-end mt-4">
+                        <Button
+                          type="button"
+                          icon="pi pi-plus"
+                          label="Erstelle eine neue Garage"
+                          class="mr-2 mb-2"
+                        />
+                      </div>
                     </div>
                   </template>
                 </DataTable>
-              </div>
-              <div v-else class="p-3">
-                <h5>No buildings found for this property.</h5>
+                <div class="flex justify-content-end mt-4">
+                  <Button
+                    type="button"
+                    icon="pi pi-plus"
+                    label="Erstelle ein neues Gebäude"
+                    class="mr-2 mb-2"
+                  />
+                </div>
               </div>
             </template>
           </DataTable>
+          <div class="flex justify-content-end mt-4">
+            <Button
+              type="button"
+              icon="pi pi-plus"
+              label="Erstelle ein neues Eigentum"
+              @click="navigateToProperty('create')"
+              class="mr-2 mb-2"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -369,5 +421,13 @@ export default {
 <style scoped>
 .custom-scroll-height {
   --custom-scroll-height: 30vw;
+}
+
+.outline-button {
+  border: 1px solid #000;
+}
+
+.create-button {
+  margin-left: auto;
 }
 </style>
