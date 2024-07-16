@@ -73,6 +73,7 @@ export interface GarageItem {
 }
 
 export default class ProjectService {
+
   private readonly url: string = "/api/v1/projects";
 
   getProjects(): Promise<ProjectList> {
