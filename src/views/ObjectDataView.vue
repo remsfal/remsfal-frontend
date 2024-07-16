@@ -32,14 +32,14 @@ export default {
           const dummyApartments = generateDummyApartments(dummyBuildings);
           const dummyGarages = generateDummyGarages(dummyBuildings);
 
-          // dummyBuildings.forEach((building) => {
-          //   building.apartments = dummyApartments.filter(
-          //     (apartment) => apartment.buildingId === building.id
-          //   );
-          //   building.garages = dummyGarages.filter(
-          //     (garage) => garage.buildingId === building.id
-          //   );
-          // });
+          dummyBuildings.forEach((building) => {
+            building.apartments = dummyApartments.filter(
+              (apartment) => apartment.buildingId === building.id
+            );
+            building.garages = dummyGarages.filter(
+              (garage) => garage.buildingId === building.id
+            );
+          });
 
           objectData.value = data.properties.map((property) => {
             return {
