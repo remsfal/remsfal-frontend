@@ -73,15 +73,16 @@ export interface GarageItem {
 }
 
 export default class ProjectService {
-
   private readonly url: string = "/api/v1/projects";
 
-  getProjects(): Promise<ProjectList> {
-    return axios.get(`${this.url}`).then((response) => {
-      const projectList: ProjectList = response.data;
-      console.log("GET projects:", projectList);
-      return projectList;
-    });
+  getProjects(limit: number = 10, offset: number = 0): Promise<ProjectList> {
+    return axios
+      .get(`${this.url}?limit=${limit}&offset=${offset}`)
+      .then((response) => {
+        const projectList: ProjectList = response.data;
+        console.log("GET projects:", projectList);
+        return projectList;
+      });
   }
 
   createProject(title: string): Promise<Project> {
