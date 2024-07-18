@@ -39,10 +39,11 @@ const onNewProjectClick = () => {
   router.push('/new-project');
 };
 
-const onAllTasksClick = () => {
+const onHomeClick = () => {
   topbarMenuActive.value = false;
-  router.push({name: "AllTasksOverview", params: {projectId: projectStore.projectId}});
-};
+  projectStore.refreshProjectList()
+  router.push('/projects')
+}
 
 const onAccountSettingsClick = () => {
   topbarMenuActive.value = false;
@@ -53,8 +54,8 @@ const logout = () => {
   window.location.pathname = "/api/v1/authentication/logout";
 };
 
-const login = () => {
-  window.location.pathname = "/api/v1/authentication/login";
+const login = (route: string) => {
+  window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
 };
 
 const topbarMenuClasses = computed(() => {
@@ -106,9 +107,12 @@ const isOutsideClicked = (event:Event) => {
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
+            <button v-if="sessionStore.user != null" @click="onHomeClick()" class="p-link layout-topbar-shortcut-button">
+              <i class="pi pi-home"></i>
+              <span>Projekte</span>
+            </button>
             <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
-                <i class="pi pi-home"></i>
-                <Dropdown v-model="projectStore.selectedProject" :options="projectStore.projectList" @change="onProjectSelectionChange($event)" optionLabel="name" placeholder="Projekt wählen" />
+              <Dropdown v-model="projectStore.selectedProject" :options="projectStore.projectList" @change="onProjectSelectionChange($event)" optionLabel="name" placeholder="Projekt wählen" />
             </div>
             <button v-if="sessionStore.user != null" @click="onNewProjectClick()" class="p-link layout-topbar-shortcut-button">
                 <i class="pi pi-plus"></i>
@@ -122,7 +126,7 @@ const isOutsideClicked = (event:Event) => {
                 <i class="pi pi-sign-out"></i>
                 <span>Abmelden</span>
             </button>
-            <button v-if="sessionStore.user == null" @click="login()" class="p-link layout-topbar-button">
+            <button v-if="sessionStore.user == null" @click="login('/projects')" class="p-link layout-topbar-button">
                 <i class="pi pi-sign-in"></i>
                 <span>Anmelden</span>
             </button>

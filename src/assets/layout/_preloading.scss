@@ -5,6 +5,7 @@
     width: 100%;
     height: 100%;
 }
+
 .preloader-content {
     border: 0 solid transparent;
     border-radius: 50%;
@@ -15,7 +16,7 @@
     left: calc(50vw - 75px);
 }
 
-.preloader-content:before, .preloader-content:after{
+.preloader-content::before, .preloader-content::after{
     content: '';
     border: 1em solid var(--primary-color);
     border-radius: 50%;
@@ -28,7 +29,7 @@
     opacity: 0;
 }
 
-.preloader-content:before{
+.preloader-content::before{
     animation-delay: 0.5s;
 }
 
@@ -37,9 +38,11 @@
         transform: scale(0);
         opacity: 0;
     }
+
     50%{
         opacity: 1;
     }
+
     100%{
         transform: scale(1);
         opacity: 0;
