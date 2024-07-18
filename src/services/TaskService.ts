@@ -6,11 +6,11 @@ export interface Task {
     description: string;
     status: Status;
     ownerId: string;
-    created_at: Date;
-    modified_at: Date;
-    blocked_by: string;
-    duplicate_of: string;
-    related_to: string;
+    createdAt: Date;
+    modifiedAt: Date;
+    blockedBy: string;
+    duplicateOf: string;
+    relatedTo: string;
 }
 
 export enum Status {
@@ -65,14 +65,16 @@ export default class TaskService {
 
     //Create a task
     createTask(projectId: string, title: string, description: string, ownerId: string, blockedBy?: string, relatedTo?: string): Promise<Task> {
+        const currentTimestamp = new Date();
         const newTask: Partial<Task> = {
             title: title,
             description: description,
             status: Status.OPEN,
             ownerId: ownerId,
-            created_at: new Date(),
-            blocked_by: blockedBy,
-            related_to: relatedTo,
+            createdAt: currentTimestamp,
+            modifiedAt: currentTimestamp,
+            blockedBy: blockedBy,
+            relatedTo: relatedTo,
         };
 
         return axios
