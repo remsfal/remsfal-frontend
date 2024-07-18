@@ -142,7 +142,7 @@ const openTasks = computed(() => {
   width: 100%;
 }
 
-.button-wrapper Button {
+.button-wrapper button {
   width: 300px;
 }
 </style>
