@@ -20,11 +20,17 @@ const model = ref([
     ]
   },
   {
-    label: 'Stammdaten',
+    label: "Stammdaten",
     items: [
-      { label: 'Objektdaten', icon: 'pi pi-fw pi-home', to: '/uikit/formlayout' },
-      { label: 'Mieter', icon: 'pi pi-fw pi-users', to: '/uikit/input' }
-    ]
+      {
+        label: "Objektdaten",
+        icon: "pi pi-fw pi-home",
+        to: projectStore.selectedProject?.id
+          ? `/project/${projectStore.selectedProject.id}/objects`
+          : "",
+      },
+      { label: "Mieter", icon: "pi pi-fw pi-users", to: "/uikit/input" },
+    ],
   },
   {
     label: 'Aufgabenmanagement',

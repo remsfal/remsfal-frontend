@@ -5,15 +5,19 @@ import {
 } from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
 import LegalNoticeView from "@/views/LegalNoticeView.vue";
-import ProjectLayout from '@/layout/ProjectLayout.vue';
+import ProjectLayout from "@/layout/ProjectLayout.vue";
 import PrivacyView from "@/views/PrivacyView.vue";
-import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
+import ProjectSelectionView from "@/views/ProjectSelectionView.vue";
 import FullscreenLayout from "@/layout/FullscreenLayout.vue";
 
 
 
 const routes = [
-    {
+  {
+    path: "/",
+    component: FullscreenLayout,
+    children: [
+      {
         path: "/",
         component: FullscreenLayout,
         children: [
@@ -55,16 +59,28 @@ const routes = [
 
         ]
     },
-    {
-        path: "/project",
-        component: ProjectLayout,
-        children: [
-            {
-                path: '/project/:projectId/',
-                name: 'ProjectDashboard',
-                props: true,
-                component: () => import('@/views/ProjectView.vue')
-            },
+  {
+    path: "/project",
+    component: ProjectLayout,
+    children: [
+      {
+        path: "/project/:projectId/objects",
+        name: "Objektdaten",
+        props: true,
+        component: () => import("@/views/ObjectDataView.vue"),
+      },
+      {
+        path: "/project/:projectId/objects/create-property",
+        name: "CreateProperty",
+        props: true,
+        component: () => import("@/views/PropertyView.vue"),
+      },
+      {
+        path: ":projectId/objects/property",
+        name: "Property",
+        props: true,
+        component: () => import("@/views/PropertyView.vue"),
+      },
             {
                 path: '/project/:projectId/tasks',
                 name: 'TaskOverview',
@@ -76,16 +92,15 @@ const routes = [
                 component: () => import('@/views/TaskView.vue')
 
             }
-        ]
-    },
-
+    ]
+  }
 ];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes: routes,
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: routes,
 });
 
-export {routes};
+export { routes };
 
-export default router
+export default router;
