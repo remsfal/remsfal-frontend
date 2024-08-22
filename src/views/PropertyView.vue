@@ -170,7 +170,7 @@ export default {
         </div>
         <div class="field col-10 md:col-6">
           <label for="plotArea">Grundstücksfläche</label>
-          <InputText
+          <InputNumber
             v-model="plotArea"
             id="plotArea"
             type="number"
@@ -179,7 +179,7 @@ export default {
         </div>
         <div class="field col-10 md:col-6">
           <label for="effectiveSpace">Nutzfläche</label>
-          <InputText
+          <InputNumber
             v-model="effectiveSpace"
             id="effectiveSpace"
             type="number"
