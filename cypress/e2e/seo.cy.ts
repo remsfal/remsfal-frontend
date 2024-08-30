@@ -18,3 +18,26 @@ const pages = [
                  });
          });
      });
+
+describe('Page Title Investigation for LandingPage', () => {
+
+    it('should log the initial title and determine its source', () => {
+        // Besucht die Landing Page
+        cy.visit('/');
+
+        // Überprüft und loggt den finalen Titel nach Ausführung von JS
+        cy.title().then((title) => {
+            cy.log('Final title after JS execution:', title);
+
+            // Bestimmt die Quelle des Titels
+            if (title === 'remsfal Online - Cloud Service for Facility Management') {
+                cy.log('The title comes directly from the index.html file.');
+            } else {
+                cy.log('The title was dynamically set by JavaScript.');
+            }
+        });
+    });
+
+});
+
+
