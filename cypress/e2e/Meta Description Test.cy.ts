@@ -1,75 +1,41 @@
-describe('SEO Meta Information Tests', () => {
+describe('SEO Tests - Missing Meta Descriptions on Various Pages', () => {
 
-  const seoPages = [
-    '/',                        // Landing Page
-    '/legal-notice',            // Rechtliche Hinweise
-    '/privacy',                 // Datenschutz
-    '/projects',                // Projektauswahl
-    '/new-project',             // Neues Projekt
-    '/account-settings',        // Kontoeinstellungen
-    '/account-contacts',        // Kontaktinformationen
-    '/project/:projectId/',     // Projektdashboard
-    '/project/:projectId/objects' // Objektdaten eines Projekts
-  ];
+  // Test für die Datenschutzseite (Privacy Policy)
+  describe('Privacy Policy Page', () => {
+    before(() => {
+      // Besuche die Datenschutzseite vor dem Test
+      cy.visit('/privacy-policy');
+    });
 
-  seoPages.forEach((page) => {
-    it(`should verify the presence of <meta> description on ${page}`, () => {
-      cy.visit(page);
-
-      // Überprüft, ob ein <meta name="description"> Tag existiert
-      cy.get('head meta[name="description"]').then(($meta) => {
-        if ($meta.length === 0) {
-          cy.log('No <meta> description found on initial load.');
-        } else {
-          cy.log('<meta> description found:', $meta.attr('content'));
-        }
-      });
-
-      // Verwende Cypress-Befehle, um auf eine Bedingung zu warten
-      cy.get('head meta[name="description"]', { timeout: 5000 }) // Timeout von 5 Sekunden
-          .should('have.attr', 'content')
-          .and('not.be.empty')
-          .then(($meta) => {
-            cy.log('<meta> description dynamically set:', $meta.attr('content'));
-          });
+    it('Should not have a meta description on the privacy policy page', () => {
+      // Überprüfen, dass das <meta name="description">-Tag nicht existiert
+      cy.get('meta[name="description"]').should('not.exist');
     });
   });
 
-});
-describe('Investigation of Missing <meta> Description', () => {
+  // Test für die Landingpage
+  describe('Landing Page', () => {
+    before(() => {
+      // Besuche die Landingpage vor dem Test
+      cy.visit('/');
+    });
 
-  const seoPages = [
-    '/',                        // Landing Page
-    '/legal-notice',            // Rechtliche Hinweise
-    '/privacy',                 // Datenschutz
-    '/projects',                // Projektauswahl
-    '/new-project',             // Neues Projekt
-    '/account-settings',        // Kontoeinstellungen
-    '/account-contacts',        // Kontaktinformationen
-    '/project/:projectId/',     // Projektdashboard
-    '/project/:projectId/objects' // Objektdaten eines Projekts
-  ];
+    it('Should not have a meta description on the landing page', () => {
+      // Überprüfen, dass das <meta name="description">-Tag nicht existiert
+      cy.get('meta[name="description"]').should('not.exist');
+    });
+  });
 
-  seoPages.forEach((page) => {
-    it(`should check for dynamic creation of <meta> description on ${page}`, () => {
-      cy.visit(page);
+  // Test für die Legal Notice Seite (Impressum)
+  describe('Legal Notice Page', () => {
+    before(() => {
+      // Besuche die Legal Notice Seite vor dem Test
+      cy.visit('/legal-notice');
+    });
 
-      // Überprüfe, ob ein <meta name="description"> Tag existiert
-      cy.get('head meta[name="description"]').then(($meta) => {
-        if ($meta.length === 0) {
-          cy.log('No <meta> description found on initial load.');
-        } else {
-          cy.log('<meta> description found:', $meta.attr('content'));
-        }
-      });
-
-      // Warte auf eine mögliche dynamische Änderung durch JavaScript
-      cy.get('head meta[name="description"]', { timeout: 5000 }) // Timeout von 5 Sekunden
-          .should('have.attr', 'content') // Überprüft, ob das Attribut 'content' existiert
-          .and('not.be.empty')            // Überprüft, ob es nicht leer ist
-          .then(($meta) => {
-            cy.log('<meta> description dynamically set or confirmed:', $meta.attr('content'));
-          });
+    it('Should not have a meta description on the legal notice page', () => {
+      // Überprüfen, dass das <meta name="description">-Tag nicht existiert
+      cy.get('meta[name="description"]').should('not.exist');
     });
   });
 
