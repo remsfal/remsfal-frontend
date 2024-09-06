@@ -1,8 +1,6 @@
-import type { ApartmentItem, BuildingItem } from "@/services/ProjectService";
+import type { ApartmentItem, BuildingItem } from '@/services/ProjectService';
 
-export function generateDummyApartments(
-  buildings: BuildingItem[]
-): ApartmentItem[] {
+export function generateDummyApartments(buildings: BuildingItem[]): ApartmentItem[] {
   const apartments: ApartmentItem[] = [];
 
   buildings.forEach((building: BuildingItem, index) => {

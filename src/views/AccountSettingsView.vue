@@ -1,6 +1,6 @@
 <script lang="ts">
-import { useUserSessionStore } from "@/stores/UserSession";
-import UserService, { type User, type Address } from "@/services/UserService";
+import { useUserSessionStore } from '@/stores/UserSession';
+import UserService, { type User, type Address } from '@/services/UserService';
 //import Modal from "@/components/LeoModal.vue";
 
 interface PhoneValid {
@@ -17,40 +17,40 @@ export default {
       editMode: false, // Modus für die Bearbeitung der Benutzerdaten
       visible: false, // Sichtbarkeit des Dialogs für Konto löschen
       countries: [
-        { name: "Australia", code: "AU" },
-        { name: "Brazil", code: "BR" },
-        { name: "China", code: "CN" },
-        { name: "Egypt", code: "EG" },
-        { name: "France", code: "FR" },
-        { name: "Germany", code: "DE" },
-        { name: "India", code: "IN" },
-        { name: "Japan", code: "JP" },
-        { name: "Spain", code: "ES" },
-        { name: "United States", code: "US" },
-        { name: "Austria", code: "AT" },
-        { name: "Belgium", code: "BE" },
-        { name: "Bulgaria", code: "BG" },
-        { name: "Croatia", code: "HR" },
-        { name: "Cyprus", code: "CY" },
-        { name: "Czech Republic", code: "CZ" },
-        { name: "Denmark", code: "DK" },
-        { name: "Estonia", code: "EE" },
-        { name: "Finland", code: "FI" },
-        { name: "Greece", code: "GR" },
-        { name: "Hungary", code: "HU" },
-        { name: "Ireland", code: "IE" },
-        { name: "Italy", code: "IT" },
-        { name: "Latvia", code: "LV" },
-        { name: "Lithuania", code: "LT" },
-        { name: "Luxembourg", code: "LU" },
-        { name: "Malta", code: "MT" },
-        { name: "Netherlands", code: "NL" },
-        { name: "Poland", code: "PL" },
-        { name: "Portugal", code: "PT" },
-        { name: "Romania", code: "RO" },
-        { name: "Slovakia", code: "SK" },
-        { name: "Slovenia", code: "SI" },
-        { name: "Sweden", code: "SE" },
+        { name: 'Australia', code: 'AU' },
+        { name: 'Brazil', code: 'BR' },
+        { name: 'China', code: 'CN' },
+        { name: 'Egypt', code: 'EG' },
+        { name: 'France', code: 'FR' },
+        { name: 'Germany', code: 'DE' },
+        { name: 'India', code: 'IN' },
+        { name: 'Japan', code: 'JP' },
+        { name: 'Spain', code: 'ES' },
+        { name: 'United States', code: 'US' },
+        { name: 'Austria', code: 'AT' },
+        { name: 'Belgium', code: 'BE' },
+        { name: 'Bulgaria', code: 'BG' },
+        { name: 'Croatia', code: 'HR' },
+        { name: 'Cyprus', code: 'CY' },
+        { name: 'Czech Republic', code: 'CZ' },
+        { name: 'Denmark', code: 'DK' },
+        { name: 'Estonia', code: 'EE' },
+        { name: 'Finland', code: 'FI' },
+        { name: 'Greece', code: 'GR' },
+        { name: 'Hungary', code: 'HU' },
+        { name: 'Ireland', code: 'IE' },
+        { name: 'Italy', code: 'IT' },
+        { name: 'Latvia', code: 'LV' },
+        { name: 'Lithuania', code: 'LT' },
+        { name: 'Luxembourg', code: 'LU' },
+        { name: 'Malta', code: 'MT' },
+        { name: 'Netherlands', code: 'NL' },
+        { name: 'Poland', code: 'PL' },
+        { name: 'Portugal', code: 'PT' },
+        { name: 'Romania', code: 'RO' },
+        { name: 'Slovakia', code: 'SK' },
+        { name: 'Slovenia', code: 'SI' },
+        { name: 'Sweden', code: 'SE' },
       ],
       isPhoneValid: {
         businessPhoneNumber: true,
@@ -61,7 +61,7 @@ export default {
   },
   async mounted() {
     const sessionStore = useUserSessionStore();
-    this.userProfile.email = sessionStore.user?.email || ""; // Sicherstellen, dass userEmail initialisiert wird
+    this.userProfile.email = sessionStore.user?.email || ''; // Sicherstellen, dass userEmail initialisiert wird
     await this.fetchUserProfile();
   },
   methods: {
@@ -74,13 +74,11 @@ export default {
           this.editedUserProfile = { ...profile };
         }
       } catch (error) {
-        console.error("Das Benutzerprofil konnte nicht gefunden werden", error);
+        console.error('Das Benutzerprofil konnte nicht gefunden werden', error);
       }
     },
     toggleEditMode() {
-      this.editedUserProfile = this.editMode
-        ? this.editedUserProfile
-        : { ...this.userProfile };
+      this.editedUserProfile = this.editMode ? this.editedUserProfile : { ...this.userProfile };
       this.editedUserProfile.address = this.editMode
         ? this.editedUserProfile.address
         : { ...this.userProfile.address };
@@ -92,10 +90,7 @@ export default {
       this.toggleEditMode();
     },
     async saveProfile() {
-      if (
-        Object.values(this.isPhoneValid).every(Boolean) &&
-        this.validateAddress()
-      ) {
+      if (Object.values(this.isPhoneValid).every(Boolean) && this.validateAddress()) {
         try {
           const userService = new UserService();
           const user = {
@@ -141,37 +136,31 @@ export default {
           this.userProfile = updatedUser ? updatedUser : this.userProfile;
           this.toggleEditMode();
         } catch (e) {
-          console.error("Das Benutzerprofil konnte nicht geupdated werden!", e);
+          console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
         }
       } else {
-        alert("Bitte überprüfen Sie Ihre Eingaben!");
+        alert('Bitte überprüfen Sie Ihre Eingaben!');
       }
     },
     logout(): void {
-      window.location.pathname = "/api/v1/authentication/logout";
+      window.location.pathname = '/api/v1/authentication/logout';
     },
     deleteAccount() {
       const userService = new UserService();
       userService
         .deleteUser()
         .then(() => this.logout())
-        .catch(() =>
-          console.error("Das Benutzerprofil konnte nicht gelöscht werden!")
-        );
+        .catch(() => console.error('Das Benutzerprofil konnte nicht gelöscht werden!'));
     },
     validatePhone(phoneCategory: string) {
       const phonePattern = /^\+?[1-9]\d{1,14}$/;
       this.isPhoneValid[phoneCategory as keyof PhoneValid] = phonePattern.test(
-        this.editedUserProfile[phoneCategory as keyof PhoneValid]
+        this.editedUserProfile[phoneCategory as keyof PhoneValid],
       );
     },
     validateAddress() {
       if (Object.keys(this.editedUserProfile.address).length == 5) {
-        if (
-          Object.values(this.editedUserProfile.address).every(
-            (value) => value.length > 0
-          )
-        ) {
+        if (Object.values(this.editedUserProfile.address).every((value) => value.length > 0)) {
           return true;
         }
       }
@@ -179,9 +168,7 @@ export default {
     },
     async getCity() {
       const userService = new UserService();
-      const address = await userService.getCityFromZip(
-        this.editedUserProfile.address.zip
-      );
+      const address = await userService.getCityFromZip(this.editedUserProfile.address.zip);
       try {
         if (address) {
           this.editedUserProfile.address.city = address[0].city;
@@ -190,7 +177,7 @@ export default {
         }
       } catch (error) {
         console.log(error);
-        alert("Bitte überprüfen Sie Ihre Postleitzahl!");
+        alert('Bitte überprüfen Sie Ihre Postleitzahl!');
       }
     },
   },
@@ -224,9 +211,7 @@ export default {
                 <strong>Private Telefonnummer:</strong>
                 {{ userProfile.privatePhoneNumber }}
               </p>
-              <p v-if="userProfile.email">
-                <strong>Email:</strong> {{ userProfile.email }}
-              </p>
+              <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
               <p v-if="userProfile.registeredDate">
                 <strong>Mitglied seit:</strong> {{ userProfile.registeredDate }}
               </p>
@@ -237,36 +222,28 @@ export default {
             <div v-else>
               <div class="edit-inputs">
                 <FloatLabel>
-                  <InputText
-                    id="firstname"
-                    v-model="editedUserProfile.firstName"
-                  />
+                  <InputText id="firstname" v-model="editedUserProfile.firstName" />
                   <label for="firstname">Vorname</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText
-                    id="lastname"
-                    v-model="editedUserProfile.lastName"
-                  />
+                  <InputText id="lastname" v-model="editedUserProfile.lastName" />
                   <label for="lastname">Nachname</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText
                     id="businessPhoneNumber"
                     v-model="editedUserProfile.businessPhoneNumber"
-                    @change="() => validatePhone('businessPhoneNumber')"
                     :class="{ 'is-invalid': !isPhoneValid.businessPhoneNumber }"
+                    @change="() => validatePhone('businessPhoneNumber')"
                   />
-                  <label for="businessPhoneNumber"
-                    >Geschäftliche Telefonnummer</label
-                  >
+                  <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText
                     id="mobilePhoneNumber"
                     v-model="editedUserProfile.mobilePhoneNumber"
-                    @change="() => validatePhone('mobilePhoneNumber')"
                     :class="{ 'is-invalid': !isPhoneValid.mobilePhoneNumber }"
+                    @change="() => validatePhone('mobilePhoneNumber')"
                   />
                   <label for="mobilePhoneNumber">Handynummer</label>
                 </FloatLabel>
@@ -274,8 +251,8 @@ export default {
                   <InputText
                     id="privatePhoneNumber"
                     v-model="editedUserProfile.privatePhoneNumber"
-                    @change="() => validatePhone('privatePhoneNumber')"
                     :class="{ 'is-invalid': !isPhoneValid.privatePhoneNumber }"
+                    @change="() => validatePhone('privatePhoneNumber')"
                   />
                   <label for="privatePhoneNumber">Private Telefonnummer</label>
                 </FloatLabel>
@@ -310,32 +287,19 @@ export default {
             <div v-else>
               <div class="edit-inputs">
                 <FloatLabel>
-                  <InputText
-                    id="street"
-                    v-model="editedUserProfile.address.street"
-                  />
+                  <InputText id="street" v-model="editedUserProfile.address.street" />
                   <label for="street">Straße und Hausnummer</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText
-                    id="zip"
-                    @change="getCity"
-                    v-model="editedUserProfile.address.zip"
-                  />
+                  <InputText id="zip" v-model="editedUserProfile.address.zip" @change="getCity" />
                   <label for="zip">Postleitzahl</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText
-                    id="city"
-                    v-model="editedUserProfile.address.city"
-                  />
+                  <InputText id="city" v-model="editedUserProfile.address.city" />
                   <label for="city">Stadt</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText
-                    id="province"
-                    v-model="editedUserProfile.address.province"
-                  />
+                  <InputText id="province" v-model="editedUserProfile.address.province" />
                   <label for="province">Bundesland</label>
                 </FloatLabel>
                 <div class="country">
@@ -345,11 +309,7 @@ export default {
                     class="select-country"
                   >
                     <option disabled value="">Land</option>
-                    <option
-                      v-for="country in countries"
-                      :key="country.code"
-                      :value="country.code"
-                    >
+                    <option v-for="country in countries" :key="country.code" :value="country.code">
                       {{ country.name }}
                     </option>
                   </select>
@@ -374,8 +334,8 @@ export default {
             type="button"
             icon="pi pi-user-edit"
             class="edit-button"
-            @click="toggleEditMode"
             label="Bearbeiten"
+            @click="toggleEditMode"
           />
           <Button
             type="button"
@@ -397,8 +357,8 @@ export default {
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
           >
             <p>
-              Bist du sicher, dass du dein Konto löschen möchtest? Alle deine
-              Daten werden unwiderruflich gelöscht.
+              Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden
+              unwiderruflich gelöscht.
             </p>
             <div class="buttons-container centered-buttons">
               <Button
@@ -406,9 +366,9 @@ export default {
                 icon="pi pi-trash"
                 severity="danger"
                 aria-label="Cancel"
-                @click="deleteAccount"
                 label="Konto wirklich löschen"
                 class="delete-button"
+                @click="deleteAccount"
               />
               <Button
                 type="button"
@@ -416,8 +376,8 @@ export default {
                 class="cancel-button"
                 severity="secondary"
                 aria-label="Cancel"
-                @click="visible = false"
                 label="Abbrechen"
+                @click="visible = false"
               />
             </div>
           </Dialog>
@@ -429,16 +389,16 @@ export default {
             type="button"
             label="Speichern"
             icon="pi pi-check"
-            @click="saveProfile"
             class="save-button"
+            @click="saveProfile"
           />
           <Button
             icon="pi pi-times"
             class="cancel-button"
             severity="secondary"
             aria-label="Cancel"
-            @click="toggleEditMode"
             label="Abbrechen"
+            @click="toggleEditMode"
           />
         </div>
       </div>

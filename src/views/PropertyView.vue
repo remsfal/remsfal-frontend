@@ -1,10 +1,9 @@
-<script lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import ProjectService, { type PropertyItem } from "@/services/ProjectService";
-
-export default {
-  name: "PropertyView",
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import ProjectService, { type PropertyItem } from '@/services/ProjectService';
+defineOptions({
+  name: 'PropertyView',
   props: {
     projectId: {
       type: String,
@@ -16,19 +15,19 @@ export default {
     const route = useRoute();
     const projectService = new ProjectService();
 
-    const id = ref(route.query.propertyId || "");
-    const title = ref("");
-    const landRegisterEntry = ref("");
-    const description = ref("");
+    const id = ref(route.query.propertyId || '');
+    const title = ref('');
+    const landRegisterEntry = ref('');
+    const description = ref('');
     const effectiveSpace = ref(0);
     const plotArea = ref(0);
     const error = ref<string | null>(null);
     const isLoading = ref(false);
 
-    const action = ref(route.query.action || "");
+    const action = ref(route.query.action || '');
 
     onMounted(() => {
-      if (action.value === "update" || action.value === "delete") {
+      if (action.value === 'update' || action.value === 'delete') {
         fetchPropertyDetails();
       }
     });
@@ -46,9 +45,7 @@ export default {
           effectiveSpace.value = property.effective_space;
         })
         .catch((err) => {
-          error.value = `Failed to fetch property details: ${
-            err.message || "Unknown error"
-          }`;
+          error.value = `Failed to fetch property details: ${err.message || 'Unknown error'}`;
         })
         .finally(() => {
           isLoading.value = false;
@@ -70,7 +67,7 @@ export default {
           router.push(`/project/${props.projectId}/objects`);
         })
         .catch((err) => {
-          console.error("Error creating property:", err);
+          console.error('Error creating property:', err);
         });
     };
 
@@ -90,7 +87,7 @@ export default {
           router.push(`/project/${props.projectId}/objects`);
         })
         .catch((err) => {
-          console.error("Error updating property:", err);
+          console.error('Error updating property:', err);
         });
     };
 
@@ -102,7 +99,7 @@ export default {
           router.push(`/project/${props.projectId}/objects`);
         })
         .catch((err) => {
-          console.error("Error deleting property:", err);
+          console.error('Error deleting property:', err);
         });
     };
 
@@ -128,7 +125,7 @@ export default {
       action,
     };
   },
-};
+});
 </script>
 
 <template>
@@ -142,18 +139,13 @@ export default {
       <div v-if="!isLoading && !error" class="p-fluid formgrid grid">
         <div class="field col-12 md:col-6">
           <label for="title">Title</label>
-          <InputText
-            v-model="title"
-            id="title"
-            type="text"
-            :disabled="action === 'delete'"
-          />
+          <InputText id="title" v-model="title" type="text" :disabled="action === 'delete'" />
         </div>
         <div class="field col-12 md:col-6">
           <label for="landRegisterEntry">Grundbucheintrag</label>
           <InputText
-            v-model="landRegisterEntry"
             id="landRegisterEntry"
+            v-model="landRegisterEntry"
             type="text"
             :disabled="action === 'delete'"
           />
@@ -161,8 +153,8 @@ export default {
         <div class="field col-12">
           <label for="description">Beschreibung</label>
           <Textarea
-            v-model="description"
             id="description"
+            v-model="description"
             rows="4"
             :disabled="action === 'delete'"
             class="no-resize"
@@ -171,8 +163,8 @@ export default {
         <div class="field col-10 md:col-6">
           <label for="plotArea">Grundstücksfläche</label>
           <InputNumber
-            v-model="plotArea"
             id="plotArea"
+            v-model="plotArea"
             type="number"
             :disabled="action === 'delete'"
           />
@@ -180,8 +172,8 @@ export default {
         <div class="field col-10 md:col-6">
           <label for="effectiveSpace">Nutzfläche</label>
           <InputNumber
-            v-model="effectiveSpace"
             id="effectiveSpace"
+            v-model="effectiveSpace"
             type="number"
             :disabled="action === 'delete'"
           />
@@ -191,28 +183,28 @@ export default {
             v-if="action === 'create'"
             label="Erstellen"
             icon="pi pi-check"
-            @click="createProperty"
             class="p-button-property mr-2 mb-2"
+            @click="createProperty"
           />
           <Button
             v-if="action === 'update'"
             label="Updaten"
             icon="pi pi-check"
-            @click="updateProperty"
             class="p-button-property mr-2 mb-2"
+            @click="updateProperty"
           />
           <Button
             v-if="action === 'delete'"
             label="Löschen"
             icon="pi pi-trash"
-            @click="deleteProperty"
             class="p-button-property p-button-danger mr-2 mb-2"
+            @click="deleteProperty"
           />
           <Button
             label="Abbrechen"
             icon="pi pi-times"
-            @click="close"
             class="p-button-property mr-2 mb-2"
+            @click="close"
           />
         </div>
       </div>

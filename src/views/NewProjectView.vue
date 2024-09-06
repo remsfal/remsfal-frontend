@@ -1,11 +1,12 @@
 <script lang="ts">
-import NewProjectForm from "@/components/NewProjectForm.vue";
-import {defineComponent} from "vue";
+import NewProjectForm from '@/components/NewProjectForm.vue';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-  components: {NewProjectForm}
-})
+  components: { NewProjectForm },
+});
 </script>
+
 <template>
   <div class="grid align-items-center justify-content-center">
     <div class="card flex mt-5">

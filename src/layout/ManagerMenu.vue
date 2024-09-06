@@ -3,59 +3,70 @@ import { ref } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
-import {useUserSessionStore} from "@/stores/UserSession";
-import {Status} from "@/services/TaskService";
+import { useUserSessionStore } from '@/stores/UserSession';
+import { Status } from '@/services/TaskService';
 
 const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
-
 
 const model = ref([
   {
     label: 'Home',
     items: [
       { label: 'Dashboard', icon: 'pi pi-fw pi-chart-bar', to: '/' },
-      { label: 'Einstellungen', icon: 'pi pi-fw pi-cog', to: '/' }
-    ]
+      { label: 'Einstellungen', icon: 'pi pi-fw pi-cog', to: '/' },
+    ],
   },
   {
-    label: "Stammdaten",
+    label: 'Stammdaten',
     items: [
       {
-        label: "Objektdaten",
-        icon: "pi pi-fw pi-home",
+        label: 'Objektdaten',
+        icon: 'pi pi-fw pi-home',
         to: projectStore.selectedProject?.id
           ? `/project/${projectStore.selectedProject.id}/objects`
-          : "",
+          : '',
       },
-      { label: "Mieter", icon: "pi pi-fw pi-users", to: "/uikit/input" },
+      { label: 'Mieter', icon: 'pi pi-fw pi-users', to: '/uikit/input' },
     ],
   },
   {
     label: 'Aufgabenmanagement',
     items: [
-      { label: 'Meine Aufgaben',
+      {
+        label: 'Meine Aufgaben',
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
-          router.push({ name: 'TaskOverview', params: { projectId }, query: { owner: sessionStore.user?.id } });
-        } },
-      { label: 'Offene Aufgaben',
+          router.push({
+            name: 'TaskOverview',
+            params: { projectId },
+            query: { owner: sessionStore.user?.id },
+          });
+        },
+      },
+      {
+        label: 'Offene Aufgaben',
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
-          router.push({ name: 'TaskOverview', params: { projectId }, query: { status: Status.OPEN} });
-        }},
+          router.push({
+            name: 'TaskOverview',
+            params: { projectId },
+            query: { status: Status.OPEN },
+          });
+        },
+      },
       {
         label: 'Alle Aufgaben',
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({ name: 'TaskOverview', params: { projectId } });
-        }
-      }
-    ]
+        },
+      },
+    ],
   },
   {
     label: 'Mängelmanagement',
@@ -63,16 +74,16 @@ const model = ref([
       { label: 'Neue Meldungen', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
       { label: 'Offene Mängel', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
       { label: 'Beauftragte Mängel', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
-      { label: 'Alle Meldungen', icon: 'pi pi-fw pi-list', to: '/uikit/input' }
-    ]
-  }
+      { label: 'Alle Meldungen', icon: 'pi pi-fw pi-list', to: '/uikit/input' },
+    ],
+  },
 ]);
 </script>
 
 <template>
   <ul class="layout-menu">
     <template v-for="(item, i) in model" :key="item.label">
-      <app-menu-item :item="item" :index="i" />
+      <AppMenuItem :item="item" :index="i" />
     </template>
   </ul>
 </template>

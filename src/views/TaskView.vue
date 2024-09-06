@@ -2,62 +2,73 @@
 import { ref, onMounted, computed, watch, defineProps } from 'vue';
 import TaskService, { Status, type TaskItem } from '@/services/TaskService';
 
-const taskService = new TaskService();
-const title = ref<string>("");
-const description = ref<string>("");
-const blockedBy = ref<string>("");
-const relatedTo = ref<string>("");
-const visible = ref<boolean>(false);
-const tasks = ref<TaskItem[]>([]);
-
 const props = defineProps<{
   projectId: string;
   owner?: string;
   status?: Status;
 }>();
+const taskService = new TaskService();
+const title = ref<string>('');
+const description = ref<string>('');
+const blockedBy = ref<string>('');
+const relatedTo = ref<string>('');
+const visible = ref<boolean>(false);
+const tasks = ref<TaskItem[]>([]);
 
 const createTask = () => {
   const projectId = props.projectId;
-  const ownerId = props.owner || "";
+  const ownerId = props.owner || '';
 
-  taskService.createTask(projectId, title.value, description.value, ownerId, blockedBy.value, relatedTo.value)
-      .then((newTask) => {
-        console.log("New task created:", newTask);
-        visible.value = false;
-        loadTasks();
-      })
-      .catch((error) => {
-        console.error("Error creating task:", error);
-      });
+  taskService
+    .createTask(
+      projectId,
+      title.value,
+      description.value,
+      ownerId,
+      blockedBy.value,
+      relatedTo.value,
+    )
+    .then((newTask) => {
+      console.log('New task created:', newTask);
+      visible.value = false;
+      loadTasks();
+    })
+    .catch((error) => {
+      console.error('Error creating task:', error);
+    });
 };
 
 const loadTasks = () => {
   const projectId = props.projectId;
 
-  taskService.getTasks(projectId)
-      .then((tasklist) => {
-        tasks.value = tasklist.tasks;
-      })
-      .catch((error) => {
-        console.error("Error loading tasks:", error);
-      });
+  taskService
+    .getTasks(projectId)
+    .then((tasklist) => {
+      tasks.value = tasklist.tasks;
+    })
+    .catch((error) => {
+      console.error('Error loading tasks:', error);
+    });
 };
 
 onMounted(() => {
   loadTasks();
 });
 
-watch(() => props, () => {
-  loadTasks();
-});
+watch(
+  () => props,
+  () => {
+    loadTasks();
+  },
+);
 
 const ownerTasks = computed(() => {
-  const ownerId = props.owner || "";
-  return tasks.value.filter(task => task.owner === ownerId);
+  const ownerId = props.owner || '';
+  return tasks.value.filter((task) => task.owner === ownerId);
 });
 
 const openTasks = computed(() => {
-  return tasks.value.filter(task => task.status === Status.OPEN);
+  return tasks.value.filter((task) => task.status === Status.OPEN);
 });
 </script>
 
@@ -79,14 +90,19 @@ const openTasks = computed(() => {
       <div class="card button-wrapper">
         <Button label="Aufgabe erstellen" @click="visible = true" />
       </div>
-      <Dialog v-model:visible="visible" modal header="Aufgabe erstellen" :style="{ width: '50rem' }">
+      <Dialog
+        v-model:visible="visible"
+        modal
+        header="Aufgabe erstellen"
+        :style="{ width: '50rem' }"
+      >
         <div class="flex items-center gap-4 mb-4">
           <label for="title" class="font-semibold w-24">Titel</label>
-          <InputText id="title" class="flex-auto" v-model="title" autocomplete="off" />
+          <InputText id="title" v-model="title" class="flex-auto" autocomplete="off" />
         </div>
         <div class="flex items-center gap-4 mb-8">
           <label for="description" class="font-semibold w-24">Beschreibung</label>
-          <InputText id="description" class="flex-auto" v-model="description" autocomplete="off" />
+          <InputText id="description" v-model="description" class="flex-auto" autocomplete="off" />
         </div>
         <div class="flex justify-end gap-2">
           <Button type="button" label="Abbrechen" severity="secondary" @click="visible = false" />

@@ -1,13 +1,13 @@
 <script lang="ts">
-import { ref, onMounted } from "vue";
-import ProjectService, { type PropertyItem } from "@/services/ProjectService";
-import { generateDummyBuildings } from "@/helper/createBuildingData";
-import { generateDummyApartments } from "@/helper/createApartmentData";
-import { generateDummyGarages } from "@/helper/createGarageData";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from 'vue';
+import ProjectService, { type PropertyItem } from '@/services/ProjectService';
+import { generateDummyBuildings } from '@/helper/createBuildingData';
+import { generateDummyApartments } from '@/helper/createApartmentData';
+import { generateDummyGarages } from '@/helper/createGarageData';
+import { useRouter } from 'vue-router';
 
 export default {
-  name: "ObjectDataView",
+  name: 'ObjectDataView',
   props: {
     projectId: {
       type: String,
@@ -29,9 +29,7 @@ export default {
         .getProperties(projectId, 10, 0)
         .then((data) => data.properties)
         .catch((err) => {
-          error.value = `Failed to fetch object data: ${
-            err.message || "Unknown error"
-          }`;
+          error.value = `Failed to fetch object data: ${err.message || 'Unknown error'}`;
           return [];
         });
     }
@@ -43,18 +41,14 @@ export default {
 
       dummyBuildings.forEach((building) => {
         building.apartments = dummyApartments.filter(
-          (apartment) => apartment.buildingId === building.id
+          (apartment) => apartment.buildingId === building.id,
         );
-        building.garages = dummyGarages.filter(
-          (garage) => garage.buildingId === building.id
-        );
+        building.garages = dummyGarages.filter((garage) => garage.buildingId === building.id);
       });
 
       objectData.value = properties.map((property) => ({
         ...property,
-        buildings: dummyBuildings.filter(
-          (building) => building.propertyId === property.id
-        ),
+        buildings: dummyBuildings.filter((building) => building.propertyId === property.id),
       }));
     }
 
@@ -71,19 +65,16 @@ export default {
     });
 
     const expandAll = () => {
-      expandedRows.value = objectData.value.reduce(
-        (acc: Record<string, boolean>, property) => {
-          if (property?.id) {
-            acc[property.id] = true;
+      expandedRows.value = objectData.value.reduce((acc: Record<string, boolean>, property) => {
+        if (property?.id) {
+          acc[property.id] = true;
 
-            property.buildings?.forEach((building) => {
-              if (building?.id) expandedSubRows.value[building.id] = true;
-            });
-          }
-          return acc;
-        },
-        {}
-      );
+          property.buildings?.forEach((building) => {
+            if (building?.id) expandedSubRows.value[building.id] = true;
+          });
+        }
+        return acc;
+      }, {});
     };
 
     const collapseAll = () => {
@@ -117,13 +108,13 @@ export default {
     <div class="grid">
       <h1>Objektdaten Ansicht</h1>
       <div v-if="isLoading">Loading...</div>
-      <div class="col-12" v-if="!isLoading && !error">
+      <div v-if="!isLoading && !error" class="col-12">
         <div class="card">
           <DataTable
+            v-model:expandedRows="expandedRows"
             :value="objectData"
             :rows="10"
             :rowHover="true"
-            v-model:expandedRows="expandedRows"
             dataKey="id"
             tableStyle="min-width: 60rem"
             scrollable
@@ -137,15 +128,15 @@ export default {
                   <Button
                     icon="pi pi-search"
                     label="Expand All"
-                    @click="expandAll"
                     class="mr-2 mb-2"
+                    @click="expandAll"
                   />
 
                   <Button
                     icon="pi pi-minus"
                     label="Collapse All"
-                    @click="collapseAll"
                     class="mr-2 mb-2"
+                    @click="collapseAll"
                   />
                 </div>
               </div>
@@ -154,17 +145,9 @@ export default {
             <Column field="id" header="PropertyID" :sortable="true" />
             <Column field="title" header="Title" :sortable="true" />
             <Column field="description" header="Description" :sortable="true" />
-            <Column
-              field="landRegisterEntry"
-              header="Land Register Entry"
-              :sortable="true"
-            />
+            <Column field="landRegisterEntry" header="Land Register Entry" :sortable="true" />
             <Column field="plotArea" header="Plot Area" :sortable="true" />
-            <Column
-              field="effective_space"
-              header="Effective Space"
-              :sortable="true"
-            />
+            <Column field="effective_space" header="Effective Space" :sortable="true" />
             <Column frozen alignFrozen="right">
               <template #body="slotProps">
                 <div class="flex justify-content-end">
@@ -195,39 +178,19 @@ export default {
               <div class="p-3">
                 <h5>Gebäude für Eigentum: {{ slotProps.data.title }}</h5>
                 <DataTable
-                  :value="slotProps.data.buildings"
                   v-model:expandedRows="expandedSubRows"
+                  :value="slotProps.data.buildings"
                   dataKey="id"
                   tableStyle="min-width: 40rem"
                 >
                   <Column :expander="true" headerStyle="width: 3rem" />
                   <Column field="id" header="BuildingID" :sortable="true" />
                   <Column field="title" header="Title" :sortable="true" />
-                  <Column
-                    field="description"
-                    header="Description"
-                    :sortable="true"
-                  />
-                  <Column
-                    field="livingSpace"
-                    header="Living Space"
-                    :sortable="true"
-                  />
-                  <Column
-                    field="commercialSpace"
-                    header="Commercial Space"
-                    :sortable="true"
-                  />
-                  <Column
-                    field="usableSpace"
-                    header="Usable Space"
-                    :sortable="true"
-                  />
-                  <Column
-                    field="heatingSpace"
-                    header="Heating Space"
-                    :sortable="true"
-                  />
+                  <Column field="description" header="Description" :sortable="true" />
+                  <Column field="livingSpace" header="Living Space" :sortable="true" />
+                  <Column field="commercialSpace" header="Commercial Space" :sortable="true" />
+                  <Column field="usableSpace" header="Usable Space" :sortable="true" />
+                  <Column field="heatingSpace" header="Heating Space" :sortable="true" />
                   <Column field="rent" header="Rent" :sortable="true" />
                   <Column frozen alignFrozen="right">
                     <template #body>
@@ -266,37 +229,13 @@ export default {
                         scrollable
                         scrollDirection="both"
                       >
-                        <Column
-                          field="id"
-                          header="ApartmentID"
-                          :sortable="true"
-                        />
+                        <Column field="id" header="ApartmentID" :sortable="true" />
                         <Column field="title" header="Title" :sortable="true" />
-                        <Column
-                          field="location"
-                          header="Location"
-                          :sortable="true"
-                        />
-                        <Column
-                          field="description"
-                          header="Description"
-                          :sortable="true"
-                        />
-                        <Column
-                          field="livingSpace"
-                          header="Living Space"
-                          :sortable="true"
-                        />
-                        <Column
-                          field="usableSpace"
-                          header="Usable Space"
-                          :sortable="true"
-                        />
-                        <Column
-                          field="heatingSpace"
-                          header="Heating Space"
-                          :sortable="true"
-                        />
+                        <Column field="location" header="Location" :sortable="true" />
+                        <Column field="description" header="Description" :sortable="true" />
+                        <Column field="livingSpace" header="Living Space" :sortable="true" />
+                        <Column field="usableSpace" header="Usable Space" :sortable="true" />
+                        <Column field="heatingSpace" header="Heating Space" :sortable="true" />
                         <Column field="rent" header="Rent" :sortable="true" />
                         <Column frozen alignFrozen="right">
                           <template #body>
@@ -346,27 +285,11 @@ export default {
                       >
                         <Column field="id" header="GarageID" :sortable="true" />
                         <Column field="title" header="Title" :sortable="true" />
-                        <Column
-                          field="location"
-                          header="Location"
-                          :sortable="true"
-                        />
-                        <Column
-                          field="description"
-                          header="Description"
-                          :sortable="true"
-                        />
-                        <Column
-                          field="usableSpace"
-                          header="Usable Space"
-                          :sortable="true"
-                        />
+                        <Column field="location" header="Location" :sortable="true" />
+                        <Column field="description" header="Description" :sortable="true" />
+                        <Column field="usableSpace" header="Usable Space" :sortable="true" />
                         <Column field="rent" header="Rent" :sortable="true" />
-                        <Column
-                          style="min-width: 200px"
-                          frozen
-                          alignFrozen="right"
-                        >
+                        <Column style="min-width: 200px" frozen alignFrozen="right">
                           <template #body>
                             <div class="flex justify-content-end">
                               <Button
@@ -417,8 +340,8 @@ export default {
               type="button"
               icon="pi pi-plus"
               label="Erstelle ein neues Eigentum"
-              @click="navigateToProperty('create')"
               class="mr-2 mb-2"
+              @click="navigateToProperty('create')"
             />
           </div>
         </div>

@@ -2,10 +2,9 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
-import { useUserSessionStore } from "@/stores/UserSession";
-import { useProjectStore } from "@/stores/ProjectStore";
-import type { DropdownChangeEvent } from "primevue/dropdown";
-
+import { useUserSessionStore } from '@/stores/UserSession';
+import { useProjectStore } from '@/stores/ProjectStore';
+import type { DropdownChangeEvent } from 'primevue/dropdown';
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
@@ -16,11 +15,11 @@ const topbarMenuActive = ref(false);
 const router = useRouter();
 
 onMounted(() => {
-    bindOutsideClickListener();
+  bindOutsideClickListener();
 });
 
 onBeforeUnmount(() => {
-    unbindOutsideClickListener();
+  unbindOutsideClickListener();
 });
 
 const onTopBarMenuButton = () => {
@@ -28,10 +27,10 @@ const onTopBarMenuButton = () => {
 };
 
 const onProjectSelectionChange = (event: DropdownChangeEvent) => {
-  console.log("new project selected ", event.value.name);
+  console.log('new project selected ', event.value.name);
   projectStore.setSelectedProject(event.value);
   topbarMenuActive.value = false;
-  router.push({name: "ProjectDashboard", params: {projectId: projectStore.projectId}});
+  router.push({ name: 'ProjectDashboard', params: { projectId: projectStore.projectId } });
 };
 
 const onNewProjectClick = () => {
@@ -41,9 +40,9 @@ const onNewProjectClick = () => {
 
 const onHomeClick = () => {
   topbarMenuActive.value = false;
-  projectStore.refreshProjectList()
-  router.push('/projects')
-}
+  projectStore.refreshProjectList();
+  router.push('/projects');
+};
 
 const onAccountSettingsClick = () => {
   topbarMenuActive.value = false;
@@ -51,7 +50,7 @@ const onAccountSettingsClick = () => {
 };
 
 const logout = () => {
-  window.location.pathname = "/api/v1/authentication/logout";
+  window.location.pathname = '/api/v1/authentication/logout';
 };
 
 const login = (route: string) => {
@@ -60,85 +59,122 @@ const login = (route: string) => {
 
 const topbarMenuClasses = computed(() => {
   return {
-    'layout-topbar-menu-mobile-active': topbarMenuActive.value
+    'layout-topbar-menu-mobile-active': topbarMenuActive.value,
   };
 });
 
 const bindOutsideClickListener = () => {
-    if (!outsideClickListener.value) {
-        outsideClickListener.value = (event:Event) => {
-            if (isOutsideClicked(event)) {
-                topbarMenuActive.value = false;
-            }
-        };
-        document.addEventListener('click', outsideClickListener.value);
-    }
+  if (!outsideClickListener.value) {
+    outsideClickListener.value = (event: Event) => {
+      if (isOutsideClicked(event)) {
+        topbarMenuActive.value = false;
+      }
+    };
+    document.addEventListener('click', outsideClickListener.value);
+  }
 };
 const unbindOutsideClickListener = () => {
-    if (outsideClickListener.value) {
-        document.removeEventListener('click', outsideClickListener.value);
-        outsideClickListener.value = null;
-    }
+  if (outsideClickListener.value) {
+    document.removeEventListener('click', outsideClickListener.value);
+    outsideClickListener.value = null;
+  }
 };
-const isOutsideClicked = (event:Event) => {
-    if (!topbarMenuActive.value) return;
+const isOutsideClicked = (event: Event) => {
+  if (!topbarMenuActive.value) return;
 
-    const sidebarEl = document.querySelector('.layout-topbar-menu');
-    const topbarEl = document.querySelector('.layout-topbar-menu-button');
+  const sidebarEl = document.querySelector('.layout-topbar-menu');
+  const topbarEl = document.querySelector('.layout-topbar-menu-button');
 
-    return !(sidebarEl!.isSameNode(event.target as Node) || sidebarEl!.contains(event.target as Node)
-          || topbarEl!.isSameNode(event.target as Node) || topbarEl!.contains(event.target as Node));
+  return !(
+    sidebarEl!.isSameNode(event.target as Node) ||
+    sidebarEl!.contains(event.target as Node) ||
+    topbarEl!.isSameNode(event.target as Node) ||
+    topbarEl!.contains(event.target as Node)
+  );
 };
 </script>
 
 <template>
   <header>
     <div class="layout-topbar">
-        <div class="layout-topbar-logo">
-            <img src="@/assets/logo.png" alt="logo" />
-        </div>
+      <div class="layout-topbar-logo">
+        <img src="@/assets/logo.png" alt="logo" />
+      </div>
 
-        <button v-if="!layoutConfig.fullscreen.value" class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
-            <i class="pi pi-bars"></i>
+      <button
+        v-if="!layoutConfig.fullscreen.value"
+        class="p-link layout-menu-button layout-topbar-button"
+        @click="onMenuToggle()"
+      >
+        <i class="pi pi-bars"></i>
+      </button>
+
+      <button
+        class="p-link layout-topbar-menu-button layout-topbar-button"
+        @click="onTopBarMenuButton()"
+      >
+        <i class="pi pi-ellipsis-v"></i>
+      </button>
+
+      <div class="layout-topbar-menu" :class="topbarMenuClasses">
+        <button
+          v-if="sessionStore.user != null"
+          class="p-link layout-topbar-shortcut-button"
+          @click="onHomeClick()"
+        >
+          <i class="pi pi-home"></i>
+          <span>Projekte</span>
         </button>
-
-        <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
-            <i class="pi pi-ellipsis-v"></i>
-        </button>
-
-        <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button v-if="sessionStore.user != null" @click="onHomeClick()" class="p-link layout-topbar-shortcut-button">
-              <i class="pi pi-home"></i>
-              <span>Projekte</span>
-            </button>
-            <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
-              <Dropdown v-model="projectStore.selectedProject" :options="projectStore.projectList" @change="onProjectSelectionChange($event)" optionLabel="name" placeholder="Projekt wählen" />
-            </div>
-            <button v-if="sessionStore.user != null" @click="onNewProjectClick()" class="p-link layout-topbar-shortcut-button">
-                <i class="pi pi-plus"></i>
-                <span>Neues Projekt</span>
-            </button>
-            <button v-if="sessionStore.user != null" @click="onAccountSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-user"></i>
-                <span>{{ sessionStore.user.email }}</span>
-            </button>
-            <button v-if="sessionStore.user != null" @click="logout()" class="p-link layout-topbar-button">
-                <i class="pi pi-sign-out"></i>
-                <span>Abmelden</span>
-            </button>
-            <button v-if="sessionStore.user == null" @click="login('/projects')" class="p-link layout-topbar-button">
-                <i class="pi pi-sign-in"></i>
-                <span>Anmelden</span>
-            </button>
+        <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
+          <Dropdown
+            v-model="projectStore.selectedProject"
+            :options="projectStore.projectList"
+            optionLabel="name"
+            placeholder="Projekt wählen"
+            @change="onProjectSelectionChange($event)"
+          />
         </div>
+        <button
+          v-if="sessionStore.user != null"
+          class="p-link layout-topbar-shortcut-button"
+          @click="onNewProjectClick()"
+        >
+          <i class="pi pi-plus"></i>
+          <span>Neues Projekt</span>
+        </button>
+        <button
+          v-if="sessionStore.user != null"
+          class="p-link layout-topbar-button"
+          @click="onAccountSettingsClick()"
+        >
+          <i class="pi pi-user"></i>
+          <span>{{ sessionStore.user.email }}</span>
+        </button>
+        <button
+          v-if="sessionStore.user != null"
+          class="p-link layout-topbar-button"
+          @click="logout()"
+        >
+          <i class="pi pi-sign-out"></i>
+          <span>Abmelden</span>
+        </button>
+        <button
+          v-if="sessionStore.user == null"
+          class="p-link layout-topbar-button"
+          @click="login('/projects')"
+        >
+          <i class="pi pi-sign-in"></i>
+          <span>Anmelden</span>
+        </button>
+      </div>
     </div>
   </header>
 </template>
 
 <style lang="scss" scoped>
 .p-dropdown {
-  border : 0;
-  box-shadow : none;
+  border: 0;
+  box-shadow: none;
   margin-left: -0.5rem;
 }
 </style>

@@ -19,9 +19,9 @@ describe('AccountSettingsView', () => {
     wrapper = mount(AccountSettingsView, {
       global: {
         plugins: [PrimeVue, router],
-        components: { Card }
+        components: { Card },
       },
-      shallow: true
+      shallow: true,
     });
 
     // Mock methods
@@ -37,11 +37,13 @@ describe('AccountSettingsView', () => {
         countryCode: 'US',
       },
     });
-    wrapper.vm.$options.methods.getCity = vi.fn().mockResolvedValue([{
-      city: 'Test City',
-      province: 'Test Province',
-      countryCode: 'TC',
-    }]);
+    wrapper.vm.$options.methods.getCity = vi.fn().mockResolvedValue([
+      {
+        city: 'Test City',
+        province: 'Test Province',
+        countryCode: 'TC',
+      },
+    ]);
   });
 
   test('The view is rendered properly', () => {
@@ -60,5 +62,4 @@ describe('AccountSettingsView', () => {
     wrapper.vm.discardChanges();
     expect(wrapper.vm.editedUserProfile.firstName).toBe(wrapper.vm.userProfile.firstName);
   });
-
 });

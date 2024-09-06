@@ -1,13 +1,10 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="grid">
     <div class="col-6">
       <Card>
-        <template #title>
-          Impressum
-        </template>
+        <template #title> Impressum </template>
         <template #content>
           <p>Angaben gemäß § 5 Telemediengesetz (TMG):</p>
           <p>
@@ -22,9 +19,7 @@
     </div>
     <div class="col-6">
       <Card>
-        <template #title>
-          Kontakt
-        </template>
+        <template #title> Kontakt </template>
         <template #content>
           <p>
             Tel.: +49 30 5019-2346<br />

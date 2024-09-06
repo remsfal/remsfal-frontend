@@ -1,9 +1,9 @@
 <script lang="ts">
 export default {
   props: {
-    projectId: String
-  }
-}
+    projectId: String,
+  },
+};
 </script>
 
 <template>
@@ -14,5 +14,4 @@ export default {
   </main>
 </template>
 
-<style>
-</style>
+<style></style>
