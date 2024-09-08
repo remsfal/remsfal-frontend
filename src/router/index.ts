@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, type RouteLocationNormalizedLoaded} from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
 import LegalNoticeView from '@/views/LegalNoticeView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
@@ -49,29 +49,47 @@ const routes = [
         ],
     },
     {
-        path: '/project',
+        path: '/project/:projectId',
         component: ProjectLayout,
         children: [
             {
-                path: '/project/:projectId/objects',
-                name: 'Objektdaten',
+                path: '',
+                name: 'ProjectDashboard',
+                props: true,
+                component: () => import('@/views/ProjectDashboard.vue'),
+            },
+            {
+                path: 'settings',
+                name: 'ProjectSettings',
+                props: true,
+                component: () => import('@/views/ProjectSettings.vue'),
+            },
+            {
+                path: 'objects',
+                name: 'ObjectData',
                 props: true,
                 component: () => import('@/views/ObjectDataView.vue'),
             },
             {
-                path: '/project/:projectId/objects/create-property',
+                path: 'tenancies',
+                name: 'ProjectTenancies',
+                props: true,
+                component: () => import('@/views/ProjectTenancies.vue'),
+            },
+            {
+                path: 'objects/create-property',
                 name: 'CreateProperty',
                 props: true,
                 component: () => import('@/views/PropertyView.vue'),
             },
             {
-                path: ':projectId/objects/property',
+                path: 'objects/property',
                 name: 'Property',
                 props: true,
                 component: () => import('@/views/PropertyView.vue'),
             },
             {
-                path: '/project/:projectId/tasks',
+                path: 'tasks',
                 name: 'TaskOverview',
                 props: (route: RouteLocationNormalizedLoaded) => ({
                     projectId: route.params.projectId,

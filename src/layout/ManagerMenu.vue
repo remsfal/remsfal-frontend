@@ -14,8 +14,16 @@ const model = ref([
   {
     label: 'Home',
     items: [
-      { label: 'Dashboard', icon: 'pi pi-fw pi-chart-bar', to: '/' },
-      { label: 'Einstellungen', icon: 'pi pi-fw pi-cog', to: '/' },
+      {
+        label: 'Dashboard',
+        icon: 'pi pi-fw pi-chart-bar',
+        to: `/project/${projectStore.projectId}/`,
+      },
+      {
+        label: 'Einstellungen',
+        icon: 'pi pi-fw pi-cog',
+        to: `/project/${projectStore.projectId}/settings`,
+      },
     ],
   },
   {
@@ -24,11 +32,13 @@ const model = ref([
       {
         label: 'Objektdaten',
         icon: 'pi pi-fw pi-home',
-        to: projectStore.selectedProject?.id
-          ? `/project/${projectStore.selectedProject.id}/objects`
-          : '',
+        to: `/project/${projectStore.projectId}/objects`,
       },
-      { label: 'Mieter', icon: 'pi pi-fw pi-users', to: '/uikit/input' },
+      {
+        label: 'Mieterdaten',
+        icon: 'pi pi-fw pi-users',
+        to: `/project/${projectStore.projectId}/tenancies`,
+      },
     ],
   },
   {

@@ -3,24 +3,20 @@ import { ref, onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 
-const props = defineProps({
-  item: {
-    type: Object,
-    default: () => ({}),
-  },
-  index: {
-    type: Number,
-    default: 0,
-  },
-  root: {
-    type: Boolean,
-    default: true,
-  },
-  parentItemKey: {
-    type: String,
-    default: null,
-  },
+interface MenuItemProps {
+  item: object;
+  index: number;
+  root: boolean;
+  parentItemKey: string | null;
+}
+
+const props = withDefaults(defineProps<MenuItemProps>(), {
+  item: () => ({}),
+  index: 0,
+  root: true,
+  parentItemKey: null,
 });
+
 const route = useRoute();
 const { layoutState, setActiveMenuItem, onMenuToggle } = useLayout();
 

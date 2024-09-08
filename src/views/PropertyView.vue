@@ -1,8 +1,8 @@
-<script setup lang="ts">
+<script lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import ProjectService, { type PropertyItem } from '@/services/ProjectService';
-defineOptions({
+export default {
   name: 'PropertyView',
   props: {
     projectId: {
@@ -125,7 +125,7 @@ defineOptions({
       action,
     };
   },
-});
+};
 </script>
 
 <template>
