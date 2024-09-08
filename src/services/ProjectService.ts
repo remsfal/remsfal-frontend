@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-export interface Project {
+export interface ProjectItem {
   id: string;
-  title: string;
+  name: string;
+  memberRole: string;
 }
 
 export interface ProjectList {
@@ -12,10 +13,9 @@ export interface ProjectList {
   projects: ProjectItem[];
 }
 
-export interface ProjectItem {
+export interface Project {
   id: string;
-  name: string;
-  memberRole: string;
+  title: string;
 }
 
 export interface PropertyList {
@@ -75,8 +75,8 @@ export interface GarageItem {
 export default class ProjectService {
   private readonly url: string = '/api/v1/projects';
 
-  getProjects(limit: number = 10, offset: number = 0): Promise<ProjectList> {
-    return axios.get(`${this.url}?limit=${limit}&offset=${offset}`).then((response) => {
+  getProjects(offset: number = 0, limit: number = 10): Promise<ProjectList> {
+    return axios.get(this.url, { params: { limit: limit, offset: offset } }).then((response) => {
       const projectList: ProjectList = response.data;
       console.log('GET projects:', projectList);
       return projectList;

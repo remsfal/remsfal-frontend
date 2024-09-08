@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia';
-import ProjectService, { type ProjectList, type ProjectItem } from '@/services/ProjectService';
+import ProjectService, {type ProjectList, type ProjectItem, type Project} from '@/services/ProjectService';
 
 export const useProjectStore = defineStore('project-store', {
   state: () => {
     return {
       projects: <ProjectItem[]>[],
       selectedProject: null as ProjectItem | null,
+      totalProjects: Number(0),
+      firstOffset: Number(0),
     };
   },
   getters: {
@@ -17,17 +19,34 @@ export const useProjectStore = defineStore('project-store', {
     refreshProjectList() {
       const projectService = new ProjectService();
       projectService
-        .getProjects(100)
+        .getProjects()
         .then((projectList: ProjectList) => {
           this.projects = projectList.projects;
+          this.totalProjects = projectList.total;
+          this.firstOffset = projectList.first;
           console.log('Refreshed project list: ', this.projects);
+        })
+        .catch((error) => {
+          // Handle the error here
+          console.error('An error occurred while refreshing projects:', error);
+        });
+    },
+    fetchProjects(offset: number, limit: number): Promise<void> {
+      const projectService = new ProjectService();
+      return projectService
+        .getProjects(offset, limit)
+        .then((projectList: ProjectList) => {
+          this.projects = projectList.projects;
+          this.totalProjects = projectList.total;
+          this.firstOffset = projectList.first;
+          console.log('Fetched project list: ', this.projects);
         })
         .catch((error) => {
           // Handle the error here
           console.error('An error occurred while fetching projects:', error);
         });
     },
-    setSelectedProject(selection: any) {
+    setSelectedProject(selection: ProjectItem) {
       this.selectedProject = selection;
       console.log('Project selection changed: ', this.selectedProject);
     },
