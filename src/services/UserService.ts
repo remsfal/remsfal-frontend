@@ -3,20 +3,20 @@ import axios from 'axios';
 export interface Address {
   street: string;
   city: string;
-  zip: string;
   province: string;
+  zip: string;
   countryCode: string;
 }
 
 export interface User {
   id: string;
+  email: string;
   firstName: string;
   lastName: string;
   address: Address;
   mobilePhoneNumber: string;
   businessPhoneNumber: string;
   privatePhoneNumber: string;
-  email: string;
   registeredDate: string;
   lastLoginDate: string;
 }

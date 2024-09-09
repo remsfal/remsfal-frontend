@@ -1,7 +1,7 @@
-<script lang="ts">
+<script setup lang="ts">
 import { useUserSessionStore } from '@/stores/UserSession';
 import UserService, { type User, type Address } from '@/services/UserService';
-//import Modal from "@/components/LeoModal.vue";
+import {onMounted, ref} from "vue";
 
 interface PhoneValid {
   businessPhoneNumber: boolean;
@@ -9,14 +9,11 @@ interface PhoneValid {
   privatePhoneNumber: boolean;
 }
 
-export default {
-  data() {
-    return {
-      userProfile: {} as User, // Das gesamte Benutzerprofil
-      editedUserProfile: {} as User,
-      editMode: false, // Modus für die Bearbeitung der Benutzerdaten
-      visible: false, // Sichtbarkeit des Dialogs für Konto löschen
-      countries: [
+const userProfile = ref({} as User); // Das gesamte Benutzerprofil
+const editedUserProfile = ref({} as User);
+const editMode = ref(false); // Modus für die Bearbeitung der Benutzerdaten
+const visible = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
+const countries = ref([
         { name: 'Australia', code: 'AU' },
         { name: 'Brazil', code: 'BR' },
         { name: 'China', code: 'CN' },
@@ -51,136 +48,141 @@ export default {
         { name: 'Slovakia', code: 'SK' },
         { name: 'Slovenia', code: 'SI' },
         { name: 'Sweden', code: 'SE' },
-      ],
-      isPhoneValid: {
+      ]);
+const isPhoneValid = ref({
         businessPhoneNumber: true,
         mobilePhoneNumber: true,
         privatePhoneNumber: true,
-      } as PhoneValid,
-    };
-  },
-  async mounted() {
+      } as PhoneValid);
+
+onMounted(() => {
     const sessionStore = useUserSessionStore();
-    this.userProfile.email = sessionStore.user?.email || ''; // Sicherstellen, dass userEmail initialisiert wird
-    await this.fetchUserProfile();
-  },
-  methods: {
-    async fetchUserProfile() {
+    userProfile.value.email = sessionStore.user?.email || ''; // Sicherstellen, dass userEmail initialisiert wird
+    fetchUserProfile();
+});
+
+async function fetchUserProfile() {
       try {
         const userService = new UserService();
         const profile = await userService.getUser(); // Ruft das Benutzerprofil vom Server ab
         if (profile) {
-          this.userProfile = profile; // Speichert das gesamte Benutzerprofil
-          this.editedUserProfile = { ...profile };
+          userProfile.value = profile; // Speichert das gesamte Benutzerprofil
+          editedUserProfile.value = { ...profile };
         }
       } catch (error) {
         console.error('Das Benutzerprofil konnte nicht gefunden werden', error);
       }
-    },
-    toggleEditMode() {
-      this.editedUserProfile = this.editMode ? this.editedUserProfile : { ...this.userProfile };
-      this.editedUserProfile.address = this.editMode
-        ? this.editedUserProfile.address
-        : { ...this.userProfile.address };
-      this.editMode = !this.editMode;
-    },
-    discardChanges() {
-      this.editedUserProfile = { ...this.userProfile };
-      this.editedUserProfile.address = { ...this.userProfile.address };
-      this.toggleEditMode();
-    },
-    async saveProfile() {
-      if (Object.values(this.isPhoneValid).every(Boolean) && this.validateAddress()) {
+    };
+
+function toggleEditMode() {
+      editedUserProfile.value = editMode.value ? editedUserProfile.value : { ...userProfile.value };
+      editedUserProfile.value.address = editMode.value
+        ? editedUserProfile.value.address
+        : { ...userProfile.value.address };
+      editMode.value = !editMode.value;
+    };
+
+function discardChanges() {
+      editedUserProfile.value = { ...userProfile.value };
+      editedUserProfile.value.address = { ...userProfile.value.address };
+      toggleEditMode();
+    };
+
+async function saveProfile() {
+      if (Object.values(isPhoneValid).every(Boolean) && validateAddress()) {
         try {
           const userService = new UserService();
           const user = {
-            id: this.userProfile.id,
-            firstName: this.editedUserProfile.firstName
-              ? this.editedUserProfile.firstName
-              : this.userProfile.firstName,
-            businessPhoneNumber: this.editedUserProfile.businessPhoneNumber
-              ? this.editedUserProfile.businessPhoneNumber
-              : this.userProfile.businessPhoneNumber,
-            lastName: this.editedUserProfile.lastName
-              ? this.editedUserProfile.lastName
-              : this.userProfile.lastName,
-            mobilePhoneNumber: this.editedUserProfile.mobilePhoneNumber
-              ? this.editedUserProfile.mobilePhoneNumber
-              : this.userProfile.mobilePhoneNumber,
-            privatePhoneNumber: this.editedUserProfile.privatePhoneNumber
-              ? this.editedUserProfile.privatePhoneNumber
-              : this.userProfile.privatePhoneNumber,
+            id: userProfile.value.id,
+            firstName: editedUserProfile.value.firstName
+              ? editedUserProfile.value.firstName
+              : userProfile.value.firstName,
+            businessPhoneNumber: editedUserProfile.value.businessPhoneNumber
+              ? editedUserProfile.value.businessPhoneNumber
+              : userProfile.value.businessPhoneNumber,
+            lastName: editedUserProfile.value.lastName
+              ? editedUserProfile.value.lastName
+              : userProfile.value.lastName,
+            mobilePhoneNumber: editedUserProfile.value.mobilePhoneNumber
+              ? editedUserProfile.value.mobilePhoneNumber
+              : userProfile.value.mobilePhoneNumber,
+            privatePhoneNumber: editedUserProfile.value.privatePhoneNumber
+              ? editedUserProfile.value.privatePhoneNumber
+              : userProfile.value.privatePhoneNumber,
           } as User;
 
-          if (this.validateAddress()) {
+          if (validateAddress()) {
             const address = {
-              street: this.editedUserProfile.address.street
-                ? this.editedUserProfile.address.street
-                : this.userProfile.address.street,
-              city: this.editedUserProfile.address.city
-                ? this.editedUserProfile.address.city
-                : this.userProfile.address.city,
-              zip: this.editedUserProfile.address.zip
-                ? this.editedUserProfile.address.zip
-                : this.userProfile.address.zip,
-              province: this.editedUserProfile.address.province
-                ? this.editedUserProfile.address.province
-                : this.userProfile.address.province,
-              countryCode: this.editedUserProfile.address.countryCode
-                ? this.editedUserProfile.address.countryCode
-                : this.userProfile.address.countryCode,
+              street: editedUserProfile.value.address.street
+                ? editedUserProfile.value.address.street
+                : userProfile.value.address.street,
+              city: editedUserProfile.value.address.city
+                ? editedUserProfile.value.address.city
+                : userProfile.value.address.city,
+              zip: editedUserProfile.value.address.zip
+                ? editedUserProfile.value.address.zip
+                : userProfile.value.address.zip,
+              province: editedUserProfile.value.address.province
+                ? editedUserProfile.value.address.province
+                : userProfile.value.address.province,
+              countryCode: editedUserProfile.value.address.countryCode
+                ? editedUserProfile.value.address.countryCode
+                : userProfile.value.address.countryCode,
             } as Address;
             user.address = address;
           }
           const updatedUser = await userService.updateUser(user);
-          this.userProfile = updatedUser ? updatedUser : this.userProfile;
-          this.toggleEditMode();
+          userProfile.value = updatedUser ? updatedUser : userProfile.value;
+          toggleEditMode();
         } catch (e) {
           console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
         }
       } else {
         alert('Bitte überprüfen Sie Ihre Eingaben!');
       }
-    },
-    logout(): void {
+    };
+
+function logout(): void {
       window.location.pathname = '/api/v1/authentication/logout';
-    },
-    deleteAccount() {
+    };
+
+function deleteAccount() {
       const userService = new UserService();
       userService
         .deleteUser()
-        .then(() => this.logout())
+        .then(() => logout())
         .catch(() => console.error('Das Benutzerprofil konnte nicht gelöscht werden!'));
-    },
-    validatePhone(phoneCategory: string) {
+    };
+
+function validatePhone(phoneCategory: string) {
       const phonePattern = /^\+?[1-9]\d{1,14}$/;
-      this.isPhoneValid[phoneCategory as keyof PhoneValid] = phonePattern.test(
-        this.editedUserProfile[phoneCategory as keyof PhoneValid],
+      isPhoneValid[phoneCategory as keyof PhoneValid] = phonePattern.test(
+        editedUserProfile[phoneCategory as keyof PhoneValid],
       );
-    },
-    validateAddress() {
-      if (Object.keys(this.editedUserProfile.address).length == 5) {
-        if (Object.values(this.editedUserProfile.address).every((value) => value.length > 0)) {
+    };
+
+function validateAddress() {
+      if (Object.keys(editedUserProfile.value.address).length == 5) {
+        if (Object.values(editedUserProfile.value.address).every((value) => value.length > 0)) {
           return true;
         }
       }
       return false;
-    },
-    async getCity() {
+    };
+
+async function getCity() {
       const userService = new UserService();
-      const address = await userService.getCityFromZip(this.editedUserProfile.address.zip);
+      const address = await userService.getCityFromZip(editedUserProfile.value.address.zip);
       try {
         if (address) {
-          this.editedUserProfile.address.city = address[0].city;
-          this.editedUserProfile.address.province = address[0].province;
-          this.editedUserProfile.address.countryCode = address[0].countryCode;
+          editedUserProfile.value.address.city = address[0].city;
+          editedUserProfile.value.address.province = address[0].province;
+          editedUserProfile.value.address.countryCode = address[0].countryCode;
         }
       } catch (error) {
         console.log(error);
         alert('Bitte überprüfen Sie Ihre Postleitzahl!');
       }
-    },
-  },
 };
 </script>
 
@@ -404,24 +406,6 @@ export default {
       </div>
     </div>
   </div>
-  <!--Modal
-          :isOpen="showModal"
-          :bodyText="'Durch die Anmeldung bzw. Registrierung stimmst Du unser Datenschutzerklärung zu.'"
-          :linkText="'Datenschutzerklärung'"
-          :linkHref="'/data-protection'"
-          :buttonText="'Mit Google Anmelden'"
-          :headingText="'Anmeldung/Registrierung'"
-          :buttonColor="'green'"
-          @closeModal="showModal = false"
-      ></Modal>
-      <Modal
-          :isOpen="showDeleteModal"
-          :bodyText="'Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.'"
-          :buttonText="'Konto löschen'"
-          :headingText="'Konto löschen'"
-          :buttonColor="'red'"
-          @closeModal="showDeleteModal = false"
-      ></Modal -->
 </template>
 
 <style>

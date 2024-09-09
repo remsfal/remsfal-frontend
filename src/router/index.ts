@@ -41,11 +41,6 @@ const routes = [
                 name: 'AccountSettings',
                 component: () => import('@/views/AccountSettingsView.vue'),
             },
-            {
-                path: '/account-contacts',
-                name: 'AccountContacts',
-                component: () => import('@/views/AccountContactsView.vue'),
-            },
         ],
     },
     {
