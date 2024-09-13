@@ -156,8 +156,8 @@ function deleteAccount() {
 
 function validatePhone(phoneCategory: string) {
       const phonePattern = /^\+?[1-9]\d{1,14}$/;
-      isPhoneValid[phoneCategory as keyof PhoneValid] = phonePattern.test(
-        editedUserProfile[phoneCategory as keyof PhoneValid],
+      isPhoneValid.value[phoneCategory as keyof PhoneValid] = phonePattern.test(
+        editedUserProfile.value[phoneCategory as keyof PhoneValid]
       );
     };
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import AppMenuItem from './AppMenuItem.vue';
+import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -87,7 +87,7 @@ const model = ref([
       { label: 'Alle Meldungen', icon: 'pi pi-fw pi-list', to: '/uikit/input' },
     ],
   },
-]);
+] as MenuItem[]);
 </script>
 
 <template>

@@ -3,15 +3,29 @@ import { ref, onBeforeMount } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 
+export interface MenuItem {
+  label: string;
+  icon: string;
+  to: string | undefined;
+  url: string | undefined;
+  navigate: () => void;
+  command: (event: object) => void;
+  disabled: boolean;
+  visible: boolean;
+  class: string;
+  target: string;
+  items: MenuItem[];
+}
+
 interface MenuItemProps {
-  item: object;
+  item: MenuItem;
   index: number;
   root: boolean;
   parentItemKey: string | null;
 }
 
 const props = withDefaults(defineProps<MenuItemProps>(), {
-  item: () => ({}),
+  item: () => ({}) as MenuItem,
   index: 0,
   root: true,
   parentItemKey: null,
@@ -29,7 +43,7 @@ onBeforeMount(() => {
     : String(props.index);
 });
 
-const itemClick = (event: Event, item: any) => {
+const itemClick = (event: Event, item: MenuItem) => {
   if (item.disabled) {
     event.preventDefault();
     return;
@@ -60,7 +74,7 @@ const itemClick = (event: Event, item: any) => {
     foundItemKey === itemKey.value || foundItemKey!.startsWith(itemKey.value + '-');
 };
 
-const checkActiveRoute = (item: any) => {
+const checkActiveRoute = (item: MenuItem) => {
   return route.path === item.to;
 };
 </script>

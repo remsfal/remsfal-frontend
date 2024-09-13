@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import AppMenuItem from './AppMenuItem.vue';
+import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 
 const model = ref([
   {
@@ -11,7 +11,7 @@ const model = ref([
       { label: 'Meldungen', icon: 'pi pi-fw pi-comment', to: '/uikit/formlayout' },
     ],
   },
-]);
+] as MenuItem[]);
 </script>
 
 <template>

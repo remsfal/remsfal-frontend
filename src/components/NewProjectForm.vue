@@ -2,7 +2,7 @@
 import { defineEmits, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ProjectService, { type Project, ProjectItem } from '@/services/ProjectService';
+import ProjectService, { type Project, type ProjectItem } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 
