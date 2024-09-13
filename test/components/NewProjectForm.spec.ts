@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { createRouter, createMemoryHistory } from 'vue-router';
-import ProjectForm from '../../src/components/NewProjectForm.vue'; // update the path accordingly
-import ProjectService from '../../src/services/ProjectService';
+import ProjectForm from '@/components/NewProjectForm.vue'; // update the path accordingly
+import ProjectService from '@/services/ProjectService';
 import { createPinia, setActivePinia } from 'pinia'; // make sure these imports are correct
+import PrimeVue from 'primevue/config';
 
 vi.mock('@/services/ProjectService');
 
@@ -23,7 +24,7 @@ const router = createRouter({
   ],
 });
 
-describe('ProjectForm.vue', () => {
+describe('NewProjectForm.vue', () => {
   let wrapper: VueWrapper<any>;
   let pushSpy: ReturnType<typeof vi.spyOn>;
   let createProjectMock: ReturnType<typeof vi.fn>;
@@ -39,7 +40,7 @@ describe('ProjectForm.vue', () => {
 
     wrapper = mount(ProjectForm, {
       global: {
-        plugins: [router, pinia],
+        plugins: [router, pinia, PrimeVue],
       },
     });
 
@@ -48,20 +49,22 @@ describe('ProjectForm.vue', () => {
 
   it('should render form correctly', () => {
     expect(wrapper.find('form').exists()).toBe(true);
+    expect(wrapper.find('[id="value"]').exists()).toBe(true);
     expect(wrapper.find('label[for="value"]').exists()).toBe(true);
     expect(wrapper.find('button[type="submit"]').exists()).toBe(true);
     expect(wrapper.find('button[type="reset"]').exists()).toBe(true);
   });
 
   it('should show error message if projectTitle exceeds maxLength', async () => {
-    await wrapper.setData({ projectTitle: 'a'.repeat(101) });
+    // await wrapper.setData({ projectTitle: 'a'.repeat(101) });
+    await wrapper.findComponent('input[type="text"]').setValue('a'.repeat(101));
     expect(wrapper.find('.p-error').text()).toBe(
       'Der Projekttitel darf nicht mehr als 100 Zeichen lang sein',
     );
   });
 
   it('should call createProject and navigate to ProjectDashboard on valid submit', async () => {
-    await wrapper.setData({ projectTitle: 'Valid Project' });
+    await wrapper.findComponent('input[type="text"]').setValue('Valid Project');
     await wrapper.find('form').trigger('submit.prevent');
 
     expect(createProjectMock).toHaveBeenCalledWith('Valid Project');
