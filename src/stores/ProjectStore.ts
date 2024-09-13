@@ -50,5 +50,15 @@ export const useProjectStore = defineStore('project-store', {
       this.selectedProject = selection;
       console.log('Project selection changed: ', this.selectedProject);
     },
+    searchSelectedProject(selection: ProjectItem) {
+      if (this.projects.find((p) => p.id === selection.id)) {
+        this.setSelectedProject(selection);
+      }
+
+      this.projects = [selection];
+      this.totalProjects++;
+      this.selectedProject = selection;
+      console.log('Searched project selection changed: ', this.selectedProject);
+    },
   },
 });

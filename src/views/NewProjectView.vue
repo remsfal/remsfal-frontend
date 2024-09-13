@@ -1,10 +1,5 @@
-<script lang="ts">
+<script setup lang="ts">
 import NewProjectForm from '@/components/NewProjectForm.vue';
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  components: { NewProjectForm },
-});
 </script>
 
 <template>
