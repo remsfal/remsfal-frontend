@@ -35,21 +35,18 @@ const routes = [
         path: "/new-project",
         name: "NewProject",
         // route level code-splitting
-        // which is lazy-loaded when the route is visited.
         component: () => import("@/views/NewProjectView.vue"),
       },
       {
         path: "/account-settings",
         name: "AccountSettings",
         // route level code-splitting
-        // which is lazy-loaded when the route is visited.
         component: () => import("@/views/AccountSettingsView.vue"),
       },
       {
         path: "/account-contacts",
         name: "AccountContacts",
         // route level code-splitting
-        // which is lazy-loaded when the route is visited.
         component: () => import("@/views/AccountContactsView.vue"),
       },
     ],
@@ -59,19 +56,19 @@ const routes = [
     component: ProjectLayout,
     children: [
       {
-        path: "/project/:projectId/",
+        path: ":projectId/",
         name: "ProjectDashboard",
         props: true,
         component: () => import("@/views/ProjectView.vue"),
       },
       {
-        path: "/project/:projectId/objects",
+        path: ":projectId/objects",
         name: "Objektdaten",
         props: true,
         component: () => import("@/views/ObjectDataView.vue"),
       },
       {
-        path: "/project/:projectId/objects/create-property",
+        path: ":projectId/objects/create-property",
         name: "CreateProperty",
         props: true,
         component: () => import("@/views/PropertyView.vue"),
