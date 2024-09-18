@@ -4,6 +4,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import App from '@/App.vue'
 import router from '@/router'
+import { createHead } from '@vueuse/head';
 
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
@@ -112,6 +113,9 @@ import '@/assets/styles.scss';
 
 const pinia = createPinia()
 const app = createApp(App)
+const head = createHead();
+
+app.use(head);
 // Install Pinia
 app.use(pinia)
 // Install Router for SPA
