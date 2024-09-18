@@ -1,7 +1,7 @@
-<script lang="ts">
-import { useUserSessionStore } from "@/stores/UserSession";
-import UserService, { type User, type Address } from "@/services/UserService";
-//import Modal from "@/components/LeoModal.vue";
+<script setup lang="ts">
+import { useUserSessionStore } from '@/stores/UserSession';
+import UserService, { type User, type Address } from '@/services/UserService';
+import {onMounted, ref} from "vue";
 
 interface PhoneValid {
   businessPhoneNumber: boolean;
@@ -9,191 +9,180 @@ interface PhoneValid {
   privatePhoneNumber: boolean;
 }
 
-export default {
-  data() {
-    return {
-      userProfile: {} as User, // Das gesamte Benutzerprofil
-      editedUserProfile: {} as User,
-      editMode: false, // Modus für die Bearbeitung der Benutzerdaten
-      visible: false, // Sichtbarkeit des Dialogs für Konto löschen
-      countries: [
-        { name: "Australia", code: "AU" },
-        { name: "Brazil", code: "BR" },
-        { name: "China", code: "CN" },
-        { name: "Egypt", code: "EG" },
-        { name: "France", code: "FR" },
-        { name: "Germany", code: "DE" },
-        { name: "India", code: "IN" },
-        { name: "Japan", code: "JP" },
-        { name: "Spain", code: "ES" },
-        { name: "United States", code: "US" },
-        { name: "Austria", code: "AT" },
-        { name: "Belgium", code: "BE" },
-        { name: "Bulgaria", code: "BG" },
-        { name: "Croatia", code: "HR" },
-        { name: "Cyprus", code: "CY" },
-        { name: "Czech Republic", code: "CZ" },
-        { name: "Denmark", code: "DK" },
-        { name: "Estonia", code: "EE" },
-        { name: "Finland", code: "FI" },
-        { name: "Greece", code: "GR" },
-        { name: "Hungary", code: "HU" },
-        { name: "Ireland", code: "IE" },
-        { name: "Italy", code: "IT" },
-        { name: "Latvia", code: "LV" },
-        { name: "Lithuania", code: "LT" },
-        { name: "Luxembourg", code: "LU" },
-        { name: "Malta", code: "MT" },
-        { name: "Netherlands", code: "NL" },
-        { name: "Poland", code: "PL" },
-        { name: "Portugal", code: "PT" },
-        { name: "Romania", code: "RO" },
-        { name: "Slovakia", code: "SK" },
-        { name: "Slovenia", code: "SI" },
-        { name: "Sweden", code: "SE" },
-      ],
-      isPhoneValid: {
+const userProfile = ref({} as User); // Das gesamte Benutzerprofil
+const editedUserProfile = ref({} as User);
+const editMode = ref(false); // Modus für die Bearbeitung der Benutzerdaten
+const visible = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
+const countries = ref([
+        { name: 'Australia', code: 'AU' },
+        { name: 'Brazil', code: 'BR' },
+        { name: 'China', code: 'CN' },
+        { name: 'Egypt', code: 'EG' },
+        { name: 'France', code: 'FR' },
+        { name: 'Germany', code: 'DE' },
+        { name: 'India', code: 'IN' },
+        { name: 'Japan', code: 'JP' },
+        { name: 'Spain', code: 'ES' },
+        { name: 'United States', code: 'US' },
+        { name: 'Austria', code: 'AT' },
+        { name: 'Belgium', code: 'BE' },
+        { name: 'Bulgaria', code: 'BG' },
+        { name: 'Croatia', code: 'HR' },
+        { name: 'Cyprus', code: 'CY' },
+        { name: 'Czech Republic', code: 'CZ' },
+        { name: 'Denmark', code: 'DK' },
+        { name: 'Estonia', code: 'EE' },
+        { name: 'Finland', code: 'FI' },
+        { name: 'Greece', code: 'GR' },
+        { name: 'Hungary', code: 'HU' },
+        { name: 'Ireland', code: 'IE' },
+        { name: 'Italy', code: 'IT' },
+        { name: 'Latvia', code: 'LV' },
+        { name: 'Lithuania', code: 'LT' },
+        { name: 'Luxembourg', code: 'LU' },
+        { name: 'Malta', code: 'MT' },
+        { name: 'Netherlands', code: 'NL' },
+        { name: 'Poland', code: 'PL' },
+        { name: 'Portugal', code: 'PT' },
+        { name: 'Romania', code: 'RO' },
+        { name: 'Slovakia', code: 'SK' },
+        { name: 'Slovenia', code: 'SI' },
+        { name: 'Sweden', code: 'SE' },
+      ]);
+const isPhoneValid = ref({
         businessPhoneNumber: true,
         mobilePhoneNumber: true,
         privatePhoneNumber: true,
-      } as PhoneValid,
-    };
-  },
-  async mounted() {
+      } as PhoneValid);
+
+onMounted(() => {
     const sessionStore = useUserSessionStore();
-    this.userProfile.email = sessionStore.user?.email || ""; // Sicherstellen, dass userEmail initialisiert wird
-    await this.fetchUserProfile();
-  },
-  methods: {
-    async fetchUserProfile() {
+    userProfile.value.email = sessionStore.user?.email || ''; // Sicherstellen, dass userEmail initialisiert wird
+    fetchUserProfile();
+});
+
+async function fetchUserProfile() {
       try {
         const userService = new UserService();
         const profile = await userService.getUser(); // Ruft das Benutzerprofil vom Server ab
         if (profile) {
-          this.userProfile = profile; // Speichert das gesamte Benutzerprofil
-          this.editedUserProfile = { ...profile };
+          userProfile.value = profile; // Speichert das gesamte Benutzerprofil
+          editedUserProfile.value = { ...profile };
         }
       } catch (error) {
-        console.error("Das Benutzerprofil konnte nicht gefunden werden", error);
+        console.error('Das Benutzerprofil konnte nicht gefunden werden', error);
       }
-    },
-    toggleEditMode() {
-      this.editedUserProfile = this.editMode
-        ? this.editedUserProfile
-        : { ...this.userProfile };
-      this.editedUserProfile.address = this.editMode
-        ? this.editedUserProfile.address
-        : { ...this.userProfile.address };
-      this.editMode = !this.editMode;
-    },
-    discardChanges() {
-      this.editedUserProfile = { ...this.userProfile };
-      this.editedUserProfile.address = { ...this.userProfile.address };
-      this.toggleEditMode();
-    },
-    async saveProfile() {
-      if (
-        Object.values(this.isPhoneValid).every(Boolean) &&
-        this.validateAddress()
-      ) {
+    };
+
+function toggleEditMode() {
+      editedUserProfile.value = editMode.value ? editedUserProfile.value : { ...userProfile.value };
+      editedUserProfile.value.address = editMode.value
+        ? editedUserProfile.value.address
+        : { ...userProfile.value.address };
+      editMode.value = !editMode.value;
+    };
+
+function discardChanges() {
+      editedUserProfile.value = { ...userProfile.value };
+      editedUserProfile.value.address = { ...userProfile.value.address };
+      toggleEditMode();
+    };
+
+async function saveProfile() {
+      if (Object.values(isPhoneValid).every(Boolean) && validateAddress()) {
         try {
           const userService = new UserService();
           const user = {
-            id: this.userProfile.id,
-            firstName: this.editedUserProfile.firstName
-              ? this.editedUserProfile.firstName
-              : this.userProfile.firstName,
-            businessPhoneNumber: this.editedUserProfile.businessPhoneNumber
-              ? this.editedUserProfile.businessPhoneNumber
-              : this.userProfile.businessPhoneNumber,
-            lastName: this.editedUserProfile.lastName
-              ? this.editedUserProfile.lastName
-              : this.userProfile.lastName,
-            mobilePhoneNumber: this.editedUserProfile.mobilePhoneNumber
-              ? this.editedUserProfile.mobilePhoneNumber
-              : this.userProfile.mobilePhoneNumber,
-            privatePhoneNumber: this.editedUserProfile.privatePhoneNumber
-              ? this.editedUserProfile.privatePhoneNumber
-              : this.userProfile.privatePhoneNumber,
+            id: userProfile.value.id,
+            firstName: editedUserProfile.value.firstName
+              ? editedUserProfile.value.firstName
+              : userProfile.value.firstName,
+            businessPhoneNumber: editedUserProfile.value.businessPhoneNumber
+              ? editedUserProfile.value.businessPhoneNumber
+              : userProfile.value.businessPhoneNumber,
+            lastName: editedUserProfile.value.lastName
+              ? editedUserProfile.value.lastName
+              : userProfile.value.lastName,
+            mobilePhoneNumber: editedUserProfile.value.mobilePhoneNumber
+              ? editedUserProfile.value.mobilePhoneNumber
+              : userProfile.value.mobilePhoneNumber,
+            privatePhoneNumber: editedUserProfile.value.privatePhoneNumber
+              ? editedUserProfile.value.privatePhoneNumber
+              : userProfile.value.privatePhoneNumber,
           } as User;
 
-          if (this.validateAddress()) {
+          if (validateAddress()) {
             const address = {
-              street: this.editedUserProfile.address.street
-                ? this.editedUserProfile.address.street
-                : this.userProfile.address.street,
-              city: this.editedUserProfile.address.city
-                ? this.editedUserProfile.address.city
-                : this.userProfile.address.city,
-              zip: this.editedUserProfile.address.zip
-                ? this.editedUserProfile.address.zip
-                : this.userProfile.address.zip,
-              province: this.editedUserProfile.address.province
-                ? this.editedUserProfile.address.province
-                : this.userProfile.address.province,
-              countryCode: this.editedUserProfile.address.countryCode
-                ? this.editedUserProfile.address.countryCode
-                : this.userProfile.address.countryCode,
+              street: editedUserProfile.value.address.street
+                ? editedUserProfile.value.address.street
+                : userProfile.value.address.street,
+              city: editedUserProfile.value.address.city
+                ? editedUserProfile.value.address.city
+                : userProfile.value.address.city,
+              zip: editedUserProfile.value.address.zip
+                ? editedUserProfile.value.address.zip
+                : userProfile.value.address.zip,
+              province: editedUserProfile.value.address.province
+                ? editedUserProfile.value.address.province
+                : userProfile.value.address.province,
+              countryCode: editedUserProfile.value.address.countryCode
+                ? editedUserProfile.value.address.countryCode
+                : userProfile.value.address.countryCode,
             } as Address;
             user.address = address;
           }
           const updatedUser = await userService.updateUser(user);
-          this.userProfile = updatedUser ? updatedUser : this.userProfile;
-          this.toggleEditMode();
+          userProfile.value = updatedUser ? updatedUser : userProfile.value;
+          toggleEditMode();
         } catch (e) {
-          console.error("Das Benutzerprofil konnte nicht geupdated werden!", e);
+          console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
         }
       } else {
-        alert("Bitte überprüfen Sie Ihre Eingaben!");
+        alert('Bitte überprüfen Sie Ihre Eingaben!');
       }
-    },
-    logout(): void {
-      window.location.pathname = "/api/v1/authentication/logout";
-    },
-    deleteAccount() {
+    };
+
+function logout(): void {
+      window.location.pathname = '/api/v1/authentication/logout';
+    };
+
+function deleteAccount() {
       const userService = new UserService();
       userService
         .deleteUser()
-        .then(() => this.logout())
-        .catch(() =>
-          console.error("Das Benutzerprofil konnte nicht gelöscht werden!")
-        );
-    },
-    validatePhone(phoneCategory: string) {
+        .then(() => logout())
+        .catch(() => console.error('Das Benutzerprofil konnte nicht gelöscht werden!'));
+    };
+
+function validatePhone(phoneCategory: string) {
       const phonePattern = /^\+?[1-9]\d{1,14}$/;
-      this.isPhoneValid[phoneCategory as keyof PhoneValid] = phonePattern.test(
-        this.editedUserProfile[phoneCategory as keyof PhoneValid]
+      isPhoneValid.value[phoneCategory as keyof PhoneValid] = phonePattern.test(
+        editedUserProfile.value[phoneCategory as keyof PhoneValid]
       );
-    },
-    validateAddress() {
-      if (Object.keys(this.editedUserProfile.address).length == 5) {
-        if (
-          Object.values(this.editedUserProfile.address).every(
-            (value) => value.length > 0
-          )
-        ) {
+    };
+
+function validateAddress() {
+      if (Object.keys(editedUserProfile.value.address).length == 5) {
+        if (Object.values(editedUserProfile.value.address).every((value) => value.length > 0)) {
           return true;
         }
       }
       return false;
-    },
-    async getCity() {
+    };
+
+async function getCity() {
       const userService = new UserService();
-      const address = await userService.getCityFromZip(
-        this.editedUserProfile.address.zip
-      );
+      const address = await userService.getCityFromZip(editedUserProfile.value.address.zip);
       try {
         if (address) {
-          this.editedUserProfile.address.city = address[0].city;
-          this.editedUserProfile.address.province = address[0].province;
-          this.editedUserProfile.address.countryCode = address[0].countryCode;
+          editedUserProfile.value.address.city = address[0].city;
+          editedUserProfile.value.address.province = address[0].province;
+          editedUserProfile.value.address.countryCode = address[0].countryCode;
         }
       } catch (error) {
         console.log(error);
-        alert("Bitte überprüfen Sie Ihre Postleitzahl!");
+        alert('Bitte überprüfen Sie Ihre Postleitzahl!');
       }
-    },
-  },
 };
 </script>
 
@@ -224,9 +213,7 @@ export default {
                 <strong>Private Telefonnummer:</strong>
                 {{ userProfile.privatePhoneNumber }}
               </p>
-              <p v-if="userProfile.email">
-                <strong>Email:</strong> {{ userProfile.email }}
-              </p>
+              <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
               <p v-if="userProfile.registeredDate">
                 <strong>Mitglied seit:</strong> {{ userProfile.registeredDate }}
               </p>
@@ -237,36 +224,28 @@ export default {
             <div v-else>
               <div class="edit-inputs">
                 <FloatLabel>
-                  <InputText
-                    id="firstname"
-                    v-model="editedUserProfile.firstName"
-                  />
+                  <InputText id="firstname" v-model="editedUserProfile.firstName" />
                   <label for="firstname">Vorname</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText
-                    id="lastname"
-                    v-model="editedUserProfile.lastName"
-                  />
+                  <InputText id="lastname" v-model="editedUserProfile.lastName" />
                   <label for="lastname">Nachname</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText
                     id="businessPhoneNumber"
                     v-model="editedUserProfile.businessPhoneNumber"
-                    @change="() => validatePhone('businessPhoneNumber')"
                     :class="{ 'is-invalid': !isPhoneValid.businessPhoneNumber }"
+                    @change="() => validatePhone('businessPhoneNumber')"
                   />
-                  <label for="businessPhoneNumber"
-                    >Geschäftliche Telefonnummer</label
-                  >
+                  <label for="businessPhoneNumber">Geschäftliche Telefonnummer</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText
                     id="mobilePhoneNumber"
                     v-model="editedUserProfile.mobilePhoneNumber"
-                    @change="() => validatePhone('mobilePhoneNumber')"
                     :class="{ 'is-invalid': !isPhoneValid.mobilePhoneNumber }"
+                    @change="() => validatePhone('mobilePhoneNumber')"
                   />
                   <label for="mobilePhoneNumber">Handynummer</label>
                 </FloatLabel>
@@ -274,8 +253,8 @@ export default {
                   <InputText
                     id="privatePhoneNumber"
                     v-model="editedUserProfile.privatePhoneNumber"
-                    @change="() => validatePhone('privatePhoneNumber')"
                     :class="{ 'is-invalid': !isPhoneValid.privatePhoneNumber }"
+                    @change="() => validatePhone('privatePhoneNumber')"
                   />
                   <label for="privatePhoneNumber">Private Telefonnummer</label>
                 </FloatLabel>
@@ -310,32 +289,19 @@ export default {
             <div v-else>
               <div class="edit-inputs">
                 <FloatLabel>
-                  <InputText
-                    id="street"
-                    v-model="editedUserProfile.address.street"
-                  />
+                  <InputText id="street" v-model="editedUserProfile.address.street" />
                   <label for="street">Straße und Hausnummer</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText
-                    id="zip"
-                    @change="getCity"
-                    v-model="editedUserProfile.address.zip"
-                  />
+                  <InputText id="zip" v-model="editedUserProfile.address.zip" @change="getCity" />
                   <label for="zip">Postleitzahl</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText
-                    id="city"
-                    v-model="editedUserProfile.address.city"
-                  />
+                  <InputText id="city" v-model="editedUserProfile.address.city" />
                   <label for="city">Stadt</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <InputText
-                    id="province"
-                    v-model="editedUserProfile.address.province"
-                  />
+                  <InputText id="province" v-model="editedUserProfile.address.province" />
                   <label for="province">Bundesland</label>
                 </FloatLabel>
                 <div class="country">
@@ -345,11 +311,7 @@ export default {
                     class="select-country"
                   >
                     <option disabled value="">Land</option>
-                    <option
-                      v-for="country in countries"
-                      :key="country.code"
-                      :value="country.code"
-                    >
+                    <option v-for="country in countries" :key="country.code" :value="country.code">
                       {{ country.name }}
                     </option>
                   </select>
@@ -374,8 +336,8 @@ export default {
             type="button"
             icon="pi pi-user-edit"
             class="edit-button"
-            @click="toggleEditMode"
             label="Bearbeiten"
+            @click="toggleEditMode"
           />
           <Button
             type="button"
@@ -397,8 +359,8 @@ export default {
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
           >
             <p>
-              Bist du sicher, dass du dein Konto löschen möchtest? Alle deine
-              Daten werden unwiderruflich gelöscht.
+              Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden
+              unwiderruflich gelöscht.
             </p>
             <div class="buttons-container centered-buttons">
               <Button
@@ -406,9 +368,9 @@ export default {
                 icon="pi pi-trash"
                 severity="danger"
                 aria-label="Cancel"
-                @click="deleteAccount"
                 label="Konto wirklich löschen"
                 class="delete-button"
+                @click="deleteAccount"
               />
               <Button
                 type="button"
@@ -416,8 +378,8 @@ export default {
                 class="cancel-button"
                 severity="secondary"
                 aria-label="Cancel"
-                @click="visible = false"
                 label="Abbrechen"
+                @click="visible = false"
               />
             </div>
           </Dialog>
@@ -429,39 +391,21 @@ export default {
             type="button"
             label="Speichern"
             icon="pi pi-check"
-            @click="saveProfile"
             class="save-button"
+            @click="saveProfile"
           />
           <Button
             icon="pi pi-times"
             class="cancel-button"
             severity="secondary"
             aria-label="Cancel"
-            @click="toggleEditMode"
             label="Abbrechen"
+            @click="toggleEditMode"
           />
         </div>
       </div>
     </div>
   </div>
-  <!--Modal
-          :isOpen="showModal"
-          :bodyText="'Durch die Anmeldung bzw. Registrierung stimmst Du unser Datenschutzerklärung zu.'"
-          :linkText="'Datenschutzerklärung'"
-          :linkHref="'/data-protection'"
-          :buttonText="'Mit Google Anmelden'"
-          :headingText="'Anmeldung/Registrierung'"
-          :buttonColor="'green'"
-          @closeModal="showModal = false"
-      ></Modal>
-      <Modal
-          :isOpen="showDeleteModal"
-          :bodyText="'Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden unwiderruflich gelöscht.'"
-          :buttonText="'Konto löschen'"
-          :headingText="'Konto löschen'"
-          :buttonColor="'red'"
-          @closeModal="showDeleteModal = false"
-      ></Modal -->
 </template>
 
 <style>

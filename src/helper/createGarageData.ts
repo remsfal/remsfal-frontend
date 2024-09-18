@@ -1,4 +1,4 @@
-import type { GarageItem, BuildingItem } from "@/services/ProjectService";
+import type { GarageItem, BuildingItem } from '@/services/ProjectService';
 
 export function generateDummyGarages(buildings: BuildingItem[]): GarageItem[] {
   const garages: GarageItem[] = [];

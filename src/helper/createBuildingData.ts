@@ -1,8 +1,6 @@
-import type { BuildingItem, PropertyItem } from "@/services/ProjectService";
+import type { BuildingItem, PropertyItem } from '@/services/ProjectService';
 
-export function generateDummyBuildings(
-  properties: PropertyItem[]
-): BuildingItem[] {
+export function generateDummyBuildings(properties: PropertyItem[]): BuildingItem[] {
   const buildings: BuildingItem[] = [];
 
   properties.forEach((property: PropertyItem, index) => {

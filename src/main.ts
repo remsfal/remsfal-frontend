@@ -1,9 +1,9 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
-import App from '@/App.vue'
-import router from '@/router'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+import App from '@/App.vue';
+import router from '@/router';
 
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
@@ -110,20 +110,20 @@ import VirtualScroller from 'primevue/virtualscroller';
 
 import '@/assets/styles.scss';
 
-const pinia = createPinia()
-const app = createApp(App)
+const pinia = createPinia();
+const app = createApp(App);
 // Install Pinia
-app.use(pinia)
+app.use(pinia);
 // Install Router for SPA
-app.use(router)
+app.use(router);
 // Make PrimeVue available throughout the project
-app.use(PrimeVue)
+app.use(PrimeVue);
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
 
 // Install Axios for RESTful Webservice calls
-app.use(VueAxios, axios)
+app.use(VueAxios, axios);
 
 // Add primevue directives
 app.directive('tooltip', Tooltip);
@@ -131,7 +131,7 @@ app.directive('badge', BadgeDirective);
 app.directive('styleclass', StyleClass);
 
 // Add primefaces components
-/* eslint-disable vue/multi-word-component-names */
+
 /* eslint-disable vue/no-reserved-component-names */
 app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);
@@ -229,4 +229,4 @@ app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
-app.mount('#app')
+app.mount('#app');

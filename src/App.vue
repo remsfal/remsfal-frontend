@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
+import { RouterView } from 'vue-router';
+defineOptions({
+  created() {
+    console.log('App created!');
+    const sessionStore = useUserSessionStore();
+    sessionStore.refreshSessionState();
+    const projectStore = useProjectStore();
+    projectStore.refreshProjectList();
+  },
+});
 </script>
 
 <template>
@@ -7,17 +16,6 @@ import { RouterView } from "vue-router";
 </template>
 
 <script lang="ts">
-import {useUserSessionStore} from "@/stores/UserSession";
-import {useProjectStore} from "@/stores/ProjectStore";
-
-export default {
-  created() {
-    console.log("App created!");
-    const sessionStore = useUserSessionStore();
-    sessionStore.refreshSessionState();
-    const projectStore = useProjectStore();
-    projectStore.refreshProjectList();
-  }
-};
+import { useUserSessionStore } from '@/stores/UserSession';
+import { useProjectStore } from '@/stores/ProjectStore';
 </script>
-
