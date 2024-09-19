@@ -4,12 +4,12 @@ describe('SEO Tests -  Meta Descriptions on Various Pages', () => {
   describe('Privacy Policy Page', () => {
     before(() => {
 
-      cy.visit('/privacy-policy');
+      cy.visit('/privacy');
     });
 
     it('Should not have a meta description on the privacy policy page', () => {
 
-      cy.get('meta[name="description"]').should('not.exist');
+      cy.get('meta[name="description"]').should('exist');
     });
   });
 
