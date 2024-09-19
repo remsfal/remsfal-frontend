@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 import { mount } from '@vue/test-utils';
-import LandingPage from '@/views/LandingPageView.vue';
+import LandingPage from '../../src/views/LandingPageView.vue';
 
 describe('LandingPageView', () => {
   test('renders properly', () => {
