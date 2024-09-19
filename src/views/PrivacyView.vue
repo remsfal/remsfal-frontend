@@ -1,5 +1,44 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
+import {useHead} from "@vueuse/head";
+const logoUrl = new URL('@/assets/logo2.png', import.meta.url).href;
+useHead({
+  title: 'Datenschutzerklärung - Remsfal',
+  meta: [
+    {
+      name: 'description',
+      content: 'Erfahren Sie, wie Remsfal Ihre Daten verarbeitet und welche Rechte Sie haben.'
+    },
+    {
+      property: 'og:title',
+      content: 'Datenschutzerklärung - Remsfal'
+    },
+    {
+      property: 'og:description',
+      content: 'Erfahren Sie, wie Remsfal Ihre Daten verarbeitet und welche Rechte Sie haben.'
+    },
+    {
+      property: 'og:image',
+      content: logoUrl
+    },
+    {
+      name: 'twitter:title',
+      content: 'Datenschutzerklärung - Remsfal'
+    },
+    {
+      name: 'twitter:description',
+      content: 'Erfahren Sie, wie Remsfal Ihre Daten verarbeitet und welche Rechte Sie haben.'
+    },
+    {
+      name: 'twitter:image',
+      content: logoUrl
+    },
+    {
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    }
+  ]
+});
 </script>
 
 <template>
