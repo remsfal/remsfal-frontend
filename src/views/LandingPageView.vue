@@ -4,7 +4,7 @@ import {defineComponent} from "vue";
 
 export default defineComponent({
   setup() {
-    const logoUrl = new URL('@/assets/logo.png', import.meta.url).href;
+    const logoUrl = new URL('@/assets/logo2.png', import.meta.url).href;
     useHead({
       title: 'Remsfal – Effizientes Liegenschaftsmanagement online',
       meta: [
@@ -22,7 +22,7 @@ export default defineComponent({
         },
         {
           property: 'og:image',
-          content: logoUrl // Verwende hier die absolute URL des Logos
+          content: logoUrl
         },
         {
           name: 'twitter:title',
@@ -34,11 +34,59 @@ export default defineComponent({
         },
         {
           name: 'twitter:image',
-          content: logoUrl // Verwende hier ebenfalls die absolute URL des Logos
+          content: logoUrl
         },
         {
           name: 'twitter:card',
           content: 'summary_large_image'
+        }
+      ],
+      script: [
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Remsfal",
+            "url": "https://remsfal.de/",
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Service",
+                "telephone": "+49 30 5019-2346",
+                "faxNumber": "+49 30 5019-48-2346",
+                "email": "info@remsfal.de",
+                "contactOption": "HearingImpairedSupported",
+                "areaServed": "DE",
+                "availableLanguage": "German"
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Privacy Officer",
+                "email": "privacy@remsfal.de",
+                "contactOption": "HearingImpairedSupported",
+                "areaServed": "DE",
+                "availableLanguage": "German"
+              }
+            ],
+            "founder": {
+              "@type": "Person",
+              "name": "Prof. Dr.-Ing. Alexander Stanik"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "TA Gebäude C, Raum 830, Treskowallee 8",
+              "addressLocality": "Berlin",
+              "postalCode": "10318",
+              "addressCountry": "DE"
+            },
+            "sameAs": [
+              "https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html",
+              "https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-privacy-statement"
+            ],
+            "foundingDate": "2023",
+            "legalName": "Prof. Dr.-Ing. Alexander Stanik"
+          })
         }
       ]
     });
