@@ -29,7 +29,7 @@
     "primevue": "3.52.0",
     "vue": "^3.3.11",
     "vue-axios": "^3.5.0",
-    "vue-router": "^4.3.2"
+    "vue-router": "^4.4.5"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-js": "^2.7.2",
