@@ -66,20 +66,11 @@ export default class TaskService {
     projectId: string,
     title: string,
     description: string,
-    ownerId: string,
-    blockedBy?: string,
-    relatedTo?: string,
   ): Promise<Task> {
-    const currentTimestamp = new Date();
     const newTask: Partial<Task> = {
       title: title,
       description: description,
       status: Status.OPEN,
-      ownerId: ownerId,
-      createdAt: currentTimestamp,
-      modifiedAt: currentTimestamp,
-      blockedBy: blockedBy,
-      relatedTo: relatedTo,
     };
 
     return axios.post<Task>(`${this.baseUrl}/${projectId}/tasks/`, newTask).then((response) => {

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, defineProps } from 'vue';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
 import TaskService, { Status, type TaskItem } from '@/services/TaskService';
 
 const props = defineProps<{
