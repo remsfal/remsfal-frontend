@@ -13,24 +13,14 @@ const props = defineProps<{
 const taskService = new TaskService();
 const title = ref<string>('');
 const description = ref<string>('');
-const blockedBy = ref<string>('');
-const relatedTo = ref<string>('');
 const visible = ref<boolean>(false);
 const tasks = ref<TaskItem[]>([]);
 
 const createTask = () => {
   const projectId = props.projectId;
-  const ownerId = props.owner || '';
 
   taskService
-    .createTask(
-      projectId,
-      title.value,
-      description.value,
-      ownerId,
-      blockedBy.value,
-      relatedTo.value,
-    )
+    .createTask(projectId, title.value, description.value)
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;

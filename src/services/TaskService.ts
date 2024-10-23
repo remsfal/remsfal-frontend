@@ -62,11 +62,7 @@ export default class TaskService {
   }
 
   //Create a task
-  createTask(
-    projectId: string,
-    title: string,
-    description: string,
-  ): Promise<Task> {
+  createTask(projectId: string, title: string, description: string): Promise<Task> {
     const newTask: Partial<Task> = {
       title: title,
       description: description,
