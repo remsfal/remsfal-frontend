@@ -67,7 +67,7 @@ export default [
       'vue/no-multiple-objects-in-class': 'warn',
       'vue/no-root-v-if': 'error',
       'vue/no-template-target-blank': 'error',
-      'vue/no-undef-components': 'warn',
+      'vue/no-undef-components': 'error',
       'vue/no-undef-properties': 'warn',
       'vue/no-unused-refs': 'warn',
       'vue/no-use-v-else-with-v-for': 'error',
