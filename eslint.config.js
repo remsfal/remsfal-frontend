@@ -48,7 +48,6 @@ export default [
       'vue/attribute-hyphenation': ['error', 'never'],
       'vue/v-on-event-hyphenation': ['error', 'never'],
       'vue/no-v-html': 'off',
-
       'vue/block-lang': ['error', { script: { lang: 'ts' } }],
       'vue/block-order': ['error', { order: ['script[setup]', 'template', 'style[scoped]'] }],
       'vue/component-api-style': ['error', ['script-setup']],
@@ -68,7 +67,7 @@ export default [
       'vue/no-root-v-if': 'error',
       'vue/no-template-target-blank': 'error',
       'vue/no-undef-components': 'error',
-      'vue/no-undef-properties': 'warn',
+      'vue/no-undef-properties': 'error',
       'vue/no-unused-refs': 'warn',
       'vue/no-use-v-else-with-v-for': 'error',
       'vue/no-useless-mustaches': 'warn',

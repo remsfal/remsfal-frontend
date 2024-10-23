@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import ProjectService, { type PropertyItem } from '@/services/ProjectService';
+import {ref, onMounted} from 'vue';
+import {useRouter, useRoute} from 'vue-router';
+import ProjectService, {type PropertyItem} from '@/services/ProjectService';
 
 const props = defineProps<{
   projectId: string;
