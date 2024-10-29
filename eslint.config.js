@@ -10,8 +10,6 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        'router-link': 'readonly',
-        'router-view': 'readonly',
         //PrimeVue Components
         Accordion: 'readonly',
         AccordionTab: 'readonly',
