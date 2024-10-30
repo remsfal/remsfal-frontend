@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import NewProjectForm from '@/components/NewProjectForm.vue';
 import ProjectSelectionTable from '@/components/ProjectSelectionTable.vue';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 
     const display = ref(false);
 

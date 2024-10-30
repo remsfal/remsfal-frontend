@@ -2,6 +2,11 @@
 import {useUserSessionStore} from '@/stores/UserSession';
 import UserService, {type User, type Address} from '@/services/UserService';
 import {onMounted, ref} from "vue";
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import FloatLabel from 'primevue/floatlabel';
+import Card from 'primevue/card';
+import Dialog from 'primevue/dialog';
 
 interface PhoneValid {
   businessPhoneNumber: boolean;
