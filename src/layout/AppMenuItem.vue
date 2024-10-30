@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, RouterLink } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
-import { RouterLink } from 'vue-router';
 
 export interface MenuItem {
   label: string;
