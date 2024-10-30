@@ -4,6 +4,7 @@ import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { RouterView } from 'vue-router';
+import Toast from 'primevue/toast';
 
 const { layoutConfig, layoutState, isSidebarActive, setFullscreen } = useLayout();
 
