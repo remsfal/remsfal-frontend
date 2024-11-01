@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, defineProps } from 'vue';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
 import TaskService, { Status, type TaskItem } from '@/services/TaskService';
 
 const props = defineProps<{
@@ -10,24 +13,14 @@ const props = defineProps<{
 const taskService = new TaskService();
 const title = ref<string>('');
 const description = ref<string>('');
-const blockedBy = ref<string>('');
-const relatedTo = ref<string>('');
 const visible = ref<boolean>(false);
 const tasks = ref<TaskItem[]>([]);
 
 const createTask = () => {
   const projectId = props.projectId;
-  const ownerId = props.owner || '';
 
   taskService
-    .createTask(
-      projectId,
-      title.value,
-      description.value,
-      ownerId,
-      blockedBy.value,
-      relatedTo.value,
-    )
+    .createTask(projectId, title.value, description.value)
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;

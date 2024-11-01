@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, RouterLink } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 
 export interface MenuItem {
@@ -95,7 +95,7 @@ const checkActiveRoute = (item: MenuItem) => {
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
     </a>
-    <router-link
+    <RouterLink
       v-if="item.to && !item.items && item.visible !== false"
       :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
       tabindex="0"
@@ -105,7 +105,7 @@ const checkActiveRoute = (item: MenuItem) => {
       <i :class="item.icon" class="layout-menuitem-icon"></i>
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
-    </router-link>
+    </RouterLink>
     <Transition v-if="item.items && item.visible !== false" name="layout-submenu">
       <ul v-show="root ? true : isActiveMenu" class="layout-submenu">
         <app-menu-item
