@@ -5,6 +5,9 @@ import { generateDummyBuildings } from '@/helper/createBuildingData';
 import { generateDummyApartments } from '@/helper/createApartmentData';
 import { generateDummyGarages } from '@/helper/createGarageData';
 import { useRouter } from 'vue-router';
+import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
 
 const props = defineProps<{
   projectId: string;

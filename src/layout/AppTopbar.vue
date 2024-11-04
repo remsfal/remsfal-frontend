@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
 import type { DropdownChangeEvent } from 'primevue/dropdown';
+import Dropdown from 'primevue/dropdown';
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();

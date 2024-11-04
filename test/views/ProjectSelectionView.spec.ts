@@ -15,30 +15,49 @@ vi.mock('vue-router', () => ({
 vi.mock('@/stores/ProjectStore', () => ({
   useProjectStore: vi.fn(),
 }));
-vi.mock('primevue/datatable', () => ({
-  DataTable: {
-    name: 'DataTable',
-    template: '<div><slot /></div>',
-  },
-}));
-vi.mock('primevue/column', () => ({
-  Column: {
-    name: 'Column',
-    template: '<div><slot /></div>',
-  },
-}));
-vi.mock('primevue/button', () => ({
-  Button: {
-    name: 'Button',
-    template: '<button><slot /></button>',
-  },
-}));
-vi.mock('primevue/dialog', () => ({
-  Dialog: {
-    name: 'Dialog',
-    template: '<div><slot /></div>',
-  },
-}));
+vi.mock('primevue/datatable', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    actual,
+    default: {
+      name: 'DataTable',
+      template: '<div><slot /></div>',
+    },
+  };
+});
+
+vi.mock('primevue/column', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    actual,
+    default: {
+      name: 'Column',
+      template: '<div><slot /></div>',
+    },
+  };
+});
+
+vi.mock('primevue/button', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    actual,
+    default: {
+      name: 'Button',
+      template: '<button><slot /></button>',
+    },
+  };
+});
+
+vi.mock('primevue/dialog', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    actual,
+    default: {
+      name: 'Dialog',
+      template: '<div><slot /></div>',
+    },
+  };
+});
 
 describe('ProjectSelectionView.vue', () => {
   let wrapper: VueWrapper<any>;

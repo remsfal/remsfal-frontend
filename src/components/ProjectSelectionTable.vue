@@ -3,6 +3,7 @@ import DataTable, { type DataTablePageEvent, type DataTableRowClickEvent } from 
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import Column from 'primevue/column';
 
 const isLoading = ref(false);
 

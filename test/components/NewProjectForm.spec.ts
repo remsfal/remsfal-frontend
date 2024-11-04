@@ -25,7 +25,7 @@ const router = createRouter({
 });
 
 describe('NewProjectForm.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<ProjectForm>;
   let pushSpy: ReturnType<typeof vi.spyOn>;
   let createProjectMock: ReturnType<typeof vi.fn>;
 

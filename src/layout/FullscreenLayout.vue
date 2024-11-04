@@ -3,6 +3,8 @@ import { computed, watch, ref } from 'vue';
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
 import { useLayout } from '@/layout/composables/layout';
+import { RouterView } from 'vue-router';
+import Toast from 'primevue/toast';
 
 const { layoutConfig, layoutState, isSidebarActive, setFullscreen } = useLayout();
 
@@ -68,7 +70,7 @@ const isOutsideClicked = (event: Event) => {
     <div class="layout-main-container">
       <main>
         <div class="layout-main">
-          <router-view></router-view>
+          <RouterView></RouterView>
         </div>
       </main>
       <AppFooter></AppFooter>
