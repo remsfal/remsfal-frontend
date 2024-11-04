@@ -39,7 +39,6 @@ function onPageChange(event: DataTablePageEvent): void {
     @page="onPageChange"
   >
     <Column field="name" header="Titel" style="min-width: 200px"></Column>
-    <Column field="id" header="Projekt-ID" style="min-width: 200px"></Column>
     <Column field="memberRole" header="Eigentümer Rolle" style="min-width: 200px"></Column>
   </DataTable>
 </template>
