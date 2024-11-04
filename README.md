@@ -58,5 +58,3 @@ npm run lint
 ```sh
 npm run stylelint
 ```
-
-Test commit
