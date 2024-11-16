@@ -154,7 +154,7 @@ import GoogleButton from '@/components/GoogleButton.vue';
     width: 300px;
   }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .widgets {
     flex-direction: column;
     align-items: center;
