@@ -39,4 +39,12 @@ describe('LegalNoticeView', () => {
         // Check if router was called with correct path
         expect(router.currentRoute.value.path).toBe('/');
     });
+
+    // Define a test case that checks if the legal notice text is rendered
+    it('renders the legal notice', () => {
+        const wrapper = mount(LegalNoticeView);
+
+        // Assert that the rendered text contains the word "Impressum" which verifies that the legal notice is displayed
+        expect(wrapper.text()).toContain('Impressum');
+    });
 });

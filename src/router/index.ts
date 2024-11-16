@@ -1,9 +1,6 @@
-import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router';
+import {createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
-import LegalNoticeView from '@/views/LegalNoticeView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
-import PrivacyView from '@/views/PrivacyView.vue';
-import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
 
 const routes = [
@@ -19,17 +16,17 @@ const routes = [
             {
                 path: '/legal-notice',
                 name: 'LegalNotice',
-                component: LegalNoticeView,
+                component: () => import('@/views/LegalNoticeView.vue'),
             },
             {
                 path: '/privacy',
                 name: 'Privacy',
-                component: PrivacyView,
+                component: () => import('@/views/PrivacyView.vue'),
             },
             {
                 path: '/projects',
                 name: 'ProjectSelection',
-                component: ProjectSelectionView,
+                component: () => import('@/views/ProjectSelectionView.vue'),
             },
             {
                 path: '/new-project',
