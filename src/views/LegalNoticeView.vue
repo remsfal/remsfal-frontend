@@ -1,9 +1,20 @@
 <script setup lang="ts">
-import Card from 'primevue/card';
+import { useRouter } from 'vue-router';
+import Button from "primevue/button"
+import Card from "primevue/card"
+
+const router = useRouter();
+
+const navigateToHome = () => {
+  router.push('/');
+};
 </script>
 
 <template>
   <div class="grid">
+    <div class="col-12 mb-3">
+      <Button icon="pi pi-home" label="Zurück zur Startseite" @click="navigateToHome" />
+    </div>
     <div class="col-6">
       <Card>
         <template #title> Impressum </template>
