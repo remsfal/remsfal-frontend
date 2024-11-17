@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import NewProjectForm from '@/components/NewProjectForm.vue';
 import ProjectSelectionTable from '@/components/ProjectSelectionTable.vue';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 
     const display = ref(false);
 
@@ -19,14 +21,14 @@ import ProjectSelectionTable from '@/components/ProjectSelectionTable.vue';
   <div class="grid">
     <div class="col-10">
       <div class="card">
-        <h5>Projekt Übersicht</h5>
+        <h5>Übersicht der Liegenschaften</h5>
         <ProjectSelectionTable />
       </div>
     </div>
     <div class="col-2">
-      <Button label="Projekt hinzufügen" icon="pi pi-plus" style="width: auto" @click="open" />
+      <Button label="Liegenschaft hinzufügen" icon="pi pi-plus" style="width: auto" @click="open" />
       <Dialog
-          header="Projekt hinzufügen"
+          header="Liegenschaft hinzufügen"
           v-model:visible="display"
           :breakpoints="{ '960px': '75vw' }"
           :style="{ width: '30vw' }"
