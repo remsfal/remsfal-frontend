@@ -2,6 +2,7 @@
 import { ref, onBeforeMount } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 export interface MenuItem {
   label: string;
@@ -97,7 +98,7 @@ const checkActiveRoute = (item: MenuItem) => {
             :class="item.icon.name"
             class="layout-menuitem-icon"
         ></i>
-        <font-awesome-icon
+        <FontAwesomeIcon
             v-else-if="item.icon.type === 'fa'"
             :icon="item.icon.name"
             class="layout-menuitem-icon"
@@ -119,7 +120,7 @@ const checkActiveRoute = (item: MenuItem) => {
             :class="item.icon.name"
             class="layout-menuitem-icon"
         ></i>
-        <font-awesome-icon
+        <FontAwesomeIcon
             v-else-if="item.icon.type === 'fa'"
             :icon="item.icon.name"
             class="layout-menuitem-icon"
