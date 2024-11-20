@@ -7,16 +7,16 @@ const model = ref([
   {
     label: 'Home',
     items: [
-      { label: 'Überblick', icon: 'pi pi-fw pi-home', to: '/' },
-      { label: 'Auftraggeber', icon: 'pi pi-fw pi-id-card', to: '/fullscreen' },
+      { label: 'Überblick', icon: {type: 'pi', name: 'pi pi-fw pi-home'}, to: '/' },
+      { label: 'Auftraggeber', icon: {type: 'pi', name: 'pi pi-fw pi-id-card'}, to: '/fullscreen' },
     ],
   },
   {
     label: 'Auftragsmanagement',
     items: [
-      { label: 'Offene Anfragen', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
-      { label: 'Laufende Aufträge', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
-      { label: 'Abgeschlossene Aufträge', icon: 'pi pi-fw pi-bookmark', to: '/uikit/floatlabel' },
+      { label: 'Offene Anfragen', icon: {type: 'pi', name: 'pi pi-fw pi-id-card'}, to: '/uikit/formlayout' },
+      { label: 'Laufende Aufträge', icon: {type: 'pi', name: 'pi pi-fw pi-check-square'}, to: '/uikit/input' },
+      { label: 'Abgeschlossene Aufträge', icon: {type: 'pi', name: 'pi pi-fw pi-bookmark'}, to: '/uikit/floatlabel' },
     ],
   },
 ] as MenuItem[]);

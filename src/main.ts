@@ -107,8 +107,16 @@ import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
+import {library} from '@fortawesome/fontawesome-svg-core';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+import {fas} from '@fortawesome/free-solid-svg-icons';
+import {far} from '@fortawesome/free-regular-svg-icons';
+import {fab} from '@fortawesome/free-brands-svg-icons';
 
 import '@/assets/styles.scss';
+
+// Add Font Awesome Icons to the Library
+library.add(fas, far, fab);
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -228,5 +236,8 @@ app.component('TreeSelect', TreeSelect);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
+
+// Register Font Awesome Icon globally
+app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.mount('#app');
