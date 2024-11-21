@@ -1,16 +1,54 @@
-// tests/views/LegalNoticeView.spec.ts
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import LegalNoticeView from '@/views/LegalNoticeView.vue';
-
+import PrimeVue from 'primevue/config';
+import Card from 'primevue/card';
+import Button from 'primevue/button';
+import { createRouter, createWebHistory } from 'vue-router';
 
 describe('LegalNoticeView.vue', () => {
-
-  // Define a test case that checks if the legal notice text is rendered
   it('renders the legal notice', () => {
-    const wrapper = mount(LegalNoticeView);
+    // Create router with necessary routes
+    const router = createRouter({
+      history: createWebHistory(),
+      routes: [
+        {
+          path: '/',
+          name: 'home',
+          component: { template: '<div>Home</div>' }
+        },
+        {
+          path: '/legal',
+          name: 'legal',
+          component: LegalNoticeView
+        }
+      ]
+    });
 
-    // Assert that the rendered text contains the word "Impressum" which verifies that the legal notice is displayed
-    expect(wrapper.text()).toContain('Impressum');
+    const wrapper = mount(LegalNoticeView, {
+      global: {
+        plugins: [PrimeVue, router],
+        components: {
+          Card,
+          Button
+        },
+        stubs: {
+          Card: {
+            template: `
+              <div class="p-card">
+                <div class="p-card-title"><slot name="title" /></div>
+                <div class="p-card-content"><slot name="content" /></div>
+              </div>
+            `
+          },
+          Button: true
+        }
+      }
+    });
+
+    // Wait for router to be ready before making assertions
+    router.isReady().then(() => {
+      expect(wrapper.text()).toContain('Impressum');
+    });
   });
 });
