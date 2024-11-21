@@ -55,18 +55,18 @@ function abort() {
   <form class="flex flex-column gap-2 w-23rem" @submit.prevent="createProject">
     <span class="p-float-label">
       <InputText
-          id="value"
-          v-model="projectTitle"
-          type="text"
-          :class="{ 'p-invalid': errorMessage }"
-          aria-describedby="text-error"
+        id="value"
+        v-model="projectTitle"
+        type="text"
+        :class="{ 'p-invalid': errorMessage }"
+        aria-describedby="text-error"
       />
       <label for="value">Name der Liegenschaft</label>
     </span>
     <small id="text-error" class="p-error">
       {{ errorMessage || '&nbsp;' }}
     </small>
-    <Button type="submit" label="Erstellen" icon="pi pi-plus" iconPos="left"/>
-    <Button type="reset" label="Abbrechen" icon="pi pi-times" iconPos="left" @click="abort"/>
+    <Button type="submit" label="Erstellen" icon="pi pi-plus" iconPos="left" />
+    <Button type="reset" label="Abbrechen" icon="pi pi-times" iconPos="left" @click="abort" />
   </form>
 </template>

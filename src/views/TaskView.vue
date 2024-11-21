@@ -55,14 +55,14 @@ watch(
   },
 );
 
-const ownerTasks = computed(() => {
+/*const ownerTasks = computed(() => {
   const ownerId = props.owner || '';
   return tasks.value.filter((task) => task.owner === ownerId);
-});
+});*/
 
-const openTasks = computed(() => {
+/*const openTasks = computed(() => {
   return tasks.value.filter((task) => task.status === Status.OPEN);
-});
+});*/
 </script>
 
 <template>

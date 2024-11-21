@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 import { useProjectStore } from '../../src/stores/ProjectStore';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
-import PrimeVue from "primevue/config";
+import PrimeVue from 'primevue/config';
 
 vi.mock('@/services/ProjectService');
 vi.mock('vue-router', () => ({

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 </script>
+
 <template>
   <footer>
     <div class="layout-footer">

@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils';
 import PrivacyView from '../../src/views/PrivacyView.vue';
 import PrimeVue from 'primevue/config';
 
-
 describe('PrivacyView', () => {
   let wrapper;
 
