@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import PrivacyView from '../../src/views/PrivacyView.vue';
 import PrimeVue from 'primevue/config';
@@ -11,7 +11,6 @@ describe('PrivacyView', () => {
   let router;
 
   beforeEach(async () => {
-    // Create router with necessary routes
     router = createRouter({
       history: createWebHistory(),
       routes: [
@@ -45,12 +44,13 @@ describe('PrivacyView', () => {
               </div>
             `
           },
-          Button: true
+          Button: {
+            template: '<button class="p-button"><slot /></button>'
+          }
         }
       }
     });
 
-    // Wait for router to be ready
     await router.isReady();
   });
 
@@ -74,5 +74,13 @@ describe('PrivacyView', () => {
     const footer = wrapper.find('.p-card-footer');
     expect(footer.exists()).toBe(true);
     expect(footer.text()).toContain('open privacy by opr.vc');
+  });
+
+  it('navigates to home when the home button is clicked', async () => {
+    const pushSpy = vi.spyOn(router, 'push');
+
+    await wrapper.find('.p-button').trigger('click');
+
+    expect(pushSpy).toHaveBeenCalledWith('/');
   });
 });
