@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, defineProps } from 'vue';
+import { ref, onMounted, watch, defineProps } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
@@ -55,14 +55,14 @@ watch(
   },
 );
 
-const ownerTasks = computed(() => {
+/*const ownerTasks = computed(() => {
   const ownerId = props.owner || '';
   return tasks.value.filter((task) => task.owner === ownerId);
-});
+});*/
 
-const openTasks = computed(() => {
+/*const openTasks = computed(() => {
   return tasks.value.filter((task) => task.status === Status.OPEN);
-});
+});*/
 </script>
 
 <template>

@@ -87,11 +87,11 @@ function toggleEditMode() {
   editMode.value = !editMode.value;
 }
 
-function discardChanges() {
+/*function discardChanges() {
   editedUserProfile.value = {...userProfile.value};
   editedUserProfile.value.address = {...userProfile.value.address};
   toggleEditMode();
-}
+}*/
 
 async function saveProfile() {
   if (Object.values(isPhoneValid).every(Boolean) && validateAddress()) {
