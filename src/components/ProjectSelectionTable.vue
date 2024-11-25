@@ -28,7 +28,6 @@ function onPageChange(event: DataTablePageEvent): void {
 
 <template>
   <DataTable
-    ref="dt"
     :value="projectStore.projects"
     scrollable
     :loading="isLoading"

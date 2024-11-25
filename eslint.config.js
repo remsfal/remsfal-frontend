@@ -68,7 +68,7 @@ export default [
       'vue/no-template-target-blank': 'error',
       'vue/no-undef-components': 'error',
       'vue/no-undef-properties': 'error',
-      'vue/no-unused-refs': 'warn',
+      'vue/no-unused-refs': 'error',
       'vue/no-use-v-else-with-v-for': 'error',
       'vue/no-useless-mustaches': 'warn',
       'vue/no-useless-v-bind': 'warn',
