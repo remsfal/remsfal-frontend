@@ -3,7 +3,7 @@ import type { ApartmentItem, BuildingItem } from '@/services/ProjectService';
 export function generateDummyApartments(buildings: BuildingItem[]): ApartmentItem[] {
   const apartments: ApartmentItem[] = [];
 
-  buildings.forEach((building: BuildingItem, index) => {
+  buildings.forEach((building: BuildingItem) => {
     for (let i = 0; i < 5; i++) {
       if (building.id) {
         apartments.push({
