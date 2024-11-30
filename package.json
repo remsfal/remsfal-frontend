@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "private": true,
   "type": "module",
+  "homepage": "https://remsfal.de",
+  "license": "MIT",
+  "repository": "github:remsfal/remsfal-frontend",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
