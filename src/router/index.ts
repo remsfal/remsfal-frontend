@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
@@ -99,6 +99,6 @@ const router = createRouter({
     routes: routes,
 });
 
-export {routes};
+export { routes };
 
 export default router;
