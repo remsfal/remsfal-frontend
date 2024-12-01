@@ -14,9 +14,21 @@ const model = ref([
   {
     label: 'Auftragsmanagement',
     items: [
-      { label: 'Offene Anfragen', icon: {type: 'pi', name: 'pi pi-fw pi-id-card'}, to: '/uikit/formlayout' },
-      { label: 'Laufende Aufträge', icon: {type: 'pi', name: 'pi pi-fw pi-check-square'}, to: '/uikit/input' },
-      { label: 'Abgeschlossene Aufträge', icon: {type: 'pi', name: 'pi pi-fw pi-bookmark'}, to: '/uikit/floatlabel' },
+      {
+        label: 'Offene Anfragen',
+        icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'Laufende Aufträge',
+        icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
+        to: '/uikit/input',
+      },
+      {
+        label: 'Abgeschlossene Aufträge',
+        icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
+        to: '/uikit/floatlabel',
+      },
     ],
   },
 ] as MenuItem[]);
