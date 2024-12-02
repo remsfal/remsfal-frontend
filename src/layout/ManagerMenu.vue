@@ -81,10 +81,26 @@ const model = ref([
   {
     label: 'Mängelmanagement',
     items: [
-      { label: 'Neue Meldungen', icon: {type: 'pi', name: 'pi pi-fw pi-list'}, to: '/uikit/formlayout' },
-      { label: 'Offene Mängel', icon: {type: 'pi', name: 'pi pi-fw pi-list'}, to: '/uikit/formlayout' },
-      { label: 'Beauftragte Mängel', icon: {type: 'pi', name: 'pi pi-fw pi-list'}, to: '/uikit/formlayout' },
-      { label: 'Alle Meldungen', icon: {type: 'pi', name: 'pi pi-fw pi-list'}, to: '/uikit/input' },
+      {
+        label: 'Neue Meldungen',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'Offene Mängel',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'Beauftragte Mängel',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'Alle Meldungen',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/uikit/input',
+      },
     ],
   },
 ] as MenuItem[]);
