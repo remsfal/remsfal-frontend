@@ -83,9 +83,8 @@ jobs:
         continue-on-error: true
         run: npm list
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         # The `npm ci` command can only install with an existing package-lock.json
-        # run: npm ci
       - name: Test with Coverage Information (coverage)
         run: npm run coverage
       - name: SonarCloud Scan on PR
