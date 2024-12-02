@@ -4,7 +4,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Checkbox from 'primevue/checkbox';
-import Select from 'primevue/select';
+import Dropdown from 'primevue/dropdown';
 
 const props = defineProps<{
   headline?: string; // Optional headline text
@@ -13,7 +13,7 @@ const props = defineProps<{
   fields: {
     name: string; // Field key
     label: string; // Label for the field
-    type: 'text' | 'textarea' | 'checkbox' | 'select'; // Input type
+    type: 'text' | 'textarea' | 'checkbox' | 'dropdown'; // Input type
     options?: any[]; // For dropdowns
     required?: boolean; // Is this field required
     validations?: ((value: any) => string | null)[]; // Array of validation functions
@@ -23,25 +23,10 @@ const props = defineProps<{
   onCancel?: () => void; // Cancel handler
 }>();
 
-const emit = defineEmits<{
-  (e: 'update:values', value: Record<string, any>): void;
-  (e: 'submit', value: Record<string, any>): void;
-  (e: 'cancel'): void;
-}>();
+const emit = defineEmits(['update:values', 'submit', 'cancel']);
 
 const formValues = ref({ ...props.initialValues });
 const validationErrors = ref<Record<string, string>>({});
-
-// make sure the form values are updated when the initial values change upon prop change
-watch(
-  () => props.initialValues,
-  (newValues) => {
-    formValues.value = { ...newValues };
-    validationErrors.value = {}; // Clear any existing validation errors
-  },
-  { deep: true, immediate: true }
-);
-
 
 // Compute whether the form is valid
 const isFormValid = computed(() => Object.keys(validationErrors.value).length === 0);
@@ -62,13 +47,12 @@ const validateField = (field: typeof props.fields[0]) => {
   }
 
   // Run additional validation rules
-  if (field.validations && value) {
-
-  for (const validationFn of field.validations) {
-    const error = validationFn(value);
-    if (error) errors.push(error);
+  if (field.validations) {
+    for (const validationFn of field.validations) {
+      const error = validationFn(value);
+      if (error) errors.push(error);
+    }
   }
-}
 
   // Update validation errors for the field
   if (errors.length > 0) {
@@ -85,7 +69,7 @@ const validateForm = () => {
 
 watch(formValues, (newValue) => {
   emit('update:values', newValue);
-}, { deep: true });
+});
 
 // Submit handler
 const handleSubmit = () => {
@@ -145,8 +129,8 @@ const handleCancel = () => {
         />
 
         <!-- Dropdown -->
-        <Select
-            v-else-if="field.type === 'select'"
+        <Dropdown
+            v-else-if="field.type === 'dropdown'"
             :id="field.name"
             v-model="formValues[field.name]"
             :options="field.options"
