@@ -103,30 +103,30 @@ const isOutsideClicked = (event: Event) => {
         <img src="@/assets/logo.png" alt="logo" />
       </div>
 
-      <Button
+      <button
         v-if="!layoutConfig.fullscreen.value"
         class="p-link layout-menu-button layout-topbar-button"
         @click="onMenuToggle()"
       >
         <i class="pi pi-bars"></i>
-      </Button>
+      </button>
 
-      <Button
+      <button
         class="p-link layout-topbar-menu-button layout-topbar-button"
         @click="onTopBarMenuButton()"
       >
         <i class="pi pi-ellipsis-v"></i>
-      </Button>
+      </button>
 
       <div class="layout-topbar-menu" :class="topbarMenuClasses">
-        <Button
+        <button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-shortcut-button"
           @click="onHomeClick()"
         >
           <i class="pi pi-home"></i>
           <span>Projekte</span>
-        </Button>
+        </button>
         <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
           <Select
             v-model="projectStore.selectedProject"
@@ -136,45 +136,45 @@ const isOutsideClicked = (event: Event) => {
             @change="onProjectSelectionChange($event)"
           />
         </div>
-        <Button
+        <button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-shortcut-button"
           @click="onNewProjectClick()"
         >
           <i class="pi pi-plus"></i>
           <span>Neues Projekt</span>
-        </Button>
-        <Button
+        </button>
+        <button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-button"
           @click="onAccountSettingsClick()"
         >
           <i class="pi pi-user"></i>
           <span>{{ sessionStore.user.email }}</span>
-        </Button>
-        <Button
+        </button>
+        <button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-button"
           @click="logout()"
         >
           <i class="pi pi-sign-out"></i>
           <span>Abmelden</span>
-        </Button>
-        <Button
+        </button>
+        <button
           v-if="sessionStore.user == null"
           class="p-link layout-topbar-button"
           @click="login('/projects')"
         >
           <i class="pi pi-sign-in"></i>
           <span>Anmelden</span>
-        </Button>
+        </button>
       </div>
     </div>
   </header>
 </template>
 
 <style lang="scss" scoped>
-.p-dropdown {
+.p-select {
   border: 0;
   box-shadow: none;
   margin-left: -0.5rem;
