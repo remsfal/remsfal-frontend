@@ -4,8 +4,9 @@ import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
-import type { DropdownChangeEvent } from 'primevue/dropdown';
-import Dropdown from 'primevue/dropdown';
+import type { SelectChangeEvent } from 'primevue/select';
+import Button from 'primevue/button';
+import Select from 'primevue/select';
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
@@ -27,7 +28,7 @@ const onTopBarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
 };
 
-const onProjectSelectionChange = (event: DropdownChangeEvent) => {
+const onProjectSelectionChange = (event: SelectChangeEvent) => {
   console.log('new project selected ', event.value.name);
   projectStore.setSelectedProject(event.value);
   topbarMenuActive.value = false;
@@ -102,32 +103,32 @@ const isOutsideClicked = (event: Event) => {
         <img src="@/assets/logo.png" alt="logo" />
       </div>
 
-      <button
+      <Button
         v-if="!layoutConfig.fullscreen.value"
         class="p-link layout-menu-button layout-topbar-button"
         @click="onMenuToggle()"
       >
         <i class="pi pi-bars"></i>
-      </button>
+      </Button>
 
-      <button
+      <Button
         class="p-link layout-topbar-menu-button layout-topbar-button"
         @click="onTopBarMenuButton()"
       >
         <i class="pi pi-ellipsis-v"></i>
-      </button>
+      </Button>
 
       <div class="layout-topbar-menu" :class="topbarMenuClasses">
-        <button
+        <Button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-shortcut-button"
           @click="onHomeClick()"
         >
           <i class="pi pi-home"></i>
           <span>Projekte</span>
-        </button>
+        </Button>
         <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
-          <Dropdown
+          <Select
             v-model="projectStore.selectedProject"
             :options="projectStore.projectList"
             optionLabel="name"
@@ -135,38 +136,38 @@ const isOutsideClicked = (event: Event) => {
             @change="onProjectSelectionChange($event)"
           />
         </div>
-        <button
+        <Button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-shortcut-button"
           @click="onNewProjectClick()"
         >
           <i class="pi pi-plus"></i>
           <span>Neues Projekt</span>
-        </button>
-        <button
+        </Button>
+        <Button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-button"
           @click="onAccountSettingsClick()"
         >
           <i class="pi pi-user"></i>
           <span>{{ sessionStore.user.email }}</span>
-        </button>
-        <button
+        </Button>
+        <Button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-button"
           @click="logout()"
         >
           <i class="pi pi-sign-out"></i>
           <span>Abmelden</span>
-        </button>
-        <button
+        </Button>
+        <Button
           v-if="sessionStore.user == null"
           class="p-link layout-topbar-button"
           @click="login('/projects')"
         >
           <i class="pi pi-sign-in"></i>
           <span>Anmelden</span>
-        </button>
+        </Button>
       </div>
     </div>
   </header>
