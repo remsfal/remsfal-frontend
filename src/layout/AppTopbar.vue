@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
 import type { SelectChangeEvent } from 'primevue/select';
-import Button from 'primevue/button';
 import Select from 'primevue/select';
 
 const { layoutConfig, onMenuToggle } = useLayout();
