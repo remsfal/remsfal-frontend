@@ -25,7 +25,7 @@ const router = createRouter({
 });
 
 describe('NewProjectForm.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<ProjectForm>;
   let pushSpy: ReturnType<typeof vi.spyOn>;
   let createProjectMock: ReturnType<typeof vi.fn>;
 
@@ -59,7 +59,7 @@ describe('NewProjectForm.vue', () => {
     // await wrapper.setData({ projectTitle: 'a'.repeat(101) });
     await wrapper.findComponent('input[type="text"]').setValue('a'.repeat(101));
     expect(wrapper.find('.p-error').text()).toBe(
-      'Der Projekttitel darf nicht mehr als 100 Zeichen lang sein',
+      'Der Name der Liegenschaft darf nicht mehr als 100 Zeichen lang sein',
     );
   });
 

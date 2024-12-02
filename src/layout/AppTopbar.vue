@@ -4,7 +4,8 @@ import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
-import type { DropdownChangeEvent } from 'primevue/dropdown';
+import type { SelectChangeEvent } from 'primevue/select';
+import Select from 'primevue/select';
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
@@ -26,7 +27,7 @@ const onTopBarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
 };
 
-const onProjectSelectionChange = (event: DropdownChangeEvent) => {
+const onProjectSelectionChange = (event: SelectChangeEvent) => {
   console.log('new project selected ', event.value.name);
   projectStore.setSelectedProject(event.value);
   topbarMenuActive.value = false;
@@ -126,7 +127,7 @@ const isOutsideClicked = (event: Event) => {
           <span>Projekte</span>
         </button>
         <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
-          <Dropdown
+          <Select
             v-model="projectStore.selectedProject"
             :options="projectStore.projectList"
             optionLabel="name"
@@ -172,7 +173,7 @@ const isOutsideClicked = (event: Event) => {
 </template>
 
 <style lang="scss" scoped>
-.p-dropdown {
+.p-select {
   border: 0;
   box-shadow: none;
   margin-left: -0.5rem;
