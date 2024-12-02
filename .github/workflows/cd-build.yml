@@ -42,7 +42,7 @@ jobs:
         run: npm ci --production
 
       - name: Run build
-        run: npm run build
+        run: npm run build-only
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
