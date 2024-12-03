@@ -18,11 +18,11 @@ const projectService = new ProjectService();
 const id = ref(route.query.propertyId || '');
 const title = ref('');
 const description = ref('');
-const district = ref(''); // Gemarkung
-const corridor = ref(''); // Flur
-const parcel = ref(''); // Flurstück
-const landRegistry = ref(''); // Liegenschaftsbuch
-const usageType = ref(null); // Wirtschaftsart
+const district = ref<string>(''); // Gemarkung
+const corridor = ref<string>(''); // Flur
+const parcel = ref<string>(''); // Flurstück
+const landRegistry = ref<string>(''); // Liegenschaftsbuch
+const usageType = ref<string | null>(null); // Wirtschaftsart
 const usageOptions = [
   { label: 'GF (Gebäude und Freifläche)', value: 'GF' },
   { label: 'BF (Betriebsfläche)', value: 'BF' },
@@ -39,13 +39,13 @@ const fetchPropertyDetails = () => {
   projectService
       .getProperty(props.projectId, id.value.toString())
       .then((property) => {
-        title.value = property.title;
-        description.value = property.description;
-        district.value = property.district;
-        corridor.value = property.corridor;
-        parcel.value = property.parcel;
-        landRegistry.value = property.landRegistry;
-        usageType.value = property.usageType;
+        title.value = property.title || '';
+        description.value = property.description || '';
+        district.value = property.district || '';
+        corridor.value = property.corridor || '';
+        parcel.value = property.parcel || '';
+        landRegistry.value = property.landRegistry || '';
+        usageType.value = property.usageType ?? null;
       })
       .catch((err) => {
         console.error('Fehler beim Laden der Objektdetails:', err);
@@ -59,11 +59,16 @@ const updateProperty = () => {
       .updateProperty(props.projectId, id.value.toString(), {
         title: title.value,
         description: description.value,
-        district: district.value,
-        corridor: corridor.value,
-        parcel: parcel.value,
-        landRegistry: landRegistry.value,
-        usageType: usageType.value,
+        district: district.value || '',
+        corridor: corridor.value || '',
+        parcel: parcel.value || '',
+        landRegistry: landRegistry.value || '',
+        usageType: usageType.value ?? null,
+
+
+        landRegisterEntry: '',
+        plotArea: 0,
+        effective_space: 0,
       })
       .then(() => {
         router.push(`/project/${props.projectId}/objects`);
@@ -72,6 +77,7 @@ const updateProperty = () => {
         console.error('Fehler beim Aktualisieren des Eigentums:', err);
       });
 };
+
 
 const cancel = () => {
   router.push(`/project/${props.projectId}/objects`);

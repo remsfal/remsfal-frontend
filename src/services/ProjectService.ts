@@ -37,7 +37,7 @@ export interface PropertyItem {
   corridor?: string; // Flur
   parcel?: string; // Flurstück
   landRegistry?: string; // Liegenschaftsbuch
-  usageType?: string; // Wirtschaftsart
+  usageType?: string | null; // Wirtschaftsart
 }
 
 export interface BuildingItem {
