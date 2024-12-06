@@ -16,26 +16,31 @@ const router = useRouter();
 const projectService = new ProjectService();
 
 const createProperty = () => {
+  console.log('createProperty called');
   if (!title.value) {
+    console.log('Title is empty, no navigation occurs');
     alert('Titel ist ein Pflichtfeld!');
     return;
   }
 
+  console.log('Calling projectService.createProperty');
   projectService
-    .createProperty(props.projectId, {
-      title: title.value,
-      description: description.value,
-      landRegisterEntry: '',
-      plotArea: 0,
-      effective_space: 0,
-    })
-    .then(() => {
-      router.push(`/project/${props.projectId}/objects`);
-    })
-    .catch((err) => {
-      console.error('Fehler beim Erstellen des Eigentums:', err);
-    });
+      .createProperty(props.projectId, {
+        title: title.value,
+        description: description.value,
+        landRegisterEntry: '',
+        plotArea: 0,
+        effective_space: 0,
+      })
+      .then(() => {
+        console.log('Navigation triggered');
+        router.push(`/project/${props.projectId}/objects`);
+      })
+      .catch((err) => {
+        console.error('Fehler beim Erstellen des Eigentums:', err);
+      });
 };
+
 
 const cancel = () => {
   router.push(`/project/${props.projectId}/objects`);
