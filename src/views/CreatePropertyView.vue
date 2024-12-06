@@ -61,7 +61,7 @@ const cancel = () => {
           <Textarea id="description" v-model="description" rows="4" class="no-resize" />
         </div>
         <div class="field col-12 text-right">
-          <Button label="Erstellen" icon="pi pi-check" @click="createProperty" class="mr-2" />
+          <Button label="Erstellen" icon="pi pi-check" @click="createProperty" class="mr-2" :disabled="!title" />
           <Button label="Abbrechen" icon="pi pi-times" @click="cancel" class="p-button-secondary" />
         </div>
       </div>
