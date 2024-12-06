@@ -11,10 +11,10 @@ const props = defineProps<{
 }>();
 
 const projectService = new ProjectService();
-const objectData = ref();
+const objectData = ref<PropertyNode[]>();
 const isLoading = ref(true);
 const error = ref<string | null>(null);
-const expandedRows = ref<Record<string, boolean>>({});
+const expandedKeys = ref({});
 
 const router = useRouter();
 
@@ -68,6 +68,27 @@ const deleteObject = (entity: string, entityId: string) => {
     // TODO: implement delete garage endpoint
   }
 };
+
+const expandAll = () => {
+  const expandRecursive = (nodes: PropertyNode[], expanded: Record<string, boolean>) => {
+    nodes.forEach((node) => {
+      expanded[node.key] = true;
+      if (node.children && node.children.length > 0) {
+        expandRecursive(node.children, expanded);
+      }
+    });
+  };
+
+  const newExpandedRows: Record<string, boolean> = {};
+  if (objectData.value) {
+    expandRecursive(objectData.value, newExpandedRows);
+  }
+  expandedKeys.value = newExpandedRows;
+};
+
+const collapseAll = () => {
+  expandedKeys.value = {};
+};
 </script>
 
 <template>
@@ -78,12 +99,12 @@ const deleteObject = (entity: string, entityId: string) => {
       <div v-if="error" class="alert alert-error">{{ error }}</div>
       <div v-if="!isLoading && !error" class="col-12">
         <div class="card">
-          <TreeTable v-model:expandedRows="expandedRows" :value="objectData" scrollable>
+          <TreeTable v-model:expandedKeys="expandedKeys" :value="objectData" scrollable>
             <template #header>
               <div class="flex justify-content-between flex-column sm:flex-row">
                 <div>
                   <Button
-                    icon="pi pi-search"
+                    icon="pi pi-plus"
                     label="Expand All"
                     class="mr-2 mb-2"
                     @click="expandAll"
