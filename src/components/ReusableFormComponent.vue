@@ -4,7 +4,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Checkbox from 'primevue/checkbox';
-import Dropdown from 'primevue/dropdown';
+import Select from 'primevue/select';
 
 const props = defineProps<{
   headline?: string; // Optional headline text
@@ -13,7 +13,7 @@ const props = defineProps<{
   fields: {
     name: string; // Field key
     label: string; // Label for the field
-    type: 'text' | 'textarea' | 'checkbox' | 'dropdown'; // Input type
+    type: 'text' | 'textarea' | 'checkbox' | 'select'; // Input type
     options?: any[]; // For dropdowns
     required?: boolean; // Is this field required
     validations?: ((value: any) => string | null)[]; // Array of validation functions
@@ -129,8 +129,8 @@ const handleCancel = () => {
         />
 
         <!-- Dropdown -->
-        <Dropdown
-            v-else-if="field.type === 'dropdown'"
+        <Select
+            v-else-if="field.type === 'select'"
             :id="field.name"
             v-model="formValues[field.name]"
             :options="field.options"
