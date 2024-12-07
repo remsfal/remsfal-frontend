@@ -23,7 +23,11 @@ const props = defineProps<{
   onCancel?: () => void; // Cancel handler
 }>();
 
-const emit = defineEmits(['update:values', 'submit', 'cancel']);
+const emit = defineEmits<{
+  (e: 'update:values', value: Record<string, any>): void;
+  (e: 'submit', value: Record<string, any>): void;
+  (e: 'cancel'): void;
+}>();
 
 const formValues = ref({ ...props.initialValues });
 const validationErrors = ref<Record<string, string>>({});
