@@ -69,7 +69,7 @@ const validateForm = () => {
 
 watch(formValues, (newValue) => {
   emit('update:values', newValue);
-});
+}, { deep: true });
 
 // Submit handler
 const handleSubmit = () => {
