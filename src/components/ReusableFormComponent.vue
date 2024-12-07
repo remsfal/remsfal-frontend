@@ -51,12 +51,12 @@ const validateField = (field: typeof props.fields[0]) => {
   }
 
   // Run additional validation rules
-  if (field.validations) {
-    for (const validationFn of field.validations) {
-      const error = validationFn(value);
-      if (error) errors.push(error);
-    }
+  if (field.validations && value) {
+  for (const validationFn of field.validations) {
+    const error = validationFn(value);
+    if (error) errors.push(error);
   }
+}
 
   // Update validation errors for the field
   if (errors.length > 0) {
