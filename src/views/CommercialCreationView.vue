@@ -9,7 +9,7 @@ const props = defineProps<{
 }>();
 
 const fields = [
-  { name: 'name', label: 'Titel', type: 'text', required: true },
+  { name: 'title', label: 'Titel', type: 'text', required: true },
   { name: 'location', label: 'Standort', type: 'textarea', required: false },
   {
     name: 'commercialSpace',
@@ -49,13 +49,7 @@ const fields = [
   },
 ];
 
-const initialCommercialData = {
-  title: '',
-  location: '',
-  commercialSpace: '',
-  description: '',
-  propertyType: null,
-};
+const initialCommercialData = {};
 
 const handleCommercialSubmit = (values: Record<string, any>) => {
   const projectService = new ProjectService();
