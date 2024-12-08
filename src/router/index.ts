@@ -81,6 +81,18 @@ const routes = [
                 component: () => import('@/views/PropertyView.vue'),
             },
             {
+                path: 'create-site',
+                name: 'CreateSite',
+                props: true,
+                component: () => import('@/views/SiteCreationView.vue'),
+            },
+            {
+                path: 'site/:siteId',
+                name: 'EditSite',
+                props: true,
+                component: () => import('@/views/SiteUpdateView.vue'),
+            },
+            {
                 path: 'tasks',
                 name: 'TaskOverview',
                 props: (route: RouteLocationNormalizedLoaded) => ({
