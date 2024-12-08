@@ -90,6 +90,18 @@ const routes = [
                 }),
                 component: () => import('@/views/TaskView.vue'),
             },
+            {
+                path: 'create-commercial',
+                name: 'CommercialCreation',
+                props: true,
+                component: () => import('@/views/CommercialCreationView.vue'),
+            },
+            {
+                path: 'commercial/:commercialId',
+                name: 'CommercialUpdate',
+                props: true,
+                component: () => import('@/views/CommercialUpdateView.vue'),
+            }
         ],
     },
 ];
