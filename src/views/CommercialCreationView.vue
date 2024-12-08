@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ReusableForm from '../components/ReusableFormComponent.vue';
-import ProjectService, {type PropertyItem} from '@/services/ProjectService';
+import ProjectService, { type CommercialItem } from '@/services/ProjectService';
 
 const props = defineProps<{
   projectId: string;
@@ -8,7 +8,14 @@ const props = defineProps<{
   buildingId: string;
 }>();
 
-const fields = [
+const fields: {
+  name: string;
+  label: string;
+  type: 'text' | 'textarea' | 'checkbox' | 'select';
+  options?: any[];
+  required?: boolean;
+  validations?: ((value: any) => string | null)[];
+}[] = [
   { name: 'title', label: 'Titel', type: 'text', required: true },
   { name: 'location', label: 'Standort', type: 'textarea', required: false },
   {
@@ -16,9 +23,8 @@ const fields = [
     label: 'Gewerbefläche (qm)',
     type: 'text',
     validations: [
-      (value) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
-      // or null
-      (value) => (value > 0 ? null : 'Muss größer als 0 sein'),
+      (value: any) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
+      (value: any) => (value > 0 ? null : 'Muss größer als 0 sein'),
     ],
   },
   {
@@ -26,8 +32,8 @@ const fields = [
     label: 'Nutzfläche (qm)',
     type: 'text',
     validations: [
-      (value) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
-      (value) => (value > 0 ? null : 'Muss größer als 0 sein'),
+      (value: any) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
+      (value: any) => (value > 0 ? null : 'Muss größer als 0 sein'),
     ],
   },
   {
@@ -35,8 +41,8 @@ const fields = [
     label: 'Heizfläche (qm)',
     type: 'text',
     validations: [
-      (value) => (!isNaN(value) ? null: 'Muss eine Zahl sein'),
-      (value) => (value > 0 ? null: 'Muss größer als 0 sein'),
+      (value: any) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
+      (value: any) => (value > 0 ? null : 'Muss größer als 0 sein'),
     ],
   },
   {
@@ -44,7 +50,7 @@ const fields = [
     label: 'Beschreibung',
     type: 'textarea',
     validations: [
-      (value) => (value.length <= 500 ? null : 'Beschreibung muss 500 Zeichen oder weniger sein'),
+      (value: any) => (value.length <= 500 ? null : 'Beschreibung muss 500 Zeichen oder weniger sein'),
     ],
   },
 ];
@@ -54,13 +60,22 @@ const initialCommercialData = {};
 const handleCommercialSubmit = (values: Record<string, any>) => {
   const projectService = new ProjectService();
   console.log('Submitting commercial:', values);
+  // Create the commercial
+  const commercial: CommercialItem = {
+    buildingId: props.buildingId,
+    title: values.title,
+    location: values.location,
+    commercialSpace: values.commercialSpace,
+    usableSpace: values.usableSpace,
+    heatingSpace: values.heatingSpace,
+    description: values.description
+  };
   try {
-    const response = projectService.createCommercial(props.projectId, props.propertyId, props.buildingId, values);
+    const response = projectService.createCommercial(props.projectId, props.propertyId, props.buildingId, commercial);
     console.log('Commercial created:', response);
     // TODO go back to the overview
   } catch (error) {
     console.error('Error creating commercial:', error);
-
   }
 };
 
