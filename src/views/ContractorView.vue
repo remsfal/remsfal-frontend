@@ -5,8 +5,12 @@ import ContractorTable from '@/components/ContractorTable.vue';
 <template>
   <main>
     <div class="grid">
-      <h1>This is the Contractor View.</h1>
-      <ContractorTable />
+      <div class="col-10">
+      <div class="card">
+        <h5>Übersicht der Aufträge</h5>
+        <ContractorTable />
+      </div>
+    </div>
     </div>
   </main>
 </template>
