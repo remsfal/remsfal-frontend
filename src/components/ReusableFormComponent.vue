@@ -32,6 +32,17 @@ const emit = defineEmits<{
 const formValues = ref({ ...props.initialValues });
 const validationErrors = ref<Record<string, string>>({});
 
+// make sure the form values are updated when the initial values change upon prop change
+watch(
+  () => props.initialValues,
+  (newValues) => {
+    formValues.value = { ...newValues };
+    validationErrors.value = {}; // Clear any existing validation errors
+  },
+  { deep: true, immediate: true }
+);
+
+
 // Compute whether the form is valid
 const isFormValid = computed(() => Object.keys(validationErrors.value).length === 0);
 
