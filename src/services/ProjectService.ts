@@ -35,6 +35,23 @@ export interface PropertyItem {
   buildings?: BuildingItem[];
 }
 
+export interface SiteItem {
+  id?: string;
+  propertyId: string;
+  address: AddressItem;
+  title: string;
+  description: string;
+  usableSpace: number;
+}
+
+export interface AddressItem {
+  street?: string;
+  city?: string;
+  province?: string;
+  zip?: string;
+  country?: string;
+}
+
 export interface BuildingItem {
   id?: string;
   propertyId: string;
@@ -187,12 +204,9 @@ export default class ProjectService {
       });
   }
 
-  createSite(title: string, projectId: string, propertyId: string) {
+  createSite(projectId: string, propertyId: string, site: SiteItem) {
     return axios
-      .post(`${this.url}/${projectId}/properties/${propertyId}/sites`, {
-        title: title,
-        propertyId: propertyId,
-      })
+      .post(`${this.url}/${projectId}/properties/${propertyId}/sites`, site)
       .then((response) => console.log(response))
       .catch((error) => console.error(error));
   }
@@ -206,6 +220,27 @@ export default class ProjectService {
       })
       .catch((error) => console.error(error));
   }
+
+  getSite(projectId: string, propertyId: string, siteId: string) {
+    return axios
+      .get(`${this.url}/${projectId}/properties/${propertyId}/sites/${siteId}`)
+      .then((response) => {
+        console.log('site returned', response.data);
+        return response.data;
+      })
+      .catch((error) => console.error(error));
+  }
+
+  updateSite(projectId: string, propertyId: string, siteId: string, site: SiteItem) {
+    return axios
+      .patch(`${this.url}/${projectId}/properties/${propertyId}/sites/${siteId}`, site)
+      .then((response) => {
+        console.log('site updated', response.data);
+        return response.data;
+      })
+      .catch((error) => console.error(error));
+  }
+
 
   createBuilding(title: string, projectId: string, propertyId: string) {
     return axios
