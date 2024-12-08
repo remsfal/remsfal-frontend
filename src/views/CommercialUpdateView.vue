@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ReusableForm from '../components/ReusableFormComponent.vue';
 import ProjectService, {type PropertyItem} from '@/services/ProjectService';
+import { onBeforeMount, onMounted, ref } from 'vue';
 
 const props = defineProps<{
   projectId: string;
@@ -10,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const fields = [
-  { name: 'name', label: 'Titel', type: 'text', required: true },
+  { name: 'title', label: 'Titel', type: 'text', required: true },
   { name: 'location', label: 'Standort', type: 'textarea', required: false },
   {
     name: 'commercialSpace',
@@ -50,19 +51,26 @@ const fields = [
   },
 ];
 
-// get the commercial data from the API
-const projectService = new ProjectService();
-const commercial = projectService.getCommercial(props.projectId, props.propertyId, props.buildingId, props.commercialId);
+const initialCommercialData = ref({
+  title: '',
+  location: '',
+  commercialSpace: '',
+  usableSpace: '',
+  heatingSpace: '',
+  description: '',
+});
 
-const initialCommercialData = {
-  title: commercial.title,
-  location: commercial.location,
-  commercialSpace: commercial.commercialSpace,
-  usableSpace: commercial.usableSpace,
-  heatingSpace: commercial.heatingSpace,
-  description: commercial.description,
-  propertyType: commercial.propertyType
-};
+onMounted( async ()=> {
+  const projectService = new ProjectService();
+  try {
+    const response = await projectService.getCommercial(props.projectId, props.propertyId, props.buildingId, props.commercialId);
+    console.log('Commercial data:', response.title);
+    initialCommercialData.value = response;
+    console.log('Initial commercial data:', initialCommercialData.value.title);
+  } catch (error) {
+    console.error('Error fetching commercial data:', error);
+  }
+});
 
 const handleCommercialSubmit = (values: Record<string, any>) => {
   const projectService = new ProjectService();
