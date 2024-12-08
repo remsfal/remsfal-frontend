@@ -68,7 +68,7 @@ export interface CommercialItem {
   title: string;
   location: string;
   description: string;
-  livingSpace: number;
+  commercialSpace: number;
   usableSpace: number;
   heatingSpace: number;
 }
