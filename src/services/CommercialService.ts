@@ -11,7 +11,7 @@ export interface CommercialItem {
   heatingSpace: number;
 }
 
-export default class ProjectService {
+export default class CommercialService {
   private readonly url: string = '/api/v1/projects';
 
   createCommercial(projectId: string, buildingId: string, commercial: CommercialItem, propertyId?: string,) {
