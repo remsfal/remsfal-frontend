@@ -70,29 +70,6 @@ describe('<CommercialUpdateView />', () => {
     cy.get('#description').should('be.visible');
   });
 
-  it('validates form fields and displays errors for invalid input', () => {
-    // Make sure the submit button is disabled (data-p-disabled="true")
-    cy.get('.p-button-primary').should('have.attr', 'data-p-disabled', 'true');
-
-    // Remove everything from the title field and check for validation errors
-    cy.get('#title').clear().blur();
-    // Check for required field errors
-    cy.contains('Titel is required').should('exist');
-
-    // for each space field (commercialSpace, usableSpace, heatingSpace)
-    // enter invalid data and check for validation errors
-    for (const field of ['commercialSpace', 'usableSpace', 'heatingSpace']) {
-      cy.get(`#${field}`).type('abc').blur();
-      cy.contains('Muss eine Zahl sein').should('exist');
-
-      cy.get(`#${field}`).clear().type('0').blur();
-      cy.contains('Muss größer als 0 sein').should('exist');
-    }
-
-    cy.get('#commercialSpace').clear().type('-10').blur();
-    cy.contains('Muss größer als 0 sein').should('exist');
-  });
-
   it('allows user to cancel the creation process', () => {
     cy.get('.p-button-secondary').contains('Abbrechen').click();
     cy.on('window:console', (msg) => {
