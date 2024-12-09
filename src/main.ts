@@ -109,6 +109,7 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 
 import '@/assets/styles.scss';
+import i18n from '@/i18n/i18n';
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -229,4 +230,5 @@ app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
+app.use(i18n);
 app.mount('#app');
