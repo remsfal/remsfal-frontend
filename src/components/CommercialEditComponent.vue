@@ -5,8 +5,8 @@ import CommercialService from '@/services/CommercialService';
 
 const props = defineProps<{
   projectId: string;
-  propertyId: string;
-  buildingId: string;
+  propertyId?: string;
+  buildingId?: string;
   commercialId?: string;
   headline: string; // Optional headline text
   saveButtonText: string; // Text for the save button

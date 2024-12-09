@@ -8,14 +8,34 @@ describe('<CommercialUpdateView />', () => {
   const commercialId = '1';
 
   beforeEach(() => {
+
+    // Intercept the short-url call and redirect to the full URL
     cy.intercept(
       'GET',
-      `**/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
+      `/api/v1/projects/${projectId}/commercials/${commercialId}`,
+      {
+        statusCode: 307,
+        headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}` },
+      }
+    )
+    cy.intercept(
+      'GET',
+      `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
       {
         statusCode: 200,
-        fixture: 'commercial.json', // Ensure this file exists in `cypress/fixtures/`
+        fixture: 'commercial.json',
       }
     ).as('getCommercial');
+
+    // intercept the short PATCH request and redirect to the full URL
+    cy.intercept(
+      'PATCH',
+      `/api/v1/projects/${projectId}/commercials/${commercialId}`,
+      {
+        statusCode: 307,
+        headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}` },
+      }
+    )
 
     // Mount the component
     cy.mount(CommercialUpdateView, {
@@ -86,7 +106,7 @@ describe('<CommercialUpdateView />', () => {
       statusCode: 200,
       body: {
         id: '1',
-        title: 'Commercial Unit 1',
+        title: 'Commercial Unit 1 updated',
         description: 'This is a test commercial unit',
         location: 'Test location',
       },

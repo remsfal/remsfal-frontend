@@ -7,6 +7,10 @@ describe('<CommercialCreationView />', () => {
   const buildingId = '3';
 
   beforeEach(() => {
+    cy.intercept('POST', `/api/v1/projects/${projectId}/buildings/${buildingId}/commercials`, {
+      statusCode: 307,
+      headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/` },
+    });
     cy.mount(CommercialCreationView, {
       global: {
         plugins: [PrimeVue],

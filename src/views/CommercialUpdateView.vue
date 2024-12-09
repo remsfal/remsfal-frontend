@@ -4,8 +4,8 @@ import CommercialService, { type CommercialItem } from '@/services/CommercialSer
 
 const props = defineProps<{
   projectId: string;
-  propertyId: string;
-  buildingId: string;
+  propertyId?: string;
+  buildingId?: string;
   commercialId: string;
 }>();
 
@@ -25,7 +25,7 @@ const handleCommercialSubmit = (values: Record<string, any>) => {
   try {
     const response = projectService.updateCommercial(props.projectId, props.commercialId, commercial);
     console.log('Commercial created:', response);
-    // TODO go back to the overview
+    // window.history.back();
   } catch (error) {
     console.error('Error updating commercial:', error);
   }
@@ -33,7 +33,7 @@ const handleCommercialSubmit = (values: Record<string, any>) => {
 
 const handleCommercialCancel = () => {
   console.log('Commercial creation canceled');
-  // TODO go back to the overview
+  // window.history.back();
 };
 </script>
 
