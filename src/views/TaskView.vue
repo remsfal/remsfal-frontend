@@ -4,6 +4,8 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import TaskService, { Status, type TaskItem } from '@/services/TaskService';
+import TaskTable from '@/components/TaskTable.vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   projectId: string;
@@ -15,12 +17,13 @@ const title = ref<string>('');
 const description = ref<string>('');
 const visible = ref<boolean>(false);
 const tasks = ref<TaskItem[]>([]);
+const router = useRouter();
 
 const createTask = () => {
   const projectId = props.projectId;
 
   taskService
-    .createTask(projectId, title.value, description.value)
+    .createTask(projectId, title.value, description.value, props.owner)
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;
@@ -37,6 +40,7 @@ const loadTasks = () => {
   taskService
     .getTasks(projectId)
     .then((tasklist) => {
+      console.log('all my tasks', tasklist.tasks);
       tasks.value = tasklist.tasks;
     })
     .catch((error) => {
@@ -44,6 +48,27 @@ const loadTasks = () => {
     });
 };
 
+const filterOpenTasks = () => {
+  const filteredTasks = tasks.value.filter((task) => task.status.toString() === 'OPEN');
+  console.log('filtered tasks', filteredTasks);
+  return filteredTasks;
+};
+const filterNotClosedTasks = () => {
+  const filteredTasks = tasks.value.filter(
+    (task) =>
+      task.status.toString() === 'OPEN' ||
+      task.status.toString() === 'IN_PROGRESS' ||
+      task.status.toString() === 'PENDING',
+  );
+  console.log('filtered tasks', filteredTasks);
+  return filteredTasks;
+};
+const navigateToProperty = (action: string, taskId?: string) => {
+  router.push({
+    path: `/project/${props.projectId}/tasks`,
+    query: { action: action, taskId: taskId },
+  });
+};
 onMounted(() => {
   loadTasks();
 });
@@ -54,7 +79,6 @@ watch(
     loadTasks();
   },
 );
-
 </script>
 
 <template>
@@ -72,9 +96,6 @@ watch(
     </div>
 
     <div class="grid">
-      <div class="card button-wrapper">
-        <Button label="Aufgabe erstellen" @click="visible = true" />
-      </div>
       <Dialog
         v-model:visible="visible"
         modal
@@ -97,13 +118,19 @@ watch(
 
       <div class="task-list-wrapper">
         <div v-if="owner">
-          <p>Dies sind meine Aufgaben. Meine Id: {{ owner }}</p>
+          <TaskTable :tasks="filterNotClosedTasks()" @click="navigateToProperty('edit')">
+            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+          </TaskTable>
         </div>
         <div v-else-if="status">
           <p>Das sind alle offenen Aufgaben. Status: {{ status }}</p>
+          <TaskTable :tasks="filterOpenTasks()"> </TaskTable>
         </div>
         <div v-else>
           <p>Dies sind alle Aufgaben für das Projekt: {{ projectId }}.</p>
+          <TaskTable :tasks="tasks">
+            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+          </TaskTable>
         </div>
       </div>
     </div>
@@ -145,5 +172,8 @@ watch(
 
 .button-wrapper button {
   width: 300px;
+}
+.my-btn {
+  padding: 10px 50px;
 }
 </style>

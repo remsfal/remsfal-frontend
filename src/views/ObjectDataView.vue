@@ -116,7 +116,6 @@ const navigateToProperty = (action: string, propertyId?: string) => {
                       class="mr-2 mb-2"
                       @click="expandAll"
                   />
-
                   <Button
                       icon="pi pi-minus"
                       label="Collapse All"

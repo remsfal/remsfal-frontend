@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} fro
 import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
+import path from 'path';
 
 const routes = [
     {
@@ -83,6 +84,7 @@ const routes = [
             {
                 path: 'tasks',
                 name: 'TaskOverview',
+                 
                 props: (route: RouteLocationNormalizedLoaded) => ({
                     projectId: route.params.projectId,
                     owner: route.query.owner,
@@ -90,6 +92,11 @@ const routes = [
                 }),
                 component: () => import('@/views/TaskView.vue'),
             },
+            {
+                path: 'taskedit/:taskid',
+                name : 'TaskEdit',
+                component: () => import('@/views/TaskEdit.vue'),
+            }
         ],
     },
 ];
