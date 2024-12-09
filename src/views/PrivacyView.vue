@@ -6,10 +6,10 @@ import Card from 'primevue/card';
   <div class="grid">
     <div class="col-12">
       <Card>
-        <template #title> Datenschutzerklärung </template>
+        <template #title> {{ $t('privacy.title') }}</template>
         <template #content>
-          <p>Im Folgenden möchten wir Sie aufklären, wie Ihre Daten von uns verarbeitet werden.</p>
-          <p class="p-card-content-header">Verantwortlich im Sinne der DSGVO ist:</p>
+          <p>{{ $t('privacy.explanation') }}</p>
+          <p class="p-card-content-header">{{ $t('privacy.responsibility') }}</p>
           <p>
             Prof. Dr.-Ing. Alexander Stanik<br />
             TA Gebäude C, Raum 830<br />
@@ -19,31 +19,24 @@ import Card from 'primevue/card';
           </p>
           <p>E-Mail: info@remsfal.de</p>
 
-          <p class="p-card-content-header">Unseren Datenschutzbeauftragten erreichen sie unter:</p>
+          <p class="p-card-content-header">{{ $t('privacy.representative') }}</p>
           <p>
             Prof. Dr.-Ing. Alexander Stanik<br />
             E-Mail: privacy@remsfal.de
           </p>
           <p>
-            Sollten Sie per E-Mail mit uns Kontakt aufnehmen, werden die mitgeteilten Daten von uns
-            gespeichert, um Ihr Anliegen zu bearbeiten.
+            {{ $t('privacy.contact') }}
           </p>
 
-          <p class="p-card-content-header">Betroffenenrechte</p>
+          <p class="p-card-content-header">{{ $t('privacy.betroffenenrechte.title') }}</p>
           <p>
-            Sie haben als betroffene Person, das Recht auf Auskunft, das Recht auf Berichtigung oder
-            Löschung, das Recht auf Einschränkung der Verarbeitung und das Recht auf Widerspruch
-            gegen die Verarbeitung Ihrer Daten. Sofern Sie uns eine Einwilligung erteilt haben,
-            können Sie diese jederzeit mit Wirkung für die Zukunft widerrufen.
+            {{ $t('privacy.betroffenenrechte.explanation.1') }}
           </p>
           <p>
-            Bitte richten Sie Ihren Widerspruch [oder Widerruf] formlos an folgende Adresse:
-            privacy@remsfal.de
+            {{ $t('privacy.betroffenenrechte.explanation.2') }}
           </p>
           <p>
-            Darüber hinaus haben Sie das Recht auf Datenübertragbarkeit. Sie haben weiter das Recht,
-            sich bei einer Aufsichtsbehörde über die Verarbeitung zu beschweren. Eine Liste der
-            entsprechenden Behörden finden Sie unter:
+            {{ $t('privacy.portability') }}
             <a
               href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html"
               target="_blank"
@@ -67,39 +60,22 @@ import Card from 'primevue/card';
 
     <div class="col-12">
       <Card>
-        <template #title> Hosting </template>
+        <template #title> {{ $t('privacy.hosting.title') }}</template>
         <template #content>
           <p class="p-card-content-header">
-            Unser Hoster erhebt in sog. Logfiles folgende Daten, die Ihr Browser übermittelt:
+            {{ $t('privacy.hosting.explanation.1') }}
           </p>
           <p>
-            Ihre IP-Adresse, Ihr Browsertyp und Ihre Browserversion, Ihr Betriebssystem, die
-            Internetseite, von der Sie auf unsere Website gelangt sind, die Unterwebseiten, welche
-            über ein zugreifendes System auf unserer Internetseite angesteuert werden, das Datum und
-            die Uhrzeit eines Zugriffs auf unsere Website und Ihr Internet-Service-Provider.
+            {{ $t('privacy.hosting.explanation.2') }}
           </p>
           <p>
-            Wir benötigen die vorgenannten Daten, um die Inhalte unserer Internetseite korrekt
-            auszuliefern und die dauerhafte Funktionsfähigkeit unserer informationstechnologischen
-            Systeme und der Technik unserer Internetseite zu gewährleisten. Die gespeicherten Daten
-            werden nur zu statistischen Zwecken ausgewertet. Rückschlüsse auf Ihre Person werden aus
-            den Daten nicht gezogen, insbesondere werden die Server-Logfiles getrennt von Ihren
-            sonstigen personenbezogenen Daten gespeichert. Personenbezogene Nutzerprofile können
-            nicht gebildet werden.
+            {{ $t('privacy.hosting.explanation.3') }}
           </p>
           <p>
-            Die Verarbeitung der Daten erfolgt auf Grundlage von Art. 6 I lit. b) DSGVO. Nach dieser
-            Vorschrift ist die Verarbeitung personenbezogener Daten zur Erfüllung eines Vertrags,
-            dessen Vertragspartei Sie sind, oder zur Durchführung vorvertraglicher Maßnahmen
-            erforderlich. Mit der Nutzung unserer Seite nehmen Sie unser Angebot auf Abschluss eines
-            entsprechenden (unentgeltlichen) Nutzungsvertrages stillschweigend an. Im Übrigen ist
-            die Verarbeitung auch über Art. 6 I lit. f) DSGVO gerechtfertigt, da wir ein
-            berechtigtes Interesse an der Verarbeitung haben und Ihre Interessen, Grundrechte und
-            Grundfreiheiten nicht überwiegen. Das Interesse besteht darin, unser Webangebot
-            ordnungsgemäß auszuliefern und die Funktionsfähigkeit unserer Systeme zu schützen.
+            {{ $t('privacy.hosting.explanation.4') }}
           </p>
           <p class="p-card-content-header">
-            Wir setzen für die Zurverfügungstellung unserer Website folgenden Hoster ein:
+            {{ $t('privacy.hosting.explanation.5') }}
           </p>
           <p>
             Hochschulrechenzentrum HTW Berlin<br />
@@ -109,8 +85,7 @@ import Card from 'primevue/card';
             Germany<br />
           </p>
           <p>
-            Weitere Details und Informationen zu Widerspruchs- und Beseitigungsmöglichkeiten
-            gegenüber dem Hochschulrechenzentrum der HTW Berlin finden Sie unter:
+            {{ $t('privacy.furtherInformation') }}
             <a
               href="https://www.htw-berlin.de/datenschutz/"
               target="_blank"
@@ -121,7 +96,7 @@ import Card from 'primevue/card';
           </p>
         </template>
         <template #footer>
-          <p>Stand: Januar 2024</p>
+          <p>{{ $t('privacy.lastUpdated') }}</p>
         </template>
       </Card>
     </div>

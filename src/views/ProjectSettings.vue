@@ -7,7 +7,7 @@ defineProps<{
 <template>
   <main>
     <div class="grid">
-      <h1>This is the project settings page for project {{ projectId }}.</h1>
+      <h1>{{ $t('projectSettings.title', [projectId]) }}</h1>
     </div>
   </main>
 </template>

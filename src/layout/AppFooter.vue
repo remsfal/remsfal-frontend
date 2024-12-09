@@ -5,8 +5,9 @@ import { RouterLink } from 'vue-router';
   <footer>
     <div class="layout-footer">
       <img src="@/assets/logo.png" alt="Logo" height="20" class="mr-2" />
-      <RouterLink to="/legal-notice">Impressum</RouterLink> |
-      <RouterLink to="/privacy">Datenschutz</RouterLink>
+      <RouterLink to="/legal-notice">{{ $t('legalNotice.title') }}</RouterLink>
+      |
+      <RouterLink to="/privacy">{{ $t('privacy.title') }}</RouterLink>
     </div>
   </footer>
 </template>

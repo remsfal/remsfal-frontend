@@ -6,9 +6,9 @@ import Card from 'primevue/card';
   <div class="grid">
     <div class="col-6">
       <Card>
-        <template #title> Impressum </template>
+        <template #title> {{ $t('legalNotice.title') }}</template>
         <template #content>
-          <p>Angaben gemäß § 5 Telemediengesetz (TMG):</p>
+          <p>{{ $t('legalNotice.definition') }}</p>
           <p>
             Prof. Dr.-Ing. Alexander Stanik<br />
             TA Gebäude C, Raum 830<br />
@@ -21,7 +21,7 @@ import Card from 'primevue/card';
     </div>
     <div class="col-6">
       <Card>
-        <template #title> Kontakt </template>
+        <template #title> {{ $t('legalNotice.contact') }}</template>
         <template #content>
           <p>
             Tel.: +49 30 5019-2346<br />
@@ -29,8 +29,7 @@ import Card from 'primevue/card';
             E-Mail: info@remsfal.de<br />
           </p>
           <p>
-            Verantwortlicher für den Inhalt ist gemäß § 55 Abs. 2 Rundfunkstaatsvertrag (RStV):<br />
-            Prof. Dr.-Ing. Alexander Stanik, info@remsfal.de
+            {{ $t('legalNotice.representative') }}
           </p>
         </template>
       </Card>

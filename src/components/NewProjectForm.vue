@@ -18,7 +18,8 @@ const router = useRouter();
 
 watch(projectTitle, (newProjectTitle) => {
   if (newProjectTitle.length > maxLength) {
-    errorMessage.value = `Der Name der Liegenschaft darf nicht mehr als ${maxLength} Zeichen lang sein`;
+    // TODO - check if the message is correctly displayed
+    errorMessage.value = $t('newProjectForm.title.error', maxLength);
   } else {
     errorMessage.value = '';
   }
@@ -55,18 +56,24 @@ function abort() {
   <form class="flex flex-column gap-2 w-23rem" @submit.prevent="createProject">
     <span class="p-float-label">
       <InputText
-          id="value"
-          v-model="projectTitle"
-          type="text"
-          :class="{ 'p-invalid': errorMessage }"
-          aria-describedby="text-error"
+        id="value"
+        v-model="projectTitle"
+        type="text"
+        :class="{ 'p-invalid': errorMessage }"
+        aria-describedby="text-error"
       />
-      <label for="value">Name der Liegenschaft</label>
+      <label for="value">{{ $t('newProjectForm.input.name') }}</label>
     </span>
     <small id="text-error" class="p-error">
       {{ errorMessage || '&nbsp;' }}
     </small>
-    <Button type="submit" label="Erstellen" icon="pi pi-plus" iconPos="left"/>
-    <Button type="reset" label="Abbrechen" icon="pi pi-times" iconPos="left" @click="abort"/>
+    <Button type="submit" label="$t('button.create')" icon="pi pi-plus" iconPos="left" />
+    <Button
+      type="reset"
+      label="$t('button.cancel')"
+      icon="pi pi-times"
+      iconPos="left"
+      @click="abort"
+    />
   </form>
 </template>

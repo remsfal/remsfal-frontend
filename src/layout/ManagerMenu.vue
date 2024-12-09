@@ -11,6 +11,7 @@ const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
 const model = ref([
+  // TODO: Replace with translations menu items
   {
     label: 'Home',
     items: [

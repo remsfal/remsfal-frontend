@@ -4,19 +4,32 @@ import { ref } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 
 const model = ref([
+  // TODO: Replace with translations menu items
   {
-    label: 'Home',
+    label: 'consultantMenu.home',
     items: [
-      { label: 'Überblick', icon: 'pi pi-fw pi-home', to: '/' },
-      { label: 'Auftraggeber', icon: 'pi pi-fw pi-id-card', to: '/fullscreen' },
+      { label: 'consultantMenu.home.overview', icon: 'pi pi-fw pi-home', to: '/' },
+      { label: 'consultantMenu.home.client', icon: 'pi pi-fw pi-id-card', to: '/fullscreen' },
     ],
   },
   {
-    label: 'Auftragsmanagement',
+    label: 'consultantMenu.clientManagement',
     items: [
-      { label: 'Offene Anfragen', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
-      { label: 'Laufende Aufträge', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
-      { label: 'Abgeschlossene Aufträge', icon: 'pi pi-fw pi-bookmark', to: '/uikit/floatlabel' },
+      {
+        label: 'consultantMenu.clientManagement.open',
+        icon: 'pi pi-fw pi-id-card',
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'consultantMenu.clientManagement.ongoing',
+        icon: 'pi pi-fw pi-check-square',
+        to: '/uikit/input',
+      },
+      {
+        label: 'consultantMenu.clientManagement.closed',
+        icon: 'pi pi-fw pi-bookmark',
+        to: '/uikit/floatlabel',
+      },
     ],
   },
 ] as MenuItem[]);
