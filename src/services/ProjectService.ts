@@ -62,17 +62,6 @@ export interface ApartmentItem {
   rent: number;
 }
 
-export interface CommercialItem {
-  id?: string;
-  buildingId: string;
-  title: string;
-  location: string;
-  description: string;
-  commercialSpace: number;
-  usableSpace: number;
-  heatingSpace: number;
-}
-
 export interface GarageItem {
   id?: string;
   buildingId: string;
@@ -256,65 +245,6 @@ export default class ProjectService {
         return response.data;
       })
       .catch((error) => console.error(error));
-  }
-
-  createCommercial(projectId: string, propertyId: string, buildingId: string, commercial: CommercialItem) {
-    return axios
-      .post(
-        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials`,
-        { commercial },
-      )
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error));
-  }
-
-  getCommercials(projectId: string, propertyId: string, buildingId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
-  getCommercial(projectId: string, propertyId: string, buildingId: string, commercialId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`)
-      .then((response) => {
-        console.log('commercial returned', response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error('Error getting commercial:', error);
-        throw error;
-      });
-  }
-
-  updateCommercial(projectId: string, propertyId: string, buildingId: string, commercialId: string, commercial: CommercialItem) {
-    return axios
-      .patch(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`, commercial)
-      .then((response) => {
-        console.log('commercial updated', response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error('Error updating commercial:', error);
-        throw error;
-      });
-  }
-
-  deleteCommercial(projectId: string, propertyId: string, buildingId: string, commercialId: string) {
-    return axios
-      .delete(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`)
-      .then((response) => {
-        console.log('commercial deleted');
-        return response.data;
-      })
-      .catch((error) => {
-        console.error('Error deleting commercial:', error);
-        throw error;
-      });
   }
 
   createGarage(title: string, projectId: string, propertyId: string, buildingId: string) {

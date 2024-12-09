@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CommercialEditComponent from '../components/CommercialEditComponent.vue';
-import ProjectService, { type CommercialItem } from '@/services/ProjectService';
+import CommercialService, { type CommercialItem } from '@/services/CommercialService';
 
 const props = defineProps<{
   projectId: string;
@@ -10,7 +10,7 @@ const props = defineProps<{
 }>();
 
 const handleCommercialSubmit = (values: Record<string, any>) => {
-  const projectService = new ProjectService();
+  const projectService = new CommercialService();
   console.log('Submitting commercial:', values);
   // Create the commercial
   const commercial: CommercialItem = {
@@ -23,7 +23,7 @@ const handleCommercialSubmit = (values: Record<string, any>) => {
     description: values.description
   };
   try {
-    const response = projectService.updateCommercial(props.projectId, props.propertyId, props.buildingId, props.commercialId, commercial);
+    const response = projectService.updateCommercial(props.projectId, props.commercialId, commercial);
     console.log('Commercial created:', response);
     // TODO go back to the overview
   } catch (error) {
