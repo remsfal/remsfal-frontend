@@ -39,7 +39,6 @@ const props = defineProps<{
                 raised
                 rounded
                 class="mb-2 mr-2"
-                @click="$emit('edit', slotProps.data.id)"
               />
             </RouterLink>
           </div>

@@ -63,12 +63,6 @@ const filterNotClosedTasks = () => {
   console.log('filtered tasks', filteredTasks);
   return filteredTasks;
 };
-const navigateToProperty = (action: string, taskId?: string) => {
-  router.push({
-    path: `/project/${props.projectId}/tasks`,
-    query: { action: action, taskId: taskId },
-  });
-};
 onMounted(() => {
   loadTasks();
 });
@@ -118,7 +112,7 @@ watch(
 
       <div class="task-list-wrapper">
         <div v-if="owner">
-          <TaskTable :tasks="filterNotClosedTasks()" @click="navigateToProperty('edit')">
+          <TaskTable :tasks="filterNotClosedTasks()">
             <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
           </TaskTable>
         </div>
