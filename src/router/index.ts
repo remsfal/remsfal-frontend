@@ -91,15 +91,21 @@ const routes = [
                 component: () => import('@/views/TaskView.vue'),
             },
             {
-                path: 'create-commercial',
+                path: 'commercial/create',
                 name: 'CommercialCreation',
-                props: true,
+                props: (route: RouteLocationNormalizedLoaded) => ({
+                    projectId: route.params.projectId,
+                    parentBuildingId: route.query.parentId,
+                }),
                 component: () => import('@/views/CommercialCreationView.vue'),
             },
             {
                 path: 'commercial/:commercialId',
                 name: 'CommercialUpdate',
-                props: true,
+                props: (route: RouteLocationNormalizedLoaded) => ({
+                    projectId: route.params.projectId,
+                    commercialId: route.params.commercialId,
+                }),
                 component: () => import('@/views/CommercialUpdateView.vue'),
             }
         ],
