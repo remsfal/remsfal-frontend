@@ -50,10 +50,11 @@ export interface PropertyNode {
 
 export interface PropertyTableData {
   type: string;
-  title: string;
-  description: string;
-  tenant: string;
-  usable_space: number;
+  title?: string;
+  description?: string;
+  tenant?: string;
+  usableSpace?: number;
+  isButtonRow?: boolean;
 }
 
 export interface BuildingItem {
