@@ -43,7 +43,6 @@
     "vue-router": "^4.4.5"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.13.8",
     "@stylistic/eslint-plugin-js": "^2.10.1",
     "@tsconfig/node18": "^18.2.4",
     "@types/jsdom": "^21.1.7",
