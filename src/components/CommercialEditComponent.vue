@@ -71,12 +71,17 @@ const initialCommercialData = ref({
   description: '',
 });
 
+const parentBuildingId = ref(props.buildingId);
+
 onMounted( async ()=> {
   if (props.commercialId) {
     const projectService = new CommercialService();
     try {
       const response = await projectService.getCommercial(props.projectId, props.commercialId);
       initialCommercialData.value = response;
+      if(!parentBuildingId.value) {
+        parentBuildingId.value = response.buildingId;
+      }
     } catch (error) {
       console.error('Error fetching commercial data:', error);
     }

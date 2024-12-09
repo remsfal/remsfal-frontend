@@ -5,7 +5,7 @@ import CommercialService, { type CommercialItem } from '@/services/CommercialSer
 const props = defineProps<{
   projectId: string;
   propertyId?: string;
-  buildingId?: string;
+  buildingId: string;
   commercialId: string;
 }>();
 

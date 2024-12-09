@@ -45,7 +45,6 @@ describe('<CommercialUpdateView />', () => {
       props: {
         projectId,
         propertyId,
-        buildingId,
         commercialId,
       },
     });
