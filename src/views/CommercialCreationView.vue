@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ReusableForm from '../components/ReusableFormComponent.vue';
+import CommercialEditComponent from '../components/CommercialEditComponent.vue';
 import ProjectService, { type CommercialItem } from '@/services/ProjectService';
 
 const props = defineProps<{
@@ -7,55 +7,6 @@ const props = defineProps<{
   propertyId: string;
   buildingId: string;
 }>();
-
-const fields: {
-  name: string;
-  label: string;
-  type: 'text' | 'textarea' | 'checkbox' | 'select';
-  options?: any[];
-  required?: boolean;
-  validations?: ((value: any) => string | null)[];
-}[] = [
-  { name: 'title', label: 'Titel', type: 'text', required: true },
-  { name: 'location', label: 'Standort', type: 'textarea', required: false },
-  {
-    name: 'commercialSpace',
-    label: 'Gewerbefläche (qm)',
-    type: 'text',
-    validations: [
-      (value: any) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
-      (value: any) => (value > 0 ? null : 'Muss größer als 0 sein'),
-    ],
-  },
-  {
-    name: 'usableSpace',
-    label: 'Nutzfläche (qm)',
-    type: 'text',
-    validations: [
-      (value: any) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
-      (value: any) => (value > 0 ? null : 'Muss größer als 0 sein'),
-    ],
-  },
-  {
-    name: 'heatingSpace',
-    label: 'Heizfläche (qm)',
-    type: 'text',
-    validations: [
-      (value: any) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
-      (value: any) => (value > 0 ? null : 'Muss größer als 0 sein'),
-    ],
-  },
-  {
-    name: 'description',
-    label: 'Beschreibung',
-    type: 'textarea',
-    validations: [
-      (value: any) => (value.length <= 500 ? null : 'Beschreibung muss 500 Zeichen oder weniger sein'),
-    ],
-  },
-];
-
-const initialCommercialData = {};
 
 const handleCommercialSubmit = (values: Record<string, any>) => {
   const projectService = new ProjectService();
@@ -86,13 +37,14 @@ const handleCommercialCancel = () => {
 </script>
 
 <template>
-  <ReusableForm
-      headline="Neue Gewerbeeinheit erstellen"
-      :fields="fields"
-      :initialValues="initialCommercialData"
-      saveButtonText="Gewerbeeinheit erstellen"
-      cancelButtonText="Abbrechen"
-      @submit="handleCommercialSubmit"
-      @cancel="handleCommercialCancel"
+  <CommercialEditComponent
+    :projectId="props.projectId"
+    :propertyId="props.propertyId"
+    :buildingId="props.buildingId"
+    saveButtonText="Gewerbe erstellen"
+    cancelButtonText="Abbrechen"
+    headline="Gewerbe erstellen"
+    @submit="handleCommercialSubmit"
+    @cancel="handleCommercialCancel"
   />
 </template>
