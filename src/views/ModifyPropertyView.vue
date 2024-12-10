@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import ProjectService from '@/services/ProjectService';
 import InputText from 'primevue/inputtext';
@@ -29,6 +29,16 @@ const usageOptions = [
   { label: 'Erholungsfläche', value: 'Erholungsfläche' },
 ];
 
+const originalValues = ref({
+  title: '',
+  description: '',
+  district: '',
+  corridor: '',
+  parcel: '',
+  landRegistry: '',
+  usageType: null,
+});
+
 onMounted(() => {
   if (id.value) {
     fetchPropertyDetails();
@@ -46,11 +56,35 @@ const fetchPropertyDetails = () => {
         parcel.value = property.parcel || '';
         landRegistry.value = property.landRegistry || '';
         usageType.value = property.usageType ?? null;
+
+
+        originalValues.value = {
+          title: title.value,
+          description: description.value,
+          district: district.value,
+          corridor: corridor.value,
+          parcel: parcel.value,
+          landRegistry: landRegistry.value,
+          usageType: usageType.value,
+        };
       })
       .catch((err) => {
         console.error('Fehler beim Laden der Objektdetails:', err);
       });
 };
+
+
+const isModified = computed(() => {
+  return (
+      title.value !== originalValues.value.title ||
+      description.value !== originalValues.value.description ||
+      district.value !== originalValues.value.district ||
+      corridor.value !== originalValues.value.corridor ||
+      parcel.value !== originalValues.value.parcel ||
+      landRegistry.value !== originalValues.value.landRegistry ||
+      usageType.value !== originalValues.value.usageType
+  );
+});
 
 const updateProperty = () => {
   if (!id.value) return;
@@ -64,8 +98,6 @@ const updateProperty = () => {
         parcel: parcel.value || '',
         landRegistry: landRegistry.value || '',
         usageType: usageType.value ?? null,
-
-
         landRegisterEntry: '',
         plotArea: 0,
         effective_space: 0,
@@ -77,7 +109,6 @@ const updateProperty = () => {
         console.error('Fehler beim Aktualisieren des Eigentums:', err);
       });
 };
-
 
 const cancel = () => {
   router.push(`/project/${props.projectId}/objects`);
@@ -118,8 +149,19 @@ const cancel = () => {
           <Dropdown id="usageType" v-model="usageType" :options="usageOptions" optionLabel="label" />
         </div>
         <div class="field col-12 text-right">
-          <Button label="Speichern" icon="pi pi-check" @click="updateProperty" class="mr-2" />
-          <Button label="Abbrechen" icon="pi pi-times" @click="cancel" class="p-button-secondary" />
+          <Button
+              label="Speichern"
+              icon="pi pi-check"
+              @click="updateProperty"
+              class="mr-2"
+              :disabled="!isModified"
+          />
+          <Button
+              label="Abbrechen"
+              icon="pi pi-times"
+              @click="cancel"
+              class="p-button-secondary"
+          />
         </div>
       </div>
     </div>
