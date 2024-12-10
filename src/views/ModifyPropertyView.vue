@@ -24,6 +24,7 @@ const parcel = ref<string>(''); // Flurstück
 const landRegistry = ref<string>(''); // Liegenschaftsbuch
 const usageType = ref<string | null>(null); // Wirtschaftsart
 const usageOptions = [
+  { label: 'Keine Auswahl', value: null },
   { label: 'GF Wohnen', value: 'GF Wohnen' },
   { label: 'GF Handel und Dienstleistung', value: 'GF Handel und Dienstleistung' },
   { label: 'GF zu Versorgungsanlagen', value: 'GF zu Versorgungsanlagen' },
@@ -152,7 +153,7 @@ const updateProperty = () => {
         corridor: corridor.value || '',
         parcel: parcel.value || '',
         landRegistry: landRegistry.value || '',
-        usageType: usageType.value ?? null,
+        usageType: usageType.value as string | null,
         landRegisterEntry: '',
         plotArea: 0,
         effective_space: 0,
