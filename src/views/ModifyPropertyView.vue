@@ -201,27 +201,25 @@ const cancel = () => {
         </div>
         <div class="field col-6">
           <label for="usageType">Wirtschaftsart</label>
-          <Dropdown id="usageType" v-model="usageType" :options="usageOptions" optionLabel="label" />
+          <Dropdown
+              id="usageType"
+              v-model="usageType"
+              :options="usageOptions"
+              optionLabel="label"
+              filter
+              filterPlaceholder="Tippen Sie, um zu suchen..."
+              class="w-full"
+          />
         </div>
         <div class="field col-12 text-right">
-          <Button
-              label="Speichern"
-              icon="pi pi-check"
-              @click="updateProperty"
-              class="mr-2"
-              :disabled="!isModified"
-          />
-          <Button
-              label="Abbrechen"
-              icon="pi pi-times"
-              @click="cancel"
-              class="p-button-secondary"
-          />
+          <Button label="Speichern" icon="pi pi-check" @click="updateProperty" class="mr-2" :disabled="!isModified" />
+          <Button label="Abbrechen" icon="pi pi-times" @click="cancel" class="p-button-secondary" />
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <style>
 .text-right {
