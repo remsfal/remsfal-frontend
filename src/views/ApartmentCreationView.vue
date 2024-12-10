@@ -55,7 +55,7 @@ const isLoading = ref(false);
 const handleSubmit = async (formData: Record<string, any>) => {
   isLoading.value = true;
   try {
-    const response = await axios.post(
+    await axios.post(
         `/project/${projectId}/building/${buildingId}/apartments`,
         formData
     );

@@ -55,7 +55,7 @@ const fetchApartmentData = async () => {
 const handleSubmit = async (formData: Record<string, any>) => {
   isLoading.value = true;
   try {
-    const response = await axios.patch(
+    await axios.patch(
         `/project/${projectId}/building/${buildingId}/apartments/${apartmentId}`,
         formData
     );
