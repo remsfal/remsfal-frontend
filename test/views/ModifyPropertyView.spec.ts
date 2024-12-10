@@ -78,12 +78,17 @@ describe('ModifyPropertyView', () => {
         const updateSpy = vi.spyOn(ProjectService.prototype, 'updateProperty');
         const pushSpy = vi.spyOn(router, 'push');
 
+        const titleInput = wrapper.find('#title');
+        await titleInput.setValue('Updated Test Property');
+
         const saveButton = wrapper.find('.p-button.mr-2');
+        expect(saveButton.attributes('disabled')).toBeUndefined(); // Der Button sollte aktiv sein
+
         await saveButton.trigger('click');
         await flushPromises();
 
         expect(updateSpy).toHaveBeenCalledWith('1', '1', expect.objectContaining({
-            title: 'Test Property',
+            title: 'Updated Test Property',
             description: 'Test Description',
             district: 'Test District',
             corridor: 'Test Corridor',
@@ -96,6 +101,7 @@ describe('ModifyPropertyView', () => {
         }));
         expect(pushSpy).toHaveBeenCalledWith('/project/1/objects');
     });
+
 
     it('navigates to objects when the cancel button is clicked', async () => {
         const pushSpy = vi.spyOn(router, 'push');
