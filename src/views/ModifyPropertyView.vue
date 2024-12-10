@@ -111,7 +111,7 @@ const fetchPropertyDetails = () => {
         corridor.value = property.corridor || '';
         parcel.value = property.parcel || '';
         landRegistry.value = property.landRegistry || '';
-        usageType.value = property.usageType ?? null;
+        usageType.value = property.usageType || null;
 
 
         originalValues.value = {
@@ -153,7 +153,7 @@ const updateProperty = () => {
         corridor: corridor.value || '',
         parcel: parcel.value || '',
         landRegistry: landRegistry.value || '',
-        usageType: usageType.value as string | null,
+        usageType: usageType.value ?? null,
         landRegisterEntry: '',
         plotArea: 0,
         effective_space: 0,
@@ -210,6 +210,7 @@ const cancel = () => {
               filter
               filterPlaceholder="Tippen Sie, um zu suchen..."
               class="w-full"
+              :value="usageType || null"
           />
         </div>
         <div class="field col-12 text-right">
