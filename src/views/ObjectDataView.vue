@@ -81,11 +81,19 @@ const collapseAll = () => {
 };
 
 const navigateToProperty = (action: string, propertyId?: string) => {
-  router.push({
-    path: `/project/${props.projectId}/objects/property`,
-    query: {action: action, propertyId: propertyId},
-  });
+  if (action === 'create') {
+    // Navigiere zu `property/create`
+    router.push({
+      path: `/project/${props.projectId}/property/create`,
+    });
+  } else if (action === 'update' && propertyId) {
+    // Navigiere zu `property/:propertyId/update`
+    router.push({
+      path: `/project/${props.projectId}/property/${propertyId}/update`,
+    });
+  }
 };
+
 </script>
 
 <template>
