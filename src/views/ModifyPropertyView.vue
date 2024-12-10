@@ -85,7 +85,15 @@ const usageOptions = [
   { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' },
 ];
 
-const originalValues = ref({
+const originalValues = ref<{
+  title: string;
+  description: string;
+  district: string;
+  corridor: string;
+  parcel: string;
+  landRegistry: string;
+  usageType: string | null;
+}>({
   title: '',
   description: '',
   district: '',
@@ -210,7 +218,6 @@ const cancel = () => {
               filter
               filterPlaceholder="Tippen Sie, um zu suchen..."
               class="w-full"
-              :value="usageType || null"
           />
         </div>
         <div class="field col-12 text-right">
