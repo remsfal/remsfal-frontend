@@ -7,6 +7,7 @@ import InputText from 'primevue/inputtext';
 import FloatLabel from 'primevue/floatlabel';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
+import ThemeSwitch from "@/components/ThemeSwitch.vue";
 
 interface PhoneValid {
   businessPhoneNumber: boolean;
@@ -409,6 +410,21 @@ async function getCity() {
           />
         </div>
       </div>
+    </div>
+    <div class="card-container">
+      <Card>
+        <template #title>
+          <h4>Einstellungen</h4>
+        </template>
+        <template #content>
+          <div>
+            <p class="grid">
+              <strong>Theme:</strong>
+              <ThemeSwitch></ThemeSwitch>
+            </p>
+          </div>
+        </template>
+      </Card>
     </div>
   </div>
 </template>

@@ -6,6 +6,7 @@ import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
 import type { DropdownChangeEvent } from 'primevue/dropdown';
 import Dropdown from 'primevue/dropdown';
+import ThemeSwitch from "@/components/ThemeSwitch.vue";
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
@@ -99,6 +100,7 @@ const isOutsideClicked = (event: Event) => {
   <header>
     <div class="layout-topbar">
       <div class="layout-topbar-logo">
+<!--    TDOO - set image based on theme    -->
         <img src="@/assets/logo.png" alt="logo" />
       </div>
 
@@ -118,6 +120,7 @@ const isOutsideClicked = (event: Event) => {
       </button>
 
       <div class="layout-topbar-menu" :class="topbarMenuClasses">
+        <ThemeSwitch></ThemeSwitch>
         <button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-shortcut-button"

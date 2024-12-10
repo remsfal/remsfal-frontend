@@ -21,6 +21,16 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
+  const init = () => {
+    const theme = localStorage.getItem('theme');
+    if (theme) {
+      layoutConfig.darkTheme = theme === 'dark';
+
+    } else    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      layoutConfig.darkTheme = true;
+    }
+  }
+
   const setFullscreen = (fullscreen: boolean) => {
     layoutConfig.fullscreen = fullscreen;
     layoutState.staticMenuDesktopInactive = fullscreen;
@@ -46,6 +56,11 @@ export function useLayout() {
     }
   };
 
+  const toggleTheme = () => {
+    layoutConfig.darkTheme = !layoutConfig.darkTheme;
+    localStorage.setItem('theme', layoutConfig.darkTheme ? 'dark' : 'light');
+  };
+
   const isSidebarActive = computed(
     () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive,
   );
@@ -61,5 +76,7 @@ export function useLayout() {
     isSidebarActive,
     isDarkTheme,
     setActiveMenuItem,
+    toggleTheme,
+    init
   };
 }
