@@ -49,12 +49,22 @@ export interface PropertyNode {
 }
 
 export interface PropertyTableData {
-  type: string;
+  type: EntityType;
   title?: string;
   description?: string;
   tenant?: string;
   usableSpace?: number;
   isButtonRow?: boolean;
+}
+
+export enum EntityType {
+  Apartment = 'apartment',
+  Commercial = 'commercial',
+  Garage = 'garage',
+  Site = 'site',
+  Building = 'building',
+  Project = 'project',
+  Property = 'property',
 }
 
 export interface BuildingItem {
