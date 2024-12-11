@@ -191,9 +191,9 @@ const collapseAll = () => {
                 <div v-if="!node.data.isButtonRow">{{ node.data.tenant }}</div>
               </template>
             </Column>
-            <Column field="usableSpace" header="Fläche">
+            <Column field="usable_space" header="Fläche">
               <template #body="{ node }">
-                <div v-if="!node.data.isButtonRow">{{ node.data.usableSpace }}</div>
+                <div v-if="!node.data.isButtonRow">{{ node.data.usable_space }}</div>
               </template>
             </Column>
             <Column frozen alignFrozen="right">
