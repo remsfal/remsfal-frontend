@@ -53,7 +53,7 @@ export interface PropertyTableData {
   title?: string;
   description?: string;
   tenant?: string;
-  usableSpace?: number;
+  usable_space?: number;
   isButtonRow?: boolean;
 }
 
