@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import ProjectService, { type PropertyNode } from '@/services/ProjectService';
+import ProjectService, { EntityType, type PropertyNode } from '@/services/ProjectService';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -19,7 +19,7 @@ const expandedKeys = ref({});
 
 const router = useRouter();
 
-function createButtonRow(key: string, type: string): PropertyNode {
+function createButtonRow(key: string, type: EntityType): PropertyNode {
   return {
     key,
     data: {
@@ -34,7 +34,12 @@ function injectButtonRows(nodes: PropertyNode[]): PropertyNode[] {
   return nodes.map((node) => {
     const { type } = node.data;
 
-    if (type !== 'Apartment' && type !== 'Garage') {
+    if (
+      type !== EntityType.Apartment &&
+      type !== EntityType.Commercial &&
+      type !== EntityType.Garage &&
+      type !== EntityType.Site
+    ) {
       const buttonRow = createButtonRow(node.key, type);
 
       node.children = injectButtonRows(node.children);
@@ -49,11 +54,11 @@ async function fetchPropertyTree(projectId: string): Promise<PropertyNode[]> {
   return projectService
     .getPropertyTree(projectId, 10, 0)
     .then((data) => {
-      /* Every node exept Apartment and Garge nodes get an extra entry with 
+      /* Every node exept Apartment, Commercial, Garge and Site nodes get an extra entry with 
       the id and type of the parent as key and type with the isButtonRow attribute enabled. */
       const nodesWithButtons = [
         ...injectButtonRows(data.nodes),
-        createButtonRow(projectId, 'Project'),
+        createButtonRow(projectId, EntityType.Project),
       ];
 
       objectData.value = nodesWithButtons;
@@ -72,7 +77,7 @@ onMounted(() => {
   });
 });
 
-const completeEntityAction = (entity: string, action: string, entityId?: string) => {
+const completeEntityAction = (entity: EntityType, action: string, entityId?: string) => {
   if (action === 'edit') {
     router.push({
       path: `/project/${props.projectId}/${entity}/${entityId}`,
@@ -89,26 +94,25 @@ const completeEntityAction = (entity: string, action: string, entityId?: string)
   }
 };
 
-const deleteObject = (entity: string, entityId: string) => {
-  // TODO: Wrap delete in confirm dialog
-  if (entity === 'property') {
+const deleteObject = (entity: EntityType, entityId: string) => {
+  if (entity === EntityType.Property) {
     projectService.deleteProperty(props.projectId, entityId).catch((err) => {
       console.error('Error deleting property:', err);
     });
   }
-  if (entity === 'site') {
+  if (entity === EntityType.Site) {
     // TODO: implement delete site endpoint
   }
-  if (entity === 'building') {
+  if (entity === EntityType.Building) {
     // TODO: implement delete building endpoint
   }
-  if (entity === 'apartment') {
+  if (entity === EntityType.Apartment) {
     // TODO: implement delete apartment endpoint
   }
-  if (entity === 'commercial') {
+  if (entity === EntityType.Commercial) {
     // TODO: implement delete commercial endpoint
   }
-  if (entity === 'garage') {
+  if (entity === EntityType.Garage) {
     // TODO: implement delete garage endpoint
   }
 };
@@ -155,14 +159,14 @@ const collapseAll = () => {
                     icon="pi pi-plus"
                     label="Alle ausklappen"
                     class="mr-2 mb-2"
-                    @click="expandAll"
+                    @click="expandAll()"
                   />
 
                   <Button
                     icon="pi pi-minus"
                     label="Alle einkalappen"
                     class="mr-2 mb-2"
-                    @click="collapseAll"
+                    @click="collapseAll()"
                   />
                 </div>
               </div>
@@ -208,39 +212,55 @@ const collapseAll = () => {
                     @click="completeEntityAction(node.data.type, 'delete', node.key)"
                   />
                 </div>
-                <div v-if="node.data.isButtonRow && node.data.type === 'Project'">
+                <div v-if="node.data.isButtonRow && node.data.type === EntityType.Project">
                   <Button
                     type="button"
                     icon="pi pi-plus"
                     label="Grundstück erstellen "
                     severity="success"
-                    @click="completeEntityAction('Property', 'create', node.key)"
+                    @click="completeEntityAction(EntityType.Property, 'create', node.key)"
                   />
                 </div>
-                <div v-if="node.data.isButtonRow && node.data.type === 'Property'">
-                  <Button
-                    type="button"
-                    icon="pi pi-plus"
-                    label="Gebäude erstellen"
-                    severity="success"
-                    @click="completeEntityAction('Building', 'create', node.key)"
-                  />
-                </div>
-                <div v-if="node.data.isButtonRow && node.data.type === 'Building'">
+                <div v-if="node.data.isButtonRow && node.data.type === EntityType.Property">
                   <SplitButton
                     label="Erstellen"
-                    icon="pi pi-plus"
                     severity="success"
                     :model="[
                       {
-                        label: 'Apartment erstellen',
+                        label: 'Gebäude erstellen',
                         icon: 'pi pi-building',
-                        command: () => completeEntityAction('Apartment', 'create', node.key),
+                        command: () =>
+                          completeEntityAction(EntityType.Building, 'create', node.key),
                       },
                       {
-                        label: 'Garage erstellen',
+                        label: 'Außenanlage erstellen',
+                        icon: 'pi pi-sun',
+                        command: () => completeEntityAction(EntityType.Site, 'create', node.key),
+                      },
+                    ]"
+                  />
+                </div>
+                <div v-if="node.data.isButtonRow && node.data.type === EntityType.Building">
+                  <SplitButton
+                    label="Erstellen"
+                    severity="success"
+                    :model="[
+                      {
+                        label: 'Wohnung erstellen',
+                        icon: 'pi pi-building',
+                        command: () =>
+                          completeEntityAction(EntityType.Apartment, 'create', node.key),
+                      },
+                      {
+                        label: 'Gewerbe erstellen',
+                        icon: 'pi pi-briefcase',
+                        command: () =>
+                          completeEntityAction(EntityType.Commercial, 'create', node.key),
+                      },
+                      {
+                        label: 'Nebennutzungsraum erstellen',
                         icon: 'pi pi-car',
-                        command: () => completeEntityAction('Garage', 'create', node.key),
+                        command: () => completeEntityAction(EntityType.Garage, 'create', node.key),
                       },
                     ]"
                   />
