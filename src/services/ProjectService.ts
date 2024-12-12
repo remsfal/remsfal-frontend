@@ -33,6 +33,11 @@ export interface PropertyItem {
   plotArea: number;
   effective_space: number;
   buildings?: BuildingItem[];
+  district?: string; // Gemarkung
+  corridor?: string; // Flur
+  parcel?: string; // Flurstück
+  landRegistry?: string; // Liegenschaftsbuch
+  usageType?: string | null; // Wirtschaftsart
 }
 
 export interface BuildingItem {
