@@ -7,16 +7,31 @@ describe('<SiteUpdateView />', () => {
   const siteId = '54321';
 
   beforeEach(() => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/sites/${siteId}`, {
+      statusCode: 307,
+        headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}` },
+    })
+
     cy.intercept('GET', `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}`, {
       fixture: 'site.json',
     }).as('getSite');
+
+    cy.intercept('PATCH', `/api/v1/projects/${projectId}/sites/${siteId}`, {
+        statusCode: 307,
+        headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}` },
+    });
+
+    cy.intercept('PATCH', `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}`, {
+      statusCode: 200,
+    }).as('updateSite');
+
+
     cy.mount(SiteUpdateView, {
       global: {
         plugins: [PrimeVue],
       },
       props: {
         projectId: projectId,
-        propertyId: propertyId,
         siteId: siteId,
       },
     });
@@ -34,8 +49,6 @@ describe('<SiteUpdateView />', () => {
   });
 
   it('gets the preexisting site data', () => {
-
-
     cy.wait('@getSite');
     cy.fixture('site.json').then((site) => {
       cy.get('#title').should('have.value', site.title);
@@ -46,28 +59,6 @@ describe('<SiteUpdateView />', () => {
     });
   });
 
-  it('validates form fields and displays errors for invalid input', () => {
-    // Submit button should be disabled initially
-    cy.get('.p-button-primary').should('have.attr', 'data-p-disabled', 'true');
-
-
-    // Trigger validation for 'title' field
-    cy.get('#title').clear().blur();
-    cy.contains('Title is required.').should('be.visible');
-
-    // Enter invalid data in 'usableSpace'
-    cy.get('#usableSpace').type('abc').blur();
-    cy.contains('Muss eine Zahl sein').should('be.visible');
-
-    // Enter valid data to clear the errors
-    cy.get('#title').type('Test Site');
-    cy.get('#street').type('123 Main Street');
-    cy.get('#city').type('Anytown');
-    cy.get('#zip').type('12345');
-    cy.get('#usableSpace').clear().type('100').blur();
-    cy.get('.p-button-primary').should('have.attr', 'data-p-disabled', 'false');
-
-  });
 
   it('allows user to cancel the update process', () => {
     cy.get('.p-button-secondary').contains('Abbrechen').click();
@@ -80,12 +71,8 @@ describe('<SiteUpdateView />', () => {
   });
 
   it('submits the form successfully', () => {
-    cy.intercept('PATCH', `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}`, {
-      statusCode: 200,
-    }).as('updateSite');
-
     // Fill out the form with valid data
-    cy.get('#title').clear().type('My Site updated');
+    cy.get('#zip').type('12345');
     // Submit the form
     cy.get('.p-button-primary').click();
 

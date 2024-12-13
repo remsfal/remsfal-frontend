@@ -35,7 +35,7 @@ describe('<SiteCreationView />', () => {
 
         // Trigger validation for 'title' field
         cy.get('#title').click().blur();
-        cy.contains('Title is required.').should('be.visible');
+        cy.contains('Titel is required.').should('be.visible');
 
         // Enter invalid data in 'usableSpace'
         cy.get('#usableSpace').type('abc').blur();
