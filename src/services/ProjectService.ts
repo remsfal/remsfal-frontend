@@ -35,6 +35,14 @@ export interface PropertyItem {
   buildings?: BuildingItem[];
 }
 
+export interface AddressItem {
+  street?: string;
+  city?: string;
+  province?: string;
+  zip?: string;
+  country?: string;
+}
+
 export interface BuildingItem {
   id?: string;
   propertyId: string;
@@ -185,26 +193,6 @@ export default class ProjectService {
         console.error('Error deleting property:', error);
         throw error;
       });
-  }
-
-  createSite(title: string, projectId: string, propertyId: string) {
-    return axios
-      .post(`${this.url}/${projectId}/properties/${propertyId}/sites`, {
-        title: title,
-        propertyId: propertyId,
-      })
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error));
-  }
-
-  getSites(projectId: string, propertyId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}/sites`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
   }
 
   createBuilding(title: string, projectId: string, propertyId: string) {
