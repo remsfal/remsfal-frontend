@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import ReusableFormComponent from '../components/ReusableFormComponent.vue';
-import ProjectService, { type SiteItem, type AddressItem} from '@/services/ProjectService';
+import SiteFormComponent from '../components/SiteFormComponent.vue';
+import SiteService, { type SiteItem} from '@/services/SiteService';
+import type {AddressItem} from "@/services/ProjectService";
 
 const props = defineProps<{
   projectId: string;
@@ -85,7 +86,7 @@ const error = ref<string | null>(null);
 const handleSubmit = async (formValues: any) => {
   loading.value = true;
   error.value = null;
-  const projectService = new ProjectService();
+  const siteService = new SiteService();
 
   const address: AddressItem = {
     street: formValues.street,
@@ -110,6 +111,7 @@ const handleSubmit = async (formValues: any) => {
     await projectService.createSite(props.projectId, props.propertyId, site);
     alert('Eine Außenanlage wurde erfolgreich erstellt!');
     //window.history.back();
+    const resp = siteService.createSite(props.projectId, props.propertyId, site);
   } catch (err) {
     error.value = 'Außenanlage konnte nicht erstellt werden.' + err;
   } finally {
