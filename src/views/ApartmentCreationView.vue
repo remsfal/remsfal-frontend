@@ -8,7 +8,7 @@ import ReusableFormComponent from '@/components/ReusableFormComponent.vue';
 const router = useRouter();
 const route = useRoute();
 const projectId = route.params.projectId as string;
-const buildingId = route.query.buildingId as string;
+const parentId = route.query.parentId as string;
 
 // Typ für Felder-Array
 interface Field {
@@ -56,11 +56,11 @@ const handleSubmit = async (formData: Record<string, any>) => {
   isLoading.value = true;
   try {
     await axios.post(
-        `/project/${projectId}/building/${buildingId}/apartments`,
+        `/project/${projectId}/building/${parentId}/apartments`,
         formData
     );
     alert('Apartment created successfully!');
-    router.push(`/project/${projectId}/buildings/${buildingId}`);
+    router.push(`/project/${projectId}/buildings/${parentId}`);
   } catch (error) {
     console.error('Error creating apartment:', error);
     alert('Failed to create apartment. Please try again.');
@@ -71,7 +71,7 @@ const handleSubmit = async (formData: Record<string, any>) => {
 
 // Abbrechen Aktion
 const handleCancel = () => {
-  router.push(`/project/${projectId}/buildings/${buildingId}`);
+  router.push(`/project/${projectId}/buildings/${parentId}`);
 };
 </script>
 

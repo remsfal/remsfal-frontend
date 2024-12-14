@@ -2,7 +2,6 @@ import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} fro
 import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
-
 const routes = [
     {
         path: '/',
@@ -80,6 +79,19 @@ const routes = [
                 props: true,
                 component: () => import('@/views/PropertyView.vue'),
             },
+            {
+                path: 'building/:buildingId/apartments/:apartmentId/update',
+                name: 'UpdateApartmentView',
+                props: true,
+                component: () => import('@/views/ApartmentUpdateView.vue'),
+            },
+            {
+                path: '/project/:projectId/apartment/create',
+                name: 'CreateApartmentView',
+                props: true,
+                component: () => import('@/views/ApartmentCreationView.vue'),
+            },
+
             {
                 path: 'tasks',
                 name: 'TaskOverview',
