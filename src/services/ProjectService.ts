@@ -268,12 +268,9 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  createGarage(title: string, projectId: string, propertyId: string, buildingId: string) {
+  createGarage(title: string, projectId: string, propertyId: string, buildingId: string, garage: GarageItem) {
     return axios
-      .post(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`, {
-        title: title,
-        buildingId: buildingId,
-      })
+      .post(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`, garage)
       .then((response) => console.log(response))
       .catch((error) => console.error(error));
   }
@@ -285,6 +282,20 @@ export default class ProjectService {
         console.log('properties returned', response.data);
         return response.data;
       })
+      .catch((error) => console.error(error));
+  }
+
+  getGarage(projectId: string, propertyId: string, buildingId: string, garageId: string){
+    return axios
+    .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`)
+    .then((response) => console.log(response))
+    .catch((error) => console.error(error))
+  }
+
+  updateGarage(projectId: string, propertyId: string, buildingId: string, garageId: string, garage: GarageItem) {
+    return axios
+      .put(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`, garage)
+      .then((response) => console.log(response))
       .catch((error) => console.error(error));
   }
 
