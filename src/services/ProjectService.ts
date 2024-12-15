@@ -217,7 +217,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  getBuildings(projectId: string, propertyId: string, siteId: string) {
+  getBuildings(projectId: string, propertyId: string) {
     return axios
       .get(`${this.url}/${projectId}/properties/${propertyId}/buildings`)
       .then((response) => {
