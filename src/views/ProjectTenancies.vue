@@ -7,7 +7,6 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
 
-// Mock tenant interface
 interface TenantItem {
   id: string;
   firstName: string;
@@ -18,11 +17,9 @@ interface TenantItem {
   rentalEnd: Date;
 }
 
-// Reactive tenant data
 const tenantData = ref<TenantItem[]>([]);
 const isLoading = ref(true);
 
-// State for dialogs and forms
 const dialogVisible = ref(false);
 const currentTenant = reactive<TenantItem>({
   id: '',
@@ -30,16 +27,14 @@ const currentTenant = reactive<TenantItem>({
   lastName: '',
   unitTitle: '',
   rentalObject: '',
-  rentalStart: '',
-  rentalEnd: '',
+  rentalStart: new Date(),
+  rentalEnd: new Date(),
 });
 const isEditMode = ref(false);
 
-// State for confirmation dialog
 const confirmationDialogVisible = ref(false);
 const tenantToDelete = ref<TenantItem | null>(null);
 
-// Function to generate mock tenant data
 function generateMockTenantData(): TenantItem[] {
   return [
     {
@@ -63,7 +58,6 @@ function generateMockTenantData(): TenantItem[] {
   ];
 }
 
-// Date formatting function (yyyy-mm-dd)
 function formatDate(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -71,7 +65,6 @@ function formatDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-// CRUD Functions
 function openAddDialog() {
   isEditMode.value = false;
   resetForm();
@@ -86,22 +79,20 @@ function openEditDialog(tenant: TenantItem) {
 
 function saveTenant() {
   if (isEditMode.value) {
-    // Update existing tenant
     const index = tenantData.value.findIndex((t) => t.id === currentTenant.id);
     if (index !== -1) {
       tenantData.value[index] = {
         ...currentTenant,
-        rentalStart: new Date(currentTenant.rentalStart),  // Ensure it's a Date object
-        rentalEnd: new Date(currentTenant.rentalEnd),
+        rentalStart: new Date(currentTenant.rentalStart as string),  // Convert string to Date
+        rentalEnd: new Date(currentTenant.rentalEnd as string),      // Convert string to Date
       };
     }
   } else {
-    // Add new tenant
     currentTenant.id = Date.now().toString(); // Generate a unique ID
     tenantData.value.push({
       ...currentTenant,
-      rentalStart: new Date(currentTenant.rentalStart),
-      rentalEnd: new Date(currentTenant.rentalEnd),
+      rentalStart: new Date(currentTenant.rentalStart as string),  // Convert string to Date
+      rentalEnd: new Date(currentTenant.rentalEnd as string),      // Convert string to Date
     });
   }
   dialogVisible.value = false;
@@ -130,12 +121,11 @@ function resetForm() {
     lastName: '',
     unitTitle: '',
     rentalObject: '',
-    rentalStart: '',
-    rentalEnd: '',
+    rentalStart: new Date(),
+    rentalEnd: new Date(),
   });
 }
 
-// Initialize mock data
 onMounted(() => {
   setTimeout(() => {
     tenantData.value = generateMockTenantData();
@@ -206,7 +196,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Add/Edit Tenant Dialog -->
     <Dialog v-model:visible="dialogVisible" :header="isEditMode ? 'Mieter bearbeiten' : 'Neuen Mieter hinzufügen'" modal>
       <div class="p-fluid">
         <div class="field">
@@ -231,7 +220,7 @@ onMounted(() => {
         </div>
         <div class="field">
           <label for="rentalEnd">Mietende</label>
-          <<Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" dateFormat="yy-mm-dd" />
+          <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" dateFormat="yy-mm-dd" />
         </div>
       </div>
       <template #footer>
@@ -240,7 +229,6 @@ onMounted(() => {
       </template>
     </Dialog>
 
-    <!-- Confirmation Dialog -->
     <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
       <div class="p-fluid">
         <p>Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }} {{ tenantToDelete?.lastName }} löschen möchten?</p>
@@ -253,12 +241,3 @@ onMounted(() => {
   </main>
 </template>
 
-<style scoped>
-.custom-scroll-height {
-  --custom-scroll-height: 30vw;
-}
-
-.p-fluid .field {
-  margin-bottom: 1rem;
-}
-</style>
