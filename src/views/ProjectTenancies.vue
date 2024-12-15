@@ -14,8 +14,8 @@ interface TenantItem {
   lastName: string;
   unitTitle: string;
   rentalObject: string;
-  rentalStart: string;
-  rentalEnd: string;
+  rentalStart: Date;
+  rentalEnd: Date;
 }
 
 // Reactive tenant data
@@ -48,8 +48,8 @@ function generateMockTenantData(): TenantItem[] {
       lastName: 'Mustermann',
       unitTitle: 'Wohnung 101',
       rentalObject: 'Wohnung',
-      rentalStart: '2020-01-01',
-      rentalEnd: '2025-12-31',
+      rentalStart: formatDate(new Date('2020-01-01')),
+      rentalEnd: formatDate(new Date('2025-12-31')),
     },
     {
       id: '2',
@@ -57,8 +57,8 @@ function generateMockTenantData(): TenantItem[] {
       lastName: 'Musterfrau',
       unitTitle: 'Wohnung 202',
       rentalObject: 'Wohnung',
-      rentalStart: '2021-05-01',
-      rentalEnd: '2026-04-30',
+      rentalStart: formatDate(new Date('2021-05-01')),
+      rentalEnd: formatDate(new Date('2026-04-30')),
     },
   ];
 }
@@ -86,12 +86,9 @@ function openEditDialog(tenant: TenantItem) {
 
 function saveTenant() {
   // Ensure date values are saved in yyyy-mm-dd format
-  if (currentTenant.rentalStart instanceof Date) {
-    currentTenant.rentalStart = formatDate(currentTenant.rentalStart);
-  }
-  if (currentTenant.rentalEnd instanceof Date) {
-    currentTenant.rentalEnd = formatDate(currentTenant.rentalEnd);
-  }
+  currentTenant.rentalStart = formatDate(currentTenant.rentalStart);
+  currentTenant.rentalEnd = formatDate(currentTenant.rentalEnd);
+
 
   if (isEditMode.value) {
     // Update existing tenant
