@@ -1,15 +1,28 @@
-import { describe, test, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
-import Component from '@/components/NewProjectForm.vue';
-import PrimeVue from "primevue/config"; // Update the import path to the correct path for your component
+import { describe, it, expect, beforeEach } from 'vitest';
+import { mount, VueWrapper } from '@vue/test-utils';
+import NewProjectView from '@/views/NewProjectView.vue';
+import PrimeVue from 'primevue/config';
+import router from '../../src/router';
 
 describe('Component', () => {
-  test('renders NewProjectForm properly', () => {
-    const wrapper = mount(Component, {
+  let wrapper: VueWrapper<NewProjectView>;
+
+  beforeEach(() => {
+    wrapper = mount(NewProjectView, {
       global: {
-        plugins: [PrimeVue],
+        plugins: [PrimeVue, router],
+        stubs: {
+          NewProjectForm: true,
+        },
       },
     });
-    expect(wrapper.findComponent({ name: 'NewProjectForm' }).exists());
+  });
+
+  it('renders NewProjectView properly', () => {
+    expect(wrapper.exists()).toBe(true);
+  });
+
+  it('renders NewProjectForm properly', () => {
+    expect(wrapper.findComponent({ name: 'NewProjectForm' }).exists()).toBe(true);
   });
 });
