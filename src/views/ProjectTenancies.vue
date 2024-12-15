@@ -216,11 +216,11 @@ onMounted(() => {
         </div>
         <div class="field">
           <label for="rentalStart">Mietbeginn</label>
-          <Calendar id="rentalStart" v-model="currentTenant.rentalStart" dateFormat="yy-mm-dd" />
+          <Calendar id="rentalStart" v-model="currentTenant.rentalStart" />
         </div>
         <div class="field">
           <label for="rentalEnd">Mietende</label>
-          <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" dateFormat="yy-mm-dd" />
+          <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" />
         </div>
       </div>
       <template #footer>
