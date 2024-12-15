@@ -85,19 +85,24 @@ function openEditDialog(tenant: TenantItem) {
 }
 
 function saveTenant() {
-  // Ensure date values are saved in yyyy-mm-dd format
-  currentTenant.rentalStart = formatDate(currentTenant.rentalStart);
-  currentTenant.rentalEnd = formatDate(currentTenant.rentalEnd);
-
-
   if (isEditMode.value) {
     // Update existing tenant
     const index = tenantData.value.findIndex((t) => t.id === currentTenant.id);
-    if (index !== -1) tenantData.value[index] = { ...currentTenant };
+    if (index !== -1) {
+      tenantData.value[index] = {
+        ...currentTenant,
+        rentalStart: new Date(currentTenant.rentalStart),  // Ensure it's a Date object
+        rentalEnd: new Date(currentTenant.rentalEnd),
+      };
+    }
   } else {
     // Add new tenant
-    currentTenant.id = (Date.now().toString()); // Generate a unique ID
-    tenantData.value.push({ ...currentTenant });
+    currentTenant.id = Date.now().toString(); // Generate a unique ID
+    tenantData.value.push({
+      ...currentTenant,
+      rentalStart: new Date(currentTenant.rentalStart),
+      rentalEnd: new Date(currentTenant.rentalEnd),
+    });
   }
   dialogVisible.value = false;
 }
@@ -161,8 +166,8 @@ onMounted(() => {
             <Column field="lastName" header="Nachname" :sortable="true" />
             <Column field="unitTitle" header="Wohneinheit" :sortable="true" />
             <Column field="rentalObject" header="Mietgegenstand" :sortable="true" />
-            <Column field="rentalStart" header="Mietbeginn" :sortable="true" :body="(rowData) => formatDate(rowData.rentalStart)" />
-            <Column field="rentalEnd" header="Mietende" :sortable="true" :body="(rowData) => formatDate(rowData.rentalEnd)" />
+            <Column field="rentalStart" header="Mietbeginn" :sortable="true" :body="(rowData: TenantItem) => formatDate(rowData.rentalStart)" />
+            <Column field="rentalEnd" header="Mietende" :sortable="true" :body="(rowData: TenantItem) => formatDate(rowData.rentalEnd)" />
             <Column frozen alignFrozen="right">
               <template #body="slotProps">
                 <div class="flex justify-content-end">
