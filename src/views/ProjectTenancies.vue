@@ -79,20 +79,22 @@ function openEditDialog(tenant: TenantItem) {
 
 function saveTenant() {
   if (isEditMode.value) {
+    // Update existing tenant
     const index = tenantData.value.findIndex((t) => t.id === currentTenant.id);
     if (index !== -1) {
       tenantData.value[index] = {
         ...currentTenant,
-        rentalStart: new Date(currentTenant.rentalStart as string),  // Convert string to Date
-        rentalEnd: new Date(currentTenant.rentalEnd as string),      // Convert string to Date
+        rentalStart: new Date(currentTenant.rentalStart),
+        rentalEnd: new Date(currentTenant.rentalEnd),
       };
     }
   } else {
+    // Add new tenant
     currentTenant.id = Date.now().toString(); // Generate a unique ID
     tenantData.value.push({
       ...currentTenant,
-      rentalStart: new Date(currentTenant.rentalStart as string),  // Convert string to Date
-      rentalEnd: new Date(currentTenant.rentalEnd as string),      // Convert string to Date
+      rentalStart: new Date(currentTenant.rentalStart),
+      rentalEnd: new Date(currentTenant.rentalEnd),
     });
   }
   dialogVisible.value = false;
@@ -156,8 +158,8 @@ onMounted(() => {
             <Column field="lastName" header="Nachname" :sortable="true" />
             <Column field="unitTitle" header="Wohneinheit" :sortable="true" />
             <Column field="rentalObject" header="Mietgegenstand" :sortable="true" />
-            <Column field="rentalStart" header="Mietbeginn" :sortable="true" :body="(rowData: TenantItem) => formatDate(rowData.rentalStart)" />
-            <Column field="rentalEnd" header="Mietende" :sortable="true" :body="(rowData: TenantItem) => formatDate(rowData.rentalEnd)" />
+            <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
+            <Column field="rentalEnd" header="Mietende" :sortable="true" />
             <Column frozen alignFrozen="right">
               <template #body="slotProps">
                 <div class="flex justify-content-end">
