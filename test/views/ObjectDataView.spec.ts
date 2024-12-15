@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ObjectDataView from '@/views/ObjectDataView.vue';
 import { EntityType } from '@/services/ProjectService.ts';
 
@@ -31,9 +31,22 @@ vi.mock('@/services/ProjectService', () => ({
   },
 }));
 
+// Mock for the router
+const mockRoutePush = vi.fn();
+vi.mock('vue-router', async () => {
+  return {
+    RouterView: {},
+    useRouter: () => {
+      return {
+        push: mockRoutePush,
+      };
+    },
+  };
+});
+
 const mockComplexData = [
   {
-    key: '12914454-eb0c-483c-b93a-020c6175eaea',
+    key: 'property-id-1',
     data: {
       type: EntityType.Property,
       title: 'Eigentum 1',
@@ -43,7 +56,7 @@ const mockComplexData = [
     },
     children: [
       {
-        key: '450c5f1d-3af6-4c96-9a93-6d812bcd7ea1',
+        key: 'building-id-1',
         data: {
           type: EntityType.Building,
           title: 'Building 1',
@@ -53,42 +66,42 @@ const mockComplexData = [
         },
         children: [
           {
-            key: '18729a9f-5d53-42d8-b49e-5be15605f1d0',
+            key: 'apartment-id-1',
             data: {
               type: EntityType.Apartment,
               title: 'Apartment 1A',
               description: 'First apartment in Building 1',
               tenant: '',
-              usable_space: 180,
+              usable_space: 300,
             },
             children: [],
           },
           {
-            key: '550e8400-e29b-41d4-a716-446655440001',
+            key: 'commercial-id-1',
             data: {
               type: EntityType.Commercial,
               title: 'Commercial 1A',
-              description: 'First commercial in Building 1.',
+              description: 'First commercial in Building 1',
               tenant: '',
-              usable_space: 0,
+              usable_space: 500,
             },
             children: [],
           },
           {
-            key: '74e11b4e-b64f-4057-b605-13b03c8b2b9d',
+            key: 'garage-id-1',
             data: {
               type: EntityType.Garage,
               title: 'Garage 1A',
-              description: 'Garage for Building 1',
+              description: 'First garage in Building 1',
               tenant: '',
-              usable_space: 35,
+              usable_space: 300,
             },
             children: [],
           },
         ],
       },
       {
-        key: '550e8400-e29b-41d4-a716-446655440000',
+        key: 'site-id-1',
         data: {
           type: EntityType.Site,
           title: 'Site 1',
@@ -101,7 +114,7 @@ const mockComplexData = [
     ],
   },
   {
-    key: '3146c0dd-431a-43fb-90d2-e0121069aad7',
+    key: 'property-id-2',
     data: {
       type: EntityType.Property,
       title: 'Eigentum 2',
@@ -114,6 +127,10 @@ const mockComplexData = [
 ];
 
 describe('ObjectDataView', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('renders correctly with fetched data', async () => {
     const wrapper = mount(ObjectDataView, {
       props: {
@@ -156,7 +173,7 @@ describe('ObjectDataView', () => {
     expect(treeTable.exists()).toBe(true);
 
     const rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(4); // 2 data rows + 1 header row + 1 button row
+    expect(rows.length).toBe(4); // 1 header row + 2 data rows + 1 button row
 
     const header = wrapper.find('.p-treetable-header');
     expect(header.exists()).toBe(true);
@@ -184,5 +201,167 @@ describe('ObjectDataView', () => {
     expect(propertyRow2.text()).toContain('Eigentum 2');
     expect(propertyRow2.text()).toContain('0');
     expect(propertyRow2.text()).toContain('Second property description');
+  });
+
+  it('expands all nodes and renders the dataset correctly', async () => {
+    getPropertyTreeMock.mockResolvedValueOnce({ nodes: mockComplexData });
+
+    const wrapper = mount(ObjectDataView, {
+      props: { projectId: '123' },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const treeTable = wrapper.findComponent({ name: 'TreeTable' });
+    expect(treeTable.exists()).toBe(true);
+
+    // Click "Alle ausklappen" button
+    const header = wrapper.find('.p-treetable-header');
+    const expandAllButton = header
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle ausklappen'));
+    expect(expandAllButton).not.toBeUndefined();
+    await expandAllButton.trigger('click');
+
+    await wrapper.vm.$nextTick();
+
+    const rows = wrapper.findAll('tr');
+    expect(rows.length).toBe(12); // 1 header row + 7 data rows + 4 button rows
+
+    // Validate first property
+    const propertyRow1 = rows[1];
+    expect(propertyRow1).not.toBeUndefined();
+    expect(propertyRow1.text()).toContain('Eigentum 1');
+    expect(propertyRow1.text()).toContain('3100');
+    expect(propertyRow1.text()).toContain('First property description');
+
+    const propertyButtonRow1 = rows[8];
+    expect(propertyButtonRow1.text()).toContain('Erstellen');
+
+    // Validate building
+    const buildingyRow = rows[2];
+    expect(buildingyRow).not.toBeUndefined();
+    expect(buildingyRow.text()).toContain('Building 1');
+    expect(buildingyRow.text()).toContain('1100');
+    expect(buildingyRow.text()).toContain('First building description');
+
+    const buildingButtonRow = rows[6];
+    expect(buildingButtonRow.text()).toContain('Erstellen');
+
+    // Validate apartment
+    const apartmentRow = rows[3];
+    expect(apartmentRow).not.toBeUndefined();
+    expect(apartmentRow.text()).toContain('Apartment 1A');
+    expect(apartmentRow.text()).toContain('300');
+    expect(apartmentRow.text()).toContain('First apartment in Building 1');
+
+    // Validate commercial
+    const commercialRow = rows[4];
+    expect(commercialRow).not.toBeUndefined();
+    expect(commercialRow.text()).toContain('Commercial 1A');
+    expect(commercialRow.text()).toContain('500');
+    expect(commercialRow.text()).toContain('First commercial in Building 1');
+
+    // Validate garage
+    const garageRow = rows[5];
+    expect(garageRow).not.toBeUndefined();
+    expect(garageRow.text()).toContain('Garage 1A');
+    expect(garageRow.text()).toContain('300');
+    expect(garageRow.text()).toContain('First garage in Building 1');
+
+    // Validate site
+    const siteRow = rows[7];
+    expect(siteRow).not.toBeUndefined();
+    expect(siteRow.text()).toContain('Site 1');
+    expect(siteRow.text()).toContain('2000');
+    expect(siteRow.text()).toContain('First Site description');
+
+    // Validate second property
+    const propertyRow2 = rows[9];
+    expect(propertyRow2).not.toBeUndefined();
+    expect(propertyRow2.text()).toContain('Eigentum 2');
+    expect(propertyRow2.text()).toContain('Second property description');
+    expect(propertyRow2.text()).toContain('0');
+
+    const propertyButtonRow2 = rows[10];
+    expect(propertyButtonRow2.text()).toContain('Erstellen');
+
+    const bottomButtonRow = rows[11];
+    expect(bottomButtonRow.text()).toContain('Grundstück erstellen');
+  });
+
+  it('routes correctly when edit buttons are clicked', async () => {
+    getPropertyTreeMock.mockResolvedValueOnce({ nodes: mockComplexData });
+
+    const wrapper = mount(ObjectDataView, {
+      props: { projectId: '123' },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const header = wrapper.find('.p-treetable-header');
+    const expandAllButton = header
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle ausklappen'));
+    expect(expandAllButton).not.toBeUndefined();
+    await expandAllButton.trigger('click');
+
+    await wrapper.vm.$nextTick();
+
+    const editButtons = wrapper.findAll('button.p-button-success .pi-pencil');
+    expect(editButtons.length).toBe(7);
+
+    const expectedRoutes = [
+      '/project/123/property/property-id-1',
+      '/project/123/building/building-id-1',
+      '/project/123/apartment/apartment-id-1',
+      '/project/123/commercial/commercial-id-1',
+      '/project/123/garage/garage-id-1',
+      '/project/123/site/site-id-1',
+      '/project/123/property/property-id-2',
+    ];
+    for (let i = 0; i < editButtons.length; i++) {
+      await editButtons[i].trigger('click');
+      expect(mockRoutePush).toHaveBeenCalledWith(
+        expect.objectContaining({ path: expectedRoutes[i] }),
+      );
+    }
+  });
+
+  it('expands and collapses all rows successfully', async () => {
+    getPropertyTreeMock.mockResolvedValueOnce({ nodes: mockComplexData });
+
+    const wrapper = mount(ObjectDataView, {
+      props: { projectId: '123' },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    let rows = wrapper.findAll('tr');
+    expect(rows.length).toBe(4);
+    const collapsedLength = rows.length;
+
+    const header = wrapper.find('.p-treetable-header');
+    const expandAllButton = header
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle ausklappen'));
+    expect(expandAllButton).not.toBeUndefined();
+    await expandAllButton.trigger('click');
+
+    await wrapper.vm.$nextTick();
+
+    rows = wrapper.findAll('tr');
+    expect(rows.length).toBe(12);
+
+    const collapseAllButton = header
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle einklappen'));
+    expect(collapseAllButton).not.toBeUndefined();
+    await collapseAllButton.trigger('click');
+
+    await wrapper.vm.$nextTick();
+
+    rows = wrapper.findAll('tr');
+    expect(rows.length).toBe(collapsedLength);
   });
 });
