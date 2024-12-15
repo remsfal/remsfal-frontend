@@ -48,8 +48,8 @@ function generateMockTenantData(): TenantItem[] {
       lastName: 'Mustermann',
       unitTitle: 'Wohnung 101',
       rentalObject: 'Wohnung',
-      rentalStart: formatDate(new Date('2020-01-01')),
-      rentalEnd: formatDate(new Date('2025-12-31')),
+      rentalStart: new Date('2020-01-01'),
+      rentalEnd: new Date('2025-12-31'),
     },
     {
       id: '2',
@@ -57,8 +57,8 @@ function generateMockTenantData(): TenantItem[] {
       lastName: 'Musterfrau',
       unitTitle: 'Wohnung 202',
       rentalObject: 'Wohnung',
-      rentalStart: formatDate(new Date('2021-05-01')),
-      rentalEnd: formatDate(new Date('2026-04-30')),
+      rentalStart: new Date('2021-05-01'),
+      rentalEnd: new Date('2026-04-30'),
     },
   ];
 }
@@ -161,8 +161,8 @@ onMounted(() => {
             <Column field="lastName" header="Nachname" :sortable="true" />
             <Column field="unitTitle" header="Wohneinheit" :sortable="true" />
             <Column field="rentalObject" header="Mietgegenstand" :sortable="true" />
-            <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
-            <Column field="rentalEnd" header="Mietende" :sortable="true" />
+            <Column field="rentalStart" header="Mietbeginn" :sortable="true" :body="(rowData) => formatDate(rowData.rentalStart)" />
+            <Column field="rentalEnd" header="Mietende" :sortable="true" :body="(rowData) => formatDate(rowData.rentalEnd)" />
             <Column frozen alignFrozen="right">
               <template #body="slotProps">
                 <div class="flex justify-content-end">
@@ -222,11 +222,11 @@ onMounted(() => {
         </div>
         <div class="field">
           <label for="rentalStart">Mietbeginn</label>
-          <Calendar id="rentalStart" v-model="currentTenant.rentalStart" />
+          <Calendar id="rentalStart" v-model="currentTenant.rentalStart" dateFormat="yy-mm-dd" />
         </div>
         <div class="field">
           <label for="rentalEnd">Mietende</label>
-          <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" />
+          <<Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" dateFormat="yy-mm-dd" />
         </div>
       </div>
       <template #footer>
