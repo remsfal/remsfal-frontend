@@ -164,7 +164,7 @@ const collapseAll = () => {
 
                   <Button
                     icon="pi pi-minus"
-                    label="Alle einkalappen"
+                    label="Alle einklappen"
                     class="mr-2 mb-2"
                     @click="collapseAll()"
                   />
@@ -273,3 +273,19 @@ const collapseAll = () => {
     </div>
   </main>
 </template>
+
+const data = { first: 0, size: 10, total: 2, nodes: [ { key: '12914454-eb0c-483c-b93a-020c6175eaea',
+data: { type: EntityType.Property, title: 'Eigentum 1', description: '', tenant: '', usable_space:
+3250, }, children: [ { key: '450c5f1d-3af6-4c96-9a93-6d812bcd7ea1', data: { type:
+EntityType.Building, title: 'Building 1', description: 'First building description', tenant: '',
+usable_space: 1100, }, children: [ { key: '18729a9f-5d53-42d8-b49e-5be15605f1d0', data: { type:
+EntityType.Apartment, title: 'Apartment 1A', description: 'First apartment in Building 1', tenant:
+'', usable_space: 180, }, children: [], }, { key: '550e8400-e29b-41d4-a716-446655440001', data: {
+type: EntityType.Commercial, title: 'Sample Commercial Title', description: 'Sample description for
+the commercial space.', tenant: '', usable_space: 0, }, children: [], }, { key:
+'74e11b4e-b64f-4057-b605-13b03c8b2b9d', data: { type: EntityType.Garage, title: 'Garage 1A',
+description: 'Garage for Building 1', tenant: '', usable_space: 35, }, children: [], }, ], }, , {
+key: '550e8400-e29b-41d4-a716-446655440000', data: { type: EntityType.Site, title: 'Sample Site
+Title', description: 'Sample description for the site.', tenant: '', usable_space: 0, }, children:
+[], }, ], }, { key: '3146c0dd-431a-43fb-90d2-e0121069aad7', data: { type: EntityType.Property,
+title: 'Eigentum 2', description: '', tenant: '', usable_space: 0, }, children: [], }, ], };
