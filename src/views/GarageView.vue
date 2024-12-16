@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import ReusableFormComponentVue from '@/components/ReusableFormComponent.vue';
+import router from '@/router';
 import ProjectService, { type GarageItem } from '@/services/ProjectService';
 import { ref } from 'vue';
 
@@ -94,6 +95,7 @@ const handleSubmit = async (values: Record<string, any>) => {
 };
 const handleCancel = () => {
   console.log("Form Cancelled");
+  router.back();
 }
 </script>
 <style>
