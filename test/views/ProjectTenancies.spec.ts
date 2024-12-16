@@ -60,4 +60,28 @@ describe('ProjectTenancies.vue', () => {
             }),
         );
     });
+
+    it('should delete a tenant correctly', async () => {
+        // Arrange: Assume there are tenants in the component's data
+        const initialTenants = [{ id: '1', name: 'Tenant 1' }, { id: '2', name: 'Tenant 2' }];
+        wrapper.vm.tenantData = [...initialTenants]; // Manually set tenant data
+
+        // Act: Call the deleteTenant method to delete tenant with id '1'
+        wrapper.vm.deleteTenant('1');
+
+        // Assert: Verify that the tenant with id '1' is removed
+        expect(wrapper.vm.tenantData).toEqual([{ id: '2', name: 'Tenant 2' }]);
+    });
+
+    it('should show confirmation dialog when a tenant is selected for deletion', async () => {
+        // Arrange: Assume we have a tenant to delete
+        const tenantToDeleteMock = { id: '1', name: 'Tenant 1' };
+
+        // Act: Call the confirmDelete method to select the tenant
+        wrapper.vm.confirmDelete(tenantToDeleteMock);
+
+        // Assert: Verify that the tenant is selected for deletion and the dialog is visible
+        expect(wrapper.vm.tenantToDelete).toEqual(tenantToDeleteMock);
+        expect(wrapper.vm.confirmationDialogVisible).toBe(true);
+    });
 });
