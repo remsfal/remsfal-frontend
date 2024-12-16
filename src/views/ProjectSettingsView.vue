@@ -2,13 +2,24 @@
 import { ref, onMounted } from "vue";
 import ProjectMemberService from "../services/ProjectMemberService";
 import { useRoute } from "vue-router";
+import type { ProjectMember } from "../services/ProjectMemberService"
+
+const props =  defineProps<{
+  projectId: string
+}>();
+
 
 const route = useRoute();
-const projectId = route.params.projectId as string;
+
+let projectId: string = props.projectId;
+if (!props.projectId){
+  projectId = route.params.projectId as string;
+}
+
 
 const newMemberEmail = ref("");
 const newMemberRole = ref("");
-const members = ref([]);
+const members = ref<ProjectMember[]>([]);
 const roles = ["MANAGER", "TENANCY", "PROPRIETOR", "LESSOR", "CARETAKER", "CONTRACTOR"];
 const error = ref<string | null>(null);
 
@@ -28,31 +39,30 @@ const addMember = async () => {
     console.error("Invalid email format.");
     return;
   }
-
+  const member: ProjectMember = {email: newMemberEmail.value, role: newMemberRole.value}
   try {
     console.log("Adding member with email:", newMemberEmail.value, "role:", newMemberRole.value);
-    await ProjectMemberService.addMember(projectId, {
-      email: newMemberEmail.value,
-      role: newMemberRole.value || "MANAGER",
-    });
+    await ProjectMemberService.addMember(projectId, member);
     newMemberEmail.value = "";
     newMemberRole.value = "";
     await fetchMembers();
-  } catch (err) {
+  } catch (error) {
+    const err = error as { response?: { data: any }; message: string };
     console.error("Failed to add member:", err.response?.data || err.message);
   }
 };
 
-const updateMemberRole = async (member) => {
+const updateMemberRole = async (member: ProjectMember, role: string) => {
   console.log("Member object passed to updateMemberRole:", member);
   try {
-    await ProjectMemberService.updateMemberRole(projectId, member, member.role);
-  } catch (err) {
-    console.error("Failed to update member role:", err);
+    await ProjectMemberService.updateMemberRole(projectId, member, role);
+  } catch (error) {
+    const err = error as { response?: { data: any }; message: string };
+    console.error("Failed to update member role:", err.response?.data || err.message);
   }
 };
 
-const removeMember = async (memberId) => {
+const removeMember = async (memberId: string) => {
   console.log("Removing member with projectId:", projectId, "memberId:", memberId);
 
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -65,7 +75,8 @@ const removeMember = async (memberId) => {
     await ProjectMemberService.removeMember(projectId, memberId);
     await fetchMembers();
     console.log("Member removed successfully");
-  } catch (err) {
+  } catch (error) {
+    const err = error as { response?: { data: any }; message: string };
     if (err.response) {
       console.error("Error response:", err.response.data);
     } else {
@@ -113,12 +124,12 @@ onMounted(() => {
       <tr v-for="member in members" :key="member.id">
         <td>{{ member.email }}</td>
         <td>
-          <select v-model="member.role" @change="updateMemberRole(member)">
+          <select v-model="member.role" @change="updateMemberRole(member, member.role ?? '')">
             <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
           </select>
         </td>
         <td>
-          <button @click="removeMember(member.id)" class="deactivate-btn">deaktivieren</button>
+          <button @click="removeMember(member.id ?? '')" class="deactivate-btn">deaktivieren</button>
         </td>
       </tr>
       </tbody>

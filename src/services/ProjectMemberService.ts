@@ -1,5 +1,11 @@
 import axios from 'axios';
 
+export interface ProjectMember {
+    id?: string;
+    email: string;
+    role?: string;
+}
+
 const API_BASE_URL = '/api/v1';
 
 class ProjectMemberService {
@@ -10,7 +16,7 @@ class ProjectMemberService {
         return response.data.members;
     }
 
-    static async addMember(projectId: string, member: { email: string; role: string }) {
+    static async addMember(projectId: string, member: ProjectMember) {
         try {
             console.log(`Adding member to project ${projectId}:`, member);
 
@@ -27,11 +33,10 @@ class ProjectMemberService {
         }
     }
 
-    static async updateMemberRole(projectId: string, member: { email: string; id: string }, newRole: string) {
+    static async updateMemberRole(projectId: string, member: ProjectMember, newRole: string) {
         try {
             const payload = { email: member.email, role: newRole }; // ID wird aus der URL entnommen
             console.log("Sending request to update member role:", payload);
-
             const response = await axios.patch(
                 `${API_BASE_URL}/projects/${projectId}/members/${member.id}`,
                 payload,
