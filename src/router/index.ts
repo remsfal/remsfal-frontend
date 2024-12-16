@@ -90,6 +90,13 @@ const routes = [
                 }),
                 component: () => import('@/views/TaskView.vue'),
             },
+            {
+                path: 'tasks/:taskId',
+                name: 'TaskEdit',
+                props: true,
+                component: () => import('@/views/TaskEdit.vue'),
+              }
+              
         ],
     },
 ];
