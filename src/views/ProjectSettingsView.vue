@@ -34,7 +34,7 @@
         <td>{{ member.email }}</td>
         <td>
           <select v-model="member.role" @change="updateMemberRole(member)">
-            <option v-for="role in roles" :value="role">{{ role }}</option>
+            <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
           </select>
         </td>
         <td>
@@ -47,7 +47,7 @@
 </template>
 
 
-<script>
+<script lang="ts">
 import ProjectMemberService from "../services/ProjectMemberService";
 
 export default{
