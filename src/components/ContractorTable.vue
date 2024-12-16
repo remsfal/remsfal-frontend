@@ -27,14 +27,12 @@ const expandedRows = ref<Record<string, boolean>>({});
     <Column :expander="true" headerStyle="width: 3rem"></Column>  
     <Column field="title" header="Titel" style="min-width: 200px"></Column>
     <Column field="status" header="Status" style="min-width: 200px"></Column>
-    <Column field="createdAt" header="Erstellt am" style="min-width: 200px"></Column>
 
     <template #expansion="slotProps">
       <div class="p-3">
         <h4>Details für "{{ slotProps.data.title }}"</h4>
         <p><strong>Beschreibung:</strong> {{ slotProps.data.description }}</p>
         <p><strong>Status:</strong> {{ slotProps.data.status }}</p>
-        <p><strong>Erstellt am:</strong> {{ slotProps.data.createdAt }}</p>
       </div>
     </template>
   </DataTable>
