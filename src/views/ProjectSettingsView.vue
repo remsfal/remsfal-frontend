@@ -1,5 +1,85 @@
-<template>
+<script lang="ts" setup>
+import { ref, onMounted } from "vue";
+import ProjectMemberService from "../services/ProjectMemberService";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
+const projectId = route.params.projectId as string;
+
+const newMemberEmail = ref("");
+const newMemberRole = ref("");
+const members = ref([]);
+const roles = ["MANAGER", "TENANCY", "PROPRIETOR", "LESSOR", "CARETAKER", "CONTRACTOR"];
+const error = ref<string | null>(null);
+
+const fetchMembers = async () => {
+  try {
+    const fetchedMembers = await ProjectMemberService.getMembers(projectId);
+    console.log("Fetched members:", fetchedMembers);
+    members.value = fetchedMembers;
+  } catch (err) {
+    console.error("Failed to fetch members", err);
+  }
+};
+
+const addMember = async () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!newMemberEmail.value || !emailRegex.test(newMemberEmail.value)) {
+    console.error("Invalid email format.");
+    return;
+  }
+
+  try {
+    console.log("Adding member with email:", newMemberEmail.value, "role:", newMemberRole.value);
+    await ProjectMemberService.addMember(projectId, {
+      email: newMemberEmail.value,
+      role: newMemberRole.value || "MANAGER",
+    });
+    newMemberEmail.value = "";
+    newMemberRole.value = "";
+    await fetchMembers();
+  } catch (err) {
+    console.error("Failed to add member:", err.response?.data || err.message);
+  }
+};
+
+const updateMemberRole = async (member) => {
+  console.log("Member object passed to updateMemberRole:", member);
+  try {
+    await ProjectMemberService.updateMemberRole(projectId, member, member.role);
+  } catch (err) {
+    console.error("Failed to update member role:", err);
+  }
+};
+
+const removeMember = async (memberId) => {
+  console.log("Removing member with projectId:", projectId, "memberId:", memberId);
+
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(memberId)) {
+    console.error("Invalid memberId format:", memberId);
+    return;
+  }
+
+  try {
+    await ProjectMemberService.removeMember(projectId, memberId);
+    await fetchMembers();
+    console.log("Member removed successfully");
+  } catch (err) {
+    if (err.response) {
+      console.error("Error response:", err.response.data);
+    } else {
+      console.error("Unexpected error:", err.message);
+    }
+  }
+};
+
+onMounted(() => {
+  fetchMembers();
+});
+</script>
+
+<template>
   <h1>Mitglieder einer Liegenschaft</h1>
 
   <h3>Mitglied hinzufügen</h3>
@@ -14,12 +94,12 @@
           placeholder="E-Mail des neuen Mitglieds"
       />
       <select v-model="newMemberRole">
-      <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
+        <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
       </select>
       <button @click="addMember" class="create-btn">erstellen</button>
     </div>
 
-  <h3>Mitgliederliste</h3>
+    <h3>Mitgliederliste</h3>
 
     <table>
       <thead>
@@ -45,100 +125,6 @@
     </table>
   </div>
 </template>
-
-
-<script lang="ts">
-import ProjectMemberService from "../services/ProjectMemberService";
-
-export default{
-props: {
-  projectId: {
-    type: String,
-        required: true,
-  },
-},
-
-  data() {
-    return {
-      newMemberEmail: "",
-      newMemberRole: "",
-      members: [],
-      roles: ["MANAGER", "TENANCY", "PROPRIETOR", "LESSOR", "CARETAKER", "CONTRACTOR"],
-      error: null,
-    };
-  },
-
-  methods: {
-    async fetchMembers() {
-      try {
-        const projectId = this.$route.params.projectId;
-        const members = await ProjectMemberService.getMembers(projectId);
-        console.log("Fetched members:", members); // Prüfe, ob die `id` enthalten ist
-        this.members = members;
-      } catch (error) {
-        console.error("Failed to fetch members", error);
-      }
-    },
-
-    async addMember() {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!this.newMemberEmail || !emailRegex.test(this.newMemberEmail)) {
-        console.error("Invalid email format.");
-        return;
-      }
-
-      try {
-        console.log("Adding member with email:", this.newMemberEmail, "role:", this.newMemberRole);
-        await ProjectMemberService.addMember(this.projectId, {
-          email: this.newMemberEmail,
-          role: this.newMemberRole || "MANAGER",
-        });
-        this.newMemberEmail = "";
-        this.newMemberRole = "";
-        await this.fetchMembers();
-      } catch (error) {
-        console.error("Failed to add member:", error.response?.data || error.message);
-      }
-    },
-
-    async updateMemberRole(member) {
-      console.log("Member object passed to updateMemberRole:", member);
-      try {
-        await ProjectMemberService.updateMemberRole(this.projectId, member, member.role);
-      } catch (error) {
-        console.error("Failed to update member role:", error);
-      }
-    },
-
-    async removeMember(memberId) {
-      console.log("Removing member with projectId:", this.projectId, "memberId:", memberId);
-
-      // Überprüfen, ob die memberId eine gültige UUID ist
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(memberId)) {
-        console.error("Invalid memberId format:", memberId);
-        return;
-      }
-
-      try {
-        await ProjectMemberService.removeMember(this.projectId, memberId);
-        await this.fetchMembers();
-        console.log("Member removed successfully");
-      } catch (error) {
-        if (error.response) {
-          console.error("Error response:", error.response.data);
-        } else {
-          console.error("Unexpected error:", error.message);
-        }
-      }
-    },
-  },
-
-  created() {
-    this.fetchMembers();
-  },
-};
-</script>
 
 
 <style scoped>
@@ -198,5 +184,4 @@ button.deactivate-btn {
 button.deactivate-btn:hover {
   background-color: #e53935;
 }
-
 </style>
