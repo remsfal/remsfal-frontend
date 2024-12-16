@@ -1,137 +1,140 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ObjectDataView from '@/views/ObjectDataView.vue';
-import { EntityType } from '@/services/ProjectService.ts';
-
-// Mock for the ProjectService
-const getPropertyTreeMock = vi.fn(() =>
-  Promise.resolve({
-    nodes: [
-      {
-        key: '1',
-        data: { title: 'Root', type: EntityType.Project },
-        children: [],
-      },
-    ],
-  }),
-);
-
-vi.mock('@/services/ProjectService', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    getPropertyTree: getPropertyTreeMock,
-  })),
-  EntityType: {
-    Apartment: 'apartment',
-    Commercial: 'commercial',
-    Garage: 'garage',
-    Site: 'site',
-    Building: 'building',
-    Project: 'project',
-    Property: 'property',
-  },
-}));
+import ProjectService, { EntityType } from '@/services/ProjectService.ts';
 
 // Mock for the router
 const mockRoutePush = vi.fn();
-vi.mock('vue-router', async () => {
+vi.mock('vue-router', () => ({
+  RouterView: {},
+  useRouter: () => ({
+    push: mockRoutePush,
+  }),
+}));
+
+vi.mock('@/services/ProjectService', () => {
+  const ProjectService = vi.fn();
+  ProjectService.prototype.getPropertyTree = vi.fn();
+
   return {
-    RouterView: {},
-    useRouter: () => {
-      return {
-        push: mockRoutePush,
-      };
+    default: ProjectService,
+    EntityType: {
+      Apartment: 'apartment',
+      Commercial: 'commercial',
+      Garage: 'garage',
+      Site: 'site',
+      Building: 'building',
+      Project: 'project',
+      Property: 'property',
     },
   };
 });
 
-const mockComplexData = [
-  {
-    key: 'property-id-1',
-    data: {
-      type: EntityType.Property,
-      title: 'Eigentum 1',
-      description: 'First property description',
-      tenant: '',
-      usable_space: 3100,
+// Mock data
+const defaultMockData = {
+  nodes: [
+    {
+      key: '1',
+      data: { title: 'Root', type: EntityType.Project },
+      children: [],
     },
-    children: [
-      {
-        key: 'building-id-1',
-        data: {
-          type: EntityType.Building,
-          title: 'Building 1',
-          description: 'First building description',
-          tenant: '',
-          usable_space: 1100,
-        },
-        children: [
-          {
-            key: 'apartment-id-1',
-            data: {
-              type: EntityType.Apartment,
-              title: 'Apartment 1A',
-              description: 'First apartment in Building 1',
-              tenant: '',
-              usable_space: 300,
-            },
-            children: [],
-          },
-          {
-            key: 'commercial-id-1',
-            data: {
-              type: EntityType.Commercial,
-              title: 'Commercial 1A',
-              description: 'First commercial in Building 1',
-              tenant: '',
-              usable_space: 500,
-            },
-            children: [],
-          },
-          {
-            key: 'garage-id-1',
-            data: {
-              type: EntityType.Garage,
-              title: 'Garage 1A',
-              description: 'First garage in Building 1',
-              tenant: '',
-              usable_space: 300,
-            },
-            children: [],
-          },
-        ],
+  ],
+};
+
+const complexMockData = {
+  nodes: [
+    {
+      key: 'property-id-1',
+      data: {
+        type: EntityType.Property,
+        title: 'Eigentum 1',
+        description: 'First property description',
+        tenant: '',
+        usable_space: 3100,
       },
-      {
-        key: 'site-id-1',
-        data: {
-          type: EntityType.Site,
-          title: 'Site 1',
-          description: 'First Site description',
-          tenant: '',
-          usable_space: 2000,
+      children: [
+        {
+          key: 'building-id-1',
+          data: {
+            type: EntityType.Building,
+            title: 'Building 1',
+            description: 'First building description',
+            tenant: '',
+            usable_space: 1100,
+          },
+          children: [
+            {
+              key: 'apartment-id-1',
+              data: {
+                type: EntityType.Apartment,
+                title: 'Apartment 1A',
+                description: 'First apartment in Building 1',
+                tenant: '',
+                usable_space: 300,
+              },
+              children: [],
+            },
+            {
+              key: 'commercial-id-1',
+              data: {
+                type: EntityType.Commercial,
+                title: 'Commercial 1A',
+                description: 'First commercial in Building 1',
+                tenant: '',
+                usable_space: 500,
+              },
+              children: [],
+            },
+            {
+              key: 'garage-id-1',
+              data: {
+                type: EntityType.Garage,
+                title: 'Garage 1A',
+                description: 'First garage in Building 1',
+                tenant: '',
+                usable_space: 300,
+              },
+              children: [],
+            },
+          ],
         },
-        children: [],
-      },
-    ],
-  },
-  {
-    key: 'property-id-2',
-    data: {
-      type: EntityType.Property,
-      title: 'Eigentum 2',
-      description: 'Second property description',
-      tenant: '',
-      usable_space: 0,
+        {
+          key: 'site-id-1',
+          data: {
+            type: EntityType.Site,
+            title: 'Site 1',
+            description: 'First Site description',
+            tenant: '',
+            usable_space: 2000,
+          },
+          children: [],
+        },
+      ],
     },
-    children: [],
-  },
-];
+    {
+      key: 'property-id-2',
+      data: {
+        type: EntityType.Property,
+        title: 'Eigentum 2',
+        description: 'Second property description',
+        tenant: '',
+        usable_space: 0,
+      },
+      children: [],
+    },
+  ],
+};
 
 describe('ObjectDataView', () => {
+  let getPropertyTreeMock: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    getPropertyTreeMock = ProjectService.prototype.getPropertyTree;
   });
 
   it('renders correctly with fetched data', async () => {
+    getPropertyTreeMock.mockResolvedValueOnce(defaultMockData);
     const wrapper = mount(ObjectDataView, {
       props: {
         projectId: '123',
@@ -161,7 +164,7 @@ describe('ObjectDataView', () => {
   });
 
   it('renders the top level of the dataset correctly (unexpanded)', async () => {
-    getPropertyTreeMock.mockResolvedValueOnce({ nodes: mockComplexData });
+    getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
     const wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
@@ -204,7 +207,7 @@ describe('ObjectDataView', () => {
   });
 
   it('expands all nodes and renders the dataset correctly', async () => {
-    getPropertyTreeMock.mockResolvedValueOnce({ nodes: mockComplexData });
+    getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
     const wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
@@ -291,7 +294,7 @@ describe('ObjectDataView', () => {
   });
 
   it('routes correctly when edit buttons are clicked', async () => {
-    getPropertyTreeMock.mockResolvedValueOnce({ nodes: mockComplexData });
+    getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
     const wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
@@ -329,7 +332,7 @@ describe('ObjectDataView', () => {
   });
 
   it('expands and collapses all rows successfully', async () => {
-    getPropertyTreeMock.mockResolvedValueOnce({ nodes: mockComplexData });
+    getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
     const wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
