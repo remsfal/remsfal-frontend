@@ -26,7 +26,6 @@ const createTask = () => {
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;
-      //tasks.value.unshift(newTask);
       loadTasks();
     })
     .catch((error) => {
@@ -40,7 +39,6 @@ const loadTasks = () => {
   taskService
     .getTasks(projectId)
     .then((tasklist) => {
-      console.log('get tasks', tasklist.tasks);
       tasks.value = tasklist.tasks;
     })
     .catch((error) => {

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach} from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
 import PrimeVue from 'primevue/config';
@@ -63,6 +63,23 @@ describe('TaskView', () => {
       const result = filterOpenTasks();
       expect(result).toEqual([]);
     });
+
+    it('should return all tasks if all have status "OPEN"', () => {
+      tasks.value = [
+        { id: 6, status: 'OPEN', owner: 'User6' },
+        { id: 7, status: 'OPEN', owner: 'User7' },
+        { id: 8, status: 'OPEN', owner: 'User8' },
+      ];
+
+      const openTasks = filterOpenTasks();
+
+      expect(openTasks).toHaveLength(3); // Expect all tasks to be filtered
+      expect(openTasks).toEqual([
+        { id: 6, status: 'OPEN', owner: 'User6' },
+        { id: 7, status: 'OPEN', owner: 'User7' },
+        { id: 8, status: 'OPEN', owner: 'User8' },
+      ]);
+    });
   });
 
   // Group 2: Testing the filterMineTasks function
@@ -100,6 +117,26 @@ describe('TaskView', () => {
       const button = wrapper.find('.my-btn');
       await button.trigger('click');
       expect(wrapper.vm.visible).toBe(true);
+    });
+  });
+
+  // Group 4: Testing header rendering
+  describe('Header rendering', () => {
+    it('renders "Meine Aufgaben" when owner prop is defined', () => {
+      const header = wrapper.find('h2');
+      expect(header.text()).toBe('Meine Aufgaben');
+    });
+
+    it('renders "Offene Aufgaben" when status prop is defined and owner is undefined', async () => {
+      await wrapper.setProps({ owner: null, status: 'OPEN' });
+      const header = wrapper.find('h2');
+      expect(header.text()).toBe('Offene Aufgaben');
+    });
+
+    it('renders "Alle Aufgaben" when neither owner nor status is defined', async () => {
+      await wrapper.setProps({ owner: null, status: null });
+      const header = wrapper.find('h2');
+      expect(header.text()).toBe('Alle Aufgaben');
     });
   });
 });
