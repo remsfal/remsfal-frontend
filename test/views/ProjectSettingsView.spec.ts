@@ -61,16 +61,19 @@ describe('ProjectSettingsView.vue', () => {
             wrapper.vm.newMemberEmail = 'test@example.com';
             wrapper.vm.newMemberRole = 'MANAGER';
 
+
             await wrapper.vm.addMember();
 
-            expect(ProjectMemberService.addMember).toHaveBeenCalledWith('test-project-id', {
-                email: 'test@example.com',
-                role: 'MANAGER',
+            expect(ProjectMemberService.addMember).toHaveBeenCalledWith(
+                'test-project-id', {
+                    "email": "test@example.com",
+                    "role": "MANAGER",
             });
             expect(wrapper.vm.newMemberEmail).toBe('');
             expect(wrapper.vm.newMemberRole).toBe('');
         });
     });
+
 
     // Test for updateMemberRole
     describe('updateMemberRole', () => {
@@ -80,9 +83,10 @@ describe('ProjectSettingsView.vue', () => {
 
             await wrapper.vm.updateMemberRole(member);
 
-            expect(ProjectMemberService.updateMemberRole).toHaveBeenCalledWith('test-project-id', member, 'MANAGER');
+            expect(ProjectMemberService.updateMemberRole).toHaveBeenCalledWith('test-project-id', member);
         });
     });
+
 
     // Test for removeMember
     test('removes a member successfully', async () => {

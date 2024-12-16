@@ -52,10 +52,10 @@ const addMember = async () => {
   }
 };
 
-const updateMemberRole = async (member: ProjectMember, role: string) => {
+const updateMemberRole = async (member: ProjectMember) => {
   console.log("Member object passed to updateMemberRole:", member);
   try {
-    await ProjectMemberService.updateMemberRole(projectId, member, role);
+    await ProjectMemberService.updateMemberRole(projectId, member);
   } catch (error) {
     const err = error as { response?: { data: any }; message: string };
     console.error("Failed to update member role:", err.response?.data || err.message);
@@ -124,7 +124,7 @@ onMounted(() => {
       <tr v-for="member in members" :key="member.id">
         <td>{{ member.email }}</td>
         <td>
-          <select v-model="member.role" @change="updateMemberRole(member, member.role ?? '')">
+          <select v-model="member.role" @change="updateMemberRole(member)">
             <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
           </select>
         </td>
