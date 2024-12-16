@@ -90,6 +90,11 @@ const routes = [
                 }),
                 component: () => import('@/views/TaskView.vue'),
             },
+            {
+                path: 'discussions',
+                name: 'Diskussionen',
+                props: true,
+            }
         ],
     },
 ];

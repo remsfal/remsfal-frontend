@@ -24,6 +24,11 @@ const model = ref([
         icon: {type: 'pi', name: 'pi pi-fw pi-cog'},
         to: `/project/${projectStore.projectId}/settings`,
       },
+      {
+        label: 'Diskussionen',
+        icon: {type: 'pi', name: 'pi pi-fw pi-comments'},
+        to: `/project/${projectStore.projectId}/discussions`
+      }
     ],
   },
   {
