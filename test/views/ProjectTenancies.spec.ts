@@ -84,4 +84,30 @@ describe('ProjectTenancies.vue', () => {
         expect(wrapper.vm.tenantToDelete).toEqual(tenantToDeleteMock);
         expect(wrapper.vm.confirmationDialogVisible).toBe(true);
     });
+
+    it('should delete the tenant and close the dialog when confirmDeletion is called', async () => {
+        // Arrange: Assume the tenant is selected for deletion and the dialog is open
+        wrapper.vm.tenantToDelete = { id: '1', name: 'Tenant 1' };
+        wrapper.vm.confirmationDialogVisible = true;
+
+        // Act: Call the confirmDeletion method
+        wrapper.vm.confirmDeletion();
+
+        // Assert: Verify the tenant is deleted and the dialog is closed
+        expect(wrapper.vm.tenantData).not.toContainEqual({ id: '1', name: 'Tenant 1' });
+        expect(wrapper.vm.confirmationDialogVisible).toBe(false);
+    });
+
+    it('should open the edit dialog with the correct tenant data', async () => {
+        // Arrange: Create a tenant object
+        const tenantToEdit = { id: '1', firstName: 'John', lastName: 'Doe' };
+
+        // Act: Call the openEditDialog method with the tenant object
+        wrapper.vm.openEditDialog(tenantToEdit);
+
+        // Assert: Verify that the tenant data is correctly assigned
+        expect(wrapper.vm.isEditMode).toBe(true);
+        expect(wrapper.vm.currentTenant).toEqual(expect.objectContaining(tenantToEdit));
+        expect(wrapper.vm.dialogVisible).toBe(true);
+    });
 });
