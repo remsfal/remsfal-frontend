@@ -35,7 +35,12 @@ class ProjectMemberService {
 
     static async updateMemberRole(projectId: string, member: ProjectMember) {
         try {
-            const payload = member;
+            const payload = {
+                id: member.id,
+                email: member.email,
+                role: member.role,
+            }
+            
             console.log("Sending request to update member role:", payload);
             const response = await axios.patch(
                 `${API_BASE_URL}/projects/${projectId}/members/${member.id}`,
