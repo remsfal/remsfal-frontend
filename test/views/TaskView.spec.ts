@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-// @ts-ignore
 import TaskView from '../../src/views/TaskView.vue';
 import PrimeVue from 'primevue/config';
 import { ref } from 'vue';

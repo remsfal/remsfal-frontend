@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-// @ts-ignore
 import TaskTable from '@/components/TaskTable.vue';
 import PrimeVue from 'primevue/config';
 import DataTable from 'primevue/datatable';

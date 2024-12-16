@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import { type TaskItem } from '../services/TaskService';
 import { RouterLink } from 'vue-router';
-import UserService from '@/services/UserService';
+import { defineProps } from 'vue';
 
-
-const user = new UserService();
-//const isLoading = ref(false);
 const props = defineProps<{
   tasks: TaskItem[];
 }>();

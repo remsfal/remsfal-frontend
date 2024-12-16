@@ -9,5 +9,5 @@
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const taskId = route.params.taskid as string; // Ensure correct typing
+const taskId = route.params.taskid as string;
 </script>
