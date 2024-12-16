@@ -34,7 +34,7 @@ const fetchMembers = async () => {
 };
 
 const addMember = async () => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!newMemberEmail.value || !emailRegex.test(newMemberEmail.value)) {
     console.error("Invalid email format.");
     return;

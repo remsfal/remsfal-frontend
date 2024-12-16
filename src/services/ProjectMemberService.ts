@@ -28,7 +28,7 @@ class ProjectMemberService {
             console.log("Member added successfully:", response.data);
             return response.data;
         } catch (error) {
-            console.error("Failed to add member:", error || error);
+            console.error("Failed to add member:", error);
             throw error;
         }
     }
