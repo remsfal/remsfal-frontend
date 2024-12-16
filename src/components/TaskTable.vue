@@ -22,12 +22,12 @@ const props = defineProps<{
           <div class="flex justify-content-end">
             <RouterLink :to="{ name: 'TaskEdit', params: { taskid: slotProps.data.id } }">
               <Button
-                  icon="pi pi-pencil"
-                  severity="success"
-                  text
-                  raised
-                  rounded
-                  class="mb-2 mr-2"
+                icon="pi pi-pencil"
+                severity="success"
+                text
+                raised
+                rounded
+                class="mb-2 mr-2"
               />
             </RouterLink>
           </div>

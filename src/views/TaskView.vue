@@ -6,8 +6,6 @@ import InputText from 'primevue/inputtext';
 import TaskService, { Status, type TaskItem } from '@/services/TaskService';
 import TaskTable from '@/components/TaskTable.vue';
 
-
-
 const props = defineProps<{
   projectId: string;
   owner?: string;
@@ -19,7 +17,6 @@ const title = ref<string>('');
 const description = ref<string>('');
 const visible = ref<boolean>(false);
 const tasks = ref<TaskItem[]>([]);
-
 
 const createTask = () => {
   const projectId = props.projectId;
@@ -51,7 +48,7 @@ const loadTasks = () => {
     });
 };
 const filterMineTasks = () => {
-    const filteredTasks =tasks.value.filter((task) => task.owner === props.owner);
+  const filteredTasks = tasks.value.filter((task) => task.owner === props.owner);
   return filteredTasks;
 };
 const filterOpenTasks = () => {
@@ -161,6 +158,7 @@ watch(
 .button-wrapper button {
   width: 300px;
 }
+
 .my-btn {
   padding: 10px 50px;
 }
