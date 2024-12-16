@@ -41,7 +41,7 @@ const defaultMockData = {
   ],
 };
 
-const complexMockData = {
+const initialComplexMockData = {
   nodes: [
     {
       key: 'property-id-1',
@@ -127,112 +127,12 @@ const complexMockData = {
 
 describe('ObjectDataView', () => {
   let getPropertyTreeMock: ReturnType<typeof vi.fn>;
+  let complexMockData;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    complexMockData = structuredClone(initialComplexMockData);
     getPropertyTreeMock = ProjectService.prototype.getPropertyTree;
-  });
-
-  it('expands and collapses all nodes and renders the dataset correctly', async () => {
-    getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
-
-    const wrapper = mount(ObjectDataView, {
-      props: { projectId: '123' },
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    const treeTable = wrapper.findComponent({ name: 'TreeTable' });
-    expect(treeTable.exists()).toBe(true);
-
-    let rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(4);
-    const collapsedLength = rows.length;
-
-    // Click "Alle ausklappen" button
-    const header = wrapper.find('.p-treetable-header');
-    const expandAllButton = header
-      .findAll('button')
-      .find((btn) => btn.text().includes('Alle ausklappen'));
-    expect(expandAllButton).not.toBeUndefined();
-    await expandAllButton.trigger('click');
-
-    await wrapper.vm.$nextTick();
-
-    rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(12); // 1 header row + 7 data rows + 4 button rows
-
-    // Validate first property
-    const propertyRow1 = rows[1];
-    expect(propertyRow1).not.toBeUndefined();
-    expect(propertyRow1.text()).toContain('Eigentum 1');
-    expect(propertyRow1.text()).toContain('3100');
-    expect(propertyRow1.text()).toContain('First property description');
-
-    const propertyButtonRow1 = rows[8];
-    expect(propertyButtonRow1.text()).toContain('Erstellen');
-
-    // Validate building
-    const buildingyRow = rows[2];
-    expect(buildingyRow).not.toBeUndefined();
-    expect(buildingyRow.text()).toContain('Building 1');
-    expect(buildingyRow.text()).toContain('1100');
-    expect(buildingyRow.text()).toContain('First building description');
-
-    const buildingButtonRow = rows[6];
-    expect(buildingButtonRow.text()).toContain('Erstellen');
-
-    // Validate apartment
-    const apartmentRow = rows[3];
-    expect(apartmentRow).not.toBeUndefined();
-    expect(apartmentRow.text()).toContain('Apartment 1A');
-    expect(apartmentRow.text()).toContain('300');
-    expect(apartmentRow.text()).toContain('First apartment in Building 1');
-
-    // Validate commercial
-    const commercialRow = rows[4];
-    expect(commercialRow).not.toBeUndefined();
-    expect(commercialRow.text()).toContain('Commercial 1A');
-    expect(commercialRow.text()).toContain('500');
-    expect(commercialRow.text()).toContain('First commercial in Building 1');
-
-    // Validate garage
-    const garageRow = rows[5];
-    expect(garageRow).not.toBeUndefined();
-    expect(garageRow.text()).toContain('Garage 1A');
-    expect(garageRow.text()).toContain('300');
-    expect(garageRow.text()).toContain('First garage in Building 1');
-
-    // Validate site
-    const siteRow = rows[7];
-    expect(siteRow).not.toBeUndefined();
-    expect(siteRow.text()).toContain('Site 1');
-    expect(siteRow.text()).toContain('2000');
-    expect(siteRow.text()).toContain('First Site description');
-
-    // Validate second property
-    const propertyRow2 = rows[9];
-    expect(propertyRow2).not.toBeUndefined();
-    expect(propertyRow2.text()).toContain('Eigentum 2');
-    expect(propertyRow2.text()).toContain('Second property description');
-    expect(propertyRow2.text()).toContain('0');
-
-    const propertyButtonRow2 = rows[10];
-    expect(propertyButtonRow2.text()).toContain('Erstellen');
-
-    const bottomButtonRow = rows[11];
-    expect(bottomButtonRow.text()).toContain('Grundstück erstellen');
-
-    const collapseAllButton = header
-      .findAll('button')
-      .find((btn) => btn.text().includes('Alle einklappen'));
-    expect(collapseAllButton).not.toBeUndefined();
-    await collapseAllButton.trigger('click');
-
-    await wrapper.vm.$nextTick();
-
-    rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(collapsedLength);
   });
 
   it('renders correctly with fetched data', async () => {
@@ -308,6 +208,93 @@ describe('ObjectDataView', () => {
     expect(propertyRow2.text()).toContain('Second property description');
   });
 
+  it('expands all nodes and renders the dataset correctly', async () => {
+    getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
+
+    const wrapper = mount(ObjectDataView, {
+      props: { projectId: '123' },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const treeTable = wrapper.findComponent({ name: 'TreeTable' });
+    expect(treeTable.exists()).toBe(true);
+
+    // Click "Alle ausklappen" button
+    const header = wrapper.find('.p-treetable-header');
+    const expandAllButton = header
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle ausklappen'));
+    expect(expandAllButton).not.toBeUndefined();
+    await expandAllButton.trigger('click');
+
+    await wrapper.vm.$nextTick();
+
+    const rows = wrapper.findAll('tr');
+    expect(rows.length).toBe(12); // 1 header row + 7 data rows + 4 button rows
+
+    // Validate first property
+    const propertyRow1 = rows[1];
+    expect(propertyRow1).not.toBeUndefined();
+    expect(propertyRow1.text()).toContain('Eigentum 1');
+    expect(propertyRow1.text()).toContain('3100');
+    expect(propertyRow1.text()).toContain('First property description');
+
+    const propertyButtonRow1 = rows[8];
+    expect(propertyButtonRow1.text()).toContain('Erstellen');
+
+    // Validate building
+    const buildingyRow = rows[2];
+    expect(buildingyRow).not.toBeUndefined();
+    expect(buildingyRow.text()).toContain('Building 1');
+    expect(buildingyRow.text()).toContain('1100');
+    expect(buildingyRow.text()).toContain('First building description');
+
+    const buildingButtonRow = rows[6];
+    expect(buildingButtonRow.text()).toContain('Erstellen');
+
+    // Validate apartment
+    const apartmentRow = rows[3];
+    expect(apartmentRow).not.toBeUndefined();
+    expect(apartmentRow.text()).toContain('Apartment 1A');
+    expect(apartmentRow.text()).toContain('300');
+    expect(apartmentRow.text()).toContain('First apartment in Building 1');
+
+    // Validate commercial
+    const commercialRow = rows[4];
+    expect(commercialRow).not.toBeUndefined();
+    expect(commercialRow.text()).toContain('Commercial 1A');
+    expect(commercialRow.text()).toContain('500');
+    expect(commercialRow.text()).toContain('First commercial in Building 1');
+
+    // Validate garage
+    const garageRow = rows[5];
+    expect(garageRow).not.toBeUndefined();
+    expect(garageRow.text()).toContain('Garage 1A');
+    expect(garageRow.text()).toContain('300');
+    expect(garageRow.text()).toContain('First garage in Building 1');
+
+    // Validate site
+    const siteRow = rows[7];
+    expect(siteRow).not.toBeUndefined();
+    expect(siteRow.text()).toContain('Site 1');
+    expect(siteRow.text()).toContain('2000');
+    expect(siteRow.text()).toContain('First Site description');
+
+    // Validate second property
+    const propertyRow2 = rows[9];
+    expect(propertyRow2).not.toBeUndefined();
+    expect(propertyRow2.text()).toContain('Eigentum 2');
+    expect(propertyRow2.text()).toContain('Second property description');
+    expect(propertyRow2.text()).toContain('0');
+
+    const propertyButtonRow2 = rows[10];
+    expect(propertyButtonRow2.text()).toContain('Erstellen');
+
+    const bottomButtonRow = rows[11];
+    expect(bottomButtonRow.text()).toContain('Grundstück erstellen');
+  });
+
   it('routes correctly when edit buttons are clicked', async () => {
     getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
@@ -344,5 +331,42 @@ describe('ObjectDataView', () => {
         expect.objectContaining({ path: expectedRoutes[i] }),
       );
     }
+  });
+
+  it('expands and collapses all rows successfully', async () => {
+    getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
+
+    const wrapper = mount(ObjectDataView, {
+      props: { projectId: '123' },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    let rows = wrapper.findAll('tr');
+    expect(rows.length).toBe(4);
+    const collapsedLength = rows.length;
+
+    const header = wrapper.find('.p-treetable-header');
+    const expandAllButton = header
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle ausklappen'));
+    expect(expandAllButton).not.toBeUndefined();
+    await expandAllButton.trigger('click');
+
+    await wrapper.vm.$nextTick();
+
+    rows = wrapper.findAll('tr');
+    expect(rows.length).toBe(12);
+
+    const collapseAllButton = header
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle einklappen'));
+    expect(collapseAllButton).not.toBeUndefined();
+    await collapseAllButton.trigger('click');
+
+    await wrapper.vm.$nextTick();
+
+    rows = wrapper.findAll('tr');
+    expect(rows.length).toBe(collapsedLength);
   });
 });
