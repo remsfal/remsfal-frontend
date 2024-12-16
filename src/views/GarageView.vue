@@ -1,24 +1,7 @@
-<template>
-<!-- TODO: Delete -->
-<h2>{{ isEditMode ? 'Edit Garage' : 'Create Garage' }}</h2>
-
-<div>
-  <ReusableFormComponentVue
-  :headline="isEditMode ? 'Edit Garage Form' : 'Garage Creation Form'"
-  :fields="fields"
-  :initialValues="initialValues"
-  saveButtonText="Save"
-  cancelButtonText="Cancel"
-  @submit="handleSubmit"
-  @cancel="handleCancel"
-/>
-</div>
-</template>
-
 <script setup lang="ts">
 import ReusableFormComponentVue from '@/components/ReusableFormComponent.vue';
-import { useRouter, useRoute } from 'vue-router';
-import ProjectService, { type GarageItem } from '@/services/ProjectService';
+import { useRouter } from 'vue-router';
+import ProjectService from '@/services/ProjectService';
 import { onMounted, ref } from 'vue';
 import { computed } from 'vue';
 
@@ -30,10 +13,10 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
-const route = useRoute(); // Get route info
+// const route = useRoute(); // Get route info
 const service = new ProjectService();
-const garageId = route.params.garageId as string | undefined;
-const isEditMode = computed(() => !!garageId); // `true` if garageId exists, else `false`
+// const garageId = route.params.garageId as string | undefined;
+const isEditMode = computed(() => !!props.garageId); // `true` if garageId exists, else `false`
 
 const fields: {
     name: string; // Field key
@@ -87,14 +70,14 @@ const initialValues = ref({
 
 // fetch garage
 const fetchGarageData = async () => {
-  if (!isEditMode.value || !garageId) return;
+  if (!isEditMode.value || !props.garageId) return;
 
   try {
     const response: any = await service.getGarage(
       props.projectId,
       props.propertyId,
       props.buildingId,
-      garageId
+      props.garageId
     );
     // Populate the initialValues
     initialValues.value = {
@@ -113,17 +96,16 @@ const handleSubmit = async (values: Record<string, any>) => {
         title: values.title,
         description: values.description,
         usableSpace: parseFloat(values.usableSpace),
-        buildingId: props.buildingId,
     };
 
   try {
-    if (isEditMode.value && garageId) {
+    if (isEditMode.value && props.garageId) {
       // Update existing garage
       const response = await service.updateGarage(
         props.projectId,
         props.propertyId,
         props.buildingId,
-        garageId,
+        props.garageId,
         values.garage
       );
       console.log('Garage updated successfully:', response);
@@ -131,7 +113,6 @@ const handleSubmit = async (values: Record<string, any>) => {
     } else {
       // create a new garage
       const response = await service.createGarage(
-      garage.title,
       props.projectId,
       props.propertyId,
       props.buildingId,
@@ -153,6 +134,23 @@ const handleCancel = () => {
 
 onMounted(fetchGarageData);
 </script>
+
+<template>
+<!-- TODO: Delete -->
+<h2>{{ isEditMode ? 'Edit Garage' : 'Create Garage' }}</h2>
+
+<div>
+  <ReusableFormComponentVue
+  :headline="isEditMode ? 'Edit Garage Form' : 'Garage Creation Form'"
+  :fields="fields"
+  :initialValues="initialValues"
+  saveButtonText="Save"
+  cancelButtonText="Cancel"
+  @submit="handleSubmit"
+  @cancel="handleCancel"
+/>
+</div>
+</template>
 
 <style>
 .garage-view {

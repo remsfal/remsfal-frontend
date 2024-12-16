@@ -268,7 +268,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  createGarage(title: string, projectId: string, propertyId: string, buildingId: string, garage: GarageItem) {
+  createGarage(projectId: string, propertyId: string, buildingId: string, garage: GarageItem) {
     return axios
       .post(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`, garage)
       .then((response) => console.log(response))
