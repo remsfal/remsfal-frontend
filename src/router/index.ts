@@ -82,13 +82,6 @@ const routes = [
             },
             {
                 path: 'property/:propertyId/building/:buildingId/garage',
-                // name: 'CreateGarage',
-                // props: (route: RouteLocationNormalizedLoaded) => ({
-                //     projectId: route.params.projectId,
-                //     propertyId: route.params.propertyId,
-                //     buildingId: route.params.buildingId
-                // }),
-                // component: () => import('@/views/GarageView.vue')
                 children: [
                 {
                     path: 'create',
@@ -96,20 +89,21 @@ const routes = [
                     props: (route: RouteLocationNormalizedLoaded) => ({
                         projectId: route.params.projectId,
                         propertyId: route.params.propertyId,
-                        buildingId: route.params.buildingId
+                        buildingId: route.params.buildingId,
                     }),
                     component: () => import('@/views/GarageView.vue')
                 },
-                // {
-                //     path: 'updateGarage',
-                //     name: 'UpdateGarage',
-                //     props: (route: RouteLocationNormalizedLoaded) => ({
-                //         projectId: route.params.projectId,
-                //         propertyId: route.params.propertyId,
-                //         buildingId: route.params.buildingId
-                //     }),
-                //     component: () => import('')
-                // }
+                {
+                    path: 'garageId/edit',
+                    name: 'EditGarage',
+                    props: (route: RouteLocationNormalizedLoaded) => ({
+                        projectId: route.params.projectId,
+                        propertyId: route.params.propertyId,
+                        buildingId: route.params.buildingId,
+                        garageId: route.params.garageId,
+                    }),
+                    component: () => import('@/views/GarageView.vue')
+                }
                 ]
             },
             {
