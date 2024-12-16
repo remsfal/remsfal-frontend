@@ -13,7 +13,7 @@ const props = defineProps<{
 
 <template>
   <div class="tasks-table-container">
-    <DataTable :value="tasks" tableStyle="min-width: 60rem" :paginator="true" :rows="5">
+    <DataTable :value="props.tasks" tableStyle="min-width: 60rem" :paginator="true" :rows="5">
       <Column field="title" header="Title" sortable />
       <Column field="owner" header="Owner" sortable />
       <Column field="status" header="Status" sortable />
