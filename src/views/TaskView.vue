@@ -5,7 +5,8 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import TaskService, { Status, type TaskItem } from '@/services/TaskService';
 import TaskTable from '@/components/TaskTable.vue';
-import { useRouter } from 'vue-router';
+
+
 
 const props = defineProps<{
   projectId: string;
@@ -13,11 +14,12 @@ const props = defineProps<{
   status?: Status;
 }>();
 const taskService = new TaskService();
+//const user = new UserService();
 const title = ref<string>('');
 const description = ref<string>('');
 const visible = ref<boolean>(false);
 const tasks = ref<TaskItem[]>([]);
-const router = useRouter();
+
 
 const createTask = () => {
   const projectId = props.projectId;
@@ -27,6 +29,7 @@ const createTask = () => {
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;
+      //tasks.value.unshift(newTask);
       loadTasks();
     })
     .catch((error) => {
@@ -40,26 +43,19 @@ const loadTasks = () => {
   taskService
     .getTasks(projectId)
     .then((tasklist) => {
-      console.log('all my tasks', tasklist.tasks);
+      console.log('get tasks', tasklist.tasks);
       tasks.value = tasklist.tasks;
     })
     .catch((error) => {
       console.error('Error loading tasks:', error);
     });
 };
-
-const filterOpenTasks = () => {
-  const filteredTasks = tasks.value.filter((task) => task.status.toString() === 'OPEN');
-  console.log('filtered tasks', filteredTasks);
+const filterMineTasks = () => {
+    const filteredTasks =tasks.value.filter((task) => task.owner === props.owner);
   return filteredTasks;
 };
-const filterNotClosedTasks = () => {
-  const filteredTasks = tasks.value.filter(
-    (task) =>
-      task.status.toString() === 'OPEN' ||
-      task.status.toString() === 'IN_PROGRESS' ||
-      task.status.toString() === 'PENDING',
-  );
+const filterOpenTasks = () => {
+  const filteredTasks = tasks.value.filter((task) => task.status.toString() === 'OPEN');
   console.log('filtered tasks', filteredTasks);
   return filteredTasks;
 };
@@ -112,16 +108,14 @@ watch(
 
       <div class="task-list-wrapper">
         <div v-if="owner">
-          <TaskTable :tasks="filterNotClosedTasks()">
+          <TaskTable :tasks="filterMineTasks()">
             <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
           </TaskTable>
         </div>
         <div v-else-if="status">
-          <p>Das sind alle offenen Aufgaben. Status: {{ status }}</p>
           <TaskTable :tasks="filterOpenTasks()"> </TaskTable>
         </div>
         <div v-else>
-          <p>Dies sind alle Aufgaben für das Projekt: {{ projectId }}.</p>
           <TaskTable :tasks="tasks">
             <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
           </TaskTable>

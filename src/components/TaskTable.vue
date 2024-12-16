@@ -5,7 +5,10 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import { type TaskItem } from '../services/TaskService';
 import { RouterLink } from 'vue-router';
+import UserService from '@/services/UserService';
 
+
+const user = new UserService();
 //const isLoading = ref(false);
 const props = defineProps<{
   tasks: TaskItem[];
@@ -14,24 +17,14 @@ const props = defineProps<{
 
 <template>
   <div class="tasks-table-container">
-    <DataTable
-      :value="tasks"
-      scrollable
-      rowHover
-      :rows="10"
-      dataKey="id"
-      lazy
-      paginator
-      tableStyle="min-width: 75rem"
-    >
-      <Column field="title" header="Title" :sortable="true" />
-      <Column field="description" header="Description" :sortable="true" />
-      <Column field="owner" header="Owner" :sortable="true" />
-      <Column field="status" header="Status" :sortable="true" />
+    <DataTable :value="tasks" tableStyle="min-width: 60rem" :paginator="true" :rows="5">
+      <Column field="title" header="Title" sortable />
+      <Column field="owner" header="Owner" sortable />
+      <Column field="status" header="Status" sortable />
       <Column frozen alignFrozen="right">
         <template #body="slotProps">
           <div class="flex justify-content-end">
-            <RouterLink :to="{ name: 'TaskEdit', params: { taskid: slotProps.data.id} }">
+            <RouterLink :to="{ name: 'TaskEdit', params: { taskid: slotProps.data.id } }">
               <Button
                 icon="pi pi-pencil"
                 severity="success"

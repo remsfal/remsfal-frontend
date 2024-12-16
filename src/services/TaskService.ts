@@ -29,6 +29,7 @@ export interface TaskItem {
   id: string;
   name: string;
   title: string;
+  //description: string;
   status: Status;
   owner: string;
 }
@@ -38,6 +39,7 @@ export default class TaskService {
 
   //Get a list of tasks
   getTasks(projectId: string): Promise<TaskList> {
+   
     return axios.get(`${this.baseUrl}/${projectId}/tasks`).then((response) => {
       const taskList: TaskList = response.data;
       console.log('GET tasks:', taskList);
