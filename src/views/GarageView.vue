@@ -7,7 +7,7 @@
   :headline="isEditMode ? 'Edit Garage Form' : 'Garage Creation Form'"
   :fields="fields"
   :initialValues="initialValues"
-  saveButtonText="isEditMode ? 'Update Garage' : 'Create Garage'"
+  saveButtonText="Save"
   cancelButtonText="Cancel"
   @submit="handleSubmit"
   @cancel="handleCancel"
@@ -35,7 +35,14 @@ const service = new ProjectService();
 const garageId = route.params.garageId as string | undefined;
 const isEditMode = computed(() => !!garageId); // `true` if garageId exists, else `false`
 
-const fields = [
+const fields: {
+    name: string; // Field key
+    label: string; // Label for the field
+    type: 'text' | 'textarea' | 'checkbox' | 'select'; // Input type
+    options?: any[]; // For dropdowns
+    required?: boolean; // Is this field required
+    validations?: ((value: any) => string | null)[]; // Array of validation functions
+  }[] = [
   {
     name: 'title',
     label: 'Garage Title',
@@ -53,12 +60,12 @@ const fields = [
     label: 'Description',
     type: 'textarea',
     required: true,
-    validations: null, // Explicitly define when no validations exist
+    validations: undefined, // Explicitly define when no validations exist
   },
   {
     name: 'usableSpace',
     label: 'Usable Space (m²)',
-    type: 'number',
+    type: 'text',
     required: true,
     validations: [
     (value: any): string | null => {
