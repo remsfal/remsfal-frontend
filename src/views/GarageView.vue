@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ReusableFormComponentVue from '@/components/ReusableFormComponent.vue';
 import { useRouter } from 'vue-router';
-import ProjectService from '@/services/ProjectService';
+import ProjectService, { type GarageItem } from '@/services/ProjectService';
 import { onMounted, ref } from 'vue';
 import { computed } from 'vue';
 
@@ -46,6 +46,13 @@ const fields: {
     validations: undefined, // Explicitly define when no validations exist
   },
   {
+    name: 'location',
+    label: 'Location',
+    type: 'textarea',
+    required: true,
+    validations: undefined,
+  },
+  {
     name: 'usableSpace',
     label: 'Usable Space (m²)',
     type: 'text',
@@ -65,6 +72,7 @@ const fields: {
 const initialValues = ref({
   title: '',
   description: '',
+  location: '',
   usableSpace: null,
 });
 
@@ -83,6 +91,7 @@ const fetchGarageData = async () => {
     initialValues.value = {
       title: response.data.title || '',
       description: response.data.description || '',
+      location: response.data.location || '',
       usableSpace: response.data.usableSpace || '',
     };
   } catch (error) {
@@ -92,10 +101,12 @@ const fetchGarageData = async () => {
 };
 
 const handleSubmit = async (values: Record<string, any>) => {
-    const garage = {
+    const garage: GarageItem = {
         title: values.title,
         description: values.description,
+        location: values.location,
         usableSpace: parseFloat(values.usableSpace),
+        buildingId: props.buildingId
     };
 
   try {
@@ -106,7 +117,7 @@ const handleSubmit = async (values: Record<string, any>) => {
         props.propertyId,
         props.buildingId,
         props.garageId,
-        values.garage
+        garage
       );
       console.log('Garage updated successfully:', response);
       alert('Garage updated successfully!');
@@ -116,7 +127,7 @@ const handleSubmit = async (values: Record<string, any>) => {
       props.projectId,
       props.propertyId,
       props.buildingId,
-      values.garage
+      garage
     );
     console.log('Garage created successfully:', response);
     alert('Garage created successfully!');
