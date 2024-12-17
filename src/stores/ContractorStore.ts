@@ -8,7 +8,6 @@ export const useContractorStore = defineStore('contractor-store', {
       tasks: <TaskItemJson[]>[],
       selectedTask: null as TaskItemJson | null,
       totalTasks: Number(0),
-      firstOffset: Number(0),
     };
   },
   getters: {

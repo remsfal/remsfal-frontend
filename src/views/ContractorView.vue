@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { useContractorStore } from '@/stores/ContractorStore';
 import ContractorTable from '@/components/ContractorTable.vue';
+
+const contractorStore = useContractorStore();
+
+onMounted(() => {
+  contractorStore.refreshTaskList('yourOwnerId');
+});
+
 </script>
 
 <template>

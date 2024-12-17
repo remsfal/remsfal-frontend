@@ -5,13 +5,14 @@ export interface TaskItemJson {
     title: string;
     status: TaskStatus;
     description: string | null;
+    ownerId: string;
 }
 
 export interface TaskListJson {
     tasks: TaskItemJson[];
 }
 
-export type TaskStatus = 'PENDING' | 'Open' | 'IN_PROGRESS' | 'CLOSED' | 'REJECTED';
+export type TaskStatus = 'PENDING' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED' | 'REJECTED';
 
 export default class ContractorService {
     private readonly baseUrl: string = '/api/v1/contractors';
