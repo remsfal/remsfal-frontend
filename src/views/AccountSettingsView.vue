@@ -68,7 +68,7 @@ const errorMessage = ref({
   privatePhoneNumber: '',
   street: '',
   zip: '',
-  city:'',
+  city: '',
   province: '',
   countryCode: '',
 });
@@ -97,11 +97,13 @@ async function fetchUserProfile() {
 }
 
 function getUpdatedValue(field: keyof User): string {
-  return editedUserProfile.value?.[field] || userProfile.value?.[field] || '';
+  const value = editedUserProfile.value?.[field] || userProfile.value?.[field];
+  return typeof value === 'string' ? value : '';
 }
 
 function getUpdatedAddressValue(field: keyof Address): string {
-  return editedAddress.value?.[field] || addressProfile.value?.[field] || '';
+  const value = editedAddress.value?.[field] || addressProfile.value?.[field];
+  return typeof value === 'string' ? value : '';
 }
 
 async function saveProfile(): Promise<void> {
@@ -109,7 +111,7 @@ async function saveProfile(): Promise<void> {
     const userService = new UserService();
 
     // Zusammenstellen des aktualisierten Benutzerobjekts
-    const user: User = {
+    const user: Partial<User> = {
       id: userProfile.value?.id || '',
       firstName: getUpdatedValue('firstName'),
       businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
@@ -130,20 +132,8 @@ async function saveProfile(): Promise<void> {
       user.address = address;
     }
 
-    console.log(user);
-    console.log(user.address);
-
-    // API-Aufruf zum Aktualisieren des Benutzers
-    try {
-      const updatedUser = await userService.updateUser(user);
-
-      console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
-    } catch (error) {
-      console.error('Fehler beim Aktualisieren des Benutzers:', error.message);
-      alert('Das Benutzerprofil konnte nicht gespeichert werden.');
-    }
-
-    // Aktualisiere lokales Benutzerprofil
+    const updatedUser = await userService.updateUser(user);
+    console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
   } catch (e) {
     console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
     alert('Fehler beim Aktualisieren des Benutzerprofils!');
@@ -151,8 +141,9 @@ async function saveProfile(): Promise<void> {
 }
 
 function validateAddress(address: Partial<Address>): boolean {
-  // Adresse gilt als valide, wenn alle Felder definiert und nicht leer sind
-  return Object.values(address).every((value) => value?.trim().length > 0);
+  return Object.values(address)
+    .filter((value): value is string => typeof value === 'string')
+    .every((value) => value.trim().length > 0);
 }
 
 function logout(): void {
@@ -171,11 +162,9 @@ function cancel() {
   editedUserProfile.value = { ...userProfile.value };
   editedAddress.value = { ...addressProfile.value };
   changes.value = false;
-  for (const key in errorMessage.value) {
-    if (errorMessage.value.hasOwnProperty(key)) {
-      errorMessage.value[key] = '';
-    }
-  }
+  Object.keys(errorMessage.value).forEach((key) => {
+    errorMessage.value[key as keyof typeof errorMessage.value] = '';
+  });
 }
 
 function validateField(
@@ -191,12 +180,12 @@ function validateField(
 
   const regexMap = {
     default: /^[A-Za-zÄÖÜäöüß\s]+$/,
-    street: /^[A-Za-zÄÖÜäöüß0-9\s.,\-\/]+$/,
+    street: /^[A-Za-zÄÖÜäöüß0-9\s.,\-/]+$/,
   };
 
   const regex = field === 'street' ? regexMap.street : regexMap.default;
 
-  if (type === 'name' || type === 'address') {
+  if ((type === 'name' || type === 'address') && typeof value === 'string') {
     if (!value || value.length === 0) {
       errorMessage.value[errorKey] = 'Bitte eingeben!';
     } else if (!regex.test(value)) {
@@ -206,16 +195,18 @@ function validateField(
     }
   }
 
-  if (type === 'phone') {
-    if (value && value.length > 0 && !/^\+?[1-9]\d{1,14}$/.test(value as string)) {
-      errorMessage.value[errorKey] = 'Telefonnummer ist ungültig!';
-    } else {
-      errorMessage.value[errorKey] = '';
-    }
+  if (typeof value === 'string' && value.length > 0 && !/^\+?[1-9]\d{1,14}$/.test(value)) {
+    errorMessage.value[errorKey] = 'Telefonnummer ist ungültig!';
+  } else {
+    errorMessage.value[errorKey] = '';
   }
 
-  // Setze `changes` auf true, wenn sich etwas geändert hat
-  changes.value = checkValues(userProfile, editedUserProfile, addressProfile, editedAddress);
+  changes.value = checkValues(
+    userProfile.value,
+    editedUserProfile.value,
+    addressProfile.value,
+    editedAddress.value,
+  );
 }
 
 function updateCountryFromCode() {
@@ -249,7 +240,12 @@ async function getCity() {
   }
 }
 
-function checkValues(userProfile, editedUserProfile, addressProfile, editedAddress) {
+function checkValues(
+  userProfile: User,
+  editedUserProfile: User,
+  addressProfile: Address,
+  editedAddress: Address,
+): boolean {
   if (
     compareObjects(userProfile || {}, editedUserProfile || {}) &&
     compareObjects(addressProfile || {}, editedAddress || {})
@@ -260,20 +256,24 @@ function checkValues(userProfile, editedUserProfile, addressProfile, editedAddre
   }
 }
 
-function compareObjects(obj1, obj2) {
+function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
   if (obj1 === obj2) return true;
 
   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
     return false;
   }
 
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
+  const keys1 = Object.keys(obj1) as Array<keyof (User & Address)>;
+  const keys2 = Object.keys(obj2) as Array<keyof (User & Address)>;
 
   if (keys1.length !== keys2.length) return false;
 
   for (const key of keys1) {
-    if (!keys2.includes(key) || !compareObjects(obj1[key], obj2[key])) {
+    // Use optional chaining for safety
+    if (
+      !keys2.includes(key) ||
+      !compareObjects(obj1[key as keyof typeof obj1], obj2[key as keyof typeof obj2])
+    ) {
       return false;
     }
   }
@@ -300,7 +300,10 @@ function compareObjects(obj1, obj2) {
                   id="firstName"
                   v-model="editedUserProfile.firstName"
                   required
-                  @input="(event) => (editedUserProfile.firstName = event.target.value)"
+                  @input="
+                    (event) =>
+                      (editedUserProfile.firstName = (event.target as HTMLInputElement).value)
+                  "
                   @blur="validateField('firstName', 'name', 'firstname')"
                 />
                 <span class="error" :class="{ active: errorMessage.firstname }">
@@ -314,7 +317,10 @@ function compareObjects(obj1, obj2) {
                   id="lastName"
                   v-model="editedUserProfile.lastName"
                   required
-                  @input="(event) => (editedUserProfile.lastName = event.target.value)"
+                  @input="
+                    (event) =>
+                      (editedUserProfile.lastName = (event.target as HTMLInputElement).value)
+                  "
                   @blur="validateField('lastName', 'name', 'lastname')"
                 />
                 <span class="error" :class="{ active: errorMessage.lastname }">
@@ -329,16 +335,23 @@ function compareObjects(obj1, obj2) {
                   v-model="editedUserProfile.email"
                   disabled
                   required
-                  @input="(event) => (editedUserProfile.email = event.target.value)"
+                  @input="
+                    (event) => (editedUserProfile.email = (event.target as HTMLInputElement).value)
+                  "
                 />
-                <span class="error" :class="{ active: errorMessage.email }"></span>
+                <span class="error"></span>
               </div>
               <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
                 <input
                   id="mobilePhoneNumber"
                   v-model="editedUserProfile.mobilePhoneNumber"
-                  @input="(event) => (editedUserProfile.mobilePhoneNumber = event.target.value)"
+                  @input="
+                    (event) =>
+                      (editedUserProfile.mobilePhoneNumber = (
+                        event.target as HTMLInputElement
+                      ).value)
+                  "
                   @blur="validateField('mobilePhoneNumber', 'phone', 'mobilePhoneNumber')"
                 />
                 <span class="error" :class="{ active: errorMessage.mobilePhoneNumber }">
@@ -350,7 +363,12 @@ function compareObjects(obj1, obj2) {
                 <input
                   id="businessPhoneNumber"
                   v-model="editedUserProfile.businessPhoneNumber"
-                  @input="(event) => (editedUserProfile.businessPhoneNumber = event.target.value)"
+                  @input="
+                    (event) =>
+                      (editedUserProfile.businessPhoneNumber = (
+                        event.target as HTMLInputElement
+                      ).value)
+                  "
                   @blur="validateField('businessPhoneNumber', 'phone', 'businessPhoneNumber')"
                 />
                 <span class="error" :class="{ active: errorMessage.businessPhoneNumber }">
@@ -363,7 +381,12 @@ function compareObjects(obj1, obj2) {
                 <input
                   id="privatePhoneNumber"
                   v-model="editedUserProfile.privatePhoneNumber"
-                  @input="(event) => (editedUserProfile.privatePhoneNumber = event.target.value)"
+                  @input="
+                    (event) =>
+                      (editedUserProfile.privatePhoneNumber = (
+                        event.target as HTMLInputElement
+                      ).value)
+                  "
                   @blur="validateField('privatePhoneNumber', 'phone', 'privatePhoneNumber')"
                 />
                 <span class="error" :class="{ active: errorMessage.privatePhoneNumber }">
@@ -385,7 +408,9 @@ function compareObjects(obj1, obj2) {
                 <input
                   id="street"
                   v-model="editedAddress.street"
-                  @input="(event) => (editedAddress.street = event.target.value)"
+                  @input="
+                    (event) => (editedAddress.street = (event.target as HTMLInputElement).value)
+                  "
                   @blur="validateField('street', 'address', 'street')"
                 />
                 <span class="error" :class="{ active: errorMessage.street }">
@@ -397,7 +422,7 @@ function compareObjects(obj1, obj2) {
                 <input
                   id="zip"
                   v-model="editedAddress.zip"
-                  @input="(event) => (editedAddress.zip = event.target.value)"
+                  @input="(event) => (editedAddress.zip = (event.target as HTMLInputElement).value)"
                   @blur="getCity()"
                 />
                 <span class="error" :class="{ active: errorMessage.zip }">
@@ -409,7 +434,9 @@ function compareObjects(obj1, obj2) {
                 <input
                   id="city"
                   v-model="editedAddress.city"
-                  @input="(event) => (editedAddress.city = event.target.value)"
+                  @input="
+                    (event) => (editedAddress.city = (event.target as HTMLInputElement).value)
+                  "
                   @blur="validateField('city', 'address', 'city')"
                 />
                 <span class="error" :class="{ active: errorMessage.city }">
@@ -421,7 +448,9 @@ function compareObjects(obj1, obj2) {
                 <input
                   id="province"
                   v-model="editedAddress.province"
-                  @input="(event) => (editedAddress.province = event.target.value)"
+                  @input="
+                    (event) => (editedAddress.province = (event.target as HTMLInputElement).value)
+                  "
                   @blur="validateField('province', 'address', 'province')"
                 />
                 <span class="error" :class="{ active: errorMessage.province }">
