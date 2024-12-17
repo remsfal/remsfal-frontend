@@ -1,6 +1,9 @@
-import {createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
+import LegalNoticeView from '@/views/LegalNoticeView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
+import PrivacyView from '@/views/PrivacyView.vue';
+import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
 
 const routes = [
@@ -16,17 +19,17 @@ const routes = [
             {
                 path: '/legal-notice',
                 name: 'LegalNotice',
-                component: () => import('@/views/LegalNoticeView.vue'),
+                component: LegalNoticeView,
             },
             {
                 path: '/privacy',
                 name: 'Privacy',
-                component: () => import('@/views/PrivacyView.vue'),
+                component: PrivacyView,
             },
             {
                 path: '/projects',
                 name: 'ProjectSelection',
-                component: () => import('@/views/ProjectSelectionView.vue'),
+                component: ProjectSelectionView,
             },
             {
                 path: '/new-project',
@@ -90,6 +93,13 @@ const routes = [
                 }),
                 component: () => import('@/views/TaskView.vue'),
             },
+            {
+                // Neue Route für die Erbringerverwaltung
+                path: 'providers', // URL-Pfad für die View
+                name: 'Providers', // Name der Route
+                props: true, // Übergibt die Routen-Parameter als Props an die View
+                component: () => import('@/views/ProviderView.vue'), // Dynamische Lazy-Loading-Import der neuen View
+            },
         ],
     },
 ];
@@ -99,6 +109,6 @@ const router = createRouter({
     routes: routes,
 });
 
-export {routes};
+export { routes };
 
 export default router;

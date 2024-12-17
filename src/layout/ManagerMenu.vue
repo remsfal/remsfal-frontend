@@ -39,6 +39,11 @@ const model = ref([
         icon: 'pi pi-fw pi-users',
         to: `/project/${projectStore.projectId}/tenancies`,
       },
+      {
+        label: 'Dienstleisterdaten',
+        icon: 'pi pi-fw pi-wrench', // PrimeVue Icon verwenden
+        to: `/project/${projectStore.projectId}/providers`, // Route zur neuen View
+      },
     ],
   },
   {
