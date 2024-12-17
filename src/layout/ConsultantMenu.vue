@@ -7,8 +7,8 @@ const model = ref([
   {
     label: 'Home',
     items: [
-      { label: 'Überblick', icon: {type: 'pi', name: 'pi pi-fw pi-home'}, to: '/' },
-      { label: 'Auftraggeber', icon: {type: 'pi', name: 'pi pi-fw pi-id-card'}, to: '/fullscreen' },
+      { label: 'Überblick', icon: {type: 'pi', name: 'pi pi-fw pi-home'}, to: '/contractor' },
+      { label: 'Auftraggeber', icon: {type: 'pi', name: 'pi pi-fw pi-id-card'}, to: '/contractor' },
     ],
   },
   {
@@ -17,17 +17,17 @@ const model = ref([
       {
         label: 'Offene Anfragen',
         icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
-        to: '/uikit/formlayout',
+        to: '/contractor',
       },
       {
         label: 'Laufende Aufträge',
         icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
-        to: '/uikit/input',
+        to: '/contractor',
       },
       {
         label: 'Abgeschlossene Aufträge',
         icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
-        to: '/uikit/floatlabel',
+        to: '/contractor',
       },
     ],
   },

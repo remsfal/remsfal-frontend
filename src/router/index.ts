@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} fro
 import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
+import ConsultantLayout from '@/layout/ConsultantLayout.vue';
 
 const routes = [
     {
@@ -89,6 +90,18 @@ const routes = [
                     status: route.query.status,
                 }),
                 component: () => import('@/views/TaskView.vue'),
+            },
+        ],
+    },
+    {
+        path: '/contractor',
+        component: ConsultantLayout,
+        children: [
+            {
+                path: '',
+                name: 'ContractorView',
+                props: true,
+                component: () => import('@/views/ContractorView.vue'),
             },
         ],
     },
