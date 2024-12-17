@@ -49,6 +49,7 @@ describe('AccountSettingsView', () => {
     ]);
     wrapper.vm.saveProfile = vi.fn();
     wrapper.vm.fetchUserProfile = vi.fn();
+    wrapper.vm.validateAddress = vi.fn();
   });
 
   test('The view is rendered properly', () => {
@@ -110,5 +111,23 @@ describe('AccountSettingsView', () => {
 
     await cancelButton.trigger('click');
     expect(wrapper.vm.editedUserProfile).toEqual(wrapper.vm.userProfile);
-  });  
+  });
+
+  test('check if all fields for address are filled', async () => {
+    wrapper.vm.editedAddress = {
+      street: 'Test Street',
+      zip: '12345',
+      city: 'Test City',
+      province: 'Test Province',
+      countryCode: 'TC',
+    };
+
+    await wrapper.vm.validateAddress(wrapper.vm.editedAddress);
+    expect(wrapper.vm.validateAddress).toHaveBeenCalled();
+    expect(wrapper.vm.editedAddress.street.length).toBeGreaterThan(0);
+    expect(wrapper.vm.editedAddress.zip.length).toBeGreaterThan(0);
+    expect(wrapper.vm.editedAddress.city.length).toBeGreaterThan(0);
+    expect(wrapper.vm.editedAddress.province.length).toBeGreaterThan(0);
+    expect(wrapper.vm.editedAddress.countryCode.length).toBeGreaterThan(0);
+  });
 });
