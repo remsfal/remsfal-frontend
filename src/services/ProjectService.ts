@@ -110,7 +110,7 @@ export interface GarageItem {
   location: string;
   description: string;
   usableSpace: number;
-  rent: number;
+  //rent: number;
 }
 
 export default class ProjectService {
