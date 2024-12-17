@@ -12,7 +12,7 @@ describe('Service Worker Tests', () => {
   });
 
   it('should listen for install event', () => {
-    expect(self.addEventListener.calledWith('install')).to.be.true;
+    void expect(self.addEventListener.calledWith('install')).to.be.true;
   });
 
   it('should cache files during install event', async () => {
@@ -35,10 +35,10 @@ describe('Service Worker Tests', () => {
     await new Promise((resolve) => setImmediate(resolve));
 
     // Assertions
-    expect(cachesOpenStub.calledOnce).to.be.true; // Prüfe, ob caches.open aufgerufen wurde
-    expect(cachesOpenStub.calledWith('remsfal-v1')).to.be.true; // Prüfe den Cache-Namen
-    expect(addAllStub.calledOnce).to.be.true; // Prüfe, ob addAll aufgerufen wurde
-    expect(installEvent.waitUntil.calledOnce).to.be.true; // Prüfe waitUntil-Aufruf
+    void expect(cachesOpenStub.calledOnce).to.be.true; // Prüfe, ob caches.open aufgerufen wurde
+    void expect(cachesOpenStub.calledWith('remsfal-v1')).to.be.true; // Prüfe den Cache-Namen
+    void expect(addAllStub.calledOnce).to.be.true; // Prüfe, ob addAll aufgerufen wurde
+    void expect(installEvent.waitUntil.calledOnce).to.be.true; // Prüfe waitUntil-Aufruf
 
     // Prüfe, ob die richtigen Dateien in den Cache geschrieben wurden
     const expectedFiles = [
@@ -51,11 +51,11 @@ describe('Service Worker Tests', () => {
       '/android-chrome-192x192.png',
       '/android-chrome-512x512.png',
     ];
-    expect(addAllStub.calledWith(sinon.match.array.deepEquals(expectedFiles))).to.be.true;
+    void expect(addAllStub.calledWith(sinon.match.array.deepEquals(expectedFiles))).to.be.true;
   });
 
   it('should listen for activate event', () => {
-    expect(self.addEventListener.calledWith('activate')).to.be.true;
+    void expect(self.addEventListener.calledWith('activate')).to.be.true;
   });
 
   it('should delete old caches during activate event', async () => {
@@ -78,13 +78,13 @@ describe('Service Worker Tests', () => {
     await new Promise((resolve) => setImmediate(resolve));
 
     // Assertions
-    expect(cachesKeysStub.calledOnce).to.be.true; // Prüfe, ob caches.keys aufgerufen wurde
-    expect(deleteStub.calledTwice).to.be.true; // Prüfe, ob alte Caches gelöscht wurden
-    expect(deleteStub.calledWith('old-cache-v1')).to.be.true; // Prüfe spezifische Aufrufe
-    expect(deleteStub.calledWith('old-cache-v2')).to.be.true;
+    void expect(cachesKeysStub.calledOnce).to.be.true; // Prüfe, ob caches.keys aufgerufen wurde
+    void expect(deleteStub.calledTwice).to.be.true; // Prüfe, ob alte Caches gelöscht wurden
+    void expect(deleteStub.calledWith('old-cache-v1')).to.be.true; // Prüfe spezifische Aufrufe
+    void expect(deleteStub.calledWith('old-cache-v2')).to.be.true;
 
     // Prüfen, ob waitUntil aufgerufen wurde
-    expect(activateEvent.waitUntil.calledOnce).to.be.true;
+    void expect(activateEvent.waitUntil.calledOnce).to.be.true;
   });
 
   it('should handle fetch events with cache fallback', async () => {
@@ -107,9 +107,9 @@ describe('Service Worker Tests', () => {
 
     await new Promise((resolve) => setImmediate(resolve));
 
-    expect(fetchStub.calledWith(event.request)).to.be.true;
-    expect(cacheMock.put.called).to.be.true;
-    expect(event.respondWith.called).to.be.true;
+    void expect(fetchStub.calledWith(event.request)).to.be.true;
+    void expect(cacheMock.put.called).to.be.true;
+    void expect(event.respondWith.called).to.be.true;
   });
 
   it('should handle sync events with tag "sync-projects"', async () => {
@@ -131,9 +131,9 @@ describe('Service Worker Tests', () => {
 
     await new Promise((resolve) => setImmediate(resolve));
 
-    expect(syncEvent.waitUntil.called).to.be.true;
-    expect(openDBMock.calledOnce).to.be.true;
-    expect(fetchStub.calledOnce).to.be.true;
-    expect(fetchStub.calledWithMatch('/api/v1/projects')).to.be.true;
+    void expect(syncEvent.waitUntil.called).to.be.true;
+    void expect(openDBMock.calledOnce).to.be.true;
+    void expect(fetchStub.calledOnce).to.be.true;
+    void expect(fetchStub.calledWithMatch('/api/v1/projects')).to.be.true;
   });
 });

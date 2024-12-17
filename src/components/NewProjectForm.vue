@@ -2,10 +2,10 @@
 import { defineEmits, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ProjectService, { type Project, type ProjectItem } from '@/services/ProjectService';
+import ProjectService, { type ProjectItem } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
-import { saveProject, getAllProjects, deleteProject } from '@/helper/indexeddb';
+import { saveProject } from '@/helper/indexeddb';
 
 
 const emit = defineEmits<{
@@ -34,19 +34,18 @@ async function createProject() {
 
   const projectTitleValue = projectTitle.value;
 
-  // Prüfe, ob die App offline ist
+  // Check if the app is offline
   if (!navigator.onLine) {
-    // Offline: Speichere das Projekt in IndexedDB
+    // Offline: Save the project in IndexedDB
     await saveProject(projectTitleValue);
-    console.info('Project saved locally (offline):', projectTitleValue);
-    return; // Beende die Funktion hier
+    return; // End the function here
   }
 
-  // Online: Sende das Projekt direkt an das Backend
+  // Online: Send the project directly to the backend
   try {
     const newProject = await projectService.createProject(projectTitleValue);
 
-    // Aktualisiere den Projektstore
+    // Update the project store
     const newProjectItem: ProjectItem = {
       id: newProject.id,
       name: newProject.title,
@@ -55,7 +54,6 @@ async function createProject() {
 
     projectStore.searchSelectedProject(newProjectItem);
 
-    console.info('New project created and synced with backend:', newProject);
     router.push({
       name: 'ProjectDashboard',
       params: { projectId: newProject.id },
@@ -63,11 +61,11 @@ async function createProject() {
   } catch (error) {
     console.error('Failed to create project online. Saving offline:', error);
 
-    // Optional: Bei einem Fehler speichere den Titel lokal
+    // Optional: Save the title locally in case of an error
     await saveProject(projectTitleValue);
-    console.info('Project saved locally after online failure:', projectTitleValue);
   }
 }
+
 
 
 

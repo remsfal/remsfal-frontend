@@ -240,7 +240,7 @@ app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 app.mount('#app');
 
-initDB(); // Initialisiere IndexedDB beim Start der App
+initDB(); // Initialize IndexedDB when the app starts
 
 // Register Service Worker based on ENV
 if ('serviceWorker' in navigator) {
@@ -248,13 +248,13 @@ if ('serviceWorker' in navigator) {
 
   if (isServiceWorkerEnabled) {
     navigator.serviceWorker
-      .register('/service-worker.js')
-      .then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      })
-      .catch((error) => {
-        console.error('Service Worker registration failed:', error);
-      });
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
   } else {
     console.log('Service Worker is disabled in the current environment.');
   }
@@ -263,32 +263,26 @@ if ('serviceWorker' in navigator) {
 if ('serviceWorker' in navigator && 'SyncManager' in window) {
   navigator.serviceWorker.ready.then((registration) => {
     registration.sync.register('sync-projects').then(() => {
-      console.log('Background sync registered');
     });
   });
 }
 
-// Online/Offline-Erkennung im Main-Thread
+// Online/Offline detection in the main thread
 window.addEventListener('online', () => {
-  console.log('[App] You are online');
   checkPendingSync();
-});
-
-window.addEventListener('offline', () => {
-  console.log('[App] You are offline');
 });
 
 function checkPendingSync() {
   if ('serviceWorker' in navigator && 'SyncManager' in window) {
     navigator.serviceWorker.ready.then((registration) => {
       registration.sync
-        .register('sync-projects')
-        .then(() => {
-          console.log('[App] Background sync registered for pending projects');
-        })
-        .catch((error: unknown) => {
-          console.error('[App] Background sync failed to register:', error);
-        });
+          .register('sync-projects')
+          .then(() => {
+            console.log('[App] Background sync registered for pending projects');
+          })
+          .catch((error: unknown) => {
+            console.error('[App] Background sync failed to register:', error);
+          });
     });
   }
 }
