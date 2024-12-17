@@ -193,12 +193,12 @@ function validateField(
     } else {
       errorMessage.value[errorKey] = '';
     }
-  }
-
-  if (typeof value === 'string' && value.length > 0 && !/^\+?[1-9]\d{1,14}$/.test(value)) {
-    errorMessage.value[errorKey] = 'Telefonnummer ist ungültig!';
   } else {
-    errorMessage.value[errorKey] = '';
+    if (typeof value === 'string' && value.length > 0 && !/^\+?[1-9]\d{1,14}$/.test(value)) {
+      errorMessage.value[errorKey] = 'Telefonnummer ist ungültig!';
+    } else {
+      errorMessage.value[errorKey] = '';
+    }
   }
 
   changes.value = checkValues(
