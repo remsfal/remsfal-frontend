@@ -18,7 +18,6 @@ const userProfile = ref({} as User); // Das gesamte Benutzerprofil
 const editedUserProfile = ref({} as User);
 const editMode = ref(false); // Modus für die Bearbeitung der Benutzerdaten
 const visible = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
-// TODO: move list of countries to a separate file and translate the name based on locale
 const countries = ref([
   { name: 'Australia', code: 'AU' },
   { name: 'Brazil', code: 'BR' },

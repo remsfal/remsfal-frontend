@@ -11,42 +11,41 @@ const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
 const model = ref([
-  // TODO: Replace with translations menu items
   {
-    label: 'Home',
+    label: 'managerMenu.home',
     items: [
       {
-        label: 'Dashboard',
+        label: 'managerMenu.home.label',
         icon: 'pi pi-fw pi-chart-bar',
         to: `/project/${projectStore.projectId}/`,
       },
       {
-        label: 'Einstellungen',
+        label: 'managerMenu.home.settings',
         icon: 'pi pi-fw pi-cog',
         to: `/project/${projectStore.projectId}/settings`,
       },
     ],
   },
   {
-    label: 'Stammdaten',
+    label: 'managerMenu.userData',
     items: [
       {
-        label: 'Objektdaten',
+        label: 'managerMenu.userData.objectData',
         icon: 'pi pi-fw pi-home',
         to: `/project/${projectStore.projectId}/objects`,
       },
       {
-        label: 'Mieterdaten',
+        label: 'managerMenu.userData.tenantData',
         icon: 'pi pi-fw pi-users',
         to: `/project/${projectStore.projectId}/tenancies`,
       },
     ],
   },
   {
-    label: 'Aufgabenmanagement',
+    label: 'managerMenu.taskManagement',
     items: [
       {
-        label: 'Meine Aufgaben',
+        label: 'managerMenu.taskManagement.mine',
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
@@ -58,7 +57,7 @@ const model = ref([
         },
       },
       {
-        label: 'Offene Aufgaben',
+        label: 'managerMenu.taskManagement.open',
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
@@ -70,7 +69,7 @@ const model = ref([
         },
       },
       {
-        label: 'Alle Aufgaben',
+        label: 'managerMenu.taskManagement.all',
         icon: 'pi pi-fw pi-list',
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
@@ -80,12 +79,24 @@ const model = ref([
     ],
   },
   {
-    label: 'Mängelmanagement',
+    label: 'managerMenu.defectManagement',
     items: [
-      { label: 'Neue Meldungen', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
-      { label: 'Offene Mängel', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
-      { label: 'Beauftragte Mängel', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
-      { label: 'Alle Meldungen', icon: 'pi pi-fw pi-list', to: '/uikit/input' },
+      {
+        label: 'managerMenu.defectManagement.new',
+        icon: 'pi pi-fw pi-list',
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'managerMenu.defectManagement.open',
+        icon: 'pi pi-fw pi-list',
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'managerMenu.defectManagement.closed',
+        icon: 'pi pi-fw pi-list',
+        to: '/uikit/formlayout',
+      },
+      { label: 'managerMenu.defectManagement.all', icon: 'pi pi-fw pi-list', to: '/uikit/input' },
     ],
   },
 ] as MenuItem[]);

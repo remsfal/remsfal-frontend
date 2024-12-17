@@ -18,7 +18,6 @@ const router = useRouter();
 
 watch(projectTitle, (newProjectTitle) => {
   if (newProjectTitle.length > maxLength) {
-    // TODO - check if the message is correctly displayed
     errorMessage.value = $t('newProjectForm.title.error', maxLength);
   } else {
     errorMessage.value = '';

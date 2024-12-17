@@ -4,7 +4,6 @@ import { ref } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 
 const model = ref([
-  // TODO: Replace with translations menu items
   {
     label: 'consultantMenu.home',
     items: [

@@ -6,6 +6,7 @@ import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
 import type { DropdownChangeEvent } from 'primevue/dropdown';
 import Dropdown from 'primevue/dropdown';
+import LocaleSwitch from '@/components/LocaleSwitch.vue';
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
@@ -131,7 +132,7 @@ const isOutsideClicked = (event: Event) => {
             v-model="projectStore.selectedProject"
             :options="projectStore.projectList"
             optionLabel="name"
-            placeholder="$t('toolbar.project.placeholder')"
+            :placeholder="$t('toolbar.project.placeholder')"
             @change="onProjectSelectionChange($event)"
           />
         </div>
@@ -167,6 +168,7 @@ const isOutsideClicked = (event: Event) => {
           <i class="pi pi-sign-in"></i>
           <span>{{ $t('toolbar.login') }}</span>
         </button>
+        <LocaleSwitch></LocaleSwitch>
       </div>
     </div>
   </header>
