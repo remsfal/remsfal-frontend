@@ -4,7 +4,6 @@ import { createPinia, setActivePinia } from 'pinia';
 import ContractorView from '../../src/views/ContractorView.vue';
 import { useContractorStore } from '../../src/stores/ContractorStore';
 import PrimeVue from 'primevue/config';
-// import ContractorTable from '../../src/components/ContractorTable.vue';
 
 vi.mock('@/stores/ContractorStore', () => ({
   useContractorStore: vi.fn(),
@@ -42,7 +41,6 @@ describe('ContractorView.vue', () => {
   it('renders the view correctly', () => {
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.find('h5').text()).toBe('Übersicht der Aufträge');
-    // expect(wrapper.find('.mock-contractor-table').exists()).toBe(true);
   });
 
   it('calls refreshTaskList on mount', () => {

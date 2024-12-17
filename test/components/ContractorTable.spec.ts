@@ -36,32 +36,5 @@ describe('ContractorTable.vue', () => {
 
     const rows = wrapper.findAll('tr');
     expect(rows.length).toBeGreaterThan(1);
-  });
-
-//   it('should expand row on expander click', async () => {
-//     await wrapper.vm.$nextTick();
-
-//     const expandButtons = wrapper.findAll('.p-row-toggler');
-//     expect(expandButtons.length).toBe(2);
-
-//     await expandButtons[0].trigger('click');
-//     await wrapper.vm.$nextTick();
-
-//     expect(wrapper.text()).toContain('Details für "Task 1"');
-//     expect(wrapper.text()).toContain('Beschreibung: Beschreibung 1');
-//   });
-
-//   it('should display loading state correctly', async () => {
-//     wrapper.vm.isLoading.value = true;
-    
-//     await wrapper.vm.$nextTick(); 
-  
-//     expect(wrapper.find('.p-datatable-loading').exists()).toBe(true);
-  
-//     wrapper.vm.isLoading.value = false;
-//     await wrapper.vm.$nextTick();
-  
-//     expect(wrapper.find('.p-datatable-loading').exists()).toBe(false);
-//   });
-  
+  });  
 });

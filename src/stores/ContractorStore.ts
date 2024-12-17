@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import ContractorService, {type TaskListJson, type TaskItemJson} from '@/services/ContractorService';
 
-
 export const useContractorStore = defineStore('contractor-store', {
   state: () => {
     return {
