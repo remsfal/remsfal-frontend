@@ -1,9 +1,7 @@
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import ReusableFormComponent from '@/components/ReusableFormComponent.vue';
 import GarageView from '@/views/GarageView.vue';
 import ProjectService from '@/services/ProjectService';
-import { nextTick } from 'vue';
 import PrimeVue from 'primevue/config';
 
 // Mock ProjectService
@@ -57,7 +55,7 @@ const dummyGarageData = {
 };
 
 describe('GarageView.vue', () => {
-  let projectServiceMock: any;
+  //let projectServiceMock: any;
 
   // Define reusable component's default props
   const defaultProps = {
@@ -82,7 +80,8 @@ describe('GarageView.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    projectServiceMock = new ProjectService();
+    new ProjectService();
+    //projectServiceMock = new ProjectService();
   });
 
   interface WrapperProps {
@@ -133,9 +132,16 @@ describe('GarageView.vue', () => {
     });
 
     const wrapper = createWrapper({ garageId: '123' });
-    await nextTick();
+    await flushPromises();
 
     expect(mockGetGarage).toHaveBeenCalledWith('1', '2', '3', '123');
+    const reusableForm = wrapper.findComponent({ name: 'ReusableFormComponentVue' });
+    expect(reusableForm.props('initialValues')).toEqual({
+      title: dummyGarageData.title,
+      description: dummyGarageData.description,
+      location: dummyGarageData.location,
+      usableSpace: dummyGarageData.usableSpace,
+    });
 
     // Simulate form values (uncomment when inputs are implemented)
     // expect(wrapper.find('input[name="title"]').element.value).toBe(dummyGarageData.title);
