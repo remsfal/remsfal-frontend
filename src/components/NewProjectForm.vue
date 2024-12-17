@@ -32,39 +32,44 @@ async function createProject() {
 
   if (projectTitle.value.length > maxLength) return;
 
-  // Speichere das Projekt zuerst in IndexedDB
-  await saveProject(projectTitle.value);
+  const projectTitleValue = projectTitle.value;
 
-  // Lade alle Projekte aus IndexedDB
-  const projects = await getAllProjects();
-  console.info('Projects loaded from IndexedDB:', projects);
+  // Prüfe, ob die App offline ist
+  if (!navigator.onLine) {
+    // Offline: Speichere das Projekt in IndexedDB
+    await saveProject(projectTitleValue);
+    console.info('Project saved locally (offline):', projectTitleValue);
+    return; // Beende die Funktion hier
+  }
 
-  // Sende Projekte an das Backend
-  for (const project of projects) {
-    try {
-      const newProject = await projectService.createProject(project.title);
+  // Online: Sende das Projekt direkt an das Backend
+  try {
+    const newProject = await projectService.createProject(projectTitleValue);
 
-      // Lösche erfolgreich synchronisierte Projekte aus der IndexedDB
-      await deleteProject(project.createdAt);
+    // Aktualisiere den Projektstore
+    const newProjectItem: ProjectItem = {
+      id: newProject.id,
+      name: newProject.title,
+      memberRole: 'MANAGER',
+    };
 
-      // Aktualisiere den Projektstore
-      const newProjectItem: ProjectItem = {
-        id: newProject.id,
-        name: newProject.title,
-        memberRole: 'MANAGER',
-      };
-      projectStore.searchSelectedProject(newProjectItem);
+    projectStore.searchSelectedProject(newProjectItem);
 
-      console.info('Project synced with backend:', newProject);
-      router.push({
-        name: 'ProjectDashboard',
-        params: { projectId: newProject.id },
-      });
-    } catch (error) {
-      console.error('Failed to sync project with backend:', error);
-    }
+    console.info('New project created and synced with backend:', newProject);
+    router.push({
+      name: 'ProjectDashboard',
+      params: { projectId: newProject.id },
+    });
+  } catch (error) {
+    console.error('Failed to create project online. Saving offline:', error);
+
+    // Optional: Bei einem Fehler speichere den Titel lokal
+    await saveProject(projectTitleValue);
+    console.info('Project saved locally after online failure:', projectTitleValue);
   }
 }
+
+
 
 function abort() {
   router.push({ name: 'ProjectSelection' });
