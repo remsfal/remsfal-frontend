@@ -2,8 +2,7 @@
 import ReusableFormComponentVue from '@/components/ReusableFormComponent.vue';
 import { useRouter } from 'vue-router';
 import ProjectService, { type GarageItem } from '@/services/ProjectService';
-import { onMounted, ref } from 'vue';
-import { computed } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 const props = defineProps<{
   projectId: string;
