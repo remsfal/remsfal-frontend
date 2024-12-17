@@ -66,3 +66,12 @@ npm run lint
 ```sh
 npm run stylelint
 ```
+
+## Service Worker
+
+The Service Worker is **disabled by default** in the local development environment to ensure that code changes are reflected immediately without caching issues.
+
+To enable and develop the Service Worker locally, set the following variable in your `.env` file:
+
+```env
+VITE_SERVICE_WORKER_ENABLED=true

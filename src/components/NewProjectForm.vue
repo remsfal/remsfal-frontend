@@ -5,6 +5,8 @@ import InputText from 'primevue/inputtext';
 import ProjectService, { type Project, type ProjectItem } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
+import { saveProject, getAllProjects, deleteProject } from '@/helper/indexeddb';
+
 
 const emit = defineEmits<{
   abort: [];
@@ -24,25 +26,44 @@ watch(projectTitle, (newProjectTitle) => {
   }
 });
 
-function createProject() {
+async function createProject() {
   const projectService = new ProjectService();
   const projectStore = useProjectStore();
 
   if (projectTitle.value.length > maxLength) return;
 
-  projectService.createProject(projectTitle.value).then((newProject: Project) => {
-    const newProjectItem: ProjectItem = {
-      id: newProject.id,
-      name: newProject.title,
-      memberRole: 'MANAGER',
-    };
-    projectStore.searchSelectedProject(newProjectItem);
-    console.info('new project has been created: ', newProject);
-    router.push({
-      name: 'ProjectDashboard',
-      params: { projectId: newProject.id },
-    });
-  });
+  // Speichere das Projekt zuerst in IndexedDB
+  await saveProject(projectTitle.value);
+
+  // Lade alle Projekte aus IndexedDB
+  const projects = await getAllProjects();
+  console.info('Projects loaded from IndexedDB:', projects);
+
+  // Sende Projekte an das Backend
+  for (const project of projects) {
+    try {
+      const newProject = await projectService.createProject(project.title);
+
+      // Lösche erfolgreich synchronisierte Projekte aus der IndexedDB
+      await deleteProject(project.createdAt);
+
+      // Aktualisiere den Projektstore
+      const newProjectItem: ProjectItem = {
+        id: newProject.id,
+        name: newProject.title,
+        memberRole: 'MANAGER',
+      };
+      projectStore.searchSelectedProject(newProjectItem);
+
+      console.info('Project synced with backend:', newProject);
+      router.push({
+        name: 'ProjectDashboard',
+        params: { projectId: newProject.id },
+      });
+    } catch (error) {
+      console.error('Failed to sync project with backend:', error);
+    }
+  }
 }
 
 function abort() {
