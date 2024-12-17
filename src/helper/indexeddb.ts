@@ -2,7 +2,7 @@ import { openDB } from 'idb';
 
 interface ProjectDB {
     projects: {
-        key: number; // Zeitstempel als Schlüssel
+        key: number; // timestamp as key
         value: { title: string; createdAt: number };
     };
 }

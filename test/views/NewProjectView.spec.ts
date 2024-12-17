@@ -69,7 +69,7 @@ describe('NewProjectView', () => {
     const input = wrapper.find('input#value');
     expect(input.exists()).toBe(true);
 
-    const longTitle = 'A'.repeat(101); // Title exceeds max length
+    const longTitle = 'A'.repeat(101);
     await input.setValue(longTitle);
 
     const errorMessage = wrapper.find('small.p-error');
@@ -123,5 +123,28 @@ describe('NewProjectView', () => {
       name: 'ProjectDashboard',
       params: { projectId: 1 },
     });
+  });
+
+  it('handles error and saves project title offline if the API call fails', async () => {
+    // Simulate an error in project creation
+    const errorMessage = 'Network error';
+    vi.mocked(ProjectService).mockImplementationOnce(() => ({
+      createProject: vi.fn(() => Promise.reject(new Error(errorMessage))),
+    }));
+
+    // Ensure navigator is online
+    Object.defineProperty(window.navigator, 'onLine', {
+      configurable: true,
+      value: true,
+    });
+
+    const input = wrapper.find('input#value');
+    await input.setValue('Error Project');
+
+    const form = wrapper.find('form');
+    await form.trigger('submit');
+
+    // Verify that the project title is saved offline due to the error
+    expect(saveProject).toHaveBeenCalledWith('Error Project');
   });
 });
