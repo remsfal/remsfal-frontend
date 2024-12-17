@@ -1,7 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import GarageView from '@/views/GarageView.vue';
-import ProjectService from '@/services/ProjectService';
 import PrimeVue from 'primevue/config';
 
 // Mock ProjectService
@@ -78,7 +77,6 @@ describe('GarageView.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    new ProjectService();
   });
 
   interface WrapperProps {
