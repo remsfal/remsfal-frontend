@@ -642,8 +642,9 @@ input {
 
 input:focus {
   border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 0.25);
 }
+
 .error {
   margin-top: 0.5rem;
   font-size: 10px;
@@ -651,9 +652,11 @@ input:focus {
   height: 1rem;
   visibility: hidden;
 }
+
 .error.active {
   visibility: visible;
 }
+
 .required {
   font-size: 10px;
 }
