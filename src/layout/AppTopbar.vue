@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
 import type { DropdownChangeEvent } from 'primevue/dropdown';
 import Dropdown from 'primevue/dropdown';
-import ThemeSwitch from "@/components/ThemeSwitch.vue";
+import ThemeSwitch from '@/components/ThemeSwitch.vue';
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
@@ -100,7 +100,6 @@ const isOutsideClicked = (event: Event) => {
   <header>
     <div class="layout-topbar">
       <div class="layout-topbar-logo">
-<!--    TDOO - set image based on theme    -->
         <img src="@/assets/logo.png" alt="logo" />
       </div>
 
@@ -120,7 +119,6 @@ const isOutsideClicked = (event: Event) => {
       </button>
 
       <div class="layout-topbar-menu" :class="topbarMenuClasses">
-        <ThemeSwitch></ThemeSwitch>
         <button
           v-if="sessionStore.user != null"
           class="p-link layout-topbar-shortcut-button"
@@ -170,6 +168,7 @@ const isOutsideClicked = (event: Event) => {
           <i class="pi pi-sign-in"></i>
           <span>Anmelden</span>
         </button>
+        <ThemeSwitch></ThemeSwitch>
       </div>
     </div>
   </header>
