@@ -13,10 +13,8 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
-// const route = useRoute(); // Get route info
 const service = new ProjectService();
-// const garageId = route.params.garageId as string | undefined;
-const isEditMode = computed(() => !!props.garageId); // `true` if garageId exists, else `false`
+const isEditMode = computed(() => !!props.garageId);
 
 const fields: {
     name: string; // Field key
@@ -147,9 +145,6 @@ onMounted(fetchGarageData);
 </script>
 
 <template>
-<!-- TODO: Delete -->
-<h2>{{ isEditMode ? 'Edit Garage' : 'Create Garage' }}</h2>
-
 <div>
   <ReusableFormComponentVue
   :headline="isEditMode ? 'Edit Garage Form' : 'Garage Creation Form'"
