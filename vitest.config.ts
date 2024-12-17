@@ -10,7 +10,7 @@ export default mergeConfig(
         reporter: ['lcov', 'text', 'json', 'html'],
       },
       environment: 'jsdom',
-      exclude: [...configDefaults.exclude, 'e2e/*', 'test/service-worker/**',],
+      exclude: [...configDefaults.exclude, 'e2e/*', 'test/service-worker/**'],
       root: fileURLToPath(new URL('./', import.meta.url)),
     },
   }),

@@ -111,7 +111,7 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
 import '@/assets/styles.scss';
-import {initDB} from "@/helper/indexeddb";
+import { initDB } from '@/helper/indexeddb';
 
 // Add Font Awesome Icons to the Library
 library.add(fas, far, fab);
@@ -236,7 +236,7 @@ app.component('TreeTable', TreeTable);
 app.component('VirtualScroller', VirtualScroller);
 
 // Register Font Awesome Icon globally
-app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 app.mount('#app');
 
@@ -244,49 +244,51 @@ initDB(); // Initialisiere IndexedDB beim Start der App
 
 // Register Service Worker based on ENV
 if ('serviceWorker' in navigator) {
-    const isServiceWorkerEnabled = import.meta.env.VITE_SERVICE_WORKER_ENABLED === 'true';
+  const isServiceWorkerEnabled = import.meta.env.VITE_SERVICE_WORKER_ENABLED === 'true';
 
-    if (isServiceWorkerEnabled) {
-        navigator.serviceWorker
-            .register('/service-worker.js')
-            .then((registration) => {
-                console.log('Service Worker registered with scope:', registration.scope);
-            })
-            .catch((error) => {
-                console.error('Service Worker registration failed:', error);
-            });
-    } else {
-        console.log('Service Worker is disabled in the current environment.');
-    }
+  if (isServiceWorkerEnabled) {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then((registration) => {
+        console.log('Service Worker registered with scope:', registration.scope);
+      })
+      .catch((error) => {
+        console.error('Service Worker registration failed:', error);
+      });
+  } else {
+    console.log('Service Worker is disabled in the current environment.');
+  }
 }
 
 if ('serviceWorker' in navigator && 'SyncManager' in window) {
-    navigator.serviceWorker.ready.then((registration) => {
-        registration.sync.register('sync-projects').then(() => {
-            console.log('Background sync registered');
-        });
+  navigator.serviceWorker.ready.then((registration) => {
+    registration.sync.register('sync-projects').then(() => {
+      console.log('Background sync registered');
     });
+  });
 }
-
 
 // Online/Offline-Erkennung im Main-Thread
 window.addEventListener('online', () => {
-    console.log('[App] You are online');
-    checkPendingSync();
+  console.log('[App] You are online');
+  checkPendingSync();
 });
 
 window.addEventListener('offline', () => {
-    console.log('[App] You are offline');
+  console.log('[App] You are offline');
 });
 
 function checkPendingSync() {
-    if ('serviceWorker' in navigator && 'SyncManager' in window) {
-        navigator.serviceWorker.ready.then((registration) => {
-            registration.sync.register('sync-projects').then(() => {
-                console.log('[App] Background sync registered for pending projects');
-            }).catch((error) => {
-                console.error('[App] Background sync failed to register:', error);
-            });
+  if ('serviceWorker' in navigator && 'SyncManager' in window) {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.sync
+        .register('sync-projects')
+        .then(() => {
+          console.log('[App] Background sync registered for pending projects');
+        })
+        .catch((error: unknown) => {
+          console.error('[App] Background sync failed to register:', error);
         });
-    }
+    });
+  }
 }
