@@ -3,7 +3,11 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import NewProjectView from '@/views/NewProjectView.vue';
 import PrimeVue from 'primevue/config';
 import router from '../../src/router';
+import { saveProject } from '@/helper/indexeddb';
+import ProjectService from '@/services/ProjectService';
+import { createPinia } from 'pinia'; // Import Pinia
 
+// Mocked services
 vi.mock('@/helper/indexeddb', () => ({
   saveProject: vi.fn(),
 }));
@@ -17,6 +21,7 @@ vi.mock('@/services/ProjectService', () => ({
 describe('NewProjectView', () => {
   let wrapper: VueWrapper<NewProjectView>;
   const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
+  const pinia = createPinia(); // Create Pinia instance
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -29,7 +34,7 @@ describe('NewProjectView', () => {
 
     wrapper = mount(NewProjectView, {
       global: {
-        plugins: [PrimeVue, router],
+        plugins: [PrimeVue, pinia, router], // Include Pinia here
         stubs: {
           NewProjectForm: false, // Disable the child component mock
         },
@@ -80,5 +85,43 @@ describe('NewProjectView', () => {
 
     // Ensure navigation to ProjectSelection
     expect(mockRouterPush).toHaveBeenCalledWith({ name: 'ProjectSelection' });
+  });
+
+  it('saves the project to IndexedDB when offline', async () => {
+    // Mock `navigator.onLine` to simulate offline status
+    Object.defineProperty(window.navigator, 'onLine', {
+      configurable: true,
+      value: false, // Set to offline
+    });
+
+    const input = wrapper.find('input#value');
+    await input.setValue('Offline Project');
+
+    const form = wrapper.find('form');
+    await form.trigger('submit');
+
+    // Verify that saveProject was called with the project title
+    expect(saveProject).toHaveBeenCalledWith('Offline Project');
+  });
+
+  it('sends the project to the backend and updates the store when online', async () => {
+    // Ensure navigator is online
+    Object.defineProperty(window.navigator, 'onLine', {
+      configurable: true,
+      value: true,
+    });
+
+    const input = wrapper.find('input#value');
+    await input.setValue('Online Project');
+
+    const form = wrapper.find('form');
+    await form.trigger('submit');
+
+    // Ensure that the API call was made and the router push was triggered
+    expect(ProjectService).toHaveBeenCalled();
+    expect(mockRouterPush).toHaveBeenCalledWith({
+      name: 'ProjectDashboard',
+      params: { projectId: 1 },
+    });
   });
 });
