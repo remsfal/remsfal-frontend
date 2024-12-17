@@ -6,12 +6,6 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 
-interface PhoneValid {
-  businessPhoneNumber: boolean;
-  mobilePhoneNumber: boolean;
-  privatePhoneNumber: boolean;
-}
-
 const userProfile = ref({} as User); // Das gesamte Benutzerprofil
 const editedUserProfile = ref({} as User);
 const addressProfile = ref({} as Address);
@@ -54,11 +48,6 @@ const countries = ref([
   { name: 'Slovenia', code: 'SI' },
   { name: 'Sweden', code: 'SE' },
 ]);
-const isPhoneValid = ref({
-  businessPhoneNumber: true,
-  mobilePhoneNumber: true,
-  privatePhoneNumber: true,
-} as PhoneValid);
 
 const errorMessage = ref({
   firstname: '',
