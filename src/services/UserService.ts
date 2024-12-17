@@ -57,13 +57,24 @@ export default class UserService {
       .patch(`${this.url}`, updatedUser)
       .then((response) => {
         const user: User = response.data;
-        console.log('PATCH user:', user);
+        console.log('PATCH user successful:', user);
         return user;
       })
       .catch((error) => {
-        console.error('PATCH user failed:', error);
+        if (error.response) {
+          // Server hat eine spezifische Fehlermeldung gesendet
+          console.error('Server-Fehler:', error.response.data);
+        } else if (error.request) {
+          // Keine Antwort vom Server erhalten
+          console.error('Keine Antwort vom Server:', error.request);
+        } else {
+          // Fehler beim Erstellen der Anfrage
+          console.error('Fehler bei der Anfrage:', error.message);
+        }
+        throw error; // Fehler erneut werfen, um es im Aufrufer abzufangen
       });
   }
+
 
   deleteUser(): Promise<boolean> {
     return axios
