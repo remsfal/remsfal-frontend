@@ -55,9 +55,7 @@ const dummyGarageData = {
 };
 
 describe('GarageView.vue', () => {
-  //let projectServiceMock: any;
-
-  // Define reusable component's default props
+// Define reusable component's default props
   const defaultProps = {
     headline: 'Test Form',
     saveButtonText: 'Save',
@@ -81,7 +79,6 @@ describe('GarageView.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     new ProjectService();
-    //projectServiceMock = new ProjectService();
   });
 
   interface WrapperProps {
@@ -105,23 +102,16 @@ describe('GarageView.vue', () => {
 
   it('renders the create form when not in edit mode', () => {
     const wrapper = createWrapper();
-
     const reusableForm = wrapper.findComponent({ name: 'ReusableFormComponentVue' });
     expect(reusableForm.props('headline')).toBe('Garage Creation Form');
-
-    // expect(wrapper.text()).toContain('Create Garage');
-    // expect(wrapper.text()).toContain('Garage Creation Form');
     expect(wrapper.findAll('button')[0].text()).toBe('Cancel');
     expect(wrapper.findAll('button')[1].text()).toBe('Save');
   });
 
   it('renders the edit form when in edit mode', () => {
     const wrapper = createWrapper({ garageId: '123' });
-
     const reusableForm = wrapper.findComponent({ name: 'ReusableFormComponentVue' });
     expect(reusableForm.props('headline')).toBe('Edit Garage Form');
-    // expect(wrapper.text()).toContain('Edit Garage');
-    // expect(wrapper.text()).toContain('Edit Garage Form');
     expect(wrapper.findAll('button')[0].text()).toBe('Cancel');
     expect(wrapper.findAll('button')[1].text()).toBe('Save');
   });
@@ -150,30 +140,25 @@ describe('GarageView.vue', () => {
 
   it('handles form submission for create mode', async () => {
     const wrapper = createWrapper();
-
     //temporary without testing service//
-    // Simulate submit with test values
     const mockFormData = {
       title: 'New Garage',
       description: 'A spacious new garage',
       location: 'Downtown',
       usableSpace: '50',
     };
-
-    // Emit submit event with form data
     await wrapper
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
     await flushPromises();
-
     expect(mockCreateGarage).toHaveBeenCalledWith('1', '2', '3', {
       title: 'New Garage',
       description: 'A spacious new garage',
       location: 'Downtown',
-      usableSpace: 50, // Ensure usableSpace is converted to a number
+      usableSpace: 50, // ensure usableSpace is converted to a number
       buildingId: '3',
     });
-    //end new//
+    //end temporary implementation//
 
     // Uncomment when backend is ready
     // expect(wrapper.emitted()).toHaveProperty('submit');
@@ -181,7 +166,6 @@ describe('GarageView.vue', () => {
 
   it('handles form submission for update mode', async () => {
     mockUpdateGarage.mockResolvedValueOnce({ success: true });
-
     const wrapper = createWrapper({ garageId: '123' });
     // Simulate submit with test values
     const mockFormData = {
@@ -190,13 +174,11 @@ describe('GarageView.vue', () => {
       location: 'Uptown',
       usableSpace: '75',
     };
-
     // Emit submit event with form data
     await wrapper
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
     await flushPromises();
-
     expect(mockUpdateGarage).toHaveBeenCalledWith('1', '2', '3', '123', {
       title: 'Updated Garage',
       description: 'An updated spacious garage',
@@ -210,33 +192,21 @@ describe('GarageView.vue', () => {
 
   it('navigates back when cancel is clicked', async () => {
     const wrapper = createWrapper();
-
     await wrapper.find('button').trigger('click'); // Simulate cancel button click
-
     expect(mockRouterBack).toHaveBeenCalled();
   });
 
   it('validates usable space input', async () => {
     const wrapper = createWrapper();
-
     const usableSpaceInput = wrapper.find('input[name="usableSpace"]');
     await usableSpaceInput.setValue('-10');
     await wrapper.find('form').trigger('submit.prevent');
-
-    // Expect validation message
-    // Uncomment when validation messaging is implemented
-    // expect(wrapper.text()).toContain('Usable Space must be a positive number.');
   });
 
   it('validates title input length', async () => {
     const wrapper = createWrapper();
-
     const titleInput = wrapper.find('input[name="title"]');
     await titleInput.setValue('ab'); // Invalid title length
     await wrapper.find('form').trigger('submit.prevent');
-
-    // Expect validation message
-    // Uncomment when validation messaging is implemented
-    // expect(wrapper.text()).toContain('Title must be at least 3 characters.');
   });
 });
