@@ -18,7 +18,7 @@ const router = useRouter();
 
 watch(projectTitle, (newProjectTitle) => {
   if (newProjectTitle.length > maxLength) {
-    errorMessage.value = `Der Projekttitel darf nicht mehr als ${maxLength} Zeichen lang sein`;
+    errorMessage.value = `Der Name der Liegenschaft darf nicht mehr als ${maxLength} Zeichen lang sein`;
   } else {
     errorMessage.value = '';
   }
@@ -61,7 +61,7 @@ function abort() {
           :class="{ 'p-invalid': errorMessage }"
           aria-describedby="text-error"
       />
-      <label for="value">Projekttitel</label>
+      <label for="value">Name der Liegenschaft</label>
     </span>
     <small id="text-error" class="p-error">
       {{ errorMessage || '&nbsp;' }}

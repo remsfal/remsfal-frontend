@@ -91,7 +91,7 @@ describe('ProjectSelectionView.vue', () => {
 
   it('renders the view', () => {
     expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('h5').text()).toBe('Projekt Übersicht');
+    expect(wrapper.find('h5').text()).toBe('Übersicht der Liegenschaften');
   });
 
   it('opens and closes the dialog', async () => {

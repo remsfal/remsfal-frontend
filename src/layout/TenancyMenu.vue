@@ -7,8 +7,16 @@ const model = ref([
   {
     label: 'Mietverhältnis',
     items: [
-      { label: 'Überblick', icon: 'pi pi-fw pi-home', to: '/' },
-      { label: 'Meldungen', icon: 'pi pi-fw pi-comment', to: '/uikit/formlayout' },
+      {
+        label: 'Überblick',
+        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+        to: '/',
+      },
+      {
+        label: 'Meldungen',
+        icon: { type: 'pi', name: 'pi pi-fw pi-comment' },
+        to: '/uikit/formlayout',
+      },
     ],
   },
 ] as MenuItem[]);
