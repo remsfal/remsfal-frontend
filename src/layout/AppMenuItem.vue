@@ -21,15 +21,15 @@ export interface MenuItem {
 interface MenuItemProps {
   item: MenuItem;
   index: number;
-  root: boolean;
-  parentItemKey: string | null;
+  root?: boolean;
+  parentItemKey?: string | undefined;
 }
 
 const props = withDefaults(defineProps<MenuItemProps>(), {
   item: () => ({}) as MenuItem,
   index: 0,
   root: true,
-  parentItemKey: null,
+  parentItemKey: undefined,
 });
 
 const route = useRoute();
