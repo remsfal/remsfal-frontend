@@ -1,8 +1,16 @@
-# remsfal-frontend
+<img src="https://remsfal.de/logo_upscaled.png" width="60%">
+
 [![License](https://img.shields.io/github/license/remsfal/remsfal-frontend)](https://github.com/remsfal/remsfal-frontend/blob/main/LICENSE)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/remsfal/remsfal-frontend)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=remsfal_remsfal-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=remsfal_remsfal-frontend)
+![Contributors](https://img.shields.io/github/contributors/remsfal/remsfal-frontend)
 
-This template should help get you started developing with Vue 3 in Vite.
+# Open Source Facility Management Software (Frontend)
+
+`remsfal-frontend` is a single-page application (SPA) built using Vue 3 in Vite to manage real estate projects.
+It works together with the [`remsfal-backend`](https://github.com/remsfal/remsfal-backend) repository.  
+You can see a live version at https://remsfal.de.
 
 ## Recommended IDE Setup
 
