@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
 import type { SelectChangeEvent } from 'primevue/select';
 import Select from 'primevue/select';
+import ThemeSwitch from '@/components/ThemeSwitch.vue';
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
@@ -167,6 +168,7 @@ const isOutsideClicked = (event: Event) => {
           <i class="pi pi-sign-in"></i>
           <span>Anmelden</span>
         </button>
+        <ThemeSwitch></ThemeSwitch>
       </div>
     </div>
   </header>
