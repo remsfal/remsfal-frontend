@@ -7,8 +7,8 @@ const model = ref([
   {
     label: 'consultantMenu.home',
     items: [
-      { label: 'consultantMenu.home.overview', icon: 'pi pi-fw pi-home', to: '/' },
-      { label: 'consultantMenu.home.client', icon: 'pi pi-fw pi-id-card', to: '/fullscreen' },
+      { label: 'consultantMenu.home.overview', icon: {type: 'pi', name: 'pi pi-fw pi-home'}, to: '/' },
+      { label: 'consultantMenu.home.client', icon: {type: 'pi', name: 'pi pi-fw pi-id-card'}, to: '/fullscreen' },
     ],
   },
   {
@@ -16,17 +16,17 @@ const model = ref([
     items: [
       {
         label: 'consultantMenu.clientManagement.open',
-        icon: 'pi pi-fw pi-id-card',
+        icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
         to: '/uikit/formlayout',
       },
       {
         label: 'consultantMenu.clientManagement.ongoing',
-        icon: 'pi pi-fw pi-check-square',
+        icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
         to: '/uikit/input',
       },
       {
         label: 'consultantMenu.clientManagement.closed',
-        icon: 'pi pi-fw pi-bookmark',
+        icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
         to: '/uikit/floatlabel',
       },
     ],

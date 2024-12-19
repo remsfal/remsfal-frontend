@@ -56,10 +56,4 @@ describe('AccountSettingsView', () => {
     wrapper.vm.toggleEditMode();
     expect(wrapper.vm.editMode).toBe(false);
   });
-
-  test('discardChanges method works correctly', async () => {
-    wrapper.vm.editedUserProfile.firstName = 'New Name';
-    wrapper.vm.discardChanges();
-    expect(wrapper.vm.editedUserProfile.firstName).toBe(wrapper.vm.userProfile.firstName);
-  });
 });

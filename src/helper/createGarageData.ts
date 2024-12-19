@@ -3,7 +3,7 @@ import type { GarageItem, BuildingItem } from '@/services/ProjectService';
 export function generateDummyGarages(buildings: BuildingItem[]): GarageItem[] {
   const garages: GarageItem[] = [];
 
-  buildings.forEach((building: BuildingItem, index) => {
+  buildings.forEach((building: BuildingItem) => {
     for (let i = 0; i < 3; i++) {
       if (building.id) {
         garages.push({

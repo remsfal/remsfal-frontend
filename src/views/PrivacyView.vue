@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
+import Button from 'primevue/button';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const navigateToHome = () => {
+  router.push('/');
+};
 </script>
 
 <template>
   <div class="grid">
+    <div class="col-12 mb-3">
+      <Button icon="pi pi-home" label="Zurück zur Startseite" @click="navigateToHome" />
+    </div>
     <div class="col-12">
       <Card>
         <template #title> {{ $t('privacy.title') }}</template>
@@ -38,9 +49,9 @@ import Card from 'primevue/card';
           <p>
             {{ $t('privacy.portability') }}
             <a
-              href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html"
-              target="_blank"
-              rel="noopener noreferrer"
+                href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html"
+                target="_blank"
+                rel="noopener noreferrer"
             >
               https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html </a
             >.
@@ -48,9 +59,9 @@ import Card from 'primevue/card';
         </template>
         <template #footer>
           <a
-            href="https://opr.vc/docs/allgemein/dse_einleitung/"
-            target="_blank"
-            rel="noopener noreferrer"
+              href="https://opr.vc/docs/allgemein/dse_einleitung/"
+              target="_blank"
+              rel="noopener noreferrer"
           >
             open privacy by opr.vc
           </a>
@@ -87,9 +98,9 @@ import Card from 'primevue/card';
           <p>
             {{ $t('privacy.furtherInformation') }}
             <a
-              href="https://www.htw-berlin.de/datenschutz/"
-              target="_blank"
-              rel="noopener noreferrer"
+                href="https://www.htw-berlin.de/datenschutz/"
+                target="_blank"
+                rel="noopener noreferrer"
             >
               https://www.htw-berlin.de/datenschutz/
             </a>
