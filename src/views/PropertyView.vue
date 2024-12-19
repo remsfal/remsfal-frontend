@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {ref, onMounted} from 'vue';
-import {useRouter, useRoute} from 'vue-router';
-import ProjectService, {type PropertyItem} from '@/services/ProjectService';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import ProjectService, { type PropertyItem } from '@/services/ProjectService';
 import Button from 'primevue/button';
-import InputNumber from 'primevue/inputnumber'
-import Textarea from 'primevue/textarea'
+import InputNumber from 'primevue/inputnumber';
+import Textarea from 'primevue/textarea';
 import InputText from 'primevue/inputtext';
 
 const props = defineProps<{
@@ -36,20 +36,20 @@ const fetchPropertyDetails = () => {
   if (!id.value) return;
   isLoading.value = true;
   projectService
-      .getProperty(props.projectId, id.value.toString())
-      .then((property: PropertyItem) => {
-        title.value = property.title;
-        description.value = property.description;
-        landRegisterEntry.value = property.landRegisterEntry;
-        plotArea.value = property.plotArea;
-        effectiveSpace.value = property.effective_space;
-      })
-      .catch((err) => {
-        error.value = `Failed to fetch property details: ${err.message || 'Unknown error'}`;
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
+    .getProperty(props.projectId, id.value.toString())
+    .then((property: PropertyItem) => {
+      title.value = property.title;
+      description.value = property.description;
+      landRegisterEntry.value = property.landRegisterEntry;
+      plotArea.value = property.plotArea;
+      effectiveSpace.value = property.effective_space;
+    })
+    .catch((err) => {
+      error.value = `Failed to fetch property details: ${err.message || 'Unknown error'}`;
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 };
 
 const createProperty = () => {
@@ -62,13 +62,13 @@ const createProperty = () => {
   };
 
   projectService
-      .createProperty(props.projectId, newProperty)
-      .then(() => {
-        router.push(`/project/${props.projectId}/objects`);
-      })
-      .catch((err) => {
-        console.error('Error creating property:', err);
-      });
+    .createProperty(props.projectId, newProperty)
+    .then(() => {
+      router.push(`/project/${props.projectId}/objects`);
+    })
+    .catch((err) => {
+      console.error('Error creating property:', err);
+    });
 };
 
 const updateProperty = () => {
@@ -82,25 +82,25 @@ const updateProperty = () => {
   };
 
   projectService
-      .updateProperty(props.projectId, id.value.toString(), updatedProperty)
-      .then(() => {
-        router.push(`/project/${props.projectId}/objects`);
-      })
-      .catch((err) => {
-        console.error('Error updating property:', err);
-      });
+    .updateProperty(props.projectId, id.value.toString(), updatedProperty)
+    .then(() => {
+      router.push(`/project/${props.projectId}/objects`);
+    })
+    .catch((err) => {
+      console.error('Error updating property:', err);
+    });
 };
 
 const deleteProperty = () => {
   if (!id.value) return;
   projectService
-      .deleteProperty(props.projectId, id.value.toString())
-      .then(() => {
-        router.push(`/project/${props.projectId}/objects`);
-      })
-      .catch((err) => {
-        console.error('Error deleting property:', err);
-      });
+    .deleteProperty(props.projectId, id.value.toString())
+    .then(() => {
+      router.push(`/project/${props.projectId}/objects`);
+    })
+    .catch((err) => {
+      console.error('Error deleting property:', err);
+    });
 };
 
 const close = () => {
@@ -111,80 +111,80 @@ const close = () => {
 <template>
   <div class="col-12">
     <div class="card">
-      <h5 v-if="action === 'create'">Erstelle Eigentum</h5>
-      <h5 v-if="action === 'update'">Update Eigentum mit ID: {{ id }}</h5>
-      <h5 v-if="action === 'delete'">Lösche Eigentum mit ID: {{ id }}</h5>
+      <h5 v-if="action === 'create'">{{ $t('property.create') }}</h5>
+      <h5 v-if="action === 'update'">{{ $t('property.update', id) }}</h5>
+      <h5 v-if="action === 'delete'">{{ $t('property.delete', id) }}</h5>
       <div v-if="isLoading">Loading...</div>
       <div v-if="error">{{ error }}</div>
       <div v-if="!isLoading && !error" class="p-fluid formgrid grid">
         <div class="field col-12 md:col-6">
-          <label for="title">Title</label>
-          <InputText id="title" v-model="title" type="text" :disabled="action === 'delete'"/>
+          <label for="title">{{ $t('property.title') }}</label>
+          <InputText id="title" v-model="title" type="text" :disabled="action === 'delete'" />
         </div>
         <div class="field col-12 md:col-6">
-          <label for="landRegisterEntry">Grundbucheintrag</label>
+          <label for="landRegisterEntry">{{ $t('property.landRegister') }}</label>
           <InputText
-              id="landRegisterEntry"
-              v-model="landRegisterEntry"
-              type="text"
-              :disabled="action === 'delete'"
+            id="landRegisterEntry"
+            v-model="landRegisterEntry"
+            type="text"
+            :disabled="action === 'delete'"
           />
         </div>
         <div class="field col-12">
-          <label for="description">Beschreibung</label>
+          <label for="description">{{ $t('property.descripton') }}</label>
           <Textarea
-              id="description"
-              v-model="description"
-              rows="4"
-              :disabled="action === 'delete'"
-              class="no-resize"
+            id="description"
+            v-model="description"
+            rows="4"
+            :disabled="action === 'delete'"
+            class="no-resize"
           />
         </div>
         <div class="field col-10 md:col-6">
-          <label for="plotArea">Grundstücksfläche</label>
+          <label for="plotArea">{{ $t('proppertty.area') }}</label>
           <InputNumber
-              id="plotArea"
-              v-model="plotArea"
-              type="number"
-              :disabled="action === 'delete'"
+            id="plotArea"
+            v-model="plotArea"
+            type="number"
+            :disabled="action === 'delete'"
           />
         </div>
         <div class="field col-10 md:col-6">
-          <label for="effectiveSpace">Nutzfläche</label>
+          <label for="effectiveSpace">{{ $t('property.effectiveArea') }}</label>
           <InputNumber
-              id="effectiveSpace"
-              v-model="effectiveSpace"
-              type="number"
-              :disabled="action === 'delete'"
+            id="effectiveSpace"
+            v-model="effectiveSpace"
+            type="number"
+            :disabled="action === 'delete'"
           />
         </div>
         <div class="field col-12 text-right">
           <Button
-              v-if="action === 'create'"
-              label="Erstellen"
-              icon="pi pi-check"
-              class="p-button-property mr-2 mb-2"
-              @click="createProperty"
+            v-if="action === 'create'"
+            label="$t('button.crete')"
+            icon="pi pi-check"
+            class="p-button-property mr-2 mb-2"
+            @click="createProperty"
           />
           <Button
-              v-if="action === 'update'"
-              label="Updaten"
-              icon="pi pi-check"
-              class="p-button-property mr-2 mb-2"
-              @click="updateProperty"
+            v-if="action === 'update'"
+            label="$t('button.udpate')"
+            icon="pi pi-check"
+            class="p-button-property mr-2 mb-2"
+            @click="updateProperty"
           />
           <Button
-              v-if="action === 'delete'"
-              label="Löschen"
-              icon="pi pi-trash"
-              class="p-button-property p-button-danger mr-2 mb-2"
-              @click="deleteProperty"
+            v-if="action === 'delete'"
+            label="$t('button.delete')"
+            icon="pi pi-trash"
+            class="p-button-property p-button-danger mr-2 mb-2"
+            @click="deleteProperty"
           />
           <Button
-              label="Abbrechen"
-              icon="pi pi-times"
-              class="p-button-property mr-2 mb-2"
-              @click="close"
+            label="$t('button.cancel')"
+            icon="pi pi-times"
+            class="p-button-property mr-2 mb-2"
+            @click="close"
           />
         </div>
       </div>
