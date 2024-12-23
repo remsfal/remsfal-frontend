@@ -94,7 +94,7 @@ const routes = [
                     component: () => import('@/views/GarageView.vue')
                 },
                 {
-                    path: 'garageId/edit',
+                    path: ':garageId/edit',
                     name: 'EditGarage',
                     props: (route: RouteLocationNormalizedLoaded) => ({
                         projectId: route.params.projectId,
