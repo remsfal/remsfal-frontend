@@ -111,6 +111,8 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
 import '@/assets/styles.scss';
+import { initDB } from '@/helper/indexeddb';
+import {addOnlineEventListener, registerServiceWorker} from "@/helper/service-worker-init";
 
 // Add Font Awesome Icons to the Library
 library.add(fas, far, fab);
@@ -235,6 +237,14 @@ app.component('TreeTable', TreeTable);
 app.component('VirtualScroller', VirtualScroller);
 
 // Register Font Awesome Icon globally
-app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 app.mount('#app');
+
+initDB(); // Initialize IndexedDB when the app starts
+
+// Register Service Worker
+registerServiceWorker();
+
+// Add Online Event Listener
+addOnlineEventListener();
