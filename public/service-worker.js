@@ -14,7 +14,6 @@ const CACHE_FILES = [
 
 // Install event: Load files into the cache
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
   event.waitUntil(
       caches.open(CACHE_NAME).then((cache) => {
         return cache.addAll(CACHE_FILES);
@@ -24,8 +23,6 @@ self.addEventListener('install', (event) => {
 
 // Activate event: Delete old caches
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating...');
-  console.log('SyncManager supported:', 'SyncManager' in self);
   event.waitUntil(
       caches.keys().then((cacheNames) => {
         return Promise.all(
@@ -42,7 +39,6 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event: Online-first strategy with fallback to the cache
 self.addEventListener('fetch', (event) => {
-  console.log('[Service Worker] Fetching:', event.request.url);
   event.respondWith(
       fetch(event.request)
           .then((response) => {
@@ -71,9 +67,6 @@ self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-projects') {
     event.waitUntil(
         syncProjects()
-            .then(() => {
-              console.log('[Service Worker] Sync-projects completed successfully');
-            })
             .catch((error) => {
               console.error('[Service Worker] Sync-projects failed:', error);
             }),
@@ -98,9 +91,7 @@ async function syncProjects() {
         });
 
         if (response.ok) {
-          console.info(`[Service Worker] Project synced successfully: ${project.title}`);
           await db.delete('projects', project.createdAt);
-          console.info(`[Service Worker] Project deleted from IndexedDB: ${project.createdAt}`);
         } else {
           console.error(`[Service Worker] Server responded with error: ${response.status}`);
         }

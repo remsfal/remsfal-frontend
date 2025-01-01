@@ -2,7 +2,6 @@ import './setupMocks.js';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-// Lade deinen Service Worker
 import '../../public/service-worker.js';
 
 describe('Service Worker Tests', () => {
@@ -16,31 +15,26 @@ describe('Service Worker Tests', () => {
   });
 
   it('should cache files during install event', async () => {
-    // Verwende den bereits vorhandenen Mock für caches.open
     const cachesOpenStub = global.caches.open;
-    const addAllStub = sinon.stub().resolves(); // Mock für cache.addAll
+    const addAllStub = sinon.stub().resolves();
 
-    // Simuliere das Verhalten von caches.open
     cachesOpenStub.resolves({ addAll: addAllStub });
 
     const installEvent = {
       waitUntil: sinon.stub(),
     };
 
-    // Rufe den Install-Event-Listener aus deinem Service Worker ab
     const installListener = self.addEventListener.getCall(0).args[1];
     installListener(installEvent);
 
-    // Warten, bis alle Promises abgearbeitet sind
     await new Promise((resolve) => setImmediate(resolve));
 
     // Assertions
-    void expect(cachesOpenStub.calledOnce).to.be.true; // Prüfe, ob caches.open aufgerufen wurde
-    void expect(cachesOpenStub.calledWith('remsfal-v1')).to.be.true; // Prüfe den Cache-Namen
-    void expect(addAllStub.calledOnce).to.be.true; // Prüfe, ob addAll aufgerufen wurde
-    void expect(installEvent.waitUntil.calledOnce).to.be.true; // Prüfe waitUntil-Aufruf
+    void expect(cachesOpenStub.calledOnce).to.be.true;
+    void expect(cachesOpenStub.calledWith('remsfal-v1')).to.be.true;
+    void expect(addAllStub.calledOnce).to.be.true;
+    void expect(installEvent.waitUntil.calledOnce).to.be.true;
 
-    // Prüfe, ob die richtigen Dateien in den Cache geschrieben wurden
     const expectedFiles = [
       '/',
       '/index.html',
@@ -59,7 +53,6 @@ describe('Service Worker Tests', () => {
   });
 
   it('should delete old caches during activate event', async () => {
-    // Verwende den bereits existierenden Mock für caches.keys
     const cachesKeysStub = global.caches.keys;
     cachesKeysStub.resolves(['old-cache-v1', 'old-cache-v2']);
 
@@ -70,20 +63,17 @@ describe('Service Worker Tests', () => {
       waitUntil: sinon.stub(),
     };
 
-    // Rufe den Activate-Event-Listener ab
     const activateListener = self.addEventListener.getCall(1).args[1];
     activateListener(activateEvent);
 
-    // Warten auf Promises
     await new Promise((resolve) => setImmediate(resolve));
 
     // Assertions
-    void expect(cachesKeysStub.calledOnce).to.be.true; // Prüfe, ob caches.keys aufgerufen wurde
-    void expect(deleteStub.calledTwice).to.be.true; // Prüfe, ob alte Caches gelöscht wurden
-    void expect(deleteStub.calledWith('old-cache-v1')).to.be.true; // Prüfe spezifische Aufrufe
+    void expect(cachesKeysStub.calledOnce).to.be.true;
+    void expect(deleteStub.calledTwice).to.be.true;
+    void expect(deleteStub.calledWith('old-cache-v1')).to.be.true;
     void expect(deleteStub.calledWith('old-cache-v2')).to.be.true;
 
-    // Prüfen, ob waitUntil aufgerufen wurde
     void expect(activateEvent.waitUntil.calledOnce).to.be.true;
   });
 
@@ -92,7 +82,7 @@ describe('Service Worker Tests', () => {
 
     const cacheMock = {
       put: sinon.stub().resolves(),
-      match: sinon.stub().resolves(null), // Simuliere, dass der Cache leer ist
+      match: sinon.stub().resolves(null),
     };
     global.caches.open.resolves(cacheMock);
 

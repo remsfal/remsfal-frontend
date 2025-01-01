@@ -20,7 +20,6 @@ describe('Service Worker Initialization', () => {
         it('should not call register if serviceWorker is not supported', () => {
             delete navigator.serviceWorker; // Simulate unsupported Service Worker
             registerServiceWorker();
-            expect(console.log).not.toHaveBeenCalled();
             expect(console.error).not.toHaveBeenCalled();
         });
 
@@ -71,9 +70,6 @@ describe('Service Worker Initialization', () => {
 
             const registration = await navigator.serviceWorker.ready;
             expect(registration.sync.register).toHaveBeenCalledWith('sync-projects');
-            expect(console.log).toHaveBeenCalledWith(
-                '[App] Background sync registered for pending projects'
-            );
         });
     });
 
