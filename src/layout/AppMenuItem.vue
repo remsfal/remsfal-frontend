@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
-import { useRoute, RouterLink } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -40,8 +40,8 @@ const itemKey = ref<string | undefined>(undefined);
 
 onBeforeMount(() => {
   itemKey.value = props.parentItemKey
-    ? props.parentItemKey + '-' + props.index
-    : String(props.index);
+      ? props.parentItemKey + '-' + props.index
+      : String(props.index);
 });
 
 const itemClick = (event: Event, item: MenuItem) => {
@@ -65,14 +65,14 @@ const itemClick = (event: Event, item: MenuItem) => {
   }
 
   const foundItemKey = item.items
-    ? isActiveMenu.value
-      ? props.parentItemKey
-      : itemKey.value
-    : itemKey.value;
+      ? isActiveMenu.value
+          ? props.parentItemKey
+          : itemKey.value
+      : itemKey.value;
   setActiveMenuItem(foundItemKey);
 
   isActiveMenu.value =
-    foundItemKey === itemKey.value || foundItemKey!.startsWith(itemKey.value + '-');
+      foundItemKey === itemKey.value || foundItemKey!.startsWith(itemKey.value + '-');
 };
 
 const checkActiveRoute = (item: MenuItem) => {
@@ -86,11 +86,11 @@ const checkActiveRoute = (item: MenuItem) => {
       {{ item.label }}
     </div>
     <a
-      v-if="(!item.to || item.items) && item.visible !== false"
-      :class="item.class"
-      :target="item.target"
-      tabindex="0"
-      @click="itemClick($event, item)"
+        v-if="(!item.to || item.items) && item.visible !== false"
+        :class="item.class"
+        :target="item.target"
+        tabindex="0"
+        @click="itemClick($event, item)"
     >
       <template v-if="item.icon">
         <i
@@ -107,12 +107,12 @@ const checkActiveRoute = (item: MenuItem) => {
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
     </a>
-    <RouterLink
-      v-if="item.to && !item.items && item.visible !== false"
-      :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
-      tabindex="0"
-      :to="item.to"
-      @click="itemClick($event, item)"
+    <router-link
+        v-if="item.to && !item.items && item.visible !== false"
+        :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
+        tabindex="0"
+        :to="item.to"
+        @click="itemClick($event, item)"
     >
       <template v-if="item.icon">
         <i
@@ -128,16 +128,16 @@ const checkActiveRoute = (item: MenuItem) => {
       </template>
       <span class="layout-menuitem-text">{{ item.label }}</span>
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
-    </RouterLink>
+    </router-link>
     <Transition v-if="item.items && item.visible !== false" name="layout-submenu">
       <ul v-show="root ? true : isActiveMenu" class="layout-submenu">
         <app-menu-item
-          v-for="(child, i) in item.items"
-          :key="child.label"
-          :index="i"
-          :item="child"
-          :parentItemKey="itemKey"
-          :root="false"
+            v-for="(child, i) in item.items"
+            :key="child.label"
+            :index="i"
+            :item="child"
+            :parentItemKey="itemKey"
+            :root="false"
         ></app-menu-item>
       </ul>
     </Transition>
