@@ -2,7 +2,7 @@
 import BaseLayout from './BaseLayout.vue';
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
-import AppSidebar from './AppSidebar.vue';
+import ConsultantMenu from './ConsultantMenu.vue';
 </script>
 
 <template>
@@ -11,7 +11,7 @@ import AppSidebar from './AppSidebar.vue';
       <AppTopbar />
     </template>
     <template #sidebar>
-      <AppSidebar />
+      <ConsultantMenu />
     </template>
     <template #footer>
       <AppFooter />
