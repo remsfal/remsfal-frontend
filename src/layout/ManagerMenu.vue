@@ -12,40 +12,40 @@ const sessionStore = useUserSessionStore();
 
 const model = ref([
   {
-    label: 'Home',
+    label: 'managerMenu.home',
     items: [
       {
-        label: 'Dashboard',
+        label: 'managerMenu.home.label',
         icon: {type: 'pi', name: 'pi pi-fw pi-chart-bar'},
         to: `/project/${projectStore.projectId}/`,
       },
       {
-        label: 'Einstellungen',
+        label: 'managerMenu.home.settings',
         icon: {type: 'pi', name: 'pi pi-fw pi-cog'},
         to: `/project/${projectStore.projectId}/settings`,
       },
     ],
   },
   {
-    label: 'Stammdaten',
+    label: 'managerMenu.userData',
     items: [
       {
-        label: 'Objektdaten',
+        label: 'managerMenu.userData.objectData',
         icon: {type: 'pi', name: 'pi pi-fw pi-home'},
         to: `/project/${projectStore.projectId}/objects`,
       },
       {
-        label: 'Mieterdaten',
+        label: 'managerMenu.userData.tenantData',
         icon: {type: 'pi', name: 'pi pi-fw pi-users'},
         to: `/project/${projectStore.projectId}/tenancies`,
       },
     ],
   },
   {
-    label: 'Aufgabenmanagement',
+    label: 'managerMenu.taskManagement',
     items: [
       {
-        label: 'Meine Aufgaben',
+        label: 'managerMenu.taskManagement.mine',
         icon: {type: 'fa', name: ['fas', 'list']},
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
@@ -57,7 +57,7 @@ const model = ref([
         },
       },
       {
-        label: 'Offene Aufgaben',
+        label: 'managerMenu.taskManagement.open',
         icon: {type: 'fa', name: ['fas', 'list-check']},
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
@@ -69,7 +69,7 @@ const model = ref([
         },
       },
       {
-        label: 'Alle Aufgaben',
+        label: 'managerMenu.taskManagement.all',
         icon: {type: 'fa', name: ['far', 'rectangle-list']},
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
@@ -79,27 +79,27 @@ const model = ref([
     ],
   },
   {
-    label: 'Mängelmanagement',
+    label: 'managerMenu.defectManagement',
     items: [
       {
-        label: 'Neue Meldungen',
+        label: 'managerMenu.defectManagement.new',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
         to: '/uikit/formlayout',
       },
       {
-        label: 'Offene Mängel',
+        label: 'managerMenu.defectManagement.open',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
         to: '/uikit/formlayout',
       },
       {
-        label: 'Beauftragte Mängel',
+        label: 'managerMenu.defectManagement.closed',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
         to: '/uikit/formlayout',
       },
       {
-        label: 'Alle Meldungen',
+        label: 'managerMenu.defectManagement.all',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/input',
+        to: '/uikit/input'
       },
     ],
   },
