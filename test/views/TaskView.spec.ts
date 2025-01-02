@@ -1,25 +1,142 @@
-// tests/views/TaskView.spec.ts
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
 import PrimeVue from 'primevue/config';
+import { ref } from 'vue';
+
+// Mock task data and functions
+const tasks = ref([
+  { id: 1, status: 'OPEN', owner: 'user1' },
+  { id: 2, status: 'CLOSED', owner: 'user2' },
+  { id: 3, status: 'OPEN', owner: 'user1' },
+  { id: 4, status: 'IN_PROGRESS', owner: 'user3' },
+]);
+
+const filterOpenTasks = (): { id: number; status: string; owner: string }[] => {
+  return tasks.value.filter((task) => task.status === 'OPEN');
+};
+
+const filterMineTasks = (owner: string): { id: number; status: string; owner: string }[] => {
+  return tasks.value.filter((task) => task.owner === owner);
+};
 
 describe('TaskView', () => {
   const projectId = '1';
+  const owner = 'user1';
   let wrapper: VueWrapper<TaskView>;
 
   beforeEach(() => {
-    // Montieren der Komponente mit den Props
     wrapper = mount(TaskView, {
-      props: { projectId },
+      props: { projectId, owner },
       global: {
         plugins: [PrimeVue],
+      },
+      data() {
+        return {
+          visible: false, // Initial visibility state
+        };
       },
     });
   });
 
-  it('renders the task list header and project ID', () => {
-    // Überprüfen, ob die Projekt-ID '1' korrekt angezeigt wird
-    expect(wrapper.text()).toContain('Dies sind alle Aufgaben für das Projekt: 1');
+  // Group 1: Testing the filterOpenTasks function
+  describe('filterOpenTasks', () => {
+    it('filters tasks with status "OPEN"', () => {
+      const result = filterOpenTasks();
+      expect(result).toEqual([
+        { id: 1, status: 'OPEN', owner: 'user1' },
+        { id: 3, status: 'OPEN', owner: 'user1' },
+      ]);
+    });
+
+    it('returns an empty array when no tasks have status "OPEN"', () => {
+      tasks.value = [
+        { id: 1, status: 'CLOSED', owner: 'user1' },
+        { id: 2, status: 'IN_PROGRESS', owner: 'user2' },
+      ];
+      const result = filterOpenTasks();
+      expect(result).toEqual([]);
+    });
+
+    it('handles an empty tasks array', () => {
+      tasks.value = [];
+      const result = filterOpenTasks();
+      expect(result).toEqual([]);
+    });
+
+    it('should return all tasks if all have status "OPEN"', () => {
+      tasks.value = [
+        { id: 6, status: 'OPEN', owner: 'User6' },
+        { id: 7, status: 'OPEN', owner: 'User7' },
+        { id: 8, status: 'OPEN', owner: 'User8' },
+      ];
+
+      const openTasks = filterOpenTasks();
+
+      expect(openTasks).toHaveLength(3); // Expect all tasks to be filtered
+      expect(openTasks).toEqual([
+        { id: 6, status: 'OPEN', owner: 'User6' },
+        { id: 7, status: 'OPEN', owner: 'User7' },
+        { id: 8, status: 'OPEN', owner: 'User8' },
+      ]);
+    });
+  });
+
+  // Group 2: Testing the filterMineTasks function
+  describe('filterMineTasks', () => {
+    it('returns tasks for the correct owner', () => {
+      tasks.value = [
+        { id: 1, owner: 'user1', status: 'OPEN' },
+        { id: 2, owner: 'user2', status: 'CLOSED' },
+        { id: 3, owner: 'user1', status: 'OPEN' },
+        { id: 4, owner: 'user3', status: 'IN_PROGRESS' },
+      ];
+      const result = filterMineTasks('user3');
+      expect(result).toEqual([{ id: 4, owner: 'user3', status: 'IN_PROGRESS' }]);
+    });
+
+    it('returns an empty array when no tasks belong to the owner', () => {
+      tasks.value = [
+        { id: 1, owner: 'user2', status: 'OPEN' },
+        { id: 2, owner: 'user2', status: 'CLOSED' },
+      ];
+      const result = filterMineTasks('user1');
+      expect(result).toEqual([]);
+    });
+  });
+
+  // Group 3: Testing button rendering and interaction
+  describe('Button rendering and interaction', () => {
+    it('renders the button when owner is defined', () => {
+      const button = wrapper.find('.my-btn');
+      expect(button.exists()).toBe(true);
+      expect(button.text()).toBe('Aufgabe erstellen');
+    });
+
+    it('sets "visible" to true when the button is clicked', async () => {
+      const button = wrapper.find('.my-btn');
+      await button.trigger('click');
+      expect(wrapper.vm.visible).toBe(true);
+    });
+  });
+
+  // Group 4: Testing header rendering
+  describe('Header rendering', () => {
+    it('renders "Meine Aufgaben" when owner prop is defined', () => {
+      const header = wrapper.find('h2');
+      expect(header.text()).toBe('Meine Aufgaben');
+    });
+
+    it('renders "Offene Aufgaben" when status prop is defined and owner is undefined', async () => {
+      await wrapper.setProps({ owner: null, status: 'OPEN' });
+      const header = wrapper.find('h2');
+      expect(header.text()).toBe('Offene Aufgaben');
+    });
+
+    it('renders "Alle Aufgaben" when neither owner nor status is defined', async () => {
+      await wrapper.setProps({ owner: null, status: null });
+      const header = wrapper.find('h2');
+      expect(header.text()).toBe('Alle Aufgaben');
+    });
   });
 });
