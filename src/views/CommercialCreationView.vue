@@ -24,7 +24,6 @@ const handleCommercialSubmit = (values: Record<string, any>) => {
   try {
     const response = projectService.createCommercial(props.projectId, props.buildingId, commercial);
     console.log('Commercial created:', response);
-    // window.history.back();
   } catch (error) {
     console.error('Error creating commercial:', error);
   }
@@ -32,7 +31,6 @@ const handleCommercialSubmit = (values: Record<string, any>) => {
 
 const handleCommercialCancel = () => {
   console.log('Commercial creation canceled');
-  // window.history.back();
 };
 </script>
 
