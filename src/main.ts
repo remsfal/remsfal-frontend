@@ -33,6 +33,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ContextMenu from 'primevue/contextmenu';
 import DataTable from 'primevue/datatable';
 import DataView from 'primevue/dataview';
+import DataViewLayoutOptions from 'primevue/dataview';
 import DeferredContent from 'primevue/deferredcontent';
 import Dialog from 'primevue/dialog';
 import DialogService from 'primevue/dialogservice';
@@ -103,7 +104,7 @@ import Tooltip from 'primevue/tooltip';
 import Tree from 'primevue/tree';
 import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
-//import TriStateCheckbox from 'primevue/tristatecheckbox';
+import TriStateCheckbox from 'primevue/tree';
 import VirtualScroller from 'primevue/virtualscroller';
 
 import '@/assets/styles.scss';
@@ -224,6 +225,7 @@ app.component('ToggleButton', ToggleButton);
 app.component('Tree', Tree);
 app.component('TreeSelect', TreeSelect);
 app.component('TreeTable', TreeTable);
+app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 
 app.mount('#app');

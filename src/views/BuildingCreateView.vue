@@ -8,7 +8,7 @@ import ReusableFormComponent from '@/components/ReusableFormComponent.vue';
 const router = useRouter();
 const route = useRoute();
 const projectId = route.params.projectId as string;
-const propertyId = route.params.propertyId as string;
+const commercialId = route.params.commercialId as string;
 
 // Typ für Felder
 interface Field {
@@ -60,9 +60,9 @@ const isLoading = ref(false);
 const handleSubmit = async (formData: Record<string, any>) => {
   isLoading.value = true;
   try {
-    await axios.post(`/project/${projectId}/property/${propertyId}/buildings`, formData);
+    await axios.post(`/project/${projectId}/commercial/${commercialId}/buildings`, formData);
     alert('Building created successfully!');
-    await router.push(`/project/${projectId}/property/${propertyId}`);
+    await router.push(`/project/${projectId}/commercial/${commercialId}`);
   } catch (error) {
     console.error('Error creating building:', error);
     alert('Failed to create building. Please try again.');
@@ -73,7 +73,7 @@ const handleSubmit = async (formData: Record<string, any>) => {
 
 // Abbrechen
 const handleCancel = () => {
-  router.push(`/project/${projectId}/property/${propertyId}`);
+  router.push(`/project/${projectId}/commercial/${commercialId}`);
 };
 </script>
 

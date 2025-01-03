@@ -8,9 +8,8 @@ import ReusableFormComponent from '@/components/ReusableFormComponent.vue';
 const router = useRouter();
 const route = useRoute();
 const projectId = route.params.projectId as string;
-const propertyId = route.params.propertyId as string;
 const buildingId = route.params.buildingId as string;
-
+const commercialId = route.params.commercialId as string;
 // Typ für Felder
 interface Field {
   name: string;
@@ -61,7 +60,7 @@ const isLoading = ref(false);
 const fetchBuildingData = async () => {
   isLoading.value = true;
   try {
-    const response = await axios.get(`/project/${projectId}/property/${propertyId}/buildings/${buildingId}`);
+    const response = await axios.get(`/project/${projectId}/commercial/${commercialId}/buildings/${buildingId}`);
     initialValues.value = response.data;
   } catch (error) {
     console.error('Error fetching building data:', error);
@@ -75,9 +74,9 @@ const fetchBuildingData = async () => {
 const handleSubmit = async (formData: Record<string, any>) => {
   isLoading.value = true;
   try {
-    await axios.patch(`/project/${projectId}/property/${propertyId}/buildings/${buildingId}`, formData);
+    await axios.patch(`/project/${projectId}/commercial/${commercialId}/buildings/${buildingId}`, formData);
     alert('Building updated successfully!');
-    await router.push(`/project/${projectId}/property/${propertyId}`);
+    await router.push(`/project/${projectId}/commercial/${commercialId}}`);
   } catch (error) {
     console.error('Error updating building:', error);
     alert('Failed to update building. Please try again.');
@@ -88,7 +87,7 @@ const handleSubmit = async (formData: Record<string, any>) => {
 
 // Abbrechen
 const handleCancel = () => {
-  router.push(`/project/${projectId}/property/${propertyId}`);
+  router.push(`/project/${projectId}/commercial/${commercialId}`);
 };
 
 // Daten beim Laden abrufen

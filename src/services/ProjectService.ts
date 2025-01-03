@@ -207,96 +207,80 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  createBuilding(
-      projectId: string,
-      propertyId: string,
-      buildingData: Omit<BuildingItem, 'id' | 'apartments' | 'garages'> // Keine Felder, die automatisch generiert werden
-  ): Promise<BuildingItem> {
-    return axios
-        .post(`${this.url}/${projectId}/properties/${propertyId}/buildings`, buildingData)
-        .then((response) => {
-          console.log('Building created:', response.data);
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error creating building:', error);
-          throw error;
-        });
+  createBuilding(projectId: string, commercialId: string, building: BuildingItem): Promise<any> {
+    const url = `/api/v1/project/${projectId}/commercial/${commercialId}/building`;
+    return axios.post(url, building)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error creating building:', error);
+        throw error;
+      });
   }
 
-
-  getBuildings(projectId: string, propertyId: string): Promise<BuildingItem[]> {
+  getBuildings(projectId: string, commercialId: string): Promise<BuildingItem[]> {
     return axios
-        .get(`${this.url}/${projectId}/properties/${propertyId}/buildings`)
-        .then((response) => {
-          console.log('Buildings returned:', response.data);
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error fetching buildings:', error);
-          throw error;
-        });
-  }
-  updateBuilding(
-      projectId: string,
-      propertyId: string,
-      buildingId: string,
-      buildingData: Partial<Omit<BuildingItem, 'id'>> // Nur die zu aktualisierenden Felder
-  ): Promise<BuildingItem> {
-    return axios
-        .patch(
-            `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}`,
-            buildingData
-        )
-        .then((response) => {
-          console.log('Building updated:', response.data);
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error updating building:', error);
-          throw error;
-        });
+      .get(`${this.url}/${projectId}/commercial/${commercialId}/buildings`)
+      .then((response) => {
+        console.log('Buildings returned:', response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error('Error fetching buildings:', error);
+        throw error;
+      });
   }
 
-  createApartment(title: string, projectId: string, propertyId: string, buildingId: string) {
+  updateBuilding(projectId: string, commercialId: string, buildingId: string, building: BuildingItem): Promise<any> {
+    const url = `/api/v1/project/${projectId}/commercial/${commercialId}/building/${buildingId}`;
+    return axios.patch(url, building)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error updating building:', error);
+        throw error;
+      });
+  }
+
+  createApartment(title: string, projectId: string, commercialId: string, buildingId: string) {
     return axios
       .post(
-        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/apartments`,
+        `${this.url}/${projectId}/commercial/${commercialId}/buildings/${buildingId}/apartments`,
         { title: title, buildingId: buildingId },
       )
       .then((response) => console.log(response))
       .catch((error) => console.error(error));
   }
+
   getBuildingDetails(
-      projectId: string,
-      propertyId: string,
-      buildingId: string
+    projectId: string,
+    commercialId: string,
+    buildingId: string
   ): Promise<BuildingItem> {
     return axios
-        .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}`)
-        .then((response) => {
-          console.log('Building details:', response.data);
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error fetching building details:', error);
-          throw error;
-        });
+      .get(`${this.url}/${projectId}/commercial/${commercialId}/buildings/${buildingId}`)
+      .then((response) => {
+        console.log('Building details:', response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error('Error fetching building details:', error);
+        throw error;
+      });
   }
+
   deleteBuilding(
-      projectId: string,
-      propertyId: string,
-      buildingId: string
+    projectId: string,
+    commercialId: string,
+    buildingId: string
   ): Promise<void> {
     return axios
-        .delete(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}`)
-        .then(() => {
-          console.log('Building deleted successfully.');
-        })
-        .catch((error) => {
-          console.error('Error deleting building:', error);
-          throw error;
-        });
+      .delete(`${this.url}/${projectId}/commercial/${commercialId}/buildings/${buildingId}`)
+      .then(() => {
+        console.log('Building deleted successfully.');
+      })
+      .catch((error) => {
+        console.error('Error deleting building:', error);
+        throw error;
+      });
   }
 
   getApartments(projectId: string, propertyId: string, buildingId: string) {
