@@ -1,4 +1,4 @@
-import { toRefs, reactive, computed } from 'vue';
+import { computed, reactive, toRefs } from 'vue';
 
 const layoutConfig = reactive({
   ripple: false,
@@ -21,6 +21,21 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
+  /*
+   * Initialize theming by
+   *   first checking if the theme has been set manually,
+   *   second reading the systems theme.
+   *
+   * */
+  const init = () => {
+    const theme = localStorage.getItem('theme');
+    if (theme) {
+      layoutConfig.darkTheme = theme === 'dark';
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      layoutConfig.darkTheme = true;
+    }
+  };
+
   const setFullscreen = (fullscreen: boolean) => {
     layoutConfig.fullscreen = fullscreen;
     layoutState.staticMenuDesktopInactive = fullscreen;
@@ -46,6 +61,11 @@ export function useLayout() {
     }
   };
 
+  const toggleTheme = () => {
+    layoutConfig.darkTheme = !layoutConfig.darkTheme;
+    localStorage.setItem('theme', layoutConfig.darkTheme ? 'dark' : 'light');
+  };
+
   const isSidebarActive = computed(
     () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive,
   );
@@ -61,5 +81,7 @@ export function useLayout() {
     isSidebarActive,
     isDarkTheme,
     setActiveMenuItem,
+    toggleTheme,
+    init,
   };
 }
