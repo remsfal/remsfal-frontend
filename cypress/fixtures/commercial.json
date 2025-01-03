@@ -1,0 +1,8 @@
+{
+  "title": "Commercial Unit 1",
+  "description": "This is a test commercial unit",
+  "location": "Test location",
+  "commercialSpace": "100",
+  "usableSpace": "90",
+  "heatingSpace": "80"
+}
