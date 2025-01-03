@@ -14,6 +14,39 @@ on:
     branches: ["main"]
 
 jobs:
+  sonarqube:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure the full history is checked out for accurate analysis
+
+      - name: Set up Java (required for SonarCloud)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+
+      - name: Install Node.js (if your project uses Node.js)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Cache SonarCloud dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar-${{ hashFiles('**/sonar-project.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-sonar-
+
+      - name: Run SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   lts-build:
     name: "Node.js 20 LTS Build"
     runs-on: ubuntu-latest
