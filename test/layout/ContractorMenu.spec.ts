@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import ConsultantMenu from '../../src/layout/ConsultantMenu.vue';
+import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia } from 'pinia';
 import { useUserSessionStore } from '../../src/stores/UserSession';
@@ -9,7 +9,7 @@ vi.mock('@/stores/UserSession', () => ({
   useUserSessionStore: vi.fn(),
 }));
 
-describe('ConsultantMenu.vue', () => {
+describe('ContractorMenu.vue', () => {
   let router;
   let sessionStoreMock;
   const pinia = createPinia();
@@ -27,7 +27,7 @@ describe('ConsultantMenu.vue', () => {
   });
 
   it('should render the correct menu structure', async () => {
-    const wrapper = mount(ConsultantMenu, {
+    const wrapper = mount(ContractorMenu, {
       global: {
         plugins: [pinia, router],
       },
@@ -46,7 +46,7 @@ describe('ConsultantMenu.vue', () => {
   
 
   it('should render the correct menu labels', async () => {
-    const wrapper = mount(ConsultantMenu, {
+    const wrapper = mount(ContractorMenu, {
       global: {
         plugins: [pinia, router],
       },
@@ -69,7 +69,7 @@ describe('ConsultantMenu.vue', () => {
   });
   
   it('should render the correct icons for menu items', async () => {
-    const wrapper = mount(ConsultantMenu, {
+    const wrapper = mount(ContractorMenu, {
       global: {
         plugins: [pinia, router],
       },
@@ -88,7 +88,7 @@ describe('ConsultantMenu.vue', () => {
   it('should navigate correctly when menu items are clicked', async () => {
     sessionStoreMock.user = { email: 'test@example.com' };
     const pushSpy = vi.spyOn(router, 'push');
-    const wrapper = mount(ConsultantMenu, {
+    const wrapper = mount(ContractorMenu, {
       global: {
         plugins: [pinia, router],
       },

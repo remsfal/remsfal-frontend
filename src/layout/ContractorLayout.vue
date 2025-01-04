@@ -2,7 +2,7 @@
 import BaseLayout from './BaseLayout.vue';
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
-import ConsultantMenu from './ConsultantMenu.vue';
+import ContractorMenu from './ContractorMenu.vue';
 </script>
 
 <template>
@@ -11,7 +11,7 @@ import ConsultantMenu from './ConsultantMenu.vue';
       <AppTopbar />
     </template>
     <template #sidebar>
-      <ConsultantMenu />
+      <ContractorMenu />
     </template>
     <template #footer>
       <AppFooter />

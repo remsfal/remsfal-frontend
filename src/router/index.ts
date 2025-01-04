@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} fro
 import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
-import ConsultantLayout from '@/layout/ConsultantLayout.vue';
+import ContractorLayout from '@/layout/ContractorLayout.vue';
 
 const routes = [
     {
@@ -95,7 +95,7 @@ const routes = [
     },
     {
         path: '/contractor',
-        component: ConsultantLayout,
+        component: ContractorLayout,
         children: [
             {
                 path: '',

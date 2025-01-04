@@ -1,14 +1,14 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
-import ConsultantLayout from '../../src/layout/ConsultantLayout.vue';
+import ContractorLayout from '../../src/layout/ContractorLayout.vue';
 import BaseLayout from '../../src/layout/BaseLayout.vue';
 import AppTopbar from '../../src/layout/AppTopbar.vue';
 import AppFooter from '../../src/layout/AppFooter.vue';
-import ConsultantMenu from '../../src/layout/ConsultantMenu.vue';
+import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia } from 'pinia';
 
-describe('ConsultantLayout.vue', () => {
+describe('ContractorLayout.vue', () => {
   let router;
   const pinia = createPinia();
 
@@ -22,7 +22,7 @@ describe('ConsultantLayout.vue', () => {
   });
 
   it('should render BaseLayout with the correct slot components', async () => {
-    const wrapper = mount(ConsultantLayout, {
+    const wrapper = mount(ContractorLayout, {
       global: {
         plugins: [pinia, router],
       },
@@ -34,7 +34,7 @@ describe('ConsultantLayout.vue', () => {
     const topbar = baseLayout.findComponent(AppTopbar);
     expect(topbar.exists()).toBe(true);
 
-    const sidebar = baseLayout.findComponent(ConsultantMenu);
+    const sidebar = baseLayout.findComponent(ContractorMenu);
     expect(sidebar.exists()).toBe(true);
 
     const footer = baseLayout.findComponent(AppFooter);

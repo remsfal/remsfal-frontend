@@ -5,7 +5,6 @@ export interface TaskItemJson {
     title: string;
     status: TaskStatus;
     description: string | null;
-    ownerId: string;
 }
 
 export interface TaskListJson {
@@ -17,8 +16,8 @@ export type TaskStatus = 'PENDING' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED' | 'REJECT
 export default class ContractorService {
     private readonly baseUrl: string = '/api/v1/contractors';
 
-    getTasks(contractorId: string): Promise<TaskListJson> {
-        const url = `${this.baseUrl}/${contractorId}/tasks`;
+    getTasks(): Promise<TaskListJson> {
+        const url = `${this.baseUrl}/tasks`;
         return axios.get(url).then((response) => {
           const taskList: TaskListJson = response.data;
           console.log('GET tasks:', taskList);
@@ -26,8 +25,8 @@ export default class ContractorService {
         });
       }
 
-      getTask(ownerId: string, taskId:string): Promise<TaskItemJson> {
-        const url = `${this.baseUrl}/${ownerId}/tasks/${taskId}`;
+      getTask(taskId:string): Promise<TaskItemJson> {
+        const url = `${this.baseUrl}/tasks/${taskId}`;
         return axios
           .get(url)
           .then((response) => {
