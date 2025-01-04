@@ -15,8 +15,8 @@ on:
 
 jobs:
   sonarqube:
-    name: SonarCloud
-    runs-on: ubuntu-latest
+    name: sonarQube
+    runs-on: windows-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
