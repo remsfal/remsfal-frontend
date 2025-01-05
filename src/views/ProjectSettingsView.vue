@@ -112,7 +112,7 @@ onMounted(() => {
           placeholder="E-Mail des neuen Mitglieds"
           class="p-inputtext"
       />
-      <Select
+      <Dropdown
           v-model="newMemberRole"
           :options="roles"
           optionLabel="label"
