@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
 import ProjectSettingsView from '@/views/ProjectSettingsView.vue';
 import ProjectMemberService from '@/services/ProjectMemberService';
+import PrimeVue from "primevue/config";
 
 vi.mock('@/services/ProjectMemberService');
 
@@ -23,7 +24,7 @@ describe('ProjectSettingsView.vue', () => {
                 projectId: 'test-project-id',
             },
             global: {
-                plugins: [router],
+                plugins: [router, PrimeVue],
                 mocks: {
                     $route: {
                         params: {

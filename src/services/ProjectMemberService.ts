@@ -10,7 +10,6 @@ const API_BASE_URL = '/api/v1';
 
 class ProjectMemberService {
 
-
     static async getMembers(projectId: string) {
         const response = await axios.get(`${API_BASE_URL}/projects/${projectId}/members`);
         return response.data.members;
@@ -28,19 +27,20 @@ class ProjectMemberService {
             console.log("Member added successfully:", response.data);
             return response.data;
         } catch (error) {
-            console.error("Failed to add member:", error);
+            this.handleError(error);
             throw error;
         }
     }
 
     static async updateMemberRole(projectId: string, member: ProjectMember) {
+        const originalMember = { ...member };
+
         try {
             const payload = {
                 id: member.id,
                 email: member.email,
                 role: member.role,
             }
-            
             console.log("Sending request to update member role:", payload);
             const response = await axios.patch(
                 `${API_BASE_URL}/projects/${projectId}/members/${member.id}`,
@@ -53,8 +53,11 @@ class ProjectMemberService {
             );
             console.log("Member role updated successfully:", response.data);
             return response.data;
-        } catch (error) {
-            console.error("Failed to update member role:", error);
+        }
+        catch (error) {
+            console.error("Failed to update member role, rolling back to original state:", originalMember);
+            member.role = originalMember.role;
+            this.handleError(error);
             throw error;
         }
     }
@@ -73,13 +76,24 @@ class ProjectMemberService {
             );
             console.log("Member removed successfully:", response.data);
             return response.data;
-        } catch (error) {
-            if (error) {
-                console.error("Error response:", error);
-            } else {
-                console.error("Unexpected error:", error);
-            }
+        }
+        catch (error) {
+            this.handleError(error);
             throw error;
+        }
+    }
+
+    private static handleError(error: unknown) {
+        if (axios.isAxiosError(error)) {
+            if (error.response) {
+                console.error("Server error:", error.response.status);
+            } else if (error.request) {
+                console.error("Network error: No response from server.");
+            } else {
+                console.error("Error in setting up request:", error.message);
+            }
+        } else {
+            console.error("Unexpected error:", error);
         }
     }
 }

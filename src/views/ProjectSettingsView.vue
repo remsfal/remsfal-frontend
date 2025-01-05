@@ -2,7 +2,12 @@
 import { ref, onMounted } from "vue";
 import ProjectMemberService from "../services/ProjectMemberService";
 import { useRoute } from "vue-router";
-import type { ProjectMember } from "../services/ProjectMemberService"
+import type { ProjectMember } from "../services/ProjectMemberService";
+import Button from 'primevue/button';
+import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 
 const props =  defineProps<{
   projectId: string
@@ -20,7 +25,13 @@ if (!props.projectId){
 const newMemberEmail = ref("");
 const newMemberRole = ref("");
 const members = ref<ProjectMember[]>([]);
-const roles = ["MANAGER", "TENANCY", "PROPRIETOR", "LESSOR", "CARETAKER", "CONTRACTOR"];
+const roles = [
+  { label: "Verwalter", value: "MANAGER" },
+  { label: "Mieter", value: "TENANCY" }, //liquibase changeset anpassen
+  { label: "Eigentümer", value: "PROPRIETOR" },
+  { label: "Vermieter", value: "LESSOR" },
+  { label: "Hausmeister", value: "CARETAKER" },
+  { label: "Auftragnehmer/Berater", value: "CONTRACTOR" }]; //liquibase changeset anpassen
 const error = ref<string | null>(null);
 
 const fetchMembers = async () => {
@@ -77,11 +88,7 @@ const removeMember = async (memberId: string) => {
     console.log("Member removed successfully");
   } catch (error) {
     const err = error as { response?: { data: any }; message: string };
-    if (err.response) {
-      console.error("Error response:", err.response.data);
-    } else {
-      console.error("Unexpected error:", err.message);
-    }
+    console.error("Failed to remove member:", err.response?.data || err.message);
   }
 };
 
@@ -99,100 +106,60 @@ onMounted(() => {
 
   <div class="project-settings">
     <div>
-      <input
+      <InputText
           v-model="newMemberEmail"
           type="email"
           placeholder="E-Mail des neuen Mitglieds"
+          class="p-inputtext"
       />
-      <select v-model="newMemberRole">
-        <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
-      </select>
-      <button @click="addMember" class="create-btn">erstellen</button>
+      <Select
+          v-model="newMemberRole"
+          :options="roles"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Rolle auswählen"
+      />
+      <Button
+          @click="addMember"
+          label="Erstellen"
+          class="create-btn"
+      />
     </div>
 
     <h3>Mitgliederliste</h3>
 
-    <table>
-      <thead>
-      <tr>
-        <th>Email</th>
-        <th>Rolle</th>
-        <th>Optionen</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="member in members" :key="member.id">
-        <td>{{ member.email }}</td>
-        <td>
-          <select v-model="member.role" @change="updateMemberRole(member)">
-            <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
-          </select>
-        </td>
-        <td>
-          <button @click="removeMember(member.id ?? '')" class="deactivate-btn">deaktivieren</button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+    <DataTable :value="members">
+      <Column field="email" header="Email"></Column>
+      <Column header="Rolle">
+        <template #body="slotProps">
+          <Dropdown
+              v-model="slotProps.data.role"
+              :options="roles"
+              optionLabel="label"
+              optionValue="value"
+              @change="updateMemberRole(slotProps.data)"
+          />
+        </template>
+      </Column>
+      <Column header="Optionen">
+        <template #body="slotProps">
+          <Button
+              @click="removeMember(
+                  slotProps.data.id ?? '')"
+              label="Deaktivieren"
+              class="deactivate-btn"
+              severity="danger"
+          />
+        </template>
+      </Column>
+    </DataTable>
   </div>
 </template>
 
-
 <style scoped>
+
 .project-settings {
   padding: 20px;
 }
 
-input {
-  margin-right: 10px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-table, th, td {
-  border: 1px solid #ddd;
-}
-
-th, td {
-  padding: 8px;
-  text-align: left;
-}
-
-button.create-btn {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  text-align: center;
-  display: inline-block;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-button.create-btn:hover {
-  background-color: #45a049;
-}
-
-button.deactivate-btn {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  text-align: center;
-  display: inline-block;
-  font-size: 12px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-button.deactivate-btn:hover {
-  background-color: #e53935;
-}
 </style>
