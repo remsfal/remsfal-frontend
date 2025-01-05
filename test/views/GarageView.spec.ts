@@ -1,9 +1,8 @@
 import { flushPromises, mount } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import GarageView from '@/views/GarageView.vue';
 import PrimeVue from 'primevue/config';
 
-// Mock ProjectService
 const mockGetGarage = vi.fn();
 const mockUpdateGarage = vi.fn();
 const mockCreateGarage = vi.fn();
@@ -18,7 +17,6 @@ vi.mock('@/services/ProjectService', () => {
   };
 });
 
-// Mock vue-router
 const mockRouterBack = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -26,7 +24,6 @@ vi.mock('vue-router', () => ({
   }),
 }));
 
-//Mock for reusable component
 vi.mock('@/components/ReusableFormComponent.vue', () => ({
   default: {
     name: 'ReusableFormComponentVue',
@@ -45,7 +42,6 @@ vi.mock('@/components/ReusableFormComponent.vue', () => ({
   },
 }));
 
-// Dummy data for testing
 const dummyGarageData = {
   title: 'Test Garage',
   description: 'Test description',
@@ -54,7 +50,6 @@ const dummyGarageData = {
 };
 
 describe('GarageView.vue', () => {
-// Define reusable component's default props
   const defaultProps = {
     headline: 'Test Form',
     saveButtonText: 'Save',
@@ -74,10 +69,23 @@ describe('GarageView.vue', () => {
     onSubmit: vi.fn(),
     onCancel: vi.fn(),
   };
+  let originalAlert: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock window.alert
+    originalAlert = window.alert;
+    window.alert = vi.fn();
   });
+
+  afterEach(() => {
+    // Restore original alert after each test
+    window.alert = originalAlert;
+  });
+
+  interface WrapperProps {
+    garageId?: string;
+  }
 
   interface WrapperProps {
     garageId?: string;
@@ -89,7 +97,7 @@ describe('GarageView.vue', () => {
         projectId: '1',
         propertyId: '2',
         buildingId: '3',
-        ...props, // Spread optional garageId for edit mode
+        ...props,
         ...defaultProps,
       },
       global: {
@@ -130,15 +138,10 @@ describe('GarageView.vue', () => {
       location: dummyGarageData.location,
       usableSpace: dummyGarageData.usableSpace,
     });
-
-    // Simulate form values (uncomment when inputs are implemented)
-    // expect(wrapper.find('input[name="title"]').element.value).toBe(dummyGarageData.title);
-    // expect(wrapper.find('textarea[name="location"]').element.value).toBe(dummyGarageData.location);
   });
 
   it('handles form submission for create mode', async () => {
     const wrapper = createWrapper();
-    //temporary without testing service//
     const mockFormData = {
       title: 'New Garage',
       description: 'A spacious new garage',
@@ -153,26 +156,20 @@ describe('GarageView.vue', () => {
       title: 'New Garage',
       description: 'A spacious new garage',
       location: 'Downtown',
-      usableSpace: 50, // ensure usableSpace is converted to a number
+      usableSpace: 50,
       buildingId: '3',
     });
-    //end temporary implementation//
-
-    // Uncomment when backend is ready
-    // expect(wrapper.emitted()).toHaveProperty('submit');
   });
 
   it('handles form submission for update mode', async () => {
     mockUpdateGarage.mockResolvedValueOnce({ success: true });
     const wrapper = createWrapper({ garageId: '123' });
-    // Simulate submit with test values
     const mockFormData = {
       title: 'Updated Garage',
       description: 'An updated spacious garage',
       location: 'Uptown',
       usableSpace: '75',
     };
-    // Emit submit event with form data
     await wrapper
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
@@ -184,13 +181,11 @@ describe('GarageView.vue', () => {
       usableSpace: 75,
       buildingId: '3',
     });
-    // Uncomment when backend is ready
-    // expect(wrapper.emitted()).toHaveProperty('submit');
   });
 
   it('navigates back when cancel is clicked', async () => {
     const wrapper = createWrapper();
-    await wrapper.find('button').trigger('click'); // Simulate cancel button click
+    await wrapper.find('button').trigger('click');
     expect(mockRouterBack).toHaveBeenCalled();
   });
 
@@ -204,7 +199,125 @@ describe('GarageView.vue', () => {
   it('validates title input length', async () => {
     const wrapper = createWrapper();
     const titleInput = wrapper.find('input[name="title"]');
-    await titleInput.setValue('ab'); // Invalid title length
+    await titleInput.setValue('ab');
     await wrapper.find('form').trigger('submit.prevent');
+  });
+
+  // New tests for edge cases
+
+  it('handles submission with missing required fields', async () => {
+    const wrapper = createWrapper();
+    const mockFormData = {
+      title: '', // Missing required title
+      description: 'A spacious new garage',
+      location: 'Downtown',
+      usableSpace: '50',
+    };
+    await wrapper
+      .findComponent({ name: 'ReusableFormComponentVue' })
+      .vm.$emit('submit', mockFormData);
+    await flushPromises();
+
+    // Ensure that no service method is called due to missing title
+    expect(mockCreateGarage).not.toHaveBeenCalled();
+    expect(mockUpdateGarage).not.toHaveBeenCalled();
+  });
+
+  it('handles submission with invalid usable space value', async () => {
+    const wrapper = createWrapper();
+    const mockFormData = {
+      title: 'Valid Garage Title',
+      description: 'A spacious new garage',
+      location: 'Downtown',
+      usableSpace: '-10', // Invalid usable space (negative number)
+    };
+    await wrapper
+      .findComponent({ name: 'ReusableFormComponentVue' })
+      .vm.$emit('submit', mockFormData);
+    await flushPromises();
+
+    // Ensure that no service method is called due to invalid usable space
+    expect(mockCreateGarage).not.toHaveBeenCalled();
+    expect(mockUpdateGarage).not.toHaveBeenCalled();
+  });
+
+  it('handles submission with invalid title length', async () => {
+    const wrapper = createWrapper();
+    const mockFormData = {
+      title: 'ab', // Invalid title (too short)
+      description: 'A spacious new garage',
+      location: 'Downtown',
+      usableSpace: '50',
+    };
+    await wrapper
+      .findComponent({ name: 'ReusableFormComponentVue' })
+      .vm.$emit('submit', mockFormData);
+    await flushPromises();
+
+    // Ensure that no service method is called due to invalid title length
+    expect(mockCreateGarage).not.toHaveBeenCalled();
+    expect(mockUpdateGarage).not.toHaveBeenCalled();
+  });
+
+  it('handles submission with invalid data for all fields', async () => {
+    const wrapper = createWrapper();
+    const mockFormData = {
+      title: 'ab', // Invalid title (too short)
+      description: '', // Missing description
+      location: '', // Missing location
+      usableSpace: '-10', // Invalid usable space (negative number)
+    };
+    await wrapper
+      .findComponent({ name: 'ReusableFormComponentVue' })
+      .vm.$emit('submit', mockFormData);
+    await flushPromises();
+
+    // Ensure that no service method is called due to invalid data
+    expect(mockCreateGarage).not.toHaveBeenCalled();
+    expect(mockUpdateGarage).not.toHaveBeenCalled();
+  });
+
+  it('shows an alert when data fetch fails', async () => {
+    mockGetGarage.mockRejectedValueOnce(new Error('Failed to fetch garage data.'));
+    const wrapper = createWrapper({ garageId: '123' });
+    await flushPromises();
+    expect(window.alert).toHaveBeenCalledWith('Failed to fetch garage data. Please try again.');
+    expect(wrapper.exists()).toBe(true);
+  });
+
+  it('shows an alert when creating a garage fails', async () => {
+    mockCreateGarage.mockRejectedValueOnce(new Error('Failed to create garage.'));
+    const wrapper = createWrapper();
+    const mockFormData = {
+      title: 'New Garage',
+      description: 'A spacious new garage',
+      location: 'Downtown',
+      usableSpace: '50',
+    };
+    await wrapper
+      .findComponent({ name: 'ReusableFormComponentVue' })
+      .vm.$emit('submit', mockFormData);
+    await flushPromises();
+
+    // Ensure that an alert is shown for the failure
+    expect(window.alert).toHaveBeenCalledWith('Failed to submit garage data. Please try again.');
+  });
+
+  it('shows an alert when updating a garage fails', async () => {
+    mockUpdateGarage.mockRejectedValueOnce(new Error('Failed to update garage.'));
+    const wrapper = createWrapper({ garageId: '123' });
+    const mockFormData = {
+      title: 'Updated Garage',
+      description: 'An updated spacious garage',
+      location: 'Uptown',
+      usableSpace: '75',
+    };
+    await wrapper
+      .findComponent({ name: 'ReusableFormComponentVue' })
+      .vm.$emit('submit', mockFormData);
+    await flushPromises();
+
+    // Ensure that an alert is shown for the failure
+    expect(window.alert).toHaveBeenCalledWith('Failed to submit garage data. Please try again.');
   });
 });

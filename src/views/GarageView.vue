@@ -31,7 +31,7 @@ const fields: {
     validations: [
       (value: any): string | null =>
         typeof value === 'string' && value.length < 3
-          ? 'Title must be at least 3 characters.'
+          ? 'Title must be at least 3 characters long.'
           : null,
     ],
   },
@@ -98,6 +98,17 @@ const fetchGarageData = async () => {
 };
 
 const handleSubmit = async (values: Record<string, any>) => {
+  // Validate required fields
+  if (!values.title || values.title.length < 3) {
+    alert('Title is required and must be at least 3 characters.');
+    return;
+  }
+
+  if (!values.usableSpace || values.usableSpace <= 0) {
+    alert('Usable space must be a positive number.');
+    return;
+  }
+
     const garage: GarageItem = {
         title: values.title,
         description: values.description,
@@ -119,6 +130,8 @@ const handleSubmit = async (values: Record<string, any>) => {
       console.log('Garage updated successfully:', response);
       alert('Garage updated successfully!');
     } else {
+      console.log('else');
+      
       // create a new garage
       const response = await service.createGarage(
       props.projectId,
@@ -136,7 +149,6 @@ const handleSubmit = async (values: Record<string, any>) => {
   }
 };
 const handleCancel = () => {
-  console.log("Form Cancelled");
   router.back();
 }
 

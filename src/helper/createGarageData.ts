@@ -13,7 +13,6 @@ export function generateDummyGarages(buildings: BuildingItem[]): GarageItem[] {
           location: `Location ${building.id}-${i + 1}`,
           description: `Description ${building.id}-${i + 1}`,
           usableSpace: 50 * (i + 1),
-          //rent: 500 * (i + 1),
         });
       }
     }

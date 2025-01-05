@@ -110,7 +110,6 @@ export interface GarageItem {
   location: string;
   description: string;
   usableSpace: number;
-  //rent: number;
 }
 
 export default class ProjectService {
@@ -272,7 +271,9 @@ export default class ProjectService {
     return axios
       .post(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`, garage)
       .then((response) => console.log(response))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        throw new Error(`Failed to create garage: ${error.message}`);
+      });
   }
 
   getGarages(projectId: string, propertyId: string, buildingId: string) {
@@ -282,21 +283,27 @@ export default class ProjectService {
         console.log('properties returned', response.data);
         return response.data;
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        throw new Error(`Failed to fetch garages: ${error.message}`);
+      });
   }
 
   getGarage(projectId: string, propertyId: string, buildingId: string, garageId: string){
     return axios
     .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`)
     .then((response) => console.log(response))
-    .catch((error) => console.error(error))
+    .catch((error) => {
+      throw new Error(`Failed to fetch garage: ${error.message}`);
+    });
   }
 
   updateGarage(projectId: string, propertyId: string, buildingId: string, garageId: string, garage: GarageItem) {
     return axios
       .put(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`, garage)
       .then((response) => console.log(response))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        throw new Error(`Failed to update garage: ${error.message}`);
+      });
   }
 
   getMembers(projectId: string) {
