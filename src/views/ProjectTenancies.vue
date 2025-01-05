@@ -1,21 +1,12 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
+import ProjectTenanciesService from '/src/services/ProjectTenanciesService.ts';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
-
-interface TenantItem {
-  id: string;
-  firstName: string;
-  lastName: string;
-  unitTitle: string;
-  rentalObject: string;
-  rentalStart: Date;
-  rentalEnd: Date;
-}
 
 const tenantData = ref<TenantItem[]>([]);
 const isLoading = ref(true);
@@ -35,30 +26,6 @@ const isEditMode = ref(false);
 const confirmationDialogVisible = ref(false);
 const tenantToDelete = ref<TenantItem | null>(null);
 
-function generateMockTenantData(): TenantItem[] {
-  return [
-    {
-      id: '1',
-      firstName: 'Max',
-      lastName: 'Mustermann',
-      unitTitle: 'Wohnung 101',
-      rentalObject: 'Wohnung',
-      rentalStart: new Date('2020-01-01'),
-      rentalEnd: new Date('2025-12-31'),
-    },
-    {
-      id: '2',
-      firstName: 'Erika',
-      lastName: 'Musterfrau',
-      unitTitle: 'Wohnung 202',
-      rentalObject: 'Wohnung',
-      rentalStart: new Date('2021-05-01'),
-      rentalEnd: new Date('2026-04-30'),
-    },
-  ];
-}
-
-
 function openAddDialog() {
   isEditMode.value = false;
   resetForm();
@@ -73,7 +40,6 @@ function openEditDialog(tenant: TenantItem) {
 
 function saveTenant() {
   if (isEditMode.value) {
-    // Update existing tenant
     const index = tenantData.value.findIndex((t) => t.id === currentTenant.id);
     if (index !== -1) {
       tenantData.value[index] = {
@@ -83,7 +49,6 @@ function saveTenant() {
       };
     }
   } else {
-    // Add new tenant
     currentTenant.id = Date.now().toString(); // Generate a unique ID
     tenantData.value.push({
       ...currentTenant,
@@ -122,11 +87,9 @@ function resetForm() {
   });
 }
 
-onMounted(() => {
-  setTimeout(() => {
-    tenantData.value = generateMockTenantData();
-    isLoading.value = false;
-  }, 500);
+onMounted(async () => {
+  tenantData.value = await ProjectTenanciesService.fetchTenantData();
+  isLoading.value = false;
 });
 </script>
 
