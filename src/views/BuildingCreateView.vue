@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import ReusableFormComponent from '@/components/ReusableFormComponent.vue';
-
 // Router und Route für IDs
 const router = useRouter();
 const route = useRoute();

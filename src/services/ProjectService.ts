@@ -35,47 +35,6 @@ export interface PropertyItem {
   buildings?: BuildingItem[];
 }
 
-
-export interface AddressItem {
-  street?: string;
-  city?: string;
-  province?: string;
-  zip?: string;
-  country?: string;
-}
-
-export interface PropertyTree {
-  first: number;
-  size: number;
-  total: number;
-  nodes: PropertyNode[];
-}
-
-export interface PropertyNode {
-  key: string;
-  data: PropertyTableData;
-  children: PropertyNode[];
-}
-
-export interface PropertyTableData {
-  type: EntityType;
-  title?: string;
-  description?: string;
-  tenant?: string;
-  usable_space?: number;
-  isButtonRow?: boolean;
-}
-
-export enum EntityType {
-  Apartment = 'apartment',
-  Commercial = 'commercial',
-  Garage = 'garage',
-  Site = 'site',
-  Building = 'building',
-  Project = 'project',
-  Property = 'property',
-}
-
 export interface BuildingItem {
   id?: string;
   propertyId: string;
@@ -169,7 +128,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  getPropertyTree(projectId: string, limit: number, offset: number): Promise<PropertyTree> {
+  getProperties(projectId: string, limit: number, offset: number): Promise<PropertyList> {
     return axios
       .get(`${this.url}/${projectId}/properties`, {
         params: {
@@ -227,6 +186,10 @@ export default class ProjectService {
         throw error;
       });
   }
+
+  createSite(title: string, projectId: string, propertyId: string) {
+    return axios
+      .post(`${this.url}/${projectId}/properties/${propertyId}/sites`, {
         title: title,
         propertyId: propertyId,
       })
@@ -234,69 +197,44 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
+  getSites(projectId: string, propertyId: string) {
     return axios
-      .get(`${this.url}/${projectId}/commercial/${commercialId}/buildings`)
+      .get(`${this.url}/${projectId}/properties/${propertyId}/sites`)
       .then((response) => {
-        console.log('Buildings returned:', response.data);
+        console.log('properties returned', response.data);
         return response.data;
       })
-      .catch((error) => {
-        console.error('Error fetching buildings:', error);
-        throw error;
-      });
+      .catch((error) => console.error(error));
   }
 
-  updateBuilding(projectId: string, commercialId: string, buildingId: string, building: BuildingItem): Promise<any> {
-    const url = `/api/v1/project/${projectId}/commercial/${commercialId}/building/${buildingId}`;
-    return axios.patch(url, building)
-      .then((response) => response.data)
-      .catch((error) => {
-        console.error('Error updating building:', error);
-        throw error;
-      });
-  }
-
-  createApartment(title: string, projectId: string, commercialId: string, buildingId: string) {
+  createBuilding(title: string, projectId: string, propertyId: string) {
     return axios
-      .post(
-        `${this.url}/${projectId}/commercial/${commercialId}/buildings/${buildingId}/apartments`,
-        { title: title, buildingId: buildingId },
-      )
+      .post(`${this.url}/${projectId}/properties/${propertyId}/buildings`, {
+        title: title,
+        propertyId: propertyId,
+      })
       .then((response) => console.log(response))
       .catch((error) => console.error(error));
   }
 
-  getBuildingDetails(
-    projectId: string,
-    commercialId: string,
-    buildingId: string
-  ): Promise<BuildingItem> {
+  getBuildings(projectId: string, propertyId: string) {
     return axios
-      .get(`${this.url}/${projectId}/commercial/${commercialId}/buildings/${buildingId}`)
+      .get(`${this.url}/${projectId}/properties/${propertyId}/buildings`)
       .then((response) => {
-        console.log('Building details:', response.data);
+        console.log('properties returned', response.data);
         return response.data;
       })
-      .catch((error) => {
-        console.error('Error fetching building details:', error);
-        throw error;
-      });
+      .catch((error) => console.error(error));
   }
 
-  deleteBuilding(
-    projectId: string,
-    commercialId: string,
-    buildingId: string
-  ): Promise<void> {
+  createApartment(title: string, projectId: string, propertyId: string, buildingId: string) {
     return axios
-      .delete(`${this.url}/${projectId}/commercial/${commercialId}/buildings/${buildingId}`)
-      .then(() => {
-        console.log('Building deleted successfully.');
-      })
-      .catch((error) => {
-        console.error('Error deleting building:', error);
-        throw error;
-      });
+      .post(
+        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/apartments`,
+        { title: title, buildingId: buildingId },
+      )
+      .then((response) => console.log(response))
+      .catch((error) => console.error(error));
   }
 
   getApartments(projectId: string, propertyId: string, buildingId: string) {

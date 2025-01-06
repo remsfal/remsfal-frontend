@@ -76,7 +76,7 @@ const handleSubmit = async (formData: Record<string, any>) => {
   try {
     await axios.patch(`/project/${projectId}/commercial/${commercialId}/buildings/${buildingId}`, formData);
     alert('Building updated successfully!');
-    await router.push(`/project/${projectId}/commercial/${commercialId}}`);
+    await router.push(`/project/${projectId}/commercial/${commercialId}`);
   } catch (error) {
     console.error('Error updating building:', error);
     alert('Failed to update building. Please try again.');
