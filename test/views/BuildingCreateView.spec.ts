@@ -14,7 +14,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 // Simulierte Routen
 const routes: RouteRecordRaw[] = [
     {
-        path: '/project/:projectId/property/:propertyId',
+        path: '/project/:projectId/commercial/:commercialId',
         name: 'PropertyDetails',
         component: { template: '<div>Property Details</div>' },
     },
@@ -28,7 +28,7 @@ const router = createRouter({
 
 describe('BuildingCreateView.vue', () => {
     beforeEach(async () => {
-        router.push('/project/123/property/456');
+        await router.push('/project/123/commercial/456');
         await router.isReady();
     });
 
@@ -78,10 +78,10 @@ describe('BuildingCreateView.vue', () => {
         await flushPromises();
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/project/123/property/456/buildings',
+            '/project/123/commercial/456/buildings',
             formData
         );
-        expect(pushMock).toHaveBeenCalledWith('/project/123/property/456');
+        expect(pushMock).toHaveBeenCalledWith('/project/123/commercial/456');
     });
 
     it('shows an error message if service call fails', async () => {
@@ -111,4 +111,49 @@ describe('BuildingCreateView.vue', () => {
         expect(mockedAxios.post).toHaveBeenCalled();
         expect(window.alert).toHaveBeenCalledWith('Failed to create building. Please try again.');
     });
+});
+it('sends the correct payload to the API when creating a building', async () => {
+    mockedAxios.post.mockResolvedValueOnce({ status: 201, data: { id: 'mock-building-id' } });
+
+    const wrapper = mount(BuildingCreateView, {
+        global: {
+            plugins: [router, PrimeVue],
+            components: { ReusableFormComponent, InputText, Button },
+        },
+    });
+
+    const formData = {
+        title: 'New Building',
+        addressId: '12345',
+        description: 'A test building',
+        commercialSpace: '100',
+        usableSpace: '200',
+        heatingSpace: '300',
+        rent: '1500',
+        livingSpace: '150', // Optional, falls benötigt
+        differentHeatingSpace: true,
+    };
+
+    // Erwartete Datenstruktur für die API
+    const expectedPayload = {
+        title: 'New Building',
+        addressId: '12345',
+        description: 'A test building',
+        commercialSpace: '100', // String
+        usableSpace: '200',     // String
+        heatingSpace: '300',    // String
+        rent: '1500',           // String
+        livingSpace: '150',     // String
+        differentHeatingSpace: true,
+    };
+
+    // Simuliere das Absenden des Formulars
+    wrapper.findComponent(ReusableFormComponent).vm.$emit('submit', formData);
+    await flushPromises();
+
+    // Überprüfung des API-Aufrufs mit den korrekten Daten
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      '/project/123/commercial/456/buildings',
+      expectedPayload
+    );
 });

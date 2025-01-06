@@ -13,12 +13,12 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 // Simulierte Routen
 const routes: RouteRecordRaw[] = [
     {
-        path: '/project/:projectId/property/:propertyId/buildings/:buildingId',
+        path: '/project/:projectId/commercial/:commercialId/buildings/:buildingId',
         name: 'BuildingUpdate',
         component: { template: '<div>Building Update</div>' },
     },
     {
-        path: '/project/:projectId/property/:propertyId',
+        path: '/project/:projectId/commercial/:commercialId',
         name: 'PropertyDetails',
         component: { template: '<div>Property Details</div>' },
     },
@@ -32,7 +32,7 @@ const router = createRouter({
 
 describe('BuildingUpdateView.vue', () => {
     beforeEach(async () => {
-        router.push('/project/123/property/456/buildings/789');
+        await router.push('/project/123/commercial/456/buildings/789');
         await router.isReady();
     });
 
@@ -58,7 +58,7 @@ describe('BuildingUpdateView.vue', () => {
         await flushPromises();
 
         const formProps = wrapper.findComponent(ReusableFormComponent).props('initialValues');
-        expect(mockedAxios.get).toHaveBeenCalledWith('/project/123/property/456/buildings/789');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/project/123/commercial/456/buildings/789');
         expect(formProps).toEqual(buildingData);
     });
 
@@ -88,9 +88,9 @@ describe('BuildingUpdateView.vue', () => {
         await flushPromises();
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/project/123/property/456/buildings/789',
+            '/project/123/commercial/456/buildings/789',
             updatedData
         );
-        expect(pushMock).toHaveBeenCalledWith('/project/123/property/456');
+        expect(pushMock).toHaveBeenCalledWith('/project/123/commercial/456');
     });
 });
