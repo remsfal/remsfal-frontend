@@ -34,12 +34,12 @@ const validationErrors = ref<Record<string, string>>({});
 
 // make sure the form values are updated when the initial values change upon prop change
 watch(
-    () => props.initialValues,
-    (newValues) => {
-      formValues.value = { ...newValues };
-      validationErrors.value = {}; // Clear any existing validation errors
-    },
-    { deep: true, immediate: true }
+  () => props.initialValues,
+  (newValues) => {
+    formValues.value = { ...newValues };
+    validationErrors.value = {}; // Clear any existing validation errors
+  },
+  { deep: true, immediate: true }
 );
 
 
@@ -63,11 +63,12 @@ const validateField = (field: typeof props.fields[0]) => {
 
   // Run additional validation rules
   if (field.validations && value) {
-    for (const validationFn of field.validations) {
-      const error = validationFn(value);
-      if (error) errors.push(error);
-    }
+
+  for (const validationFn of field.validations) {
+    const error = validationFn(value);
+    if (error) errors.push(error);
   }
+}
 
   // Update validation errors for the field
   if (errors.length > 0) {
