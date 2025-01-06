@@ -83,6 +83,29 @@ const routes = [
                 component: () => import('@/views/PropertyView.vue'),
             },
             {
+                path: 'site',
+                children:[
+                    {
+                        path: 'create',
+                        name: 'CreateSite',
+                        props: (route: RouteLocationNormalizedLoaded) => ({
+                            projectId: route.params.projectId,
+                            propertyId: route.query.parentId,
+                        }),
+                        component: () => import('@/views/SiteCreationView.vue'),
+                    },
+                    {
+                        path: ':siteId',
+                        name: 'EditSite',
+                        props: (route: RouteLocationNormalizedLoaded) => ({
+                            projectId: route.params.project,
+                            siteId: route.params.siteId,
+                        }),
+                        component: () => import('@/views/SiteUpdateView.vue'),
+                    }
+                ]
+            },
+            {
                 path: 'tasks',
                 name: 'TaskOverview',
                 props: (route: RouteLocationNormalizedLoaded) => ({
