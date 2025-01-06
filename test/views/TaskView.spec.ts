@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
 import PrimeVue from 'primevue/config';
-import { ref } from 'vue';
 import TaskService, { Status, TaskItem } from "../../src/services/TaskService";
 
 
