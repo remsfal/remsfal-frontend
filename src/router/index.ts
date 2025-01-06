@@ -54,7 +54,7 @@ const routes = [
                 path: 'settings',
                 name: 'ProjectSettings',
                 props: true,
-                component: () => import('@/views/ProjectSettings.vue'),
+                component: () => import('@/views/ProjectSettingsView.vue'),
             },
             {
                 path: 'objects',
