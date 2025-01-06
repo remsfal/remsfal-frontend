@@ -35,16 +35,11 @@
 <script>
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import Panel from 'primevue/panel';
-import Avatar from 'primevue/avatar';
-import Button from 'primevue/button';
-import Editor from 'primevue/editor';
-import Message from 'primevue/message';
 
 export default {
   name: 'ProjectDiscussionChatSession',
   setup() {
-    // Define dummy data
+    // Dummy data - 3 discussions corresponding to those used in ProjectDiscussions.vue
     const discussions = [
       {
         discussionId: 1,
@@ -109,7 +104,6 @@ export default {
           },
         ],
       },
-      // Add more dummy data as needed
     ];
 
     // Get the discussionId from the route (assumed to be passed as a parameter in the URL)
@@ -164,6 +158,3 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Add styles if needed */
-</style>

@@ -59,7 +59,7 @@ import { useRouter } from 'vue-router';
 import Menu from 'primevue/menu';
 import Button from 'primevue/button';
 import Avatar from 'primevue/avatar';
-import ProjectDiscussionChatSession from './ProjectDiscussionChatSession.vue'; // Adjust path as needed
+import ProjectDiscussionChatSession from './ProjectDiscussionChatSession.vue';
 
 const menu = ref(null);
 const toast = useToast();
@@ -83,10 +83,10 @@ const items = ref([
   },
 ]);
 
-// This variable holds the text to be displayed
+// This variable holds the text to be displayed (Dummy Data)
 const defaultText = "This is the default Text for the Discussion Messages, make sure to load this dynamically from the back end of the application";
 
-// Adjusted dummy data structure with dynamic avatars
+// Dummy Data for testing
 const discussions = ref([
   { userId: 1, discussionId: 1, title: 'Bug Fix: Login Issue', text: defaultText, avatarUrl: 'https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png' },
   { userId: 2, discussionId: 2, title: 'Feature Request: Dark Mode', text: defaultText, avatarUrl: 'https://primefaces.org/cdn/primevue/images/avatar/johnson.png' },
