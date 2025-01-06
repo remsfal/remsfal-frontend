@@ -3,6 +3,7 @@ import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
 import ProjectDiscussions from '@/views/ProjectDiscussions.vue';
+import ProjectDiscussionChatSession from '@/views/ProjectDiscussionChatSession.vue';
 
 const routes = [
     {
@@ -96,6 +97,12 @@ const routes = [
                 name: 'Diskussionen',
                 props: true,
                 component: () => import('@/views/ProjectDiscussions.vue'),
+            },
+            {
+                path: 'discussions/:discussionId',
+                name: 'ProjectDiscussionChatSession',
+                props: true,
+                component: () => import('@/views/ProjectDiscussionChatSession.vue'),
             }
         ],
     },

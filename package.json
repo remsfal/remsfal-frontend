@@ -36,6 +36,7 @@
     "primeflex": "^3.3.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.5",
+    "quill": "^2.0.3",
     "vue": "^3.5.13",
     "vue-axios": "^3.5.0",
     "vue-router": "^4.5.0"
