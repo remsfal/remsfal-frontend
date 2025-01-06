@@ -5,12 +5,6 @@ import PrimeVue from 'primevue/config';
 import { ref } from 'vue';
 import TaskService, { Status, TaskItem } from "../../src/services/TaskService";
 
-const tasks = ref([
-  { id: 1, status: 'OPEN', owner: 'user1' },
-  { id: 2, status: 'CLOSED', owner: 'user2' },
-  { id: 3, status: 'OPEN', owner: 'user1' },
-  { id: 4, status: 'IN_PROGRESS', owner: 'user3' },
-]);
 
 describe('TaskView', () => {
   const projectId = '1';
