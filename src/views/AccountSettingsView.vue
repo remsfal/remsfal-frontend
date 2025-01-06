@@ -5,13 +5,16 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
+import { computed } from 'vue';
 
 const userProfile = ref({} as User); // Das gesamte Benutzerprofil
 const editedUserProfile = ref({} as User);
 const addressProfile = ref({} as Address);
 const editedAddress = ref({} as Address);
-const visible = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
+const deleteAcc = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
 const changes = ref(false);
+const saveSuccess = ref(false);
+const saveError = ref(false);
 const countries = ref([
   { name: 'Australia', code: 'AU' },
   { name: 'Brazil', code: 'BR' },
@@ -71,9 +74,9 @@ onMounted(() => {
 async function fetchUserProfile() {
   try {
     const userService = new UserService();
-    const profile = await userService.getUser(); // Ruft das Benutzerprofil vom Server ab
+    const profile = await userService.getUser();
     if (profile) {
-      userProfile.value = profile; // Speichert das gesamte Benutzerprofil
+      userProfile.value = profile;
       editedUserProfile.value = { ...profile };
       if (userProfile.value.address) {
         addressProfile.value = userProfile.value.address;
@@ -99,7 +102,6 @@ async function saveProfile(): Promise<void> {
   try {
     const userService = new UserService();
 
-    // Zusammenstellen des aktualisierten Benutzerobjekts
     const user: Partial<User> = {
       id: userProfile.value?.id || '',
       firstName: getUpdatedValue('firstName'),
@@ -109,7 +111,6 @@ async function saveProfile(): Promise<void> {
       privatePhoneNumber: getUpdatedValue('privatePhoneNumber'),
     };
 
-    // Optional: Adresse hinzufügen, falls sie valide ist
     if (editedAddress.value && validateAddress(editedAddress.value)) {
       const address: Address = {
         street: getUpdatedAddressValue('street'),
@@ -123,9 +124,12 @@ async function saveProfile(): Promise<void> {
 
     const updatedUser = await userService.updateUser(user);
     console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
+    saveSuccess.value = true;
+
   } catch (e) {
     console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
     alert('Fehler beim Aktualisieren des Benutzerprofils!');
+    saveError.value = true;
   }
 }
 
@@ -147,6 +151,7 @@ function deleteAccount() {
     .catch(() => console.error('Das Benutzerprofil konnte nicht gelöscht werden!'));
 }
 
+// Reverts all changes made to the user and address profiles
 function cancel() {
   editedUserProfile.value = { ...userProfile.value };
   editedAddress.value = { ...addressProfile.value };
@@ -156,12 +161,18 @@ function cancel() {
   });
 }
 
+// Validates a specific field in the user or address profile based on its type and content.
+// Uses regex patterns to enforce rules:
+// - Default: Only allows alphabetic characters and spaces.
+// - Street: Allows numbers, alphabetic characters, spaces, and certain symbols (.,-).
+// Validates names and addresses for emptiness or incorrect format and validates phone numbers
+// Updates the appropriate error message if validation fails.
+// Also checks for any changes between the original and edited profiles to update `changes`.
 function validateField(
   field: keyof User | keyof Address,
   type: 'name' | 'phone' | 'address',
   errorKey: keyof typeof errorMessage.value,
 ) {
-  // Wähle das Feld entweder aus `editedUserProfile` oder `editedAddress`
   const value =
     field in editedUserProfile.value
       ? editedUserProfile.value[field as keyof User]
@@ -169,12 +180,13 @@ function validateField(
 
   const regexMap = {
     default: /^[A-Za-zÄÖÜäöüß\s]+$/,
-    street: /^[A-Za-zÄÖÜäöüß0-9\s.,\-/]+$/,
+    street: /^(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s.,\-]+$/,
   };
 
   const regex = field === 'street' ? regexMap.street : regexMap.default;
 
   if ((type === 'name' || type === 'address') && typeof value === 'string') {
+    console.log("222")
     if (!value || value.length === 0) {
       errorMessage.value[errorKey] = 'Bitte eingeben!';
     } else if (!regex.test(value)) {
@@ -198,6 +210,8 @@ function validateField(
   );
 }
 
+// Validates the entered country code by checking if it matches a known country.
+// If no match is found an error indicating the country code is invalid will be displayed.
 function updateCountryFromCode() {
   const matchingCountry = countries.value.find(
     (country) => country.code === editedAddress.value.countryCode.toUpperCase(),
@@ -206,10 +220,13 @@ function updateCountryFromCode() {
   if (!matchingCountry) {
     errorMessage.value.countryCode = 'Ungültiges Länderkürzel!';
   } else {
-    editedAddress.value.countryCode = matchingCountry.code; // Kein Fehler
+    editedAddress.value.countryCode = matchingCountry.code;
+    errorMessage.value.countryCode = '';
   }
 }
 
+// Fetches city, province, and country code based on the entered zip code.
+// Displays an error message if the zip code is invalid or the service call fails.
 async function getCity() {
   const userService = new UserService();
   const address = await userService.getCityFromZip(editedAddress.value.zip);
@@ -229,6 +246,8 @@ async function getCity() {
   }
 }
 
+// Determines if there are any changes between the original user and address profiles and their edited
+// versions. Returns `true` if differences are detected, otherwise `false`.
 function checkValues(
   userProfile: User,
   editedUserProfile: User,
@@ -245,6 +264,9 @@ function checkValues(
   }
 }
 
+// Recursively compares two objects (User or Address) to check if they are identical.
+// - Returns `true` if the objects have the same structure and identical values for all keys.
+// - Returns `false` if the objects differ in keys or values.
 function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
   if (obj1 === obj2) return true;
 
@@ -258,7 +280,6 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
   if (keys1.length !== keys2.length) return false;
 
   for (const key of keys1) {
-    // Use optional chaining for safety
     if (
       !keys2.includes(key) ||
       !compareObjects(obj1[key as keyof typeof obj1], obj2[key as keyof typeof obj2])
@@ -269,6 +290,11 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
 
   return true;
 }
+
+// Check if any error message is not empty to disable save button
+const isDisabled = computed(() => {
+  return Object.values(errorMessage.value).some((message) => message !== '');
+});
 </script>
 
 <template>
@@ -393,7 +419,7 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="street">Straße*:</label>
+                <label class="label" for="street">Straße und Hausnummer*:</label>
                 <input
                   id="street"
                   v-model="editedAddress.street"
@@ -448,7 +474,12 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
               </div>
               <div class="input-container">
                 <label for="country" class="label">Land*:</label>
-                <select id="country" v-model="editedAddress.countryCode" class="select-country">
+                <select
+                  id="country"
+                  v-model="editedAddress.countryCode"
+                  class="select-country"
+                  @change="updateCountryFromCode"
+                >
                   <option disabled value="">Land auswählen*</option>
                   <option v-for="country in countries" :key="country.code" :value="country.code">
                     {{ country.name }}
@@ -479,35 +510,36 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
     <div>
       <div>
         <div class="buttons-container centered-buttons">
-          <div v-if="changes">
             <Button
+            v-if="changes"
               type="button"
               icon="pi pi-user-edit"
-              class="save-button"
+              class="save-button btn"
               label="Speichern"
+              v-bind:disabled="isDisabled"
               @click="saveProfile"
             />
             <Button
+            v-if="changes"
               type="button"
               icon="pi pi-times"
-              class="cancel-button"
+              class="cancel-button btn"
               label="Abbrechen"
               @click="cancel"
             />
-          </div>
           <Button
             type="button"
             icon="pi pi-trash"
             severity="danger"
             aria-label="Cancel"
-            class="delete-button"
+            class="delete-button btn"
             label="Konto löschen"
-            @click="visible = true"
+            @click="deleteAcc = true"
           />
         </div>
         <div class="delete Button">
           <Dialog
-            v-model:visible="visible"
+            v-model:visible="deleteAcc"
             maximizable
             modal
             header=" "
@@ -529,6 +561,30 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
                 @click="deleteAccount"
               />
             </div>
+          </Dialog>
+        </div>
+        <div class="saveSuccess">
+          <Dialog
+            v-model:visible="saveSuccess"
+            maximizable
+            modal
+            header=" "
+            :style="{ width: '50rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+          >
+            <p>Daten wurden erfolgreich gespeichert!</p>
+          </Dialog>
+        </div>
+        <div class="saveError">
+          <Dialog
+            v-model:visible="saveError"
+            maximizable
+            modal
+            header=" "
+            :style="{ width: '50rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+          >
+            <p>Daten konnten nicht gespeichert werden!</p>
           </Dialog>
         </div>
       </div>
@@ -567,6 +623,10 @@ h1 {
 
 p {
   font-size: 12px;
+}
+
+.btn{
+  width: 150px;
 }
 
 input,
