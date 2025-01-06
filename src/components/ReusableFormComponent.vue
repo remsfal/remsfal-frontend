@@ -26,19 +26,6 @@ const emit = defineEmits<{
   (e: 'submit', value: Record<string, any>): void;
   (e: 'cancel'): void;
 }>();
-const formValues = ref({ ...props.initialValues });
-const validationErrors = ref<Record<string, string>>({});
-// make sure the form values are updated when the initial values change upon prop change
-watch(
-    () => props.initialValues,
-    (newValues) => {
-      formValues.value = { ...newValues };
-      validationErrors.value = {}; // Clear any existing validation errors
-    },
-    { deep: true, immediate: true }
-);
-// Compute whether the form is valid
-const isFormValid = computed(() => Object.keys(validationErrors.value).length === 0);
 // Detect if any values have changed from the initial state
 const isChanged = computed(() => {
   return JSON.stringify(formValues.value) !== JSON.stringify(props.initialValues);
@@ -51,13 +38,6 @@ const validateField = (field: typeof props.fields[0]) => {
   if (field.required && !value) {
     errors.push(`${field.label} is required.`);
   }
-  // Run additional validation rules
-  if (field.validations && value) {
-    for (const validationFn of field.validations) {
-      const error = validationFn(value);
-      if (error) errors.push(error);
-    }
-  }
   // Update validation errors for the field
   if (errors.length > 0) {
     validationErrors.value[field.name] = errors.join(' ');
@@ -69,9 +49,6 @@ const validateField = (field: typeof props.fields[0]) => {
 const validateForm = () => {
   props.fields.forEach((field) => validateField(field));
 };
-watch(formValues, (newValue) => {
-  emit('update:values', newValue);
-}, { deep: true });
 // Submit handler
 const handleSubmit = () => {
   validateForm();
@@ -80,6 +57,7 @@ const handleSubmit = () => {
     emit('submit', formValues.value);
   }
 };
+
 // Cancel handler
 const handleCancel = () => {
   if (props.onCancel) props.onCancel();
@@ -171,21 +149,18 @@ const handleCancel = () => {
   max-width: 600px;
   margin: 0 auto;
 }
-.form-fields {
-  margin-bottom: 1rem;
-}
-.field {
-  margin-bottom: 1rem;
-}
+
 .error-message {
   color: red;
   font-size: 0.875rem;
 }
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
 }
+
 .no-resize {
   resize: none;
 }

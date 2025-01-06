@@ -2,6 +2,10 @@
 import {ref, onMounted} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
 import ProjectService, {type PropertyItem} from '@/services/ProjectService';
+import Button from 'primevue/button';
+import InputNumber from 'primevue/inputnumber'
+import Textarea from 'primevue/textarea'
+import InputText from 'primevue/inputtext';
 
 const props = defineProps<{
   projectId: string;
