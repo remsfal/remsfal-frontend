@@ -85,10 +85,6 @@ describe('GarageView.vue', () => {
     garageId?: string;
   }
 
-  interface WrapperProps {
-    garageId?: string;
-  }
-
   const createWrapper = (props: WrapperProps = {}) => {
     return mount(GarageView, {
       props: {
@@ -102,6 +98,15 @@ describe('GarageView.vue', () => {
         plugins: [PrimeVue],
       },
     });
+  };
+
+  const validateFormSubmission = async (wrapper, mockFormData, expectedCalls) => {
+    await wrapper
+      .findComponent({ name: 'ReusableFormComponentVue' })
+      .vm.$emit('submit', mockFormData);
+    await flushPromises();
+    expect(mockCreateGarage).toHaveBeenCalledTimes(expectedCalls.create);
+    expect(mockUpdateGarage).toHaveBeenCalledTimes(expectedCalls.update);
   };
 
   it('renders the create form when not in edit mode', () => {
@@ -185,82 +190,31 @@ describe('GarageView.vue', () => {
     expect(mockRouterBack).toHaveBeenCalled();
   });
 
-  it('validates usable space input', async () => {
+  it('validates form submission with various invalid inputs', async () => {
     const wrapper = createWrapper();
-    const usableSpaceInput = wrapper.find('input[name="usableSpace"]');
-    await usableSpaceInput.setValue('-10');
-    await wrapper.find('form').trigger('submit.prevent');
-  });
 
-  it('validates title input length', async () => {
-    const wrapper = createWrapper();
-    const titleInput = wrapper.find('input[name="title"]');
-    await titleInput.setValue('ab');
-    await wrapper.find('form').trigger('submit.prevent');
-  });
+    const testCases = [
+      {
+        data: { title: '', description: 'A spacious new garage', location: 'Downtown', usableSpace: '50' },
+        description: 'missing required fields',
+      },
+      {
+        data: { title: 'Valid Garage Title', description: 'A spacious new garage', location: 'Downtown', usableSpace: '-10' },
+        description: 'invalid usable space value',
+      },
+      {
+        data: { title: 'ab', description: 'A spacious new garage', location: 'Downtown', usableSpace: '50' },
+        description: 'invalid title length',
+      },
+      {
+        data: { title: 'ab', description: '', location: '', usableSpace: '-10' },
+        description: 'invalid data for all fields',
+      },
+    ];
 
-  it('handles submission with missing required fields', async () => {
-    const wrapper = createWrapper();
-    const mockFormData = {
-      title: '',
-      description: 'A spacious new garage',
-      location: 'Downtown',
-      usableSpace: '50',
-    };
-    await wrapper
-      .findComponent({ name: 'ReusableFormComponentVue' })
-      .vm.$emit('submit', mockFormData);
-    await flushPromises();
-    expect(mockCreateGarage).not.toHaveBeenCalled();
-    expect(mockUpdateGarage).not.toHaveBeenCalled();
-  });
-
-  it('handles submission with invalid usable space value', async () => {
-    const wrapper = createWrapper();
-    const mockFormData = {
-      title: 'Valid Garage Title',
-      description: 'A spacious new garage',
-      location: 'Downtown',
-      usableSpace: '-10',
-    };
-    await wrapper
-      .findComponent({ name: 'ReusableFormComponentVue' })
-      .vm.$emit('submit', mockFormData);
-    await flushPromises();
-    expect(mockCreateGarage).not.toHaveBeenCalled();
-    expect(mockUpdateGarage).not.toHaveBeenCalled();
-  });
-
-  it('handles submission with invalid title length', async () => {
-    const wrapper = createWrapper();
-    const mockFormData = {
-      title: 'ab',
-      description: 'A spacious new garage',
-      location: 'Downtown',
-      usableSpace: '50',
-    };
-    await wrapper
-      .findComponent({ name: 'ReusableFormComponentVue' })
-      .vm.$emit('submit', mockFormData);
-    await flushPromises();
-    expect(mockCreateGarage).not.toHaveBeenCalled();
-    expect(mockUpdateGarage).not.toHaveBeenCalled();
-  });
-
-  it('handles submission with invalid data for all fields', async () => {
-    const wrapper = createWrapper();
-    const mockFormData = {
-      title: 'ab',
-      description: '',
-      location: '',
-      usableSpace: '-10',
-    };
-    await wrapper
-      .findComponent({ name: 'ReusableFormComponentVue' })
-      .vm.$emit('submit', mockFormData);
-    await flushPromises();
-    expect(mockCreateGarage).not.toHaveBeenCalled();
-    expect(mockUpdateGarage).not.toHaveBeenCalled();
+    for (const testCase of testCases) {
+      await validateFormSubmission(wrapper, testCase.data, { create: 0, update: 0 });
+    }
   });
 
   it('shows an alert when data fetch fails', async () => {
