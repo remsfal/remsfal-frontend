@@ -63,7 +63,6 @@ const validateField = (field: typeof props.fields[0]) => {
 
   // Run additional validation rules
   if (field.validations && value) {
-
   for (const validationFn of field.validations) {
     const error = validationFn(value);
     if (error) errors.push(error);
