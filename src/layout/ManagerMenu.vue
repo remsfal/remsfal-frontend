@@ -16,12 +16,12 @@ const model = ref([
     items: [
       {
         label: 'Dashboard',
-        icon: 'pi pi-fw pi-chart-bar',
+        icon: {type: 'pi', name: 'pi pi-fw pi-chart-bar'},
         to: `/project/${projectStore.projectId}/`,
       },
       {
         label: 'Einstellungen',
-        icon: 'pi pi-fw pi-cog',
+        icon: {type: 'pi', name: 'pi pi-fw pi-cog'},
         to: `/project/${projectStore.projectId}/settings`,
       },
     ],
@@ -31,12 +31,12 @@ const model = ref([
     items: [
       {
         label: 'Objektdaten',
-        icon: 'pi pi-fw pi-home',
+        icon: {type: 'pi', name: 'pi pi-fw pi-home'},
         to: `/project/${projectStore.projectId}/objects`,
       },
       {
         label: 'Mieterdaten',
-        icon: 'pi pi-fw pi-users',
+        icon: {type: 'pi', name: 'pi pi-fw pi-users'},
         to: `/project/${projectStore.projectId}/tenancies`,
       },
     ],
@@ -46,7 +46,7 @@ const model = ref([
     items: [
       {
         label: 'Meine Aufgaben',
-        icon: 'pi pi-fw pi-list',
+        icon: {type: 'fa', name: ['fas', 'list']},
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({
@@ -58,7 +58,7 @@ const model = ref([
       },
       {
         label: 'Offene Aufgaben',
-        icon: 'pi pi-fw pi-list',
+        icon: {type: 'fa', name: ['fas', 'list-check']},
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({
@@ -70,7 +70,7 @@ const model = ref([
       },
       {
         label: 'Alle Aufgaben',
-        icon: 'pi pi-fw pi-list',
+        icon: {type: 'fa', name: ['far', 'rectangle-list']},
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({ name: 'TaskOverview', params: { projectId } });
@@ -81,10 +81,26 @@ const model = ref([
   {
     label: 'Mängelmanagement',
     items: [
-      { label: 'Neue Meldungen', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
-      { label: 'Offene Mängel', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
-      { label: 'Beauftragte Mängel', icon: 'pi pi-fw pi-list', to: '/uikit/formlayout' },
-      { label: 'Alle Meldungen', icon: 'pi pi-fw pi-list', to: '/uikit/input' },
+      {
+        label: 'Neue Meldungen',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'Offene Mängel',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'Beauftragte Mängel',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/uikit/formlayout',
+      },
+      {
+        label: 'Alle Meldungen',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/uikit/input',
+      },
     ],
   },
 ] as MenuItem[]);

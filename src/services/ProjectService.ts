@@ -35,6 +35,38 @@ export interface PropertyItem {
   buildings?: BuildingItem[];
 }
 
+export interface PropertyTree {
+  first: number;
+  size: number;
+  total: number;
+  nodes: PropertyNode[];
+}
+
+export interface PropertyNode {
+  key: string;
+  data: PropertyTableData;
+  children: PropertyNode[];
+}
+
+export interface PropertyTableData {
+  type: EntityType;
+  title?: string;
+  description?: string;
+  tenant?: string;
+  usable_space?: number;
+  isButtonRow?: boolean;
+}
+
+export enum EntityType {
+  Apartment = 'apartment',
+  Commercial = 'commercial',
+  Garage = 'garage',
+  Site = 'site',
+  Building = 'building',
+  Project = 'project',
+  Property = 'property',
+}
+
 export interface BuildingItem {
   id?: string;
   propertyId: string;
@@ -128,7 +160,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  getProperties(projectId: string, limit: number, offset: number): Promise<PropertyList> {
+  getPropertyTree(projectId: string, limit: number, offset: number): Promise<PropertyTree> {
     return axios
       .get(`${this.url}/${projectId}/properties`, {
         params: {
@@ -217,7 +249,6 @@ export default class ProjectService {
       });
   }
 
-  getBuildings(projectId: string, commercialId: string): Promise<BuildingItem[]> {
     return axios
       .get(`${this.url}/${projectId}/commercial/${commercialId}/buildings`)
       .then((response) => {
