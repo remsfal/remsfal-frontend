@@ -35,6 +35,15 @@ export interface PropertyItem {
   buildings?: BuildingItem[];
 }
 
+
+export interface AddressItem {
+  street?: string;
+  city?: string;
+  province?: string;
+  zip?: string;
+  country?: string;
+}
+
 export interface PropertyTree {
   first: number;
   size: number;
@@ -218,35 +227,11 @@ export default class ProjectService {
         throw error;
       });
   }
-
-  createSite(title: string, projectId: string, propertyId: string) {
-    return axios
-      .post(`${this.url}/${projectId}/properties/${propertyId}/sites`, {
         title: title,
         propertyId: propertyId,
       })
       .then((response) => console.log(response))
       .catch((error) => console.error(error));
-  }
-
-  getSites(projectId: string, propertyId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}/sites`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
-  createBuilding(projectId: string, commercialId: string, building: BuildingItem): Promise<any> {
-    const url = `/api/v1/project/${projectId}/commercial/${commercialId}/building`;
-    return axios.post(url, building)
-      .then((response) => response.data)
-      .catch((error) => {
-        console.error('Error creating building:', error);
-        throw error;
-      });
   }
 
     return axios
