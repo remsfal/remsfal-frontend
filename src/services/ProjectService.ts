@@ -71,9 +71,19 @@ export interface GarageItem {
   usableSpace: number;
   rent: number;
 }
+export enum EntityType {
+  Apartment = 'apartment',
+  Commercial = 'commercial',
+  Garage = 'garage',
+  Site = 'site',
+  Project = 'project',
+  Property = 'property',
+}
 
 export default class ProjectService {
   private readonly url: string = '/api/v1/projects';
+
+
 
   getProjects(offset: number = 0, limit: number = 10): Promise<ProjectList> {
     return axios.get(this.url, { params: { limit: limit, offset: offset } }).then((response) => {
