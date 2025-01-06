@@ -42,6 +42,7 @@ export interface AddressItem {
   province?: string;
   zip?: string;
   country?: string;
+}
 
 export interface PropertyTree {
   first: number;
