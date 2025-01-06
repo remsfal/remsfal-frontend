@@ -21,12 +21,18 @@
     "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@primevue/themes": "^4.2.5",
     "axios": "^1.7.7",
     "chart.js": "4.4.4",
     "pinia": "^2.1.7",
     "primeflex": "^3.3.0",
     "primeicons": "^7.0.0",
-    "primevue": "3.52.0",
+    "primevue": "^4.2.5",
     "vue": "^3.3.11",
     "vue-axios": "^3.5.0",
     "vue-router": "^4.4.5"
