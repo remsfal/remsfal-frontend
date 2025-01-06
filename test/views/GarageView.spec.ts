@@ -73,13 +73,11 @@ describe('GarageView.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock window.alert
     originalAlert = window.alert;
     window.alert = vi.fn();
   });
 
   afterEach(() => {
-    // Restore original alert after each test
     window.alert = originalAlert;
   });
 
@@ -126,10 +124,8 @@ describe('GarageView.vue', () => {
     mockGetGarage.mockResolvedValueOnce({
       data: dummyGarageData,
     });
-
     const wrapper = createWrapper({ garageId: '123' });
     await flushPromises();
-
     expect(mockGetGarage).toHaveBeenCalledWith('1', '2', '3', '123');
     const reusableForm = wrapper.findComponent({ name: 'ReusableFormComponentVue' });
     expect(reusableForm.props('initialValues')).toEqual({
@@ -203,12 +199,10 @@ describe('GarageView.vue', () => {
     await wrapper.find('form').trigger('submit.prevent');
   });
 
-  // New tests for edge cases
-
   it('handles submission with missing required fields', async () => {
     const wrapper = createWrapper();
     const mockFormData = {
-      title: '', // Missing required title
+      title: '',
       description: 'A spacious new garage',
       location: 'Downtown',
       usableSpace: '50',
@@ -217,8 +211,6 @@ describe('GarageView.vue', () => {
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
     await flushPromises();
-
-    // Ensure that no service method is called due to missing title
     expect(mockCreateGarage).not.toHaveBeenCalled();
     expect(mockUpdateGarage).not.toHaveBeenCalled();
   });
@@ -229,14 +221,12 @@ describe('GarageView.vue', () => {
       title: 'Valid Garage Title',
       description: 'A spacious new garage',
       location: 'Downtown',
-      usableSpace: '-10', // Invalid usable space (negative number)
+      usableSpace: '-10',
     };
     await wrapper
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
     await flushPromises();
-
-    // Ensure that no service method is called due to invalid usable space
     expect(mockCreateGarage).not.toHaveBeenCalled();
     expect(mockUpdateGarage).not.toHaveBeenCalled();
   });
@@ -244,7 +234,7 @@ describe('GarageView.vue', () => {
   it('handles submission with invalid title length', async () => {
     const wrapper = createWrapper();
     const mockFormData = {
-      title: 'ab', // Invalid title (too short)
+      title: 'ab',
       description: 'A spacious new garage',
       location: 'Downtown',
       usableSpace: '50',
@@ -253,8 +243,6 @@ describe('GarageView.vue', () => {
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
     await flushPromises();
-
-    // Ensure that no service method is called due to invalid title length
     expect(mockCreateGarage).not.toHaveBeenCalled();
     expect(mockUpdateGarage).not.toHaveBeenCalled();
   });
@@ -262,17 +250,15 @@ describe('GarageView.vue', () => {
   it('handles submission with invalid data for all fields', async () => {
     const wrapper = createWrapper();
     const mockFormData = {
-      title: 'ab', // Invalid title (too short)
-      description: '', // Missing description
-      location: '', // Missing location
-      usableSpace: '-10', // Invalid usable space (negative number)
+      title: 'ab',
+      description: '',
+      location: '',
+      usableSpace: '-10',
     };
     await wrapper
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
     await flushPromises();
-
-    // Ensure that no service method is called due to invalid data
     expect(mockCreateGarage).not.toHaveBeenCalled();
     expect(mockUpdateGarage).not.toHaveBeenCalled();
   });
@@ -298,8 +284,6 @@ describe('GarageView.vue', () => {
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
     await flushPromises();
-
-    // Ensure that an alert is shown for the failure
     expect(window.alert).toHaveBeenCalledWith('Failed to submit garage data. Please try again.');
   });
 
@@ -316,8 +300,6 @@ describe('GarageView.vue', () => {
       .findComponent({ name: 'ReusableFormComponentVue' })
       .vm.$emit('submit', mockFormData);
     await flushPromises();
-
-    // Ensure that an alert is shown for the failure
     expect(window.alert).toHaveBeenCalledWith('Failed to submit garage data. Please try again.');
   });
 });
