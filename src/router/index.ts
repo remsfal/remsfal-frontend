@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} fro
 import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
+import ProjectDiscussions from '@/views/ProjectDiscussions.vue';
 
 const routes = [
     {
@@ -94,6 +95,7 @@ const routes = [
                 path: 'discussions',
                 name: 'Diskussionen',
                 props: true,
+                component: () => import('@/views/ProjectDiscussions.vue'),
             }
         ],
     },
