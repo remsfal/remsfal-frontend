@@ -12,11 +12,12 @@ const props = defineProps<{
   status?: Status;
 }>();
 const taskService = new TaskService();
-//const user = new UserService();
 const title = ref<string>('');
 const description = ref<string>('');
 const visible = ref<boolean>(false);
 const tasks = ref<TaskItem[]>([]);
+const taskbyStatusOpen = ref<TaskItem[]>([]);
+const myTasks = ref<TaskItem[]>([]);
 
 const createTask = () => {
   const projectId = props.projectId;
@@ -35,7 +36,6 @@ const createTask = () => {
 
 const loadTasks = () => {
   const projectId = props.projectId;
-
   taskService
     .getTasks(projectId)
     .then((tasklist) => {
@@ -45,23 +45,41 @@ const loadTasks = () => {
       console.error('Error loading tasks:', error);
     });
 };
-const filterMineTasks = () => {
-  const filteredTasks = tasks.value.filter((task) => task.owner === props.owner);
-  return filteredTasks;
+const loadTaskswithOpenStatus = () => {
+  const projectId = props.projectId;
+  taskService
+    .getTasks(projectId,'OPEN')
+    .then((tasklist) => {
+      taskbyStatusOpen.value = tasklist.tasks;
+    })
+    .catch((error) => {
+      console.error('Error loading tasks:', error);
+    });
 };
-const filterOpenTasks = () => {
-  const filteredTasks = tasks.value.filter((task) => task.status.toString() === 'OPEN');
-  console.log('filtered tasks', filteredTasks);
-  return filteredTasks;
+const loadMyTasks = () => {
+  const projectId = props.projectId;
+  taskService
+    .getTasks(projectId,null, props.owner)
+    .then((tasklist) => {
+      myTasks.value = tasklist.tasks;
+    })
+    .catch((error) => {
+      console.error('Error loading tasks:', error);
+    });
 };
+
 onMounted(() => {
   loadTasks();
+  loadTaskswithOpenStatus();
+  loadMyTasks();
 });
 
 watch(
   () => props,
   () => {
     loadTasks();
+    loadTaskswithOpenStatus();
+    loadMyTasks();
   },
 );
 </script>
@@ -103,12 +121,12 @@ watch(
 
       <div class="task-list-wrapper">
         <div v-if="owner">
-          <TaskTable :tasks="filterMineTasks()">
+          <TaskTable :tasks="myTasks">
             <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
           </TaskTable>
         </div>
         <div v-else-if="status">
-          <TaskTable :tasks="filterOpenTasks()"> </TaskTable>
+          <TaskTable :tasks="taskbyStatusOpen"> </TaskTable>
         </div>
         <div v-else>
           <TaskTable :tasks="tasks">
