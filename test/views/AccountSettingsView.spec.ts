@@ -82,7 +82,7 @@ describe('AccountSettingsView', () => {
       await input.setValue('');
       await input.trigger('blur');
       errorMessage = wrapper.find('input#firstName ~ .error');
-      expect(errorMessage.text()).toBe('Please enter a value!');
+      expect(errorMessage.text()).toBe('Bitte eingeben!');
     });
 
     test('An invalid input value fails regex validation and shows an error', async () => {
@@ -92,7 +92,7 @@ describe('AccountSettingsView', () => {
       await input.setValue('12dg');
       await input.trigger('blur');
       errorMessage = wrapper.find('input#firstName ~ .error');
-      expect(errorMessage.text()).toBe('Please check your input!');
+      expect(errorMessage.text()).toBe('Eingabe bitte überprüfen!');
     });
   });
 
@@ -114,7 +114,7 @@ describe('AccountSettingsView', () => {
       await input.setValue('12w134567');
       await input.trigger('blur');
       errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
-      expect(errorMessage.text()).toBe('Invalid phone number!');
+      expect(errorMessage.text()).toBe('Telefonnummer ist ungültig!');
     });
   });
 
@@ -142,7 +142,7 @@ describe('AccountSettingsView', () => {
     test('Errors cause isDisabled to be true', async () => {
       wrapper.vm.changes = true;
       wrapper.vm.errorMessage = {
-        firstname: 'Please enter a value!',
+        firstname: 'Bitte eingeben!',
       };
       await nextTick();
       expect(wrapper.vm.isDisabled).toBe(true);
