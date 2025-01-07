@@ -75,7 +75,7 @@ const routes = [
                 component: () => import('@/views/CreatePropertyView.vue'),
             },
             {
-                path: 'property/:propertyId/update',
+                path: 'property/:propertyId',
                 name: 'ModifyProperty',
                 props: (route: RouteLocationNormalizedLoaded) => ({
                     projectId: route.params.projectId,
