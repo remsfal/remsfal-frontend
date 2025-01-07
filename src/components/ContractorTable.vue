@@ -1,25 +1,44 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable';
-import { useContractorStore } from '@/stores/ContractorStore';
-import { ref } from 'vue';
 import Column from 'primevue/column';
+import { ref, onMounted } from 'vue';
+import { type TaskListJson, type TaskItemJson } from '@/services/ContractorService';
+import ContractorService from '@/services/ContractorService';
 
 const isLoading = ref(false);
-
-const contractorStore = useContractorStore();
+const tasks = ref<TaskItemJson[]>([]);
 const expandedRows = ref<Record<string, boolean>>({});
+
+const contractorService = new ContractorService();
+
+const loadTasks = () => {
+  isLoading.value = true;
+  contractorService
+    .getTasks()
+    .then((taskList: TaskListJson) => {
+      tasks.value = taskList.tasks;
+      isLoading.value = false;
+    })
+    .catch(() => {
+      isLoading.value = false;
+    });
+};
+
+onMounted(() => {
+  loadTasks();
+})
 </script>
 
 <template>
   <DataTable
     v-model:expandedRows="expandedRows"
-    :value="contractorStore.tasks"
+    :value="tasks"
     scrollable
     :loading="isLoading"
     rowHover
     :rows="10"
     dataKey="id"
-    :totalRecords="contractorStore.totalTasks"
+    :totalRecords="tasks.length"
     lazy
     paginator
     tableStyle="min-width: 75rem"
