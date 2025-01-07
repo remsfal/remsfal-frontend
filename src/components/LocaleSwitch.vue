@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Select from 'primevue/select';
 import { useI18n } from 'vue-i18n';
 
 const i18n = useI18n();

@@ -5,7 +5,7 @@ import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import { createRouter, createWebHistory } from 'vue-router';
-import i18n from "../../src/i18n/i18n";
+import i18n from '../../src/i18n/i18n';
 
 describe('LegalNoticeView.vue', () => {
   const router = createRouter({
@@ -14,14 +14,14 @@ describe('LegalNoticeView.vue', () => {
       {
         path: '/',
         name: 'home',
-        component: { template: '<div>Home</div>' }
+        component: { template: '<div>Home</div>' },
       },
       {
         path: '/legal',
         name: 'legal',
-        component: LegalNoticeView
-      }
-    ]
+        component: LegalNoticeView,
+      },
+    ],
   });
 
   it('renders the legal notice', () => {
@@ -30,7 +30,7 @@ describe('LegalNoticeView.vue', () => {
         plugins: [PrimeVue, router, i18n],
         components: {
           Card,
-          Button
+          Button,
         },
         stubs: {
           Card: {
@@ -39,11 +39,11 @@ describe('LegalNoticeView.vue', () => {
                 <div class="p-card-title"><slot name="title" /></div>
                 <div class="p-card-content"><slot name="content" /></div>
               </div>
-            `
+            `,
           },
-          Button: true
-        }
-      }
+          Button: true,
+        },
+      },
     });
 
     router.isReady().then(() => {
@@ -59,7 +59,7 @@ describe('LegalNoticeView.vue', () => {
         plugins: [PrimeVue, router, i18n],
         components: {
           Card,
-          Button
+          Button,
         },
         stubs: {
           Card: {
@@ -68,13 +68,13 @@ describe('LegalNoticeView.vue', () => {
                 <div class="p-card-title"><slot name="title" /></div>
                 <div class="p-card-content"><slot name="content" /></div>
               </div>
-            `
+            `,
           },
           Button: {
-            template: '<button class="p-button"><slot /></button>'
-          }
-        }
-      }
+            template: '<button class="p-button"><slot /></button>',
+          },
+        },
+      },
     });
 
     await wrapper.find('.p-button').trigger('click');

@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ProjectDashboard from '../../src/views/ProjectDashboard.vue';
-import i18n from "../../src/i18n/i18n";
+import i18n from '../../src/i18n/i18n';
 
 describe('ProjectDashboard.vue', () => {
   it('view dashboard for project ID', () => {
@@ -13,7 +13,7 @@ describe('ProjectDashboard.vue', () => {
     // Montieren der Komponente mit den Props
     const wrapper = mount(ProjectDashboard, {
       global: {
-        plugins: [i18n]
+        plugins: [i18n],
       },
       props: { projectId, projectTitle },
     });

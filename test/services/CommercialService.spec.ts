@@ -31,11 +31,16 @@ describe('CommercialService', () => {
       const mockResponse = { data: { success: true } };
       (axios.post as vi.Mock).mockResolvedValue(mockResponse);
 
-      await commercialService.createCommercial(mockProjectId, mockBuildingId, mockCommercial, mockPropertyId);
+      await commercialService.createCommercial(
+        mockProjectId,
+        mockBuildingId,
+        mockCommercial,
+        mockPropertyId,
+      );
 
       expect(axios.post).toHaveBeenCalledWith(
         `/api/v1/projects/${mockProjectId}/properties/${mockPropertyId}/buildings/${mockBuildingId}/commercials`,
-        { commercial: mockCommercial }
+        { commercial: mockCommercial },
       );
     });
 
@@ -47,7 +52,7 @@ describe('CommercialService', () => {
 
       expect(axios.post).toHaveBeenCalledWith(
         `/api/v1/projects/${mockProjectId}/buildings/${mockBuildingId}/commercials`,
-        { commercial: mockCommercial }
+        { commercial: mockCommercial },
       );
     });
   });
@@ -57,10 +62,15 @@ describe('CommercialService', () => {
       const mockResponse = { data: mockCommercial };
       (axios.get as vi.Mock).mockResolvedValue(mockResponse);
 
-      const result = await commercialService.getCommercial(mockProjectId, mockCommercialId, mockPropertyId, mockBuildingId);
+      const result = await commercialService.getCommercial(
+        mockProjectId,
+        mockCommercialId,
+        mockPropertyId,
+        mockBuildingId,
+      );
 
       expect(axios.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${mockProjectId}/properties/${mockPropertyId}/buildings/${mockBuildingId}/commercials/${mockCommercialId}`
+        `/api/v1/projects/${mockProjectId}/properties/${mockPropertyId}/buildings/${mockBuildingId}/commercials/${mockCommercialId}`,
       );
       expect(result).toEqual(mockCommercial);
     });
@@ -72,7 +82,7 @@ describe('CommercialService', () => {
       const result = await commercialService.getCommercial(mockProjectId, mockCommercialId);
 
       expect(axios.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${mockProjectId}/commercials/${mockCommercialId}`
+        `/api/v1/projects/${mockProjectId}/commercials/${mockCommercialId}`,
       );
       expect(result).toEqual(mockCommercial);
     });
@@ -83,11 +93,17 @@ describe('CommercialService', () => {
       const mockResponse = { data: { ...mockCommercial, title: 'Updated Commercial' } };
       (axios.patch as vi.Mock).mockResolvedValue(mockResponse);
 
-      const result = await commercialService.updateCommercial(mockProjectId, mockCommercialId, mockCommercial, mockPropertyId, mockBuildingId);
+      const result = await commercialService.updateCommercial(
+        mockProjectId,
+        mockCommercialId,
+        mockCommercial,
+        mockPropertyId,
+        mockBuildingId,
+      );
 
       expect(axios.patch).toHaveBeenCalledWith(
         `/api/v1/projects/${mockProjectId}/properties/${mockPropertyId}/buildings/${mockBuildingId}/commercials/${mockCommercialId}`,
-        mockCommercial
+        mockCommercial,
       );
       expect(result).toEqual(mockResponse.data);
     });
@@ -96,11 +112,15 @@ describe('CommercialService', () => {
       const mockResponse = { data: { ...mockCommercial, title: 'Updated Commercial' } };
       (axios.patch as vi.Mock).mockResolvedValue(mockResponse);
 
-      const result = await commercialService.updateCommercial(mockProjectId, mockCommercialId, mockCommercial);
+      const result = await commercialService.updateCommercial(
+        mockProjectId,
+        mockCommercialId,
+        mockCommercial,
+      );
 
       expect(axios.patch).toHaveBeenCalledWith(
         `/api/v1/projects/${mockProjectId}/commercials/${mockCommercialId}`,
-        mockCommercial
+        mockCommercial,
       );
       expect(result).toEqual(mockResponse.data);
     });
@@ -111,10 +131,15 @@ describe('CommercialService', () => {
       const mockResponse = { data: { success: true } };
       (axios.delete as vi.Mock).mockResolvedValue(mockResponse);
 
-      await commercialService.deleteCommercial(mockProjectId, mockCommercialId, mockPropertyId, mockBuildingId);
+      await commercialService.deleteCommercial(
+        mockProjectId,
+        mockCommercialId,
+        mockPropertyId,
+        mockBuildingId,
+      );
 
       expect(axios.delete).toHaveBeenCalledWith(
-        `/api/v1/projects/${mockProjectId}/properties/${mockPropertyId}/buildings/${mockBuildingId}/commercials/${mockCommercialId}`
+        `/api/v1/projects/${mockProjectId}/properties/${mockPropertyId}/buildings/${mockBuildingId}/commercials/${mockCommercialId}`,
       );
     });
 
@@ -125,7 +150,7 @@ describe('CommercialService', () => {
       await commercialService.deleteCommercial(mockProjectId, mockCommercialId);
 
       expect(axios.delete).toHaveBeenCalledWith(
-        `/api/v1/projects/${mockProjectId}/commercials/${mockCommercialId}`
+        `/api/v1/projects/${mockProjectId}/commercials/${mockCommercialId}`,
       );
     });
   });

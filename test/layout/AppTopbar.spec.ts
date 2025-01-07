@@ -5,7 +5,7 @@ import PrimeVue from 'primevue/config';
 import router from '@/router';
 import { createPinia } from 'pinia';
 import { useUserSessionStore } from '@/stores/UserSession';
-import i18n from "../../src/i18n/i18n";
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/stores/UserSession', () => ({
   useUserSessionStore: vi.fn(),
@@ -67,4 +67,3 @@ describe('AppTopbar.vue', () => {
     expect(pushSpy).toHaveBeenCalledWith('/projects');
   });
 });
-

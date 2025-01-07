@@ -8,11 +8,11 @@ import Textarea from 'primevue/textarea';
 import InputText from 'primevue/inputtext';
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
-
 const props = defineProps<{
   projectId: string;
 }>();
+
+const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();

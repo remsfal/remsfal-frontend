@@ -16,12 +16,12 @@ const model = ref([
     items: [
       {
         label: 'managerMenu.home.label',
-        icon: {type: 'pi', name: 'pi pi-fw pi-chart-bar'},
+        icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
         to: `/project/${projectStore.projectId}/`,
       },
       {
         label: 'managerMenu.home.settings',
-        icon: {type: 'pi', name: 'pi pi-fw pi-cog'},
+        icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
         to: `/project/${projectStore.projectId}/settings`,
       },
     ],
@@ -31,12 +31,12 @@ const model = ref([
     items: [
       {
         label: 'managerMenu.userData.objectData',
-        icon: {type: 'pi', name: 'pi pi-fw pi-home'},
+        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
         to: `/project/${projectStore.projectId}/objects`,
       },
       {
         label: 'managerMenu.userData.tenantData',
-        icon: {type: 'pi', name: 'pi pi-fw pi-users'},
+        icon: { type: 'pi', name: 'pi pi-fw pi-users' },
         to: `/project/${projectStore.projectId}/tenancies`,
       },
     ],
@@ -46,7 +46,7 @@ const model = ref([
     items: [
       {
         label: 'managerMenu.taskManagement.mine',
-        icon: {type: 'fa', name: ['fas', 'list']},
+        icon: { type: 'fa', name: ['fas', 'list'] },
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({
@@ -58,7 +58,7 @@ const model = ref([
       },
       {
         label: 'managerMenu.taskManagement.open',
-        icon: {type: 'fa', name: ['fas', 'list-check']},
+        icon: { type: 'fa', name: ['fas', 'list-check'] },
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({
@@ -70,7 +70,7 @@ const model = ref([
       },
       {
         label: 'managerMenu.taskManagement.all',
-        icon: {type: 'fa', name: ['far', 'rectangle-list']},
+        icon: { type: 'fa', name: ['far', 'rectangle-list'] },
         navigate: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({ name: 'TaskOverview', params: { projectId } });
@@ -99,7 +99,7 @@ const model = ref([
       {
         label: 'managerMenu.defectManagement.all',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/input'
+        to: '/uikit/input',
       },
     ],
   },

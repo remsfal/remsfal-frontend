@@ -7,8 +7,16 @@ const model = ref([
   {
     label: 'consultantMenu.home',
     items: [
-      { label: 'consultantMenu.home.overview', icon: {type: 'pi', name: 'pi pi-fw pi-home'}, to: '/' },
-      { label: 'consultantMenu.home.client', icon: {type: 'pi', name: 'pi pi-fw pi-id-card'}, to: '/fullscreen' },
+      {
+        label: 'consultantMenu.home.overview',
+        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+        to: '/',
+      },
+      {
+        label: 'consultantMenu.home.client',
+        icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+        to: '/fullscreen',
+      },
     ],
   },
   {

@@ -239,6 +239,6 @@ app.component('TreeTable', TreeTable);
 app.component('VirtualScroller', VirtualScroller);
 
 // Register Font Awesome Icon globally
-app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 app.mount('#app');

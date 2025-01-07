@@ -35,8 +35,8 @@ const close = () => {
         @click="open"
       />
       <Dialog
-        :header="t('projectSelection.add')"
         v-model:visible="display"
+        :header="t('projectSelection.add')"
         :breakpoints="{ '960px': '75vw' }"
         :style="{ width: '30vw' }"
         :modal="true"

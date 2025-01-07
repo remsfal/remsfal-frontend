@@ -5,6 +5,13 @@ import { useLayout } from '@/layout/composables/layout';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 
+const props = withDefaults(defineProps<MenuItemProps>(), {
+  item: () => ({}) as MenuItem,
+  index: 0,
+  root: true,
+  parentItemKey: undefined,
+});
+
 const { t } = useI18n();
 
 export interface MenuItem {
@@ -27,13 +34,6 @@ interface MenuItemProps {
   root?: boolean;
   parentItemKey?: string | undefined;
 }
-
-const props = withDefaults(defineProps<MenuItemProps>(), {
-  item: () => ({}) as MenuItem,
-  index: 0,
-  root: true,
-  parentItemKey: undefined,
-});
 
 const route = useRoute();
 const { layoutState, setActiveMenuItem, onMenuToggle } = useLayout();

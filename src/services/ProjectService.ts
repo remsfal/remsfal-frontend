@@ -35,7 +35,6 @@ export interface PropertyItem {
   buildings?: BuildingItem[];
 }
 
-
 export interface AddressItem {
   street?: string;
   city?: string;
@@ -269,7 +268,10 @@ export default class ProjectService {
 
   createGarage(projectId: string, propertyId: string, buildingId: string, garage: GarageItem) {
     return axios
-      .post(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`, garage)
+      .post(
+        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`,
+        garage,
+      )
       .then((response) => console.log(response))
       .catch((error) => {
         throw new Error(`Failed to create garage: ${error.message}`);
@@ -288,18 +290,29 @@ export default class ProjectService {
       });
   }
 
-  getGarage(projectId: string, propertyId: string, buildingId: string, garageId: string){
+  getGarage(projectId: string, propertyId: string, buildingId: string, garageId: string) {
     return axios
-    .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`)
-    .then((response) => console.log(response))
-    .catch((error) => {
-      throw new Error(`Failed to fetch garage: ${error.message}`);
-    });
+      .get(
+        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`,
+      )
+      .then((response) => console.log(response))
+      .catch((error) => {
+        throw new Error(`Failed to fetch garage: ${error.message}`);
+      });
   }
 
-  updateGarage(projectId: string, propertyId: string, buildingId: string, garageId: string, garage: GarageItem) {
+  updateGarage(
+    projectId: string,
+    propertyId: string,
+    buildingId: string,
+    garageId: string,
+    garage: GarageItem,
+  ) {
     return axios
-      .put(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`, garage)
+      .put(
+        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`,
+        garage,
+      )
       .then((response) => console.log(response))
       .catch((error) => {
         throw new Error(`Failed to update garage: ${error.message}`);

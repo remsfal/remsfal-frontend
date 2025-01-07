@@ -20,10 +20,14 @@ const handleCommercialSubmit = (values: Record<string, any>) => {
     commercialSpace: values.commercialSpace,
     usableSpace: values.usableSpace,
     heatingSpace: values.heatingSpace,
-    description: values.description
+    description: values.description,
   };
   try {
-    const response = projectService.updateCommercial(props.projectId, props.commercialId, commercial);
+    const response = projectService.updateCommercial(
+      props.projectId,
+      props.commercialId,
+      commercial,
+    );
     console.log('Commercial created:', response);
   } catch (error) {
     console.error('Error updating commercial:', error);

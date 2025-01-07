@@ -57,7 +57,8 @@ const fields: {
     label: 'Beschreibung',
     type: 'textarea',
     validations: [
-      (value: any) => (value.length <= 500 ? null : 'Beschreibung muss 500 Zeichen oder weniger sein'),
+      (value: any) =>
+        value.length <= 500 ? null : 'Beschreibung muss 500 Zeichen oder weniger sein',
     ],
   },
 ];
@@ -73,13 +74,13 @@ const initialCommercialData = ref({
 
 const parentBuildingId = ref(props.buildingId);
 
-onMounted( async ()=> {
+onMounted(async () => {
   if (props.commercialId) {
     const projectService = new CommercialService();
     try {
       const response = await projectService.getCommercial(props.projectId, props.commercialId);
       initialCommercialData.value = response;
-      if(!parentBuildingId.value) {
+      if (!parentBuildingId.value) {
         parentBuildingId.value = response.buildingId;
       }
     } catch (error) {
@@ -87,8 +88,8 @@ onMounted( async ()=> {
     }
   }
 });
-
 </script>
+
 <template>
   <ReusableForm
     :headline="props.headline"
