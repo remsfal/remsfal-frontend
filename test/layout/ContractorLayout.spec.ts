@@ -42,4 +42,18 @@ describe('ContractorLayout.vue', () => {
     const routerViewContent = wrapper.html();
     expect(routerViewContent).toContain('Contractor Page');
   });
+
+  it('should display correct content for the contractor route', async () => {
+    const wrapper = mount(ContractorLayout, {
+      global: {
+        plugins: [pinia, router],
+      },
+    });
+
+    await router.push('/contractor');
+    await wrapper.vm.$nextTick();
+
+    const routerViewContent = wrapper.html();
+    expect(routerViewContent).toContain('Contractor Page');
+  });
 });
