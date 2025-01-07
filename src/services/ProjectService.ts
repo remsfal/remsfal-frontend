@@ -40,6 +40,47 @@ export interface PropertyItem {
   usageType?: string | null; // Wirtschaftsart
 }
 
+
+export interface AddressItem {
+  street?: string;
+  city?: string;
+  province?: string;
+  zip?: string;
+  country?: string;
+}
+
+export interface PropertyTree {
+  first: number;
+  size: number;
+  total: number;
+  nodes: PropertyNode[];
+}
+
+export interface PropertyNode {
+  key: string;
+  data: PropertyTableData;
+  children: PropertyNode[];
+}
+
+export interface PropertyTableData {
+  type: EntityType;
+  title?: string;
+  description?: string;
+  tenant?: string;
+  usable_space?: number;
+  isButtonRow?: boolean;
+}
+
+export enum EntityType {
+  Apartment = 'apartment',
+  Commercial = 'commercial',
+  Garage = 'garage',
+  Site = 'site',
+  Building = 'building',
+  Project = 'project',
+  Property = 'property',
+}
+
 export interface BuildingItem {
   id?: string;
   propertyId: string;
@@ -74,7 +115,6 @@ export interface GarageItem {
   location: string;
   description: string;
   usableSpace: number;
-  rent: number;
 }
 
 export default class ProjectService {
@@ -133,7 +173,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  getProperties(projectId: string, limit: number, offset: number): Promise<PropertyList> {
+  getPropertyTree(projectId: string, limit: number, offset: number): Promise<PropertyTree> {
     return axios
       .get(`${this.url}/${projectId}/properties`, {
         params: {
@@ -192,26 +232,6 @@ export default class ProjectService {
       });
   }
 
-  createSite(title: string, projectId: string, propertyId: string) {
-    return axios
-      .post(`${this.url}/${projectId}/properties/${propertyId}/sites`, {
-        title: title,
-        propertyId: propertyId,
-      })
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error));
-  }
-
-  getSites(projectId: string, propertyId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}/sites`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
   createBuilding(title: string, projectId: string, propertyId: string) {
     return axios
       .post(`${this.url}/${projectId}/properties/${propertyId}/buildings`, {
@@ -252,14 +272,13 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  createGarage(title: string, projectId: string, propertyId: string, buildingId: string) {
+  createGarage(projectId: string, propertyId: string, buildingId: string, garage: GarageItem) {
     return axios
-      .post(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`, {
-        title: title,
-        buildingId: buildingId,
-      })
+      .post(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`, garage)
       .then((response) => console.log(response))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        throw new Error(`Failed to create garage: ${error.message}`);
+      });
   }
 
   getGarages(projectId: string, propertyId: string, buildingId: string) {
@@ -269,7 +288,27 @@ export default class ProjectService {
         console.log('properties returned', response.data);
         return response.data;
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        throw new Error(`Failed to fetch garages: ${error.message}`);
+      });
+  }
+
+  getGarage(projectId: string, propertyId: string, buildingId: string, garageId: string){
+    return axios
+    .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`)
+    .then((response) => console.log(response))
+    .catch((error) => {
+      throw new Error(`Failed to fetch garage: ${error.message}`);
+    });
+  }
+
+  updateGarage(projectId: string, propertyId: string, buildingId: string, garageId: string, garage: GarageItem) {
+    return axios
+      .put(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`, garage)
+      .then((response) => console.log(response))
+      .catch((error) => {
+        throw new Error(`Failed to update garage: ${error.message}`);
+      });
   }
 
   getMembers(projectId: string) {
