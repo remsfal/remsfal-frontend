@@ -5,6 +5,8 @@ import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 import { computed } from 'vue';
 
 const userProfile = ref({} as User); // Das gesamte Benutzerprofil
@@ -125,7 +127,6 @@ async function saveProfile(): Promise<void> {
     const updatedUser = await userService.updateUser(user);
     console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
     saveSuccess.value = true;
-
   } catch (e) {
     console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
     alert('Fehler beim Aktualisieren des Benutzerprofils!');
@@ -186,7 +187,7 @@ function validateField(
   const regex = field === 'street' ? regexMap.street : regexMap.default;
 
   if ((type === 'name' || type === 'address') && typeof value === 'string') {
-    console.log("222")
+    console.log('222');
     if (!value || value.length === 0) {
       errorMessage.value[errorKey] = 'Bitte eingeben!';
     } else if (!regex.test(value)) {
@@ -311,56 +312,61 @@ const isDisabled = computed(() => {
             <div>
               <div class="input-container">
                 <label class="label" for="firstName">Vorname*:</label>
-                <input
+                <InputText
                   id="firstName"
                   v-model="editedUserProfile.firstName"
                   required
-                  @input="
-                    (event) =>
-                      (editedUserProfile.firstName = (event.target as HTMLInputElement).value)
-                  "
+                  :invalid="errorMessage.firstname !== ''"
+                  @input="(event) => (editedUserProfile.firstName = event.target.value)"
                   @blur="validateField('firstName', 'name', 'firstname')"
                 />
-                <span class="error" :class="{ active: errorMessage.firstname }">
-                  {{ errorMessage.firstname }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.firstname }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.firstname }}</Message
+                >
               </div>
 
               <div class="input-container">
                 <label class="label" for="lastName">Nachname*:</label>
-                <input
+                <InputText
                   id="lastName"
                   v-model="editedUserProfile.lastName"
                   required
-                  @input="
-                    (event) =>
-                      (editedUserProfile.lastName = (event.target as HTMLInputElement).value)
-                  "
+                  :invalid="errorMessage.lastname !== ''"
+                  @input="(event) => (editedUserProfile.lastName = event.target.value)"
                   @blur="validateField('lastName', 'name', 'lastname')"
                 />
-                <span class="error" :class="{ active: errorMessage.lastname }">
-                  {{ errorMessage.lastname }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.lastname }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.lastname }}</Message
+                >
               </div>
 
               <div class="input-container">
                 <label class="label" for="eMail">E-Mail:</label>
-                <input
+                <InputText
                   id="eMail"
                   v-model="editedUserProfile.email"
                   disabled
                   required
-                  @input="
-                    (event) => (editedUserProfile.email = (event.target as HTMLInputElement).value)
-                  "
+                  @input="(event) => (editedUserProfile.email = event.target.value)"
                 />
-                <span class="error"></span>
+                <Message class="error" size="small" severity="error" variant="simple"></Message>
               </div>
               <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
-                <input
+                <InputText
                   id="mobilePhoneNumber"
                   v-model="editedUserProfile.mobilePhoneNumber"
+                  :invalid="errorMessage.mobilePhoneNumber !== ''"
                   @input="
                     (event) =>
                       (editedUserProfile.mobilePhoneNumber = (
@@ -369,15 +375,21 @@ const isDisabled = computed(() => {
                   "
                   @blur="validateField('mobilePhoneNumber', 'phone', 'mobilePhoneNumber')"
                 />
-                <span class="error" :class="{ active: errorMessage.mobilePhoneNumber }">
-                  {{ errorMessage.mobilePhoneNumber }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.mobilePhoneNumber }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.mobilePhoneNumber }}</Message
+                >
               </div>
               <div class="input-container">
                 <label class="label" for="businessPhoneNumber">Geschäftliche Telefonnummer:</label>
-                <input
+                <InputText
                   id="businessPhoneNumber"
                   v-model="editedUserProfile.businessPhoneNumber"
+                  :invalid="errorMessage.businessPhoneNumber !== ''"
                   @input="
                     (event) =>
                       (editedUserProfile.businessPhoneNumber = (
@@ -386,16 +398,22 @@ const isDisabled = computed(() => {
                   "
                   @blur="validateField('businessPhoneNumber', 'phone', 'businessPhoneNumber')"
                 />
-                <span class="error" :class="{ active: errorMessage.businessPhoneNumber }">
-                  {{ errorMessage.businessPhoneNumber }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.businessPhoneNumber }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.businessPhoneNumber }}</Message
+                >
               </div>
 
               <div class="input-container">
                 <label class="label" for="privatePhoneNumber">Handynummer:</label>
-                <input
+                <InputText
                   id="privatePhoneNumber"
                   v-model="editedUserProfile.privatePhoneNumber"
+                  :invalid="errorMessage.privatePhoneNumber !== ''"
                   @input="
                     (event) =>
                       (editedUserProfile.privatePhoneNumber = (
@@ -404,12 +422,17 @@ const isDisabled = computed(() => {
                   "
                   @blur="validateField('privatePhoneNumber', 'phone', 'privatePhoneNumber')"
                 />
-                <span class="error" :class="{ active: errorMessage.privatePhoneNumber }">
-                  {{ errorMessage.privatePhoneNumber }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.privatePhoneNumber }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.privatePhoneNumber }}</Message
+                >
               </div>
             </div>
-            <span class="required">*Pflichtfelder</span>
+            <Message class="required" size="small" variant="simple">*Pflichtfelder</Message>
           </template>
         </Card>
         <Card>
@@ -420,57 +443,75 @@ const isDisabled = computed(() => {
             <div>
               <div class="input-container">
                 <label class="label" for="street">Straße und Hausnummer*:</label>
-                <input
+                <InputText
                   id="street"
                   v-model="editedAddress.street"
-                  @input="
-                    (event) => (editedAddress.street = (event.target as HTMLInputElement).value)
-                  "
+                  :invalid="errorMessage.street !== ''"
+                  @input="(event) => (editedAddress.street = event.target.value)"
                   @blur="validateField('street', 'address', 'street')"
                 />
-                <span class="error" :class="{ active: errorMessage.street }">
-                  {{ errorMessage.street }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.street }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.street }}</Message
+                >
               </div>
               <div class="input-container">
                 <label class="label" for="zip">Postleitzahl*:</label>
-                <input
+                <InputText
                   id="zip"
                   v-model="editedAddress.zip"
-                  @input="(event) => (editedAddress.zip = (event.target as HTMLInputElement).value)"
+                  :invalid="errorMessage.zip !== ''"
+                  @input="(event) => (editedAddress.zip = event.target.value)"
                   @blur="getCity()"
                 />
-                <span class="error" :class="{ active: errorMessage.zip }">
-                  {{ errorMessage.zip }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.zip }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.zip }}</Message
+                >
               </div>
               <div class="input-container">
                 <label class="label" for="zip">Stadt*:</label>
-                <input
+                <InputText
                   id="city"
                   v-model="editedAddress.city"
-                  @input="
-                    (event) => (editedAddress.city = (event.target as HTMLInputElement).value)
-                  "
+                  :invalid="errorMessage.city !== ''"
+                  @input="(event) => (editedAddress.city = event.target.value)"
                   @blur="validateField('city', 'address', 'city')"
                 />
-                <span class="error" :class="{ active: errorMessage.city }">
-                  {{ errorMessage.city }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.city }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.city }}</Message
+                >
               </div>
               <div class="input-container">
                 <label class="label" for="zip">Bundesland*:</label>
-                <input
+                <InputText
                   id="province"
                   v-model="editedAddress.province"
-                  @input="
-                    (event) => (editedAddress.province = (event.target as HTMLInputElement).value)
-                  "
+                  :invalid="errorMessage.province !== ''"
+                  @input="(event) => (editedAddress.province = event.target.value)"
                   @blur="validateField('province', 'address', 'province')"
                 />
-                <span class="error" :class="{ active: errorMessage.province }">
-                  {{ errorMessage.province }}
-                </span>
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.province }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.province }}</Message
+                >
               </div>
               <div class="input-container">
                 <label for="country" class="label">Land*:</label>
@@ -485,24 +526,30 @@ const isDisabled = computed(() => {
                     {{ country.name }}
                   </option>
                 </select>
-                <span class="error"></span>
+                <Message class="error" size="small" severity="error" variant="simple"></Message>
               </div>
 
               <div class="input-container">
                 <label for="countryCode" class="label">Länderkürzel*:</label>
-                <input
+                <InputText
                   id="countryCode"
                   v-model="editedAddress.countryCode"
                   required
                   style="text-transform: uppercase"
+                  :invalid="errorMessage.countryCode !== ''"
                   @input="updateCountryFromCode"
                 />
-                <span class="error" :class="{ active: errorMessage.countryCode }">
-                  {{ errorMessage.countryCode }}</span
+                <Message
+                  class="error"
+                  :class="{ active: errorMessage.countryCode }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                  >{{ errorMessage.countryCode }}</Message
                 >
               </div>
             </div>
-            <span class="required">*Pflichtfelder</span>
+            <Message class="required" size="small" variant="simple">*Pflichtfelder</Message>
           </template>
         </Card>
       </div>
@@ -510,23 +557,23 @@ const isDisabled = computed(() => {
     <div>
       <div>
         <div class="buttons-container centered-buttons">
-            <Button
+          <Button
             v-if="changes"
-              type="button"
-              icon="pi pi-user-edit"
-              class="save-button btn"
-              label="Speichern"
-              v-bind:disabled="isDisabled"
-              @click="saveProfile"
-            />
-            <Button
+            type="button"
+            icon="pi pi-user-edit"
+            class="save-button btn"
+            label="Speichern"
+            :disabled="isDisabled"
+            @click="saveProfile"
+          />
+          <Button
             v-if="changes"
-              type="button"
-              icon="pi pi-times"
-              class="cancel-button btn"
-              label="Abbrechen"
-              @click="cancel"
-            />
+            type="button"
+            icon="pi pi-times"
+            class="cancel-button btn"
+            label="Abbrechen"
+            @click="cancel"
+          />
           <Button
             type="button"
             icon="pi pi-trash"
@@ -625,7 +672,7 @@ p {
   font-size: 12px;
 }
 
-.btn{
+.btn {
   width: 150px;
 }
 
@@ -676,6 +723,7 @@ input:focus {
 .centered-buttons {
   display: flex;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 
 .input-container {
@@ -687,7 +735,6 @@ input:focus {
 
 .label {
   margin-bottom: 0.5rem;
-  font-size: 12px;
   font-weight: 500;
 }
 

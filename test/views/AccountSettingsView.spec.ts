@@ -50,6 +50,7 @@ describe('AccountSettingsView', () => {
     wrapper.vm.saveProfile = vi.fn();
     wrapper.vm.fetchUserProfile = vi.fn();
     wrapper.vm.validateAddress = vi.fn();
+    wrapper.vm.isDisabled = vi.fn();
   });
 
   test('The view is rendered properly', () => {
@@ -62,35 +63,59 @@ describe('AccountSettingsView', () => {
     expect(wrapper.vm.User).not.toBeNull();
   });
 
-  test('required inputs fields are validated successfully', async () => {
-    const input = wrapper.find('input#firstName');
-    expect(input.exists()).toBe(true);
+  describe('required inputs fields are validated successfully', async () => {
+    test('input is correct', async () => {
+      const input = wrapper.find('input#firstName');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#firstName ~ .error');
+      await input.setValue('First Name');
+      expect(wrapper.vm.editedUserProfile.firstName).toBe('First Name');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#firstName ~ .error');
+      expect(errorMessage.text()).toBe('');
+    });
 
-    await input.setValue('First Name');
-    expect(wrapper.vm.editedUserProfile.firstName).toBe('First Name');
-    await input.trigger('blur');
-    let errorMessage = wrapper.find('input#firstName ~ .error');
-    expect(errorMessage.text()).toBe('');
+    test('input is empty and show error', async () => {
+      const input = wrapper.find('input#firstName');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#firstName ~ .error');
+      await input.setValue('');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#firstName ~ .error');
+      expect(errorMessage.text()).toBe('Bitte eingeben!');
+    });
 
-    await input.setValue('');
-    await input.trigger('blur');
-    errorMessage = wrapper.find('input#firstName ~ .error');
-    expect(errorMessage.text()).toBe('Bitte eingeben!');
+    test('input firstname do not pass regex and show error', async () => {
+      const input = wrapper.find('input#firstName');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#firstName ~ .error');
+      await input.setValue('12dg');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#firstName ~ .error');
+      expect(errorMessage.text()).toBe('Eingabe bitte überprüfen!');
+    });
   });
 
-  test('phonenumbers have to be digits only', async () => {
-    const input = wrapper.find('input#mobilePhoneNumber');
-    expect(input.exists()).toBe(true);
+  describe('check phonenumber', async () => {
+    test('phonenumbers is correct regex', async () => {
+      const input = wrapper.find('input#mobilePhoneNumber');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
+      await input.setValue('123456789');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
+      expect(errorMessage.text()).toBe('');
+    });
 
-    await input.setValue('123456789');
-    await input.trigger('blur');
-    let errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
-    expect(errorMessage.text()).toBe('');
-
-    await input.setValue('12w134567');
-    await input.trigger('blur');
-    errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
-    expect(errorMessage.text()).toBe('Telefonnummer ist ungültig!');
+    test('phonenumbers has character and show error', async () => {
+      const input = wrapper.find('input#mobilePhoneNumber');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
+      await input.setValue('12w134567');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
+      expect(errorMessage.text()).toBe('Telefonnummer ist ungültig!');
+    });
   });
 
   test('saveProfile is called on save button click', async () => {
@@ -113,21 +138,23 @@ describe('AccountSettingsView', () => {
     expect(wrapper.vm.editedUserProfile).toEqual(wrapper.vm.userProfile);
   });
 
-  test('check if all fields for address are filled', async () => {
-    wrapper.vm.editedAddress = {
-      street: 'Test Street',
-      zip: '12345',
-      city: 'Test City',
-      province: 'Test Province',
-      countryCode: 'TC',
-    };
+  describe('check function isDisabled', async () => {
+    test('errors turn isDisabled into true', async () => {
+      wrapper.vm.changes = true;
+      wrapper.vm.errorMessage = {
+        firstname: 'Bitte eingeben!',
+      };
+      await nextTick();
+      expect(wrapper.vm.isDisabled).toBe(true);
+    });
 
-    await wrapper.vm.validateAddress(wrapper.vm.editedAddress);
-    expect(wrapper.vm.validateAddress).toHaveBeenCalled();
-    expect(wrapper.vm.editedAddress.street.length).toBeGreaterThan(0);
-    expect(wrapper.vm.editedAddress.zip.length).toBeGreaterThan(0);
-    expect(wrapper.vm.editedAddress.city.length).toBeGreaterThan(0);
-    expect(wrapper.vm.editedAddress.province.length).toBeGreaterThan(0);
-    expect(wrapper.vm.editedAddress.countryCode.length).toBeGreaterThan(0);
+    test('no errors turn isDisabled into false', async () => {
+      wrapper.vm.changes = true;
+      wrapper.vm.errorMessage = {
+        firstname: '',
+      };
+      await nextTick();
+      expect(wrapper.vm.isDisabled).toBe(false);
+    });
   });
 });
