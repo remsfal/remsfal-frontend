@@ -1,8 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 import ContractorLayout from '../../src/layout/ContractorLayout.vue';
-import BaseLayout from '../../src/layout/BaseLayout.vue';
-import AppTopbar from '../../src/layout/AppTopbar.vue';
+import ContractorTopbar from '../../src/layout/ContractorTopbar.vue';
 import AppFooter from '../../src/layout/AppFooter.vue';
 import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -21,23 +20,26 @@ describe('ContractorLayout.vue', () => {
     });
   });
 
-  it('should render BaseLayout with the correct slot components', async () => {
+  it('should render the layout components correctly', async () => {
     const wrapper = mount(ContractorLayout, {
       global: {
         plugins: [pinia, router],
       },
     });
 
-    const baseLayout = wrapper.findComponent(BaseLayout);
-    expect(baseLayout.exists()).toBe(true);
-
-    const topbar = baseLayout.findComponent(AppTopbar);
+    const topbar = wrapper.findComponent(ContractorTopbar);
     expect(topbar.exists()).toBe(true);
 
-    const sidebar = baseLayout.findComponent(ContractorMenu);
+    const sidebar = wrapper.findComponent(ContractorMenu);
     expect(sidebar.exists()).toBe(true);
 
-    const footer = baseLayout.findComponent(AppFooter);
+    const footer = wrapper.findComponent(AppFooter);
     expect(footer.exists()).toBe(true);
+
+    await router.push('/contractor');
+    await wrapper.vm.$nextTick();
+
+    const routerViewContent = wrapper.html();
+    expect(routerViewContent).toContain('Contractor Page');
   });
 });

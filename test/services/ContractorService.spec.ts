@@ -4,9 +4,7 @@ import ContractorService, { TaskItemJson, TaskListJson } from '../../src/service
 
 describe('ContractorService', () => {
   const service = new ContractorService();
-  const contractorId = 'test-contractor';
   const taskId = 'test-task';
-  const ownerId = 'owner1';
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -19,13 +17,12 @@ describe('ContractorService', () => {
         title: 'Task 1',
         description: 'Description 1',
         status: 'OPEN',
-        ownerId: 'owner1',
       },
     ];
 
     vi.spyOn(axios, 'get').mockResolvedValue({ data: { tasks: mockTasks } });
 
-    const taskList: TaskListJson = await service.getTasks(contractorId);
+    const taskList: TaskListJson = await service.getTasks();
     expect(taskList.tasks.length).toBe(1);
     expect(taskList.tasks[0].title).toBe('Task 1');
   });
@@ -36,12 +33,11 @@ describe('ContractorService', () => {
       title: 'Task 1',
       description: 'Description 1',
       status: 'OPEN',
-      ownerId: 'owner1',
     };
 
     vi.spyOn(axios, 'get').mockResolvedValue({ data: mockTask });
 
-    const task: TaskItemJson = await service.getTask(ownerId, taskId);
+    const task: TaskItemJson = await service.getTask(taskId);
     expect(task.title).toBe('Task 1');
   });
 
@@ -51,7 +47,7 @@ describe('ContractorService', () => {
     });
 
     try {
-      await service.getTask(ownerId, taskId);
+      await service.getTask(taskId);
     } catch (error) {
       expect(error).toBe(404);
     }
