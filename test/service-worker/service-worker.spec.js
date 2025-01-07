@@ -103,17 +103,24 @@ describe('Service Worker Tests', () => {
   });
 
   it('should handle sync events with tag "sync-projects"', async () => {
-    const openDBMock = sinon.stub().resolves({
-      getAll: sinon.stub().resolves([{ title: 'Offline Project', createdAt: 123456 }]),
-      delete: sinon.stub().resolves(),
-    });
-    global.idb = { openDB: openDBMock };
+    const getAllProjectsMock = sinon
+      .stub()
+      .resolves([{ title: 'Offline Project', createdAt: 123456 }]);
+    global.getAllProjects = getAllProjectsMock;
+
+    const deleteProjectMock = sinon.stub().resolves();
+    global.deleteProject = deleteProjectMock;
 
     const fetchStub = sinon.stub(global, 'fetch').resolves({ ok: true });
 
     const syncEvent = {
       tag: 'sync-projects',
-      waitUntil: sinon.stub(),
+      waitUntil: sinon.stub().callsFake((promise) =>
+        promise.then(
+          () => {},
+          () => {},
+        ),
+      ),
     };
 
     const syncListener = self.addEventListener.getCall(3).args[1];
@@ -121,8 +128,10 @@ describe('Service Worker Tests', () => {
 
     await new Promise((resolve) => setImmediate(resolve));
 
+    // Assertions
     void expect(syncEvent.waitUntil.called).to.be.true;
-    void expect(openDBMock.calledOnce).to.be.true;
+    void expect(getAllProjectsMock.calledOnce).to.be.true;
+    void expect(deleteProjectMock.calledOnce).to.be.true;
     void expect(fetchStub.calledOnce).to.be.true;
     void expect(fetchStub.calledWithMatch('/api/v1/projects')).to.be.true;
   });

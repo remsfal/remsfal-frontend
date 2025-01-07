@@ -1,4 +1,4 @@
-importScripts('/idb.js'); // Loads the UMD version of idb
+importScripts('/idbHelper.js');
 
 const CACHE_NAME = 'remsfal-v1';
 const CACHE_FILES = [
@@ -15,24 +15,24 @@ const CACHE_FILES = [
 // Install event: Load files into the cache
 self.addEventListener('install', (event) => {
   event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.addAll(CACHE_FILES);
-      }),
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(CACHE_FILES);
+    }),
   );
 });
 
 // Activate event: Delete old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-            cacheNames.map((cache) => {
-              if (cache !== CACHE_NAME) {
-                return caches.delete(cache);
-              }
-            }),
-        );
-      }),
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        }),
+      );
+    }),
   );
   return self.clients.claim(); // Claim control over all clients
 });
@@ -40,36 +40,34 @@ self.addEventListener('activate', (event) => {
 // Fetch event: Online-first strategy with fallback to the cache
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-      fetch(event.request)
-          .then((response) => {
-            // Save the response in the cache
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
-            });
+    fetch(event.request)
+      .then((response) => {
+        // Save the response in the cache
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // On error (e.g., offline), retrieve from the cache
+        return caches.match(event.request).then((response) => {
+          if (response) {
             return response;
-          })
-          .catch(() => {
-            // On error (e.g., offline), retrieve from the cache
-            return caches.match(event.request).then((response) => {
-              if (response) {
-                return response;
-              } else if (event.request.mode === 'navigate') {
-                return caches.match('/index.html'); // Fallback to the start page
-              }
-            });
-          }),
+          } else if (event.request.mode === 'navigate') {
+            return caches.match('/index.html'); // Fallback to the start page
+          }
+        });
+      }),
   );
 });
 
 self.addEventListener('sync', (event) => {
-
   if (event.tag === 'sync-projects') {
     event.waitUntil(
-        syncProjects()
-            .catch((error) => {
-              console.error('[Service Worker] Sync-projects failed:', error);
-            }),
+      syncProjects().catch((error) => {
+        console.error('[Service Worker] Sync-projects failed:', error);
+      }),
     );
   } else {
     console.warn('[Service Worker] Unknown sync tag:', event.tag);
@@ -78,9 +76,7 @@ self.addEventListener('sync', (event) => {
 
 async function syncProjects() {
   try {
-    const db = await idb.openDB('offline-projects-db', 1); // Access via idb.openDB
-
-    const projects = await db.getAll('projects');
+    const projects = await getAllProjects();
 
     for (const project of projects) {
       try {
@@ -91,7 +87,7 @@ async function syncProjects() {
         });
 
         if (response.ok) {
-          await db.delete('projects', project.createdAt);
+          await deleteProject(project.createdAt);
         } else {
           console.error(`[Service Worker] Server responded with error: ${response.status}`);
         }
