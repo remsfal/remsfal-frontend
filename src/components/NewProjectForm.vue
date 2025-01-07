@@ -5,6 +5,7 @@ import InputText from 'primevue/inputtext';
 import ProjectService, { type Project, type ProjectItem } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const emit = defineEmits<{
   abort: [];
@@ -15,10 +16,11 @@ const projectTitle = ref('');
 const errorMessage = ref('');
 
 const router = useRouter();
+const i18n = useI18n();
 
 watch(projectTitle, (newProjectTitle) => {
   if (newProjectTitle.length > maxLength) {
-    errorMessage.value = $t('newProjectForm.title.error', maxLength);
+    errorMessage.value = i18n.t('newProjectForm.title.error', { maxLength: maxLength });
   } else {
     errorMessage.value = '';
   }

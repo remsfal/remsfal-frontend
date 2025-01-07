@@ -59,7 +59,7 @@
   "landingPage.header.documentation": "Dokumentation",
   "landingPage.header.monitoring": "Überwachung",
   "google.signIn": "Mit Google anmelden",
-  "newProjectForm.title.error": "Der Name der Liegenschaft darf nicht mehr als {maxLength} Zeichen lang sei",
+  "newProjectForm.title.error": "Der Name der Liegenschaft darf nicht mehr als {maxLength} Zeichen lang sein",
   "newProjectForm.input.name": "Name der Liegenschaft",
   "projectTable.title": "Titel",
   "projectTable.role": "Rolle",

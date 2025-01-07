@@ -5,6 +5,7 @@ import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import { createRouter, createWebHistory } from 'vue-router';
+import i18n from "../../src/i18n/i18n";
 
 describe('LegalNoticeView.vue', () => {
   const router = createRouter({
@@ -26,7 +27,7 @@ describe('LegalNoticeView.vue', () => {
   it('renders the legal notice', () => {
     const wrapper = mount(LegalNoticeView, {
       global: {
-        plugins: [PrimeVue, router],
+        plugins: [PrimeVue, router, i18n],
         components: {
           Card,
           Button
@@ -55,7 +56,7 @@ describe('LegalNoticeView.vue', () => {
 
     const wrapper = mount(LegalNoticeView, {
       global: {
-        plugins: [PrimeVue, router],
+        plugins: [PrimeVue, router, i18n],
         components: {
           Card,
           Button
