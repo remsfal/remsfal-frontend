@@ -30,14 +30,14 @@
   "legalNotice.title": "Legal Notice",
   "legalNotice.definition": "Information according to § 5 Telemedia Act (TMG):",
   "legalNotice.contact": "Contact",
-  "legalNotice.representative": "Content responsibility according to § 55 Abs. 2 State Treaty on Broadcasting (RStV):<br /> Prof. Dr.-Ing. Alexander Stanik, info@remsfal.de",
+  "legalNotice.representative": "Content responsibility according to § 55 Abs. 2 State Treaty on Broadcasting (RStV): <br> Prof. Dr.-Ing. Alexander Stanik, info{'@'}remsfal.de",
   "privacy.explanation": "In the following, we would like to inform you about how we process your data.",
   "privacy.responsibility": "Responsible in the sense of the GDPR is:",
   "privacy.representative": "You can reach our data protection officer at:",
   "privacy.contact": "If you contact us by email, the data you provide will be stored by us to handle your request.",
   "privacy.betroffenenrechte.title": "Rights of the Data Subjects",
   "privacy.betroffenenrechte.explanation.1": "As a data subject, you have the right to access information, the right to rectification or erasure, the right to restrict processing, and the right to object to the processing of your data. If you have given us consent, you can revoke it at any time with future effect.",
-  "privacy.betroffenenrechte.explanation.2": "Please direct your objection [or revocation] informally to the following address: privacy@remsfal.de",
+  "privacy.betroffenenrechte.explanation.2": "Please direct your objection [or revocation] informally to the following address: privacy{'@'}remsfal.de",
   "privacy.hosting.title": "Hosting",
   "privacy.hosting.explanation.1": "Our host collects the following data in so-called log files, which your browser transmits:",
   "privacy.hosting.explanation.2": "Your IP address, your browser type and version, your operating system, the web page from which you accessed our website, the sub-web pages accessed via a system on our site, the date and time of access to our website, and your internet service provider.",
@@ -101,5 +101,7 @@
   "property.area": "Plot Area",
   "property.effectiveArea": "Effective Area",
   "taskView.create.action": "Create Task",
-  "taskView.update.title": "Update Task with ID: { id }"
+  "taskView.update.title": "Update Task with ID: { id }",
+  "property.descripton": "Description",
+  "proppertty.area": "Propperty Area"
 }

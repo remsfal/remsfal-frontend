@@ -66,10 +66,10 @@ function abort() {
     <small id="text-error" class="p-error">
       {{ errorMessage || '&nbsp;' }}
     </small>
-    <Button type="submit" label="$t('button.create')" icon="pi pi-plus" iconPos="left" />
+    <Button type="submit" :label="$t('button.create')" icon="pi pi-plus" iconPos="left" />
     <Button
       type="reset"
-      label="$t('button.cancel')"
+      :label="$t('button.cancel')"
       icon="pi pi-times"
       iconPos="left"
       @click="abort"

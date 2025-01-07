@@ -38,8 +38,7 @@ const navigateToHome = () => {
             Fax: +49 30 5019-48-2346<br />
             E-Mail: info@remsfal.de<br />
           </p>
-          <p>
-            {{ $t('legalNotice.representative') }}
+          <p v-html="$t('legalNotice.representative')">
           </p>
         </template>
       </Card>

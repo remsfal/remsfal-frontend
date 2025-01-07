@@ -351,16 +351,16 @@ async function getCity() {
             type="button"
             icon="pi pi-user-edit"
             class="edit-button"
-            label="$t('button.edit')"
+            :label="$t('button.edit')"
             @click="toggleEditMode"
           />
           <Button
             type="button"
             icon="pi pi-trash"
             severity="danger"
-            aria-label="$t('accountSettings.delete.delete')"
+            :aria-label="$t('accountSettings.delete.delete')"
             class="edit-button"
-            label="$t('accountSettings.delete.delete')"
+            :label="$t('accountSettings.delete.delete')"
             @click="visible = true"
           />
         </div>
@@ -381,8 +381,8 @@ async function getCity() {
                 type="button"
                 icon="pi pi-trash"
                 severity="danger"
-                aria-label="$t('accountSettings.delete.confirmDelete')"
-                label="$t('accountSettings.delete.confirmDelete')"
+                :aria-label="$t('accountSettings.delete.confirmDelete')"
+                :label="$t('accountSettings.delete.confirmDelete')"
                 class="delete-button"
                 @click="deleteAccount"
               />
@@ -391,8 +391,8 @@ async function getCity() {
                 icon="pi pi-times"
                 class="cancel-button"
                 severity="secondary"
-                aria-label="$t('button.cancel')"
-                label="$t('button.cancel')"
+                :aria-label="$t('button.cancel')"
+                :label="$t('button.cancel')"
                 @click="visible = false"
               />
             </div>
@@ -403,7 +403,7 @@ async function getCity() {
         <div class="buttons-container centered-buttons">
           <Button
             type="button"
-            label="Speichern"
+            :label="$t('button.save')"
             icon="pi pi-check"
             class="save-button"
             @click="saveProfile"
@@ -412,8 +412,8 @@ async function getCity() {
             icon="pi pi-times"
             class="cancel-button"
             severity="secondary"
-            aria-label="$t('button.cancel')"
-            label="$t('button.cancel')"
+            :aria-label="$t('button.cancel')"
+            :label="$t('button.cancel')"
             @click="toggleEditMode"
           />
         </div>

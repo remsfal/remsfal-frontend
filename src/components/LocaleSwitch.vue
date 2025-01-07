@@ -4,7 +4,7 @@
 
 <template>
   <div class="p-link layout-topbar-button">
-    <Dropdown v-model="$i18n.locale" :options="$i18n.availableLocales">
+    <Select v-model="$i18n.locale" :options="$i18n.availableLocales">
       <template #value="slotProps">
         <img
           :alt="slotProps.value"
@@ -19,7 +19,7 @@
           :src="`/src/assets/flags/${slotProps.option}.png`"
         />
       </template>
-    </Dropdown>
+    </Select>
   </div>
 </template>
 

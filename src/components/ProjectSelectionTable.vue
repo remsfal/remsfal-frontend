@@ -41,7 +41,7 @@ function onPageChange(event: DataTablePageEvent): void {
     @rowClick="onRowClick"
     @page="onPageChange"
   >
-    <Column field="name" header="$t('projectTable.title')" style="min-width: 200px"></Column>
-    <Column field="memberRole" header="$t('projectTable.role')" style="min-width: 200px"></Column>
+    <Column field="name" :header="$t('projectTable.title')" style="min-width: 200px"></Column>
+    <Column field="memberRole" :header="$t('projectTable.role')" style="min-width: 200px"></Column>
   </DataTable>
 </template>

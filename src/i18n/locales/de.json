@@ -30,14 +30,14 @@
   "legalNotice.title": "Impressum",
   "legalNotice.definition": "Angaben gemäß § 5 Telemediengesetz (TMG):",
   "legalNotice.contact": "Kontakt",
-  "legalNotice.representative": "Verantwortlicher für den Inhalt ist gemäß § 55 Abs. 2 Rundfunkstaatsvertrag (RStV):<br /> Prof. Dr.-Ing. Alexander Stanik, info@remsfal.de",
+  "legalNotice.representative": "Verantwortlicher für den Inhalt ist gemäß § 55 Abs. 2 Rundfunkstaatsvertrag (RStV): <br /> Prof. Dr.-Ing. Alexander Stanik, info{'@'}remsfal.de",
   "privacy.explanation": "Im Folgenden möchten wir Sie aufklären, wie Ihre Daten von uns verarbeitet werden.",
   "privacy.responsibility": "Verantwortlich im Sinne der DSGVO ist:",
   "privacy.representative": "Unseren Datenschutzbeauftragten erreichen sie unter:",
   "privacy.contact": "Sollten Sie per E-Mail mit uns Kontakt aufnehmen, werden die mitgeteilten Daten von uns gespeichert, um Ihr Anliegen zu bearbeiten.",
   "privacy.betroffenenrechte.title": "Betroffenenrechte",
   "privacy.betroffenenrechte.explanation.1": "Sie haben als betroffene Person, das Recht auf Auskunft, das Recht auf Berichtigung oder Löschung, das Recht auf Einschränkung der Verarbeitung und das Recht auf Widerspruch gegen die Verarbeitung Ihrer Daten. Sofern Sie uns eine Einwilligung erteilt haben, können Sie diese jederzeit mit Wirkung für die Zukunft widerrufen.",
-  "privacy.betroffenenrechte.explanation.2": "Bitte richten Sie Ihren Widerspruch [oder Widerruf] formlos an folgende Adresse: privacy@remsfal.de",
+  "privacy.betroffenenrechte.explanation.2": "Bitte richten Sie Ihren Widerspruch [oder Widerruf] formlos an folgende Adresse: privacy{'@'}remsfal.de",
   "privacy.hosting.title": "Hosting",
   "privacy.hosting.explanation.1": "Unser Hoster erhebt in sog. Logfiles folgende Daten, die Ihr Browser übermittelt:",
   "privacy.hosting.explanation.2": "Ihre IP-Adresse, Ihr Browsertyp und Ihre Browserversion, Ihr Betriebssystem, die Internetseite, von der Sie auf unsere Website gelangt sind, die Unterwebseiten, welche über ein zugreifendes System auf unserer Internetseite angesteuert werden, das Datum und die Uhrzeit eines Zugriffs auf unsere Website und Ihr Internet-Service-Provider.",
@@ -101,5 +101,8 @@
   "property.area": "Grundstücksfläche",
   "property.effectiveArea": "Nutzfläche",
   "taskView.create.action": "Erstelle Aufgabe",
-  "taskView.update.title": "Update Aufgabe mit ID: { id }"
+  "taskView.update.title": "Update Aufgabe mit ID: { id }",
+  "property.descripton": "Beschreibung",
+  "proppertty.area": "Grundstücksfläche",
+  "laoding": "Lade ..."
 }

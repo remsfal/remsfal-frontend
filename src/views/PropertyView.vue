@@ -114,7 +114,7 @@ const close = () => {
       <h5 v-if="action === 'create'">{{ $t('property.create') }}</h5>
       <h5 v-if="action === 'update'">{{ $t('property.update', id) }}</h5>
       <h5 v-if="action === 'delete'">{{ $t('property.delete', id) }}</h5>
-      <div v-if="isLoading">Loading...</div>
+      <div v-if="isLoading">$t('loading')</div>
       <div v-if="error">{{ error }}</div>
       <div v-if="!isLoading && !error" class="p-fluid formgrid grid">
         <div class="field col-12 md:col-6">
@@ -161,27 +161,27 @@ const close = () => {
         <div class="field col-12 text-right">
           <Button
             v-if="action === 'create'"
-            label="$t('button.crete')"
+            :label="$t('button.create')"
             icon="pi pi-check"
             class="p-button-property mr-2 mb-2"
             @click="createProperty"
           />
           <Button
             v-if="action === 'update'"
-            label="$t('button.udpate')"
+            :label="$t('button.update')"
             icon="pi pi-check"
             class="p-button-property mr-2 mb-2"
             @click="updateProperty"
           />
           <Button
             v-if="action === 'delete'"
-            label="$t('button.delete')"
+            :label="$t('button.delete')"
             icon="pi pi-trash"
             class="p-button-property p-button-danger mr-2 mb-2"
             @click="deleteProperty"
           />
           <Button
-            label="$t('button.cancel')"
+            :label="$t('button.cancel')"
             icon="pi pi-times"
             class="p-button-property mr-2 mb-2"
             @click="close"

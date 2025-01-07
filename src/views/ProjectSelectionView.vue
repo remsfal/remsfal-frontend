@@ -26,13 +26,13 @@ const close = () => {
     </div>
     <div class="col-2">
       <Button
-        label="$t('projectSelection.add')"
+        :label="$t('projectSelection.add')"
         icon="pi pi-plus"
         style="width: auto"
         @click="open"
       />
       <Dialog
-        header="Liegenschaft hinzufügen"
+        :header="$t('projectSelection.add')"
         v-model:visible="display"
         :breakpoints="{ '960px': '75vw' }"
         :style="{ width: '30vw' }"
