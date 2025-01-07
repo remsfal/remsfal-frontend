@@ -4,6 +4,7 @@ import { registerServiceWorker, enableBackgroundSync, addOnlineEventListener } f
 describe('Service Worker Initialization', () => {
     beforeEach(() => {
         vi.restoreAllMocks(); // Restore mocks for clean state before each test
+        process.env.VITE_SERVICE_WORKER_ENABLED = 'true';
     });
 
     describe('registerServiceWorker', () => {
