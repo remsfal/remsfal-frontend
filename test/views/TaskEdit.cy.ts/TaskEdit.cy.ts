@@ -57,91 +57,33 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
   it('Handles errors when saving the task', () => {
     // Intercept für den Fehlerfall (Fehlgeschlagener Aufruf)
     cy.intercept('PATCH', `${baseUrl}/api/v1/projects/${projectId}/tasks/${taskId}`, {
-        statusCode: 500,
-        body: { message: 'Internal Server Error' },
+      statusCode: 500,
+      body: { message: 'Internal Server Error' },
     }).as('saveTaskError');
 
-    // Navigiere zur Seite
     cy.visit(taskUrl);
     cy.wait(5000);
-
-    // Warten auf API-Responses
     cy.wait('@getUser');
     cy.wait('@getProjects');
     cy.wait('@getTask');
 
-    // Status ändern und speichern
     cy.get('.editable-cell').contains('IN_PROGRESS').click();
-    cy.get('select.editable-input')
-        .select('CLOSED')
-        .should('have.value', 'CLOSED');
-
+    cy.get('select.editable-input').select('CLOSED').should('have.value', 'CLOSED');
     cy.get('.save-button').click();
 
     // Validieren, ob der Fehler-Alert korrekt angezeigt wird
     cy.wait('@saveTaskError');
     cy.on('window:alert', (alertText) => {
-        expect(alertText).to.include('Aufgabe konnte nicht gespeichert werden');
-    });
-});
-
-
-
-  it('Navigates back using the Zurück button', () => {
-    // Simuliere das Navigieren zu einer Seite vor der Task-Edit-Seite
-    cy.visit(baseUrl); // Besuche die vorherige Seite
-    cy.visit(taskUrl); // Besuche die Task-Edit-Seite
-
-    // Wait for API responses
-    cy.wait(5000);
-    cy.wait('@getUser');
-    cy.wait('@getProjects');
-    cy.wait('@getTask');
-
-    // **Zurück-Button prüfen**
-    cy.get('.header-buttons .pi-arrow-left') // Selektor für den Zurück-Button
-      .should('be.visible'); // Sicherstellen, dass der Button sichtbar ist
-
-    // Klicke auf den Zurück-Button
-    cy.get('.header-buttons .pi-arrow-left').click();
-
-    // Prüfen, ob der Benutzer zur vorherigen Seite navigiert wird
-    cy.url().then((currentUrl) => {
-      const normalizedUrl = currentUrl.replace(/\/$/, '');
-      expect(normalizedUrl).to.equal(baseUrl);
+      expect(alertText).to.include('Aufgabe konnte nicht gespeichert werden');
     });
   });
 
-  it('Checks toggle button text for Mehr/Weniger Details', () => {
-    // Navigate to the Task Edit URL
-    cy.visit(taskUrl);
-    cy.wait(5000);
-
-    // Wait for API responses
-    cy.wait('@getUser');
-    cy.wait('@getProjects');
-    cy.wait('@getTask');
-
-    // **Prüfen des Mehr Details-Buttons**
-    cy.get('.toggle-button') // Selektor für den Umschalt-Button
-      .should('be.visible') // Sicherstellen, dass der Button sichtbar ist
-      .and('contain', 'Mehr Details'); // Sicherstellen, dass der Button den richtigen Text hat
-
-    // Klicke auf den Button, um zu "Weniger Details" zu wechseln
-    cy.get('.toggle-button').click();
-    cy.get('.toggle-button').should('contain', 'Weniger Details'); // Prüfen des aktualisierten Textes
-
-    // Klicke erneut, um zu "Mehr Details" zurückzukehren
-    cy.get('.toggle-button').click();
-    cy.get('.toggle-button').should('contain', 'Mehr Details'); // Prüfen des ursprünglichen Textes
-  });
-
-  it('Changes status successfully and saves the task', () => {
+  it('Changes status successfully and saves the task + back to previous page + toggle check', () => {
     const updatedTask = {
       id: taskId,
       title: 'Mock Task Title',
       description: 'This is a mocked task description.',
-      status: 'CLOSED', // Neuer Status
+      status: 'CLOSED',
     };
 
     // Intercept the PATCH request for saving the task
@@ -160,7 +102,7 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
       });
     }).as('saveTask');
 
-    // Navigate to the Task Edit URL
+    cy.visit(baseUrl);
     cy.visit(taskUrl);
     cy.wait(5000);
 
@@ -169,30 +111,45 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
     cy.wait('@getProjects');
     cy.wait('@getTask');
 
+    // **Prüfen des Mehr Details-Buttons**
+    cy.get('.toggle-button').should('be.visible').and('contain', 'Mehr Details');
+
+    cy.get('.toggle-button').click();
+    cy.get('.toggle-button').should('contain', 'Weniger Details');
+    cy.get('.toggle-button').click();
+    cy.get('.toggle-button').should('contain', 'Mehr Details');
+
     // Start editing the status
-    cy.get('.editable-cell').contains('IN_PROGRESS').click(); // Klicke auf den aktuellen Status
-    cy.get('select.editable-input') // Wähle die Dropdown-Auswahl
-      .select('CLOSED') // Wähle den neuen Status
-      .should('have.value', 'CLOSED'); // Sicherstellen, dass der neue Wert gesetzt ist
+    cy.get('.editable-cell').contains('IN_PROGRESS').click();
+    cy.get('select.editable-input').select('CLOSED').should('have.value', 'CLOSED');
 
     cy.wait(1000);
-
-    // Click the save button
     cy.get('.save-button').click();
 
     // Wait for the PATCH request and validate the response
     cy.wait('@saveTask').then((interception) => {
-      expect(interception.response?.statusCode).to.equal(200); // Prüfen, ob der Speichern-Request erfolgreich war
+      expect(interception.response?.statusCode).to.equal(200);
     });
 
-    // Überwachung von window.alert
     cy.on('window:alert', (alertText) => {
-      expect(alertText).to.equal('Die Aufgabe wurde erfolgreich gespeichert!'); // Alert-Nachricht prüfen
+      expect(alertText).to.equal('Die Aufgabe wurde erfolgreich gespeichert!');
 
       // Simuliertes Schließen des Alerts
       cy.window().then((win) => {
-        win.alert = () => {}; // Simuliere Klick auf "OK"
+        win.alert = () => {};
       });
+    });
+
+    cy.wait(5000);
+
+    // **Zurück-Button prüfen**
+    cy.get('.header-buttons .pi-arrow-left').should('be.visible');
+    cy.get('.header-buttons .pi-arrow-left').click();
+
+    // Prüfen, ob der Benutzer zur vorherigen Seite navigiert wird
+    cy.url().then((currentUrl) => {
+      const normalizedUrl = currentUrl.replace(/\/$/, '');
+      expect(normalizedUrl).to.equal(baseUrl);
     });
   });
 
@@ -203,20 +160,19 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
       body: { message: 'Unauthorized' },
     }).as('getTaskUnauthorized');
 
-    // Navigate to the Task Edit URL
     cy.visit(taskUrl);
     cy.wait(5000);
 
     // Warten auf den API-Aufruf und prüfen, ob der Fehler abgefangen wird
     cy.wait('@getTaskUnauthorized').then((interception) => {
-      expect(interception.response?.statusCode).to.equal(401); // Statuscode prüfen
-      expect(interception.response?.body.message).to.equal('Unauthorized'); // Fehlernachricht prüfen
+      expect(interception.response?.statusCode).to.equal(401); 
+      expect(interception.response?.body.message).to.equal('Unauthorized');
     });
 
     // Prüfen, ob der Alert mit der richtigen Fehlermeldung angezeigt wird
     cy.on('window:alert', (alertText) => {
-      const normalizedText = alertText.replace(/\s+/g, ' ').trim(); // Entfernt zusätzliche Leerzeichen und Zeilenumbrüche
-      expect(normalizedText).to.contain('Aufgabe konnte nicht geladen werden: 401'); // Fehlercode statt "Unauthorized"
+      const normalizedText = alertText.replace(/\s+/g, ' ').trim();
+      expect(normalizedText).to.contain('Aufgabe konnte nicht geladen werden: 401');
       expect(normalizedText).to.contain('Bitte überprüfen Sie, ob Sie eingeloggt sind.');
     });
   });
@@ -232,17 +188,16 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
     cy.wait('@getTask');
 
     // **Titel und Beschreibung löschen**
-    // Start editing the title and leave it empty
-    cy.get('.editable-cell').contains('Mock Task Title').click(); // Klicke auf den aktuellen Titel
+    cy.get('.editable-cell').contains('Mock Task Title').click();
     cy.get('input.editable-input')
-      .clear() // Leere das Eingabefeld
-      .should('have.value', ''); // Stelle sicher, dass das Feld leer ist
+      .clear()
+      .should('have.value', '');
 
     // Start editing the description and leave it empty
-    cy.get('.editable-cell').contains('This is a mocked task description.').click(); // Klicke auf die Beschreibung
+    cy.get('.editable-cell').contains('This is a mocked task description.').click(); 
     cy.get('textarea.editable-input')
-      .clear() // Leere das Eingabefeld
-      .should('have.value', ''); // Stelle sicher, dass das Feld leer ist
+      .clear() 
+      .should('have.value', '');
 
     cy.wait(1000);
 
@@ -251,14 +206,13 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
 
     // **Prüfen der Fehlermeldungen**
     cy.on('window:alert', (alertText) => {
-      const normalizedText = alertText.replace(/\s+/g, ' ').trim(); // Entfernt zusätzliche Leerzeichen und Zeilenumbrüche
-      expect(normalizedText).to.contain('- Name muss gegeben sein.'); // Fehlermeldung für den Titel prüfen
-      expect(normalizedText).to.contain('- Beschreibung muss gegeben sein.'); // Fehlermeldung für die Beschreibung prüfen
+      const normalizedText = alertText.replace(/\s+/g, ' ').trim(); 
+      expect(normalizedText).to.contain('- Name muss gegeben sein.'); 
+      expect(normalizedText).to.contain('- Beschreibung muss gegeben sein.');
     });
   });
 
   it('Validation Test for Description', () => {
-    // Navigate to the Task Edit URL
     cy.visit(taskUrl);
     cy.wait(5000);
 
@@ -268,11 +222,10 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
     cy.wait('@getTask');
 
     // **Beschreibung löschen**
-    // Start editing the description and leave it empty
-    cy.get('.editable-cell').contains('This is a mocked task description.').click(); // Klicke auf die Beschreibung
+    cy.get('.editable-cell').contains('This is a mocked task description.').click();
     cy.get('textarea.editable-input')
-      .clear() // Leere das Eingabefeld
-      .should('have.value', ''); // Stelle sicher, dass das Feld leer ist
+      .clear() 
+      .should('have.value', ''); 
 
     cy.wait(1000);
 
@@ -312,6 +265,9 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
       const normalizedText = alertText.replace(/\s+/g, ' ').trim(); // Entfernt zusätzliche Leerzeichen und Zeilenumbrüche
       expect(normalizedText).to.contain('- Name muss gegeben sein.'); // Fehlermeldung für den Titel prüfen
     });
+
+    cy.reload();
+    cy.wait(5000);
   });
 
   it('Displays alert when no changes are made to the task', () => {
@@ -410,7 +366,6 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
       });
     }).as('saveTask');
 
-    // Navigate to the Task Edit URL
     cy.visit(taskUrl);
     cy.wait(5000);
 
@@ -421,32 +376,25 @@ describe('TaskEdit Page with Mock Login and API Stubs', () => {
 
     // Start editing the description
     cy.get('.editable-cell').contains('This is a mocked task description.').click(); // Click to start editing
-    cy.get('textarea.editable-input') // Target the textarea
-      .should('be.visible') // Ensure the textarea is visible
-      .clear() // Clear any existing content
-      .type('Updated Task Description') // Type the new description
-      .blur(); // Simulate leaving the textarea
+    cy.get('textarea.editable-input')
+      .should('be.visible')
+      .clear()
+      .type('Updated Task Description') 
+      .blur();
 
     // Assert the description was updated
     cy.get('.editable-cell').contains('Updated Task Description').should('be.visible');
-
-    // Click the save button
     cy.get('.save-button').click();
-
-    // Wait for the PATCH request and validate the response
     cy.wait('@saveTask').then((interception) => {
       expect(interception.response?.statusCode).to.equal(200);
     });
     cy.wait(10000);
 
-    // Überwachung von window.alert ohne Stub
     cy.on('window:alert', (alertText) => {
-      // <-- Änderung: Echter Alert wird überwacht
       expect(alertText).to.equal('Die Aufgabe wurde erfolgreich gespeichert!');
 
-      // Simuliertes Schließen des Alerts
       cy.window().then((win) => {
-        win.alert = () => {}; // <-- Änderung: Simuliertes Klicken auf "OK"
+        win.alert = () => {};
       });
     });
   });
