@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 
+const i18n = useI18n();
 </script>
 
 <template>
   <div class="p-link layout-topbar-button">
-    <Select v-model="$i18n.locale" :options="$i18n.availableLocales">
+    <Select v-model="i18n.locale" :options="i18n.availableLocales">
       <template #value="slotProps">
         <img
           :alt="slotProps.value"

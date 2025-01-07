@@ -10,6 +10,7 @@ export type Locale = 'en' | 'de';
 export const locales: Locale[] = ['en', 'de'];
 
 const i18n = createI18n({
+  legacy: false,
   locale: 'de',
   fallback: 'en',
   messages: {

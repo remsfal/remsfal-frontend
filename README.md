@@ -75,5 +75,5 @@ Hint: Use i18n-ally with VS Code
 
 Steps:
 1. Create a translation key in `src/i18n/locales/de.json` and `src/i18n/locales/de.json`
-2. Reference it inside the Component with `$t('your.key')`
+2. Reference it inside the Component with `t('your.key')` after importing t from useI18n()
 

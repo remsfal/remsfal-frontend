@@ -5,7 +5,10 @@ import InputText from 'primevue/inputtext';
 import ProjectService, { type Project, type ProjectItem } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
+
 import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const emit = defineEmits<{
   abort: [];
@@ -16,11 +19,10 @@ const projectTitle = ref('');
 const errorMessage = ref('');
 
 const router = useRouter();
-const i18n = useI18n();
 
 watch(projectTitle, (newProjectTitle) => {
   if (newProjectTitle.length > maxLength) {
-    errorMessage.value = i18n.t('newProjectForm.title.error', { maxLength: maxLength });
+    errorMessage.value = t('newProjectForm.title.error', { maxLength: maxLength });
   } else {
     errorMessage.value = '';
   }
@@ -63,15 +65,15 @@ function abort() {
         :class="{ 'p-invalid': errorMessage }"
         aria-describedby="text-error"
       />
-      <label for="value">{{ $t('newProjectForm.input.name') }}</label>
+      <label for="value">{{ t('newProjectForm.input.name') }}</label>
     </span>
     <small id="text-error" class="p-error">
       {{ errorMessage || '&nbsp;' }}
     </small>
-    <Button type="submit" :label="$t('button.create')" icon="pi pi-plus" iconPos="left" />
+    <Button type="submit" :label="t('button.create')" icon="pi pi-plus" iconPos="left" />
     <Button
       type="reset"
-      :label="$t('button.cancel')"
+      :label="t('button.cancel')"
       icon="pi pi-times"
       iconPos="left"
       @click="abort"

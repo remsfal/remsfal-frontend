@@ -8,6 +8,10 @@ import FloatLabel from 'primevue/floatlabel';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 interface PhoneValid {
   businessPhoneNumber: boolean;
   mobilePhoneNumber: boolean;
@@ -187,39 +191,39 @@ async function getCity() {
 
 <template>
   <div class="grid">
-    <h1>{{ $t('accountSettings.title') }}</h1>
+    <h1>{{ t('accountSettings.title') }}</h1>
     <div class="card-container">
       <Card>
         <template #title>
-          <h4>{{ $t('accountSettings.userProfile.title') }}</h4>
+          <h4>{{ t('accountSettings.userProfile.title') }}</h4>
         </template>
         <template #content>
           <div v-if="userProfile">
             <div v-if="!editMode">
               <p v-if="userProfile.firstName || userProfile.lastName">
-                <strong>{{ $t('accountSettings.userProfile.name') }}:</strong>
+                <strong>{{ t('accountSettings.userProfile.name') }}:</strong>
                 {{ userProfile.firstName }}
                 {{ userProfile.lastName }}
               </p>
               <p v-if="userProfile.businessPhoneNumber">
-                <strong>{{ $t('accountSettings.userProfile.businessPhone') }}:</strong>
+                <strong>{{ t('accountSettings.userProfile.businessPhone') }}:</strong>
                 {{ userProfile.businessPhoneNumber }}
               </p>
               <p v-if="userProfile.mobilePhoneNumber">
-                <strong>{{ $t('accountSettings.userProfile.mobilePhone') }}:</strong>
+                <strong>{{ t('accountSettings.userProfile.mobilePhone') }}:</strong>
                 {{ userProfile.mobilePhoneNumber }}
               </p>
               <p v-if="userProfile.privatePhoneNumber">
-                <strong>{{ $t('accountSettings.userProfile.privatePhone') }}:</strong>
+                <strong>{{ t('accountSettings.userProfile.privatePhone') }}:</strong>
                 {{ userProfile.privatePhoneNumber }}
               </p>
               <p v-if="userProfile.email"><strong>Email:</strong> {{ userProfile.email }}</p>
               <p v-if="userProfile.registeredDate">
-                <strong>{{ $t('accountSettings.userProfile.email') }}:</strong>
+                <strong>{{ t('accountSettings.userProfile.email') }}:</strong>
                 {{ userProfile.registeredDate }}
               </p>
               <p v-if="userProfile.lastLoginDate">
-                <strong>{{ $t('accountSettings.userProfile.lastLogin') }}:</strong>
+                <strong>{{ t('accountSettings.userProfile.lastLogin') }}:</strong>
                 {{ userProfile.lastLoginDate }}
               </p>
             </div>
@@ -227,11 +231,11 @@ async function getCity() {
               <div class="edit-inputs">
                 <FloatLabel>
                   <InputText id="firstname" v-model="editedUserProfile.firstName" />
-                  <label for="firstname">{{ $t('accountSettings.userProfile.firstName') }}</label>
+                  <label for="firstname">{{ t('accountSettings.userProfile.firstName') }}</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="lastname" v-model="editedUserProfile.lastName" />
-                  <label for="lastname">{{ $t('accountSettings.userProfile.lastName') }}</label>
+                  <label for="lastname">{{ t('accountSettings.userProfile.lastName') }}</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText
@@ -241,7 +245,7 @@ async function getCity() {
                     @change="() => validatePhone('businessPhoneNumber')"
                   />
                   <label for="businessPhoneNumber">{{
-                    $t('accountSettings.userProfile.businessPhone')
+                    t('accountSettings.userProfile.businessPhone')
                   }}</label>
                 </FloatLabel>
                 <FloatLabel>
@@ -252,7 +256,7 @@ async function getCity() {
                     @change="() => validatePhone('mobilePhoneNumber')"
                   />
                   <label for="mobilePhoneNumber">{{
-                    $t('accountSettings.userProfile.mobilePhone')
+                    t('accountSettings.userProfile.mobilePhone')
                   }}</label>
                 </FloatLabel>
                 <FloatLabel>
@@ -263,7 +267,7 @@ async function getCity() {
                     @change="() => validatePhone('privatePhoneNumber')"
                   />
                   <label for="privatePhoneNumber">{{
-                    $t('accountSettings.userProfile.privatePhone')
+                    t('accountSettings.userProfile.privatePhone')
                   }}</label>
                 </FloatLabel>
               </div>
@@ -273,29 +277,29 @@ async function getCity() {
       </Card>
       <Card>
         <template #title>
-          <h4>{{ $t('accountSettings.address.title') }}</h4>
+          <h4>{{ t('accountSettings.address.title') }}</h4>
         </template>
         <template #content>
           <div v-if="userProfile">
             <div v-if="!editMode">
               <p v-if="userProfile.address">
-                <strong>{{ $t('accountSettings.address.street') }}:</strong>
+                <strong>{{ t('accountSettings.address.street') }}:</strong>
                 {{ userProfile.address.street }}
               </p>
               <p v-if="userProfile.address">
-                <strong>{{ $t('accountSettings.address.zip') }}:</strong>
+                <strong>{{ t('accountSettings.address.zip') }}:</strong>
                 {{ userProfile.address.zip }}
               </p>
               <p v-if="userProfile.address">
-                <strong>{{ $t('accountSettings.address.city') }}:</strong>
+                <strong>{{ t('accountSettings.address.city') }}:</strong>
                 {{ userProfile.address.city }}
               </p>
               <p v-if="userProfile.address">
-                <strong>{{ $t('accountSettings.address.state') }}:</strong>
+                <strong>{{ t('accountSettings.address.state') }}:</strong>
                 {{ userProfile.address.province }}
               </p>
               <p v-if="userProfile.address">
-                <strong>{{ $t('accountSettings.address.countrycode') }}:</strong>
+                <strong>{{ t('accountSettings.address.countrycode') }}:</strong>
                 {{ userProfile.address.countryCode }}
               </p>
             </div>
@@ -303,19 +307,19 @@ async function getCity() {
               <div class="edit-inputs">
                 <FloatLabel>
                   <InputText id="street" v-model="editedUserProfile.address.street" />
-                  <label for="street">{{ $t('accountSettings.address.street') }}</label>
+                  <label for="street">{{ t('accountSettings.address.street') }}</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="zip" v-model="editedUserProfile.address.zip" @change="getCity" />
-                  <label for="zip">{{ $t('accountSettings.address.zip') }}</label>
+                  <label for="zip">{{ t('accountSettings.address.zip') }}</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="city" v-model="editedUserProfile.address.city" />
-                  <label for="city">{{ $t('accountSettings.address.city') }}</label>
+                  <label for="city">{{ t('accountSettings.address.city') }}</label>
                 </FloatLabel>
                 <FloatLabel>
                   <InputText id="province" v-model="editedUserProfile.address.province" />
-                  <label for="province">{{ $t('accountSettings.address.state') }}</label>
+                  <label for="province">{{ t('accountSettings.address.state') }}</label>
                 </FloatLabel>
                 <div class="country">
                   <select
@@ -323,7 +327,7 @@ async function getCity() {
                     v-model="editedUserProfile.address.countryCode"
                     class="select-country"
                   >
-                    <option disabled value="">{{ $t('accountSettings.address.country') }}</option>
+                    <option disabled value="">{{ t('accountSettings.address.country') }}</option>
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                       {{ country.name }}
                     </option>
@@ -334,7 +338,7 @@ async function getCity() {
                       v-model="editedUserProfile.address.countryCode"
                     />
                     <label for="countryCodeInput">{{
-                      $t('accountSettings.address.countrycode')
+                      t('accountSettings.address.countrycode')
                     }}</label>
                   </FloatLabel>
                 </div>
@@ -351,16 +355,16 @@ async function getCity() {
             type="button"
             icon="pi pi-user-edit"
             class="edit-button"
-            :label="$t('button.edit')"
+            :label="t('button.edit')"
             @click="toggleEditMode"
           />
           <Button
             type="button"
             icon="pi pi-trash"
             severity="danger"
-            :aria-label="$t('accountSettings.delete.delete')"
+            :aria-label="t('accountSettings.delete.delete')"
             class="edit-button"
-            :label="$t('accountSettings.delete.delete')"
+            :label="t('accountSettings.delete.delete')"
             @click="visible = true"
           />
         </div>
@@ -374,15 +378,15 @@ async function getCity() {
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
           >
             <p>
-              {{ $t('accountSettings.delete.deleteWarning') }}
+              {{ t('accountSettings.delete.deleteWarning') }}
             </p>
             <div class="buttons-container centered-buttons">
               <Button
                 type="button"
                 icon="pi pi-trash"
                 severity="danger"
-                :aria-label="$t('accountSettings.delete.confirmDelete')"
-                :label="$t('accountSettings.delete.confirmDelete')"
+                :aria-label="t('accountSettings.delete.confirmDelete')"
+                :label="t('accountSettings.delete.confirmDelete')"
                 class="delete-button"
                 @click="deleteAccount"
               />
@@ -391,8 +395,8 @@ async function getCity() {
                 icon="pi pi-times"
                 class="cancel-button"
                 severity="secondary"
-                :aria-label="$t('button.cancel')"
-                :label="$t('button.cancel')"
+                :aria-label="t('button.cancel')"
+                :label="t('button.cancel')"
                 @click="visible = false"
               />
             </div>
@@ -403,7 +407,7 @@ async function getCity() {
         <div class="buttons-container centered-buttons">
           <Button
             type="button"
-            :label="$t('button.save')"
+            :label="t('button.save')"
             icon="pi pi-check"
             class="save-button"
             @click="saveProfile"
@@ -412,8 +416,8 @@ async function getCity() {
             icon="pi pi-times"
             class="cancel-button"
             severity="secondary"
-            :aria-label="$t('button.cancel')"
-            :label="$t('button.cancel')"
+            :aria-label="t('button.cancel')"
+            :label="t('button.cancel')"
             @click="toggleEditMode"
           />
         </div>

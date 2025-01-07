@@ -8,6 +8,10 @@ import type { SelectChangeEvent } from 'primevue/select';
 import Select from 'primevue/select';
 import LocaleSwitch from '@/components/LocaleSwitch.vue';
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
 const projectStore = useProjectStore();
@@ -125,14 +129,14 @@ const isOutsideClicked = (event: Event) => {
           @click="onHomeClick()"
         >
           <i class="pi pi-home"></i>
-          <span>{{ $t('toolbar.projects') }}</span>
+          <span>{{ t('toolbar.projects') }}</span>
         </button>
         <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
           <Select
             v-model="projectStore.selectedProject"
             :options="projectStore.projectList"
             optionLabel="name"
-            :placeholder="$t('toolbar.project.placeholder')"
+            :placeholder="t('toolbar.project.placeholder')"
             @change="onProjectSelectionChange($event)"
           />
         </div>
@@ -142,7 +146,7 @@ const isOutsideClicked = (event: Event) => {
           @click="onNewProjectClick()"
         >
           <i class="pi pi-plus"></i>
-          <span>{{ $t('toolbar.newProject') }}</span>
+          <span>{{ t('toolbar.newProject') }}</span>
         </button>
         <button
           v-if="sessionStore.user != null"
@@ -158,7 +162,7 @@ const isOutsideClicked = (event: Event) => {
           @click="logout()"
         >
           <i class="pi pi-sign-out"></i>
-          <span>{{ $t('toolbar.logout') }}</span>
+          <span>{{ t('toolbar.logout') }}</span>
         </button>
         <button
           v-if="sessionStore.user == null"
@@ -166,7 +170,7 @@ const isOutsideClicked = (event: Event) => {
           @click="login('/projects')"
         >
           <i class="pi pi-sign-in"></i>
-          <span>{{ $t('toolbar.login') }}</span>
+          <span>{{ t('toolbar.login') }}</span>
         </button>
         <LocaleSwitch></LocaleSwitch>
       </div>

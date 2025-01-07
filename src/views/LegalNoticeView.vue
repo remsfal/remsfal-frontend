@@ -2,6 +2,9 @@
 import { useRouter } from 'vue-router';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const router = useRouter();
 
 const navigateToHome = () => {
@@ -16,9 +19,9 @@ const navigateToHome = () => {
     </div>
     <div class="col-6">
       <Card>
-        <template #title> {{ $t('legalNotice.title') }}</template>
+        <template #title> {{ t('legalNotice.title') }}</template>
         <template #content>
-          <p>{{ $t('legalNotice.definition') }}</p>
+          <p>{{ t('legalNotice.definition') }}</p>
           <p>
             Prof. Dr.-Ing. Alexander Stanik<br />
             TA Gebäude C, Raum 830<br />
@@ -31,15 +34,14 @@ const navigateToHome = () => {
     </div>
     <div class="col-6">
       <Card>
-        <template #title> {{ $t('legalNotice.contact') }}</template>
+        <template #title> {{ t('legalNotice.contact') }}</template>
         <template #content>
           <p>
             Tel.: +49 30 5019-2346<br />
             Fax: +49 30 5019-48-2346<br />
             E-Mail: info@remsfal.de<br />
           </p>
-          <p v-html="$t('legalNotice.representative')">
-          </p>
+          <p v-html="t('legalNotice.representative')"></p>
         </template>
       </Card>
     </div>

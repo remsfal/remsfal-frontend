@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 function login(route: string): void {
   window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
 }
@@ -34,8 +38,8 @@ function login(route: string): void {
           <path fill="none" d="M0 0h48v48H0z"></path>
         </svg>
       </div>
-      <span class="gsi-material-button-contents">{{ $t('google.signIn') }}</span>
-      <span style="display: none">{{ $t('google.signIn') }}</span>
+      <span class="gsi-material-button-contents">{{ t('google.signIn') }}</span>
+      <span style="display: none">{{ t('google.signIn') }}</span>
     </div>
   </button>
 </template>

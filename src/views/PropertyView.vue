@@ -6,6 +6,9 @@ import Button from 'primevue/button';
 import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import InputText from 'primevue/inputtext';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   projectId: string;
@@ -111,18 +114,18 @@ const close = () => {
 <template>
   <div class="col-12">
     <div class="card">
-      <h5 v-if="action === 'create'">{{ $t('property.create') }}</h5>
-      <h5 v-if="action === 'update'">{{ $t('property.update', id) }}</h5>
-      <h5 v-if="action === 'delete'">{{ $t('property.delete', id) }}</h5>
-      <div v-if="isLoading">$t('loading')</div>
+      <h5 v-if="action === 'create'">{{ t('property.create') }}</h5>
+      <h5 v-if="action === 'update'">{{ t('property.update', { id }) }}</h5>
+      <h5 v-if="action === 'delete'">{{ t('property.delete', { id }) }}</h5>
+      <div v-if="isLoading">t('loading')</div>
       <div v-if="error">{{ error }}</div>
       <div v-if="!isLoading && !error" class="p-fluid formgrid grid">
         <div class="field col-12 md:col-6">
-          <label for="title">{{ $t('property.title') }}</label>
+          <label for="title">{{ t('property.title') }}</label>
           <InputText id="title" v-model="title" type="text" :disabled="action === 'delete'" />
         </div>
         <div class="field col-12 md:col-6">
-          <label for="landRegisterEntry">{{ $t('property.landRegister') }}</label>
+          <label for="landRegisterEntry">{{ t('property.landRegister') }}</label>
           <InputText
             id="landRegisterEntry"
             v-model="landRegisterEntry"
@@ -131,7 +134,7 @@ const close = () => {
           />
         </div>
         <div class="field col-12">
-          <label for="description">{{ $t('property.descripton') }}</label>
+          <label for="description">{{ t('property.descripton') }}</label>
           <Textarea
             id="description"
             v-model="description"
@@ -141,7 +144,7 @@ const close = () => {
           />
         </div>
         <div class="field col-10 md:col-6">
-          <label for="plotArea">{{ $t('proppertty.area') }}</label>
+          <label for="plotArea">{{ t('proppertty.area') }}</label>
           <InputNumber
             id="plotArea"
             v-model="plotArea"
@@ -150,7 +153,7 @@ const close = () => {
           />
         </div>
         <div class="field col-10 md:col-6">
-          <label for="effectiveSpace">{{ $t('property.effectiveArea') }}</label>
+          <label for="effectiveSpace">{{ t('property.effectiveArea') }}</label>
           <InputNumber
             id="effectiveSpace"
             v-model="effectiveSpace"
@@ -161,27 +164,27 @@ const close = () => {
         <div class="field col-12 text-right">
           <Button
             v-if="action === 'create'"
-            :label="$t('button.create')"
+            :label="t('button.create')"
             icon="pi pi-check"
             class="p-button-property mr-2 mb-2"
             @click="createProperty"
           />
           <Button
             v-if="action === 'update'"
-            :label="$t('button.update')"
+            :label="t('button.update')"
             icon="pi pi-check"
             class="p-button-property mr-2 mb-2"
             @click="updateProperty"
           />
           <Button
             v-if="action === 'delete'"
-            :label="$t('button.delete')"
+            :label="t('button.delete')"
             icon="pi pi-trash"
             class="p-button-property p-button-danger mr-2 mb-2"
             @click="deleteProperty"
           />
           <Button
-            :label="$t('button.cancel')"
+            :label="t('button.cancel')"
             icon="pi pi-times"
             class="p-button-property mr-2 mb-2"
             @click="close"

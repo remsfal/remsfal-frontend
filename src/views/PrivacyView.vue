@@ -2,6 +2,9 @@
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter();
 
@@ -17,10 +20,10 @@ const navigateToHome = () => {
     </div>
     <div class="col-12">
       <Card>
-        <template #title> {{ $t('privacy.title') }}</template>
+        <template #title> {{ t('privacy.title') }}</template>
         <template #content>
-          <p>{{ $t('privacy.explanation') }}</p>
-          <p class="p-card-content-header">{{ $t('privacy.responsibility') }}</p>
+          <p>{{ t('privacy.explanation') }}</p>
+          <p class="p-card-content-header">{{ t('privacy.responsibility') }}</p>
           <p>
             Prof. Dr.-Ing. Alexander Stanik<br />
             TA Gebäude C, Raum 830<br />
@@ -30,28 +33,28 @@ const navigateToHome = () => {
           </p>
           <p>E-Mail: info@remsfal.de</p>
 
-          <p class="p-card-content-header">{{ $t('privacy.representative') }}</p>
+          <p class="p-card-content-header">{{ t('privacy.representative') }}</p>
           <p>
             Prof. Dr.-Ing. Alexander Stanik<br />
             E-Mail: privacy@remsfal.de
           </p>
           <p>
-            {{ $t('privacy.contact') }}
+            {{ t('privacy.contact') }}
           </p>
 
-          <p class="p-card-content-header">{{ $t('privacy.betroffenenrechte.title') }}</p>
+          <p class="p-card-content-header">{{ t('privacy.betroffenenrechte.title') }}</p>
           <p>
-            {{ $t('privacy.betroffenenrechte.explanation.1') }}
+            {{ t('privacy.betroffenenrechte.explanation.1') }}
           </p>
           <p>
-            {{ $t('privacy.betroffenenrechte.explanation.2') }}
+            {{ t('privacy.betroffenenrechte.explanation.2') }}
           </p>
           <p>
-            {{ $t('privacy.portability') }}
+            {{ t('privacy.portability') }}
             <a
-                href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html"
-                target="_blank"
-                rel="noopener noreferrer"
+              href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html </a
             >.
@@ -59,9 +62,9 @@ const navigateToHome = () => {
         </template>
         <template #footer>
           <a
-              href="https://opr.vc/docs/allgemein/dse_einleitung/"
-              target="_blank"
-              rel="noopener noreferrer"
+            href="https://opr.vc/docs/allgemein/dse_einleitung/"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             open privacy by opr.vc
           </a>
@@ -71,22 +74,22 @@ const navigateToHome = () => {
 
     <div class="col-12">
       <Card>
-        <template #title> {{ $t('privacy.hosting.title') }}</template>
+        <template #title> {{ t('privacy.hosting.title') }}</template>
         <template #content>
           <p class="p-card-content-header">
-            {{ $t('privacy.hosting.explanation.1') }}
+            {{ t('privacy.hosting.explanation.1') }}
           </p>
           <p>
-            {{ $t('privacy.hosting.explanation.2') }}
+            {{ t('privacy.hosting.explanation.2') }}
           </p>
           <p>
-            {{ $t('privacy.hosting.explanation.3') }}
+            {{ t('privacy.hosting.explanation.3') }}
           </p>
           <p>
-            {{ $t('privacy.hosting.explanation.4') }}
+            {{ t('privacy.hosting.explanation.4') }}
           </p>
           <p class="p-card-content-header">
-            {{ $t('privacy.hosting.explanation.5') }}
+            {{ t('privacy.hosting.explanation.5') }}
           </p>
           <p>
             Hochschulrechenzentrum HTW Berlin<br />
@@ -96,18 +99,18 @@ const navigateToHome = () => {
             Germany<br />
           </p>
           <p>
-            {{ $t('privacy.furtherInformation') }}
+            {{ t('privacy.furtherInformation') }}
             <a
-                href="https://www.htw-berlin.de/datenschutz/"
-                target="_blank"
-                rel="noopener noreferrer"
+              href="https://www.htw-berlin.de/datenschutz/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               https://www.htw-berlin.de/datenschutz/
             </a>
           </p>
         </template>
         <template #footer>
-          <p>{{ $t('privacy.lastUpdated') }}</p>
+          <p>{{ t('privacy.lastUpdated') }}</p>
         </template>
       </Card>
     </div>
