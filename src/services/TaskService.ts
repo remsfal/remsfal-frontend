@@ -34,6 +34,7 @@ export interface TaskItem {
 }
 
 export default class TaskService {
+  
   readonly baseUrl: string = '/api/v1/projects';
 
   //Get a list of tasks
@@ -77,11 +78,20 @@ export default class TaskService {
   }
 
   //modify a task
-  modifyTask(projectId: string, taskId: string, title: string, description: string) {
+  modifyTask(
+    projectId: string,
+    taskId: string,
+    title: string,
+    description: string,
+    status: string,
+    ownerId: string,
+  ) {
     return axios
       .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
         title: title,
         description: description,
+        status: status,
+        ownerId: ownerId,
       })
       .then((response) => {
         console.log('task updated', response.data);
