@@ -1,3 +1,4 @@
+<!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
 import { useUserSessionStore } from '@/stores/UserSession';
 import UserService, { type User, type Address } from '@/services/UserService';
@@ -181,13 +182,12 @@ function validateField(
 
   const regexMap = {
     default: /^[A-Za-zÄÖÜäöüß\s]+$/,
-    street: /^(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s.,\-]+$/,
+    street: /^(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/,
   };
 
   const regex = field === 'street' ? regexMap.street : regexMap.default;
 
   if ((type === 'name' || type === 'address') && typeof value === 'string') {
-    console.log('222');
     if (!value || value.length === 0) {
       errorMessage.value[errorKey] = 'Bitte eingeben!';
     } else if (!regex.test(value)) {
@@ -317,7 +317,6 @@ const isDisabled = computed(() => {
                   v-model="editedUserProfile.firstName"
                   required
                   :invalid="errorMessage.firstname !== ''"
-                  @input="(event) => (editedUserProfile.firstName = event.target.value)"
                   @blur="validateField('firstName', 'name', 'firstname')"
                 />
                 <Message
@@ -337,7 +336,6 @@ const isDisabled = computed(() => {
                   v-model="editedUserProfile.lastName"
                   required
                   :invalid="errorMessage.lastname !== ''"
-                  @input="(event) => (editedUserProfile.lastName = event.target.value)"
                   @blur="validateField('lastName', 'name', 'lastname')"
                 />
                 <Message
@@ -352,13 +350,7 @@ const isDisabled = computed(() => {
 
               <div class="input-container">
                 <label class="label" for="eMail">E-Mail:</label>
-                <InputText
-                  id="eMail"
-                  v-model="editedUserProfile.email"
-                  disabled
-                  required
-                  @input="(event) => (editedUserProfile.email = event.target.value)"
-                />
+                <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
                 <Message class="error" size="small" severity="error" variant="simple"></Message>
               </div>
               <div class="input-container">
@@ -367,12 +359,6 @@ const isDisabled = computed(() => {
                   id="mobilePhoneNumber"
                   v-model="editedUserProfile.mobilePhoneNumber"
                   :invalid="errorMessage.mobilePhoneNumber !== ''"
-                  @input="
-                    (event) =>
-                      (editedUserProfile.mobilePhoneNumber = (
-                        event.target as HTMLInputElement
-                      ).value)
-                  "
                   @blur="validateField('mobilePhoneNumber', 'phone', 'mobilePhoneNumber')"
                 />
                 <Message
@@ -390,12 +376,6 @@ const isDisabled = computed(() => {
                   id="businessPhoneNumber"
                   v-model="editedUserProfile.businessPhoneNumber"
                   :invalid="errorMessage.businessPhoneNumber !== ''"
-                  @input="
-                    (event) =>
-                      (editedUserProfile.businessPhoneNumber = (
-                        event.target as HTMLInputElement
-                      ).value)
-                  "
                   @blur="validateField('businessPhoneNumber', 'phone', 'businessPhoneNumber')"
                 />
                 <Message
@@ -414,12 +394,6 @@ const isDisabled = computed(() => {
                   id="privatePhoneNumber"
                   v-model="editedUserProfile.privatePhoneNumber"
                   :invalid="errorMessage.privatePhoneNumber !== ''"
-                  @input="
-                    (event) =>
-                      (editedUserProfile.privatePhoneNumber = (
-                        event.target as HTMLInputElement
-                      ).value)
-                  "
                   @blur="validateField('privatePhoneNumber', 'phone', 'privatePhoneNumber')"
                 />
                 <Message
@@ -432,7 +406,7 @@ const isDisabled = computed(() => {
                 >
               </div>
             </div>
-            <Message class="required" size="small" variant="simple">*Pflichtfelder</Message>
+            <Message class="required" size="small" severity="secondary" variant="simple">*Pflichtfelder</Message>
           </template>
         </Card>
         <Card>
@@ -447,7 +421,6 @@ const isDisabled = computed(() => {
                   id="street"
                   v-model="editedAddress.street"
                   :invalid="errorMessage.street !== ''"
-                  @input="(event) => (editedAddress.street = event.target.value)"
                   @blur="validateField('street', 'address', 'street')"
                 />
                 <Message
@@ -465,7 +438,6 @@ const isDisabled = computed(() => {
                   id="zip"
                   v-model="editedAddress.zip"
                   :invalid="errorMessage.zip !== ''"
-                  @input="(event) => (editedAddress.zip = event.target.value)"
                   @blur="getCity()"
                 />
                 <Message
@@ -483,7 +455,6 @@ const isDisabled = computed(() => {
                   id="city"
                   v-model="editedAddress.city"
                   :invalid="errorMessage.city !== ''"
-                  @input="(event) => (editedAddress.city = event.target.value)"
                   @blur="validateField('city', 'address', 'city')"
                 />
                 <Message
@@ -501,7 +472,6 @@ const isDisabled = computed(() => {
                   id="province"
                   v-model="editedAddress.province"
                   :invalid="errorMessage.province !== ''"
-                  @input="(event) => (editedAddress.province = event.target.value)"
                   @blur="validateField('province', 'address', 'province')"
                 />
                 <Message
@@ -729,13 +699,7 @@ input:focus {
 .input-container {
   display: flex;
   flex-direction: column;
-  margin-bottom: 5px;
   width: 100%;
-}
-
-.label {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
 }
 
 input {
@@ -758,6 +722,7 @@ input:focus {
   color: red;
   height: 1rem;
   visibility: hidden;
+  border: none;
 }
 
 .error.active {
@@ -766,5 +731,6 @@ input:focus {
 
 .required {
   font-size: 10px;
+  border: none;
 }
 </style>

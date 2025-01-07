@@ -53,18 +53,18 @@ describe('AccountSettingsView', () => {
     wrapper.vm.isDisabled = vi.fn();
   });
 
-  test('The view is rendered properly', () => {
+  test('The view renders correctly', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  test('fetchUserProfile fetches user data successfully', async () => {
+  test('fetchUserProfile successfully retrieves user data', async () => {
     await wrapper.vm.fetchUserProfile();
     expect(wrapper.vm.fetchUserProfile).toHaveBeenCalled();
     expect(wrapper.vm.User).not.toBeNull();
   });
 
-  describe('required inputs fields are validated successfully', async () => {
-    test('input is correct', async () => {
+  describe('Validation of required input fields', async () => {
+    test('A valid input value is accepted', async () => {
       const input = wrapper.find('input#firstName');
       expect(input.exists()).toBe(true);
       let errorMessage = wrapper.find('input#firstName ~ .error');
@@ -75,29 +75,29 @@ describe('AccountSettingsView', () => {
       expect(errorMessage.text()).toBe('');
     });
 
-    test('input is empty and show error', async () => {
+    test('An empty input value shows an error message', async () => {
       const input = wrapper.find('input#firstName');
       expect(input.exists()).toBe(true);
       let errorMessage = wrapper.find('input#firstName ~ .error');
       await input.setValue('');
       await input.trigger('blur');
       errorMessage = wrapper.find('input#firstName ~ .error');
-      expect(errorMessage.text()).toBe('Bitte eingeben!');
+      expect(errorMessage.text()).toBe('Please enter a value!');
     });
 
-    test('input firstname do not pass regex and show error', async () => {
+    test('An invalid input value fails regex validation and shows an error', async () => {
       const input = wrapper.find('input#firstName');
       expect(input.exists()).toBe(true);
       let errorMessage = wrapper.find('input#firstName ~ .error');
       await input.setValue('12dg');
       await input.trigger('blur');
       errorMessage = wrapper.find('input#firstName ~ .error');
-      expect(errorMessage.text()).toBe('Eingabe bitte überprüfen!');
+      expect(errorMessage.text()).toBe('Please check your input!');
     });
   });
 
-  describe('check phonenumber', async () => {
-    test('phonenumbers is correct regex', async () => {
+  describe('Validation of phone number', async () => {
+    test('A valid phone number passes regex validation', async () => {
       const input = wrapper.find('input#mobilePhoneNumber');
       expect(input.exists()).toBe(true);
       let errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
@@ -107,18 +107,18 @@ describe('AccountSettingsView', () => {
       expect(errorMessage.text()).toBe('');
     });
 
-    test('phonenumbers has character and show error', async () => {
+    test('A phone number containing characters shows an error message', async () => {
       const input = wrapper.find('input#mobilePhoneNumber');
       expect(input.exists()).toBe(true);
       let errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
       await input.setValue('12w134567');
       await input.trigger('blur');
       errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
-      expect(errorMessage.text()).toBe('Telefonnummer ist ungültig!');
+      expect(errorMessage.text()).toBe('Invalid phone number!');
     });
   });
 
-  test('saveProfile is called on save button click', async () => {
+  test('saveProfile is called when the save button is clicked', async () => {
     wrapper.vm.changes = true;
     await nextTick();
     const saveButton = wrapper.find('.save-button');
@@ -128,7 +128,7 @@ describe('AccountSettingsView', () => {
     expect(wrapper.vm.saveProfile).toHaveBeenCalled();
   });
 
-  test('changes are discarded after clicking the cancel button', async () => {
+  test('Changes are discarded after clicking the cancel button', async () => {
     wrapper.vm.changes = true;
     await nextTick();
     const cancelButton = wrapper.find('.cancel-button');
@@ -138,17 +138,17 @@ describe('AccountSettingsView', () => {
     expect(wrapper.vm.editedUserProfile).toEqual(wrapper.vm.userProfile);
   });
 
-  describe('check function isDisabled', async () => {
-    test('errors turn isDisabled into true', async () => {
+  describe('Validation of isDisabled function', async () => {
+    test('Errors cause isDisabled to be true', async () => {
       wrapper.vm.changes = true;
       wrapper.vm.errorMessage = {
-        firstname: 'Bitte eingeben!',
+        firstname: 'Please enter a value!',
       };
       await nextTick();
       expect(wrapper.vm.isDisabled).toBe(true);
     });
 
-    test('no errors turn isDisabled into false', async () => {
+    test('No errors cause isDisabled to be false', async () => {
       wrapper.vm.changes = true;
       wrapper.vm.errorMessage = {
         firstname: '',
