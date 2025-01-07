@@ -22,13 +22,7 @@ const navigateToHome = () => {
         <template #title> {{ t('legalNotice.title') }}</template>
         <template #content>
           <p>{{ t('legalNotice.definition') }}</p>
-          <p>
-            Prof. Dr.-Ing. Alexander Stanik<br />
-            TA Gebäude C, Raum 830<br />
-            Treskowallee 8<br />
-            10318 Berlin<br />
-            Deutschland<br />
-          </p>
+          <p v-html="t('legalNotice.contact.address')"></p>
         </template>
       </Card>
     </div>
@@ -37,9 +31,9 @@ const navigateToHome = () => {
         <template #title> {{ t('legalNotice.contact') }}</template>
         <template #content>
           <p>
-            Tel.: +49 30 5019-2346<br />
-            Fax: +49 30 5019-48-2346<br />
-            E-Mail: info@remsfal.de<br />
+            {{ t('legalNotice.contact.phone') }}<br />
+            {{ t('legalNotice.contact.fax') }}<br />
+            {{ t('legalNotice.contact.email') }}<br />
           </p>
           <p v-html="t('legalNotice.representative')"></p>
         </template>

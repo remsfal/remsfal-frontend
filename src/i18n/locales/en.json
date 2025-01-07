@@ -30,6 +30,10 @@
   "legalNotice.title": "Legal Notice",
   "legalNotice.definition": "Information according to § 5 Telemedia Act (TMG):",
   "legalNotice.contact": "Contact",
+  "legalNotice.contact.phone": "Tel.: +49 30 5019-2346",
+  "legalNotice.contact.fax": "Fax: +49 30 5019-48-2346",
+  "legalNotice.contact.email": "E-Mail: info{'@'}remsfal.de",
+  "legalNotice.contact.address": "Prof. Dr.-Ing. Alexander Stanik<br /> TA Gebäude C, Raum 830<br /> Treskowallee 8<br /> 10318 Berlin<br /> Deutschland<br />",
   "legalNotice.representative": "Content responsibility according to § 55 Abs. 2 State Treaty on Broadcasting (RStV): <br /> Prof. Dr.-Ing. Alexander Stanik, info{'@'}remsfal.de",
   "privacy.explanation": "In the following, we would like to inform you about how we process your data.",
   "privacy.responsibility": "Responsible in the sense of the GDPR is:",
@@ -44,6 +48,7 @@
   "privacy.hosting.explanation.3": "We need the aforementioned data to correctly deliver the content of our website and to ensure the long-term operability of our IT systems and the technology of our website. The stored data is only evaluated for statistical purposes. No conclusions about your person are drawn, especially the server log files are stored separately from other personal data. Personal user profiles cannot be created.",
   "privacy.hosting.explanation.4": "Data processing is based on Art. 6 I lit. b) GDPR. According to this provision, processing personal data is necessary for the performance of a contract to which you are a party or to take pre-contractual actions. By using our website, you tacitly accept our offer to conclude a corresponding (free) usage contract. Moreover, processing is justified by Art. 6 I lit. f) GDPR, as we have a legitimate interest in processing, and your interests, fundamental rights, and freedoms do not outweigh this interest. The interest lies in properly delivering our web offer and protecting the functionality of our systems.",
   "privacy.hosting.explanation.5": "We use the following host to provide our website:",
+  "privacy.hosting.adress": "Hochschulrechenzentrum HTW Berlin<br /> TGS Technologie- und Gründerzentrum Spreeknie Haus 9<br /> Ostendstraße 25<br /> 12459 Berlin<br /> Germany<br />",
   "privacy.furtherInformation": "Further details and information on objection and removal options against the computing center of HTW Berlin can be found at:",
   "privacy.lastUpdated": "Last Updated: January 2024",
   "projectDashboard.title": "This is the project dashboard page for project {0}.",
@@ -103,5 +108,6 @@
   "taskView.create.action": "Create Task",
   "taskView.update.title": "Update Task with ID: { id }",
   "property.descripton": "Description",
-  "proppertty.area": "Propperty Area"
+  "proppertty.area": "Propperty Area",
+  "laoding": "Loading ..."
 }

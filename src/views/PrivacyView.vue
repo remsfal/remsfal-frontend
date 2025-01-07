@@ -24,14 +24,8 @@ const navigateToHome = () => {
         <template #content>
           <p>{{ t('privacy.explanation') }}</p>
           <p class="p-card-content-header">{{ t('privacy.responsibility') }}</p>
-          <p>
-            Prof. Dr.-Ing. Alexander Stanik<br />
-            TA Gebäude C, Raum 830<br />
-            Treskowallee 8<br />
-            10318 Berlin<br />
-            Deutschland
-          </p>
-          <p>E-Mail: info@remsfal.de</p>
+          <p v-html="t('legalNotice.contact.address')"></p>
+          <p>{{ t('legalNotice.contact.email') }}</p>
 
           <p class="p-card-content-header">{{ t('privacy.representative') }}</p>
           <p>
@@ -91,13 +85,7 @@ const navigateToHome = () => {
           <p class="p-card-content-header">
             {{ t('privacy.hosting.explanation.5') }}
           </p>
-          <p>
-            Hochschulrechenzentrum HTW Berlin<br />
-            TGS Technologie- und Gründerzentrum Spreeknie Haus 9<br />
-            Ostendstraße 25<br />
-            12459 Berlin<br />
-            Germany<br />
-          </p>
+          <p v-html="t('privacy.hosting.adress')"></p>
           <p>
             {{ t('privacy.furtherInformation') }}
             <a
