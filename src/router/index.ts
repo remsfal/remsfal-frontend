@@ -55,7 +55,7 @@ const routes = [
                 path: 'settings',
                 name: 'ProjectSettings',
                 props: true,
-                component: () => import('@/views/ProjectSettings.vue'),
+                component: () => import('@/views/ProjectSettingsView.vue'),
             },
             {
                 path: 'objects',
@@ -82,6 +82,55 @@ const routes = [
                 component: () => import('@/views/PropertyView.vue'),
             },
             {
+                path: 'site',
+                children:[
+                    {
+                        path: 'create',
+                        name: 'CreateSite',
+                        props: (route: RouteLocationNormalizedLoaded) => ({
+                            projectId: route.params.projectId,
+                            propertyId: route.query.parentId,
+                        }),
+                        component: () => import('@/views/SiteCreationView.vue'),
+                    },
+                    {
+                        path: ':siteId',
+                        name: 'EditSite',
+                        props: (route: RouteLocationNormalizedLoaded) => ({
+                            projectId: route.params.project,
+                            siteId: route.params.siteId,
+                        }),
+                        component: () => import('@/views/SiteUpdateView.vue'),
+                    }
+                ]
+            },
+            {
+                path: 'property/:propertyId/building/:buildingId/garage',
+                children: [
+                {
+                    path: 'create',
+                    name: 'CreateGarage',
+                    props: (route: RouteLocationNormalizedLoaded) => ({
+                        projectId: route.params.projectId,
+                        propertyId: route.params.propertyId,
+                        buildingId: route.params.buildingId,
+                    }),
+                    component: () => import('@/views/GarageView.vue')
+                },
+                {
+                    path: ':garageId/edit',
+                    name: 'EditGarage',
+                    props: (route: RouteLocationNormalizedLoaded) => ({
+                        projectId: route.params.projectId,
+                        propertyId: route.params.propertyId,
+                        buildingId: route.params.buildingId,
+                        garageId: route.params.garageId,
+                    }),
+                    component: () => import('@/views/GarageView.vue')
+                }
+                ]
+            },
+            {
                 path: 'tasks',
                 name: 'TaskOverview',
                 props: (route: RouteLocationNormalizedLoaded) => ({
@@ -91,6 +140,24 @@ const routes = [
                 }),
                 component: () => import('@/views/TaskView.vue'),
             },
+            {
+                path: 'commercial/create',
+                name: 'CommercialCreation',
+                props: (route: RouteLocationNormalizedLoaded) => ({
+                    projectId: route.params.projectId,
+                    parentBuildingId: route.query.parentId,
+                }),
+                component: () => import('@/views/CommercialCreationView.vue'),
+            },
+            {
+                path: 'commercial/:commercialId',
+                name: 'CommercialUpdate',
+                props: (route: RouteLocationNormalizedLoaded) => ({
+                    projectId: route.params.projectId,
+                    commercialId: route.params.commercialId,
+                }),
+                component: () => import('@/views/CommercialUpdateView.vue'),
+            }
         ],
     },
     {
