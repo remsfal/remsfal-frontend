@@ -146,10 +146,11 @@ const navigateToProperty = (action: string, propertyId?: string) => {
       path: `/project/${props.projectId}/property/${propertyId}/update`,
     });
   }
+}
 
 const collapseAll = () => {
   expandedKeys.value = {};
-};
+}
 
 </script>
 
