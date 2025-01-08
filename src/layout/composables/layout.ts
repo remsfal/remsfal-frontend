@@ -1,4 +1,4 @@
-import { toRefs, reactive, computed } from 'vue';
+import { toRefs, reactive, computed, ref } from 'vue';
 
 const layoutConfig = reactive({
   ripple: false,
@@ -52,6 +52,38 @@ export function useLayout() {
 
   const isDarkTheme = computed(() => layoutConfig.darkTheme);
 
+  const outsideClickListener = ref<EventListenerOrEventListenerObject | null>(null);
+
+  const bindOutsideClickListener = (callback: () => void) => {
+    if (!outsideClickListener.value) {
+      outsideClickListener.value = (event: Event) => {
+        if (isOutsideClicked(event)) {
+          callback();
+        }
+      };
+      document.addEventListener('click', outsideClickListener.value);
+    }
+  };
+
+  const unbindOutsideClickListener = () => {
+    if (outsideClickListener.value) {
+      document.removeEventListener('click', outsideClickListener.value);
+      outsideClickListener.value = null;
+    }
+  };
+
+  const isOutsideClicked = (event: Event) => {
+    const sidebarEl = document.querySelector('.layout-sidebar');
+    const topbarEl = document.querySelector('.layout-menu-button');
+
+    return !(
+      sidebarEl?.isSameNode(event.target as Node) ||
+      sidebarEl?.contains(event.target as Node) ||
+      topbarEl?.isSameNode(event.target as Node) ||
+      topbarEl?.contains(event.target as Node)
+    );
+  };
+ 
   return {
     layoutConfig: toRefs(layoutConfig),
     layoutState: toRefs(layoutState),
@@ -61,5 +93,8 @@ export function useLayout() {
     isSidebarActive,
     isDarkTheme,
     setActiveMenuItem,
+    bindOutsideClickListener,
+    unbindOutsideClickListener,
+    isOutsideClicked,
   };
 }

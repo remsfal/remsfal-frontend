@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import PrivacyView from '../../src/views/PrivacyView.vue';
 import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import { createRouter, createWebHistory } from 'vue-router';
+import i18n from '../../src/i18n/i18n';
 
 describe('PrivacyView', () => {
   let wrapper;
@@ -17,22 +18,22 @@ describe('PrivacyView', () => {
         {
           path: '/',
           name: 'home',
-          component: { template: '<div>Home</div>' }
+          component: { template: '<div>Home</div>' },
         },
         {
           path: '/privacy',
           name: 'privacy',
-          component: PrivacyView
-        }
-      ]
+          component: PrivacyView,
+        },
+      ],
     });
 
     wrapper = mount(PrivacyView, {
       global: {
-        plugins: [PrimeVue, router],
+        plugins: [PrimeVue, router, i18n],
         components: {
           Card,
-          Button
+          Button,
         },
         stubs: {
           Card: {
@@ -42,13 +43,13 @@ describe('PrivacyView', () => {
                 <div class="p-card-content"><slot name="content" /></div>
                 <div class="p-card-footer"><slot name="footer" /></div>
               </div>
-            `
+            `,
           },
           Button: {
-            template: '<button class="p-button"><slot /></button>'
-          }
-        }
-      }
+            template: '<button class="p-button"><slot /></button>',
+          },
+        },
+      },
     });
 
     await router.isReady();
@@ -64,7 +65,7 @@ describe('PrivacyView', () => {
     const content = wrapper.find('.p-card-content');
     expect(content.exists()).toBe(true);
     expect(content.text()).toContain(
-        'Im Folgenden möchten wir Sie aufklären, wie Ihre Daten von uns verarbeitet werden.',
+      'Im Folgenden möchten wir Sie aufklären, wie Ihre Daten von uns verarbeitet werden.',
     );
     expect(content.text()).toContain('Verantwortlich im Sinne der DSGVO ist:');
     expect(content.text()).toContain('E-Mail: info@remsfal.de');

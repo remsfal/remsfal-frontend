@@ -2,13 +2,19 @@
 import { defineEmits, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ProjectService, { type Project, type ProjectItem } from '@/services/ProjectService';
+import ProjectService, { type ProjectItem } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
+import { saveProject } from '@/helper/indexeddb';
+
+
+import { useI18n } from 'vue-i18n';
 
 const emit = defineEmits<{
   abort: [];
 }>();
+
+const { t } = useI18n();
 
 const maxLength = 100;
 const projectTitle = ref('');
@@ -18,32 +24,54 @@ const router = useRouter();
 
 watch(projectTitle, (newProjectTitle) => {
   if (newProjectTitle.length > maxLength) {
-    errorMessage.value = `Der Name der Liegenschaft darf nicht mehr als ${maxLength} Zeichen lang sein`;
+    errorMessage.value = t('newProjectForm.title.error', { maxLength: maxLength });
   } else {
     errorMessage.value = '';
   }
 });
 
-function createProject() {
+async function createProject() {
   const projectService = new ProjectService();
   const projectStore = useProjectStore();
 
   if (projectTitle.value.length > maxLength) return;
 
-  projectService.createProject(projectTitle.value).then((newProject: Project) => {
+  const projectTitleValue = projectTitle.value;
+
+  // Check if the app is offline
+  if (!navigator.onLine) {
+    // Offline: Save the project in IndexedDB
+    await saveProject(projectTitleValue);
+    return; // End the function here
+  }
+
+  // Online: Send the project directly to the backend
+  try {
+    const newProject = await projectService.createProject(projectTitleValue);
+
+    // Update the project store
     const newProjectItem: ProjectItem = {
       id: newProject.id,
       name: newProject.title,
       memberRole: 'MANAGER',
     };
+
     projectStore.searchSelectedProject(newProjectItem);
-    console.info('new project has been created: ', newProject);
+
     router.push({
       name: 'ProjectDashboard',
       params: { projectId: newProject.id },
     });
-  });
+  } catch (error) {
+    console.error('Failed to create project online. Saving offline:', error);
+
+    // Optional: Save the title locally in case of an error
+    await saveProject(projectTitleValue);
+  }
 }
+
+
+
 
 function abort() {
   router.push({ name: 'ProjectSelection' });
@@ -55,18 +83,24 @@ function abort() {
   <form class="flex flex-column gap-2 w-23rem" @submit.prevent="createProject">
     <span class="p-float-label">
       <InputText
-          id="value"
-          v-model="projectTitle"
-          type="text"
-          :class="{ 'p-invalid': errorMessage }"
-          aria-describedby="text-error"
+        id="value"
+        v-model="projectTitle"
+        type="text"
+        :class="{ 'p-invalid': errorMessage }"
+        aria-describedby="text-error"
       />
-      <label for="value">Name der Liegenschaft</label>
+      <label for="value">{{ t('newProjectForm.input.name') }}</label>
     </span>
     <small id="text-error" class="p-error">
       {{ errorMessage || '&nbsp;' }}
     </small>
-    <Button type="submit" label="Erstellen" icon="pi pi-plus" iconPos="left"/>
-    <Button type="reset" label="Abbrechen" icon="pi pi-times" iconPos="left" @click="abort"/>
+    <Button type="submit" :label="t('button.create')" icon="pi pi-plus" iconPos="left" />
+    <Button
+      type="reset"
+      :label="t('button.cancel')"
+      icon="pi pi-times"
+      iconPos="left"
+      @click="abort"
+    />
   </form>
 </template>

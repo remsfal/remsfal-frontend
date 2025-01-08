@@ -9,22 +9,29 @@ describe('<SiteUpdateView />', () => {
   beforeEach(() => {
     cy.intercept('GET', `/api/v1/projects/${projectId}/sites/${siteId}`, {
       statusCode: 307,
-        headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}` },
-    })
+      headers: {
+        location: `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}`,
+      },
+    });
 
     cy.intercept('GET', `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}`, {
       fixture: 'site.json',
     }).as('getSite');
 
     cy.intercept('PATCH', `/api/v1/projects/${projectId}/sites/${siteId}`, {
-        statusCode: 307,
-        headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}` },
+      statusCode: 307,
+      headers: {
+        location: `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}`,
+      },
     });
 
-    cy.intercept('PATCH', `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}`, {
-      statusCode: 200,
-    }).as('updateSite');
-
+    cy.intercept(
+      'PATCH',
+      `/api/v1/projects/${projectId}/properties/${propertyId}/sites/${siteId}`,
+      {
+        statusCode: 200,
+      },
+    ).as('updateSite');
 
     cy.mount(SiteUpdateView, {
       global: {
@@ -59,7 +66,6 @@ describe('<SiteUpdateView />', () => {
     });
   });
 
-
   it('allows user to cancel the update process', () => {
     cy.get('.p-button-secondary').contains('Abbrechen').click();
     // expect alert to be shown
@@ -67,7 +73,6 @@ describe('<SiteUpdateView />', () => {
       expect(str).to.equal('Form submission cancelled');
       return true;
     });
-
   });
 
   it('submits the form successfully', () => {
@@ -85,6 +90,3 @@ describe('<SiteUpdateView />', () => {
     });
   });
 });
-
-
-
