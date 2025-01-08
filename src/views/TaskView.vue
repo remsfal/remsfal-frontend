@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, defineProps } from 'vue';
+import { defineProps, onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import TaskService, { Status, type TaskItem } from '@/services/TaskService';
+import TaskTable from '@/components/TaskTable.vue';
 
 const props = defineProps<{
   projectId: string;
@@ -15,12 +16,14 @@ const title = ref<string>('');
 const description = ref<string>('');
 const visible = ref<boolean>(false);
 const tasks = ref<TaskItem[]>([]);
+const taskbyStatusOpen = ref<TaskItem[]>([]);
+const myTasks = ref<TaskItem[]>([]);
 
 const createTask = () => {
   const projectId = props.projectId;
 
   taskService
-    .createTask(projectId, title.value, description.value)
+    .createTask(projectId, title.value, description.value, props.owner)
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;
@@ -33,7 +36,6 @@ const createTask = () => {
 
 const loadTasks = () => {
   const projectId = props.projectId;
-
   taskService
     .getTasks(projectId)
     .then((tasklist) => {
@@ -43,18 +45,43 @@ const loadTasks = () => {
       console.error('Error loading tasks:', error);
     });
 };
+const loadTaskswithOpenStatus = () => {
+  const projectId = props.projectId;
+  taskService
+    .getTasks(projectId,'OPEN')
+    .then((tasklist) => {
+      taskbyStatusOpen.value = tasklist.tasks;
+    })
+    .catch((error) => {
+      console.error('Error loading tasks:', error);
+    });
+};
+const loadMyTasks = () => {
+  const projectId = props.projectId;
+  taskService
+    .getTasks(projectId,null, props.owner)
+    .then((tasklist) => {
+      myTasks.value = tasklist.tasks;
+    })
+    .catch((error) => {
+      console.error('Error loading tasks:', error);
+    });
+};
 
 onMounted(() => {
   loadTasks();
+  loadTaskswithOpenStatus();
+  loadMyTasks();
 });
 
 watch(
   () => props,
   () => {
     loadTasks();
+    loadTaskswithOpenStatus();
+    loadMyTasks();
   },
 );
-
 </script>
 
 <template>
@@ -72,9 +99,6 @@ watch(
     </div>
 
     <div class="grid">
-      <div class="card button-wrapper">
-        <Button label="Aufgabe erstellen" @click="visible = true" />
-      </div>
       <Dialog
         v-model:visible="visible"
         modal
@@ -97,13 +121,17 @@ watch(
 
       <div class="task-list-wrapper">
         <div v-if="owner">
-          <p>Dies sind meine Aufgaben. Meine Id: {{ owner }}</p>
+          <TaskTable :tasks="myTasks">
+            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+          </TaskTable>
         </div>
         <div v-else-if="status">
-          <p>Das sind alle offenen Aufgaben. Status: {{ status }}</p>
+          <TaskTable :tasks="taskbyStatusOpen"> </TaskTable>
         </div>
         <div v-else>
-          <p>Dies sind alle Aufgaben für das Projekt: {{ projectId }}.</p>
+          <TaskTable :tasks="tasks">
+            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+          </TaskTable>
         </div>
       </div>
     </div>
@@ -145,5 +173,9 @@ watch(
 
 .button-wrapper button {
   width: 300px;
+}
+
+.my-btn {
+  padding: 10px 50px;
 }
 </style>

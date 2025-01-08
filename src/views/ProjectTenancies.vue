@@ -8,6 +8,13 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
 
+import { useI18n } from 'vue-i18n';
+
+defineProps<{
+  projectId: string;
+}>();
+const { t } = useI18n();
+
 const tenantData = ref<TenantItem[]>([]);
 const isLoading = ref(true);
 
@@ -96,7 +103,7 @@ onMounted(async () => {
 <template>
   <main>
     <div class="grid">
-      <h1>Mieterdaten Ansicht</h1>
+      <h1>{{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht</h1>
       <div v-if="isLoading">Loading...</div>
       <div v-if="!isLoading" class="col-12">
         <div class="card">

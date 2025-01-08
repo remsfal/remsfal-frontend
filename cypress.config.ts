@@ -6,10 +6,10 @@ export default defineConfig({
     baseUrl: 'http://localhost:4173',
   },
   component: {
-    specPattern: "test/**/*.cy.{js,jsx,ts,tsx}",
+    specPattern: 'test/**/*.cy.{js,jsx,ts,tsx}',
     devServer: {
-      framework: "vue",
-      bundler: "vite",
+      framework: 'vue',
+      bundler: 'vite',
     },
   },
 });

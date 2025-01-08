@@ -1,5 +1,3 @@
-// tests/TaskService.spec.ts
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import TaskService, { Task, Status } from '../../src/services/TaskService';
@@ -37,6 +35,37 @@ describe('TaskService', () => {
     expect(taskList.tasks[0].title).toBe('Task 1');
   });
 
+  it('should call the API with status query parameter when status is provided', async () => {
+    // Arrange
+    const projectId = 'project1';
+    const status = 'OPEN';
+    const mockResponse = { data: [] };
+    vi.spyOn(axios, 'get').mockResolvedValue(mockResponse);
+
+    // Act
+    await service.getTasks(projectId, status);
+
+    // Assert
+    expect(axios.get).toHaveBeenCalledWith(
+        `/api/v1/projects/${projectId}/tasks?status=${status}`
+    );
+  });
+
+  it('should call the API with owner query parameter when ownerId is provided', async () => {
+    // Arrange
+    const projectId = 'project1';
+    const ownerId = 'user1';
+    const mockResponse = { data: [] };
+    vi.spyOn(axios, 'get').mockResolvedValue(mockResponse);
+
+    // Act
+    await service.getTasks(projectId, undefined, ownerId);
+
+    // Assert
+    expect(axios.get).toHaveBeenCalledWith(
+        `/api/v1/projects/${projectId}/tasks?owner=${ownerId}`
+    );
+  });
   it('should get a single task', async () => {
     const mockTask: Task = {
       id: '1',
