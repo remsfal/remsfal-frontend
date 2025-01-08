@@ -8,16 +8,9 @@ import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
-
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
-
-interface PhoneValid {
-  businessPhoneNumber: boolean;
-  mobilePhoneNumber: boolean;
-  privatePhoneNumber: boolean;
-}
 
 const userProfile = ref({} as User); // Das gesamte Benutzerprofil
 const editedUserProfile = ref({} as User);
