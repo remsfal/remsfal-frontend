@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import ProjectTenancies from '@/views/ProjectTenancies.vue';
 import PrimeVue from 'primevue/config';
 import Dialog from 'primevue/dialog';
+import i18n from '../../src/i18n/i18n'
 
 // Mock PrimeVue configuration and Dialog component to avoid errors during testing
 vi.mock('primevue/config', () => ({
@@ -26,7 +27,7 @@ describe('ProjectTenancies.vue', () => {
         // Mount the component with PrimeVue plugin and Dialog component mocked
         wrapper = mount(ProjectTenancies, {
             global: {
-                plugins: [PrimeVue],
+                plugins: [PrimeVue, i18n],
                 components: {
                     Dialog,
                 },
