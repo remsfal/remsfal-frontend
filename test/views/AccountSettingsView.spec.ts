@@ -7,6 +7,7 @@ import Card from 'primevue/card';
 import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 import App from '@/App.vue';
+import i18n from '../../src/i18n/i18n';
 
 describe('AccountSettingsView', () => {
   let wrapper;
@@ -18,7 +19,7 @@ describe('AccountSettingsView', () => {
 
     wrapper = mount(AccountSettingsView, {
       global: {
-        plugins: [PrimeVue, router],
+        plugins: [PrimeVue, router, i18n],
         components: { Card },
       },
       shallow: true,

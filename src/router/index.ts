@@ -7,106 +7,176 @@ import ProjectSelectionView from '@/views/ProjectSelectionView.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
 
 const routes = [
-    {
+  {
+    path: '/',
+    component: FullscreenLayout,
+    children: [
+      {
         path: '/',
-        component: FullscreenLayout,
+        name: 'LandingPage',
+        component: LandingPageView,
+      },
+      {
+        path: '/legal-notice',
+        name: 'LegalNotice',
+        component: () => import('@/views/LegalNoticeView.vue'),
+      },
+      {
+        path: '/privacy',
+        name: 'Privacy',
+        component: () => import('@/views/PrivacyView.vue'),
+      },
+      {
+        path: '/projects',
+        name: 'ProjectSelection',
+        component: () => import('@/views/ProjectSelectionView.vue'),
+      },
+      {
+        path: '/new-project',
+        name: 'NewProject',
+        component: () => import('@/views/NewProjectView.vue'),
+      },
+      {
+        path: '/account-settings',
+        name: 'AccountSettings',
+        component: () => import('@/views/AccountSettingsView.vue'),
+      },
+    ],
+  },
+  {
+    path: '/project/:projectId',
+    component: ProjectLayout,
+    children: [
+      {
+        path: '',
+        name: 'ProjectDashboard',
+        props: true,
+        component: () => import('@/views/ProjectDashboard.vue'),
+      },
+      {
+        path: 'settings',
+        name: 'ProjectSettings',
+        props: true,
+        component: () => import('@/views/ProjectSettingsView.vue'),
+      },
+      {
+        path: 'objects',
+        name: 'ObjectData',
+        props: true,
+        component: () => import('@/views/ObjectDataView.vue'),
+      },
+      {
+        path: 'tenancies',
+        name: 'ProjectTenancies',
+        props: true,
+        component: () => import('@/views/ProjectTenancies.vue'),
+      },
+      {
+        // Neue Route für die Erbringerverwaltung
+        path: 'providers', // URL-Pfad für die View
+        name: 'Providers', // Name der Route
+        props: true, // Übergibt die Routen-Parameter als Props an die View
+        component: () => import('@/views/ProviderView.vue'), // Dynamische Lazy-Loading-Import der neuen View
+      },
+      {
+        path: 'property/create',
+        name: 'CreateProperty',
+        props: true,
+        component: () => import('@/views/CreatePropertyView.vue'),
+      },
+      {
+        path: 'property/:propertyId',
+        name: 'ModifyProperty',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          propertyId: route.params.propertyId,
+        }),
+        component: () => import('@/views/ModifyPropertyView.vue'),
+      },
+      {
+        path: 'site',
         children: [
-            {
-                path: '/',
-                name: 'LandingPage',
-                component: LandingPageView,
-            },
-            {
-                path: '/legal-notice',
-                name: 'LegalNotice',
-                component: LegalNoticeView,
-            },
-            {
-                path: '/privacy',
-                name: 'Privacy',
-                component: PrivacyView,
-            },
-            {
-                path: '/projects',
-                name: 'ProjectSelection',
-                component: ProjectSelectionView,
-            },
-            {
-                path: '/new-project',
-                name: 'NewProject',
-                component: () => import('@/views/NewProjectView.vue'),
-            },
-            {
-                path: '/account-settings',
-                name: 'AccountSettings',
-                component: () => import('@/views/AccountSettingsView.vue'),
-            },
+          {
+            path: 'create',
+            name: 'CreateSite',
+            props: (route: RouteLocationNormalizedLoaded) => ({
+              projectId: route.params.projectId,
+              propertyId: route.query.parentId,
+            }),
+            component: () => import('@/views/SiteCreationView.vue'),
+          },
+          {
+            path: ':siteId',
+            name: 'EditSite',
+            props: (route: RouteLocationNormalizedLoaded) => ({
+              projectId: route.params.project,
+              siteId: route.params.siteId,
+            }),
+            component: () => import('@/views/SiteUpdateView.vue'),
+          },
         ],
-    },
-    {
-        path: '/project/:projectId',
-        component: ProjectLayout,
+      },
+      {
+        path: 'property/:propertyId/building/:buildingId/garage',
         children: [
-            {
-                path: '',
-                name: 'ProjectDashboard',
-                props: true,
-                component: () => import('@/views/ProjectDashboard.vue'),
-            },
-            {
-                path: 'settings',
-                name: 'ProjectSettings',
-                props: true,
-                component: () => import('@/views/ProjectSettings.vue'),
-            },
-            {
-                path: 'objects',
-                name: 'ObjectData',
-                props: true,
-                component: () => import('@/views/ObjectDataView.vue'),
-            },
-            {
-                path: 'tenancies',
-                name: 'ProjectTenancies',
-                props: true,
-                component: () => import('@/views/ProjectTenancies.vue'),
-            },
-            {
-                path: 'objects/create-property',
-                name: 'CreateProperty',
-                props: true,
-                component: () => import('@/views/PropertyView.vue'),
-            },
-            {
-                path: 'objects/property',
-                name: 'Property',
-                props: true,
-                component: () => import('@/views/PropertyView.vue'),
-            },
-            {
-                path: 'tasks',
-                name: 'TaskOverview',
-                props: (route: RouteLocationNormalizedLoaded) => ({
-                    projectId: route.params.projectId,
-                    owner: route.query.owner,
-                    status: route.query.status,
-                }),
-                component: () => import('@/views/TaskView.vue'),
-            },
-            {
-                // Neue Route für die Erbringerverwaltung
-                path: 'providers', // URL-Pfad für die View
-                name: 'Providers', // Name der Route
-                props: true, // Übergibt die Routen-Parameter als Props an die View
-                component: () => import('@/views/ProviderView.vue'), // Dynamische Lazy-Loading-Import der neuen View
-            },
+          {
+            path: 'create',
+            name: 'CreateGarage',
+            props: (route: RouteLocationNormalizedLoaded) => ({
+              projectId: route.params.projectId,
+              propertyId: route.params.propertyId,
+              buildingId: route.params.buildingId,
+            }),
+            component: () => import('@/views/GarageView.vue'),
+          },
+          {
+            path: ':garageId/edit',
+            name: 'EditGarage',
+            props: (route: RouteLocationNormalizedLoaded) => ({
+              projectId: route.params.projectId,
+              propertyId: route.params.propertyId,
+              buildingId: route.params.buildingId,
+              garageId: route.params.garageId,
+            }),
+            component: () => import('@/views/GarageView.vue'),
+          },
         ],
-    },
+      },
+      {
+        path: 'tasks',
+        name: 'TaskOverview',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          owner: route.query.owner,
+          status: route.query.status,
+        }),
+        component: () => import('@/views/TaskView.vue'),
+      },
+      {
+        path: 'commercial/create',
+        name: 'CommercialCreation',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          parentBuildingId: route.query.parentId,
+        }),
+        component: () => import('@/views/CommercialCreationView.vue'),
+      },
+      {
+        path: 'commercial/:commercialId',
+        name: 'CommercialUpdate',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          commercialId: route.params.commercialId,
+        }),
+        component: () => import('@/views/CommercialUpdateView.vue'),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes: routes,
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: routes,
 });
 
 export { routes };

@@ -1,0 +1,13 @@
+{
+  "propertyId": "12345",
+  "title": "My Site",
+  "description": "This is a test site",
+  "usableSpace": 80,
+  "address": {
+    "street": "123 Evergreen Terrace",
+    "city": "Springfield",
+    "zip": "12345",
+    "province": "",
+    "country": ""
+  }
+}
