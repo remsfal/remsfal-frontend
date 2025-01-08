@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import ProjectTenanciesService from '/src/services/ProjectTenanciesService.ts';
+import ProjectTenanciesService, { type TenantItem } from '@/services/ProjectTenanciesService';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
