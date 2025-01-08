@@ -144,6 +144,12 @@ const routes = [
         component: () => import('@/views/TaskView.vue'),
       },
       {
+        path: 'taskedit/:taskid',
+        name: 'TaskEdit',
+        props: true,
+        component: () => import('@/views/TaskEdit.vue'),
+      },
+      {
         path: 'commercial/create',
         name: 'CommercialCreation',
         props: (route: RouteLocationNormalizedLoaded) => ({
