@@ -4,6 +4,7 @@ import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia } from 'pinia';
 import { useUserSessionStore } from '../../src/stores/UserSession';
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/stores/UserSession', () => ({
   useUserSessionStore: vi.fn(),
@@ -29,7 +30,7 @@ describe('ContractorMenu.vue', () => {
   it('should render the correct menu structure', async () => {
     const wrapper = mount(ContractorMenu, {
       global: {
-        plugins: [pinia, router],
+        plugins: [pinia, router, i18n],
       },
     });
   
@@ -48,7 +49,7 @@ describe('ContractorMenu.vue', () => {
   it('should render the correct menu labels', async () => {
     const wrapper = mount(ContractorMenu, {
       global: {
-        plugins: [pinia, router],
+        plugins: [pinia, router, i18n],
       },
     });
   
@@ -71,7 +72,7 @@ describe('ContractorMenu.vue', () => {
   it('should render the correct icons for menu items', async () => {
     const wrapper = mount(ContractorMenu, {
       global: {
-        plugins: [pinia, router],
+        plugins: [pinia, router, i18n],
       },
     });
   
@@ -90,7 +91,7 @@ describe('ContractorMenu.vue', () => {
     const pushSpy = vi.spyOn(router, 'push');
     const wrapper = mount(ContractorMenu, {
       global: {
-        plugins: [pinia, router],
+        plugins: [pinia, router, i18n],
       },
     });
 

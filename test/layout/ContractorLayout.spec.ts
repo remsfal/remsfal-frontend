@@ -6,6 +6,7 @@ import AppFooter from '../../src/layout/AppFooter.vue';
 import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia } from 'pinia';
+import i18n from '../../src/i18n/i18n';
 
 describe('ContractorLayout.vue', () => {
   let router;
@@ -23,7 +24,7 @@ describe('ContractorLayout.vue', () => {
   it('should render the layout components correctly', async () => {
     const wrapper = mount(ContractorLayout, {
       global: {
-        plugins: [pinia, router],
+        plugins: [pinia, router, i18n],
       },
     });
 
@@ -46,7 +47,7 @@ describe('ContractorLayout.vue', () => {
   it('should display correct content for the contractor route', async () => {
     const wrapper = mount(ContractorLayout, {
       global: {
-        plugins: [pinia, router],
+        plugins: [pinia, router, i18n],
       },
     });
 
