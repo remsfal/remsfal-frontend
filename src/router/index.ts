@@ -146,7 +146,8 @@ const routes = [
       },
       {
         path: 'taskedit/:taskid',
-        name : 'TaskEdit',
+        name: 'TaskEdit',
+        props: true,
         component: () => import('@/views/TaskEdit.vue'),
       },
       {
