@@ -6,6 +6,7 @@ import router from '../../src/router';
 import { saveProject } from '@/helper/indexeddb';
 import ProjectService from '@/services/ProjectService';
 import { createPinia } from 'pinia'; // Import Pinia
+import i18n from '../../src/i18n/i18n';
 
 // Mocked services
 vi.mock('@/helper/indexeddb', () => ({
@@ -34,7 +35,7 @@ describe('NewProjectView', () => {
 
     wrapper = mount(NewProjectView, {
       global: {
-        plugins: [PrimeVue, pinia, router], // Include Pinia here
+        plugins: [PrimeVue, pinia, router, i18n], // Include Pinia here
         stubs: {
           NewProjectForm: false, // Disable the child component mock
         },
