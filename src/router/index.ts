@@ -1,7 +1,8 @@
-import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
+import ContractorLayout from '@/layout/ContractorLayout.vue';
 
 const routes = [
   {
@@ -159,6 +160,18 @@ const routes = [
           commercialId: route.params.commercialId,
         }),
         component: () => import('@/views/CommercialUpdateView.vue'),
+      },
+    ],
+  },
+  {
+    path: '/contractor',
+    component: ContractorLayout,
+    children: [
+      {
+        path: '',
+        name: 'ContractorView',
+        props: true,
+        component: () => import('@/views/ContractorView.vue'),
       },
     ],
   },

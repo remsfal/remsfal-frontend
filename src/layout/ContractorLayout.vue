@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
-import AppTopbar from './AppTopbar.vue';
+import ContractorTopbar from './ContractorTopbar.vue';
 import AppFooter from './AppFooter.vue';
-import AppSidebar from './AppSidebar.vue';
+import ContractorMenu from './ContractorMenu.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { RouterView } from 'vue-router';
-import Toast from 'primevue/toast';
+
 const {
   layoutConfig,
   layoutState,
@@ -44,8 +44,10 @@ const containerClass = computed(() => {
 
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <AppTopbar></AppTopbar>
-    <AppSidebar></AppSidebar>
+    <ContractorTopbar></ContractorTopbar>
+    <div class="layout-sidebar">
+      <ContractorMenu></ContractorMenu>
+    </div>
     <div class="layout-main-container">
       <main>
         <div class="layout-main">
@@ -56,5 +58,4 @@ const containerClass = computed(() => {
     </div>
     <div class="layout-mask"></div>
   </div>
-  <Toast />
 </template>
