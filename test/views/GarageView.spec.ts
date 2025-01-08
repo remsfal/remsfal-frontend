@@ -195,15 +195,30 @@ describe('GarageView.vue', () => {
 
     const testCases = [
       {
-        data: { title: '', description: 'A spacious new garage', location: 'Downtown', usableSpace: '50' },
+        data: {
+          title: '',
+          description: 'A spacious new garage',
+          location: 'Downtown',
+          usableSpace: '50',
+        },
         description: 'missing required fields',
       },
       {
-        data: { title: 'Valid Garage Title', description: 'A spacious new garage', location: 'Downtown', usableSpace: '-10' },
+        data: {
+          title: 'Valid Garage Title',
+          description: 'A spacious new garage',
+          location: 'Downtown',
+          usableSpace: '-10',
+        },
         description: 'invalid usable space value',
       },
       {
-        data: { title: 'ab', description: 'A spacious new garage', location: 'Downtown', usableSpace: '50' },
+        data: {
+          title: 'ab',
+          description: 'A spacious new garage',
+          location: 'Downtown',
+          usableSpace: '50',
+        },
         description: 'invalid title length',
       },
       {

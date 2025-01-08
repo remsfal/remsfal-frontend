@@ -5,6 +5,7 @@ import PrimeVue from 'primevue/config';
 import router from '@/router';
 import { createPinia } from 'pinia';
 import { useUserSessionStore } from '@/stores/UserSession';
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/stores/UserSession', () => ({
   useUserSessionStore: vi.fn(),
@@ -22,7 +23,7 @@ describe('AppTopbar.vue', () => {
   it('zeigt den Anmelde-Button an, wenn der Benutzer nicht eingeloggt ist', () => {
     const wrapper = mount(AppTopbar, {
       global: {
-        plugins: [PrimeVue, pinia, router],
+        plugins: [PrimeVue, pinia, router, i18n],
       },
     });
     expect(wrapper.find('.pi-sign-in').exists()).toBe(true);
@@ -33,7 +34,7 @@ describe('AppTopbar.vue', () => {
     sessionStoreMock.user = { email: 'test@example.com' };
     const wrapper = mount(AppTopbar, {
       global: {
-        plugins: [PrimeVue, pinia, router],
+        plugins: [PrimeVue, pinia, router, i18n],
       },
     });
     expect(wrapper.find('.pi-sign-out').exists()).toBe(true);
@@ -45,7 +46,7 @@ describe('AppTopbar.vue', () => {
     const pushSpy = vi.spyOn(router, 'push');
     const wrapper = mount(AppTopbar, {
       global: {
-        plugins: [PrimeVue, pinia, router],
+        plugins: [PrimeVue, pinia, router, i18n],
       },
     });
 
@@ -58,7 +59,7 @@ describe('AppTopbar.vue', () => {
     const pushSpy = vi.spyOn(router, 'push');
     const wrapper = mount(AppTopbar, {
       global: {
-        plugins: [PrimeVue, pinia, router],
+        plugins: [PrimeVue, pinia, router, i18n],
       },
     });
 
@@ -66,4 +67,3 @@ describe('AppTopbar.vue', () => {
     expect(pushSpy).toHaveBeenCalledWith('/projects');
   });
 });
-

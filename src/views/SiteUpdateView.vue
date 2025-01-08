@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import { onMounted, ref } from 'vue';
 import SiteFormComponent from '../components/SiteFormComponent.vue';
-import SiteService, { type SiteItem} from '@/services/SiteService';
-import type {AddressItem} from "@/services/ProjectService";
+import SiteService, { type SiteItem } from '@/services/SiteService';
+import type { AddressItem } from '@/services/ProjectService';
 
 const props = defineProps<{
   projectId: string;
@@ -10,11 +10,13 @@ const props = defineProps<{
   siteId: string;
 }>();
 
-const initialValues: Record<string, any> = ref({})
+const initialValues: Record<string, any> = ref({});
 
-let parentPropertyId: string | undefined = props.propertyId ? props.propertyId.valueOf() : undefined;
+let parentPropertyId: string | undefined = props.propertyId
+  ? props.propertyId.valueOf()
+  : undefined;
 onMounted(async () => {
-  if(!props.siteId) return;
+  if (!props.siteId) return;
   const siteService = new SiteService();
   try {
     console.log('Fetching site data...');
@@ -28,7 +30,7 @@ onMounted(async () => {
     initialValues.value.province = site.address.province;
     initialValues.value.country = site.address.country;
 
-    if(!parentPropertyId) {
+    if (!parentPropertyId) {
       parentPropertyId = site.propertyId;
     }
     console.log('Site data:', initialValues.value);
@@ -66,7 +68,7 @@ const handleSubmit = async (formValues: any) => {
     // Create the site
     console.log('Creating site:', site);
     await siteService.updateSite(props.projectId, props.siteId, site, props.propertyId);
-  // Here we could handle how to go back to the previous page
+    // Here we could handle how to go back to the previous page
   } catch (err) {
     error.value = 'Außenanlage konnte nicht aktualisiert werden.' + err;
   } finally {
@@ -84,15 +86,15 @@ const handleCancel = () => {
 <template>
   <div>
     <SiteFormComponent
-        :projectId="projectId"
-        :propertyId="propertyId"
-        :siteId="siteId"
-        headline="Außenanlage bearbeiten"
-        saveButtonText="Speichern"
-        cancelButtonText="Abbrechen"
-        :onSubmit="handleSubmit"
-        :onCancel="handleCancel"
-        :initialValues="initialValues"
+      :projectId="projectId"
+      :propertyId="propertyId"
+      :siteId="siteId"
+      headline="Außenanlage bearbeiten"
+      saveButtonText="Speichern"
+      cancelButtonText="Abbrechen"
+      :onSubmit="handleSubmit"
+      :onCancel="handleCancel"
+      :initialValues="initialValues"
     />
     <div v-if="loading">Senden...</div>
     <div v-if="error" class="error-message">{{ error }}</div>

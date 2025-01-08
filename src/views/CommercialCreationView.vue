@@ -19,7 +19,7 @@ const handleCommercialSubmit = (values: Record<string, any>) => {
     commercialSpace: values.commercialSpace,
     usableSpace: values.usableSpace,
     heatingSpace: values.heatingSpace,
-    description: values.description
+    description: values.description,
   };
   try {
     const response = projectService.createCommercial(props.projectId, props.buildingId, commercial);

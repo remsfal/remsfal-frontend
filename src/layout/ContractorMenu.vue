@@ -5,27 +5,35 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 
 const model = ref([
   {
-    label: 'Home',
+    label: 'consultantMenu.home',
     items: [
-      { label: 'Überblick', icon: {type: 'pi', name: 'pi pi-fw pi-home'}, to: '/contractor' },
-      { label: 'Auftraggeber', icon: {type: 'pi', name: 'pi pi-fw pi-id-card'}, to: '/contractor' },
+      {
+        label: 'consultantMenu.home.overview',
+        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+        to: '/contractor',
+      },
+      {
+        label: 'consultantMenu.home.client',
+        icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+        to: '/contractor',
+      },
     ],
   },
   {
-    label: 'Auftragsmanagement',
+    label: 'consultantMenu.clientManagement',
     items: [
       {
-        label: 'Offene Anfragen',
+        label: 'consultantMenu.clientManagement.open',
         icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
         to: '/contractor',
       },
       {
-        label: 'Laufende Aufträge',
+        label: 'consultantMenu.clientManagement.ongoing',
         icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
         to: '/contractor',
       },
       {
-        label: 'Abgeschlossene Aufträge',
+        label: 'consultantMenu.clientManagement.closed',
         icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
         to: '/contractor',
       },

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import SiteFormComponent from '../components/SiteFormComponent.vue';
-import SiteService, { type SiteItem} from '@/services/SiteService';
-import type {AddressItem} from "@/services/ProjectService";
+import SiteService, { type SiteItem } from '@/services/SiteService';
+import type { AddressItem } from '@/services/ProjectService';
 
 const props = defineProps<{
   projectId: string;
@@ -34,7 +34,6 @@ const handleSubmit = async (formValues: Record<string, any>) => {
     address: address,
   };
 
-
   try {
     // Create the site
     console.log('Creating site:', site);
@@ -58,13 +57,13 @@ const handleCancel = () => {
 <template>
   <div>
     <SiteFormComponent
-        :projectId="projectId"
-        :propertyId="propertyId"
-        headline="Neue Außenanlage erstellen"
-        saveButtonText="Außenanlage erstellen"
-        cancelButtonText="Abbrechen"
-        :onSubmit="handleSubmit"
-        :onCancel="handleCancel"
+      :projectId="projectId"
+      :propertyId="propertyId"
+      headline="Neue Außenanlage erstellen"
+      saveButtonText="Außenanlage erstellen"
+      cancelButtonText="Abbrechen"
+      :onSubmit="handleSubmit"
+      :onCancel="handleCancel"
     />
     <div v-if="loading">Senden...</div>
     <div v-if="error" class="error-message">{{ error }}</div>

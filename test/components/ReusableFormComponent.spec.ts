@@ -14,7 +14,12 @@ describe('MyFormComponent', () => {
       { name: 'name', label: 'Name', type: 'text', required: true },
       { name: 'description', label: 'Description', type: 'textarea' },
       { name: 'isChecked', label: 'Checked', type: 'checkbox' },
-      { name: 'dropdownOption', label: 'Option', type: 'dropdown', options: [{ label: 'Option 1', value: 'option1' }] }
+      {
+        name: 'dropdownOption',
+        label: 'Option',
+        type: 'dropdown',
+        options: [{ label: 'Option 1', value: 'option1' }],
+      },
     ],
     initialValues: { name: 'name', description: '', isChecked: false, dropdownOption: null },
     onSubmit: vi.fn(),
@@ -29,7 +34,7 @@ describe('MyFormComponent', () => {
     wrapper = mount(ReusableFormComponent, {
       props: defaultProps,
       global: {
-        plugins: [PrimeVue]
+        plugins: [PrimeVue],
       },
     });
   });
@@ -67,7 +72,12 @@ describe('MyFormComponent', () => {
     console.log(wrapper.emitted());
     // expect the emitted event to be present
     expect(wrapper.emitted()['update:values']).toBeTruthy();
-    expect(wrapper.emitted()['update:values'][0][0]).toEqual({ name: 'Test Name', description: '', isChecked: false, dropdownOption: null });
+    expect(wrapper.emitted()['update:values'][0][0]).toEqual({
+      name: 'Test Name',
+      description: '',
+      isChecked: false,
+      dropdownOption: null,
+    });
   });
 
   // test the action of the save button
@@ -77,7 +87,12 @@ describe('MyFormComponent', () => {
     await nameInput.setValue('Test Name');
     const saveButton = wrapper.find('.p-button-primary');
     await saveButton.trigger('click');
-    expect(defaultProps.onSubmit).toHaveBeenCalledWith({ name: 'Test Name', description: '', isChecked: false, dropdownOption: null });
+    expect(defaultProps.onSubmit).toHaveBeenCalledWith({
+      name: 'Test Name',
+      description: '',
+      isChecked: false,
+      dropdownOption: null,
+    });
   });
 
   // test the emission of the submit event with valid form data
@@ -89,7 +104,12 @@ describe('MyFormComponent', () => {
     await saveButton.trigger('click');
 
     expect(wrapper.emitted().submit).toBeTruthy();
-    expect(wrapper.emitted().submit[0][0]).toEqual({ name: 'Test Name', description: '', isChecked: false, dropdownOption: null });
+    expect(wrapper.emitted().submit[0][0]).toEqual({
+      name: 'Test Name',
+      description: '',
+      isChecked: false,
+      dropdownOption: null,
+    });
   });
 
   // test the action of the cancel button
