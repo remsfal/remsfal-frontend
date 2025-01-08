@@ -4,7 +4,6 @@ import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
 import ContractorLayout from '@/layout/ContractorLayout.vue';
 
-
 const routes = [
   {
     path: '/',
@@ -149,6 +148,18 @@ const routes = [
         name: 'TaskEdit',
         props: true,
         component: () => import('@/views/TaskEdit.vue'),
+      },
+      {
+        path: 'building/:buildingId/apartments/:apartmentId/update',
+        name: 'UpdateApartmentView',
+        props: true,
+        component: () => import('@/views/ApartmentUpdateView.vue'),
+      },
+      {
+        path: '/project/:projectId/apartment/create',
+        name: 'CreateApartmentView',
+        props: true,
+        component: () => import('@/views/ApartmentCreationView.vue'),
       },
       {
         path: 'commercial/create',
