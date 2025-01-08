@@ -1,14 +1,23 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
 import { useUserSessionStore } from '@/stores/UserSession';
-import UserService, { type User, type Address } from '@/services/UserService';
-import { onMounted, ref } from 'vue';
+import UserService, { type Address, type User } from '@/services/UserService';
+import { computed, onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
-import { computed } from 'vue';
+
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
+interface PhoneValid {
+  businessPhoneNumber: boolean;
+  mobilePhoneNumber: boolean;
+  privatePhoneNumber: boolean;
+}
 
 const userProfile = ref({} as User); // Das gesamte Benutzerprofil
 const editedUserProfile = ref({} as User);
@@ -300,18 +309,18 @@ const isDisabled = computed(() => {
 
 <template>
   <div class="grid">
-    <h1>Mein Benutzerprofil</h1>
+    <h1>{{ t('accountSettings.title') }}</h1>
     <form>
       <div class="card-container">
         <Card>
           <template #title>
-            <h4>Meine Daten</h4>
+            <h4>{{ t('accountSettings.userProfile.title') }}</h4>
           </template>
 
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="firstName">Vorname*:</label>
+                <label class="label" for="firstName">{{ t('accountSettings.userProfile.name') }}:</label>
                 <InputText
                   id="firstName"
                   v-model="editedUserProfile.firstName"
@@ -564,16 +573,15 @@ const isDisabled = computed(() => {
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
           >
             <p>
-              Bist du sicher, dass du dein Konto löschen möchtest? Alle deine Daten werden
-              unwiderruflich gelöscht.
+              {{ t('accountSettings.delete.deleteWarning') }}
             </p>
             <div class="buttons-container centered-buttons">
               <Button
                 type="button"
                 icon="pi pi-trash"
                 severity="danger"
-                aria-label="Cancel"
-                label="Konto wirklich löschen"
+                :aria-label="t('accountSettings.delete.confirmDelete')"
+                :label="t('accountSettings.delete.confirmDelete')"
                 class="delete-button"
                 @click="deleteAccount"
               />
@@ -603,7 +611,7 @@ const isDisabled = computed(() => {
           >
             <p>Daten konnten nicht gespeichert werden!</p>
           </Dialog>
-        </div>
+       </div>
       </div>
     </div>
   </div>

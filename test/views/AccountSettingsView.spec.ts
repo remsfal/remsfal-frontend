@@ -5,9 +5,9 @@ import router from '@/router';
 import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import { createPinia } from 'pinia';
-import { createApp } from 'vue';
+import { createApp, nextTick } from 'vue';
 import App from '@/App.vue';
-import { nextTick } from 'vue';
+import i18n from '../../src/i18n/i18n';
 
 describe('AccountSettingsView', () => {
   let wrapper;
@@ -19,7 +19,7 @@ describe('AccountSettingsView', () => {
 
     wrapper = mount(AccountSettingsView, {
       global: {
-        plugins: [PrimeVue, router],
+        plugins: [PrimeVue, router, i18n],
         components: { Card },
       },
     });
