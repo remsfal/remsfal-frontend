@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 export interface Task {
   id: string;
   title: string;
@@ -36,16 +35,29 @@ export interface TaskItem {
 export default class TaskService {
   
   readonly baseUrl: string = '/api/v1/projects';
-
   //Get a list of tasks
-  getTasks(projectId: string): Promise<TaskList> {
+  getTasks(projectId: string, status?: 'OPEN' | null , ownerId?:string ): Promise<TaskList> {
+    if (status) {
+      return axios.get(`${this.baseUrl}/${projectId}/tasks?status=${status}`).then((response) => {
+        const taskList: TaskList = response.data;
+        console.log('GET tasks:', taskList);
+        return taskList;
+      });
+    }
+    if (ownerId) {
+      return axios.get(`${this.baseUrl}/${projectId}/tasks?owner=${ownerId}`).then((response) => {
+        const taskList: TaskList = response.data;
+        console.log('GET tasks:', taskList);
+        return taskList;
+      });
+    }
+
     return axios.get(`${this.baseUrl}/${projectId}/tasks`).then((response) => {
       const taskList: TaskList = response.data;
       console.log('GET tasks:', taskList);
       return taskList;
     });
   }
-
   //Get a single task
   getTask(projectId: string, taskId: string) {
     return axios
@@ -63,11 +75,17 @@ export default class TaskService {
   }
 
   //Create a task
-  createTask(projectId: string, title: string, description: string): Promise<Task> {
+  createTask(
+    projectId: string,
+    title: string,
+    description: string,
+    ownerId?: string,
+  ): Promise<Task> {
     const newTask: Partial<Task> = {
       title: title,
       description: description,
       status: Status.OPEN,
+      ownerId: ownerId,
     };
 
     return axios.post<Task>(`${this.baseUrl}/${projectId}/tasks/`, newTask).then((response) => {
@@ -87,16 +105,16 @@ export default class TaskService {
     ownerId: string,
   ) {
     return axios
-      .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
-        title: title,
-        description: description,
-        status: status,
-        ownerId: ownerId,
-      })
-      .then((response) => {
-        console.log('task updated', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
+        .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
+          title: title,
+          description: description,
+          status: status,
+          ownerId: ownerId,
+        })
+        .then((response) => {
+          console.log('task updated', response.data);
+          return response.data;
+        })
+        .catch((error) => console.error(error));
   }
 }

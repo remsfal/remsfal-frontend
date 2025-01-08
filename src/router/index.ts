@@ -4,6 +4,7 @@ import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
 import ContractorLayout from '@/layout/ContractorLayout.vue';
 
+
 const routes = [
   {
     path: '/',
