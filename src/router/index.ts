@@ -1,7 +1,9 @@
-import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded } from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} from 'vue-router';
 import LandingPageView from '@/views/LandingPageView.vue';
 import ProjectLayout from '@/layout/ProjectLayout.vue';
 import FullscreenLayout from '@/layout/FullscreenLayout.vue';
+import ContractorLayout from '@/layout/ContractorLayout.vue';
+
 const routes = [
   {
     path: '/',
@@ -142,6 +144,12 @@ const routes = [
         component: () => import('@/views/TaskView.vue'),
       },
       {
+        path: 'taskedit/:taskid',
+        name: 'TaskEdit',
+        props: true,
+        component: () => import('@/views/TaskEdit.vue'),
+      },
+      {
         path: 'building/:buildingId/apartments/:apartmentId/update',
         name: 'UpdateApartmentView',
         props: true,
@@ -170,6 +178,18 @@ const routes = [
           commercialId: route.params.commercialId,
         }),
         component: () => import('@/views/CommercialUpdateView.vue'),
+      },
+    ],
+  },
+  {
+    path: '/contractor',
+    component: ContractorLayout,
+    children: [
+      {
+        path: '',
+        name: 'ContractorView',
+        props: true,
+        component: () => import('@/views/ContractorView.vue'),
       },
     ],
   },
