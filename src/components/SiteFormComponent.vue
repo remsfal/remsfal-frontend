@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ReusableForm from '../components/ReusableFormComponent.vue';
-import {  ref } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps<{
   projectId: string;
@@ -18,7 +18,7 @@ const props = defineProps<{
 const fields: {
   name: string;
   label: string;
-  type: "select" | "textarea" | "text" | "checkbox";
+  type: 'select' | 'textarea' | 'text' | 'checkbox';
   options?: any[];
   required?: boolean;
   validations?: ((value: any) => string | null)[];
@@ -29,7 +29,8 @@ const fields: {
     type: 'text',
     required: true,
     validations: [
-      (value: string) => (value.length > 255 ? 'Ein Titel darf nicht mehr als 255 Zeichen lang sein.' : null),
+      (value: string) =>
+        value.length > 255 ? 'Ein Titel darf nicht mehr als 255 Zeichen lang sein.' : null,
     ],
   },
   {
@@ -41,9 +42,7 @@ const fields: {
     name: 'usableSpace',
     label: 'Nutzfläche (qm)',
     type: 'text',
-    validations: [
-      (value) => (!isNaN(value) ? null : 'Muss eine Zahl sein'),
-    ],
+    validations: [(value) => (!isNaN(value) ? null : 'Muss eine Zahl sein')],
   },
   {
     name: 'street',
@@ -88,10 +87,9 @@ if (!props.initialValues) {
     city: '',
     zip: '',
     province: '',
-    country: ''
+    country: '',
   });
 }
-
 </script>
 
 <template>
