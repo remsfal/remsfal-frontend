@@ -101,11 +101,15 @@ export default class TaskService {
     taskId: string,
     title: string,
     description: string,
+    status: string,
+    ownerId: string,
   ) {
     return axios
         .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
           title: title,
           description: description,
+          status: status,
+          ownerId: ownerId,
         })
         .then((response) => {
           console.log('task updated', response.data);
