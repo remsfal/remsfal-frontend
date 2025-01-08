@@ -9,7 +9,9 @@ describe('<CommercialCreationView />', () => {
   beforeEach(() => {
     cy.intercept('POST', `/api/v1/projects/${projectId}/buildings/${buildingId}/commercials`, {
       statusCode: 307,
-      headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/` },
+      headers: {
+        location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/`,
+      },
     });
     cy.mount(CommercialCreationView, {
       global: {
@@ -63,15 +65,19 @@ describe('<CommercialCreationView />', () => {
   });
 
   it('submits the form successfully', () => {
-    cy.intercept('POST', `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials`, {
-      statusCode: 200,
-      body: {
-        id: '1',
-        title: 'Commercial Unit 1',
-        description: 'This is a test commercial unit',
-        location: 'Test location',
+    cy.intercept(
+      'POST',
+      `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials`,
+      {
+        statusCode: 200,
+        body: {
+          id: '1',
+          title: 'Commercial Unit 1',
+          description: 'This is a test commercial unit',
+          location: 'Test location',
+        },
       },
-    }).as('createCommercial');
+    ).as('createCommercial');
 
     // Fill out the form with valid data
     cy.get('#title').type('Commercial Unit 1');
@@ -89,10 +95,14 @@ describe('<CommercialCreationView />', () => {
   });
 
   it('handles API errors gracefully', () => {
-    cy.intercept('POST', `**/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials`, {
-      statusCode: 500,
-      body: { message: 'Internal Server Error' },
-    }).as('createCommercialError');
+    cy.intercept(
+      'POST',
+      `**/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials`,
+      {
+        statusCode: 500,
+        body: { message: 'Internal Server Error' },
+      },
+    ).as('createCommercialError');
 
     // Fill out the form with valid data
     cy.get('#title').type('Commercial Unit Error Test');
