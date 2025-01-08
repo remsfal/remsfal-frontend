@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -34,14 +34,13 @@ const validationErrors = ref<Record<string, string>>({});
 
 // make sure the form values are updated when the initial values change upon prop change
 watch(
-    () => props.initialValues,
-    (newValues) => {
-      formValues.value = { ...newValues };
-      validationErrors.value = {}; // Clear any existing validation errors
-    },
-    { deep: true, immediate: true }
+  () => props.initialValues,
+  (newValues) => {
+    formValues.value = { ...newValues };
+    validationErrors.value = {}; // Clear any existing validation errors
+  },
+  { deep: true, immediate: true },
 );
-
 
 // Compute whether the form is valid
 const isFormValid = computed(() => Object.keys(validationErrors.value).length === 0);
@@ -52,7 +51,7 @@ const isChanged = computed(() => {
 });
 
 // Validate a single field
-const validateField = (field: typeof props.fields[0]) => {
+const validateField = (field: (typeof props.fields)[0]) => {
   const value = formValues.value[field.name];
   const errors: string[] = [];
 
@@ -82,9 +81,13 @@ const validateForm = () => {
   props.fields.forEach((field) => validateField(field));
 };
 
-watch(formValues, (newValue) => {
-  emit('update:values', newValue);
-}, { deep: true });
+watch(
+  formValues,
+  (newValue) => {
+    emit('update:values', newValue);
+  },
+  { deep: true },
+);
 
 // Submit handler
 const handleSubmit = () => {
@@ -106,55 +109,51 @@ const handleCancel = () => {
   <div class="form-container">
     <h2 v-if="headline">{{ headline }}</h2>
     <div class="form-fields">
-      <div
-          v-for="field in fields"
-          :key="field.name"
-          class="field"
-      >
+      <div v-for="field in fields" :key="field.name" class="field">
         <label :for="field.name">{{ field.label }}</label>
-        <br>
+        <br />
 
         <!-- Text Field -->
         <InputText
-            v-if="field.type === 'text'"
-            :id="field.name"
-            v-model="formValues[field.name]"
-            :name="field.name"
-            @blur="validateField(field)"
+          v-if="field.type === 'text'"
+          :id="field.name"
+          v-model="formValues[field.name]"
+          :name="field.name"
+          @blur="validateField(field)"
         />
 
         <!-- Textarea -->
         <Textarea
-            v-else-if="field.type === 'textarea'"
-            :id="field.name"
-            v-model="formValues[field.name]"
-            rows="4"
-            class="no-resize"
-            :name="field.name"
-            @blur="validateField(field)"
+          v-else-if="field.type === 'textarea'"
+          :id="field.name"
+          v-model="formValues[field.name]"
+          rows="4"
+          class="no-resize"
+          :name="field.name"
+          @blur="validateField(field)"
         />
 
         <!-- Checkbox -->
         <Checkbox
-            v-else-if="field.type === 'checkbox'"
-            :id="field.name"
-            v-model="formValues[field.name]"
-            :name="field.name"
-            @blur="validateField(field)"
+          v-else-if="field.type === 'checkbox'"
+          :id="field.name"
+          v-model="formValues[field.name]"
+          :name="field.name"
+          @blur="validateField(field)"
         />
 
         <!-- Dropdown -->
         <Select
-            v-else-if="field.type === 'select'"
-            :id="field.name"
-            v-model="formValues[field.name]"
-            :options="field.options"
-            optionValue="value"
-            optionLabel="label"
-            :name="field.name"
-            @change="validateField(field)"
+          v-else-if="field.type === 'select'"
+          :id="field.name"
+          v-model="formValues[field.name]"
+          :options="field.options"
+          optionValue="value"
+          optionLabel="label"
+          :name="field.name"
+          @change="validateField(field)"
         />
-        <br>
+        <br />
         <!-- Validation Error Messages -->
         <span v-if="validationErrors[field.name]" class="error-message">
           {{ validationErrors[field.name] }}
@@ -164,15 +163,15 @@ const handleCancel = () => {
 
     <div class="form-actions">
       <Button
-          :label="cancelButtonText || 'Cancel'"
-          class="p-button-secondary"
-          @click="handleCancel"
+        :label="cancelButtonText || 'Cancel'"
+        class="p-button-secondary"
+        @click="handleCancel"
       />
       <Button
-          :label="saveButtonText || 'Save'"
-          :disabled="!isChanged || !isFormValid"
-          class="p-button-primary"
-          @click="handleSubmit"
+        :label="saveButtonText || 'Save'"
+        :disabled="!isChanged || !isFormValid"
+        class="p-button-primary"
+        @click="handleSubmit"
       />
     </div>
   </div>
