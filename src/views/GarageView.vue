@@ -2,7 +2,7 @@
 import ReusableFormComponentVue from '@/components/ReusableFormComponent.vue';
 import { useRouter } from 'vue-router';
 import ProjectService, { type GarageItem } from '@/services/ProjectService';
-import { onMounted, ref, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps<{
   projectId: string;
@@ -16,13 +16,13 @@ const service = new ProjectService();
 const isEditMode = computed(() => !!props.garageId);
 
 const fields: {
-    name: string; // Field key
-    label: string; // Label for the field
-    type: 'text' | 'textarea' | 'checkbox' | 'select'; // Input type
-    options?: any[]; // For dropdowns
-    required?: boolean; // Is this field required
-    validations?: ((value: any) => string | null)[]; // Array of validation functions
-  }[] = [
+  name: string; // Field key
+  label: string; // Label for the field
+  type: 'text' | 'textarea' | 'checkbox' | 'select'; // Input type
+  options?: any[]; // For dropdowns
+  required?: boolean; // Is this field required
+  validations?: ((value: any) => string | null)[]; // Array of validation functions
+}[] = [
   {
     name: 'title',
     label: 'Garage Title',
@@ -55,11 +55,11 @@ const fields: {
     type: 'text',
     required: true,
     validations: [
-    (value: any): string | null => {
-      const numberValue = Number(value);
-      return isNaN(numberValue) || numberValue <= 0
-        ? 'Usable Space must be a positive number.'
-        : null;
+      (value: any): string | null => {
+        const numberValue = Number(value);
+        return isNaN(numberValue) || numberValue <= 0
+          ? 'Usable Space must be a positive number.'
+          : null;
       },
     ],
     options: undefined, // Explicitly define when no options exist
@@ -82,7 +82,7 @@ const fetchGarageData = async () => {
       props.projectId,
       props.propertyId,
       props.buildingId,
-      props.garageId
+      props.garageId,
     );
     // Populate the initialValues
     initialValues.value = {
@@ -109,13 +109,13 @@ const handleSubmit = async (values: Record<string, any>) => {
     return;
   }
 
-    const garage: GarageItem = {
-        title: values.title,
-        description: values.description,
-        location: values.location,
-        usableSpace: parseFloat(values.usableSpace),
-        buildingId: props.buildingId
-    };
+  const garage: GarageItem = {
+    title: values.title,
+    description: values.description,
+    location: values.location,
+    usableSpace: parseFloat(values.usableSpace),
+    buildingId: props.buildingId,
+  };
 
   try {
     if (isEditMode.value && props.garageId) {
@@ -125,23 +125,23 @@ const handleSubmit = async (values: Record<string, any>) => {
         props.propertyId,
         props.buildingId,
         props.garageId,
-        garage
+        garage,
       );
       console.log('Garage updated successfully:', response);
       alert('Garage updated successfully!');
     } else {
       console.log('else');
-      
+
       // create a new garage
       const response = await service.createGarage(
-      props.projectId,
-      props.propertyId,
-      props.buildingId,
-      garage
-    );
-    console.log('Garage created successfully:', response);
-    alert('Garage created successfully!');
-    router.back();
+        props.projectId,
+        props.propertyId,
+        props.buildingId,
+        garage,
+      );
+      console.log('Garage created successfully:', response);
+      alert('Garage created successfully!');
+      router.back();
     }
   } catch (error) {
     console.error('Error submitting garage data:', error);
@@ -150,23 +150,23 @@ const handleSubmit = async (values: Record<string, any>) => {
 };
 const handleCancel = () => {
   router.back();
-}
+};
 
 onMounted(fetchGarageData);
 </script>
 
 <template>
-<div>
-  <ReusableFormComponentVue
-  :headline="isEditMode ? 'Edit Garage Form' : 'Garage Creation Form'"
-  :fields="fields"
-  :initialValues="initialValues"
-  saveButtonText="Save"
-  cancelButtonText="Cancel"
-  @submit="handleSubmit"
-  @cancel="handleCancel"
-/>
-</div>
+  <div>
+    <ReusableFormComponentVue
+      :headline="isEditMode ? 'Edit Garage Form' : 'Garage Creation Form'"
+      :fields="fields"
+      :initialValues="initialValues"
+      saveButtonText="Save"
+      cancelButtonText="Cancel"
+      @submit="handleSubmit"
+      @cancel="handleCancel"
+    />
+  </div>
 </template>
 
 <style>

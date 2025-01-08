@@ -8,34 +8,29 @@ describe('<CommercialUpdateView />', () => {
   const commercialId = '1';
 
   beforeEach(() => {
-
     // Intercept the short-url call and redirect to the full URL
-    cy.intercept(
-      'GET',
-      `/api/v1/projects/${projectId}/commercials/${commercialId}`,
-      {
-        statusCode: 307,
-        headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}` },
-      }
-    )
+    cy.intercept('GET', `/api/v1/projects/${projectId}/commercials/${commercialId}`, {
+      statusCode: 307,
+      headers: {
+        location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
+      },
+    });
     cy.intercept(
       'GET',
       `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
       {
         statusCode: 200,
         fixture: 'commercial.json',
-      }
+      },
     ).as('getCommercial');
 
     // intercept the short PATCH request and redirect to the full URL
-    cy.intercept(
-      'PATCH',
-      `/api/v1/projects/${projectId}/commercials/${commercialId}`,
-      {
-        statusCode: 307,
-        headers: { location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}` },
-      }
-    )
+    cy.intercept('PATCH', `/api/v1/projects/${projectId}/commercials/${commercialId}`, {
+      statusCode: 307,
+      headers: {
+        location: `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
+      },
+    });
 
     // Mount the component
     cy.mount(CommercialUpdateView, {
@@ -60,7 +55,6 @@ describe('<CommercialUpdateView />', () => {
     cy.get('#description').should('have.value', 'This is a test commercial unit');
   });
 
-
   it('renders the form fields correctly', () => {
     cy.get('#title').should('be.visible');
     cy.get('#location').should('be.visible');
@@ -78,15 +72,19 @@ describe('<CommercialUpdateView />', () => {
   });
 
   it('submits the form successfully', () => {
-    cy.intercept('PATCH', `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`, {
-      statusCode: 200,
-      body: {
-        id: '1',
-        title: 'Commercial Unit 1 updated',
-        description: 'This is a test commercial unit',
-        location: 'Test location',
+    cy.intercept(
+      'PATCH',
+      `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
+      {
+        statusCode: 200,
+        body: {
+          id: '1',
+          title: 'Commercial Unit 1 updated',
+          description: 'This is a test commercial unit',
+          location: 'Test location',
+        },
       },
-    }).as('createCommercial');
+    ).as('createCommercial');
 
     // Fill out the form with valid data
     cy.get('#title').clear().type('Commercial Unit 1 updated');
@@ -99,9 +97,13 @@ describe('<CommercialUpdateView />', () => {
   });
 
   it('handles API errors gracefully', () => {
-    cy.intercept('PATCH', `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`, {
-      statusCode: 500
-    }).as('updateCommercialError');
+    cy.intercept(
+      'PATCH',
+      `/api/v1/projects/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
+      {
+        statusCode: 500,
+      },
+    ).as('updateCommercialError');
 
     // Fill out the form with valid data
     cy.get('#title').clear().type('Commercial Unit Error Test');
@@ -113,5 +115,6 @@ describe('<CommercialUpdateView />', () => {
       if (err.message.includes('Request failed with status code 500')) {
         return false;
       }
-    });  });
+    });
+  });
 });

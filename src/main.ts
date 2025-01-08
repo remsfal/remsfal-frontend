@@ -111,6 +111,7 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
 import '@/assets/styles.scss';
+import i18n from '@/i18n/i18n';
 
 // Add Font Awesome Icons to the Library
 library.add(fas, far, fab);
@@ -131,6 +132,9 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
+
+// Install Internationalization
+app.use(i18n);
 
 // Install Axios for RESTful Webservice calls
 app.use(VueAxios, axios);
@@ -235,6 +239,6 @@ app.component('TreeTable', TreeTable);
 app.component('VirtualScroller', VirtualScroller);
 
 // Register Font Awesome Icon globally
-app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 app.mount('#app');
