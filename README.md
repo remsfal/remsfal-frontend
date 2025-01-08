@@ -66,3 +66,23 @@ npm run lint
 ```sh
 npm run stylelint
 ```
+
+## Service Worker
+
+The Service Worker is **disabled by default** in the local development environment to ensure that code changes are reflected immediately without caching issues.
+
+To enable and develop the Service Worker locally, set the following variable in your `.env` file:
+
+```env
+VITE_SERVICE_WORKER_ENABLED=true
+```
+
+## Translate with [vue-18n](https://vue-i18n.intlify.dev/)
+
+The default language is set to German with English as the fallback Language
+
+Hint: Use i18n-ally with VS Code
+
+Steps:
+1. Create a translation key in `src/i18n/locales/de.json` and `src/i18n/locales/de.json`
+2. Reference it inside the Component with `t('your.key')` after importing t from useI18n()

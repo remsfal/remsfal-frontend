@@ -1,12 +1,13 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ProjectSelectionView from '../../src/views/ProjectSelectionView.vue';
 import ProjectService from '../../src/services/ProjectService';
 import { useRouter } from 'vue-router';
 import { useProjectStore } from '../../src/stores/ProjectStore';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
-import PrimeVue from "primevue/config";
+import PrimeVue from 'primevue/config';
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/ProjectService');
 vi.mock('vue-router', () => ({
@@ -84,7 +85,7 @@ describe('ProjectSelectionView.vue', () => {
     // Mount the component with Pinia
     wrapper = shallowMount(ProjectSelectionView, {
       global: {
-        plugins: [pinia, PrimeVue],
+        plugins: [pinia, PrimeVue, i18n],
       },
     });
   });
