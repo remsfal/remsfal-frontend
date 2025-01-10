@@ -75,6 +75,16 @@ const routes = [
                 component: () => import('@/views/PropertyView.vue'),
             },
             {
+                path: '/project/:projectId/commercial/:commercialId/building/create',
+                name: 'CreateBuilding',
+                component: () => import('@/views/BuildingCreateView.vue'),
+            },
+            {
+                path: '/project/:projectId/commercial/:commercialId/building/:buildingId',
+                name: 'UpdateBuilding',
+                component: () => import('@/views/BuildingUpdateView.vue'),
+            },
+            {
                 path: 'objects/property',
                 name: 'Property',
                 props: true,
