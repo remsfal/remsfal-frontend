@@ -5,6 +5,7 @@ import ProjectForm from '@/components/NewProjectForm.vue'; // update the path ac
 import ProjectService from '@/services/ProjectService';
 import { createPinia, setActivePinia } from 'pinia'; // make sure these imports are correct
 import PrimeVue from 'primevue/config';
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/ProjectService');
 
@@ -40,7 +41,7 @@ describe('NewProjectForm.vue', () => {
 
     wrapper = mount(ProjectForm, {
       global: {
-        plugins: [router, pinia, PrimeVue],
+        plugins: [router, pinia, PrimeVue, i18n],
       },
     });
 
@@ -59,7 +60,7 @@ describe('NewProjectForm.vue', () => {
     // await wrapper.setData({ projectTitle: 'a'.repeat(101) });
     await wrapper.findComponent('input[type="text"]').setValue('a'.repeat(101));
     expect(wrapper.find('.p-error').text()).toBe(
-      'Der Projekttitel darf nicht mehr als 100 Zeichen lang sein',
+      'Der Name der Liegenschaft darf nicht mehr als 100 Zeichen lang sein',
     );
   });
 

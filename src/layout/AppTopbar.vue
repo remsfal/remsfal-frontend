@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
-import type { DropdownChangeEvent } from 'primevue/dropdown';
+import type { SelectChangeEvent } from 'primevue/select';
+import Select from 'primevue/select';
+import LocaleSwitch from '@/components/LocaleSwitch.vue';
+
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const { layoutConfig, onMenuToggle } = useLayout();
 const sessionStore = useUserSessionStore();
@@ -26,7 +32,7 @@ const onTopBarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
 };
 
-const onProjectSelectionChange = (event: DropdownChangeEvent) => {
+const onProjectSelectionChange = (event: SelectChangeEvent) => {
   console.log('new project selected ', event.value.name);
   projectStore.setSelectedProject(event.value);
   topbarMenuActive.value = false;
@@ -123,14 +129,14 @@ const isOutsideClicked = (event: Event) => {
           @click="onHomeClick()"
         >
           <i class="pi pi-home"></i>
-          <span>Projekte</span>
+          <span>{{ t('toolbar.projects') }}</span>
         </button>
         <div v-if="sessionStore.user != null" class="p-link layout-topbar-button">
-          <Dropdown
+          <Select
             v-model="projectStore.selectedProject"
             :options="projectStore.projectList"
             optionLabel="name"
-            placeholder="Projekt wählen"
+            :placeholder="t('toolbar.project.placeholder')"
             @change="onProjectSelectionChange($event)"
           />
         </div>
@@ -140,7 +146,7 @@ const isOutsideClicked = (event: Event) => {
           @click="onNewProjectClick()"
         >
           <i class="pi pi-plus"></i>
-          <span>Neues Projekt</span>
+          <span>{{ t('toolbar.newProject') }}</span>
         </button>
         <button
           v-if="sessionStore.user != null"
@@ -156,7 +162,7 @@ const isOutsideClicked = (event: Event) => {
           @click="logout()"
         >
           <i class="pi pi-sign-out"></i>
-          <span>Abmelden</span>
+          <span>{{ t('toolbar.logout') }}</span>
         </button>
         <button
           v-if="sessionStore.user == null"
@@ -164,15 +170,16 @@ const isOutsideClicked = (event: Event) => {
           @click="login('/projects')"
         >
           <i class="pi pi-sign-in"></i>
-          <span>Anmelden</span>
+          <span>{{ t('toolbar.login') }}</span>
         </button>
+        <LocaleSwitch></LocaleSwitch>
       </div>
     </div>
   </header>
 </template>
 
 <style lang="scss" scoped>
-.p-dropdown {
+.p-select {
   border: 0;
   box-shadow: none;
   margin-left: -0.5rem;

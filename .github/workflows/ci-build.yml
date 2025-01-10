@@ -42,9 +42,8 @@ jobs:
         continue-on-error: true
         run: npm list
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         # The `npm ci` command can only install with an existing package-lock.json
-        # run: npm ci
       - name: Run Unit Test with Vitest (test)
         run: npm run test:unit
       - name: Build with Vite (build)
@@ -102,9 +101,8 @@ jobs:
         continue-on-error: true
         run: npm list
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         # The `npm ci` command can only install with an existing package-lock.json
-        # run: npm ci
       - name: Run Unit Test with Vitest (test)
         run: npm run test:unit
       - name: Build with Vite (build)

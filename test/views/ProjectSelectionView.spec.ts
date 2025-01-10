@@ -1,12 +1,13 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ProjectSelectionView from '../../src/views/ProjectSelectionView.vue';
 import ProjectService from '../../src/services/ProjectService';
 import { useRouter } from 'vue-router';
 import { useProjectStore } from '../../src/stores/ProjectStore';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
-import PrimeVue from "primevue/config";
+import PrimeVue from 'primevue/config';
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/ProjectService');
 vi.mock('vue-router', () => ({
@@ -15,30 +16,49 @@ vi.mock('vue-router', () => ({
 vi.mock('@/stores/ProjectStore', () => ({
   useProjectStore: vi.fn(),
 }));
-vi.mock('primevue/datatable', () => ({
-  DataTable: {
-    name: 'DataTable',
-    template: '<div><slot /></div>',
-  },
-}));
-vi.mock('primevue/column', () => ({
-  Column: {
-    name: 'Column',
-    template: '<div><slot /></div>',
-  },
-}));
-vi.mock('primevue/button', () => ({
-  Button: {
-    name: 'Button',
-    template: '<button><slot /></button>',
-  },
-}));
-vi.mock('primevue/dialog', () => ({
-  Dialog: {
-    name: 'Dialog',
-    template: '<div><slot /></div>',
-  },
-}));
+vi.mock('primevue/datatable', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    actual,
+    default: {
+      name: 'DataTable',
+      template: '<div><slot /></div>',
+    },
+  };
+});
+
+vi.mock('primevue/column', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    actual,
+    default: {
+      name: 'Column',
+      template: '<div><slot /></div>',
+    },
+  };
+});
+
+vi.mock('primevue/button', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    actual,
+    default: {
+      name: 'Button',
+      template: '<button><slot /></button>',
+    },
+  };
+});
+
+vi.mock('primevue/dialog', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    actual,
+    default: {
+      name: 'Dialog',
+      template: '<div><slot /></div>',
+    },
+  };
+});
 
 describe('ProjectSelectionView.vue', () => {
   let wrapper: VueWrapper<any>;
@@ -65,14 +85,14 @@ describe('ProjectSelectionView.vue', () => {
     // Mount the component with Pinia
     wrapper = shallowMount(ProjectSelectionView, {
       global: {
-        plugins: [pinia, PrimeVue],
+        plugins: [pinia, PrimeVue, i18n],
       },
     });
   });
 
   it('renders the view', () => {
     expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('h5').text()).toBe('Projekt Übersicht');
+    expect(wrapper.find('h5').text()).toBe('Übersicht der Liegenschaften');
   });
 
   it('opens and closes the dialog', async () => {

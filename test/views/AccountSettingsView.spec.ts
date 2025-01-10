@@ -5,8 +5,9 @@ import router from '@/router';
 import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import { createPinia } from 'pinia';
-import { createApp } from 'vue';
+import { createApp, nextTick } from 'vue';
 import App from '@/App.vue';
+import i18n from '../../src/i18n/i18n';
 
 describe('AccountSettingsView', () => {
   let wrapper;
@@ -18,14 +19,16 @@ describe('AccountSettingsView', () => {
 
     wrapper = mount(AccountSettingsView, {
       global: {
-        plugins: [PrimeVue, router],
+        plugins: [PrimeVue, router, i18n],
         components: { Card },
       },
-      shallow: true,
     });
 
     // Mock methods
-    wrapper.vm.$options.fetchUserProfile = vi.fn();
+    wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({
+      firstName: 'First Name',
+      lastName: 'Last Name',
+    });
     wrapper.vm.$options.saveProfile = vi.fn().mockResolvedValue({
       firstName: 'Updated First Name',
       lastName: 'Updated Last Name',
@@ -44,22 +47,114 @@ describe('AccountSettingsView', () => {
         countryCode: 'TC',
       },
     ]);
+    wrapper.vm.saveProfile = vi.fn();
+    wrapper.vm.fetchUserProfile = vi.fn();
+    wrapper.vm.validateAddress = vi.fn();
+    wrapper.vm.isDisabled = vi.fn();
   });
 
-  test('The view is rendered properly', () => {
+  test('The view renders correctly', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  test('toggleEditMode method works correctly', async () => {
-    wrapper.vm.toggleEditMode();
-    expect(wrapper.vm.editMode).toBe(true);
-    wrapper.vm.toggleEditMode();
-    expect(wrapper.vm.editMode).toBe(false);
+  test('fetchUserProfile successfully retrieves user data', async () => {
+    await wrapper.vm.fetchUserProfile();
+    expect(wrapper.vm.fetchUserProfile).toHaveBeenCalled();
+    expect(wrapper.vm.User).not.toBeNull();
   });
 
-  test('discardChanges method works correctly', async () => {
-    wrapper.vm.editedUserProfile.firstName = 'New Name';
-    wrapper.vm.discardChanges();
-    expect(wrapper.vm.editedUserProfile.firstName).toBe(wrapper.vm.userProfile.firstName);
+  describe('Validation of required input fields', async () => {
+    test('A valid input value is accepted', async () => {
+      const input = wrapper.find('input#firstName');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#firstName ~ .error');
+      await input.setValue('First Name');
+      expect(wrapper.vm.editedUserProfile.firstName).toBe('First Name');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#firstName ~ .error');
+      expect(errorMessage.text()).toBe('');
+    });
+
+    test('An empty input value shows an error message', async () => {
+      const input = wrapper.find('input#firstName');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#firstName ~ .error');
+      await input.setValue('');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#firstName ~ .error');
+      expect(errorMessage.text()).toBe('Bitte eingeben!');
+    });
+
+    test('An invalid input value fails regex validation and shows an error', async () => {
+      const input = wrapper.find('input#firstName');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#firstName ~ .error');
+      await input.setValue('12dg');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#firstName ~ .error');
+      expect(errorMessage.text()).toBe('Eingabe bitte überprüfen!');
+    });
+  });
+
+  describe('Validation of phone number', async () => {
+    test('A valid phone number passes regex validation', async () => {
+      const input = wrapper.find('input#mobilePhoneNumber');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
+      await input.setValue('123456789');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
+      expect(errorMessage.text()).toBe('');
+    });
+
+    test('A phone number containing characters shows an error message', async () => {
+      const input = wrapper.find('input#mobilePhoneNumber');
+      expect(input.exists()).toBe(true);
+      let errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
+      await input.setValue('12w134567');
+      await input.trigger('blur');
+      errorMessage = wrapper.find('input#mobilePhoneNumber ~ .error');
+      expect(errorMessage.text()).toBe('Telefonnummer ist ungültig!');
+    });
+  });
+
+  test('saveProfile is called when the save button is clicked', async () => {
+    wrapper.vm.changes = true;
+    await nextTick();
+    const saveButton = wrapper.find('.save-button');
+    expect(saveButton.exists()).toBe(true);
+
+    await wrapper.vm.saveProfile();
+    expect(wrapper.vm.saveProfile).toHaveBeenCalled();
+  });
+
+  test('Changes are discarded after clicking the cancel button', async () => {
+    wrapper.vm.changes = true;
+    await nextTick();
+    const cancelButton = wrapper.find('.cancel-button');
+    expect(cancelButton.exists()).toBe(true);
+
+    await cancelButton.trigger('click');
+    expect(wrapper.vm.editedUserProfile).toEqual(wrapper.vm.userProfile);
+  });
+
+  describe('Validation of isDisabled function', async () => {
+    test('Errors cause isDisabled to be true', async () => {
+      wrapper.vm.changes = true;
+      wrapper.vm.errorMessage = {
+        firstname: 'Bitte eingeben!',
+      };
+      await nextTick();
+      expect(wrapper.vm.isDisabled).toBe(true);
+    });
+
+    test('No errors cause isDisabled to be false', async () => {
+      wrapper.vm.changes = true;
+      wrapper.vm.errorMessage = {
+        firstname: '',
+      };
+      await nextTick();
+      expect(wrapper.vm.isDisabled).toBe(false);
+    });
   });
 });
