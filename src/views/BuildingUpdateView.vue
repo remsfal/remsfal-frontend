@@ -92,13 +92,13 @@ onMounted(fetchBuildingData);
   <div>
     <h1>Update Building</h1>
     <ReusableFormComponent
-        :headline="'Update Building'"
-        :saveButtonText="'Update'"
-        :cancelButtonText="'Cancel'"
-        :fields="fields"
-        :initialValues="initialValues"
-        @submit="handleSubmit"
-        @cancel="handleCancel"
+      :headline="'Update Building'"
+      :saveButtonText="'Update'"
+      :cancelButtonText="'Cancel'"
+      :fields="fields"
+      :initialValues="initialValues"
+      @submit="handleSubmit"
+      @cancel="handleCancel"
     />
   </div>
 </template>
