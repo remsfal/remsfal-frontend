@@ -13,11 +13,11 @@ const navigateToHome = () => {
 </script>
 
 <template>
-  <div class="grid">
-    <div class="col-12 mb-3">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 mb-4">
       <Button icon="pi pi-home" label="Zurück zur Startseite" @click="navigateToHome" />
     </div>
-    <div class="col-6">
+    <div class="col-span-6">
       <Card>
         <template #title> {{ t('legalNotice.title') }}</template>
         <template #content>
@@ -26,7 +26,7 @@ const navigateToHome = () => {
         </template>
       </Card>
     </div>
-    <div class="col-6">
+    <div class="col-span-6">
       <Card>
         <template #title> {{ t('legalNotice.contact') }}</template>
         <template #content>

@@ -19,7 +19,7 @@ const props = defineProps<{
       <Column field="status" header="Status" sortable />
       <Column frozen alignFrozen="right">
         <template #body="slotProps">
-          <div class="flex justify-content-end">
+          <div class="flex justify-end">
             <RouterLink :to="{ name: 'TaskEdit', params: { taskid: slotProps.data.id } }">
               <Button
                 icon="pi pi-pencil"

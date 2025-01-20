@@ -180,35 +180,35 @@ const cancel = () => {
 </script>
 
 <template>
-  <div class="col-12">
+  <div class="col-span-12">
     <div class="card">
       <h5>Bearbeite Eigentum mit ID: {{ id }}</h5>
-      <div class="p-fluid formgrid grid">
-        <div class="field col-12">
+      <div class="p-fluid formgrid grid grid-cols-12 gap-4">
+        <div class="field col-span-12">
           <label for="title">Titel</label>
           <InputText id="title" v-model="title" type="text" />
         </div>
-        <div class="field col-12">
+        <div class="field col-span-12">
           <label for="description">Beschreibung</label>
           <Textarea id="description" v-model="description" rows="4" class="no-resize" />
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="district">Gemarkung</label>
           <InputText id="district" v-model="district" type="text" />
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="corridor">Flur</label>
           <InputText id="corridor" v-model="corridor" type="text" />
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="parcel">Flurstück</label>
           <InputText id="parcel" v-model="parcel" type="text" />
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="landRegistry">Liegenschaftsbuch</label>
           <InputText id="landRegistry" v-model="landRegistry" type="text" />
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="usageType">Wirtschaftsart</label>
           <Dropdown
               id="usageType"
@@ -220,7 +220,7 @@ const cancel = () => {
               class="w-full"
           />
         </div>
-        <div class="field col-12 text-right">
+        <div class="field col-span-12 text-right">
           <Button label="Speichern" icon="pi pi-check" @click="updateProperty" class="mr-2" :disabled="!isModified" />
           <Button label="Abbrechen" icon="pi pi-times" @click="cancel" class="p-button-secondary" />
         </div>

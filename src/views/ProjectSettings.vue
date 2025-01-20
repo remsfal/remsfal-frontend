@@ -9,7 +9,7 @@ const { t } = useI18n();
 
 <template>
   <main>
-    <div class="grid">
+    <div class="grid grid-cols-12 gap-4">
       <h1>{{ t('projectSettings.title', [projectId]) }}</h1>
     </div>
   </main>

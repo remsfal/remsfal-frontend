@@ -80,7 +80,7 @@ function abort() {
 </script>
 
 <template>
-  <form class="flex flex-column gap-2 w-23rem" @submit.prevent="createProject">
+  <form class="flex flex-col gap-2 w-[23rem]" @submit.prevent="createProject">
     <span class="p-float-label">
       <InputText
         id="value"
