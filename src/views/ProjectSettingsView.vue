@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import type { ProjectMember } from '../services/ProjectMemberService';
-import ProjectMemberService from '../services/ProjectMemberService';
+import ProjectMemberService, { type Member } from '@/services/ProjectMemberService';
 import { useRoute } from 'vue-router';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import ProjectMemberTable from "@/components/ProjectMemberTable.vue";
 
 const props = defineProps<{
   projectId: string;
@@ -22,14 +22,13 @@ if (!props.projectId) {
 
 const newMemberEmail = ref('');
 const newMemberRole = ref('');
-const members = ref<ProjectMember[]>([]);
+const members = ref<Member[]>([]);
 const roles = [
-  { label: 'Verwalter', value: 'MANAGER' },
-  { label: 'Mieter', value: 'TENANCY' }, //liquibase changeset anpassen
   { label: 'Eigentümer', value: 'PROPRIETOR' },
+  { label: 'Verwalter', value: 'MANAGER' },
   { label: 'Vermieter', value: 'LESSOR' },
-  { label: 'Hausmeister', value: 'CARETAKER' },
-  { label: 'Auftragnehmer/Berater', value: 'CONTRACTOR' },
+  { label: 'Mitarbeiter', value: 'STAFF' },
+  { label: 'Kollaborateur', value: 'COLLABORATOR' },
 ]; //liquibase changeset anpassen
 const error = ref<string | null>(null);
 
@@ -49,7 +48,7 @@ const addMember = async () => {
     console.error('Invalid email format.');
     return;
   }
-  const member: ProjectMember = { email: newMemberEmail.value, role: newMemberRole.value };
+  const member: Member = { email: newMemberEmail.value, role: newMemberRole.value };
   try {
     console.log('Adding member with email:', newMemberEmail.value, 'role:', newMemberRole.value);
     await ProjectMemberService.addMember(projectId, member);
@@ -62,7 +61,7 @@ const addMember = async () => {
   }
 };
 
-const updateMemberRole = async (member: ProjectMember) => {
+const updateMemberRole = async (member: Member) => {
   console.log('Member object passed to updateMemberRole:', member);
   try {
     await ProjectMemberService.updateMemberRole(projectId, member);
@@ -148,6 +147,7 @@ onMounted(() => {
       </Column>
     </DataTable>
   </div>
+  <ProjectMemberTable :projectId="projectId" />
 </template>
 
 <style scoped>

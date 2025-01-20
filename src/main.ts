@@ -112,7 +112,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 
 import '@/assets/styles.scss';
 import { initDB } from '@/helper/indexeddb';
-import {addOnlineEventListener, registerServiceWorker} from "@/helper/service-worker-init";
+import { addOnlineEventListener, registerServiceWorker } from "@/helper/service-worker-init";
 import i18n from '@/i18n/i18n';
 
 // Add Font Awesome Icons to the Library

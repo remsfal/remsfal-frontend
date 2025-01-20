@@ -102,10 +102,10 @@ onMounted(async () => {
 
 <template>
   <main>
-    <div class="grid">
+    <div class="grid grid-cols-12 gap-4">
       <h1>{{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht</h1>
       <div v-if="isLoading">Loading...</div>
-      <div v-if="!isLoading" class="col-12">
+      <div v-if="!isLoading" class="col-span-12">
         <div class="card">
           <DataTable
               :value="tenantData"
@@ -126,7 +126,7 @@ onMounted(async () => {
             <Column field="rentalEnd" header="Mietende" :sortable="true" />
             <Column frozen alignFrozen="right">
               <template #body="slotProps">
-                <div class="flex justify-content-end">
+                <div class="flex justify-end">
                   <Button
                       icon="pi pi-pencil"
                       severity="success"
@@ -149,7 +149,7 @@ onMounted(async () => {
               </template>
             </Column>
           </DataTable>
-          <div class="flex justify-content-end mt-4">
+          <div class="flex justify-end mt-6">
             <Button
                 type="button"
                 icon="pi pi-plus"

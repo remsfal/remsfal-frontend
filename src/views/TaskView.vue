@@ -98,18 +98,18 @@ watch(
       </div>
     </div>
 
-    <div class="grid">
+    <div class="grid grid-cols-12 gap-4">
       <Dialog
         v-model:visible="visible"
         modal
         header="Aufgabe erstellen"
         :style="{ width: '50rem' }"
       >
-        <div class="flex items-center gap-4 mb-4">
+        <div class="flex items-center gap-6 mb-6">
           <label for="title" class="font-semibold w-24">Titel</label>
           <InputText id="title" v-model="title" class="flex-auto" autocomplete="off" />
         </div>
-        <div class="flex items-center gap-4 mb-8">
+        <div class="flex items-center gap-6 mb-20">
           <label for="description" class="font-semibold w-24">Beschreibung</label>
           <InputText id="description" v-model="description" class="flex-auto" autocomplete="off" />
         </div>
