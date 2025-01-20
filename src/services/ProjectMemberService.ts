@@ -1,24 +1,31 @@
 import axios from 'axios';
 
-export interface ProjectMember {
+export interface Member {
   id?: string;
-  email: string;
+  name?: string;
+  email?: string;
   role?: string;
+  isActive?: boolean;
 }
 
-const API_BASE_URL = '/api/v1';
+export interface MemberList {
+  members: Member[];
+}
+
+const API_BASE_URL = '/api/v1/projects';
 
 class ProjectMemberService {
-  static async getMembers(projectId: string) {
-    const response = await axios.get(`${API_BASE_URL}/projects/${projectId}/members`);
+
+  static async getMembers(projectId: string): Promise<MemberList> {
+    const response = await axios.get(`${API_BASE_URL}/${projectId}/members`);
     return response.data.members;
   }
 
-  static async addMember(projectId: string, member: ProjectMember) {
+  static async addMember(projectId: string, member: Member): Promise<Member> {
     try {
       console.log(`Adding member to project ${projectId}:`, member);
 
-      const response = await axios.post(`${API_BASE_URL}/projects/${projectId}/members`, {
+      const response = await axios.post(`${API_BASE_URL}/${projectId}/members`, {
         email: member.email,
         role: member.role,
       });
@@ -31,7 +38,7 @@ class ProjectMemberService {
     }
   }
 
-  static async updateMemberRole(projectId: string, member: ProjectMember) {
+  static async updateMemberRole(projectId: string, member: Member): Promise<Member> {
     const originalMember = { ...member };
 
     try {
@@ -63,7 +70,7 @@ class ProjectMemberService {
     }
   }
 
-  static async removeMember(projectId: string, memberId: string) {
+  static async removeMember(projectId: string, memberId: string): Promise<void> {
     try {
       console.log(`Attempting to remove member with projectId=${projectId}, memberId=${memberId}`);
 
