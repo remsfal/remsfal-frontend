@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import AppTopbar from '../../src/layout/AppTopbar.vue';
+import AppTopbar from '../../src/layout/ManagerTopbar.vue';
 import PrimeVue from 'primevue/config';
 import router from '@/router';
 import { createPinia } from 'pinia';
@@ -11,7 +11,7 @@ vi.mock('@/stores/UserSession', () => ({
   useUserSessionStore: vi.fn(),
 }));
 
-describe('AppTopbar.vue', () => {
+describe('ManagerTopbar.vue', () => {
   let sessionStoreMock;
   const pinia = createPinia();
 

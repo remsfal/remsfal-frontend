@@ -5,7 +5,7 @@ export const useProjectStore = defineStore('project-store', {
   state: () => {
     return {
       projects: <ProjectItem[]>[],
-      selectedProject: null as ProjectItem | null,
+      selectedProject: undefined as ProjectItem | undefined,
       totalProjects: Number(0),
       firstOffset: Number(0),
     };
@@ -13,7 +13,11 @@ export const useProjectStore = defineStore('project-store', {
   getters: {
     projectList: (state) => state.projects,
     projectSelection: (state) => state.selectedProject,
-    projectId: (state) => state.selectedProject!.id,
+    projectId: (state) => {
+      if (state.selectedProject !== undefined) {
+        return state.selectedProject!.id;
+      }
+    },
   },
   actions: {
     refreshProjectList() {
@@ -46,19 +50,37 @@ export const useProjectStore = defineStore('project-store', {
           console.error('An error occurred while fetching projects:', error);
         });
     },
-    setSelectedProject(selection: ProjectItem) {
+    searchProjects(projectId: string): Promise<void> {
+      const projectService = new ProjectService();
+      return projectService
+        .searchProjects(projectId)
+        .then((projectList: ProjectList) => {
+          this.projects = projectList.projects;
+          this.totalProjects = projectList.total;
+          this.firstOffset = projectList.first;
+          console.log('Searched project list: ', this.projects);
+        })
+        .catch((error) => {
+          // Handle the error here
+          console.error('An error occurred while fetching projects:', error);
+        });
+    },
+    setSelectedProject(selection: ProjectItem | undefined) {
       this.selectedProject = selection;
       console.log('Project selection changed: ', this.selectedProject);
     },
-    searchSelectedProject(selection: ProjectItem) {
-      if (this.projects.find((p) => p.id === selection.id)) {
-        this.setSelectedProject(selection);
+    searchSelectedProject(projectId: string) {
+      if (projectId === this.selectedProject?.id) {
+        console.log('Project is already selected');
+        return;
       }
-
-      this.projects = [selection];
-      this.totalProjects++;
-      this.selectedProject = selection;
-      console.log('Searched project selection changed: ', this.selectedProject);
+      if (this.projects.find((p) => p.id === projectId)) {
+        this.setSelectedProject(this.projects.findLast((p) => p.id === projectId));
+        return;
+      }
+      this.searchProjects(projectId).finally(() => {
+        this.setSelectedProject(this.projects.findLast((p) => p.id === projectId));
+      });
     },
   },
 });

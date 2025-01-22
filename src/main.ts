@@ -111,8 +111,9 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
 import '@/assets/styles.scss';
+import '@/assets/tailwind.css';
 import { initDB } from '@/helper/indexeddb';
-import { addOnlineEventListener, registerServiceWorker } from "@/helper/service-worker-init";
+import { addOnlineEventListener, registerServiceWorker } from '@/helper/service-worker-init';
 import i18n from '@/i18n/i18n';
 
 // Add Font Awesome Icons to the Library
@@ -129,6 +130,9 @@ app.use(PrimeVue, {
   theme: {
     preset: Aura,
     // https://primevue.org/theming/styled/
+    options: {
+      darkModeSelector: '.app-dark',
+    },
   },
 });
 app.use(ToastService);

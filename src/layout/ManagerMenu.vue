@@ -107,9 +107,11 @@ const model = ref([
 </script>
 
 <template>
-  <ul class="layout-menu">
-    <template v-for="(item, i) in model" :key="item.label">
-      <AppMenuItem :item="item" :index="i" />
-    </template>
-  </ul>
+  <div class="layout-sidebar">
+    <ul class="layout-menu">
+      <template v-for="(item, i) in model" :key="item.label">
+        <AppMenuItem :item="item" :index="i" />
+      </template>
+    </ul>
+  </div>
 </template>

@@ -50,13 +50,7 @@ async function createProject() {
     const newProject = await projectService.createProject(projectTitleValue);
 
     // Update the project store
-    const newProjectItem: ProjectItem = {
-      id: newProject.id,
-      name: newProject.title,
-      memberRole: 'MANAGER',
-    };
-
-    projectStore.searchSelectedProject(newProjectItem);
+    projectStore.searchSelectedProject(newProject.id);
 
     router.push({
       name: 'ProjectDashboard',
