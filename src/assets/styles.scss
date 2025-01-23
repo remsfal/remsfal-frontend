@@ -4,7 +4,7 @@
 /* @import 'primevue/resources/primevue.min.css'; // version deplicated. You must open the command line if you are using < 3.29.00 */
 
 /* SakaiVue */
-@import '@/assets/layout/layout.scss';
+@use '@/assets/layout/layout.scss';
 
 /* PrimeIcons */
-@import 'primeicons/primeicons.css';
+@use 'primeicons/primeicons.css';

@@ -36,7 +36,7 @@ const fetchMembers = async () => {
   try {
     const fetchedMembers = await ProjectMemberService.getMembers(projectId);
     console.log('Fetched members:', fetchedMembers);
-    members.value = fetchedMembers;
+    members.value = fetchedMembers.members;
   } catch (err) {
     console.error('Failed to fetch members', err);
   }

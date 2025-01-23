@@ -10,7 +10,7 @@ import LocaleSwitch from '@/components/LocaleSwitch.vue';
 
 import { useI18n } from 'vue-i18n';
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
 
@@ -56,11 +56,12 @@ const login = (route: string) => {
   <header>
     <div class="layout-topbar">
       <div class="layout-topbar-logo-container">
-        <Button v-if="!isFullscreen" class="layout-menu-button layout-topbar-action" @click="toggleMenu">
+        <!-- Button v-if="!isFullscreen" class="layout-menu-button layout-topbar-action" @click="toggleMenu" -->
+        <Button class="layout-menu-button layout-topbar-menu-button layout-topbar-action" @click="toggleMenu">
           <i class="pi pi-bars"></i>
         </Button>
         <router-link to="/" class="layout-topbar-logo">
-          <img src="@/assets/logo.png" alt="logo"/>
+          <img src="@/assets/logo.png" alt="logo" />
         </router-link>
       </div>
 
@@ -72,22 +73,30 @@ const login = (route: string) => {
         </div>
 
         <Button
-          class="layout-topbar-action"
-          v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
+          v-styleclass="{
+            selector: '@next',
+            enterFromClass: 'hidden',
+            enterActiveClass: 'animate-scalein',
+            leaveToClass: 'hidden',
+            leaveActiveClass: 'animate-fadeout',
+            hideOnOutsideClick: true,
+toggleClass: 'hidden'
+          }"
+          class="layout-topbar-menu-button layout-topbar-action"
         >
           <i class="pi pi-ellipsis-v"></i>
         </Button>
 
         <div class="layout-topbar-menu hidden lg:block">
           <div class="layout-topbar-menu-content">
-            <Button
+            <button
               v-if="sessionStore.user != null"
-              class="layout-topbar-action"
+              class="layout-topbar-shortcut-button layout-topbar-action"
               @click="onHomeClick()"
             >
               <i class="pi pi-home"></i>
               <span>{{ t('toolbar.projects') }}</span>
-            </Button>
+            </button>
             <div v-if="sessionStore.user != null" class="layout-topbar-action">
               <Select
                 v-model="projectStore.selectedProject"
@@ -97,22 +106,22 @@ const login = (route: string) => {
                 @change="onProjectSelectionChange($event)"
               />
             </div>
-            <Button
+            <button
               v-if="sessionStore.user != null"
-              class="layout-topbar-action"
+              class="layout-topbar-shortcut-button layout-topbar-action"
               @click="onNewProjectClick()"
             >
               <i class="pi pi-plus"></i>
               <span>{{ t('toolbar.newProject') }}</span>
-            </Button>
-            <Button
+            </button>
+            <button
               v-if="sessionStore.user != null"
               class="layout-topbar-action"
               @click="onAccountSettingsClick()"
             >
               <i class="pi pi-user"></i>
               <span>{{ sessionStore.user.email }}</span>
-            </Button>
+            </button>
             <Button
               v-if="sessionStore.user != null"
               class="layout-topbar-action"
