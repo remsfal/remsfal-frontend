@@ -50,6 +50,9 @@ typings/
 # TypeScript cache
 *.tsbuildinfo
 
+# Cypress output
+cypress/screenshots/
+
 # Optional npm cache directory
 .npm
 .vscode/

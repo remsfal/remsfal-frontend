@@ -29,14 +29,17 @@ describe('NewProjectForm.vue', () => {
   let wrapper: VueWrapper<ProjectForm>;
   let pushSpy: ReturnType<typeof vi.spyOn>;
   let createProjectMock: ReturnType<typeof vi.fn>;
+  let searchProjectsMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     const pinia = createPinia();
     setActivePinia(pinia);
 
     createProjectMock = vi.fn().mockResolvedValue({ id: 1, title: 'New Project' });
+    searchProjectsMock = vi.fn().mockResolvedValue({ id: 1, title: 'New Project' });
     ProjectService.mockImplementation(() => ({
       createProject: createProjectMock,
+      searchProjects: searchProjectsMock,
     }));
 
     wrapper = mount(ProjectForm, {
@@ -69,6 +72,7 @@ describe('NewProjectForm.vue', () => {
     await wrapper.find('form').trigger('submit.prevent');
 
     expect(createProjectMock).toHaveBeenCalledWith('Valid Project');
+    expect(searchProjectsMock).toHaveBeenCalledWith(1);
     expect(pushSpy).toHaveBeenCalledWith({
       name: 'ProjectDashboard',
       params: { projectId: 1 },

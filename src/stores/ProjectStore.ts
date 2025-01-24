@@ -79,7 +79,7 @@ export const useProjectStore = defineStore('project-store', {
         return;
       }
       this.searchProjects(projectId).finally(() => {
-        this.setSelectedProject(this.projects.findLast((p) => p.id === projectId));
+        this.setSelectedProject(this.projects?.findLast((p) => p.id === projectId));
       });
     },
   },
