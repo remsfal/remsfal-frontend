@@ -142,10 +142,10 @@ const collapseAll = () => {
 
 <template>
   <main>
-    <div class="grid">
+    <div class="grid grid-cols-12 gap-4">
       <h1>Objektdaten Ansicht</h1>
       <div v-if="error" class="alert alert-error">{{ error }}</div>
-      <div v-if="!error" class="col-12">
+      <div v-if="!error" class="col-span-12">
         <div class="card">
           <TreeTable
             v-model:expandedKeys="expandedKeys"
@@ -154,7 +154,7 @@ const collapseAll = () => {
             :loading="isLoading"
           >
             <template #header>
-              <div class="flex justify-content-between flex-column sm:flex-row">
+              <div class="flex justify-between flex-col sm:flex-row">
                 <div>
                   <Button
                     icon="pi pi-plus"

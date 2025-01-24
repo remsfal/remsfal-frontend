@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
-import ContractorLayout from '../../src/layout/ContractorLayout.vue';
-import ContractorTopbar from '../../src/layout/ContractorTopbar.vue';
+import AppLayout from '../../src/layout/AppLayout.vue';
 import AppFooter from '../../src/layout/AppFooter.vue';
+import ContractorTopbar from '../../src/layout/ContractorTopbar.vue';
 import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia } from 'pinia';
@@ -22,7 +22,7 @@ describe('ContractorLayout.vue', () => {
   });
 
   it('should render the layout components correctly', async () => {
-    const wrapper = mount(ContractorLayout, {
+    const wrapper = mount(AppLayout, {
       global: {
         plugins: [pinia, router, i18n],
       },
@@ -45,7 +45,7 @@ describe('ContractorLayout.vue', () => {
   });
 
   it('should display correct content for the contractor route', async () => {
-    const wrapper = mount(ContractorLayout, {
+    const wrapper = mount(AppLayout, {
       global: {
         plugins: [pinia, router, i18n],
       },

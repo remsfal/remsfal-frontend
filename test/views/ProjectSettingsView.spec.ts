@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import ProjectSettingsView from '@/views/ProjectSettingsView.vue';
 import ProjectMemberService from '@/services/ProjectMemberService';
 import PrimeVue from 'primevue/config';
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/ProjectMemberService');
 
@@ -24,7 +25,7 @@ describe('ProjectSettingsView.vue', () => {
         projectId: 'test-project-id',
       },
       global: {
-        plugins: [router, PrimeVue],
+        plugins: [router, PrimeVue, i18n],
         mocks: {
           $route: {
             params: {

@@ -72,6 +72,7 @@ import ProgressBar from 'primevue/progressbar';
 import ProgressSpinner from 'primevue/progressspinner';
 import Rating from 'primevue/rating';
 import RadioButton from 'primevue/radiobutton';
+import Ripple from 'primevue/ripple';
 import Row from 'primevue/row';
 import Select from 'primevue/select';
 import SelectButton from 'primevue/selectbutton';
@@ -111,8 +112,9 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
 import '@/assets/styles.scss';
+import '@/assets/tailwind.css';
 import { initDB } from '@/helper/indexeddb';
-import {addOnlineEventListener, registerServiceWorker} from "@/helper/service-worker-init";
+import { addOnlineEventListener, registerServiceWorker } from '@/helper/service-worker-init';
 import i18n from '@/i18n/i18n';
 
 // Add Font Awesome Icons to the Library
@@ -129,6 +131,9 @@ app.use(PrimeVue, {
   theme: {
     preset: Aura,
     // https://primevue.org/theming/styled/
+    options: {
+      darkModeSelector: '.app-dark',
+    },
   },
 });
 app.use(ToastService);
@@ -142,9 +147,10 @@ app.use(i18n);
 app.use(VueAxios, axios);
 
 // Add primevue directives
-app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
+app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
+app.directive('tooltip', Tooltip);
 
 // Add primefaces components
 

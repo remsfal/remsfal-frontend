@@ -48,7 +48,7 @@ onMounted(() => {
     <Column field="status" header="Status" style="min-width: 200px"></Column>
 
     <template #expansion="slotProps">
-      <div class="p-3">
+      <div class="p-4">
         <h4>Details für "{{ slotProps.data.title }}"</h4>
         <p><strong>Beschreibung:</strong> {{ slotProps.data.description }}</p>
         <p><strong>Status:</strong> {{ slotProps.data.status }}</p>

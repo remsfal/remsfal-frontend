@@ -24,7 +24,7 @@ describe('ContractorTable.vue', () => {
   beforeEach(() => {
     wrapper = mount(ContractorTable, {
       global: {
-        plugins: [PrimeVue]
+        plugins: [PrimeVue],
       },
     });
   });

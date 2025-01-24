@@ -1,17 +1,18 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import AppTopbar from '../../src/layout/AppTopbar.vue';
+import ManagerTopbar from '../../src/layout/ManagerTopbar.vue';
 import PrimeVue from 'primevue/config';
 import router from '@/router';
 import { createPinia } from 'pinia';
 import { useUserSessionStore } from '@/stores/UserSession';
 import i18n from '../../src/i18n/i18n';
+import Ripple from 'primevue/ripple';
 
 vi.mock('@/stores/UserSession', () => ({
   useUserSessionStore: vi.fn(),
 }));
 
-describe('AppTopbar.vue', () => {
+describe('ManagerTopbar.vue', () => {
   let sessionStoreMock;
   const pinia = createPinia();
 
@@ -21,7 +22,7 @@ describe('AppTopbar.vue', () => {
   });
 
   it('zeigt den Anmelde-Button an, wenn der Benutzer nicht eingeloggt ist', () => {
-    const wrapper = mount(AppTopbar, {
+    const wrapper = mount(ManagerTopbar, {
       global: {
         plugins: [PrimeVue, pinia, router, i18n],
       },
@@ -32,7 +33,7 @@ describe('AppTopbar.vue', () => {
 
   it('zeigt den Abmelde-Button an, wenn der Benutzer eingeloggt ist', () => {
     sessionStoreMock.user = { email: 'test@example.com' };
-    const wrapper = mount(AppTopbar, {
+    const wrapper = mount(ManagerTopbar, {
       global: {
         plugins: [PrimeVue, pinia, router, i18n],
       },
@@ -44,9 +45,10 @@ describe('AppTopbar.vue', () => {
   it('navigiert zu den Kontoeinstellungen bei Klick auf den Kontoeinstellungen-Button', async () => {
     sessionStoreMock.user = { email: 'test@example.com' };
     const pushSpy = vi.spyOn(router, 'push');
-    const wrapper = mount(AppTopbar, {
+    const wrapper = mount(ManagerTopbar, {
       global: {
         plugins: [PrimeVue, pinia, router, i18n],
+        directives: { ripple: Ripple },
       },
     });
 
@@ -57,7 +59,7 @@ describe('AppTopbar.vue', () => {
   it('navigiert zur Projektübersicht bei Klick auf den Home-Button', async () => {
     sessionStoreMock.user = { email: 'test@example.com' };
     const pushSpy = vi.spyOn(router, 'push');
-    const wrapper = mount(AppTopbar, {
+    const wrapper = mount(ManagerTopbar, {
       global: {
         plugins: [PrimeVue, pinia, router, i18n],
       },
