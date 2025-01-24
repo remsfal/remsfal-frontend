@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import { watch, ref, onMounted } from 'vue';
+import { watch, ref, onBeforeUpdate, onMounted } from 'vue';
 import AppFooter from './AppFooter.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { RouterView } from 'vue-router';
-import {useUserSessionStore} from "@/stores/UserSession";
 
 const props = defineProps<{
   fullscreen: boolean;
 }>();
 
-const { layoutState, isSidebarActive } = useLayout();
+const { layoutState, isSidebarActive, setFullscreen } = useLayout();
 const outsideClickListener = ref<EventListenerOrEventListenerObject | null>(null);
 
 onMounted(() => {
-  layoutState.staticMenuDesktopInactive = props.fullscreen;
+  setFullscreen(props.fullscreen);
+});
+
+onBeforeUpdate(() => {
+  setFullscreen(props.fullscreen);
 });
 
 watch(isSidebarActive, (newVal) => {

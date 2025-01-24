@@ -19,6 +19,10 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
+  const setFullscreen = (fullscreen: boolean) => {
+    layoutState.staticMenuDesktopInactive = fullscreen;
+  };
+
   const setActiveMenuItem = (
     item: string | Ref<string | undefined, string | undefined> | undefined,
   ) => {
@@ -78,6 +82,7 @@ export function useLayout() {
     getPrimary,
     getSurface,
     setActiveMenuItem,
+    setFullscreen,
     toggleDarkMode,
   };
 }

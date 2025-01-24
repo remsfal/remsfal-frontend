@@ -7,10 +7,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Button: typeof import('primevue/button')['default']
     CommercialEditComponent: typeof import('./src/components/CommercialEditComponent.vue')['default']
     ContractorTable: typeof import('./src/components/ContractorTable.vue')['default']
     GoogleButton: typeof import('./src/components/GoogleButton.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    InputText: typeof import('primevue/inputtext')['default']
     LocaleSwitch: typeof import('./src/components/LocaleSwitch.vue')['default']
     NewProjectForm: typeof import('./src/components/NewProjectForm.vue')['default']
     NewProjectMemberButton: typeof import('./src/components/NewProjectMemberButton.vue')['default']
