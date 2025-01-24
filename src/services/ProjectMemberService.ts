@@ -49,7 +49,7 @@ class ProjectMemberService {
       };
       console.log('Sending request to update member role:', payload);
       const response = await axios.patch(
-        `${API_BASE_URL}/projects/${projectId}/members/${member.id}`,
+        `${API_BASE_URL}/${projectId}/members/${member.id}`,
         payload,
         {
           headers: {
@@ -75,7 +75,7 @@ class ProjectMemberService {
       console.log(`Attempting to remove member with projectId=${projectId}, memberId=${memberId}`);
 
       const response = await axios.delete(
-        `${API_BASE_URL}/projects/${projectId}/members/${memberId}`,
+        `${API_BASE_URL}/${projectId}/members/${memberId}`,
         {
           headers: {
             'Content-Type': 'application/json',

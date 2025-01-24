@@ -4,6 +4,7 @@ import ContractorTopbar from '../../src/layout/ContractorTopbar.vue';
 import { createPinia } from 'pinia';
 import { useUserSessionStore } from '../../src/stores/UserSession';
 import PrimeVue from 'primevue/config';
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/stores/UserSession', () => ({
   useUserSessionStore: vi.fn(),
@@ -21,7 +22,7 @@ describe('ContractorTopbar.vue', () => {
   it('should display the login button when the user is not logged in', () => {
     const wrapper = mount(ContractorTopbar, {
       global: {
-        plugins: [PrimeVue, pinia],
+        plugins: [PrimeVue, pinia, i18n],
       },
     });
     expect(wrapper.find('.pi-sign-in').exists()).toBe(true);
@@ -32,7 +33,7 @@ describe('ContractorTopbar.vue', () => {
     sessionStoreMock.user = { email: 'test@example.com' };
     const wrapper = mount(ContractorTopbar, {
       global: {
-        plugins: [PrimeVue, pinia],
+        plugins: [PrimeVue, pinia, i18n],
       },
     });
     expect(wrapper.find('.pi-sign-out').exists()).toBe(true);
@@ -42,7 +43,7 @@ describe('ContractorTopbar.vue', () => {
   it('should toggle the topbar menu when the menu button is clicked', async () => {
     const wrapper = mount(ContractorTopbar, {
       global: {
-        plugins: [PrimeVue, pinia],
+        plugins: [PrimeVue, pinia, i18n],
       },
     });
     

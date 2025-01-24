@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { defineEmits, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ProjectService, { type ProjectItem } from '@/services/ProjectService';
+import ProjectService from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { saveProject } from '@/helper/indexeddb';
-
-
 import { useI18n } from 'vue-i18n';
 
 const emit = defineEmits<{
@@ -52,7 +50,7 @@ async function createProject() {
     // Update the project store
     projectStore.searchSelectedProject(newProject.id);
 
-    router.push({
+    await router.push({
       name: 'ProjectDashboard',
       params: { projectId: newProject.id },
     });
@@ -63,9 +61,6 @@ async function createProject() {
     await saveProject(projectTitleValue);
   }
 }
-
-
-
 
 function abort() {
   router.push({ name: 'ProjectSelection' });

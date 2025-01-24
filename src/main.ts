@@ -72,6 +72,7 @@ import ProgressBar from 'primevue/progressbar';
 import ProgressSpinner from 'primevue/progressspinner';
 import Rating from 'primevue/rating';
 import RadioButton from 'primevue/radiobutton';
+import Ripple from 'primevue/ripple';
 import Row from 'primevue/row';
 import Select from 'primevue/select';
 import SelectButton from 'primevue/selectbutton';
@@ -146,9 +147,10 @@ app.use(i18n);
 app.use(VueAxios, axios);
 
 // Add primevue directives
-app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
+app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
+app.directive('tooltip', Tooltip);
 
 // Add primefaces components
 
