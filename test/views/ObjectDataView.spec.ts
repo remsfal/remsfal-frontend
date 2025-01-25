@@ -1,7 +1,7 @@
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import ObjectDataView from '@/views/ObjectDataView.vue';
-import ProjectService, { EntityType } from '@/services/ProjectService.ts';
+import ObjectDataView from '../../src/views/ObjectDataView.vue';
+import ProjectService, { EntityType } from '../../src/services/ProjectService';
 
 // Mock for the router
 const mockRoutePush = vi.fn();
@@ -126,6 +126,8 @@ const initialComplexMockData = {
 };
 
 describe('ObjectDataView', () => {
+  let wrapper: VueWrapper;
+
   let getPropertyTreeMock: ReturnType<typeof vi.fn>;
   let complexMockData;
 

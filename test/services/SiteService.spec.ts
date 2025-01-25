@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
-import SiteService, { SiteItem } from '@/services/SiteService';
+import SiteService, { SiteItem } from '../../src/services/SiteService';
+import { VueWrapper } from "@vue/test-utils";
 
 vi.mock('axios');
 
@@ -25,6 +26,8 @@ const mockSite: SiteItem = {
 };
 
 describe('SiteService', () => {
+  let wrapper: VueWrapper;
+
   beforeEach(() => {
     vi.clearAllMocks();
   });

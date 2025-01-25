@@ -4,7 +4,6 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import { type TaskItem } from '../services/TaskService';
 import { RouterLink } from 'vue-router';
-import { defineProps } from 'vue';
 
 const props = defineProps<{
   tasks: TaskItem[];

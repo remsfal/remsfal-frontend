@@ -1,4 +1,9 @@
+import { config } from '@vue/test-utils';
 import { vi } from 'vitest';
+import PrimeVue from 'primevue/config';
+import router from '../../src/router';
+import i18n from '../../src/i18n/i18n';
+import { createTestingPinia } from '@pinia/testing';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -13,3 +18,5 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: vi.fn(),
   })),
 });
+
+config.global.plugins = [PrimeVue, createTestingPinia(), router, i18n];

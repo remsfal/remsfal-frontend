@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ProjectService from '@/services/ProjectService';
+import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { saveProject } from '@/helper/indexeddb';
@@ -29,7 +29,6 @@ watch(projectTitle, (newProjectTitle) => {
 });
 
 async function createProject() {
-  const projectService = new ProjectService();
   const projectStore = useProjectStore();
 
   if (projectTitle.value.length > maxLength) return;

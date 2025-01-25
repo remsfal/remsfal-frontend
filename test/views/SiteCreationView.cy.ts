@@ -1,7 +1,9 @@
 import SiteCreationView from '../../src/views/SiteCreationView.vue';
 import PrimeVue from 'primevue/config';
+import { VueWrapper } from "@vue/test-utils";
 
 describe('<SiteCreationView />', () => {
+  let wrapper: VueWrapper;
   const projectId = 'df3d6629-257b-46dc-bbbe-7d3605dd4e03';
   const propertyId = '12345';
 

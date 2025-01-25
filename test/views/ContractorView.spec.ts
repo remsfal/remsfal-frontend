@@ -11,7 +11,7 @@ vi.mock('../../src/components/ContractorTable.vue', () => ({
 }));
 
 describe('ContractorView.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper;
 
   beforeEach(() => {
     wrapper = shallowMount(ContractorView, {

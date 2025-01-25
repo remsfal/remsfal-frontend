@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApartmentUpdateView from '../../src/views/ApartmentUpdateView.vue';
 import axios from 'axios';
@@ -21,7 +21,7 @@ vi.mock('vue-router', () => ({
 vi.mock('axios');
 
 describe('ApartmentUpdateView.vue', () => {
-    let wrapper: ReturnType<typeof mount>;
+    let wrapper: VueWrapper;
 
     beforeEach(() => {
         wrapper = mount(ApartmentUpdateView, {

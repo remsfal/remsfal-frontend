@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ContractorTopbar from '../../src/layout/ContractorTopbar.vue';
 import { createPinia } from 'pinia';
@@ -11,6 +11,7 @@ vi.mock('@/stores/UserSession', () => ({
 }));
 
 describe('ContractorTopbar.vue', () => {
+  let wrapper: VueWrapper;
   let sessionStoreMock;
   const pinia = createPinia();
 

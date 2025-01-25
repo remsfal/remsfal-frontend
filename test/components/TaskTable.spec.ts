@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import TaskTable from '@/components/TaskTable.vue';
-import PrimeVue from 'primevue/config';
+import TaskTable from '../../src/components/TaskTable.vue';
 import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 import Button from 'primevue/button';
 import { RouterLinkStub } from '@vue/test-utils';
 
@@ -23,8 +21,6 @@ describe('TaskTable', () => {
         tasks: mockTasks,
       },
       global: {
-        plugins: [PrimeVue],
-        components: { DataTable, Column, Button },
         stubs: {
           RouterLink: RouterLinkStub, // Stub the RouterLink for testing
         },

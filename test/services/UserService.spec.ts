@@ -1,10 +1,11 @@
-// tests/UserService.spec.ts
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import UserService, { User, Address } from '../../src/services/UserService';
+import { VueWrapper } from "@vue/test-utils";
 
 describe('UserService', () => {
+  let wrapper: VueWrapper;
+
   const service = new UserService();
   const mockUser: User = {
     id: '1',

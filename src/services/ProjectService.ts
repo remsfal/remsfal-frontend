@@ -384,3 +384,5 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 }
+
+export const projectService = new ProjectService();

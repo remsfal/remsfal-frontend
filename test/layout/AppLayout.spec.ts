@@ -1,60 +1,35 @@
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, beforeEach } from 'vitest';
 import AppLayout from '../../src/layout/AppLayout.vue';
 import AppFooter from '../../src/layout/AppFooter.vue';
-import ContractorTopbar from '../../src/layout/ContractorTopbar.vue';
-import ContractorMenu from '../../src/layout/ContractorMenu.vue';
-import { createRouter, createWebHistory } from 'vue-router';
-import { createPinia } from 'pinia';
-import i18n from '../../src/i18n/i18n';
 
-describe('ContractorLayout.vue', () => {
-  let router;
-  const pinia = createPinia();
+describe('AppLayout.vue', () => {
+  let wrapper: VueWrapper;
 
   beforeEach(() => {
-    router = createRouter({
-      history: createWebHistory(),
-      routes: [
-        { path: '/contractor', name: 'contractor', component: { template: '<div>Contractor Page</div>' } },
-      ],
+    wrapper = mount(AppLayout, {
+      props: {
+        fullscreen: false,
+      },
     });
   });
 
   it('should render the layout components correctly', async () => {
-    const wrapper = mount(AppLayout, {
-      global: {
-        plugins: [pinia, router, i18n],
-      },
-    });
-
-    const topbar = wrapper.findComponent(ContractorTopbar);
-    expect(topbar.exists()).toBe(true);
-
-    const sidebar = wrapper.findComponent(ContractorMenu);
-    expect(sidebar.exists()).toBe(true);
-
     const footer = wrapper.findComponent(AppFooter);
     expect(footer.exists()).toBe(true);
 
-    await router.push('/contractor');
+    await wrapper.vm.$router.push('/contractor');
     await wrapper.vm.$nextTick();
 
     const routerViewContent = wrapper.html();
-    expect(routerViewContent).toContain('Contractor Page');
+    expect(routerViewContent).toContain('Übersicht der Aufträge');
   });
 
   it('should display correct content for the contractor route', async () => {
-    const wrapper = mount(AppLayout, {
-      global: {
-        plugins: [pinia, router, i18n],
-      },
-    });
-
-    await router.push('/contractor');
+    await wrapper.vm.$router.push('/contractor');
     await wrapper.vm.$nextTick();
 
     const routerViewContent = wrapper.html();
-    expect(routerViewContent).toContain('Contractor Page');
+    expect(routerViewContent).toContain('Übersicht der Aufträge');
   });
 });

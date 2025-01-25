@@ -1,6 +1,6 @@
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import GarageView from '@/views/GarageView.vue';
+import GarageView from '../../src/views/GarageView.vue';
 import PrimeVue from 'primevue/config';
 
 const mockGetGarage = vi.fn();
@@ -50,6 +50,8 @@ const dummyGarageData = {
 };
 
 describe('GarageView.vue', () => {
+  let wrapper: VueWrapper;
+
   const defaultProps = {
     headline: 'Test Form',
     saveButtonText: 'Save',

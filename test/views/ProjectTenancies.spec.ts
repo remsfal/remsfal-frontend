@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import ProjectTenancies from '@/views/ProjectTenancies.vue';
+import { mount, VueWrapper } from '@vue/test-utils';
+import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
 import PrimeVue from 'primevue/config';
 import Dialog from 'primevue/dialog';
-import i18n from '../../src/i18n/i18n'
+import i18n from '../../src/i18n/i18n';
 
 // Mock PrimeVue configuration and Dialog component to avoid errors during testing
 vi.mock('primevue/config', () => ({
@@ -21,7 +21,7 @@ vi.mock('primevue/dialog', () => ({
 }));
 
 describe('ProjectTenancies.vue', () => {
-    let wrapper: any;
+    let wrapper: VueWrapper;
 
     beforeEach(() => {
         // Mount the component with PrimeVue plugin and Dialog component mocked

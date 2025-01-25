@@ -2,13 +2,13 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
 import PrimeVue from 'primevue/config';
-import TaskService, { Status, TaskItem } from "../../src/services/TaskService";
-
+import TaskService, { Status, TaskItem } from '../../src/services/TaskService';
 
 describe('TaskView', () => {
+  let wrapper: VueWrapper;
+
   const projectId = '1';
   const owner = 'user1';
-  let wrapper: VueWrapper<TaskView>;
   const service = new TaskService();
 
   beforeEach(() => {

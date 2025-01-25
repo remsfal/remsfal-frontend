@@ -1,36 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import PrivacyView from '../../src/views/PrivacyView.vue';
-import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
-import { createRouter, createWebHistory } from 'vue-router';
-import i18n from '../../src/i18n/i18n';
 
 describe('PrivacyView', () => {
-  let wrapper;
-  let router;
+  let wrapper: VueWrapper;
 
   beforeEach(async () => {
-    router = createRouter({
-      history: createWebHistory(),
-      routes: [
-        {
-          path: '/',
-          name: 'home',
-          component: { template: '<div>Home</div>' },
-        },
-        {
-          path: '/privacy',
-          name: 'privacy',
-          component: PrivacyView,
-        },
-      ],
-    });
-
     wrapper = mount(PrivacyView, {
       global: {
-        plugins: [PrimeVue, router, i18n],
         components: {
           Card,
           Button,
@@ -51,8 +30,6 @@ describe('PrivacyView', () => {
         },
       },
     });
-
-    await router.isReady();
   });
 
   it('renders the title', async () => {
@@ -78,10 +55,8 @@ describe('PrivacyView', () => {
   });
 
   it('navigates to home when the home button is clicked', async () => {
-    const pushSpy = vi.spyOn(router, 'push');
-
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.p-button').trigger('click');
-
     expect(pushSpy).toHaveBeenCalledWith('/');
   });
 });

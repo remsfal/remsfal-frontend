@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewProjectView from '@/views/NewProjectView.vue';
+import NewProjectView from '../../src/views/NewProjectView.vue';
 import PrimeVue from 'primevue/config';
 import router from '../../src/router';
-import { saveProject } from '@/helper/indexeddb';
-import ProjectService from '@/services/ProjectService';
+import { saveProject } from '../../src/helper/indexeddb';
+import ProjectService from '../../src/services/ProjectService';
 import { createPinia } from 'pinia'; // Import Pinia
 import i18n from '../../src/i18n/i18n';
 
@@ -20,7 +20,7 @@ vi.mock('@/services/ProjectService', () => ({
 }));
 
 describe('NewProjectView', () => {
-  let wrapper: VueWrapper<NewProjectView>;
+  let wrapper: VueWrapper;
   const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
   const pinia = createPinia(); // Create Pinia instance
 

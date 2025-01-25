@@ -1,7 +1,9 @@
 import SiteUpdateView from '../../src/views/SiteUpdateView.vue';
 import PrimeVue from 'primevue/config';
+import { VueWrapper } from "@vue/test-utils";
 
 describe('<SiteUpdateView />', () => {
+  let wrapper: VueWrapper;
   const projectId = 'df3d6629-257b-46dc-bbbe-7d3605dd4e03';
   const propertyId = '12345';
   const siteId = '54321';

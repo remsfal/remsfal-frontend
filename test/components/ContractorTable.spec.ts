@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ContractorTable from '../../src/components/ContractorTable.vue';
-import PrimeVue from 'primevue/config';
 
 vi.mock('@/services/ContractorService', () => {
   return {
@@ -22,11 +21,7 @@ describe('ContractorTable.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    wrapper = mount(ContractorTable, {
-      global: {
-        plugins: [PrimeVue],
-      },
-    });
+    wrapper = mount(ContractorTable);
   });
 
   it('should render rows correctly', async () => {

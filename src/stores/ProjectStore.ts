@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import ProjectService, { type ProjectList, type ProjectItem } from '@/services/ProjectService';
+import { projectService, type ProjectList, type ProjectItem } from '@/services/ProjectService';
 
 export const useProjectStore = defineStore('project-store', {
   state: () => {
@@ -21,7 +21,6 @@ export const useProjectStore = defineStore('project-store', {
   },
   actions: {
     refreshProjectList() {
-      const projectService = new ProjectService();
       projectService
         .getProjects()
         .then((projectList: ProjectList) => {
@@ -36,7 +35,6 @@ export const useProjectStore = defineStore('project-store', {
         });
     },
     fetchProjects(offset: number, limit: number): Promise<void> {
-      const projectService = new ProjectService();
       return projectService
         .getProjects(offset, limit)
         .then((projectList: ProjectList) => {
@@ -51,7 +49,6 @@ export const useProjectStore = defineStore('project-store', {
         });
     },
     searchProjects(projectId: string): Promise<void> {
-      const projectService = new ProjectService();
       return projectService
         .searchProjects(projectId)
         .then((projectList: ProjectList) => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import LegalNoticeView from '@/views/LegalNoticeView.vue';
+import { mount, VueWrapper } from '@vue/test-utils';
+import LegalNoticeView from '../../src/views/LegalNoticeView.vue';
 import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
@@ -8,6 +8,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import i18n from '../../src/i18n/i18n';
 
 describe('LegalNoticeView.vue', () => {
+  let wrapper: VueWrapper;
+
   const router = createRouter({
     history: createWebHistory(),
     routes: [
