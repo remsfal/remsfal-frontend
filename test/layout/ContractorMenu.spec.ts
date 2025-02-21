@@ -9,25 +9,21 @@ describe('ContractorMenu.vue', () => {
 
   beforeEach(() => {
     userSessionStore = useUserSessionStore();
-
-    sessionStoreMock = { user: null };
-    useUserSessionStore.mockReturnValue(sessionStoreMock);
-
     wrapper = mount(ContractorMenu);
   });
 
   it('should render the correct menu structure', async () => {
     await wrapper.vm.$nextTick();
-    
+
     const rootMenuItems = wrapper.findAll('.layout-root-menuitem');
     expect(rootMenuItems.length).toBe(2);
     expect(rootMenuItems[0].text()).toContain('Home');
     expect(rootMenuItems[1].text()).toContain('Auftragsmanagement');
-  
+
     const submenus = wrapper.findAll('.layout-submenu');
     expect(submenus.length).toBe(2);
   });
-  
+
 
   it('should render the correct menu labels', async () => {
     await wrapper.vm.$nextTick();
@@ -40,25 +36,25 @@ describe('ContractorMenu.vue', () => {
       'Laufende Aufträge',
       'Abgeschlossene Aufträge',
     ];
-  
+
     expectedSubmenuLabels.forEach((label, index) => {
       expect(submenuLabels[index].text()).toContain(label);
     });
   });
-  
+
   it('should render the correct icons for menu items', async () => {
     await wrapper.vm.$nextTick();
-  
+
     const overviewIcon = wrapper.find('.pi-home');
     expect(overviewIcon.exists()).toBe(true);
-  
+
     const clientIcon = wrapper.find('.pi-id-card');
     expect(clientIcon.exists()).toBe(true);
   });
 
   it('should navigate correctly when menu items are clicked', async () => {
-    sessionStoreMock.user = { email: 'test@example.com' };
-    const pushSpy = vi.spyOn(router, 'push');
+    userSessionStore.user = { email: 'test@example.com' };
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
 
     await wrapper.find('.pi-home').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/contractor');

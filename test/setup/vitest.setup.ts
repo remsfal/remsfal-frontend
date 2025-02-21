@@ -4,6 +4,10 @@ import PrimeVue from 'primevue/config';
 import router from '../../src/router';
 import i18n from '../../src/i18n/i18n';
 import { createTestingPinia } from '@pinia/testing';
+import BadgeDirective from 'primevue/badgedirective';
+import Ripple from 'primevue/ripple';
+import StyleClass from 'primevue/styleclass';
+import Tooltip from 'primevue/tooltip';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -20,3 +24,10 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 config.global.plugins = [PrimeVue, createTestingPinia(), router, i18n];
+
+config.global.directives = {
+  badge: BadgeDirective,
+  ripple: Ripple,
+  styleclass: StyleClass,
+  tooltip: Tooltip,
+};

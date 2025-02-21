@@ -8,24 +8,15 @@ import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/ProjectMemberService');
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [{ path: '/project/:projectId', component: ProjectSettingsView }],
-});
-
 describe('ProjectSettingsView.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(async () => {
-    router.push('/project/test-project-id');
-    await router.isReady();
-
     wrapper = mount(ProjectSettingsView, {
       props: {
         projectId: 'test-project-id',
       },
       global: {
-        plugins: [router, PrimeVue, i18n],
         mocks: {
           $route: {
             params: {
@@ -35,7 +26,8 @@ describe('ProjectSettingsView.vue', () => {
         },
       },
     });
-
+    wrapper.vm.$router.push('/project/test-project-id');
+    await wrapper.vm.$router.isReady();
     vi.clearAllMocks();
   });
 

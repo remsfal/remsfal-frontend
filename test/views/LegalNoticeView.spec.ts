@@ -1,39 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import LegalNoticeView from '../../src/views/LegalNoticeView.vue';
-import PrimeVue from 'primevue/config';
-import Card from 'primevue/card';
-import Button from 'primevue/button';
-import { createRouter, createWebHistory } from 'vue-router';
-import i18n from '../../src/i18n/i18n';
 
 describe('LegalNoticeView.vue', () => {
   let wrapper: VueWrapper;
 
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-      {
-        path: '/',
-        name: 'home',
-        component: { template: '<div>Home</div>' },
-      },
-      {
-        path: '/legal',
-        name: 'legal',
-        component: LegalNoticeView,
-      },
-    ],
-  });
-
   it('renders the legal notice', () => {
-    const wrapper = mount(LegalNoticeView, {
+    wrapper = mount(LegalNoticeView, {
       global: {
-        plugins: [PrimeVue, router, i18n],
-        components: {
-          Card,
-          Button,
-        },
         stubs: {
           Card: {
             template: `
@@ -48,21 +22,14 @@ describe('LegalNoticeView.vue', () => {
       },
     });
 
-    router.isReady().then(() => {
+    wrapper.vm.$router.isReady().then(() => {
       expect(wrapper.text()).toContain('Impressum');
     });
   });
 
   it('navigates to home when the home button is clicked', async () => {
-    const pushSpy = vi.spyOn(router, 'push');
-
-    const wrapper = mount(LegalNoticeView, {
+    wrapper = mount(LegalNoticeView, {
       global: {
-        plugins: [PrimeVue, router, i18n],
-        components: {
-          Card,
-          Button,
-        },
         stubs: {
           Card: {
             template: `
@@ -78,7 +45,7 @@ describe('LegalNoticeView.vue', () => {
         },
       },
     });
-
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.p-button').trigger('click');
 
     expect(pushSpy).toHaveBeenCalledWith('/');

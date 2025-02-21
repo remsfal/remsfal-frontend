@@ -35,10 +35,10 @@ function injectButtonRows(nodes: PropertyNode[]): PropertyNode[] {
     const { type } = node.data;
 
     if (
-        type !== EntityType.Apartment &&
-        type !== EntityType.Commercial &&
-        type !== EntityType.Garage &&
-        type !== EntityType.Site
+      type !== EntityType.Apartment &&
+      type !== EntityType.Commercial &&
+      type !== EntityType.Garage &&
+      type !== EntityType.Site
     ) {
       const buttonRow = createButtonRow(node.key, type);
 
@@ -52,23 +52,23 @@ function injectButtonRows(nodes: PropertyNode[]): PropertyNode[] {
 
 async function fetchPropertyTree(projectId: string): Promise<PropertyNode[]> {
   return projectService
-      .getPropertyTree(projectId, 10, 0)
-      .then((data) => {
-        /* Every node exept Apartment, Commercial, Garge and Site nodes get an extra entry with
+    .getPropertyTree(projectId, 10, 0)
+    .then((data) => {
+      /* Every node exept Apartment, Commercial, Garge and Site nodes get an extra entry with
         the id and type of the parent as key and type with the isButtonRow attribute enabled. */
-        const nodesWithButtons = [
-          ...injectButtonRows(data.nodes),
-          createButtonRow(projectId, EntityType.Project),
-        ];
+      const nodesWithButtons = [
+        ...injectButtonRows(data.nodes),
+        createButtonRow(projectId, EntityType.Project),
+      ];
 
-        objectData.value = nodesWithButtons;
+      objectData.value = nodesWithButtons;
 
-        return nodesWithButtons;
-      })
-      .catch((err) => {
-        error.value = `Failed to fetch object data: ${err.message || 'Unknown error'}`;
-        return [];
-      });
+      return nodesWithButtons;
+    })
+    .catch((err) => {
+      error.value = `Failed to fetch object data: ${err.message || 'Unknown error'}`;
+      return [];
+    });
 }
 
 onMounted(() => {
@@ -136,8 +136,7 @@ const expandAll = () => {
 
 const collapseAll = () => {
   expandedKeys.value = {};
-}
-
+};
 </script>
 
 <template>
@@ -200,25 +199,25 @@ const collapseAll = () => {
               <template #body="{ node }">
                 <div v-if="!node.data.isButtonRow" class="flex flex-wrap gap-2">
                   <Button
-                      type="button"
-                      icon="pi pi-pencil"
-                      severity="success"
-                      @click="completeEntityAction(node.data.type, 'edit', node.key)"
+                    type="button"
+                    icon="pi pi-pencil"
+                    severity="success"
+                    @click="completeEntityAction(node.data.type, 'edit', node.key)"
                   />
                   <Button
-                      type="button"
-                      icon="pi pi-trash"
-                      severity="danger"
-                      @click="completeEntityAction(node.data.type, 'delete', node.key)"
+                    type="button"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    @click="completeEntityAction(node.data.type, 'delete', node.key)"
                   />
                 </div>
                 <div v-if="node.data.isButtonRow && node.data.type === EntityType.Project">
                   <Button
-                      type="button"
-                      icon="pi pi-plus"
-                      label="Grundstück erstellen "
-                      severity="success"
-                      @click="completeEntityAction(EntityType.Property, 'create', node.key)"
+                    type="button"
+                    icon="pi pi-plus"
+                    label="Grundstück erstellen "
+                    severity="success"
+                    @click="completeEntityAction(EntityType.Property, 'create', node.key)"
                   />
                 </div>
                 <div v-if="node.data.isButtonRow && node.data.type === EntityType.Property">

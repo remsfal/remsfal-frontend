@@ -180,7 +180,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  getPropertyTree(projectId: string, limit: number, offset: number): Promise<PropertyTree> {
+  async getPropertyTree(projectId: string, limit: number, offset: number): Promise<PropertyTree> {
     return axios
       .get(`${this.url}/${projectId}/properties`, {
         params: {
