@@ -127,6 +127,14 @@ export default class ProjectService {
     });
   }
 
+  searchProjects(projectId: string): Promise<ProjectList> {
+    return axios.get(this.url, { params: { projectId: projectId } }).then((response) => {
+      const projectList: ProjectList = response.data;
+      console.log('GET projects:', projectList);
+      return projectList;
+    });
+  }
+
   createProject(title: string): Promise<Project> {
     return axios.post(`${this.url}`, { title: title }).then((response) => {
       const project: Project = response.data;
@@ -172,7 +180,7 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 
-  getPropertyTree(projectId: string, limit: number, offset: number): Promise<PropertyTree> {
+  async getPropertyTree(projectId: string, limit: number, offset: number): Promise<PropertyTree> {
     return axios
       .get(`${this.url}/${projectId}/properties`, {
         params: {
@@ -376,3 +384,5 @@ export default class ProjectService {
       .catch((error) => console.error(error));
   }
 }
+
+export const projectService = new ProjectService();

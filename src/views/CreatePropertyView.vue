@@ -48,19 +48,19 @@ const cancel = () => {
 </script>
 
 <template>
-  <div class="col-12">
+  <div class="col-span-12">
     <div class="card">
       <h5>Erstelle neues Eigentum</h5>
-      <div class="p-fluid formgrid grid">
-        <div class="field col-12">
+      <div class="p-fluid formgrid grid grid-cols-12 gap-4">
+        <div class="field col-span-12">
           <label for="title">Titel</label>
           <InputText id="title" v-model="title" type="text" />
         </div>
-        <div class="field col-12">
+        <div class="field col-span-12">
           <label for="description">Beschreibung</label>
           <Textarea id="description" v-model="description" rows="4" class="no-resize" />
         </div>
-        <div class="field col-12 text-right">
+        <div class="field col-span-12 text-right">
           <Button label="Erstellen" icon="pi pi-check" @click="createProperty" class="mr-2" :disabled="!title" />
           <Button label="Abbrechen" icon="pi pi-times" @click="cancel" class="p-button-secondary" />
         </div>

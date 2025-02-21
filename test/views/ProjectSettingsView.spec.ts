@@ -1,30 +1,22 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
-import ProjectSettingsView from '@/views/ProjectSettingsView.vue';
-import ProjectMemberService from '@/services/ProjectMemberService';
+import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
+import ProjectMemberService from '../../src/services/ProjectMemberService';
 import PrimeVue from 'primevue/config';
+import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/ProjectMemberService');
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [{ path: '/project/:projectId', component: ProjectSettingsView }],
-});
-
 describe('ProjectSettingsView.vue', () => {
-  let wrapper: any;
+  let wrapper: VueWrapper;
 
   beforeEach(async () => {
-    router.push('/project/test-project-id');
-    await router.isReady();
-
     wrapper = mount(ProjectSettingsView, {
       props: {
         projectId: 'test-project-id',
       },
       global: {
-        plugins: [router, PrimeVue],
         mocks: {
           $route: {
             params: {
@@ -34,7 +26,8 @@ describe('ProjectSettingsView.vue', () => {
         },
       },
     });
-
+    wrapper.vm.$router.push('/project/test-project-id');
+    await wrapper.vm.$router.isReady();
     vi.clearAllMocks();
   });
 

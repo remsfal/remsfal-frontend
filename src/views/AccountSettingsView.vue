@@ -301,7 +301,7 @@ const isDisabled = computed(() => {
 </script>
 
 <template>
-  <div class="grid">
+  <div class="grid grid-cols-12 gap-4">
     <h1>{{ t('accountSettings.title') }}</h1>
     <form>
       <div class="card-container">

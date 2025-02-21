@@ -1,7 +1,7 @@
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import ObjectDataView from '@/views/ObjectDataView.vue';
-import ProjectService, { EntityType } from '@/services/ProjectService.ts';
+import ObjectDataView from '../../src/views/ObjectDataView.vue';
+import ProjectService, { EntityType } from '../../src/services/ProjectService';
 
 // Mock for the router
 const mockRoutePush = vi.fn();
@@ -126,6 +126,8 @@ const initialComplexMockData = {
 };
 
 describe('ObjectDataView', () => {
+  let wrapper: VueWrapper;
+
   let getPropertyTreeMock: ReturnType<typeof vi.fn>;
   let complexMockData;
 
@@ -137,7 +139,7 @@ describe('ObjectDataView', () => {
 
   it('renders correctly with fetched data', async () => {
     getPropertyTreeMock.mockResolvedValueOnce(defaultMockData);
-    const wrapper = mount(ObjectDataView, {
+    wrapper = mount(ObjectDataView, {
       props: {
         projectId: '123',
       },
@@ -154,7 +156,7 @@ describe('ObjectDataView', () => {
   it('displays an error when fetch fails', async () => {
     getPropertyTreeMock.mockRejectedValueOnce(new Error('Fetch failed'));
 
-    const wrapper = mount(ObjectDataView, {
+    wrapper = mount(ObjectDataView, {
       props: {
         projectId: '123',
       },
@@ -168,7 +170,7 @@ describe('ObjectDataView', () => {
   it('renders the top level of the dataset correctly (unexpanded)', async () => {
     getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
-    const wrapper = mount(ObjectDataView, {
+    wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
     });
 
@@ -211,7 +213,7 @@ describe('ObjectDataView', () => {
   it('expands all nodes and renders the dataset correctly', async () => {
     getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
-    const wrapper = mount(ObjectDataView, {
+    wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
     });
 
@@ -298,7 +300,7 @@ describe('ObjectDataView', () => {
   it('routes correctly when edit buttons are clicked', async () => {
     getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
-    const wrapper = mount(ObjectDataView, {
+    wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
     });
 
@@ -336,7 +338,7 @@ describe('ObjectDataView', () => {
   it('expands and collapses all rows successfully', async () => {
     getPropertyTreeMock.mockResolvedValueOnce(complexMockData);
 
-    const wrapper = mount(ObjectDataView, {
+    wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
     });
 

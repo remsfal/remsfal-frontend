@@ -1,7 +1,10 @@
 import CommercialUpdateView from '../../src/views/CommercialUpdateView.vue';
 import PrimeVue from 'primevue/config';
+import { VueWrapper } from "@vue/test-utils";
 
 describe('<CommercialUpdateView />', () => {
+  let wrapper: VueWrapper;
+
   const projectId = 'df3d6629-257b-46dc-bbbe-7d3605dd4e03';
   const propertyId = '2';
   const buildingId = '3';

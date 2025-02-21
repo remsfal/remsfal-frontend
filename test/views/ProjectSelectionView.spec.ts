@@ -10,9 +10,9 @@ import PrimeVue from 'primevue/config';
 import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/ProjectService');
-vi.mock('vue-router', () => ({
-  useRouter: vi.fn(),
-}));
+//vi.mock('vue-router', () => ({
+//  useRouter: vi.fn(),
+//}));
 vi.mock('@/stores/ProjectStore', () => ({
   useProjectStore: vi.fn(),
 }));
@@ -61,7 +61,7 @@ vi.mock('primevue/dialog', async (importOriginal) => {
 });
 
 describe('ProjectSelectionView.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper;
 
   beforeEach(() => {
     // Create and set Pinia instance
@@ -73,9 +73,9 @@ describe('ProjectSelectionView.vue', () => {
       getProjects: vi.fn().mockResolvedValue({ projects: [], total: 0 }),
     }));
 
-    useRouter.mockReturnValue({
-      push: vi.fn(),
-    });
+//    useRouter.mockReturnValue({
+//      push: vi.fn(),
+//    });
 
     useProjectStore.mockReturnValue({
       setSelectedProject: vi.fn(),
@@ -85,7 +85,7 @@ describe('ProjectSelectionView.vue', () => {
     // Mount the component with Pinia
     wrapper = shallowMount(ProjectSelectionView, {
       global: {
-        plugins: [pinia, PrimeVue, i18n],
+        plugins: [pinia, PrimeVue],
       },
     });
   });

@@ -1,13 +1,30 @@
-import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  type RouteLocationNormalized,
+  type RouteLocationNormalizedLoaded,
+  type RouteRecordRaw,
+} from 'vue-router';
+import { useProjectStore } from '@/stores/ProjectStore';
 import LandingPageView from '@/views/LandingPageView.vue';
-import ProjectLayout from '@/layout/ProjectLayout.vue';
-import FullscreenLayout from '@/layout/FullscreenLayout.vue';
-import ContractorLayout from '@/layout/ContractorLayout.vue';
+import AppLayout from '@/layout/AppLayout.vue';
+import ManagerMenu from '@/layout/ManagerMenu.vue';
+import ManagerTopbar from '@/layout/ManagerTopbar.vue';
+import ContractorMenu from '@/layout/ContractorMenu.vue';
+import ContractorTopbar from '@/layout/ContractorTopbar.vue';
 
-const routes = [
+const fullscreenRoutes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: FullscreenLayout,
+    components: {
+      default: AppLayout,
+      topbar: ManagerTopbar,
+    },
+    props: {
+      default: {
+        fullscreen: true,
+      },
+    },
     children: [
       {
         path: '/',
@@ -41,9 +58,26 @@ const routes = [
       },
     ],
   },
+];
+
+const projectRoutes: RouteRecordRaw[] = [
   {
     path: '/project/:projectId',
-    component: ProjectLayout,
+    components: {
+      default: AppLayout,
+      topbar: ManagerTopbar,
+      sidebar: ManagerMenu,
+    },
+    props: {
+      default: {
+        fullscreen: false,
+      },
+    },
+    beforeEnter: (to: RouteLocationNormalized) => {
+      const projectStore = useProjectStore();
+      projectStore.searchSelectedProject(<string>to.params.projectId);
+      console.log('Router enter project: ' + to.params.projectId);
+    },
     children: [
       {
         path: '',
@@ -181,9 +215,21 @@ const routes = [
       },
     ],
   },
+];
+
+const contractorRoutes: RouteRecordRaw[] = [
   {
     path: '/contractor',
-    component: ContractorLayout,
+    components: {
+      default: AppLayout,
+      topbar: ContractorTopbar,
+      sidebar: ContractorMenu,
+    },
+    props: {
+      default: {
+        fullscreen: false,
+      },
+    },
     children: [
       {
         path: '',
@@ -193,6 +239,12 @@ const routes = [
       },
     ],
   },
+];
+
+const routes: Readonly<RouteRecordRaw[]> = [
+  ...fullscreenRoutes,
+  ...projectRoutes,
+  ...contractorRoutes,
 ];
 
 const router = createRouter({

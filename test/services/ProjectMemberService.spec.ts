@@ -1,7 +1,8 @@
 import axios from 'axios';
-import ProjectMemberService, { ProjectMember } from '@/services/ProjectMemberService';
+import ProjectMemberService, { ProjectMember } from '../../src/services/ProjectMemberService';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import type { Mock } from 'vitest';
+import { VueWrapper } from "@vue/test-utils";
 
 vi.mock('axios');
 const mockedAxios = axios as unknown as {
@@ -12,6 +13,8 @@ const mockedAxios = axios as unknown as {
 };
 
 describe('ProjectMemberService', () => {
+  let wrapper: VueWrapper;
+
   const projectId = 'project123';
   const member: ProjectMember = {
     id: 'member123',
