@@ -57,7 +57,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.5.1",
     "chai": "^5.1.2",
-    "cypress": "^13.17.0",
+    "cypress": "^14.1.0",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-cypress": "^4.1.0",
