@@ -8,6 +8,9 @@ import BadgeDirective from 'primevue/badgedirective';
 import Ripple from 'primevue/ripple';
 import StyleClass from 'primevue/styleclass';
 import Tooltip from 'primevue/tooltip';
+import ToastService from "primevue/toastservice";
+import DialogService from "primevue/dialogservice";
+import ConfirmationService from "primevue/confirmationservice";
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -23,7 +26,15 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-config.global.plugins = [PrimeVue, createTestingPinia(), router, i18n];
+config.global.plugins = [
+  PrimeVue,
+  ToastService,
+  DialogService,
+  ConfirmationService,
+  createTestingPinia(),
+  router,
+  i18n,
+];
 
 config.global.directives = {
   badge: BadgeDirective,

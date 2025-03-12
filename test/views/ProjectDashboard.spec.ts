@@ -2,21 +2,15 @@
 import { describe, it, expect } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ProjectDashboard from '../../src/views/ProjectDashboard.vue';
-import i18n from '../../src/i18n/i18n';
 
 describe('ProjectDashboard.vue', () => {
-  let wrapper: VueWrapper;
-
   it('view dashboard for project ID', () => {
     // Beispiel-Prop 'projectId'
     const projectId = '1';
     const projectTitle = 'Projekt Titel';
 
     // Montieren der Komponente mit den Props
-    const wrapper = mount(ProjectDashboard, {
-      global: {
-        plugins: [i18n],
-      },
+    const wrapper: VueWrapper = mount(ProjectDashboard, {
       props: { projectId, projectTitle },
     });
 

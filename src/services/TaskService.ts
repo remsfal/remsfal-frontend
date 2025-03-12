@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 export interface Task {
   id: string;
   title: string;
@@ -33,8 +34,8 @@ export interface TaskItem {
 }
 
 export default class TaskService {
-  
   readonly baseUrl: string = '/api/v1/projects';
+
   //Get a list of tasks
   getTasks(projectId: string, status?: 'OPEN' | null , ownerId?:string ): Promise<TaskList> {
     if (status) {

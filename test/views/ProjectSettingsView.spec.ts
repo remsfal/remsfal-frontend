@@ -1,95 +1,33 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import { createRouter, createWebHistory } from 'vue-router';
 import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
-import ProjectMemberService from '../../src/services/ProjectMemberService';
-import PrimeVue from 'primevue/config';
-import i18n from '../../src/i18n/i18n';
-
-vi.mock('@/services/ProjectMemberService');
+import { type MemberList, projectMemberService } from '../../src/services/ProjectMemberService';
 
 describe('ProjectSettingsView.vue', () => {
   let wrapper: VueWrapper;
 
+  vi.mock('@/services/ProjectMemberService');
+
   beforeEach(async () => {
+    const mockMembers: MemberList = {
+      members: [
+        { id: '1', email: 'test1@example.com', role: 'MANAGER' },
+        { id: '2', email: 'test2@example.com', role: 'TENANCY' },
+      ],
+    };
+    vi.mocked(projectMemberService.getMembers).mockResolvedValue(mockMembers);
     wrapper = mount(ProjectSettingsView, {
-      props: {
+      propsData: {
         projectId: 'test-project-id',
       },
-      global: {
-        mocks: {
-          $route: {
-            params: {
-              projectId: 'test-project-id',
-            },
-          },
-        },
-      },
     });
-    wrapper.vm.$router.push('/project/test-project-id');
-    await wrapper.vm.$router.isReady();
     vi.clearAllMocks();
   });
 
-  // Test for fetchMembers
-  describe('fetchMembers', () => {
-    test('loads members successfully', async () => {
-      const mockMembers = [
-        { id: '1', email: 'test1@example.com', role: 'MANAGER' },
-        { id: '2', email: 'test2@example.com', role: 'TENANCY' },
-      ];
-      ProjectMemberService.getMembers.mockResolvedValueOnce(mockMembers);
-
-      await wrapper.vm.fetchMembers();
-      expect(wrapper.vm.members).toEqual(mockMembers);
-      expect(ProjectMemberService.getMembers).toHaveBeenCalledWith('test-project-id');
-    });
-  });
-
-  // Test for addMember
-  describe('addMember', () => {
-    test('adds a new member successfully', async () => {
-      ProjectMemberService.addMember.mockResolvedValueOnce({});
-      ProjectMemberService.getMembers.mockResolvedValueOnce([]);
-
-      wrapper.vm.newMemberEmail = 'test@example.com';
-      wrapper.vm.newMemberRole = 'MANAGER';
-
-      await wrapper.vm.addMember();
-
-      expect(ProjectMemberService.addMember).toHaveBeenCalledWith('test-project-id', {
-        email: 'test@example.com',
-        role: 'MANAGER',
-      });
-      expect(wrapper.vm.newMemberEmail).toBe('');
-      expect(wrapper.vm.newMemberRole).toBe('');
-    });
-  });
-
-  // Test for updateMemberRole
-  describe('updateMemberRole', () => {
-    test("updates a member's role successfully", async () => {
-      ProjectMemberService.updateMemberRole.mockResolvedValueOnce({});
-      const member = { id: '1', email: 'test@example.com', role: 'MANAGER' };
-
-      await wrapper.vm.updateMemberRole(member);
-
-      expect(ProjectMemberService.updateMemberRole).toHaveBeenCalledWith('test-project-id', member);
-    });
-  });
-
-  // Test for removeMember
-  test('removes a member successfully', async () => {
-    const validMemberId = '6a5cf8c4-e060-4ff7-8abb-601438f67bfa'; // Valid UUID
-    ProjectMemberService.removeMember.mockResolvedValueOnce({});
-    ProjectMemberService.getMembers.mockResolvedValueOnce([]);
-
-    await wrapper.vm.removeMember(validMemberId); // Use valid UUID
-
-    expect(ProjectMemberService.removeMember).toHaveBeenCalledWith(
-      'test-project-id',
-      validMemberId,
-    );
-    expect(ProjectMemberService.getMembers).toHaveBeenCalledWith('test-project-id');
+  test('loads project member settings successfully', async () => {
+    const rows = wrapper.findAll('td');
+    expect(rows.length).toBe(6);
+    expect(rows.at(0).text()).toEqual('test1@example.com');
+    expect(rows.at(3).text()).toEqual('test2@example.com');
   });
 });

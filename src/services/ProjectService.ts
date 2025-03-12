@@ -385,4 +385,4 @@ export default class ProjectService {
   }
 }
 
-export const projectService = new ProjectService();
+export const projectService: ProjectService = new ProjectService();

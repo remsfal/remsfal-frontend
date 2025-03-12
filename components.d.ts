@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
+    Card: typeof import('primevue/card')['default']
     CommercialEditComponent: typeof import('./src/components/CommercialEditComponent.vue')['default']
     ContractorTable: typeof import('./src/components/ContractorTable.vue')['default']
     GoogleButton: typeof import('./src/components/GoogleButton.vue')['default']
@@ -16,11 +17,13 @@ declare module 'vue' {
     LocaleSwitch: typeof import('./src/components/LocaleSwitch.vue')['default']
     NewProjectForm: typeof import('./src/components/NewProjectForm.vue')['default']
     NewProjectMemberButton: typeof import('./src/components/NewProjectMemberButton.vue')['default']
-    ProjectMemberTable: typeof import('./src/components/ProjectMemberTable.vue')['default']
+    ProjectMemberSettings: typeof import('./src/components/ProjectMemberSettings.vue')['default']
+    ProjectMemberTable: typeof import('./src/components/ProjectMemberSettings.vue')['default']
     ProjectSelectionTable: typeof import('./src/components/ProjectSelectionTable.vue')['default']
     ReusableFormComponent: typeof import('./src/components/ReusableFormComponent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Select: typeof import('primevue/select')['default']
     SiteFormComponent: typeof import('./src/components/SiteFormComponent.vue')['default']
     TaskTable: typeof import('./src/components/TaskTable.vue')['default']
   }

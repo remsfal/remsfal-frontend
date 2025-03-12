@@ -83,11 +83,7 @@ describe('ProjectSelectionView.vue', () => {
     });
 
     // Mount the component with Pinia
-    wrapper = shallowMount(ProjectSelectionView, {
-      global: {
-        plugins: [pinia, PrimeVue],
-      },
-    });
+    wrapper = shallowMount(ProjectSelectionView);
   });
 
   it('renders the view', () => {

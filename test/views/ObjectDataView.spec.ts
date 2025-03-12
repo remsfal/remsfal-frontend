@@ -4,13 +4,13 @@ import ObjectDataView from '../../src/views/ObjectDataView.vue';
 import ProjectService, { EntityType } from '../../src/services/ProjectService';
 
 // Mock for the router
-const mockRoutePush = vi.fn();
-vi.mock('vue-router', () => ({
-  RouterView: {},
-  useRouter: () => ({
-    push: mockRoutePush,
-  }),
-}));
+//const mockRouterPush = vi.fn();
+//vi.mock('vue-router', () => ({
+//  RouterView: {},
+//  useRouter: () => ({
+//    push: mockRouterPush,
+//  }),
+//}));
 
 vi.mock('@/services/ProjectService', () => {
   const ProjectService = vi.fn();

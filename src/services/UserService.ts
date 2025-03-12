@@ -24,7 +24,6 @@ export interface User {
 export default class UserService {
   private readonly url: string = '/api/v1/user';
 
-
   getUser(): Promise<User | void> {
     return axios
       .get(`${this.url}`)

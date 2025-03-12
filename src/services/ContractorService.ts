@@ -16,7 +16,7 @@ export type TaskStatus = 'PENDING' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED' | 'REJECT
 export default class ContractorService {
   private readonly baseUrl: string = '/api/v1/contractors';
 
-  getTasks(): Promise<TaskListJson> {
+  async getTasks(): Promise<TaskListJson> {
     const url = `${this.baseUrl}/tasks`;
     return axios.get(url).then((response) => {
       const taskList: TaskListJson = response.data;
@@ -25,7 +25,7 @@ export default class ContractorService {
     });
   }
 
-  getTask(taskId: string): Promise<TaskItemJson> {
+  async getTask(taskId: string): Promise<TaskItemJson> {
     const url = `${this.baseUrl}/tasks/${taskId}`;
     return axios
       .get(url)
@@ -41,3 +41,5 @@ export default class ContractorService {
       });
   }
 }
+
+export const contractorService: ContractorService = new ContractorService();

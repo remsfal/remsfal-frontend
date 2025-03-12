@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
-import PrimeVue from 'primevue/config';
 import TaskService, { Status, TaskItem } from '../../src/services/TaskService';
 
 describe('TaskView', () => {
@@ -14,9 +13,6 @@ describe('TaskView', () => {
   beforeEach(() => {
     wrapper = mount(TaskView, {
       props: { projectId, owner },
-      global: {
-        plugins: [PrimeVue],
-      },
       data() {
         return {
           visible: false, // Initial visibility state
@@ -91,7 +87,4 @@ describe('TaskView', () => {
       expect(result.tasks[1].id).toBe('2');
     });
   });
-
-
-
 });

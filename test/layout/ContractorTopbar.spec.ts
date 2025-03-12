@@ -8,7 +8,7 @@ import { vi } from 'vitest';
 import { EventBus } from '@primeuix/utils/eventbus';
 
 describe('ContractorTopbar.vue', () => {
-//  let wrapper: VueWrapper;
+  let wrapper: VueWrapper;
   let userSessionStore;
 
   beforeEach(() => {

@@ -3,13 +3,11 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { ref, onMounted } from 'vue';
 import { type TaskListJson, type TaskItemJson } from '@/services/ContractorService';
-import ContractorService from '@/services/ContractorService';
+import { contractorService } from '@/services/ContractorService';
 
 const isLoading = ref(false);
 const tasks = ref<TaskItemJson[]>([]);
 const expandedRows = ref<Record<string, boolean>>({});
-
-const contractorService = new ContractorService();
 
 const loadTasks = () => {
   isLoading.value = true;

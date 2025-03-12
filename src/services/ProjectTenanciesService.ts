@@ -1,3 +1,4 @@
+
 export interface TenantItem {
     id: string;
     firstName: string;
@@ -8,7 +9,7 @@ export interface TenantItem {
     rentalEnd: Date;
 }
 
-class ProjectTenanciesService {
+export default class ProjectTenanciesService {
     generateMockTenantData(): TenantItem[] {
         return [
             {
@@ -42,4 +43,4 @@ class ProjectTenanciesService {
     }
 }
 
-export default new ProjectTenanciesService();
+export const projectTenanciesService: ProjectTenanciesService = new ProjectTenanciesService();

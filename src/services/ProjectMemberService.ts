@@ -1,10 +1,19 @@
 import axios from 'axios';
+import { ref } from 'vue';
+
+export const memberRoles = ref([
+  { label: 'Eigentümer', value: 'PROPRIETOR' },
+  { label: 'Verwalter', value: 'MANAGER' },
+  { label: 'Vermieter', value: 'LESSOR' },
+  { label: 'Mitarbeiter', value: 'STAFF' },
+  { label: 'Kollaborateur', value: 'COLLABORATOR' },
+]);
 
 export interface Member {
   id?: string;
   name?: string;
   email?: string;
-  role?: string;
+  role?: string | null;
   isActive?: boolean;
 }
 
@@ -12,20 +21,24 @@ export interface MemberList {
   members: Member[];
 }
 
-const API_BASE_URL = '/api/v1/projects';
+export default class ProjectMemberService {
+  private readonly baseUrl: string = '/api/v1/projects';
 
-class ProjectMemberService {
-
-  static async getMembers(projectId: string): Promise<MemberList> {
-    const response = await axios.get(`${API_BASE_URL}/${projectId}/members`);
-    return response.data.members;
+  async getMembers(projectId: string): Promise<MemberList> {
+    return axios
+      .get(`${this.baseUrl}/${projectId}/members`)
+      .then((response) => {
+      const list: MemberList = response.data;
+      console.log('GET members:', list);
+      return list;
+    });
   }
 
-  static async addMember(projectId: string, member: Member): Promise<Member> {
+  async addMember(projectId: string, member: Member): Promise<Member> {
     try {
       console.log(`Adding member to project ${projectId}:`, member);
 
-      const response = await axios.post(`${API_BASE_URL}/${projectId}/members`, {
+      const response = await axios.post(`${this.baseUrl}/${projectId}/members`, {
         email: member.email,
         role: member.role,
       });
@@ -38,18 +51,16 @@ class ProjectMemberService {
     }
   }
 
-  static async updateMemberRole(projectId: string, member: Member): Promise<Member> {
+  async updateMemberRole(projectId: string, member: Member): Promise<Member> {
     const originalMember = { ...member };
 
     try {
       const payload = {
-        id: member.id,
-        email: member.email,
         role: member.role,
       };
       console.log('Sending request to update member role:', payload);
       const response = await axios.patch(
-        `${API_BASE_URL}/${projectId}/members/${member.id}`,
+        `${this.baseUrl}/${projectId}/members/${member.id}`,
         payload,
         {
           headers: {
@@ -70,12 +81,12 @@ class ProjectMemberService {
     }
   }
 
-  static async removeMember(projectId: string, memberId: string): Promise<void> {
+  async removeMember(projectId: string, memberId: string): Promise<void> {
     try {
       console.log(`Attempting to remove member with projectId=${projectId}, memberId=${memberId}`);
 
       const response = await axios.delete(
-        `${API_BASE_URL}/${projectId}/members/${memberId}`,
+        `${this.baseUrl}/${projectId}/members/${memberId}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -90,7 +101,7 @@ class ProjectMemberService {
     }
   }
 
-  private static handleError(error: unknown) {
+  private handleError(error: unknown) {
     if (axios.isAxiosError(error)) {
       if (error.response) {
         console.error('Server error:', error.response.status);
@@ -105,4 +116,4 @@ class ProjectMemberService {
   }
 }
 
-export default ProjectMemberService;
+export const projectMemberService: ProjectMemberService = new ProjectMemberService();

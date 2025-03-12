@@ -3,16 +3,20 @@ import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import ModifyPropertyView from '../../src/views/ModifyPropertyView.vue';
 import PrimeVue from 'primevue/config';
 import { createRouter, createWebHistory } from 'vue-router';
-import ProjectService from '../../src/services/ProjectService';
+import ProjectService, { type BuildingItem } from '../../src/services/ProjectService';
 
 describe('ModifyPropertyView', () => {
   let wrapper: VueWrapper;
 
   beforeEach(async () => {
-    vi.spyOn(ProjectService.prototype, 'getProperty').mockResolvedValue({
+    const getPropertySpy = vi.spyOn(ProjectService.prototype, 'getProperty').mockResolvedValue({
       id: '1',
       title: 'Test Property',
       description: 'Test Description',
+      landRegisterEntry: 'any',
+      plotArea: 0,
+      effective_space: 0,
+      buildings: null,
       district: 'Test District',
       corridor: 'Test Corridor',
       parcel: 'Test Parcel',
@@ -20,33 +24,24 @@ describe('ModifyPropertyView', () => {
       usageType: 'GF',
     });
 
-    vi.spyOn(ProjectService.prototype, 'updateProperty').mockResolvedValue({});
-    vi.spyOn(window, 'alert').mockImplementation(() => {
+    vi.spyOn(ProjectService.prototype, 'updateProperty').mockResolvedValue({
+      description: '',
+      effective_space: 0,
+      landRegisterEntry: '',
+      plotArea: 0,
+      title: '',
     });
-
-    router = createRouter({
-      history: createWebHistory(),
-      routes: [
-        {
-          path: '/project/:projectId/objects',
-          name: 'objects',
-          component: { template: '<div>Objects</div>' },
-        },
-      ],
-    });
-
-
-    router.push({ path: '/', query: { propertyId: '1' } });
-    await router.isReady();
+    vi.spyOn(window, 'alert').mockImplementation(() => {});
 
     wrapper = mount(ModifyPropertyView, {
       props: { projectId: '1' },
-      global: {
-        plugins: [PrimeVue, router],
-      },
     });
-
+    wrapper.vm.$router.push({ path: '/', query: { propertyId: '1' } });
+    await wrapper.vm.$router.isReady();
     await flushPromises(); // Warten auf asynchrone Vorgänge
+//    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+ //   sleep(1000);
+//    expect(getPropertySpy).toHaveBeenCalledWith('1', '1');
   });
 
   it('renders the property details', async () => {
@@ -66,7 +61,7 @@ describe('ModifyPropertyView', () => {
     expect(landRegistryInput.exists()).toBe(true);
     expect(usageTypeDropdown.exists()).toBe(true);
 
-    expect(titleInput.element.value).toBe('Test Property');
+    expect(titleInput.element.textContent).toBe('Test Property');
     expect(descriptionTextarea.element.value).toBe('Test Description');
     expect(districtInput.element.value).toBe('Test District');
     expect(corridorInput.element.value).toBe('Test Corridor');
@@ -76,7 +71,7 @@ describe('ModifyPropertyView', () => {
 
   it('updates the property when the save button is clicked', async () => {
     const updateSpy = vi.spyOn(ProjectService.prototype, 'updateProperty');
-    const pushSpy = vi.spyOn(router, 'push');
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
 
     const titleInput = wrapper.find('#title');
     await titleInput.setValue('Updated Test Property');
@@ -102,9 +97,8 @@ describe('ModifyPropertyView', () => {
     expect(pushSpy).toHaveBeenCalledWith('/project/1/objects');
   });
 
-
   it('navigates to objects when the cancel button is clicked', async () => {
-    const pushSpy = vi.spyOn(router, 'push');
+    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
 
     const cancelButton = wrapper.find('.p-button.p-button-secondary');
     await cancelButton.trigger('click');
@@ -116,15 +110,14 @@ describe('ModifyPropertyView', () => {
     const getPropertySpy = vi.spyOn(ProjectService.prototype, 'getProperty').mockResolvedValue({
       id: '1',
       title: 'Test Property',
-      // ... weitere Felder
+      description: '',
+      effective_space: 0,
+      landRegisterEntry: '',
+      plotArea: 0,
     });
-
 
     wrapper = mount(ModifyPropertyView, {
       props: { projectId: '1' },
-      global: {
-        plugins: [PrimeVue, router],
-      },
     });
 
     await flushPromises();
