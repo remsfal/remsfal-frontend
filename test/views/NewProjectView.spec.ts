@@ -1,28 +1,19 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import NewProjectView from '../../src/views/NewProjectView.vue';
-import PrimeVue from 'primevue/config';
 import router from '../../src/router';
 import { saveProject } from '../../src/helper/indexeddb';
-import ProjectService from '../../src/services/ProjectService';
-import { createPinia } from 'pinia'; // Import Pinia
-import i18n from '../../src/i18n/i18n';
+import { projectService } from '../../src/services/ProjectService';
 
 // Mocked services
 vi.mock('@/helper/indexeddb', () => ({
   saveProject: vi.fn(),
 }));
 
-vi.mock('@/services/ProjectService', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    createProject: vi.fn(() => Promise.resolve({ id: 1, title: 'Test Project' })),
-  })),
-}));
+vi.mock('@/services/ProjectService');
 
 describe('NewProjectView', () => {
   let wrapper: VueWrapper;
-  const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
-  const pinia = createPinia(); // Create Pinia instance
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -35,7 +26,6 @@ describe('NewProjectView', () => {
 
     wrapper = mount(NewProjectView, {
       global: {
-        plugins: [PrimeVue, pinia, router, i18n], // Include Pinia here
         stubs: {
           NewProjectForm: false, // Disable the child component mock
         },
@@ -63,7 +53,7 @@ describe('NewProjectView', () => {
 
     // Set input value and check binding with v-model
     await input.setValue('New Project Title');
-    expect(input.element.value).toBe('New Project Title');
+    expect(input.element.getAttribute('value')).toBe('New Project Title');
   });
 
   it('displays an error message when project title exceeds max length', async () => {
@@ -79,6 +69,8 @@ describe('NewProjectView', () => {
   });
 
   it('handles the abort function and navigates to ProjectSelection', async () => {
+    const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
+
     const abortButton = wrapper.find('button[type="reset"]');
     expect(abortButton.exists()).toBe(true);
 
@@ -111,6 +103,8 @@ describe('NewProjectView', () => {
       configurable: true,
       value: true,
     });
+    const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
+    vi.mocked(projectService.createProject).mockResolvedValue({ id: '1', title: 'Test Project' });
 
     const input = wrapper.find('input#value');
     await input.setValue('Online Project');
@@ -119,19 +113,19 @@ describe('NewProjectView', () => {
     await form.trigger('submit');
 
     // Ensure that the API call was made and the router push was triggered
-    expect(ProjectService).toHaveBeenCalled();
+    expect(projectService.createProject).toHaveBeenCalled();
     expect(mockRouterPush).toHaveBeenCalledWith({
       name: 'ProjectDashboard',
-      params: { projectId: 1 },
+      params: { projectId: '1' },
     });
   });
 
   it('handles error and saves project title offline if the API call fails', async () => {
     // Simulate an error in project creation
     const errorMessage = 'Network error';
-    vi.mocked(ProjectService).mockImplementationOnce(() => ({
-      createProject: vi.fn(() => Promise.reject(new Error(errorMessage))),
-    }));
+    vi.mocked(projectService.createProject).mockReturnValue(
+      Promise.reject(new Error(errorMessage)),
+    );
 
     // Ensure navigator is online
     Object.defineProperty(window.navigator, 'onLine', {

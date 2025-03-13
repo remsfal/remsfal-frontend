@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import ProjectService, { EntityType, type PropertyNode } from '@/services/ProjectService';
+import { projectService, EntityType, type PropertyNode } from '@/services/ProjectService';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -11,7 +11,6 @@ const props = defineProps<{
   projectId: string;
 }>();
 
-const projectService = new ProjectService();
 const objectData = ref<PropertyNode[]>();
 const isLoading = ref(true);
 const error = ref<string | null>(null);
