@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -36,7 +36,7 @@ interface MenuItemProps {
 }
 
 const route = useRoute();
-const { layoutState, setActiveMenuItem, onMenuToggle } = useLayout();
+const { layoutState, setActiveMenuItem, toggleMenu } = useLayout();
 
 const isActiveMenu = ref<boolean>(false);
 const itemKey = ref<string | undefined>(undefined);
@@ -45,7 +45,20 @@ onBeforeMount(() => {
   itemKey.value = props.parentItemKey
     ? props.parentItemKey + '-' + props.index
     : String(props.index);
+
+  const activeItem = layoutState.activeMenuItem;
+
+  isActiveMenu.value =
+    activeItem === itemKey.value || activeItem ? activeItem.startsWith(itemKey.value + '-') : false;
 });
+
+watch(
+  () => layoutState.activeMenuItem,
+  (newVal) => {
+    isActiveMenu.value =
+      newVal !== undefined && (newVal === itemKey.value || newVal.startsWith(itemKey.value + '-'));
+  },
+);
 
 const itemClick = (event: Event, item: MenuItem) => {
   if (item.disabled) {
@@ -53,10 +66,11 @@ const itemClick = (event: Event, item: MenuItem) => {
     return;
   }
 
-  const { overlayMenuActive, staticMenuMobileActive } = layoutState;
-
-  if ((item.to || item.url) && (staticMenuMobileActive.value || overlayMenuActive.value)) {
-    onMenuToggle();
+  if (
+    (item.to || item.url) &&
+    (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)
+  ) {
+    toggleMenu();
   }
 
   if (item.command) {
@@ -70,12 +84,10 @@ const itemClick = (event: Event, item: MenuItem) => {
   const foundItemKey = item.items
     ? isActiveMenu.value
       ? props.parentItemKey
-      : itemKey.value
+      : itemKey
     : itemKey.value;
-  setActiveMenuItem(foundItemKey);
 
-  isActiveMenu.value =
-    foundItemKey === itemKey.value || foundItemKey!.startsWith(itemKey.value + '-');
+  setActiveMenuItem(foundItemKey);
 };
 
 const checkActiveRoute = (item: MenuItem) => {

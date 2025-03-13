@@ -1,8 +1,7 @@
 // tests/views/TaskView.spec.ts
 import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import ProjectDashboard from '../../src/views/ProjectDashboard.vue';
-import i18n from '../../src/i18n/i18n';
 
 describe('ProjectDashboard.vue', () => {
   it('view dashboard for project ID', () => {
@@ -11,10 +10,7 @@ describe('ProjectDashboard.vue', () => {
     const projectTitle = 'Projekt Titel';
 
     // Montieren der Komponente mit den Props
-    const wrapper = mount(ProjectDashboard, {
-      global: {
-        plugins: [i18n],
-      },
+    const wrapper: VueWrapper = mount(ProjectDashboard, {
       props: { projectId, projectTitle },
     });
 

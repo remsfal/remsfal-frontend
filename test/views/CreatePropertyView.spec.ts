@@ -1,13 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import CreatePropertyView from '../../src/views/CreatePropertyView.vue';
 import PrimeVue from 'primevue/config';
 import { createRouter, createWebHistory } from 'vue-router';
 import ProjectService from '../../src/services/ProjectService';
 
 describe('CreatePropertyView', () => {
-    let wrapper;
-    let router;
+    let wrapper: VueWrapper;
 
     beforeEach(async () => {
         vi.spyOn(window, 'alert').mockImplementation(() => {});

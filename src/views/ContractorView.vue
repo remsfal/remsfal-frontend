@@ -4,8 +4,8 @@ import ContractorTable from '@/components/ContractorTable.vue';
 
 <template>
   <main>
-    <div class="grid">
-      <div class="col-10">
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-10">
         <div class="card">
           <h5>Übersicht der Aufträge</h5>
           <ContractorTable />

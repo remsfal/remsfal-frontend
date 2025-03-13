@@ -1,8 +1,6 @@
-// tests the ReusableFormComponent.vue:
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import ReusableFormComponent from '@/components/ReusableFormComponent.vue';
-import PrimeVue from 'primevue/config';
+import ReusableFormComponent from '../../src/components/ReusableFormComponent.vue';
 
 describe('MyFormComponent', () => {
   // Define the default props
@@ -27,15 +25,12 @@ describe('MyFormComponent', () => {
   };
 
   // Define the wrapper
-  let wrapper: VueWrapper<ReusableFormComponent>;
+  let wrapper: VueWrapper;
 
   // Create the wrapper before each test
   beforeEach(() => {
     wrapper = mount(ReusableFormComponent, {
       props: defaultProps,
-      global: {
-        plugins: [PrimeVue],
-      },
     });
   });
 

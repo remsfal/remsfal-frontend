@@ -1,8 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
-import ContractorService, { TaskItemJson, TaskListJson } from '../../src/services/ContractorService';
+import ContractorService, {
+  TaskItemJson,
+  TaskListJson,
+} from '../../src/services/ContractorService';
+import { VueWrapper } from "@vue/test-utils";
 
 describe('ContractorService', () => {
+  let wrapper: VueWrapper;
+
   const service = new ContractorService();
   const taskId = 'test-task';
 

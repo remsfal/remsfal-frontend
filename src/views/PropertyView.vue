@@ -112,19 +112,19 @@ const close = () => {
 </script>
 
 <template>
-  <div class="col-12">
+  <div class="col-span-12">
     <div class="card">
       <h5 v-if="action === 'create'">{{ t('property.create') }}</h5>
       <h5 v-if="action === 'update'">{{ t('property.update', { id }) }}</h5>
       <h5 v-if="action === 'delete'">{{ t('property.delete', { id }) }}</h5>
       <div v-if="isLoading">t('loading')</div>
       <div v-if="error">{{ error }}</div>
-      <div v-if="!isLoading && !error" class="p-fluid formgrid grid">
-        <div class="field col-12 md:col-6">
+      <div v-if="!isLoading && !error" class="p-fluid formgrid grid grid-cols-12 gap-4">
+        <div class="field col-span-12 md:col-span-6">
           <label for="title">{{ t('property.title') }}</label>
           <InputText id="title" v-model="title" type="text" :disabled="action === 'delete'" />
         </div>
-        <div class="field col-12 md:col-6">
+        <div class="field col-span-12 md:col-span-6">
           <label for="landRegisterEntry">{{ t('property.landRegister') }}</label>
           <InputText
             id="landRegisterEntry"
@@ -133,7 +133,7 @@ const close = () => {
             :disabled="action === 'delete'"
           />
         </div>
-        <div class="field col-12">
+        <div class="field col-span-12">
           <label for="description">{{ t('property.descripton') }}</label>
           <Textarea
             id="description"
@@ -143,7 +143,7 @@ const close = () => {
             class="no-resize"
           />
         </div>
-        <div class="field col-10 md:col-6">
+        <div class="field col-span-10 md:col-span-6">
           <label for="plotArea">{{ t('proppertty.area') }}</label>
           <InputNumber
             id="plotArea"
@@ -152,7 +152,7 @@ const close = () => {
             :disabled="action === 'delete'"
           />
         </div>
-        <div class="field col-10 md:col-6">
+        <div class="field col-span-10 md:col-span-6">
           <label for="effectiveSpace">{{ t('property.effectiveArea') }}</label>
           <InputNumber
             id="effectiveSpace"
@@ -161,7 +161,7 @@ const close = () => {
             :disabled="action === 'delete'"
           />
         </div>
-        <div class="field col-12 text-right">
+        <div class="field col-span-12 text-right">
           <Button
             v-if="action === 'create'"
             :label="t('button.create')"
