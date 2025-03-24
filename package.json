@@ -68,7 +68,7 @@
     "mocha": "^11.0.1",
     "npm-run-all2": "^7.0.1",
     "prettier": "^3.4.2",
-    "sass": "^1.69.7",
+    "sass": "^1.86.0",
     "sinon": "^19.0.2",
     "start-server-and-test": "^2.0.9",
     "stylelint": "^16.13.2",
