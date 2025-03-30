@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ReusableForm from '../components/ReusableFormComponent.vue';
 import { onMounted, ref } from 'vue';
-import CommercialService from '@/services/CommercialService';
+import { commercialService } from '@/services/CommercialService';
 
 const props = defineProps<{
   projectId: string;
@@ -76,9 +76,8 @@ const parentBuildingId = ref(props.buildingId);
 
 onMounted(async () => {
   if (props.commercialId) {
-    const projectService = new CommercialService();
     try {
-      const response = await projectService.getCommercial(props.projectId, props.commercialId);
+      const response = await commercialService.getCommercial(props.projectId, props.commercialId);
       initialCommercialData.value = response;
       if (!parentBuildingId.value) {
         parentBuildingId.value = response.buildingId;

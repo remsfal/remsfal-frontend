@@ -68,8 +68,8 @@ function onNewMember(email: string) {
   fetchMembers();
   toast.add({
     severity: 'success',
-    summary: 'Neues Mitglied hinzugefühgt',
-    detail: `Ein Neues Mitglied mit der E-Mail Adresse ${email} wurde erfolgreich hinzugefühgt`,
+    summary: 'Neues Mitglied hinzugefügt',
+    detail: `Ein Neues Mitglied mit der E-Mail Adresse ${email} wurde erfolgreich hinzugefügt`,
     life: 3000,
   });
 }

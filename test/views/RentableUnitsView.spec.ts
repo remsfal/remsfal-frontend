@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import ObjectDataView from '../../src/views/ObjectDataView.vue';
+import ObjectDataView from '../../src/views/RentableUnitsView.vue';
 import { projectService, EntityType } from '../../src/services/ProjectService';
 
 // Mock for the router

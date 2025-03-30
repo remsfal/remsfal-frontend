@@ -1,24 +1,27 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { projectService, EntityType, type PropertyNode } from '@/services/ProjectService';
+import { propertyService, EntityType, type RentableUnitTreeNode } from '@/services/PropertyService';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import SplitButton from 'primevue/splitbutton';
 import TreeTable from 'primevue/treetable';
+import NewRentableUnitButton from '@/components/NewRentableUnitButton.vue';
+import { useToast } from 'primevue/usetoast';
 
 const props = defineProps<{
   projectId: string;
 }>();
 
-const objectData = ref<PropertyNode[]>();
+const toast = useToast();
+
+const objectData = ref<RentableUnitTreeNode[]>();
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 const expandedKeys = ref({});
 
 const router = useRouter();
 
-function createButtonRow(key: string, type: EntityType): PropertyNode {
+function createButtonRow(key: string, type: EntityType): RentableUnitTreeNode {
   return {
     key,
     data: {
@@ -29,7 +32,7 @@ function createButtonRow(key: string, type: EntityType): PropertyNode {
   };
 }
 
-function injectButtonRows(nodes: PropertyNode[]): PropertyNode[] {
+function injectButtonRows(nodes: RentableUnitTreeNode[]): RentableUnitTreeNode[] {
   return nodes.map((node) => {
     const { type } = node.data;
 
@@ -49,14 +52,14 @@ function injectButtonRows(nodes: PropertyNode[]): PropertyNode[] {
   });
 }
 
-async function fetchPropertyTree(projectId: string): Promise<PropertyNode[]> {
-  return projectService
-    .getPropertyTree(projectId, 10, 0)
+async function fetchPropertyTree(projectId: string): Promise<RentableUnitTreeNode[]> {
+  return propertyService
+    .getPropertyTree(projectId)
     .then((data) => {
       /* Every node exept Apartment, Commercial, Garge and Site nodes get an extra entry with
         the id and type of the parent as key and type with the isButtonRow attribute enabled. */
       const nodesWithButtons = [
-        ...injectButtonRows(data.nodes),
+        ...injectButtonRows(data.properties),
         createButtonRow(projectId, EntityType.Project),
       ];
 
@@ -75,6 +78,18 @@ onMounted(() => {
     isLoading.value = false;
   });
 });
+
+function onNewRentableUnit(title: string) {
+  fetchPropertyTree(props.projectId).finally(() => {
+    isLoading.value = false;
+  });
+  toast.add({
+    severity: 'success',
+    summary: 'Neue Einheit hinzugefügt',
+    detail: `Eine neue Einheit mit dem Titel ${title} wurde erfolgreich hinzugefügt`,
+    life: 3000,
+  });
+}
 
 const completeEntityAction = (entity: EntityType, action: string, entityId?: string) => {
   if (action === 'edit') {
@@ -95,7 +110,7 @@ const completeEntityAction = (entity: EntityType, action: string, entityId?: str
 
 const deleteObject = (entity: EntityType, entityId: string) => {
   if (entity === EntityType.Property) {
-    projectService.deleteProperty(props.projectId, entityId).catch((err) => {
+    propertyService.deleteProperty(props.projectId, entityId).catch((err) => {
       console.error('Error deleting property:', err);
     });
   }
@@ -117,7 +132,7 @@ const deleteObject = (entity: EntityType, entityId: string) => {
 };
 
 const expandAll = () => {
-  const expandRecursive = (nodes: PropertyNode[], expanded: Record<string, boolean>) => {
+  const expandRecursive = (nodes: RentableUnitTreeNode[], expanded: Record<string, boolean>) => {
     nodes.forEach((node) => {
       expanded[node.key] = true;
       if (node.children && node.children.length > 0) {
@@ -210,59 +225,12 @@ const collapseAll = () => {
                     @click="completeEntityAction(node.data.type, 'delete', node.key)"
                   />
                 </div>
-                <div v-if="node.data.isButtonRow && node.data.type === EntityType.Project">
-                  <Button
-                    type="button"
-                    icon="pi pi-plus"
-                    label="Grundstück erstellen "
-                    severity="success"
-                    @click="completeEntityAction(EntityType.Property, 'create', node.key)"
-                  />
-                </div>
-                <div v-if="node.data.isButtonRow && node.data.type === EntityType.Property">
-                  <SplitButton
-                    label="Erstellen"
-                    severity="success"
-                    :model="[
-                      {
-                        label: 'Gebäude erstellen',
-                        icon: 'pi pi-building',
-                        command: () =>
-                          completeEntityAction(EntityType.Building, 'create', node.key),
-                      },
-                      {
-                        label: 'Außenanlage erstellen',
-                        icon: 'pi pi-sun',
-                        command: () => completeEntityAction(EntityType.Site, 'create', node.key),
-                      },
-                    ]"
-                  />
-                </div>
-                <div v-if="node.data.isButtonRow && node.data.type === EntityType.Building">
-                  <SplitButton
-                    label="Erstellen"
-                    severity="success"
-                    :model="[
-                      {
-                        label: 'Wohnung erstellen',
-                        icon: 'pi pi-building',
-                        command: () =>
-                          completeEntityAction(EntityType.Apartment, 'create', node.key),
-                      },
-                      {
-                        label: 'Gewerbe erstellen',
-                        icon: 'pi pi-briefcase',
-                        command: () =>
-                          completeEntityAction(EntityType.Commercial, 'create', node.key),
-                      },
-                      {
-                        label: 'Nebennutzungsraum erstellen',
-                        icon: 'pi pi-car',
-                        command: () => completeEntityAction(EntityType.Garage, 'create', node.key),
-                      },
-                    ]"
-                  />
-                </div>
+                <NewRentableUnitButton
+                  :projectId="props.projectId"
+                  :parentId="node.key"
+                  :type="node.data.type"
+                  @newUnit="onNewRentableUnit"
+                />
               </template>
             </Column>
           </TreeTable>

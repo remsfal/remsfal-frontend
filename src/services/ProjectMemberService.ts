@@ -21,7 +21,7 @@ export interface MemberList {
   members: Member[];
 }
 
-export default class ProjectMemberService {
+class ProjectMemberService {
   private readonly baseUrl: string = '/api/v1/projects';
 
   async getMembers(projectId: string): Promise<MemberList> {

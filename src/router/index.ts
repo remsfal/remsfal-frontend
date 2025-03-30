@@ -95,7 +95,7 @@ const projectRoutes: RouteRecordRaw[] = [
         path: 'objects',
         name: 'ObjectData',
         props: true,
-        component: () => import('@/views/ObjectDataView.vue'),
+        component: () => import('@/views/RentableUnitsView.vue'),
       },
       {
         path: 'tenancies',

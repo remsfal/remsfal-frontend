@@ -18,28 +18,6 @@ export interface Project {
   title: string;
 }
 
-export interface PropertyList {
-  first: number;
-  size: number;
-  total: number;
-  properties: PropertyItem[];
-}
-
-export interface PropertyItem {
-  id?: string;
-  title: string;
-  description: string;
-  landRegisterEntry: string;
-  plotArea: number;
-  effective_space: number;
-  buildings?: BuildingItem[];
-  district?: string; // Gemarkung
-  corridor?: string; // Flur
-  parcel?: string; // Flurstück
-  landRegistry?: string; // Liegenschaftsbuch
-  usageType?: string | null; // Wirtschaftsart
-}
-
 export interface AddressItem {
   street?: string;
   city?: string;
@@ -48,104 +26,42 @@ export interface AddressItem {
   country?: string;
 }
 
-export interface PropertyTree {
-  first: number;
-  size: number;
-  total: number;
-  nodes: PropertyNode[];
-}
-
-export interface PropertyNode {
-  key: string;
-  data: PropertyTableData;
-  children: PropertyNode[];
-}
-
-export interface PropertyTableData {
-  type: EntityType;
-  title?: string;
-  description?: string;
-  tenant?: string;
-  usable_space?: number;
-  isButtonRow?: boolean;
-}
-
-export enum EntityType {
-  Apartment = 'apartment',
-  Commercial = 'commercial',
-  Garage = 'garage',
-  Site = 'site',
-  Building = 'building',
-  Project = 'project',
-  Property = 'property',
-}
-
-export interface BuildingItem {
-  id?: string;
-  propertyId: string;
-  title: string;
-  addressId: string;
-  description: string;
-  livingSpace: number;
-  commercialSpace: number;
-  usableSpace: number;
-  heatingSpace: number;
-  rent: number;
-  apartments?: ApartmentItem[];
-  garages?: GarageItem[];
-}
-
-export interface ApartmentItem {
-  id?: string;
-  buildingId: string;
-  title: string;
-  location: string;
-  description: string;
-  livingSpace: number;
-  usableSpace: number;
-  heatingSpace: number;
-  rent: number;
-}
-
-export interface GarageItem {
-  id?: string;
-  buildingId: string;
-  title: string;
-  location: string;
-  description: string;
-  usableSpace: number;
-}
-
 export default class ProjectService {
-  private readonly url: string = '/api/v1/projects';
+  private readonly baseUrl: string = '/api/v1/projects';
 
-  getProjects(offset: number = 0, limit: number = 10): Promise<ProjectList> {
-    return axios.get(this.url, { params: { limit: limit, offset: offset } }).then((response) => {
-      const projectList: ProjectList = response.data;
-      console.log('GET projects:', projectList);
-      return projectList;
-    });
+  async getProjects(offset: number = 0, limit: number = 10): Promise<ProjectList> {
+    return axios
+      .get(this.baseUrl, { params: { limit: limit, offset: offset } })
+      .then((response) => {
+        const projectList: ProjectList = response.data;
+        console.log('GET projects:', projectList);
+        return projectList;
+      });
   }
 
-  searchProjects(projectId: string): Promise<ProjectList> {
-    return axios.get(this.url, { params: { projectId: projectId } }).then((response) => {
-      const projectList: ProjectList = response.data;
-      console.log('GET projects:', projectList);
-      return projectList;
+  async searchProjects(projectId: string): Promise<ProjectList> {
+    return axios
+      .get(this.baseUrl, { params: { projectId: projectId } })
+      .then((response) => {
+        const projectList: ProjectList = response.data;
+        console.log('GET projects:', projectList);
+        return projectList;
     });
   }
 
   createProject(title: string): Promise<Project> {
-    return axios.post(`${this.url}`, { title: title }).then((response) => {
-      const project: Project = response.data;
-      console.log('POST create project:', project);
-      return project;
+    return axios
+      .post(`${this.baseUrl}`, { title: title })
+      .then((response) => {
+        const project: Project = response.data;
+        console.log('POST create project:', project);
+        return project;
     });
   }
 
   getProject(projectId: string) {
     return axios
-      .get(`${this.url}/${projectId}`)
+      .get(`${this.baseUrl}/${projectId}`)
       .then((response) => {
         console.log('project returned', response.data);
         return response.data;
@@ -156,232 +72,6 @@ export default class ProjectService {
         console.error(error.request.status);
         throw error.request.status; // This will allow error to be caught where getProject is called
       });
-  }
-
-  getRole(projectId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/role`)
-      .then((response) => {
-        console.log('role returned', response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.log('role retrieval error', error.request.status);
-
-        console.error(error.request.status);
-        throw error.request.status; // This will allow error to be caught where getProject is called
-      });
-  }
-
-  createProperty(projectId: string, property: PropertyItem) {
-    return axios
-      .post(`${this.url}/${projectId}/properties`, property)
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error));
-  }
-
-  async getPropertyTree(projectId: string, limit: number, offset: number): Promise<PropertyTree> {
-    return axios
-      .get(`${this.url}/${projectId}/properties`, {
-        params: {
-          limit: limit,
-          offset: offset,
-          projectId: projectId,
-        },
-      })
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
-  getProperty(projectId: string, propertyId: string): Promise<PropertyItem> {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}`)
-      .then((response) => {
-        console.log('property returned', response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error('Error getting property:', error);
-        throw error;
-      });
-  }
-
-  updateProperty(
-    projectId: string,
-    propertyId: string,
-    property: PropertyItem,
-  ): Promise<PropertyItem> {
-    return axios
-      .patch(`${this.url}/${projectId}/properties/${propertyId}`, property)
-      .then((response) => {
-        console.log('property updated', response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.error('Error updating property:', error);
-        throw error;
-      });
-  }
-
-  deleteProperty(projectId: string, propertyId: string): Promise<void> {
-    return axios
-      .delete(`${this.url}/${projectId}/properties/${propertyId}`)
-      .then((response) => {
-        console.log('property deleted');
-        return response.data;
-      })
-      .catch((error) => {
-        console.error('Error deleting property:', error);
-        throw error;
-      });
-  }
-
-  createBuilding(title: string, projectId: string, propertyId: string) {
-    return axios
-      .post(`${this.url}/${projectId}/properties/${propertyId}/buildings`, {
-        title: title,
-        propertyId: propertyId,
-      })
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error));
-  }
-
-  getBuildings(projectId: string, propertyId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}/buildings`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
-  createApartment(title: string, projectId: string, propertyId: string, buildingId: string) {
-    return axios
-      .post(
-        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/apartments`,
-        { title: title, buildingId: buildingId },
-      )
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error));
-  }
-
-  getApartments(projectId: string, propertyId: string, buildingId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/apartments`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
-  createGarage(projectId: string, propertyId: string, buildingId: string, garage: GarageItem) {
-    return axios
-      .post(
-        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`,
-        garage,
-      )
-      .then((response) => console.log(response))
-      .catch((error) => {
-        throw new Error(`Failed to create garage: ${error.message}`);
-      });
-  }
-
-  getGarages(projectId: string, propertyId: string, buildingId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        throw new Error(`Failed to fetch garages: ${error.message}`);
-      });
-  }
-
-  getGarage(projectId: string, propertyId: string, buildingId: string, garageId: string) {
-    return axios
-      .get(
-        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`,
-      )
-      .then((response) => console.log(response))
-      .catch((error) => {
-        throw new Error(`Failed to fetch garage: ${error.message}`);
-      });
-  }
-
-  updateGarage(
-    projectId: string,
-    propertyId: string,
-    buildingId: string,
-    garageId: string,
-    garage: GarageItem,
-  ) {
-    return axios
-      .put(
-        `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/garages/${garageId}`,
-        garage,
-      )
-      .then((response) => console.log(response))
-      .catch((error) => {
-        throw new Error(`Failed to update garage: ${error.message}`);
-      });
-  }
-
-  getMembers(projectId: string) {
-    return axios
-      .get(`${this.url}/${projectId}/members`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
-  updateMember(projectId: string, memberId: string, role: string, email: string) {
-    return axios
-      .patch(`${this.url}/${projectId}/members/${memberId}`, {
-        role: role,
-        id: memberId,
-        email: email,
-      })
-      .then((response) => {
-        console.log('member updated', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
-  deleteMember(projectId: string, memberId: string) {
-    console.log('deleteProjectMember', projectId, memberId);
-    return axios
-      .delete(`${this.url}/${projectId}/members/${memberId}`)
-      .then((response) => {
-        console.log('member deleted');
-        return response.data;
-      })
-      .catch((error) => console.error(error));
-  }
-
-  addMember(projectId: string, email: string, role: string) {
-    console.log('addMember', projectId);
-
-    const payload = {
-      email: email,
-      role: role,
-    };
-
-    return axios
-      .post(`${this.url}/${projectId}/members`, payload)
-      .then((response) => {
-        console.log('member added', response.data);
-        return response.data;
-      })
-      .catch((error) => console.error(error));
   }
 }
 
