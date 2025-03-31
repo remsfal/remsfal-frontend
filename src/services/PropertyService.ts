@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { TreeNode } from 'primevue/treenode';
 
 export enum EntityType {
   Apartment = 'APARTMENT',
@@ -10,16 +11,19 @@ export enum EntityType {
   Property = 'PROPERTY',
 }
 
+export function toRentableUnitView(entity: EntityType): string {
+  return entity[0].toUpperCase() + entity.substring(1).toLowerCase() + 'View';
+}
+
 export interface RentableUnitNodeData {
   type: EntityType;
   title?: string;
   description?: string;
   tenant?: string;
   usable_space?: number;
-  isButtonRow?: boolean;
 }
 
-export interface RentableUnitTreeNode {
+export interface RentableUnitTreeNode extends TreeNode {
   key: string;
   data: RentableUnitNodeData;
   children: RentableUnitTreeNode[];

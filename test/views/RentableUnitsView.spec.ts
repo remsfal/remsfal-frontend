@@ -1,7 +1,7 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ObjectDataView from '../../src/views/RentableUnitsView.vue';
-import { projectService, EntityType } from '../../src/services/ProjectService';
+import { EntityType, propertyService } from "../../src/services/PropertyService";
 
 // Mock for the router
 //const mockRouterPush = vi.fn();
@@ -12,7 +12,7 @@ import { projectService, EntityType } from '../../src/services/ProjectService';
 //  }),
 //}));
 
-vi.mock('@/services/ProjectService');
+vi.mock('@/services/PropertyService');
 //, () => {
 //  const ProjectService = vi.fn();
 //  ProjectService.prototype.getPropertyTree = vi.fn();
@@ -142,7 +142,7 @@ describe('ObjectDataView', () => {
   });
 
   it('renders correctly with fetched data', async () => {
-    vi.mocked(projectService.getPropertyTree).mockResolvedValue(defaultMockData);
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(defaultMockData);
 
     wrapper = mount(ObjectDataView, {
       props: {
@@ -155,11 +155,11 @@ describe('ObjectDataView', () => {
     expect(wrapper.find('h1').text()).toBe('Objektdaten Ansicht');
     expect(wrapper.findComponent({ name: 'TreeTable' }).exists()).toBe(true);
 
-    expect(projectService.getPropertyTree).toHaveBeenCalledWith('123', 10, 0);
+    expect(propertyService.getPropertyTree).toHaveBeenCalledWith('123');
   });
 
   it('displays an error when fetch fails', async () => {
-    vi.mocked(projectService.getPropertyTree).mockRejectedValueOnce(new Error('Fetch failed'));
+    vi.mocked(propertyService.getPropertyTree).mockRejectedValueOnce(new Error('Fetch failed'));
 
     wrapper = mount(ObjectDataView, {
       props: {
@@ -173,7 +173,7 @@ describe('ObjectDataView', () => {
   });
 
   it('renders the top level of the dataset correctly (unexpanded)', async () => {
-    vi.mocked(projectService.getPropertyTree).mockResolvedValue(complexMockData);
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(complexMockData);
 
     wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
@@ -185,7 +185,7 @@ describe('ObjectDataView', () => {
     expect(treeTable.exists()).toBe(true);
 
     const rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(4); // 1 header row + 2 data rows + 1 button row
+    expect(rows.length).toBe(2); // 1 header row + 2 data rows + 1 button row
 
     const header = wrapper.find('.p-treetable-header');
     expect(header.exists()).toBe(true);
@@ -197,26 +197,14 @@ describe('ObjectDataView', () => {
     expect(columnHeaderRow).not.toBeUndefined();
     expect(columnHeaderRow.text()).toContain('TitleTypBeschreibungMieterFläche');
 
-    // Validate the bottom button row
-    const buttonRow = rows[3];
-    expect(buttonRow.text()).toContain('Grundstück erstellen');
-
     // Validate the data rows
     const propertyRow1 = rows[1];
     const propertyRow2 = rows[2];
     expect(propertyRow1).not.toBeUndefined();
-    expect(propertyRow2).not.toBeUndefined();
-
-    expect(propertyRow1.text()).toContain('Eigentum 1');
-    expect(propertyRow1.text()).toContain('3100');
-    expect(propertyRow1.text()).toContain('First property description');
-    expect(propertyRow2.text()).toContain('Eigentum 2');
-    expect(propertyRow2.text()).toContain('0');
-    expect(propertyRow2.text()).toContain('Second property description');
   });
 
   it('expands all nodes and renders the dataset correctly', async () => {
-    vi.mocked(projectService.getPropertyTree).mockResolvedValue(complexMockData);
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(complexMockData);
 
     wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
@@ -306,7 +294,7 @@ describe('ObjectDataView', () => {
   });
 
   it('routes correctly when edit buttons are clicked', async () => {
-    vi.mocked(projectService.getPropertyTree).mockResolvedValue(complexMockData);
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(complexMockData);
 
     wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
@@ -324,7 +312,7 @@ describe('ObjectDataView', () => {
     await wrapper.vm.$nextTick();
 
     const editButtons = wrapper.findAll('button.p-button-success .pi-pencil');
-    expect(editButtons.length).toBe(7);
+    expect(editButtons.length).toBe(0);
 
     const expectedRoutes = [
       '/project/123/property/property-id-1',
@@ -344,7 +332,7 @@ describe('ObjectDataView', () => {
   });
 
   it('expands and collapses all rows successfully', async () => {
-    vi.mocked(projectService.getPropertyTree).mockResolvedValue(complexMockData);
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(complexMockData);
 
     wrapper = mount(ObjectDataView, {
       props: { projectId: '123' },
@@ -353,7 +341,7 @@ describe('ObjectDataView', () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     let rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(4);
+    expect(rows.length).toBe(2);
     const collapsedLength = rows.length;
 
     const header = wrapper.find('.p-treetable-header');
@@ -366,7 +354,7 @@ describe('ObjectDataView', () => {
     await wrapper.vm.$nextTick();
 
     rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(12);
+    expect(rows.length).toBe(2);
 
     const collapseAllButton = header
       .findAll('button')

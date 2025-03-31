@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { propertyService, EntityType, type RentableUnitTreeNode } from '@/services/PropertyService';
+import {
+  propertyService,
+  EntityType,
+  type RentableUnitTreeNode,
+  toRentableUnitView,
+} from '@/services/PropertyService';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import TreeTable from 'primevue/treetable';
+import TreeTable, {
+  type TreeTableExpandedKeys,
+  type TreeTableSelectionKeys,
+} from 'primevue/treetable';
 import NewRentableUnitButton from '@/components/NewRentableUnitButton.vue';
 import { useToast } from 'primevue/usetoast';
+import NewPropertyButton from '@/components/NewPropertyButton.vue';
 
 const props = defineProps<{
   projectId: string;
@@ -14,58 +23,20 @@ const props = defineProps<{
 
 const toast = useToast();
 
-const objectData = ref<RentableUnitTreeNode[]>();
+const rentableUnitTree = ref<RentableUnitTreeNode[]>();
 const isLoading = ref(true);
 const error = ref<string | null>(null);
-const expandedKeys = ref({});
+const expandedKeys = ref<TreeTableExpandedKeys>({});
+const selectedKey = ref<TreeTableSelectionKeys>({});
 
 const router = useRouter();
-
-function createButtonRow(key: string, type: EntityType): RentableUnitTreeNode {
-  return {
-    key,
-    data: {
-      type,
-      isButtonRow: true,
-    },
-    children: [],
-  };
-}
-
-function injectButtonRows(nodes: RentableUnitTreeNode[]): RentableUnitTreeNode[] {
-  return nodes.map((node) => {
-    const { type } = node.data;
-
-    if (
-      type !== EntityType.Apartment &&
-      type !== EntityType.Commercial &&
-      type !== EntityType.Garage &&
-      type !== EntityType.Site
-    ) {
-      const buttonRow = createButtonRow(node.key, type);
-
-      node.children = injectButtonRows(node.children);
-      node.children.push(buttonRow);
-    }
-
-    return node;
-  });
-}
 
 async function fetchPropertyTree(projectId: string): Promise<RentableUnitTreeNode[]> {
   return propertyService
     .getPropertyTree(projectId)
     .then((data) => {
-      /* Every node exept Apartment, Commercial, Garge and Site nodes get an extra entry with
-        the id and type of the parent as key and type with the isButtonRow attribute enabled. */
-      const nodesWithButtons = [
-        ...injectButtonRows(data.properties),
-        createButtonRow(projectId, EntityType.Project),
-      ];
-
-      objectData.value = nodesWithButtons;
-
-      return nodesWithButtons;
+      rentableUnitTree.value = data.properties;
+      return data.properties;
     })
     .catch((err) => {
       error.value = `Failed to fetch object data: ${err.message || 'Unknown error'}`;
@@ -91,28 +62,67 @@ function onNewRentableUnit(title: string) {
   });
 }
 
-const completeEntityAction = (entity: EntityType, action: string, entityId?: string) => {
-  if (action === 'edit') {
-    router.push({
-      path: `/project/${props.projectId}/${entity}/${entityId}`,
+const expandAll = () => {
+  const expandRecursive = (nodes: RentableUnitTreeNode[], expanded: Record<string, boolean>) => {
+    nodes.forEach((node) => {
+      expanded[node.key] = true;
+      if (node.children && node.children.length > 0) {
+        expandRecursive(node.children, expanded);
+      }
     });
+  };
+
+  const newExpandedRows: Record<string, boolean> = {};
+  if (rentableUnitTree.value) {
+    expandRecursive(rentableUnitTree.value, newExpandedRows);
   }
-  if (entityId && action === 'delete') {
-    deleteObject(entity, entityId);
-  }
-  if (action === 'create') {
-    router.push({
-      path: `/project/${props.projectId}/${entity}/create`,
-      query: { parentId: entityId }, // in this case entityId is the Id of the parent
-    });
-  }
+  expandedKeys.value = newExpandedRows;
 };
 
-const deleteObject = (entity: EntityType, entityId: string) => {
+const collapseAll = () => {
+  expandedKeys.value = {};
+};
+
+const onNodeSelect = (node: RentableUnitTreeNode) => {
+  const str = node.data.title! + selectedKey.value;
+  toast.add({
+    severity: 'success',
+    summary: 'Node Selected',
+    detail: str,
+    life: 3000,
+  });
+  selectedKey.value.remove(node);
+};
+
+const onOpenInNewTab = (node: RentableUnitTreeNode) => {
+  const view = toRentableUnitView(node.data.type);
+  toast.add({
+    severity: 'success',
+    summary: 'Node Selected',
+    detail: view,
+    life: 3000,
+  });
+  const routeData = router.resolve({
+    name: view,
+    params: { projectId: props.projectId, unitId: node.key },
+  });
+  window.open(routeData.href, '_blank');
+};
+
+const onDeleteNode = (node: RentableUnitTreeNode) => {
+  isLoading.value = true;
+  const entity = node.data.type;
   if (entity === EntityType.Property) {
-    propertyService.deleteProperty(props.projectId, entityId).catch((err) => {
-      console.error('Error deleting property:', err);
-    });
+    propertyService
+      .deleteProperty(props.projectId, node.key)
+      .then(() => {
+        fetchPropertyTree(props.projectId).finally(() => {
+          isLoading.value = false;
+        });
+      })
+      .catch((err) => {
+        console.error('Error deleting property:', err);
+      });
   }
   if (entity === EntityType.Site) {
     // TODO: implement delete site endpoint
@@ -130,27 +140,6 @@ const deleteObject = (entity: EntityType, entityId: string) => {
     // TODO: implement delete garage endpoint
   }
 };
-
-const expandAll = () => {
-  const expandRecursive = (nodes: RentableUnitTreeNode[], expanded: Record<string, boolean>) => {
-    nodes.forEach((node) => {
-      expanded[node.key] = true;
-      if (node.children && node.children.length > 0) {
-        expandRecursive(node.children, expanded);
-      }
-    });
-  };
-
-  const newExpandedRows: Record<string, boolean> = {};
-  if (objectData.value) {
-    expandRecursive(objectData.value, newExpandedRows);
-  }
-  expandedKeys.value = newExpandedRows;
-};
-
-const collapseAll = () => {
-  expandedKeys.value = {};
-};
 </script>
 
 <template>
@@ -162,9 +151,13 @@ const collapseAll = () => {
         <div class="card">
           <TreeTable
             v-model:expandedKeys="expandedKeys"
-            :value="objectData"
+            v-model:selectionKeys="selectedKey"
+            :value="rentableUnitTree"
+            selectionMode="single"
+            :metaKeySelection="false"
             scrollable
             :loading="isLoading"
+            @nodeSelect="onNodeSelect"
           >
             <template #header>
               <div class="flex justify-between flex-col sm:flex-row">
@@ -186,54 +179,57 @@ const collapseAll = () => {
             </template>
             <Column field="title" header="Title" expander>
               <template #body="{ node }">
-                <div v-if="!node.data.isButtonRow">{{ node.data.title }}</div>
+                <div>{{ node.data.title }}</div>
               </template>
             </Column>
             <Column field="type" header="Typ">
               <template #body="{ node }">
-                <div v-if="!node.data.isButtonRow">{{ node.data.type }}</div>
+                <div>{{ node.data.type }}</div>
               </template>
             </Column>
             <Column field="description" header="Beschreibung">
               <template #body="{ node }">
-                <div v-if="!node.data.isButtonRow">{{ node.data.description }}</div>
+                <div>{{ node.data.description }}</div>
               </template>
             </Column>
             <Column field="tenant" header="Mieter">
               <template #body="{ node }">
-                <div v-if="!node.data.isButtonRow">{{ node.data.tenant }}</div>
+                <div>{{ node.data.tenant }}</div>
               </template>
             </Column>
             <Column field="usable_space" header="Fläche">
               <template #body="{ node }">
-                <div v-if="!node.data.isButtonRow">{{ node.data.usable_space }}</div>
+                <div>{{ node.data.usable_space }}</div>
               </template>
             </Column>
             <Column frozen alignFrozen="right">
               <template #body="{ node }">
-                <div v-if="!node.data.isButtonRow" class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2">
                   <Button
                     type="button"
                     icon="pi pi-pencil"
                     severity="success"
-                    @click="completeEntityAction(node.data.type, 'edit', node.key)"
+                    @click="onOpenInNewTab(node)"
                   />
                   <Button
                     type="button"
                     icon="pi pi-trash"
                     severity="danger"
-                    @click="completeEntityAction(node.data.type, 'delete', node.key)"
+                    @click="onDeleteNode(node)"
+                  />
+                  <NewRentableUnitButton
+                    :projectId="props.projectId"
+                    :parentId="node.key"
+                    :type="node.data.type"
+                    @newUnit="onNewRentableUnit"
                   />
                 </div>
-                <NewRentableUnitButton
-                  :projectId="props.projectId"
-                  :parentId="node.key"
-                  :type="node.data.type"
-                  @newUnit="onNewRentableUnit"
-                />
               </template>
             </Column>
           </TreeTable>
+          <div class="flex justify-end basis-auto mt-6">
+            <NewPropertyButton :projectId="props.projectId" @newUnit="onNewRentableUnit" />
+          </div>
         </div>
       </div>
     </div>

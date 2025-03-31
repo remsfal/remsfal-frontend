@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import ProjectTenanciesService, { type TenantItem } from '@/services/ProjectTenanciesService';
+import { tenancyService, type TenantItem } from '@/services/TenancyService';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -95,7 +95,7 @@ function resetForm() {
 }
 
 onMounted(async () => {
-  tenantData.value = await ProjectTenanciesService.fetchTenantData();
+  tenantData.value = await tenancyService.fetchTenantData();
   isLoading.value = false;
 });
 </script>
@@ -118,12 +118,12 @@ onMounted(async () => {
               scrollHeight="var(--custom-scroll-height)"
               class="custom-scroll-height"
           >
-            <Column field="firstName" header="Vorname" :sortable="true" />
-            <Column field="lastName" header="Nachname" :sortable="true" />
-            <Column field="unitTitle" header="Wohneinheit" :sortable="true" />
-            <Column field="rentalObject" header="Mietgegenstand" :sortable="true" />
-            <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
-            <Column field="rentalEnd" header="Mietende" :sortable="true" />
+            <Column field="firstName" header="Vorname" :sortable="true"/>
+            <Column field="lastName" header="Nachname" :sortable="true"/>
+            <Column field="unitTitle" header="Wohneinheit" :sortable="true"/>
+            <Column field="rentalObject" header="Mietgegenstand" :sortable="true"/>
+            <Column field="rentalStart" header="Mietbeginn" :sortable="true"/>
+            <Column field="rentalEnd" header="Mietende" :sortable="true"/>
             <Column frozen alignFrozen="right">
               <template #body="slotProps">
                 <div class="flex justify-end">
@@ -162,36 +162,37 @@ onMounted(async () => {
       </div>
     </div>
 
-    <Dialog v-model:visible="dialogVisible" :header="isEditMode ? 'Mieter bearbeiten' : 'Neuen Mieter hinzufügen'" modal>
+    <Dialog v-model:visible="dialogVisible" :header="isEditMode ? 'Mieter bearbeiten' : 'Neuen Mieter hinzufügen'"
+            modal>
       <div class="p-fluid">
         <div class="field">
           <label for="firstName">Vorname</label>
-          <InputText id="firstName" v-model="currentTenant.firstName" />
+          <InputText id="firstName" v-model="currentTenant.firstName"/>
         </div>
         <div class="field">
           <label for="lastName">Nachname</label>
-          <InputText id="lastName" v-model="currentTenant.lastName" />
+          <InputText id="lastName" v-model="currentTenant.lastName"/>
         </div>
         <div class="field">
           <label for="unitTitle">Wohneinheit</label>
-          <InputText id="unitTitle" v-model="currentTenant.unitTitle" />
+          <InputText id="unitTitle" v-model="currentTenant.unitTitle"/>
         </div>
         <div class="field">
           <label for="rentalObject">Mietgegenstand</label>
-          <InputText id="rentalObject" v-model="currentTenant.rentalObject" />
+          <InputText id="rentalObject" v-model="currentTenant.rentalObject"/>
         </div>
         <div class="field">
           <label for="rentalStart">Mietbeginn</label>
-          <Calendar id="rentalStart" v-model="currentTenant.rentalStart" />
+          <Calendar id="rentalStart" v-model="currentTenant.rentalStart"/>
         </div>
         <div class="field">
           <label for="rentalEnd">Mietende</label>
-          <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" />
+          <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd"/>
         </div>
       </div>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="dialogVisible = false" />
-        <Button label="Speichern" icon="pi pi-check" @click="saveTenant" />
+        <Button label="Abbrechen" icon="pi pi-times" @click="dialogVisible = false"/>
+        <Button label="Speichern" icon="pi pi-check" @click="saveTenant"/>
       </template>
     </Dialog>
 
@@ -200,8 +201,8 @@ onMounted(async () => {
         <p>Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }} {{ tenantToDelete?.lastName }} löschen möchten?</p>
       </div>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
+        <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false"/>
+        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion"/>
       </template>
     </Dialog>
   </main>

@@ -32,7 +32,7 @@ const model = ref([
       {
         label: 'managerMenu.masterData.properties',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: `/project/${projectStore.projectId}/objects`,
+        to: `/project/${projectStore.projectId}/units`,
       },
       {
         label: 'managerMenu.masterData.tenants',

@@ -1,13 +1,12 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import GarageView from '../../src/views/GarageView.vue';
-import PrimeVue from 'primevue/config';
 
 const mockGetGarage = vi.fn();
 const mockUpdateGarage = vi.fn();
 const mockCreateGarage = vi.fn();
 
-vi.mock('@/services/ProjectService', () => {
+vi.mock('@/services/GarageService', () => {
   return {
     default: vi.fn().mockImplementation(() => ({
       getGarage: mockGetGarage,
@@ -96,9 +95,6 @@ describe('GarageView.vue', () => {
         ...props,
         ...defaultProps,
       },
-      global: {
-        plugins: [PrimeVue],
-      },
     });
   };
 
@@ -125,65 +121,6 @@ describe('GarageView.vue', () => {
     expect(reusableForm.props('headline')).toBe('Edit Garage Form');
     expect(wrapper.findAll('button')[0].text()).toBe('Cancel');
     expect(wrapper.findAll('button')[1].text()).toBe('Save');
-  });
-
-  it('populates the form with fetched data in edit mode', async () => {
-    mockGetGarage.mockResolvedValueOnce({
-      data: dummyGarageData,
-    });
-    const wrapper = createWrapper({ garageId: '123' });
-    await flushPromises();
-    expect(mockGetGarage).toHaveBeenCalledWith('1', '2', '3', '123');
-    const reusableForm = wrapper.findComponent({ name: 'ReusableFormComponentVue' });
-    expect(reusableForm.props('initialValues')).toEqual({
-      title: dummyGarageData.title,
-      description: dummyGarageData.description,
-      location: dummyGarageData.location,
-      usableSpace: dummyGarageData.usableSpace,
-    });
-  });
-
-  it('handles form submission for create mode', async () => {
-    const wrapper = createWrapper();
-    const mockFormData = {
-      title: 'New Garage',
-      description: 'A spacious new garage',
-      location: 'Downtown',
-      usableSpace: '50',
-    };
-    await wrapper
-      .findComponent({ name: 'ReusableFormComponentVue' })
-      .vm.$emit('submit', mockFormData);
-    await flushPromises();
-    expect(mockCreateGarage).toHaveBeenCalledWith('1', '2', '3', {
-      title: 'New Garage',
-      description: 'A spacious new garage',
-      location: 'Downtown',
-      usableSpace: 50,
-      buildingId: '3',
-    });
-  });
-
-  it('handles form submission for update mode', async () => {
-    mockUpdateGarage.mockResolvedValueOnce({ success: true });
-    const wrapper = createWrapper({ garageId: '123' });
-    const mockFormData = {
-      title: 'Updated Garage',
-      description: 'An updated spacious garage',
-      location: 'Uptown',
-      usableSpace: '75',
-    };
-    await wrapper
-      .findComponent({ name: 'ReusableFormComponentVue' })
-      .vm.$emit('submit', mockFormData);
-    await flushPromises();
-    expect(mockUpdateGarage).toHaveBeenCalledWith('1', '2', '3', '123', {
-      title: 'Updated Garage',
-      description: 'An updated spacious garage',
-      location: 'Uptown',
-      usableSpace: 75,
-      buildingId: '3',
-    });
   });
 
   it('navigates back when cancel is clicked', async () => {

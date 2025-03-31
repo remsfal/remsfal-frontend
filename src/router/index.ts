@@ -92,8 +92,8 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectSettingsView.vue'),
       },
       {
-        path: 'objects',
-        name: 'ObjectData',
+        path: 'units',
+        name: 'RentableUnits',
         props: true,
         component: () => import('@/views/RentableUnitsView.vue'),
       },
@@ -104,32 +104,17 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectTenancies.vue'),
       },
       {
-        path: 'property/create',
-        name: 'CreateProperty',
-        props: true,
-        component: () => import('@/views/CreatePropertyView.vue'),
-      },
-      {
-        path: 'property/:propertyId',
-        name: 'ModifyProperty',
+        path: 'property/:unitId',
+        name: 'PropertyView',
         props: (route: RouteLocationNormalizedLoaded) => ({
           projectId: route.params.projectId,
-          propertyId: route.params.propertyId,
+          unitId: route.params.unitId,
         }),
         component: () => import('@/views/ModifyPropertyView.vue'),
       },
       {
         path: 'site',
         children: [
-          {
-            path: 'create',
-            name: 'CreateSite',
-            props: (route: RouteLocationNormalizedLoaded) => ({
-              projectId: route.params.projectId,
-              propertyId: route.query.parentId,
-            }),
-            component: () => import('@/views/SiteCreationView.vue'),
-          },
           {
             path: ':siteId',
             name: 'EditSite',
@@ -144,16 +129,6 @@ const projectRoutes: RouteRecordRaw[] = [
       {
         path: 'property/:propertyId/building/:buildingId/garage',
         children: [
-          {
-            path: 'create',
-            name: 'CreateGarage',
-            props: (route: RouteLocationNormalizedLoaded) => ({
-              projectId: route.params.projectId,
-              propertyId: route.params.propertyId,
-              buildingId: route.params.buildingId,
-            }),
-            component: () => import('@/views/GarageView.vue'),
-          },
           {
             path: ':garageId/edit',
             name: 'EditGarage',
@@ -188,21 +163,6 @@ const projectRoutes: RouteRecordRaw[] = [
         name: 'UpdateApartmentView',
         props: true,
         component: () => import('@/views/ApartmentUpdateView.vue'),
-      },
-      {
-        path: '/project/:projectId/apartment/create',
-        name: 'CreateApartmentView',
-        props: true,
-        component: () => import('@/views/ApartmentCreationView.vue'),
-      },
-      {
-        path: 'commercial/create',
-        name: 'CommercialCreation',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-          parentBuildingId: route.query.parentId,
-        }),
-        component: () => import('@/views/CommercialCreationView.vue'),
       },
       {
         path: 'commercial/:commercialId',

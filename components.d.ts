@@ -17,6 +17,7 @@ declare module 'vue' {
     LocaleSwitch: typeof import('./src/components/LocaleSwitch.vue')['default']
     NewProjectForm: typeof import('./src/components/NewProjectForm.vue')['default']
     NewProjectMemberButton: typeof import('./src/components/NewProjectMemberButton.vue')['default']
+    NewPropertyButton: typeof import('./src/components/NewPropertyButton.vue')['default']
     NewRentableUnitButton: typeof import('./src/components/NewRentableUnitButton.vue')['default']
     ProjectMemberSettings: typeof import('./src/components/ProjectMemberSettings.vue')['default']
     ProjectMemberTable: typeof import('./src/components/ProjectMemberSettings.vue')['default']
