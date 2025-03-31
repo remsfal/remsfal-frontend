@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import SiteFormComponent from '../components/SiteFormComponent.vue';
-import SiteService, { type SiteItem } from '@/services/SiteService';
+import { siteService, type SiteUnit } from '@/services/SiteService';
 import type { AddressItem } from '@/services/ProjectService';
 
 const props = defineProps<{
@@ -17,22 +17,18 @@ let parentPropertyId: string | undefined = props.propertyId
   : undefined;
 onMounted(async () => {
   if (!props.siteId) return;
-  const siteService = new SiteService();
   try {
     console.log('Fetching site data...');
     const site = await siteService.getSite(props.projectId, props.siteId);
     initialValues.value.title = site.title;
     initialValues.value.description = site.description;
-    initialValues.value.usableSpace = site.usableSpace.toString();
-    initialValues.value.street = site.address.street;
-    initialValues.value.city = site.address.city;
-    initialValues.value.zip = site.address.zip;
-    initialValues.value.province = site.address.province;
-    initialValues.value.country = site.address.country;
+//    initialValues.value.usableSpace = site.usableSpace.toString();
+//    initialValues.value.street = site.address.street;
+//    initialValues.value.city = site.address.city;
+//    initialValues.value.zip = site.address.zip;
+//    initialValues.value.province = site.address.province;
+//    initialValues.value.country = site.address.country;
 
-    if (!parentPropertyId) {
-      parentPropertyId = site.propertyId;
-    }
     console.log('Site data:', initialValues.value);
   } catch (error) {
     console.error('Error fetching site data:', error);
@@ -46,7 +42,6 @@ const error = ref<string | null>(null);
 const handleSubmit = async (formValues: any) => {
   loading.value = true;
   error.value = null;
-  const siteService = new SiteService();
 
   const address: AddressItem = {
     street: formValues.street,
@@ -56,18 +51,17 @@ const handleSubmit = async (formValues: any) => {
     country: formValues.country,
   };
 
-  const site: SiteItem = {
-    propertyId: parentPropertyId ? parentPropertyId.valueOf() : '',
+  const site: SiteUnit = {
     title: formValues.title,
     description: formValues.description,
     usableSpace: parseFloat(formValues.usableSpace),
-    address: address,
+//    address: address,
   };
 
   try {
     // Create the site
     console.log('Creating site:', site);
-    await siteService.updateSite(props.projectId, props.siteId, site, props.propertyId);
+    await siteService.updateSite(props.projectId, props.siteId, site);
     // Here we could handle how to go back to the previous page
   } catch (err) {
     error.value = 'Außenanlage konnte nicht aktualisiert werden.' + err;
