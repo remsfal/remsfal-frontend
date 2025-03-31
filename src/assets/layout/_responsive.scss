@@ -1,4 +1,4 @@
-@media screen and (min-width: 1960px) {
+@media screen and (width >= 1960px) {
     .layout-main,
     .landing-wrapper {
         width: 1504px;
@@ -7,7 +7,7 @@
     }
 }
 
-@media (min-width: 992px) {
+@media (width >= 992px) {
     .layout-wrapper {
         &.layout-overlay {
             .layout-main-container {
@@ -27,9 +27,9 @@
                     transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99),
                     left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
                 box-shadow:
-                    0px 3px 5px rgba(0, 0, 0, 0.02),
-                    0px 0px 2px rgba(0, 0, 0, 0.05),
-                    0px 1px 4px rgba(0, 0, 0, 0.08);
+                    0 3px 5px rgb(0 0 0 / 0.02),
+                    0 0 2px rgb(0 0 0 / 0.05),
+                    0 1px 4px rgb(0 0 0 / 0.08);
             }
 
             &.layout-overlay-active {
@@ -63,7 +63,7 @@
     }
 }
 
-@media (max-width: 991px) {
+@media (width <= 991px) {
     .blocked-scroll {
         overflow: hidden;
     }

@@ -24,7 +24,8 @@
     "lint": "eslint --quiet",
     "lint:fix": "eslint --fix",
     "format": "prettier --write src/",
-    "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'"
+    "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'",
+    "stylelint:fix": "stylelint --fix '{src,public}/**/*.{vue,css,scss}'"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.1",

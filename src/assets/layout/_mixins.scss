@@ -1,7 +1,5 @@
 @mixin focused() {
-    outline-width: var(--focus-ring-width);
-    outline-style: var(--focus-ring-style);
-    outline-color: var(--focus-ring-color);
+    outline: var(--focus-ring-color) var(--focus-ring-style) var(--focus-ring-width);
     outline-offset: var(--focus-ring-offset);
     box-shadow: var(--focus-ring-shadow);
     transition:
