@@ -1,4 +1,4 @@
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import GarageView from '../../src/views/GarageView.vue';
 
@@ -41,15 +41,7 @@ vi.mock('@/components/ReusableFormComponent.vue', () => ({
   },
 }));
 
-const dummyGarageData = {
-  title: 'Test Garage',
-  description: 'Test description',
-  location: 'Basement A',
-  usableSpace: '50',
-};
-
 describe('GarageView.vue', () => {
-  let wrapper: VueWrapper;
 
   const defaultProps = {
     headline: 'Test Form',

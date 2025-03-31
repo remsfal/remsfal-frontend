@@ -1,17 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import { commercialService, type CommercialUnit } from '../../src/services/CommercialService';
-import { VueWrapper } from '@vue/test-utils';
 
 vi.mock('axios');
 
 describe('CommercialService', () => {
-  let wrapper: VueWrapper;
 
   const mockProjectId = 'project123';
   const mockBuildingId = 'building123';
   const mockCommercialId = 'commercial123';
-  const mockPropertyId = 'property123';
 
   const mockCommercial: CommercialUnit = {
     title: 'Commercial Space 1',

@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue';
 import SiteFormComponent from '../components/SiteFormComponent.vue';
 import { siteService, type SiteUnit } from '@/services/SiteService';
-import type { AddressItem } from '@/services/ProjectService';
 
 const props = defineProps<{
   projectId: string;
@@ -12,9 +11,6 @@ const props = defineProps<{
 
 const initialValues: Record<string, any> = ref({});
 
-let parentPropertyId: string | undefined = props.propertyId
-  ? props.propertyId.valueOf()
-  : undefined;
 onMounted(async () => {
   if (!props.siteId) return;
   try {
@@ -43,13 +39,13 @@ const handleSubmit = async (formValues: any) => {
   loading.value = true;
   error.value = null;
 
-  const address: AddressItem = {
-    street: formValues.street,
-    city: formValues.city,
-    zip: formValues.zip,
-    province: formValues.province,
-    country: formValues.country,
-  };
+//  const address: AddressItem = {
+//    street: formValues.street,
+//    city: formValues.city,
+//    zip: formValues.zip,
+//    province: formValues.province,
+//    country: formValues.country,
+//  };
 
   const site: SiteUnit = {
     title: formValues.title,

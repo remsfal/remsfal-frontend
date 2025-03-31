@@ -18,7 +18,7 @@ const router = useRouter();
 const onProjectSelectionChange = (event: SelectChangeEvent) => {
   console.log('new project selected ', event.value.name);
   projectStore.setSelectedProject(event.value);
-  router.push({name: 'ProjectDashboard', params: {projectId: projectStore.projectId}});
+  router.push({ name: 'ProjectDashboard', params: { projectId: projectStore.projectId } });
 };
 
 const onNewProjectClick = () => {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useLayout } from '@/layout/composables/layout';
+import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
@@ -16,9 +17,9 @@ const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
         >
           <i class="pi pi-bars"></i>
         </Button>
-        <router-link to="/" class="layout-topbar-logo">
+        <RouterLink to="/" class="layout-topbar-logo">
           <img src="@/assets/logo.png" alt="logo" />
-        </router-link>
+        </RouterLink>
       </div>
 
       <div class="layout-topbar-actions">

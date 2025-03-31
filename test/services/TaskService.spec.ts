@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import TaskService, { Task, Status } from '../../src/services/TaskService';
-import { VueWrapper } from "@vue/test-utils";
 
 describe('TaskService', () => {
-  let wrapper: VueWrapper;
 
   const service = new TaskService();
   const projectId = 'test-project';

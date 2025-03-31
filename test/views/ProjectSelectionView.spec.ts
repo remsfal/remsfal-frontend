@@ -2,17 +2,11 @@ import { shallowMount, VueWrapper } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ProjectSelectionView from '../../src/views/ProjectSelectionView.vue';
 import ProjectService from '../../src/services/ProjectService';
-import { useRouter } from 'vue-router';
 import { useProjectStore } from '../../src/stores/ProjectStore';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
-import PrimeVue from 'primevue/config';
-import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/ProjectService');
-//vi.mock('vue-router', () => ({
-//  useRouter: vi.fn(),
-//}));
 vi.mock('@/stores/ProjectStore', () => ({
   useProjectStore: vi.fn(),
 }));

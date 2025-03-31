@@ -4,10 +4,8 @@ import ContractorService, {
   TaskItemJson,
   TaskListJson,
 } from '../../src/services/ContractorService';
-import { VueWrapper } from "@vue/test-utils";
 
 describe('ContractorService', () => {
-  let wrapper: VueWrapper;
 
   const service = new ContractorService();
   const taskId = 'test-task';

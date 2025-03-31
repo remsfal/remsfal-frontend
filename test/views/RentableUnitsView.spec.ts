@@ -1,35 +1,9 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ObjectDataView from '../../src/views/RentableUnitsView.vue';
-import { EntityType, propertyService } from "../../src/services/PropertyService";
-
-// Mock for the router
-//const mockRouterPush = vi.fn();
-//vi.mock('vue-router', () => ({
-//  RouterView: {},
-//  useRouter: () => ({
-//    push: mockRouterPush,
-//  }),
-//}));
+import { EntityType, propertyService } from '../../src/services/PropertyService';
 
 vi.mock('@/services/PropertyService');
-//, () => {
-//  const ProjectService = vi.fn();
-//  ProjectService.prototype.getPropertyTree = vi.fn();
-//
-//  return {
-//    default: ProjectService,
-//    EntityType: {
-//      Apartment: 'apartment',
-//      Commercial: 'commercial',
-//      Garage: 'garage',
-//      Site: 'site',
-//      Building: 'building',
-//      Project: 'project',
-//      Property: 'property',
-//    },
-//  };
-//});
 
 // Mock data
 const defaultMockData = {
@@ -199,7 +173,6 @@ describe('ObjectDataView', () => {
 
     // Validate the data rows
     const propertyRow1 = rows[1];
-    const propertyRow2 = rows[2];
     expect(propertyRow1).not.toBeUndefined();
   });
 
