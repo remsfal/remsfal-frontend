@@ -27,15 +27,20 @@ const model = ref([
     ],
   },
   {
-    label: 'managerMenu.userData',
+    label: 'managerMenu.masterData',
     items: [
       {
-        label: 'managerMenu.userData.objectData',
+        label: 'managerMenu.masterData.properties',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: `/project/${projectStore.projectId}/objects`,
+        to: `/project/${projectStore.projectId}/units`,
       },
       {
-        label: 'managerMenu.userData.tenantData',
+        label: 'managerMenu.masterData.tenants',
+        icon: { type: 'pi', name: 'pi pi-fw pi-users' },
+        to: `/project/${projectStore.projectId}/tenancies`,
+      },
+      {
+        label: 'managerMenu.masterData.contractors',
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
         to: `/project/${projectStore.projectId}/tenancies`,
       },
@@ -107,9 +112,11 @@ const model = ref([
 </script>
 
 <template>
-  <ul class="layout-menu">
-    <template v-for="(item, i) in model" :key="item.label">
-      <AppMenuItem :item="item" :index="i" />
-    </template>
-  </ul>
+  <div class="layout-sidebar">
+    <ul class="layout-menu">
+      <template v-for="(item, i) in model" :key="item.label">
+        <AppMenuItem :item="item" :index="i" />
+      </template>
+    </ul>
+  </div>
 </template>

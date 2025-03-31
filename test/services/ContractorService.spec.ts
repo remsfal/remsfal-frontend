@@ -1,8 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
-import ContractorService, { TaskItemJson, TaskListJson } from '../../src/services/ContractorService';
+import ContractorService, {
+  TaskItemJson,
+  TaskListJson,
+} from '../../src/services/ContractorService';
 
 describe('ContractorService', () => {
+
   const service = new ContractorService();
   const taskId = 'test-task';
 

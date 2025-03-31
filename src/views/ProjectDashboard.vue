@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
 
 defineProps<{
   projectId: string;
@@ -10,8 +12,10 @@ const { t } = useI18n();
 
 <template>
   <main>
-    <div class="grid">
+    <div class="grid grid-cols-12 gap-4">
       <h1>{{ t('projectDashboard.title', [projectId]) }}</h1>
+      <Button v-styleclass="{ selector: '@next', toggleClass: 'p-hidden' }" label="Toggle p-disabled" />
+      <InputText />
     </div>
   </main>
 </template>

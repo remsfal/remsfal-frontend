@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useLayout } from '@/layout/composables/layout';
 import { useUserSessionStore } from '@/stores/UserSession';
+import AppTopbar from '@/layout/AppTopbar.vue';
+import Button from 'primevue/button';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
-const { layoutConfig, onMenuToggle } = useLayout();
+const { t } = useI18n();
 const sessionStore = useUserSessionStore();
+const router = useRouter();
 
-const topbarMenuActive = ref(false);
-const onTopBarMenuButton = () => {
-  topbarMenuActive.value = !topbarMenuActive.value;
+const onAccountSettingsClick = () => {
+  router.push('/account-settings');
 };
 
 const logout = () => {
@@ -18,62 +20,29 @@ const logout = () => {
 const login = (route: string) => {
   window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
 };
-
-const topbarMenuClasses = computed(() => {
-  return {
-    'layout-topbar-menu-mobile-active': topbarMenuActive.value,
-  };
-});
 </script>
 
 <template>
-  <header>
-    <div class="layout-topbar">
-      <div class="layout-topbar-logo">
-        <img src="@/assets/logo.png" alt="logo" />
-      </div>
-
-      <button
-        v-if="!layoutConfig.fullscreen.value"
-        class="p-link layout-menu-button layout-topbar-button"
-        @click="onMenuToggle()"
-      >
-        <i class="pi pi-bars"></i>
-      </button>
-
-      <button
-        class="p-link layout-topbar-menu-button layout-topbar-button"
-        @click="onTopBarMenuButton()"
-      >
-        <i class="pi pi-ellipsis-v"></i>
-      </button>
-
-      <div class="layout-topbar-menu" :class="topbarMenuClasses">
-        <button
-          v-if="sessionStore.user != null"
-          class="p-link layout-topbar-button"
-          @click="logout()"
-        >
-          <i class="pi pi-sign-out"></i>
-          <span>Abmelden</span>
-        </button>
-        <button
-          v-if="sessionStore.user == null"
-          class="p-link layout-topbar-button"
-          @click="login('/projects')"
-        >
-          <i class="pi pi-sign-in"></i>
-          <span>Anmelden</span>
-        </button>
-      </div>
-    </div>
-  </header>
+  <AppTopbar>
+    <Button
+      v-if="sessionStore.user != null"
+      class="layout-topbar-action"
+      @click="onAccountSettingsClick()"
+    >
+      <i class="pi pi-user"></i>
+      <span>{{ sessionStore.user.email }}</span>
+    </Button>
+    <Button v-if="sessionStore.user != null" class="layout-topbar-action" @click="logout()">
+      <i class="pi pi-sign-out"></i>
+      <span>{{ t('toolbar.logout') }}</span>
+    </Button>
+    <Button
+      v-if="sessionStore.user == null"
+      class="layout-topbar-action"
+      @click="login('/projects')"
+    >
+      <i class="pi pi-sign-in"></i>
+      <span>{{ t('toolbar.login') }}</span>
+    </Button>
+  </AppTopbar>
 </template>
-
-<style lang="scss" scoped>
-.p-select {
-  border: 0;
-  box-shadow: none;
-  margin-left: -0.5rem;
-}
-</style>

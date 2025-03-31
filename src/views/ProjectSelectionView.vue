@@ -20,14 +20,14 @@ const close = () => {
 </script>
 
 <template>
-  <div class="grid">
-    <div class="col-10">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-10">
       <div class="card">
         <h5>{{ t('projectSelection.title') }}</h5>
         <ProjectSelectionTable />
       </div>
     </div>
-    <div class="col-2">
+    <div class="col-span-2">
       <Button
         :label="t('projectSelection.add')"
         icon="pi pi-plus"

@@ -1,13 +1,30 @@
-import { createRouter, createWebHistory, type RouteLocationNormalizedLoaded} from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  type RouteLocationNormalized,
+  type RouteLocationNormalizedLoaded,
+  type RouteRecordRaw,
+} from 'vue-router';
+import { useProjectStore } from '@/stores/ProjectStore';
 import LandingPageView from '@/views/LandingPageView.vue';
-import ProjectLayout from '@/layout/ProjectLayout.vue';
-import FullscreenLayout from '@/layout/FullscreenLayout.vue';
-import ContractorLayout from '@/layout/ContractorLayout.vue';
+import AppLayout from '@/layout/AppLayout.vue';
+import ManagerMenu from '@/layout/ManagerMenu.vue';
+import ManagerTopbar from '@/layout/ManagerTopbar.vue';
+import ContractorMenu from '@/layout/ContractorMenu.vue';
+import ContractorTopbar from '@/layout/ContractorTopbar.vue';
 
-const routes = [
+const fullscreenRoutes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: FullscreenLayout,
+    components: {
+      default: AppLayout,
+      topbar: ManagerTopbar,
+    },
+    props: {
+      default: {
+        fullscreen: true,
+      },
+    },
     children: [
       {
         path: '/',
@@ -41,9 +58,26 @@ const routes = [
       },
     ],
   },
+];
+
+const projectRoutes: RouteRecordRaw[] = [
   {
     path: '/project/:projectId',
-    component: ProjectLayout,
+    components: {
+      default: AppLayout,
+      topbar: ManagerTopbar,
+      sidebar: ManagerMenu,
+    },
+    props: {
+      default: {
+        fullscreen: false,
+      },
+    },
+    beforeEnter: (to: RouteLocationNormalized) => {
+      const projectStore = useProjectStore();
+      projectStore.searchSelectedProject(<string>to.params.projectId);
+      console.log('Router enter project: ' + to.params.projectId);
+    },
     children: [
       {
         path: '',
@@ -58,10 +92,10 @@ const routes = [
         component: () => import('@/views/ProjectSettingsView.vue'),
       },
       {
-        path: 'objects',
-        name: 'ObjectData',
+        path: 'units',
+        name: 'RentableUnits',
         props: true,
-        component: () => import('@/views/ObjectDataView.vue'),
+        component: () => import('@/views/RentableUnitsView.vue'),
       },
       {
         path: 'tenancies',
@@ -70,32 +104,17 @@ const routes = [
         component: () => import('@/views/ProjectTenancies.vue'),
       },
       {
-        path: 'property/create',
-        name: 'CreateProperty',
-        props: true,
-        component: () => import('@/views/CreatePropertyView.vue'),
-      },
-      {
-        path: 'property/:propertyId',
-        name: 'ModifyProperty',
+        path: 'property/:unitId',
+        name: 'PropertyView',
         props: (route: RouteLocationNormalizedLoaded) => ({
           projectId: route.params.projectId,
-          propertyId: route.params.propertyId,
+          unitId: route.params.unitId,
         }),
         component: () => import('@/views/ModifyPropertyView.vue'),
       },
       {
         path: 'site',
         children: [
-          {
-            path: 'create',
-            name: 'CreateSite',
-            props: (route: RouteLocationNormalizedLoaded) => ({
-              projectId: route.params.projectId,
-              propertyId: route.query.parentId,
-            }),
-            component: () => import('@/views/SiteCreationView.vue'),
-          },
           {
             path: ':siteId',
             name: 'EditSite',
@@ -110,16 +129,6 @@ const routes = [
       {
         path: 'property/:propertyId/building/:buildingId/garage',
         children: [
-          {
-            path: 'create',
-            name: 'CreateGarage',
-            props: (route: RouteLocationNormalizedLoaded) => ({
-              projectId: route.params.projectId,
-              propertyId: route.params.propertyId,
-              buildingId: route.params.buildingId,
-            }),
-            component: () => import('@/views/GarageView.vue'),
-          },
           {
             path: ':garageId/edit',
             name: 'EditGarage',
@@ -156,21 +165,6 @@ const routes = [
         component: () => import('@/views/ApartmentUpdateView.vue'),
       },
       {
-        path: '/project/:projectId/apartment/create',
-        name: 'CreateApartmentView',
-        props: true,
-        component: () => import('@/views/ApartmentCreationView.vue'),
-      },
-      {
-        path: 'commercial/create',
-        name: 'CommercialCreation',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-          parentBuildingId: route.query.parentId,
-        }),
-        component: () => import('@/views/CommercialCreationView.vue'),
-      },
-      {
         path: 'commercial/:commercialId',
         name: 'CommercialUpdate',
         props: (route: RouteLocationNormalizedLoaded) => ({
@@ -181,9 +175,21 @@ const routes = [
       },
     ],
   },
+];
+
+const contractorRoutes: RouteRecordRaw[] = [
   {
     path: '/contractor',
-    component: ContractorLayout,
+    components: {
+      default: AppLayout,
+      topbar: ContractorTopbar,
+      sidebar: ContractorMenu,
+    },
+    props: {
+      default: {
+        fullscreen: false,
+      },
+    },
     children: [
       {
         path: '',
@@ -193,6 +199,12 @@ const routes = [
       },
     ],
   },
+];
+
+const routes: Readonly<RouteRecordRaw[]> = [
+  ...fullscreenRoutes,
+  ...projectRoutes,
+  ...contractorRoutes,
 ];
 
 const router = createRouter({

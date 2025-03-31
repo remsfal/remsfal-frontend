@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CommercialEditComponent from '../components/CommercialEditComponent.vue';
-import CommercialService, { type CommercialItem } from '@/services/CommercialService';
+import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 
 const props = defineProps<{
   projectId: string;
@@ -10,11 +10,9 @@ const props = defineProps<{
 }>();
 
 const handleCommercialSubmit = (values: Record<string, any>) => {
-  const projectService = new CommercialService();
   console.log('Submitting commercial:', values);
   // Create the commercial
-  const commercial: CommercialItem = {
-    buildingId: props.buildingId,
+  const commercial: CommercialUnit = {
     title: values.title,
     location: values.location,
     commercialSpace: values.commercialSpace,
@@ -23,7 +21,7 @@ const handleCommercialSubmit = (values: Record<string, any>) => {
     description: values.description,
   };
   try {
-    const response = projectService.updateCommercial(
+    const response = commercialService.updateCommercial(
       props.projectId,
       props.commercialId,
       commercial,

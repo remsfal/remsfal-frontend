@@ -1,21 +1,19 @@
-<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import ProjectService from '@/services/ProjectService';
+<script lang="ts" setup>
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
+import { propertyService } from '@/services/PropertyService';
 
 const props = defineProps<{
   projectId: string;
+  unitId: string;
 }>();
 
 const router = useRouter();
-const route = useRoute();
-const projectService = new ProjectService();
 
-const id = ref(route.query.propertyId || '');
 const title = ref('');
 const description = ref('');
 const district = ref<string>(''); // Gemarkung
@@ -104,14 +102,14 @@ const originalValues = ref<{
 });
 
 onMounted(() => {
-  if (id.value) {
+  if (props.unitId) {
     fetchPropertyDetails();
   }
 });
 
 const fetchPropertyDetails = () => {
-  projectService
-      .getProperty(props.projectId, id.value.toString())
+  propertyService
+      .getProperty(props.projectId, props.unitId)
       .then((property) => {
         title.value = property.title || '';
         description.value = property.description || '';
@@ -151,10 +149,8 @@ const isModified = computed(() => {
 });
 
 const updateProperty = () => {
-  if (!id.value) return;
-
-  projectService
-      .updateProperty(props.projectId, id.value.toString(), {
+  propertyService
+      .updateProperty(props.projectId, props.unitId, {
         title: title.value,
         description: description.value,
         district: district.value || '',
@@ -180,55 +176,54 @@ const cancel = () => {
 </script>
 
 <template>
-  <div class="col-12">
+  <div class="col-span-12">
     <div class="card">
-      <h5>Bearbeite Eigentum mit ID: {{ id }}</h5>
-      <div class="p-fluid formgrid grid">
-        <div class="field col-12">
+      <h5>Bearbeite Eigentum mit ID: {{ props.unitId }}</h5>
+      <div class="p-fluid formgrid grid grid-cols-12 gap-4">
+        <div class="field col-span-12">
           <label for="title">Titel</label>
-          <InputText id="title" v-model="title" type="text" />
+          <InputText id="title" v-model="title" type="text"/>
         </div>
-        <div class="field col-12">
+        <div class="field col-span-12">
           <label for="description">Beschreibung</label>
-          <Textarea id="description" v-model="description" rows="4" class="no-resize" />
+          <Textarea id="description" v-model="description" class="no-resize" rows="4"/>
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="district">Gemarkung</label>
-          <InputText id="district" v-model="district" type="text" />
+          <InputText id="district" v-model="district" type="text"/>
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="corridor">Flur</label>
-          <InputText id="corridor" v-model="corridor" type="text" />
+          <InputText id="corridor" v-model="corridor" type="text"/>
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="parcel">Flurstück</label>
-          <InputText id="parcel" v-model="parcel" type="text" />
+          <InputText id="parcel" v-model="parcel" type="text"/>
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="landRegistry">Liegenschaftsbuch</label>
-          <InputText id="landRegistry" v-model="landRegistry" type="text" />
+          <InputText id="landRegistry" v-model="landRegistry" type="text"/>
         </div>
-        <div class="field col-6">
+        <div class="field col-span-6">
           <label for="usageType">Wirtschaftsart</label>
           <Dropdown
               id="usageType"
               v-model="usageType"
               :options="usageOptions"
-              optionLabel="label"
+              class="w-full"
               filter
               filterPlaceholder="Tippen Sie, um zu suchen..."
-              class="w-full"
+              optionLabel="label"
           />
         </div>
-        <div class="field col-12 text-right">
-          <Button label="Speichern" icon="pi pi-check" @click="updateProperty" class="mr-2" :disabled="!isModified" />
-          <Button label="Abbrechen" icon="pi pi-times" @click="cancel" class="p-button-secondary" />
+        <div class="field col-span-12 text-right">
+          <Button :disabled="!isModified" class="mr-2" icon="pi pi-check" label="Speichern" @click="updateProperty"/>
+          <Button class="p-button-secondary" icon="pi pi-times" label="Abbrechen" @click="cancel"/>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <style>
 .text-right {

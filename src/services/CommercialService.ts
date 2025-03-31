@@ -1,134 +1,60 @@
 import axios from 'axios';
 
-export interface CommercialItem {
+export interface CommercialUnit {
   id?: string;
-  buildingId: string;
   title: string;
-  location: string;
-  description: string;
-  commercialSpace: number;
-  usableSpace: number;
-  heatingSpace: number;
+  description?: string;
+  location?: string;
+  commercialSpace?: number;
+  usableSpace?: number;
+  heatingSpace?: number;
 }
 
-export default class CommercialService {
-  private readonly url: string = '/api/v1/projects';
+class CommercialService {
+  private readonly baseUrl: string = '/api/v1/projects';
 
-  createCommercial(
+  async createCommercial(
     projectId: string,
     buildingId: string,
-    commercial: CommercialItem,
-    propertyId?: string,
-  ) {
-    if (propertyId) {
-      return axios
-        .post(
-          `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials`,
-          { commercial },
-        )
-        .then((response) => console.log(response))
-        .catch((error) => console.error(error));
-    } else {
-      return axios
-        .post(`${this.url}/${projectId}/buildings/${buildingId}/commercials`, { commercial })
-        .then((response) => console.log(response))
-        .catch((error) => console.error(error));
-    }
+    commercial: CommercialUnit,
+  ): Promise<CommercialUnit> {
+    return axios
+      .post(`${this.baseUrl}/${projectId}/buildings/${buildingId}/commercials`, commercial)
+      .then((response) => {
+        console.debug(response);
+        return response.data;
+      });
   }
 
-  getCommercial(projectId: string, commercialId: string, propertyId?: string, buildingId?: string) {
-    if (propertyId && buildingId) {
-      return axios
-        .get(
-          `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
-        )
-        .then((response) => {
-          console.log('commercial returned', response.data);
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error getting commercial:', error);
-          throw error;
-        });
-    } else {
-      return axios
-        .get(`${this.url}/${projectId}/commercials/${commercialId}`)
-        .then((response) => {
-          console.log('commercial returned', response.data);
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error getting commercial:', error);
-          throw error;
-        });
-    }
+  async getCommercial(projectId: string, commercialId: string): Promise<CommercialUnit> {
+    return axios
+      .get(`${this.baseUrl}/${projectId}/commercials/${commercialId}`)
+      .then((response) => {
+        console.debug(response);
+        return response.data;
+      });
   }
 
-  updateCommercial(
+  async updateCommercial(
     projectId: string,
     commercialId: string,
-    commercial: CommercialItem,
-    propertyId?: string,
-    buildingId?: string,
-  ) {
-    if (propertyId && buildingId) {
-      return axios
-        .patch(
-          `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
-          commercial,
-        )
-        .then((response) => {
-          console.log('commercial updated', response.data);
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error updating commercial:', error);
-          throw error;
-        });
-    } else {
-      return axios
-        .patch(`${this.url}/${projectId}/commercials/${commercialId}`, commercial)
-        .then((response) => {
-          console.log('commercial updated', response.data);
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error updating commercial:', error);
-          throw error;
-        });
-    }
+    commercial: CommercialUnit,
+  ): Promise<CommercialUnit> {
+    return axios
+      .patch(`${this.baseUrl}/${projectId}/commercials/${commercialId}`, commercial)
+      .then((response) => {
+        console.debug(response);
+        return response.data;
+      });
   }
 
-  deleteCommercial(
-    projectId: string,
-    commercialId: string,
-    propertyId?: string,
-    buildingId?: string,
-  ) {
-    if (propertyId && buildingId) {
-      return axios
-        .delete(
-          `${this.url}/${projectId}/properties/${propertyId}/buildings/${buildingId}/commercials/${commercialId}`,
-        )
-        .then((response) => {
-          console.log('commercial deleted');
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error deleting commercial:', error);
-          throw error;
-        });
-    } else {
-      return axios
-        .delete(`${this.url}/${projectId}/commercials/${commercialId}`)
-        .then((response) => {
-          console.log('commercial deleted');
-          return response.data;
-        })
-        .catch((error) => {
-          console.error('Error deleting commercial:', error);
-          throw error;
-        });
-    }
+  async deleteCommercial(projectId: string, commercialId: string): Promise<void> {
+    return axios
+      .delete(`${this.baseUrl}/${projectId}/commercials/${commercialId}`)
+      .then((response) => {
+        console.debug(response);
+      });
   }
 }
+
+export const commercialService: CommercialService = new CommercialService();

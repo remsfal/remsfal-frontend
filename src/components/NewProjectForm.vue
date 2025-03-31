@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { defineEmits, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ProjectService, { type ProjectItem } from '@/services/ProjectService';
+import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { saveProject } from '@/helper/indexeddb';
-
-
 import { useI18n } from 'vue-i18n';
 
 const emit = defineEmits<{
@@ -31,7 +29,6 @@ watch(projectTitle, (newProjectTitle) => {
 });
 
 async function createProject() {
-  const projectService = new ProjectService();
   const projectStore = useProjectStore();
 
   if (projectTitle.value.length > maxLength) return;
@@ -50,15 +47,9 @@ async function createProject() {
     const newProject = await projectService.createProject(projectTitleValue);
 
     // Update the project store
-    const newProjectItem: ProjectItem = {
-      id: newProject.id,
-      name: newProject.title,
-      memberRole: 'MANAGER',
-    };
+    projectStore.searchSelectedProject(newProject.id);
 
-    projectStore.searchSelectedProject(newProjectItem);
-
-    router.push({
+    await router.push({
       name: 'ProjectDashboard',
       params: { projectId: newProject.id },
     });
@@ -70,9 +61,6 @@ async function createProject() {
   }
 }
 
-
-
-
 function abort() {
   router.push({ name: 'ProjectSelection' });
   emit('abort');
@@ -80,7 +68,7 @@ function abort() {
 </script>
 
 <template>
-  <form class="flex flex-column gap-2 w-23rem" @submit.prevent="createProject">
+  <form class="flex flex-col gap-2 w-[23rem]" @submit.prevent="createProject">
     <span class="p-float-label">
       <InputText
         id="value"

@@ -3,13 +3,11 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { ref, onMounted } from 'vue';
 import { type TaskListJson, type TaskItemJson } from '@/services/ContractorService';
-import ContractorService from '@/services/ContractorService';
+import { contractorService } from '@/services/ContractorService';
 
 const isLoading = ref(false);
 const tasks = ref<TaskItemJson[]>([]);
 const expandedRows = ref<Record<string, boolean>>({});
-
-const contractorService = new ContractorService();
 
 const loadTasks = () => {
   isLoading.value = true;
@@ -48,7 +46,7 @@ onMounted(() => {
     <Column field="status" header="Status" style="min-width: 200px"></Column>
 
     <template #expansion="slotProps">
-      <div class="p-3">
+      <div class="p-4">
         <h4>Details für "{{ slotProps.data.title }}"</h4>
         <p><strong>Beschreibung:</strong> {{ slotProps.data.description }}</p>
         <p><strong>Status:</strong> {{ slotProps.data.status }}</p>

@@ -1,50 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import { createRouter, createMemoryHistory } from 'vue-router';
-import ProjectForm from '@/components/NewProjectForm.vue'; // update the path accordingly
-import ProjectService from '@/services/ProjectService';
-import { createPinia, setActivePinia } from 'pinia'; // make sure these imports are correct
-import PrimeVue from 'primevue/config';
-import i18n from '../../src/i18n/i18n';
+import NewProjectForm from '../../src/components/NewProjectForm.vue'; // update the path accordingly
+import { projectService } from '../../src/services/ProjectService';
+import { useProjectStore } from '../../src/stores/ProjectStore';
 
-vi.mock('@/services/ProjectService');
-
-const router = createRouter({
-  history: createMemoryHistory(),
-  routes: [
-    {
-      path: '/projects',
-      name: 'ProjectSelection',
-      component: { template: '<div>Project Selection</div>' },
-    },
-    {
-      path: '/project/:projectId',
-      name: 'ProjectDashboard',
-      component: { template: '<div>Project Dashboard</div>' },
-    },
-  ],
-});
+vi.mock('@/services/ProjectService', { spy: true });
 
 describe('NewProjectForm.vue', () => {
-  let wrapper: VueWrapper<ProjectForm>;
+  let wrapper: VueWrapper;
   let pushSpy: ReturnType<typeof vi.spyOn>;
-  let createProjectMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    const pinia = createPinia();
-    setActivePinia(pinia);
+    vi.mocked(projectService.createProject).mockResolvedValue({ id: '1', title: 'Valid Project' });
 
-    createProjectMock = vi.fn().mockResolvedValue({ id: 1, title: 'New Project' });
-    ProjectService.mockImplementation(() => ({
-      createProject: createProjectMock,
-    }));
-
-    wrapper = mount(ProjectForm, {
-      global: {
-        plugins: [router, pinia, PrimeVue, i18n],
-      },
-    });
-
+    wrapper = mount(NewProjectForm);
     pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
   });
 
@@ -57,7 +26,6 @@ describe('NewProjectForm.vue', () => {
   });
 
   it('should show error message if projectTitle exceeds maxLength', async () => {
-    // await wrapper.setData({ projectTitle: 'a'.repeat(101) });
     await wrapper.findComponent('input[type="text"]').setValue('a'.repeat(101));
     expect(wrapper.find('.p-error').text()).toBe(
       'Der Name der Liegenschaft darf nicht mehr als 100 Zeichen lang sein',
@@ -68,16 +36,17 @@ describe('NewProjectForm.vue', () => {
     await wrapper.findComponent('input[type="text"]').setValue('Valid Project');
     await wrapper.find('form').trigger('submit.prevent');
 
-    expect(createProjectMock).toHaveBeenCalledWith('Valid Project');
+    const projectStore = useProjectStore();
+    expect(projectService.createProject).toHaveBeenCalledWith('Valid Project');
+    expect(projectStore.searchSelectedProject).toHaveBeenCalledWith('1');
     expect(pushSpy).toHaveBeenCalledWith({
       name: 'ProjectDashboard',
-      params: { projectId: 1 },
+      params: { projectId: '1' },
     });
   });
 
   it('should navigate to ProjectSelection on abort', async () => {
     await wrapper.find('button[type="reset"]').trigger('click');
-
     expect(pushSpy).toHaveBeenCalledWith({ name: 'ProjectSelection' });
   });
 });

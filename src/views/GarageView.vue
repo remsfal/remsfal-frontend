@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import ReusableFormComponentVue from '@/components/ReusableFormComponent.vue';
 import { useRouter } from 'vue-router';
-import ProjectService, { type GarageItem } from '@/services/ProjectService';
 import { computed, onMounted, ref } from 'vue';
+import { garageService, type GarageUnit } from '@/services/GarageService';
 
 const props = defineProps<{
   projectId: string;
@@ -12,7 +12,6 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
-const service = new ProjectService();
 const isEditMode = computed(() => !!props.garageId);
 
 const fields: {
@@ -78,12 +77,7 @@ const fetchGarageData = async () => {
   if (!isEditMode.value || !props.garageId) return;
 
   try {
-    const response: any = await service.getGarage(
-      props.projectId,
-      props.propertyId,
-      props.buildingId,
-      props.garageId,
-    );
+    const response: any = await garageService.getGarage(props.projectId, props.garageId);
     // Populate the initialValues
     initialValues.value = {
       title: response.data.title || '',
@@ -109,33 +103,25 @@ const handleSubmit = async (values: Record<string, any>) => {
     return;
   }
 
-  const garage: GarageItem = {
+  const garage: GarageUnit = {
     title: values.title,
     description: values.description,
     location: values.location,
     usableSpace: parseFloat(values.usableSpace),
-    buildingId: props.buildingId,
   };
 
   try {
     if (isEditMode.value && props.garageId) {
       // Update existing garage
-      const response = await service.updateGarage(
-        props.projectId,
-        props.propertyId,
-        props.buildingId,
-        props.garageId,
-        garage,
-      );
+      const response = await garageService.updateGarage(props.projectId, props.garageId, garage);
       console.log('Garage updated successfully:', response);
       alert('Garage updated successfully!');
     } else {
       console.log('else');
 
       // create a new garage
-      const response = await service.createGarage(
+      const response = await garageService.createGarage(
         props.projectId,
-        props.propertyId,
         props.buildingId,
         garage,
       );

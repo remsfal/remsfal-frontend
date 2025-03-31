@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import ReusableForm from '../components/ReusableFormComponent.vue';
 import { onMounted, ref } from 'vue';
-import CommercialService from '@/services/CommercialService';
+import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 
 const props = defineProps<{
   projectId: string;
-  propertyId?: string;
+  unitId?: string;
   buildingId?: string;
   commercialId?: string;
   headline: string; // Optional headline text
@@ -63,26 +63,19 @@ const fields: {
   },
 ];
 
-const initialCommercialData = ref({
+const initialCommercialData = ref<CommercialUnit>({
   title: '',
   location: '',
-  commercialSpace: '',
-  usableSpace: '',
-  heatingSpace: '',
+  commercialSpace: 0,
+  usableSpace: 0,
+  heatingSpace: 0,
   description: '',
 });
 
-const parentBuildingId = ref(props.buildingId);
-
 onMounted(async () => {
   if (props.commercialId) {
-    const projectService = new CommercialService();
     try {
-      const response = await projectService.getCommercial(props.projectId, props.commercialId);
-      initialCommercialData.value = response;
-      if (!parentBuildingId.value) {
-        parentBuildingId.value = response.buildingId;
-      }
+      initialCommercialData.value = await commercialService.getCommercial(props.projectId, props.commercialId);
     } catch (error) {
       console.error('Error fetching commercial data:', error);
     }
