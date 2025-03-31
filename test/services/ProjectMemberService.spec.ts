@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { projectMemberService, type Member } from '../../src/services/projectMemberService';
+import { projectMemberService, type Member } from '../../src/services/ProjectMemberService';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import type { Mock } from 'vitest';
 
