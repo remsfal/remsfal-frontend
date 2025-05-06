@@ -19,74 +19,52 @@ const { t } = useI18n();
 const visible = ref<boolean>(false);
 const newMemberEmail = ref<string | null>(null);
 const newMemberRole = ref<string | null>(null);
+const emailValid = ref<boolean>(true);
 
 const addMember = async () => {
-  visible.value = false;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!newMemberEmail.value || !emailRegex.test(newMemberEmail.value)) {
-    console.error('Invalid email format.');
+  emailValid.value = !!newMemberEmail.value && emailRegex.test(newMemberEmail.value);
+  if (!emailValid.value) {
     return;
   }
-  const member: Member = { email: newMemberEmail.value, role: newMemberRole.value };
+  visible.value = false;
+  const member: Member = { email: newMemberEmail.value!, role: newMemberRole.value! };
   try {
-    console.log('Adding member with email:', newMemberEmail.value, 'role:', newMemberRole.value);
-    await projectMemberService.addMember(props.projectId, member);
-    emit('newMember', newMemberEmail.value);
-    newMemberEmail.value = '';
-    newMemberRole.value = '';
+    const result = await projectMemberService.addMember(props.projectId, member);
+    emit('newMember', newMemberEmail.value!);
   } catch (error) {
-    const err = error as { response?: { data: any }; message: string };
-    console.error('Failed to add member:', err.response?.data || err.message);
+    console.error('Failed to add member', error);
   }
 };
 </script>
 
 <template>
-  <Button
-    :label="t('projectSettings.newProjectMemberButton.label')"
-    icon="pi pi-plus"
-    style="width: auto"
-    @click="visible = true"
-  />
-
-  <Dialog
-    v-model:visible="visible"
-    modal
-    :header="t('projectSettings.newProjectMemberButton.label')"
-    :style="{ width: '35rem' }"
-  >
-    <div class="flex items-center gap-6 mb-6">
-      <label for="email" class="font-semibold w-24">E-Mail Adresse</label>
+  <Button label="Mitglied hinzufügen" icon="pi pi-user-plus" @click="visible = true" />
+  <Dialog v-model:visible="visible" modal header="Mitglied hinzufügen" :style="{ width: '30vw' }">
+    <div class="flex flex-col gap-3">
+      <label for="email">E-Mail Adresse</label>
       <InputText
-        id="email"
-        v-model="newMemberEmail"
-        type="email"
-        placeholder="E-Mail Adresse des neuen Mitglieds"
-        class="flex-auto"
-        autocomplete="off"
+          id="email"
+          v-model="newMemberEmail"
+          :class="[{ 'p-invalid border-red-500': !emailValid }, 'w-full']"
+          placeholder="name@beispielmail.de"
       />
+      <small v-if="!emailValid" class="text-red-500">Bitte eine gültige E-Mail-Adresse eingeben.</small>
+
+      <label for="role">Mitgliedsrolle</label>
+      <Select id="role" v-model="newMemberRole" :options="memberRoles" optionLabel="label" class="w-full" />
     </div>
-    <div class="flex items-center gap-6 mb-20">
-      <label for="role" class="font-semibold w-24">Mitgliedsrolle</label>
-      <Select
-        v-model="newMemberRole"
-        inputId="role"
-        :options="memberRoles"
-        optionLabel="label"
-        optionValue="value"
-        class="w-full"
-      />
-    </div>
-    <div class="flex justify-end gap-2">
-      <Button
-        type="button"
-        :label="t('button.cancel')"
-        severity="secondary"
-        @click="visible = false"
-      ></Button>
-      <Button type="button" :label="t('button.add')" @click="addMember"></Button>
-    </div>
+
+    <template #footer>
+      <Button label="Abbrechen" icon="pi pi-times" severity="secondary" @click="visible = false" />
+      <Button label="Hinzufügen" icon="pi pi-check" @click="addMember" />
+    </template>
   </Dialog>
 </template>
 
-<style scoped></style>
+<style scoped>
+.p-invalid {
+  border-color: red !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
+}
+</style>
