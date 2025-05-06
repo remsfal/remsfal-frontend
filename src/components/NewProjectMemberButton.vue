@@ -47,7 +47,7 @@ const addMember = async () => {
           id="email"
           v-model="newMemberEmail"
           :class="[{ 'p-invalid border-red-500': !emailValid }, 'w-full']"
-          placeholder="name@beispielmail.de"
+          placeholder="name@beispiel.de"
       />
       <small v-if="!emailValid" class="text-red-500">Bitte eine gültige E-Mail-Adresse eingeben.</small>
 

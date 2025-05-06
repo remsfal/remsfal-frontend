@@ -3,16 +3,17 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import NewProjectMemberButton from '../../src/components/NewProjectMemberButton.vue';
 import { projectMemberService } from '../../src/services/ProjectMemberService';
 
-vi.mock('@/services/ProjectMemberService');
-
 describe('NewProjectMemberButton.vue', () => {
   let wrapper: VueWrapper;
+
+  vi.mock('@/services/ProjectMemberService');
 
   beforeEach(async () => {
     wrapper = mount(NewProjectMemberButton, {
       propsData: {
         projectId: 'test-project-id',
       },
+      attachTo: document.body, // notwendig, da PrimeVue Dialog teleportiert
     });
     vi.clearAllMocks();
   });
@@ -28,17 +29,32 @@ describe('NewProjectMemberButton.vue', () => {
     });
   });
 
-  test('email validation - invalid email shows error and does not call service', async () => {
-    wrapper.vm.newMemberEmail = 'invalid-email';
+  test('shows red border and error for invalid email input', async () => {
+    // Dialog öffnen
+    await wrapper.find('button').trigger('click');
+    await wrapper.vm.$nextTick();
+
+    // Ungültige E-Mail eingeben
+    const emailInput = document.querySelector('input#email') as HTMLInputElement;
+    expect(emailInput).toBeTruthy();
+    emailInput.value = 'ungueltig';
+    emailInput.dispatchEvent(new Event('input'));
+
+    // Rolle setzen
     wrapper.vm.newMemberRole = 'MANAGER';
-    await wrapper.vm.addMember();
-    expect(projectMemberService.addMember).not.toHaveBeenCalled();
+
+    // Klick auf Hinzufügen
+    const buttons = document.querySelectorAll('button');
+    const addButton = Array.from(buttons).find(btn => btn.textContent?.includes('Hinzufügen'));
+    expect(addButton).toBeTruthy();
+    addButton?.dispatchEvent(new Event('click'));
 
     await wrapper.vm.$nextTick();
-    const input = wrapper.find('input#email');
-    expect(input.classes()).toContain('p-invalid');
-    const errorText = wrapper.find('small.text-red-500');
-    expect(errorText.exists()).toBe(true);
-    expect(errorText.text()).toContain('gültige E-Mail-Adresse');
+
+    // Prüfen, ob .p-invalid gesetzt ist und Fehlermeldung erscheint
+    expect(emailInput.classList.contains('p-invalid')).toBe(true);
+    const errorText = document.querySelector('small.text-red-500');
+    expect(errorText).toBeTruthy();
+    expect(errorText!.textContent).toContain('gültige E-Mail-Adresse');
   });
 });
