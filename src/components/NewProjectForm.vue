@@ -68,7 +68,7 @@ function abort() {
 </script>
 
 <template>
-  <form class="flex flex-col gap-2 w-[23rem]" @submit.prevent="createProject">
+  <form class="flex flex-col gap-2 w-[34rem]" @submit.prevent="createProject">
     <span class="p-float-label">
       <InputText
         id="value"
@@ -82,13 +82,22 @@ function abort() {
     <small id="text-error" class="p-error">
       {{ errorMessage || '&nbsp;' }}
     </small>
-    <Button type="submit" :label="t('button.create')" icon="pi pi-plus" iconPos="left" />
+    <div class="flex justify-end gap-2">
     <Button
-      type="reset"
-      :label="t('button.cancel')"
-      icon="pi pi-times"
-      iconPos="left"
-      @click="abort"
+    type="button"
+    :label="t('button.cancel')"
+    icon="pi pi-times"
+    iconPos="left"
+    severity="secondary"
+    @click="abort"
     />
+    <Button
+    type="submit"
+    :label="t('button.create')"
+    icon="pi pi-plus"
+    iconPos="left"
+    />
+    </div>
+
   </form>
 </template>
