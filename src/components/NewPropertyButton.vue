@@ -48,7 +48,7 @@ const createProperty = async () => {
   <Button
     type="button"
     icon="pi pi-plus"
-    label="Grundstück hinzufügen"
+    :label="t('button.addProperty')"
     severity="success"
     @click="visible = true"
   />
@@ -56,7 +56,7 @@ const createProperty = async () => {
   <Dialog
     v-model:visible="visible"
     modal
-    header="Grundstück hinzufügen"
+    :header="t('button.addProperty')"
     :style="{ width: '35rem' }"
   >
     <div class="flex items-center gap-6 mb-6">

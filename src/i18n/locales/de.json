@@ -113,5 +113,22 @@
   "taskView.update.title": "Update Aufgabe mit ID: { id }",
   "property.descripton": "Beschreibung",
   "proppertty.area": "Grundstücksfläche",
-  "laoding": "Lade ..."
+  "laoding": "Lade ...",
+  "viewTitle": "Objektdaten Ansicht",
+  "table": {
+    "title": "Titel",
+    "type": "Typ",
+    "description": "Beschreibung",
+    "tenant": "Mieter",
+    "area": "Fläche"
+  },
+  "button": {
+    "addProperty": "Grundstück hinzufügen",
+    "expandAll": "Alle ausklappen",
+    "collapseAll": "Alle einklappen"
+  }
+
+
+
+
 }
