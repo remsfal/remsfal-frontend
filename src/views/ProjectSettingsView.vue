@@ -2,10 +2,32 @@
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import ProjectMemberSettings from '@/components/ProjectMemberSettings.vue';
+import { ref, onMounted, watch } from 'vue';
+import { projectService } from '@/services/ProjectService';
 
 const props = defineProps<{
   projectId: string;
 }>();
+
+const projectName = ref('');
+
+const fetchProject = async (id: string) => {
+  try {
+    const project = await projectService.getProject(id);
+    projectName.value = project.title;
+  } catch (error) {
+    console.error('Error fetching project:', error);
+  }
+};
+
+onMounted(() => {
+  fetchProject(props.projectId);
+});
+
+// Watch for changes in projectId and update the project data
+watch(() => props.projectId, (newProjectId) => {
+  fetchProject(newProjectId);
+});
 </script>
 
 <template>
@@ -16,7 +38,7 @@ const props = defineProps<{
     <template #content>
       <div class="flex flex-col gap-2">
         <label for="name">Name der Liegenschaft</label>
-        <InputText id="name" type="text" />
+        <InputText id="name" type="text" v-model="projectName" />
       </div>
     </template>
   </Card>
