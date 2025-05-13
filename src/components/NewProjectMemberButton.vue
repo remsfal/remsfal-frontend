@@ -30,7 +30,7 @@ const addMember = async () => {
   visible.value = false;
   const member: Member = { email: newMemberEmail.value!, role: newMemberRole.value! };
   try {
-    //const result = await projectMemberService.addMember(props.projectId, member);
+    await projectMemberService.addMember(props.projectId, member);
     emit('newMember', newMemberEmail.value!);
   } catch (error) {
     console.error('Failed to add member', error);
