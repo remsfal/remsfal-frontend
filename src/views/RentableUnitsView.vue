@@ -28,6 +28,9 @@ const isLoading = ref(true);
 const error = ref<string | null>(null);
 const expandedKeys = ref<TreeTableExpandedKeys>({});
 const selectedKey = ref<TreeTableSelectionKeys>({});
+const showDeleteDialog = ref(false);
+const nodeToDelete = ref<RentableUnitTreeNode | null>(null);
+
 
 const router = useRouter();
 
@@ -109,9 +112,22 @@ const onOpenInNewTab = (node: RentableUnitTreeNode) => {
   window.open(routeData.href, '_blank');
 };
 
+const confirmDeleteNode = (node: RentableUnitTreeNode) => {
+  nodeToDelete.value = node;
+  showDeleteDialog.value = true;
+};
+
+const deleteConfirmed = () => {
+  if (nodeToDelete.value) {
+    onDeleteNode(nodeToDelete.value);
+  }
+  showDeleteDialog.value = false;
+};
+
 const onDeleteNode = (node: RentableUnitTreeNode) => {
   isLoading.value = true;
   const entity = node.data.type;
+
   if (entity === EntityType.Property) {
     propertyService
       .deleteProperty(props.projectId, node.key)
@@ -215,7 +231,7 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                     type="button"
                     icon="pi pi-trash"
                     severity="danger"
-                    @click="onDeleteNode(node)"
+                    @click="confirmDeleteNode(node)"
                   />
                   <NewRentableUnitButton
                     :projectId="props.projectId"
@@ -233,5 +249,12 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
         </div>
       </div>
     </div>
+    <Dialog v-model:visible="showDeleteDialog" header="Löschen bestätigen" modal>
+      <p>Bist du sicher, dass du dieses Objekt löschen möchtest?</p>
+      <template #footer>
+        <Button label="Abbrechen" icon="pi pi-times" @click="showDeleteDialog = false" />
+        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="deleteConfirmed" />
+      </template>
+    </Dialog>
   </main>
 </template>
