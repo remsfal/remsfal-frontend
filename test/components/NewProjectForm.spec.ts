@@ -22,7 +22,7 @@ describe('NewProjectForm.vue', () => {
     expect(wrapper.find('[id="value"]').exists()).toBe(true);
     expect(wrapper.find('label[for="value"]').exists()).toBe(true);
     expect(wrapper.find('button[type="submit"]').exists()).toBe(true);
-    expect(wrapper.find('button[type="reset"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="abort-button"]').exists()).toBe(true);
   });
 
   it('should show error message if projectTitle exceeds maxLength', async () => {
@@ -46,7 +46,7 @@ describe('NewProjectForm.vue', () => {
   });
 
   it('should navigate to ProjectSelection on abort', async () => {
-    await wrapper.find('button[type="reset"]').trigger('click');
+    await wrapper.find('[data-testid="abort-button"]').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith({ name: 'ProjectSelection' });
   });
 });
