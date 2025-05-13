@@ -84,8 +84,7 @@ function abort() {
     </small>
     <div class="flex justify-end gap-2">
     <Button
-    data-testid="abort-button"
-    type="button"
+    type="reset"
     :label="t('button.cancel')"
     icon="pi pi-times"
     iconPos="left"
