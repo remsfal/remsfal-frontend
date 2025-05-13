@@ -14,7 +14,7 @@ const emit = defineEmits<{
   (e: 'newMember', email: string): void;
 }>();
 
-const { t } = useI18n();
+
 
 const visible = ref<boolean>(false);
 const newMemberEmail = ref<string | null>(null);
@@ -30,7 +30,7 @@ const addMember = async () => {
   visible.value = false;
   const member: Member = { email: newMemberEmail.value!, role: newMemberRole.value! };
   try {
-    const result = await projectMemberService.addMember(props.projectId, member);
+    //const result = await projectMemberService.addMember(props.projectId, member);
     emit('newMember', newMemberEmail.value!);
   } catch (error) {
     console.error('Failed to add member', error);
