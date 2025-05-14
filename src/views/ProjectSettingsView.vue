@@ -25,9 +25,12 @@ onMounted(() => {
 });
 
 // Watch for changes in projectId and update the project data
-watch(() => props.projectId, (newProjectId) => {
-  fetchProject(newProjectId);
-});
+watch(
+  () => props.projectId,
+  (newProjectId) => {
+    fetchProject(newProjectId);
+  },
+);
 </script>
 
 <template>
