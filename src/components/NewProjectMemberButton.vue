@@ -65,6 +65,6 @@ const addMember = async () => {
 <style scoped>
 .p-invalid {
   border-color: red !important;
-  box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(255 0 0 / 0.25);
 }
 </style>
