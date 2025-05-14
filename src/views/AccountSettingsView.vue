@@ -679,7 +679,6 @@ input:focus {
   appearance: none;
   background: url('data:image/svg+xml;utf8,<svg fill="%23999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')
     no-repeat right 10px center;
-  background-color: white;
   background-size: 12px 12px;
 }
 
