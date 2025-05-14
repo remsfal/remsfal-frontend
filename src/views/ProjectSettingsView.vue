@@ -31,7 +31,6 @@ watch(
     fetchProject(newProjectId);
   },
 );
-
 </script>
 
 <template>
