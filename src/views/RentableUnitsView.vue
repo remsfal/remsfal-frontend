@@ -7,9 +7,10 @@ import {
   toRentableUnitView,
 } from '@/services/PropertyService';
 import { useRouter } from 'vue-router';
+import Dialog from 'primevue/dialog'
 import Button from 'primevue/button';
 import Column from 'primevue/column';
-import Dialog from 'primevue/dialog'
+
 import TreeTable, {
   type TreeTableExpandedKeys,
   type TreeTableSelectionKeys,
