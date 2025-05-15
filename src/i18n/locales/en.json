@@ -113,5 +113,24 @@
   "taskView.update.title": "Update Task with ID: { id }",
   "property.descripton": "Description",
   "proppertty.area": "Propperty Area",
-  "laoding": "Loading ..."
+  "laoding": "Loading ...",
+  "viewTitle": "Object Data View",
+  "table": {
+    "title": "Title",
+    "type": "Type",
+    "description": "Description",
+    "tenant": "Tenant",
+    "area": "Area"
+  },
+  "button": {
+    "addProperty": "Add Property",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all"
+  }
+
+
+
+
 }
+
+

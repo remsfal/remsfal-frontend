@@ -3,6 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ObjectDataView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
 
+
+
 vi.mock('@/services/PropertyService');
 
 // Mock data
@@ -169,7 +171,8 @@ describe('ObjectDataView', () => {
 
     const columnHeaderRow = rows.find((row) => row.find('th'));
     expect(columnHeaderRow).not.toBeUndefined();
-    expect(columnHeaderRow.text()).toContain('TitleTypBeschreibungMieterFläche');
+    expect(columnHeaderRow.text()).toContain('TitelTypBeschreibungMieterFläche');
+
 
     // Validate the data rows
     const propertyRow1 = rows[1];
