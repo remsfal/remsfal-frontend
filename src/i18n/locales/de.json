@@ -114,19 +114,21 @@
   "property.descripton": "Beschreibung",
   "proppertty.area": "Grundstücksfläche",
   "laoding": "Lade ...",
-  "viewTitle": "Objektdaten Ansicht",
-  "table": {
-    "title": "Titel",
-    "type": "Typ",
-    "description": "Beschreibung",
-    "tenant": "Mieter",
-    "area": "Fläche"
-  },
-  "button": {
-    "addProperty": "Grundstück hinzufügen",
-    "expandAll": "Alle ausklappen",
-    "collapseAll": "Alle einklappen"
-  }
+  "rentableUnits.view.title": "Objektdaten Ansicht",
+  "rentableUnits.button.addProperty": "Grundstück hinzufügen",
+  "rentableUnits.button.expandAll": "Alle ausklappen",
+  "rentableUnits.button.collapseAll": "Alle einklappen",
+  "rentableUnits.button.cancel": "Abbrechen",
+  "rentableUnits.button.confirmAdd": "Hinzufügen",
+  "rentableUnits.form.title": "Titel",
+  "rentableUnits.form.description": "Beschreibung",
+  "rentableUnits.form.titlePlaceholder": "Titel der neuen Einheit",
+  "rentableUnits.form.titleRequired": "Titel ist ein Pflichtfeld!",
+  "rentableUnits.table.title": "Titel",
+  "rentableUnits.table.type": "Typ",
+  "rentableUnits.table.description": "Beschreibung",
+  "rentableUnits.table.tenant": "Mieter",
+  "rentableUnits.table.area": "Fläche"
 
 
 

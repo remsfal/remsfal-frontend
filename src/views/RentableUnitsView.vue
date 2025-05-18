@@ -147,7 +147,7 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <h1>{{ t('viewTitle') }}</h1>
+      <h1>{{ t('rentableUnits.view.title') }}</h1>
       <div v-if="error" class="alert alert-error">{{ error }}</div>
       <div v-if="!error" class="col-span-12">
         <div class="card">
@@ -166,13 +166,13 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                 <div>
                   <Button
                     icon="pi pi-plus"
-                    :label="t('button.expandAll')"
+                    :label="t('rentableUnits.button.expandAll')"
                     class="mr-2 mb-2"
                     @click="expandAll()"
                   />
                   <Button
                     icon="pi pi-minus"
-                    :label="t('button.collapseAll')"
+                    :label="t('rentableUnits.button.collapseAll')"
                     class="mr-2 mb-2"
                     @click="collapseAll()"
                   />
@@ -180,31 +180,31 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                 </div>
               </div>
             </template>
-            <Column field="title" :header="t('table.title')" expander>
+            <Column field="title" :header="t('rentableUnits.table.title')" expander>
               <template #body="{ node }">
                 <div>{{ node.data.title }}</div>
               </template>
             </Column>
 
-            <Column field="type" :header="t('table.type')">
+            <Column field="type" :header="t('rentableUnits.table.type')">
               <template #body="{ node }">
                 <div>{{ node.data.type }}</div>
               </template>
             </Column>
 
-            <Column field="description" :header="t('table.description')">
+            <Column field="description" :header="t('rentableUnits.table.description')">
               <template #body="{ node }">
                 <div>{{ node.data.description }}</div>
               </template>
             </Column>
 
-            <Column field="tenant" :header="t('table.tenant')">
+            <Column field="tenant" :header="t('rentableUnits.table.tenant')">
               <template #body="{ node }">
                 <div>{{ node.data.tenant }}</div>
               </template>
             </Column>
 
-            <Column field="usable_space" :header="t('table.area')">
+            <Column field="usable_space" :header="t('rentableUnits.table.area')">
               <template #body="{ node }">
                 <div>{{ node.data.usable_space }}</div>
               </template>

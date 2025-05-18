@@ -114,19 +114,16 @@
   "property.descripton": "Description",
   "proppertty.area": "Propperty Area",
   "laoding": "Loading ...",
-  "viewTitle": "Object Data View",
-  "table": {
-    "title": "Title",
-    "type": "Type",
-    "description": "Description",
-    "tenant": "Tenant",
-    "area": "Area"
-  },
-  "button": {
-    "addProperty": "Add Property",
-    "expandAll": "Expand all",
-    "collapseAll": "Collapse all"
-  }
+  "rentableUnits.button.addProperty": "Add Property",
+  "rentableUnits.button.expandAll": "Expand all",
+  "rentableUnits.button.collapseAll": "Collapse all",
+  "rentableUnits.table.title": "Title",
+  "rentableUnits.table.type": "Type",
+  "rentableUnits.table.description": "Description",
+  "rentableUnits.table.tenant": "Tenant",
+  "rentableUnits.table.area": "Area",
+  "rentableUnits.view.title": "Object Data View"
+
 
 
 
