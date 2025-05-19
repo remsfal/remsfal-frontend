@@ -10,6 +10,7 @@ import { useRouter } from 'vue-router';
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button';
 import Column from 'primevue/column';
+import { useI18n } from 'vue-i18n';
 
 import TreeTable, {
   type TreeTableExpandedKeys,
@@ -22,7 +23,7 @@ import NewPropertyButton from '@/components/NewPropertyButton.vue';
 const props = defineProps<{
   projectId: string;
 }>();
-
+const { t } = useI18n();
 const toast = useToast();
 
 const rentableUnitTree = ref<RentableUnitTreeNode[]>();
@@ -163,7 +164,7 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <h1>Objektdaten Ansicht</h1>
+      <h1>{{ t('rentableUnits.view.title') }}</h1>
       <div v-if="error" class="alert alert-error">{{ error }}</div>
       <div v-if="!error" class="col-span-12">
         <div class="card">
@@ -182,44 +183,51 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                 <div>
                   <Button
                     icon="pi pi-plus"
-                    label="Alle ausklappen"
+                    :label="t('rentableUnits.button.expandAll')"
                     class="mr-2 mb-2"
                     @click="expandAll()"
                   />
                   <Button
                     icon="pi pi-minus"
-                    label="Alle einklappen"
+                    :label="t('rentableUnits.button.collapseAll')"
                     class="mr-2 mb-2"
                     @click="collapseAll()"
                   />
+
                 </div>
               </div>
             </template>
-            <Column field="title" header="Title" expander>
+            <Column field="title" :header="t('rentableUnits.table.title')" expander>
               <template #body="{ node }">
                 <div>{{ node.data.title }}</div>
               </template>
             </Column>
-            <Column field="type" header="Typ">
+
+            <Column field="type" :header="t('rentableUnits.table.type')">
               <template #body="{ node }">
                 <div>{{ node.data.type }}</div>
               </template>
             </Column>
-            <Column field="description" header="Beschreibung">
+
+            <Column field="description" :header="t('rentableUnits.table.description')">
               <template #body="{ node }">
                 <div>{{ node.data.description }}</div>
               </template>
             </Column>
-            <Column field="tenant" header="Mieter">
+
+            <Column field="tenant" :header="t('rentableUnits.table.tenant')">
               <template #body="{ node }">
                 <div>{{ node.data.tenant }}</div>
               </template>
             </Column>
-            <Column field="usable_space" header="Fläche">
+
+            <Column field="usable_space" :header="t('rentableUnits.table.area')">
               <template #body="{ node }">
                 <div>{{ node.data.usable_space }}</div>
               </template>
             </Column>
+
+
             <Column frozen alignFrozen="right">
               <template #body="{ node }">
                 <div class="flex flex-wrap gap-2">
