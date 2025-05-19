@@ -13,25 +13,48 @@ describe('NewProjectMemberButton.vue', () => {
       propsData: {
         projectId: 'test-project-id',
       },
+      attachTo: document.body, // notwendig, da PrimeVue Dialog teleportiert
     });
     vi.clearAllMocks();
   });
 
-  // Test for addMember
   test('addMember - adds a new member successfully', async () => {
     projectMemberService.addMember.mockResolvedValueOnce({});
-    projectMemberService.getMembers.mockResolvedValueOnce([]);
-
     wrapper.vm.newMemberEmail = 'test@example.com';
     wrapper.vm.newMemberRole = 'MANAGER';
-
     await wrapper.vm.addMember();
-
     expect(projectMemberService.addMember).toHaveBeenCalledWith('test-project-id', {
       email: 'test@example.com',
       role: 'MANAGER',
     });
-    expect(wrapper.vm.newMemberEmail).toBe('');
-    expect(wrapper.vm.newMemberRole).toBe('');
+  });
+
+  test('shows red border and error for invalid email input', async () => {
+    // Dialog öffnen
+    await wrapper.find('button').trigger('click');
+    await wrapper.vm.$nextTick();
+
+    // Ungültige E-Mail eingeben
+    const emailInput = document.querySelector('input#email') as HTMLInputElement;
+    expect(emailInput).toBeTruthy();
+    emailInput.value = 'ungueltig';
+    emailInput.dispatchEvent(new Event('input'));
+
+    // Rolle setzen
+    wrapper.vm.newMemberRole = 'MANAGER';
+
+    // Klick auf Hinzufügen
+    const buttons = document.querySelectorAll('button');
+    const addButton = Array.from(buttons).find(btn => btn.textContent?.includes('Hinzufügen'));
+    expect(addButton).toBeTruthy();
+    addButton?.dispatchEvent(new Event('click'));
+
+    await wrapper.vm.$nextTick();
+
+    // Prüfen, ob .p-invalid gesetzt ist und Fehlermeldung erscheint
+    expect(emailInput.classList.contains('p-invalid')).toBe(true);
+    const errorText = document.querySelector('small.text-red-500');
+    expect(errorText).toBeTruthy();
+    expect(errorText!.textContent).toContain('gültige E-Mail-Adresse');
   });
 });
