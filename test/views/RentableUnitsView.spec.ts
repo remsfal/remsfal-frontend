@@ -1,4 +1,4 @@
-import { mount, VueWrapper } from '@vue/test-utils';
+import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ObjectDataView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
@@ -342,5 +342,41 @@ describe('ObjectDataView', () => {
 
     rows = wrapper.findAll('tr');
     expect(rows.length).toBe(collapsedLength);
+  });
+
+  it('Delete confirmation dialog should be displayed', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
+      properties: [
+        { key: '1', data: { title: 'Test', type: 'Project' }, children: [] }
+      ],
+      first: 0,
+      size: 1,
+      total: 1,
+    } as any);
+
+    const wrapper = mount(ObjectDataView, {
+      props: { projectId: 'property-id-1' },
+      attachTo: document.body,
+    });
+
+    await flushPromises()
+
+
+    const header = wrapper.find('.p-treetable-header');
+    const expandAllButton = header
+        .findAll('button')
+        .find((btn) => btn.text().includes('Alle ausklappen'));
+    expect(expandAllButton).not.toBeUndefined();
+    await expandAllButton.trigger('click');
+
+    await wrapper.vm.$nextTick();
+
+    // Act: Klicke auf den ersten "Löschen"-Button in der Tabelle
+    const deleteRowButton = wrapper.find('button.p-button-danger');
+    expect(deleteRowButton.exists()).toBe(true);
+    await deleteRowButton.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.vm.showDeleteDialog).toBe(true);
   });
 });

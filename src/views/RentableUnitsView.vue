@@ -241,6 +241,7 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                     type="button"
                     icon="pi pi-trash"
                     severity="danger"
+                    data-testid="deleteNode"
                     @click="confirmDeleteNode(node)"
                   />
                   <NewRentableUnitButton
@@ -259,11 +260,11 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
         </div>
       </div>
     </div>
-    <Dialog v-model:visible="showDeleteDialog" header="Löschen bestätigen" modal>
+    <Dialog v-model:visible="showDeleteDialog" header="Löschen bestätigen" modal data-testid="deleteDialog">
       <p>Bist du sicher, dass du dieses Objekt löschen möchtest?</p>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="showDeleteDialog = false" />
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="deleteConfirmed" />
+        <Button label="Abbrechen" icon="pi pi-times" @click="showDeleteDialog = false" data-testid="cancelDelete"/>
+        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="deleteConfirmed" data-testid="confirmDeleteButton"/>
       </template>
     </Dialog>
   </main>
