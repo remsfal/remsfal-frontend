@@ -7,8 +7,11 @@ import {
   toRentableUnitView,
 } from '@/services/PropertyService';
 import { useRouter } from 'vue-router';
+import Dialog from 'primevue/dialog'
 import Button from 'primevue/button';
 import Column from 'primevue/column';
+import { useI18n } from 'vue-i18n';
+
 import TreeTable, {
   type TreeTableExpandedKeys,
   type TreeTableSelectionKeys,
@@ -20,7 +23,7 @@ import NewPropertyButton from '@/components/NewPropertyButton.vue';
 const props = defineProps<{
   projectId: string;
 }>();
-
+const { t } = useI18n();
 const toast = useToast();
 
 const rentableUnitTree = ref<RentableUnitTreeNode[]>();
@@ -28,6 +31,9 @@ const isLoading = ref(true);
 const error = ref<string | null>(null);
 const expandedKeys = ref<TreeTableExpandedKeys>({});
 const selectedKey = ref<TreeTableSelectionKeys>({});
+const showDeleteDialog = ref(false);
+const nodeToDelete = ref<RentableUnitTreeNode | null>(null);
+
 
 const router = useRouter();
 
@@ -109,9 +115,22 @@ const onOpenInNewTab = (node: RentableUnitTreeNode) => {
   window.open(routeData.href, '_blank');
 };
 
+const confirmDeleteNode = (node: RentableUnitTreeNode) => {
+  nodeToDelete.value = node;
+  showDeleteDialog.value = true;
+};
+
+const deleteConfirmed = () => {
+  if (nodeToDelete.value) {
+    onDeleteNode(nodeToDelete.value);
+  }
+  showDeleteDialog.value = false;
+};
+
 const onDeleteNode = (node: RentableUnitTreeNode) => {
   isLoading.value = true;
   const entity = node.data.type;
+
   if (entity === EntityType.Property) {
     propertyService
       .deleteProperty(props.projectId, node.key)
@@ -145,7 +164,7 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <h1>Objektdaten Ansicht</h1>
+      <h1>{{ t('rentableUnits.view.title') }}</h1>
       <div v-if="error" class="alert alert-error">{{ error }}</div>
       <div v-if="!error" class="col-span-12">
         <div class="card">
@@ -164,44 +183,51 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                 <div>
                   <Button
                     icon="pi pi-plus"
-                    label="Alle ausklappen"
+                    :label="t('rentableUnits.button.expandAll')"
                     class="mr-2 mb-2"
                     @click="expandAll()"
                   />
                   <Button
                     icon="pi pi-minus"
-                    label="Alle einklappen"
+                    :label="t('rentableUnits.button.collapseAll')"
                     class="mr-2 mb-2"
                     @click="collapseAll()"
                   />
+
                 </div>
               </div>
             </template>
-            <Column field="title" header="Title" expander>
+            <Column field="title" :header="t('rentableUnits.table.title')" expander>
               <template #body="{ node }">
                 <div>{{ node.data.title }}</div>
               </template>
             </Column>
-            <Column field="type" header="Typ">
+
+            <Column field="type" :header="t('rentableUnits.table.type')">
               <template #body="{ node }">
                 <div>{{ node.data.type }}</div>
               </template>
             </Column>
-            <Column field="description" header="Beschreibung">
+
+            <Column field="description" :header="t('rentableUnits.table.description')">
               <template #body="{ node }">
                 <div>{{ node.data.description }}</div>
               </template>
             </Column>
-            <Column field="tenant" header="Mieter">
+
+            <Column field="tenant" :header="t('rentableUnits.table.tenant')">
               <template #body="{ node }">
                 <div>{{ node.data.tenant }}</div>
               </template>
             </Column>
-            <Column field="usable_space" header="Fläche">
+
+            <Column field="usable_space" :header="t('rentableUnits.table.area')">
               <template #body="{ node }">
                 <div>{{ node.data.usable_space }}</div>
               </template>
             </Column>
+
+
             <Column frozen alignFrozen="right">
               <template #body="{ node }">
                 <div class="flex flex-wrap gap-2">
@@ -215,7 +241,8 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                     type="button"
                     icon="pi pi-trash"
                     severity="danger"
-                    @click="onDeleteNode(node)"
+                    data-testid="deleteNode"
+                    @click="confirmDeleteNode(node)"
                   />
                   <NewRentableUnitButton
                     :projectId="props.projectId"
@@ -233,5 +260,12 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
         </div>
       </div>
     </div>
+    <Dialog v-model:visible="showDeleteDialog" header="Löschen bestätigen" modal data-testid="deleteDialog">
+      <p>Bist du sicher, dass du dieses Objekt löschen möchtest?</p>
+      <template #footer>
+        <Button label="Abbrechen" icon="pi pi-times" @click="showDeleteDialog = false" data-testid="cancelDelete"/>
+        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="deleteConfirmed" data-testid="confirmDeleteButton"/>
+      </template>
+    </Dialog>
   </main>
 </template>
