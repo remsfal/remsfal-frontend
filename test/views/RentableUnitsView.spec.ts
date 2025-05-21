@@ -406,25 +406,8 @@ describe('ObjectDataView', () => {
 });
 
 describe('RentableUnitsView.vue', () => {
-  let wrapper: VueWrapper;
-
-  const sampleNode = {
-    key: 'node-1',
-    data: {
-      type: EntityType.Project,
-      title: 'Test Node',
-      description: '',
-      tenant: '',
-      usable_space: 0
-    },
-    children: []
-  };
-
-
-
 
     it('check if dialog exists', async () => {
-      const deleteSpy = vi.mocked(propertyService.deleteProperty).mockResolvedValue(undefined);
 
       vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
         properties: [
