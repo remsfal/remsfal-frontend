@@ -4,7 +4,7 @@ import ProjectMemberSettings from '../../src/components/ProjectMemberSettings.vu
 import { type MemberList, projectMemberService } from '../../src/services/ProjectMemberService';
 
 describe('ProjectMemberSettings.vue', () => {
-  let wrapper: VueWrapper;
+  let wrapper: VueWrapper<InstanceType<typeof ProjectMemberSettings>>;
 
   vi.mock('@/services/ProjectMemberService');
 
@@ -17,7 +17,7 @@ describe('ProjectMemberSettings.vue', () => {
     };
     vi.mocked(projectMemberService.getMembers).mockResolvedValue(mockMembers);
     wrapper = mount(ProjectMemberSettings, {
-      propsData: {
+      props: {
         projectId: 'test-project-id',
       },
     });
@@ -28,13 +28,14 @@ describe('ProjectMemberSettings.vue', () => {
   test('fetchMembers - loads members successfully', async () => {
     const rows = wrapper.findAll('td');
     expect(rows.length).toBe(6);
-    expect(rows.at(0).text()).toEqual("test1@example.com");
-    expect(rows.at(3).text()).toEqual("test2@example.com");
+    expect(rows.at(0).text()).toEqual('test1@example.com');
+    expect(rows.at(3).text()).toEqual('test2@example.com');
   });
 
   // Test for updateMemberRole
   test("updateMemberRole - updates a member's role successfully", async () => {
-    projectMemberService.updateMemberRole.mockResolvedValueOnce({});
+    expect(wrapper.vm.projectId).toBe('test-project-id');
+    vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce({});
     const member = { id: '1', email: 'test@example.com', role: 'MANAGER' };
 
     await wrapper.vm.updateMemberRole(member);
@@ -45,8 +46,8 @@ describe('ProjectMemberSettings.vue', () => {
   // Test for removeMember
   test('removeMember - removes a member successfully', async () => {
     const validMemberId = '6a5cf8c4-e060-4ff7-8abb-601438f67bfa'; // Valid UUID
-    projectMemberService.removeMember.mockResolvedValueOnce({});
-    projectMemberService.getMembers.mockResolvedValueOnce([]);
+    vi.mocked(projectMemberService.removeMember).mockResolvedValueOnce({});
+    vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce([]);
 
     await wrapper.vm.removeMember(validMemberId); // Use valid UUID
 
