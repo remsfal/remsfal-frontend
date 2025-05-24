@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
+import istanbul from 'vite-plugin-istanbul';
 import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
@@ -15,6 +16,13 @@ export default defineConfig({
     vueDevTools(),
     Components({
       resolvers: [PrimeVueResolver()],
+    }),
+    istanbul({
+      include: 'src/*',
+      exclude: ['node_modules', 'cypress/', 'test/'],
+      extension: ['.ts', '.vue'],
+      cypress: true,
+      requireEnv: false,
     }),
   ],
   css: {
