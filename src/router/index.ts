@@ -173,6 +173,12 @@ const projectRoutes: RouteRecordRaw[] = [
         }),
         component: () => import('@/views/CommercialUpdateView.vue'),
       },
+      {
+        path: 'providers',
+        name: 'Providers',
+        props: true,
+        component: () => import('@/views/ProviderView.vue'),
+      },
     ],
   },
 ];
@@ -213,5 +219,4 @@ const router = createRouter({
 });
 
 export { routes };
-
 export default router;

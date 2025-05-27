@@ -26,6 +26,7 @@ const model = ref([
       },
     ],
   },
+  // Manager.Menu.vue  – Ausschnitt masterData-Block angepasst
   {
     label: 'managerMenu.masterData',
     items: [
@@ -39,13 +40,15 @@ const model = ref([
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
         to: `/project/${projectStore.projectId}/tenancies`,
       },
+      /*  ➜  Neuer/angepasster Menüpunkt  */
       {
-        label: 'managerMenu.masterData.contractors',
-        icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: `/project/${projectStore.projectId}/tenancies`,
+        label: 'managerMenu.masterData.contractors',   // i18n-Key – übersetze z. B. „Dienstleister“
+        icon:  { type: 'pi', name: 'pi pi-fw pi-id-card' },
+        to: `/project/${projectStore.projectId}/providers`, // <-- neue Route
       },
     ],
   },
+
   {
     label: 'managerMenu.taskManagement',
     items: [
