@@ -4,7 +4,7 @@ import NewProjectMemberButton from '../../src/components/NewProjectMemberButton.
 import { projectMemberService } from '../../src/services/ProjectMemberService';
 
 describe('NewProjectMemberButton.vue', () => {
-  let wrapper: VueWrapper;
+  let wrapper: VueWrapper<InstanceType<typeof NewProjectMemberButton>>;
 
   vi.mock('@/services/ProjectMemberService');
 
