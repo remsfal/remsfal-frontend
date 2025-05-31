@@ -46,7 +46,10 @@ describe('NewProjectForm.vue', () => {
   });
 
   it('should navigate to ProjectSelection on abort', async () => {
-    await wrapper.find('button[type="reset"]').trigger('click');
+    const buttons = wrapper.findAll('button');
+    const abortButton = buttons.find((btn) => btn.text() === 'Abbrechen');
+    expect(abortButton).toBeTruthy();
+    await abortButton!.trigger('click');
     expect(pushSpy).toHaveBeenCalledWith({ name: 'ProjectSelection' });
   });
 });

@@ -8,22 +8,24 @@ import BadgeDirective from 'primevue/badgedirective';
 import Ripple from 'primevue/ripple';
 import StyleClass from 'primevue/styleclass';
 import Tooltip from 'primevue/tooltip';
-import ToastService from "primevue/toastservice";
-import DialogService from "primevue/dialogservice";
-import ConfirmationService from "primevue/confirmationservice";
+import ToastService from 'primevue/toastservice';
+import DialogService from 'primevue/dialogservice';
+import ConfirmationService from 'primevue/confirmationservice';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
+  value: (query: string) => {
+    return {
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // für ältere APIs
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(), // moderne APIs
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    };
+  },
 });
 
 config.global.plugins = [
