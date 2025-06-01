@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import GarageView from '../../src/views/GarageView.vue';
+import ModifyGarageView from '../../src/views/ModifyGarageView.vue';
 
 const mockGetGarage = vi.fn();
 const mockUpdateGarage = vi.fn();
@@ -41,7 +41,7 @@ vi.mock('@/components/ReusableFormComponent.vue', () => ({
   },
 }));
 
-describe('GarageView.vue', () => {
+describe('ModifyGarageView.vue', () => {
 
   const defaultProps = {
     headline: 'Test Form',
@@ -79,7 +79,7 @@ describe('GarageView.vue', () => {
   }
 
   const createWrapper = (props: WrapperProps = {}) => {
-    return mount(GarageView, {
+    return mount(ModifyGarageView, {
       props: {
         projectId: '1',
         propertyId: '2',

@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import ApartmentUpdateView from '../../src/views/ApartmentUpdateView.vue';
+import ModifyApartmentView from '../../src/views/ModifyApartmentView.vue';
 import axios from 'axios';
 
 // Mock für die Router-Parameter
@@ -20,11 +20,11 @@ vi.mock('vue-router', () => ({
 // Mock Axios
 vi.mock('axios');
 
-describe('ApartmentUpdateView.vue', () => {
+describe('ModifyApartmentView.vue', () => {
     let wrapper: VueWrapper;
 
     beforeEach(() => {
-        wrapper = mount(ApartmentUpdateView, {
+        wrapper = mount(ModifyApartmentView, {
             global: {
                 stubs: ['ReusableFormComponent'], // Falls ReusableFormComponent verwendet wird
             },
