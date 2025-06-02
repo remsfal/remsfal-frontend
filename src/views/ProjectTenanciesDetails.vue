@@ -68,12 +68,12 @@
               <template #content>
                 <div class="p-4">
                   <div class="flex items-center gap-2 mb-2">
-                    <label class="text-sm font-medium">Mietbeginn:</label>
+                    <label class="text-sm font-medium">Mietgegenstand: {{ unit.rentalObject }}</label>
                     <span class="text-sm text-gray-600">
                     </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <label class="text-sm font-medium">Mietende:</label>
+                    <label class="text-sm font-medium">Wohneinheit: {{ unit.unitTitle }}</label>
                     <span class="text-sm text-gray-600">
                     </span>
                   </div>
@@ -92,6 +92,10 @@ import { tenancyService, type TenancyItem, type TenancyTenantItem, type TenancyU
 import { type TenantItem } from '@/services/TenancyService';
 import { onMounted } from 'vue';
   
+
+
+const tenancy = ref<TenancyItem | null>(null);
+
 const rentalStart = ref<Date | null>(null);
 const rentalEnd = ref<Date | null>(null);
 const rentalActive = computed(() => {
@@ -99,13 +103,13 @@ const rentalActive = computed(() => {
     const now = new Date();
     return now >= rentalStart.value && now <= rentalEnd.value;
 });
-
-const tenancy = ref<TenancyItem | null >(null);
   
 onMounted(() => {
   // hier promise result simulieren?
   tenancy.value = tenancyService.loadMockTenancyData(window.location.href.split('/').pop() || '');
-  console.log('Tenancy data loaded:', tenancy.value);
+  //warum funktioniert nicht im template tenancy.value?.rentalStart?
+  rentalStart.value = tenancy.value?.rentalStart || null;
+  rentalEnd.value = tenancy.value?.rentalEnd || null;
 });
 </script>
   

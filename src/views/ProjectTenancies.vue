@@ -99,7 +99,7 @@ function resetForm() {
 }
 
 function navigateToTenancyDetails(id: string) {
-  // get the projectId from the route params or props
+  //richtige url bauen und nicht hardcodieren
   router.push("/project/eb2a1b67-0bf7-46b7-bf35-94724210cc52/tenancies/" + id);
 }
 
