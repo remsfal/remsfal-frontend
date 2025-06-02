@@ -113,6 +113,15 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ModifyPropertyView.vue'),
       },
       {
+        path: 'building/:unitId',
+        name: 'BuildingView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/ModifyBuildingView.vue'),
+      },
+      {
         path: 'site',
         children: [
           {
@@ -143,6 +152,14 @@ const projectRoutes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: 'garage/:unitId',
+        name: 'GarageView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/ModifyGarageView.vue'),
+      },
+      {
         path: 'tasks',
         name: 'TaskOverview',
         props: (route: RouteLocationNormalizedLoaded) => ({
@@ -165,11 +182,27 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ModifyApartmentView.vue'),
       },
       {
+        path: 'apartment/:unitId',
+        name: 'ApartmentView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/ModifyApartmentView.vue'),
+      },
+      {
         path: 'commercial/:commercialId',
         name: 'CommercialUpdate',
         props: (route: RouteLocationNormalizedLoaded) => ({
           projectId: route.params.projectId,
           commercialId: route.params.commercialId,
+        }),
+        component: () => import('@/views/ModifyCommercialView.vue'),
+      },
+      {
+        path: 'commercial/:unitId',
+        name: 'CommercialView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          unitId: route.params.unitId,
         }),
         component: () => import('@/views/ModifyCommercialView.vue'),
       },
