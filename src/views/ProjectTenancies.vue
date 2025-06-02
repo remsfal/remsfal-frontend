@@ -1,22 +1,26 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { tenancyService, type TenantItem } from '@/services/TenancyService';
+import { tenancyService, type TenantItem, type TenancyItem } from '@/services/TenancyService';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
-
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 defineProps<{
   projectId: string;
 }>();
 const { t } = useI18n();
 
+const router = useRouter();
+
 const tenantData = ref<TenantItem[]>([]);
 const isLoading = ref(true);
+
+const tenancyData = ref<TenancyItem[]>([]);
 
 const dialogVisible = ref(false);
 const currentTenant = reactive<TenantItem>({
@@ -94,9 +98,16 @@ function resetForm() {
   });
 }
 
+function navigateToTenancyDetails(id: string) {
+  // get the projectId from the route params or props
+  router.push("/project/eb2a1b67-0bf7-46b7-bf35-94724210cc52/tenancies/" + id);
+}
+
 onMounted(async () => {
   tenantData.value = await tenancyService.fetchTenantData();
   isLoading.value = false;
+
+  tenancyData.value = await tenancyService.fetchTenancyData();
 });
 </script>
 
@@ -150,12 +161,80 @@ onMounted(async () => {
             </Column>
           </DataTable>
           <div class="flex justify-end mt-6">
+            
+
+            <DataTable
+              :value="tenancyData"
+              :rows="10"
+              :rowHover="true"
+              dataKey="id"
+              tableStyle="min-width: 60rem"
+              scrollable
+              scrollDirection="both"
+              scrollHeight="var(--custom-scroll-height)"
+              class="custom-scroll-height"
+            >
+              <!-- Basis-Spalten -->
+              <Column field="rentalStart" header="Mietbeginn" :sortable="true"/>
+              <Column field="rentalEnd" header="Mietende" :sortable="true"/>
+              
+              <!-- Mieter-Spalte mit Mehrfachanzeige -->
+              <Column field="listOfTenants" header="Mieter">
+                  <template #body="slotProps">
+                      <div class="space-y-2">
+                          <div v-for="(tenant, index) in slotProps.data.listOfTenants" 
+                              :key="`${tenant.id}-${index}`"
+                              class="border-b last:border-none py-2">
+                              {{ tenant.firstName }} {{ tenant.lastName }}
+                          </div>
+                      </div>
+                  </template>
+              </Column>
+
+              <!-- Wohneinheiten-Spalte mit Mehrfachanzeige -->
+              <Column field="listOfUnits" header="Wohneinheiten">
+                  <template #body="slotProps">
+                      <div class="space-y-2">
+                          <div v-for="(unit, index) in slotProps.data.listOfUnits" 
+                              :key="`${unit.id}-${index}`"
+                              class="border-b last:border-none py-2">
+                              {{ unit.rentalObject }} - {{ unit.unitTitle }}
+                          </div>
+                      </div>
+                  </template>
+              </Column>
+
+              <!-- Aktionen-Spalte -->
+              <Column frozen alignFrozen="right">
+                  <template #body="slotProps">
+                      <div class="flex justify-end">
+                          <Button
+                              icon="pi pi-pencil"
+                              severity="success"
+                              text
+                              raised
+                              rounded
+                              class="mb-2 mr-2"
+                              @click="navigateToTenancyDetails( slotProps.data.id )"
+                          />
+                          <Button
+                              icon="pi pi-trash"
+                              severity="danger"
+                              text
+                              raised
+                              rounded
+                              class="mb-2 mr-2"
+                              @click="confirmDelete(slotProps.data)"
+                          />
+                      </div>
+                  </template>
+              </Column>
+          </DataTable>
             <Button
-                type="button"
-                icon="pi pi-plus"
-                label="Neuen Mieter hinzufügen"
-                class="mr-2 mb-2"
-                @click="openAddDialog"
+              label="Neuen Mieter hinzufügen"
+              icon="pi pi-plus"
+              severity="primary"
+              @click="openAddDialog"
             />
           </div>
         </div>
