@@ -47,7 +47,7 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.14.3",
+    "@cypress/code-coverage": "^3.14.4",
     "@intlify/eslint-plugin-vue-i18n": "^3.2.0",
     "@pinia/testing": "^0.1.7",
     "@primevue/auto-import-resolver": "^4.2.5",
