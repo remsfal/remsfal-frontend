@@ -12,7 +12,7 @@ import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
-import TenancyView from '@/views/TenancyView.vue'
+
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
