@@ -10,7 +10,7 @@ const model = ref([
       {
         label: 'Überblick',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: '/',
+        to: '/tenancy',
       },
       {
         label: 'Meldungen',

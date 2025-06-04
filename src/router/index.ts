@@ -12,6 +12,7 @@ import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
+import TenancyView from '@/views/TenancyView.vue'
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -201,10 +202,35 @@ const contractorRoutes: RouteRecordRaw[] = [
   },
 ];
 
+const tenancyRoutes: RouteRecordRaw[] = [
+  {
+    path: '/tenancy',
+    components: {
+      default: AppLayout,
+      topbar: ContractorTopbar, // or create/use TenancyTopbar if it exists
+      sidebar: ContractorMenu,  // or create/use TenancyMenu if it exists
+    },
+    props: {
+      default: {
+        fullscreen: false,
+      },
+    },
+    children: [
+      {
+        path: '',
+        name: 'TenancyView',
+        props: true,
+        component: () => import('@/views/TenancyView.vue'),
+      },
+    ],
+  },
+];
+
 const routes: Readonly<RouteRecordRaw[]> = [
   ...fullscreenRoutes,
   ...projectRoutes,
   ...contractorRoutes,
+  ...tenancyRoutes,
 ];
 
 const router = createRouter({
