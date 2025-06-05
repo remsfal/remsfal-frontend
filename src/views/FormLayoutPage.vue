@@ -1,3 +1,7 @@
+<script setup lang="ts">
+// optional logic
+</script>
+
 <template>
   <div>
     <h1>Form Layout Page</h1>
@@ -5,6 +9,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-// optional logic
-</script>
