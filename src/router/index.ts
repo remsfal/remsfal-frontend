@@ -61,6 +61,11 @@ const fullscreenRoutes: RouteRecordRaw[] = [
         name: 'TenancyView',
         component: () => import('@/views/TenancyView.vue'),
       },
+      {
+        path: '/uikit/formlayout',
+        name: 'FormLayoutPage',
+        component: () => import('@/views/FormLayoutPage.vue'),
+      },
     ],
   },
 ];
