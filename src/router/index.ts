@@ -56,6 +56,11 @@ const fullscreenRoutes: RouteRecordRaw[] = [
         name: 'AccountSettings',
         component: () => import('@/views/AccountSettingsView.vue'),
       },
+      {
+        path: '/tenancy',
+        name: 'TenancyView',
+        component: () => import('@/views/TenancyView.vue'),
+      },
     ],
   },
 ];

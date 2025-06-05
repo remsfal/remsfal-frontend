@@ -5,18 +5,28 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 
 const model = ref([
   {
-    label: 'Mietverhältnis',
+    label: 'MÄNGELMANAGEMENT',
     items: [
       {
-        label: 'Überblick',
+        label: 'Neue Meldungen',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
         to: '/tenancy',
       },
       {
-        label: 'Meldungen',
+        label: 'Offene Mängel',
         icon: { type: 'pi', name: 'pi pi-fw pi-comment' },
         to: '/uikit/formlayout',
       },
+      {
+        label: 'Abgeschlossene Mängel',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/tenancy'
+      },
+      {
+        label: 'Alle Mängel',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/tenancy'
+      }
     ],
   },
 ] as MenuItem[]);
