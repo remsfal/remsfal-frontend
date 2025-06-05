@@ -13,7 +13,6 @@ import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
 
-
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
     path: '/',
