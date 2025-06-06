@@ -14,8 +14,9 @@ describe('TenancyTable.vue', () => {
     await nextTick()
 
     // Check that Dialog is now visible and input exists
-    const input = wrapper.find('input')
+    const input = wrapper.find('input[type="text"]')
     expect(input.exists()).toBe(true)
+
   })
 
   it('creates a new deficiency and displays it', async () => {
@@ -27,8 +28,10 @@ describe('TenancyTable.vue', () => {
     await nextTick()
 
     // Enter description
-    const input = wrapper.find('input')
+    const input = wrapper.find('input[type="text"]')
+    expect(input.exists()).toBe(true)
     await input.setValue('Neuer Test-Mangel')
+
 
     // Submit form using second button (footer of Dialog)
     const buttons = wrapper.findAllComponents({ name: 'Button' })
