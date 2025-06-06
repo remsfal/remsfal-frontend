@@ -4,17 +4,16 @@ import TenancyTable from '@/components/TenancyTable.vue'
 import { nextTick } from 'vue'
 
 describe('TenancyTable.vue', () => {
-  it('shows form when "Mangel melden" is clicked', async () => {
+  it('shows form when "Mangel melden" button is clicked', async () => {
     const wrapper = mount(TenancyTable)
 
-    // Click the "Mangel melden" button
-    const createBtn = wrapper.findAll('button').find(b => b.text().includes('Mangel melden'))
-    expect(createBtn).toBeTruthy()
-    if (createBtn) {
-      await createBtn.trigger('click')
-      await nextTick() // wait for DOM update
-    }
+    // Find and click the "Mangel melden" button (PrimeVue Button)
+    const createBtn = wrapper.findComponent({ name: 'Button' })
+    expect(createBtn.exists()).toBe(true)
+    await createBtn.trigger('click')
+    await nextTick()
 
+    // Check that Dialog is now visible and input exists
     const input = wrapper.find('input')
     expect(input.exists()).toBe(true)
   })
@@ -22,29 +21,26 @@ describe('TenancyTable.vue', () => {
   it('creates a new deficiency and displays it', async () => {
     const wrapper = mount(TenancyTable)
 
-    // Show form
-    const createBtn = wrapper.findAll('button').find(b => b.text().includes('Mangel melden'))
-    if (createBtn) {
-      await createBtn.trigger('click')
-      await nextTick()
-    }
-
-    // Fill in the form
-    const input = wrapper.find('input')
-    expect(input.exists()).toBe(true)
-    await input.setValue('Test Mangel')
-
-    const select = wrapper.find('select')
-    expect(select.exists()).toBe(true)
-    await select.setValue('Offen')
-
-    // Submit the form
-    const saveBtn = wrapper.findAll('button').find(b => b.text().includes('Speichern'))
-    expect(saveBtn).toBeTruthy()
-    if (saveBtn) await saveBtn.trigger('click')
+    // Click "Mangel melden" to show dialog
+    const createBtn = wrapper.findComponent({ name: 'Button' })
+    await createBtn.trigger('click')
     await nextTick()
 
-    // Verify new entry appears
-    expect(wrapper.text()).toContain('Test Mangel')
+    // Enter description
+    const input = wrapper.find('input')
+    await input.setValue('Neuer Test-Mangel')
+
+    // Submit form using second button (footer of Dialog)
+    const buttons = wrapper.findAllComponents({ name: 'Button' })
+    const submitButton = buttons.find(b => b.text().includes('Melden'))
+    expect(submitButton).toBeTruthy()
+    if (submitButton) {
+      await submitButton.trigger('click')
+    }
+
+    await nextTick()
+
+    // Confirm it's rendered in the table
+    expect(wrapper.html()).toContain('Neuer Test-Mangel')
   })
 })
