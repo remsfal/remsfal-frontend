@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
@@ -10,7 +10,7 @@ const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
-const model = ref([
+const model = computed(() => [
   {
     label: 'managerMenu.home',
     items: [
@@ -108,8 +108,9 @@ const model = ref([
       },
     ],
   },
-] as MenuItem[]);
+]);
 </script>
+
 
 <template>
   <div class="layout-sidebar">
