@@ -56,6 +56,11 @@ const fullscreenRoutes: RouteRecordRaw[] = [
         name: 'AccountSettings',
         component: () => import('@/views/AccountSettingsView.vue'),
       },
+      {
+        path: '/tenancy',
+        name: 'TenancyView',
+        component: () => import('@/views/TenancyView.vue'),
+      },
     ],
   },
 ];
@@ -201,10 +206,35 @@ const contractorRoutes: RouteRecordRaw[] = [
   },
 ];
 
+const tenancyRoutes: RouteRecordRaw[] = [
+  {
+    path: '/tenancy',
+    components: {
+      default: AppLayout,
+      topbar: ContractorTopbar, // or create/use TenancyTopbar if it exists
+      sidebar: ContractorMenu,  // or create/use TenancyMenu if it exists
+    },
+    props: {
+      default: {
+        fullscreen: false,
+      },
+    },
+    children: [
+      {
+        path: '',
+        name: 'TenancyView',
+        props: true,
+        component: () => import('@/views/TenancyView.vue'),
+      },
+    ],
+  },
+];
+
 const routes: Readonly<RouteRecordRaw[]> = [
   ...fullscreenRoutes,
   ...projectRoutes,
   ...contractorRoutes,
+  ...tenancyRoutes,
 ];
 
 const router = createRouter({
