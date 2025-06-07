@@ -15,10 +15,7 @@ const { t } = useI18n();
 
 export interface MenuItem {
   label: string;
-  icon:
-    | { type: 'pi'; name: string }              // PrimeIcons class name
-    | { type: 'fa'; name: string | [string, string] }  // FontAwesome icon (string or tuple)
-    | null;
+  icon?: { type: 'pi' | 'fa'; name: string | [string, string] } | null;  
   to?: string;
   url?: string;
   navigate?: () => void;
