@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
+import AppMenuItem from './AppMenuItem.vue'; 
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -10,7 +10,7 @@ const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
-interface CustomMenuItem extends MenuItem {
+interface CustomMenuItem {
   label: string;
   icon: { type: string; name: string | [string, string] };
   to?: string;
@@ -18,7 +18,7 @@ interface CustomMenuItem extends MenuItem {
   items?: CustomMenuItem[];
 }
 
-const model = computed<CustomMenuItem[]>(() => [
+const model = computed((): CustomMenuItem[] => [
   {
     label: 'managerMenu.home',
     items: [
