@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
@@ -10,19 +10,32 @@ const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
-const model = ref([
+// Make projectId reactive via computed
+const projectId = computed(() => projectStore.projectId);
+
+// Optional: watch projectId changes for debugging
+watch(
+  projectId,
+  (id) => {
+    console.log('projectId changed to:', id);
+  },
+  { immediate: true }
+);
+
+// Define menu model as computed, so it updates whenever projectId changes
+const model = computed<MenuItem[]>(() => [
   {
     label: 'managerMenu.home',
     items: [
       {
         label: 'managerMenu.home.label',
         icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
-        to: `/project/${projectStore.projectId}/`,
+        to: projectId.value ? `/project/${projectId.value}/` : '/',
       },
       {
         label: 'managerMenu.home.settings',
         icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
-        to: `/project/${projectStore.projectId}/settings`,
+        to: projectId.value ? `/project/${projectId.value}/settings` : '/',
       },
     ],
   },
@@ -32,17 +45,17 @@ const model = ref([
       {
         label: 'managerMenu.masterData.properties',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: `/project/${projectStore.projectId}/units`,
+        to: projectId.value ? `/project/${projectId.value}/units` : '/',
       },
       {
         label: 'managerMenu.masterData.tenants',
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: `/project/${projectStore.projectId}/tenancies`,
+        to: projectId.value ? `/project/${projectId.value}/tenancies` : '/',
       },
       {
         label: 'managerMenu.masterData.contractors',
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: `/project/${projectStore.projectId}/tenancies`,
+        to: projectId.value ? `/project/${projectId.value}/tenancies` : '/',
       },
     ],
   },
@@ -53,10 +66,10 @@ const model = ref([
         label: 'managerMenu.taskManagement.mine',
         icon: { type: 'fa', name: ['fas', 'list'] },
         navigate: () => {
-          const projectId = projectStore.selectedProject?.id;
+          if (!projectId.value) return;
           router.push({
             name: 'TaskOverview',
-            params: { projectId },
+            params: { projectId: projectId.value },
             query: { owner: sessionStore.user?.id },
           });
         },
@@ -65,10 +78,10 @@ const model = ref([
         label: 'managerMenu.taskManagement.open',
         icon: { type: 'fa', name: ['fas', 'list-check'] },
         navigate: () => {
-          const projectId = projectStore.selectedProject?.id;
+          if (!projectId.value) return;
           router.push({
             name: 'TaskOverview',
-            params: { projectId },
+            params: { projectId: projectId.value },
             query: { status: Status.OPEN },
           });
         },
@@ -77,8 +90,8 @@ const model = ref([
         label: 'managerMenu.taskManagement.all',
         icon: { type: 'fa', name: ['far', 'rectangle-list'] },
         navigate: () => {
-          const projectId = projectStore.selectedProject?.id;
-          router.push({ name: 'TaskOverview', params: { projectId } });
+          if (!projectId.value) return;
+          router.push({ name: 'TaskOverview', params: { projectId: projectId.value } });
         },
       },
     ],
@@ -108,7 +121,7 @@ const model = ref([
       },
     ],
   },
-] as MenuItem[]);
+]);
 </script>
 
 <template>
