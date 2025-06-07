@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
