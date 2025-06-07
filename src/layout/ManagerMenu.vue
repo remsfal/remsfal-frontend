@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import AppMenuItem from './AppMenuItem.vue';
+import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { Status } from '@/services/TaskService';
-import type { MenuItem } from 'primevue/api';  // or wherever your MenuItem type is
 
 const router = useRouter();
 const projectStore = useProjectStore();
