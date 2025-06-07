@@ -10,7 +10,15 @@ const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
-const model = computed<MenuItem[]>(() => [
+interface CustomMenuItem extends MenuItem {
+  label: string;
+  icon: { type: string; name: string | [string, string] };
+  to?: string;
+  navigate?: () => void;
+  items?: CustomMenuItem[];
+}
+
+const model = computed<CustomMenuItem[]>(() => [
   {
     label: 'managerMenu.home',
     items: [
@@ -110,6 +118,7 @@ const model = computed<MenuItem[]>(() => [
   },
 ]);
 </script>
+
 <template>
   <div class="layout-sidebar">
     <ul class="layout-menu">
