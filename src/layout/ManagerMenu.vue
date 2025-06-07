@@ -10,9 +10,8 @@ const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
-// Helper to resolve `to` property: if function, call it; else return as is
-function resolveTo(to: string | (() => string) | undefined) {
-  return typeof to === 'function' ? to() : to;
+function navigateTo(path: string) {
+  router.push(path);
 }
 
 const model = ref<MenuItem[]>([
@@ -22,12 +21,12 @@ const model = ref<MenuItem[]>([
       {
         label: 'managerMenu.home.label',
         icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
-        to: () => `/project/${projectStore.projectId}/`,
+        command: () => navigateTo(`/project/${projectStore.projectId}/`)
       },
       {
         label: 'managerMenu.home.settings',
         icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
-        to: () => `/project/${projectStore.projectId}/settings`,
+        command: () => navigateTo(`/project/${projectStore.projectId}/settings`)
       },
     ],
   },
@@ -37,17 +36,17 @@ const model = ref<MenuItem[]>([
       {
         label: 'managerMenu.masterData.properties',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: () => `/project/${projectStore.projectId}/units`,
+        command: () => navigateTo(`/project/${projectStore.projectId}/units`)
       },
       {
         label: 'managerMenu.masterData.tenants',
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: () => `/project/${projectStore.projectId}/tenancies`,
+        command: () => navigateTo(`/project/${projectStore.projectId}/tenancies`)
       },
       {
         label: 'managerMenu.masterData.contractors',
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: () => `/project/${projectStore.projectId}/tenancies`,
+        command: () => navigateTo(`/project/${projectStore.projectId}/contractors`)
       },
     ],
   },
@@ -57,7 +56,7 @@ const model = ref<MenuItem[]>([
       {
         label: 'managerMenu.taskManagement.mine',
         icon: { type: 'fa', name: ['fas', 'list'] },
-        navigate: () => {
+        command: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({
             name: 'TaskOverview',
@@ -69,7 +68,7 @@ const model = ref<MenuItem[]>([
       {
         label: 'managerMenu.taskManagement.open',
         icon: { type: 'fa', name: ['fas', 'list-check'] },
-        navigate: () => {
+        command: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({
             name: 'TaskOverview',
@@ -81,7 +80,7 @@ const model = ref<MenuItem[]>([
       {
         label: 'managerMenu.taskManagement.all',
         icon: { type: 'fa', name: ['far', 'rectangle-list'] },
-        navigate: () => {
+        command: () => {
           const projectId = projectStore.selectedProject?.id;
           router.push({ name: 'TaskOverview', params: { projectId } });
         },
@@ -94,38 +93,33 @@ const model = ref<MenuItem[]>([
       {
         label: 'managerMenu.defectManagement.new',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/formlayout',
+        command: () => navigateTo('/uikit/formlayout'),
       },
       {
         label: 'managerMenu.defectManagement.open',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/formlayout',
+        command: () => navigateTo('/uikit/formlayout'),
       },
       {
         label: 'managerMenu.defectManagement.closed',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/formlayout',
+        command: () => navigateTo('/uikit/formlayout'),
       },
       {
         label: 'managerMenu.defectManagement.all',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/input',
+        command: () => navigateTo('/uikit/input'),
       },
     ],
   },
 ]);
-
 </script>
 
 <template>
   <div class="layout-sidebar">
     <ul class="layout-menu">
       <template v-for="(item, i) in model" :key="item.label">
-        <!-- Resolve to property if it’s a function -->
-        <AppMenuItem
-          :item="{ ...item, items: item.items?.map(sub => ({ ...sub, to: resolveTo(sub.to) })) }"
-          :index="i"
-        />
+        <AppMenuItem :item="item" :index="i" />
       </template>
     </ul>
   </div>
