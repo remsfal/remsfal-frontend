@@ -10,21 +10,24 @@ const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
-import { computed } from 'vue';
+// Helper to resolve `to` property: if function, call it; else return as is
+function resolveTo(to: string | (() => string) | undefined) {
+  return typeof to === 'function' ? to() : to;
+}
 
-const model = computed(() => [
+const model = ref<MenuItem[]>([
   {
     label: 'managerMenu.home',
     items: [
       {
         label: 'managerMenu.home.label',
         icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
-        to: `/project/${projectStore.projectId}/`,  // <-- Use backticks here!
+        to: () => `/project/${projectStore.projectId}/`,
       },
       {
         label: 'managerMenu.home.settings',
         icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
-        to: `/project/${projectStore.projectId}/settings`,
+        to: () => `/project/${projectStore.projectId}/settings`,
       },
     ],
   },
@@ -34,17 +37,17 @@ const model = computed(() => [
       {
         label: 'managerMenu.masterData.properties',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: `/project/${projectStore.projectId}/units`,
+        to: () => `/project/${projectStore.projectId}/units`,
       },
       {
         label: 'managerMenu.masterData.tenants',
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: `/project/${projectStore.projectId}/tenancies`,
+        to: () => `/project/${projectStore.projectId}/tenancies`,
       },
       {
         label: 'managerMenu.masterData.contractors',
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: `/project/${projectStore.projectId}/tenancies`,
+        to: () => `/project/${projectStore.projectId}/tenancies`,
       },
     ],
   },
@@ -118,7 +121,11 @@ const model = computed(() => [
   <div class="layout-sidebar">
     <ul class="layout-menu">
       <template v-for="(item, i) in model" :key="item.label">
-        <AppMenuItem :item="item" :index="i" />
+        <!-- Resolve to property if it’s a function -->
+        <AppMenuItem
+          :item="{ ...item, items: item.items?.map(sub => ({ ...sub, to: resolveTo(sub.to) })) }"
+          :index="i"
+        />
       </template>
     </ul>
   </div>
