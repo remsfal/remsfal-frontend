@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
@@ -115,9 +115,15 @@ function buildMenu(projectId: string | undefined) {
     },
   ];
 }
-onMounted(() => {
-  buildMenu(projectStore.projectId);
-});
+
+// Reactively watch for projectId changes and rebuild menu
+watch(
+  () => projectStore.projectId,
+  (newProjectId) => {
+    buildMenu(newProjectId);
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
