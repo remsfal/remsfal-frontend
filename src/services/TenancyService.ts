@@ -110,6 +110,10 @@ class TenancyService {
       }, 500);
     });
   }
+
+  async deleteTenancy(tenancyId: string): Promise<void> {
+    // TODO: Implementieren
+  }
 }
 
 export const tenancyService: TenancyService = new TenancyService();

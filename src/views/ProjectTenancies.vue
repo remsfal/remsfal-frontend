@@ -9,6 +9,7 @@ import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useProjectStore } from '@/stores/ProjectStore';
 
 defineProps<{
   projectId: string;
@@ -16,6 +17,7 @@ defineProps<{
 const { t } = useI18n();
 
 const router = useRouter();
+const projectStore = useProjectStore();
 
 const tenantData = ref<TenantItem[]>([]);
 const isLoading = ref(true);
@@ -100,7 +102,7 @@ function resetForm() {
 
 function navigateToTenancyDetails(id: string) {
   //richtige url bauen und nicht hardcodieren
-  router.push("/project/eb2a1b67-0bf7-46b7-bf35-94724210cc52/tenancies/" + id);
+  router.push("/project/" + projectStore.projectId + "/tenancies/" + id);
 }
 
 onMounted(async () => {
@@ -114,175 +116,92 @@ onMounted(async () => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <h1>{{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht</h1>
+      <h1 class="col-span-12">{{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht</h1>
       <div v-if="isLoading">Loading...</div>
-      <div v-if="!isLoading" class="col-span-12">
-        <div class="card">
-          <DataTable
-              :value="tenantData"
-              :rows="10"
-              :rowHover="true"
-              dataKey="id"
-              tableStyle="min-width: 60rem"
-              scrollable
-              scrollDirection="both"
-              scrollHeight="var(--custom-scroll-height)"
-              class="custom-scroll-height"
-          >
-            <Column field="firstName" header="Vorname" :sortable="true"/>
-            <Column field="lastName" header="Nachname" :sortable="true"/>
-            <Column field="unitTitle" header="Wohneinheit" :sortable="true"/>
-            <Column field="rentalObject" header="Mietgegenstand" :sortable="true"/>
-            <Column field="rentalStart" header="Mietbeginn" :sortable="true"/>
-            <Column field="rentalEnd" header="Mietende" :sortable="true"/>
-            <Column frozen alignFrozen="right">
-              <template #body="slotProps">
-                <div class="flex justify-end">
-                  <Button
-                      icon="pi pi-pencil"
-                      severity="success"
-                      text
-                      raised
-                      rounded
-                      class="mb-2 mr-2"
-                      @click="openEditDialog(slotProps.data)"
-                  />
-                  <Button
-                      icon="pi pi-trash"
-                      severity="danger"
-                      text
-                      raised
-                      rounded
-                      class="mb-2 mr-2"
-                      @click="confirmDelete(slotProps.data)"
-                  />
+      <div v-if="!isLoading" class="col-span-12 card">
+
+        <DataTable :value="tenancyData" :rows="10" :rowHover="true" dataKey="id" tableStyle="min-width: 60rem"
+          scrollable scrollDirection="both" scrollHeight="var(--custom-scroll-height)"
+          class="custom-scroll-height cursor-pointer" v-on:row-click="navigateToTenancyDetails( $event.data.id )">
+          <!-- Basis-Spalten -->
+          <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
+          <Column field="rentalEnd" header="Mietende" :sortable="true" />
+
+          <!-- Mieter-Spalte mit Mehrfachanzeige -->
+          <Column field="listOfTenants" header="Mieter">
+            <template #body="slotProps">
+              <div class="space-y-2">
+                <div v-for="(tenant, index) in slotProps.data.listOfTenants" :key="`${tenant.id}-${index}`"
+                  class="border-b last:border-none py-2">
+                  {{ tenant.firstName }} {{ tenant.lastName }}
                 </div>
-              </template>
-            </Column>
-          </DataTable>
-          <div class="flex justify-end mt-6">
-            
+              </div>
+            </template>
+          </Column>
 
-            <DataTable
-              :value="tenancyData"
-              :rows="10"
-              :rowHover="true"
-              dataKey="id"
-              tableStyle="min-width: 60rem"
-              scrollable
-              scrollDirection="both"
-              scrollHeight="var(--custom-scroll-height)"
-              class="custom-scroll-height"
-            >
-              <!-- Basis-Spalten -->
-              <Column field="rentalStart" header="Mietbeginn" :sortable="true"/>
-              <Column field="rentalEnd" header="Mietende" :sortable="true"/>
-              
-              <!-- Mieter-Spalte mit Mehrfachanzeige -->
-              <Column field="listOfTenants" header="Mieter">
-                  <template #body="slotProps">
-                      <div class="space-y-2">
-                          <div v-for="(tenant, index) in slotProps.data.listOfTenants" 
-                              :key="`${tenant.id}-${index}`"
-                              class="border-b last:border-none py-2">
-                              {{ tenant.firstName }} {{ tenant.lastName }}
-                          </div>
-                      </div>
-                  </template>
-              </Column>
+          <!-- Wohneinheiten-Spalte mit Mehrfachanzeige -->
+          <Column field="listOfUnits" header="Wohneinheiten">
+            <template #body="slotProps">
+              <div class="space-y-2">
+                <div v-for="(unit, index) in slotProps.data.listOfUnits" :key="`${unit.id}-${index}`"
+                  class="border-b last:border-none py-2">
+                  {{ unit.rentalObject }} - {{ unit.unitTitle }}
+                </div>
+              </div>
+            </template>
+          </Column>
+        </DataTable>
 
-              <!-- Wohneinheiten-Spalte mit Mehrfachanzeige -->
-              <Column field="listOfUnits" header="Wohneinheiten">
-                  <template #body="slotProps">
-                      <div class="space-y-2">
-                          <div v-for="(unit, index) in slotProps.data.listOfUnits" 
-                              :key="`${unit.id}-${index}`"
-                              class="border-b last:border-none py-2">
-                              {{ unit.rentalObject }} - {{ unit.unitTitle }}
-                          </div>
-                      </div>
-                  </template>
-              </Column>
-
-              <!-- Aktionen-Spalte -->
-              <Column frozen alignFrozen="right">
-                  <template #body="slotProps">
-                      <div class="flex justify-end">
-                          <Button
-                              icon="pi pi-pencil"
-                              severity="success"
-                              text
-                              raised
-                              rounded
-                              class="mb-2 mr-2"
-                              @click="navigateToTenancyDetails( slotProps.data.id )"
-                          />
-                          <Button
-                              icon="pi pi-trash"
-                              severity="danger"
-                              text
-                              raised
-                              rounded
-                              class="mb-2 mr-2"
-                              @click="confirmDelete(slotProps.data)"
-                          />
-                      </div>
-                  </template>
-              </Column>
-          </DataTable>
-            <Button
-              label="Neuen Mieter hinzufügen"
-              icon="pi pi-plus"
-              severity="primary"
-              @click="openAddDialog"
-            />
-          </div>
+        <div class="flex justify-end mt-6">
+          <Button type="button" icon="pi pi-plus" label="Neuen Mieter hinzufügen" class="mr-2 mb-2"
+            @click="openAddDialog" />
         </div>
       </div>
     </div>
 
-    <Dialog v-model:visible="dialogVisible" :header="isEditMode ? 'Mieter bearbeiten' : 'Neuen Mieter hinzufügen'" modal>
+    <Dialog v-model:visible="dialogVisible" :header="isEditMode ? 'Mieter bearbeiten' : 'Neuen Mieter hinzufügen'"
+      modal>
       <div class="p-fluid">
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="firstName" class="w-32">Vorname</label>
-            <InputText id="firstName" v-model="currentTenant.firstName" class="flex-1"/>
+            <InputText id="firstName" v-model="currentTenant.firstName" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="lastName" class="w-32">Nachname</label>
-            <InputText id="lastName" v-model="currentTenant.lastName" class="flex-1"/>
+            <InputText id="lastName" v-model="currentTenant.lastName" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="unitTitle" class="w-32">Wohneinheit</label>
-            <InputText id="unitTitle" v-model="currentTenant.unitTitle" class="flex-1"/>
+            <InputText id="unitTitle" v-model="currentTenant.unitTitle" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="rentalObject" class="w-32">Mietgegenstand</label>
-            <InputText id="rentalObject" v-model="currentTenant.rentalObject" class="flex-1"/>
+            <InputText id="rentalObject" v-model="currentTenant.rentalObject" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="rentalStart" class="w-32">Mietbeginn</label>
-            <Calendar id="rentalStart" v-model="currentTenant.rentalStart" class="flex-1"/>
+            <Calendar id="rentalStart" v-model="currentTenant.rentalStart" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="rentalEnd" class="w-32">Mietende</label>
-            <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" class="flex-1"/>
+            <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" class="flex-1" />
           </div>
         </div>
       </div>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="dialogVisible = false"/>
-        <Button label="Speichern" icon="pi pi-check" @click="saveTenant"/>
+        <Button label="Abbrechen" icon="pi pi-times" @click="dialogVisible = false" />
+        <Button label="Speichern" icon="pi pi-check" @click="saveTenant" />
       </template>
     </Dialog>
 
@@ -291,8 +210,8 @@ onMounted(async () => {
         <p>Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }} {{ tenantToDelete?.lastName }} löschen möchten?</p>
       </div>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false"/>
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion"/>
+        <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
+        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
       </template>
     </Dialog>
   </main>
