@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
@@ -10,118 +10,125 @@ const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
-// Make projectId reactive via computed
-const projectId = computed(() => projectStore.projectId);
+const projectId = ref<string | undefined>(projectStore.projectId);
+const model = ref<MenuItem[]>([]);
 
-// Optional: watch projectId changes for debugging
+// Function to build menu model given current projectId
+function buildMenuModel(currentProjectId?: string): MenuItem[] {
+  return [
+    {
+      label: 'managerMenu.home',
+      items: [
+        {
+          label: 'managerMenu.home.label',
+          icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
+          to: currentProjectId ? `/project/${currentProjectId}/` : '/',
+        },
+        {
+          label: 'managerMenu.home.settings',
+          icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
+          to: currentProjectId ? `/project/${currentProjectId}/settings` : '/',
+        },
+      ],
+    },
+    {
+      label: 'managerMenu.masterData',
+      items: [
+        {
+          label: 'managerMenu.masterData.properties',
+          icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+          to: currentProjectId ? `/project/${currentProjectId}/units` : '/',
+        },
+        {
+          label: 'managerMenu.masterData.tenants',
+          icon: { type: 'pi', name: 'pi pi-fw pi-users' },
+          to: currentProjectId ? `/project/${currentProjectId}/tenancies` : '/',
+        },
+        {
+          label: 'managerMenu.masterData.contractors',
+          icon: { type: 'pi', name: 'pi pi-fw pi-users' },
+          to: currentProjectId ? `/project/${currentProjectId}/tenancies` : '/',
+        },
+      ],
+    },
+    {
+      label: 'managerMenu.taskManagement',
+      items: [
+        {
+          label: 'managerMenu.taskManagement.mine',
+          icon: { type: 'fa', name: ['fas', 'list'] },
+          navigate: () => {
+            if (!currentProjectId) return;
+            router.push({
+              name: 'TaskOverview',
+              params: { projectId: currentProjectId },
+              query: { owner: sessionStore.user?.id },
+            });
+          },
+        },
+        {
+          label: 'managerMenu.taskManagement.open',
+          icon: { type: 'fa', name: ['fas', 'list-check'] },
+          navigate: () => {
+            if (!currentProjectId) return;
+            router.push({
+              name: 'TaskOverview',
+              params: { projectId: currentProjectId },
+              query: { status: Status.OPEN },
+            });
+          },
+        },
+        {
+          label: 'managerMenu.taskManagement.all',
+          icon: { type: 'fa', name: ['far', 'rectangle-list'] },
+          navigate: () => {
+            if (!currentProjectId) return;
+            router.push({ name: 'TaskOverview', params: { projectId: currentProjectId } });
+          },
+        },
+      ],
+    },
+    {
+      label: 'managerMenu.defectManagement',
+      items: [
+        {
+          label: 'managerMenu.defectManagement.new',
+          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+          to: '/uikit/formlayout',
+        },
+        {
+          label: 'managerMenu.defectManagement.open',
+          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+          to: '/uikit/formlayout',
+        },
+        {
+          label: 'managerMenu.defectManagement.closed',
+          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+          to: '/uikit/formlayout',
+        },
+        {
+          label: 'managerMenu.defectManagement.all',
+          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+          to: '/uikit/input',
+        },
+      ],
+    },
+  ];
+}
+
+// Initialize model on first load
+model.value = buildMenuModel(projectId.value);
+
+// Watch projectStore.projectId changes to update projectId and model
 watch(
-  projectId,
-  (id) => {
-    console.log('projectId changed to:', id);
+  () => projectStore.projectId,
+  (newId) => {
+    console.log('projectId changed to:', newId);
+    projectId.value = newId;
+    model.value = buildMenuModel(newId);
   },
   { immediate: true }
 );
-
-// Define menu model as computed, so it updates whenever projectId changes
-const model = computed<MenuItem[]>(() => [
-  {
-    label: 'managerMenu.home',
-    items: [
-      {
-        label: 'managerMenu.home.label',
-        icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
-        to: projectId.value ? `/project/${projectId.value}/` : '/',
-      },
-      {
-        label: 'managerMenu.home.settings',
-        icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
-        to: projectId.value ? `/project/${projectId.value}/settings` : '/',
-      },
-    ],
-  },
-  {
-    label: 'managerMenu.masterData',
-    items: [
-      {
-        label: 'managerMenu.masterData.properties',
-        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: projectId.value ? `/project/${projectId.value}/units` : '/',
-      },
-      {
-        label: 'managerMenu.masterData.tenants',
-        icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: projectId.value ? `/project/${projectId.value}/tenancies` : '/',
-      },
-      {
-        label: 'managerMenu.masterData.contractors',
-        icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-        to: projectId.value ? `/project/${projectId.value}/tenancies` : '/',
-      },
-    ],
-  },
-  {
-    label: 'managerMenu.taskManagement',
-    items: [
-      {
-        label: 'managerMenu.taskManagement.mine',
-        icon: { type: 'fa', name: ['fas', 'list'] },
-        navigate: () => {
-          if (!projectId.value) return;
-          router.push({
-            name: 'TaskOverview',
-            params: { projectId: projectId.value },
-            query: { owner: sessionStore.user?.id },
-          });
-        },
-      },
-      {
-        label: 'managerMenu.taskManagement.open',
-        icon: { type: 'fa', name: ['fas', 'list-check'] },
-        navigate: () => {
-          if (!projectId.value) return;
-          router.push({
-            name: 'TaskOverview',
-            params: { projectId: projectId.value },
-            query: { status: Status.OPEN },
-          });
-        },
-      },
-      {
-        label: 'managerMenu.taskManagement.all',
-        icon: { type: 'fa', name: ['far', 'rectangle-list'] },
-        navigate: () => {
-          if (!projectId.value) return;
-          router.push({ name: 'TaskOverview', params: { projectId: projectId.value } });
-        },
-      },
-    ],
-  },
-  {
-    label: 'managerMenu.defectManagement',
-    items: [
-      {
-        label: 'managerMenu.defectManagement.new',
-        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/formlayout',
-      },
-      {
-        label: 'managerMenu.defectManagement.open',
-        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/formlayout',
-      },
-      {
-        label: 'managerMenu.defectManagement.closed',
-        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/formlayout',
-      },
-      {
-        label: 'managerMenu.defectManagement.all',
-        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/uikit/input',
-      },
-    ],
-  },
-]);
 </script>
 
 <template>
