@@ -10,9 +10,11 @@ import { useRoute } from 'vue-router';
 
 import Chart from 'primevue/chart';
 import Card from 'primevue/card';
-import Dashboard from '@/components/Dashboard.vue'; 
 
 const { t } = useI18n();
+const route = useRoute();
+const projectId = route.params.projectId as string;
+
 const taskChartData = {
   labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
@@ -243,9 +245,6 @@ const recentActivities = [
   },
 ];
 
-
-const route = useRoute();
-const projectId = route.params.projectId as string;
 </script>
 
 
