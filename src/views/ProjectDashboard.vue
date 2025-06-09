@@ -17,31 +17,25 @@ const projectId = route.params.projectId as string;
 
 const statCards = [
   {
-    icon: 'pi pi-briefcase',
-    bgColor: 'bg-blue-100',
-    textColor: 'text-blue-600',
-    label: 'Projekte',
+    icon: 'pi-briefcase',
+    title: 'Projekte',
     value: 6,
-    info: '+2 seit letzter Woche',
-    infoColor: 'text-green-600',
+    subtext: '+2 seit letzter Woche',
+    color: 'blue'
   },
   {
-    icon: 'pi pi-exclamation-circle',
-    bgColor: 'bg-yellow-100',
-    textColor: 'text-yellow-600',
-    label: 'Offene Issues',
+    icon: 'pi-exclamation-circle',
+    title: 'Offene Issues',
     value: 12,
-    info: '-1 seit gestern',
-    infoColor: 'text-red-500',
+    subtext: '-1 seit gestern',
+    color: 'yellow'
   },
   {
     icon: 'pi pi-check-circle',
-    bgColor: 'bg-green-100',
-    textColor: 'text-green-600',
-    label: 'Abgeschlossene Aufgaben',
+    title: 'Abgeschlossene Aufgaben',
     value: 34,
-    info: '+5 abgeschlossen',
-    infoColor: 'text-green-600',
+    subtext: '+5 abgeschlossen',
+    color: 'green'
   }
 ];
 
@@ -127,7 +121,7 @@ const issueChartData = {
   ],
 };
 
-const issueChartOptions = taskChartOptions; // Reuse
+const issueChartOptions = taskChartOptions;
 
 const defectChartData = {
   labels: ['Offen', 'In Bearbeitung', 'Behoben'],
@@ -167,33 +161,18 @@ const recentActivities = [
       {{ t('projectDashboard.title', [projectId]) }}
     </h1>
 
-    <!-- Verbesserte Summary Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-  <StatCard
-    icon="pi-briefcase"
-    title="Projekte"
-    value="6"
-    subtext="+2 seit letzter Woche"
-    color="blue"
-  />
-
-  <StatCard
-    icon="pi-exclamation-circle"
-    title="Offene Issues"
-    value="12"
-    subtext="-1 seit gestern"
-    color="yellow"
-  />
-
-  <StatCard
-    icon="pi-check-circle"
-    title="Abgeschlossene Aufgaben"
-    value="34"
-    subtext="+5 abgeschlossen"
-    color="green"
-  />
-</div>
-
+    <!-- Dynamische Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+      <StatCard
+        v-for="(card, index) in statCards"
+        :key="index"
+        :icon="card.icon"
+        :title="card.title"
+        :value="card.value"
+        :subtext="card.subtext"
+        :color="card.color"
+      />
+    </div>
 
     <!-- Aufgabenstatus -->
     <Card class="mb-6 p-4">
