@@ -9,35 +9,48 @@ import { useRoute } from 'vue-router';
 
 import Chart from 'primevue/chart';
 import Card from 'primevue/card';
+import StatCard from '@/components/StatCard.vue';
 
 const { t } = useI18n();
 const route = useRoute();
 const projectId = route.params.projectId as string;
 
+const statCards = [
+  {
+    icon: 'pi pi-briefcase',
+    bgColor: 'bg-blue-100',
+    textColor: 'text-blue-600',
+    label: 'Projekte',
+    value: 6,
+    info: '+2 seit letzter Woche',
+    infoColor: 'text-green-600',
+  },
+  {
+    icon: 'pi pi-exclamation-circle',
+    bgColor: 'bg-yellow-100',
+    textColor: 'text-yellow-600',
+    label: 'Offene Issues',
+    value: 12,
+    info: '-1 seit gestern',
+    infoColor: 'text-red-500',
+  },
+  {
+    icon: 'pi pi-check-circle',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-600',
+    label: 'Abgeschlossene Aufgaben',
+    value: 34,
+    info: '+5 abgeschlossen',
+    infoColor: 'text-green-600',
+  }
+];
+
 const taskChartData = {
   labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
-    {
-      label: 'Aufgaben',
-      data: [20,15,16,12,8,13],
-      backgroundColor: '#3B82F6',
-      borderRadius: 4,
-      barThickness: 12,
-    },
-    {
-      label: 'Offene Aufgaben',
-      data: [0,2,4,1,0,7],
-      backgroundColor: '#F97316',
-      borderRadius: 4,
-      barThickness: 12,
-    },
-    {
-      label: 'Erledigte Aufgaben',
-      data: [20,13,12,11,8,6],
-      backgroundColor: '#10B981',
-      borderRadius: 4,
-      barThickness: 12,
-    },
+    { label: 'Aufgaben', data: [20,15,16,12,8,13], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 },
+    { label: 'Offene Aufgaben', data: [0,2,4,1,0,7], backgroundColor: '#F97316', borderRadius: 4, barThickness: 12 },
+    { label: 'Erledigte Aufgaben', data: [20,13,12,11,8,6], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 },
   ],
 };
 
@@ -47,47 +60,34 @@ const taskChartOptions = {
     legend: {
       position: 'top',
       labels: {
-        color: '#374151', 
+        color: '#374151',
         padding: 20,
-        font: {
-          size: 14,
-          weight: 'bold',
-        },
+        font: { size: 14, weight: 'bold' }
       },
     },
     tooltip: {
-    backgroundColor: '#f9fafb',
-    titleColor: '#111827',
-    bodyColor: '#374151',
-    borderColor: '#e5e7eb',
-    borderWidth: 1,
-    titleFont: { weight: 'bold' },
+      backgroundColor: '#f9fafb',
+      titleColor: '#111827',
+      bodyColor: '#374151',
+      borderColor: '#e5e7eb',
+      borderWidth: 1,
+      titleFont: { weight: 'bold' },
     },
   },
   scales: {
     x: {
-      ticks: {
-        color: '#6b7280', // helleres Grau
-      },
-      grid: {
-        display: false,
-      },
+      ticks: { color: '#6b7280' },
+      grid: { display: false },
       barPercentage: 0.7,
       categoryPercentage: 0.5,
     },
     y: {
       beginAtZero: true,
-      ticks: {
-        color: '#6b7280',
-        stepSize: 5,
-      },
-      grid: {
-        color: '#e5e7eb', // hellgraue Linien
-      },
+      ticks: { color: '#6b7280', stepSize: 5 },
+      grid: { color: '#e5e7eb' },
     },
   },
 };
-
 
 const costChartData = {
   labels: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
@@ -105,14 +105,10 @@ const costChartData = {
 const costChartOptions = {
   responsive: true,
   plugins: {
-    legend: {
-      position: 'top'
-    }
+    legend: { position: 'top' }
   },
   scales: {
-    y: {
-      beginAtZero: true
-    }
+    y: { beginAtZero: true }
   }
 };
 
@@ -125,76 +121,13 @@ const upcomingTasks = [
 const issueChartData = {
   labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
-    {
-      label: 'Offene Issues',
-      data: [5, 7, 4, 6, 8, 3],
-      backgroundColor: '#F59E0B', // Amber
-      borderRadius: 4,
-      barThickness: 12,
-    },
-    {
-      label: 'In Bearbeitung',
-      data: [2, 3, 5, 4, 3, 2],
-      backgroundColor: '#3B82F6', // Blau
-      borderRadius: 4,
-      barThickness: 12,
-    },
-    {
-      label: 'Erledigte Issues',
-      data: [10, 8, 9, 11, 7, 10],
-      backgroundColor: '#10B981', // Grün
-      borderRadius: 4,
-      barThickness: 12,
-    },
+    { label: 'Offene Issues', data: [5, 7, 4, 6, 8, 3], backgroundColor: '#F59E0B', borderRadius: 4, barThickness: 12 },
+    { label: 'In Bearbeitung', data: [2, 3, 5, 4, 3, 2], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 },
+    { label: 'Erledigte Issues', data: [10, 8, 9, 11, 7, 10], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 },
   ],
 };
 
-const issueChartOptions = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-      labels: {
-        color: '#374151',
-        padding: 20,
-        font: {
-          size: 14,
-          weight: 'bold',
-        },
-      },
-    },
-    tooltip: {
-      backgroundColor: '#f9fafb',
-      titleColor: '#111827',
-      bodyColor: '#374151',
-      borderColor: '#e5e7eb',
-      borderWidth: 1,
-      titleFont: { weight: 'bold' },
-    },
-  },
-  scales: {
-    x: {
-      ticks: {
-        color: '#6b7280',
-      },
-      grid: {
-        display: false,
-      },
-      barPercentage: 0.7,
-      categoryPercentage: 0.5,
-    },
-    y: {
-      beginAtZero: true,
-      ticks: {
-        color: '#6b7280',
-        stepSize: 5,
-      },
-      grid: {
-        color: '#e5e7eb',
-      },
-    },
-  },
-};
+const issueChartOptions = taskChartOptions; // Reuse
 
 const defectChartData = {
   labels: ['Offen', 'In Bearbeitung', 'Behoben'],
@@ -211,41 +144,22 @@ const defectChartData = {
 const defectChartOptions = {
   responsive: true,
   plugins: {
-    legend: {
-      position: 'top',
-    },
+    legend: { position: 'top' },
     datalabels: {
       display: true,
       color: '#111827',
-      font: {
-        weight: 'bold' as const,
-        size: 14,
-      },
+      font: { weight: 'bold' as const, size: 14 },
       formatter: (value: number) => value
     }
   }
 };
 
 const recentActivities = [
-  {
-    title: 'Dokumentation abgeschlossen',
-    date: '2025-06-04',
-    type: 'completed'
-  },
-  {
-    title: 'Status geändert: "Review Meeting"',
-    date: '2025-06-03',
-    type: 'updated'
-  },
-  {
-    title: 'Neuer Mangel gemeldet',
-    date: '2025-06-01',
-    type: 'issue'
-  },
+  { title: 'Dokumentation abgeschlossen', date: '2025-06-04', type: 'completed' },
+  { title: 'Status geändert: "Review Meeting"', date: '2025-06-03', type: 'updated' },
+  { title: 'Neuer Mangel gemeldet', date: '2025-06-01', type: 'issue' },
 ];
-
 </script>
-
 
 <template>
   <main class="p-4">
@@ -253,77 +167,26 @@ const recentActivities = [
       {{ t('projectDashboard.title', [projectId]) }}
     </h1>
 
-    <!-- Verbesserte Summary Cards -->
+    <!-- Stat Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-  <!-- Projekte -->
-  <Card class="shadow-lg rounded-xl">
-    <template #content>
-      <div class="flex items-center gap-4 p-4">
-        <div class="bg-blue-100 text-blue-600 rounded-full p-3">
-          <i class="pi pi-briefcase text-xl"></i>
-        </div>
-        <div>
-          <p class="text-gray-500 text-sm font-medium">Projekte</p>
-          <p class="text-2xl font-bold text-gray-800">6</p>
-          <p class="text-sm text-green-600 mt-1">+2 seit letzter Woche</p>
-        </div>
-      </div>
-    </template>
-  </Card>
-
-  <!-- Offene Issues -->
-  <Card class="shadow-lg rounded-xl">
-    <template #content>
-      <div class="flex items-center gap-4 p-4">
-        <div class="bg-yellow-100 text-yellow-600 rounded-full p-3">
-          <i class="pi pi-exclamation-circle text-xl"></i>
-        </div>
-        <div>
-          <p class="text-gray-500 text-sm font-medium">Offene Issues</p>
-          <p class="text-2xl font-bold text-gray-800">12</p>
-          <p class="text-sm text-red-500 mt-1">-1 seit gestern</p>
-        </div>
-      </div>
-    </template>
-  </Card>
-
-  <!-- Abgeschlossene Aufgaben -->
-  <Card class="shadow-lg rounded-xl">
-    <template #content>
-      <div class="flex items-center gap-4 p-4">
-        <div class="bg-green-100 text-green-600 rounded-full p-3">
-          <i class="pi pi-check-circle text-xl"></i>
-        </div>
-        <div>
-          <p class="text-gray-500 text-sm font-medium">Abgeschlossene Aufgaben</p>
-          <p class="text-2xl font-bold text-gray-800">34</p>
-          <p class="text-sm text-green-600 mt-1">+5 abgeschlossen</p>
-        </div>
-      </div>
-    </template>
-  </Card>
-</div>
+      <StatCard
+        v-for="card in statCards"
+        :key="card.label"
+        v-bind="card"
+      />
+    </div>
 
     <!-- Aufgabenstatus -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Aufgabenstatus
-      </template>
+      <template #title>Aufgabenstatus</template>
       <template #content>
-        <Chart
-          type="bar"
-          :data="taskChartData"
-          :options="taskChartOptions"
-          style="height: 300px"
-        />
+        <Chart type="bar" :data="taskChartData" :options="taskChartOptions" style="height: 300px" />
       </template>
     </Card>
 
-    <!-- Recent Activity Feed -->
+    <!-- Letzte Aktivitäten -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Letzte Aktivitäten
-      </template>
+      <template #title>Letzte Aktivitäten</template>
       <template #content>
         <ul class="space-y-4">
           <li
@@ -340,9 +203,7 @@ const recentActivities = [
               }"
             ></span>
             <div>
-              <p class="text-sm text-gray-800 font-medium">
-                {{ activity.title }}
-              </p>
+              <p class="text-sm text-gray-800 font-medium">{{ activity.title }}</p>
               <p class="text-xs text-gray-500">{{ activity.date }}</p>
             </div>
           </li>
@@ -352,39 +213,23 @@ const recentActivities = [
 
     <!-- Kostenübersicht -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Monatliche Kosten
-      </template>
+      <template #title>Monatliche Kosten</template>
       <template #content>
-        <Chart
-          type="line"
-          :data="costChartData"
-          :options="costChartOptions"
-          style="height: 300px; max-width: 100%;"
-        />
+        <Chart type="line" :data="costChartData" :options="costChartOptions" style="height: 300px" />
       </template>
     </Card>
 
-    <!-- Issue Status Übersicht -->
+    <!-- Issue Übersicht -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Issue Status Übersicht
-      </template>
+      <template #title>Issue Status Übersicht</template>
       <template #content>
-        <Chart
-          type="bar"
-          :data="issueChartData"
-          :options="issueChartOptions"
-          style="height: 300px"
-        />
+        <Chart type="bar" :data="issueChartData" :options="issueChartOptions" style="height: 300px" />
       </template>
     </Card>
 
     <!-- Nächste Fälligkeiten -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Nächste Fälligkeiten
-      </template>
+      <template #title>Nächste Fälligkeiten</template>
       <template #content>
         <table class="min-w-full divide-y divide-gray-200 text-sm">
           <thead class="bg-gray-50 text-gray-700 text-left">
@@ -402,8 +247,7 @@ const recentActivities = [
                 <span
                   :class="{
                     'text-red-500 font-semibold': task.status === 'Offen',
-                    'text-yellow-500 font-semibold':
-                      task.status === 'In Bearbeitung',
+                    'text-yellow-500 font-semibold': task.status === 'In Bearbeitung',
                     'text-green-500 font-semibold': task.status === 'Erledigt',
                   }"
                 >
@@ -418,9 +262,7 @@ const recentActivities = [
 
     <!-- Mängelübersicht -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Mängelübersicht
-      </template>
+      <template #title>Mängelübersicht</template>
       <template #content>
         <Chart
           type="doughnut"
