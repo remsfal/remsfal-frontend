@@ -167,14 +167,33 @@ const recentActivities = [
       {{ t('projectDashboard.title', [projectId]) }}
     </h1>
 
-    <!-- Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-      <StatCard
-        v-for="card in statCards"
-        :key="card.label"
-        v-bind="card"
-      />
-    </div>
+    <!-- Verbesserte Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+  <StatCard
+    icon="pi-briefcase"
+    title="Projekte"
+    value="6"
+    subtext="+2 seit letzter Woche"
+    color="blue"
+  />
+
+  <StatCard
+    icon="pi-exclamation-circle"
+    title="Offene Issues"
+    value="12"
+    subtext="-1 seit gestern"
+    color="yellow"
+  />
+
+  <StatCard
+    icon="pi-check-circle"
+    title="Abgeschlossene Aufgaben"
+    value="34"
+    subtext="+5 abgeschlossen"
+    color="green"
+  />
+</div>
+
 
     <!-- Aufgabenstatus -->
     <Card class="mb-6 p-4">
