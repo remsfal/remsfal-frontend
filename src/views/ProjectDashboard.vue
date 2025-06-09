@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import 'chart.js/auto';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, ArcElement } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
 ChartJS.register(ArcElement);
 
 import { useI18n } from 'vue-i18n';
