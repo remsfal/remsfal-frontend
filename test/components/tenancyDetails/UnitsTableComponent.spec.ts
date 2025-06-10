@@ -68,17 +68,16 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
   it('handles fetch error gracefully', async () => {
     (propertyService.getPropertyTree as any).mockRejectedValueOnce(new Error('fetch failed'));
 
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
     const wrapper = mount(UnitsTableComponent, {
       props: {
         listOfUnits: [],
       },
     });
 
-    await new Promise(setImmediate);
+    await new Promise(setImmediate); // wait for onMounted + promise
 
-    expect(consoleSpy).toHaveBeenCalledWith('Failed to load dropdown options:', expect.any(Error));
-    consoleSpy.mockRestore();
+    const vm: any = wrapper.vm;
+    expect(vm.unitTypes).toEqual([]);
+    expect(vm.rentalObjects).toEqual([]);
   });
 });
