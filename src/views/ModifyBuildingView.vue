@@ -279,7 +279,6 @@ const fetchBuildingDetails = () => {
   buildingService
     .getBuilding(props.projectId, props.unitId)
     .then((building) => {
-      console.log('🎯 Full Building Response:', JSON.stringify(building, null, 2));
       title.value = building.title || '';
       description.value = building.description || '';
       livingSpace.value = building.livingSpace ?? null;
