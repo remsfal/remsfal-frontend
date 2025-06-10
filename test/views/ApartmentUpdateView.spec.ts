@@ -1,5 +1,5 @@
 import { mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import ModifyApartmentView from '../../src/views/ModifyApartmentView.vue';
 import axios from 'axios';
 
@@ -43,7 +43,7 @@ describe('ModifyApartmentView.vue', () => {
         };
 
         const mockPush = vi.fn();
-        (axios.patch as vi.Mock).mockResolvedValue({});
+        (axios.patch as Mock).mockResolvedValue({});
         (wrapper.vm as any).router.push = mockPush;
 
         // Call handleSubmit
