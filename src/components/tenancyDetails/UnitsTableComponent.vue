@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { tenancyService, type TenancyUnitItem } from '@/services/TenancyService';
 import { propertyService, EntityType, toRentableUnitView } from '@/services/PropertyService';
 import { useProjectStore } from '@/stores/ProjectStore';
+import Select, { type SelectChangeEvent } from 'primevue/select';
 
 const { listOfUnits } = defineProps<{
     listOfUnits: TenancyUnitItem[];
@@ -104,9 +105,8 @@ const onCellEditComplete = async (event: any) => {
                 <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header"
                     style="width: 25%">
                     <template #editor="{ data, field }">
-                        <Dropdown v-model="data[field]" :options="field === 'rentalObject' ? rentalObjects : unitTypes"
-                            optionLabel="label" optionValue="value" placeholder="Auswählen..." :showClear="true"
-                            :filter="true" filterPlaceholder="Suchen..." />
+                        <Select v-model="data[field]" :options="field === 'rentalObject' ? rentalObjects : unitTypes"
+                            optionLabel="label" optionValue="value" placeholder="Auswählen..." filter />
                     </template>
                 </Column>
             </DataTable>

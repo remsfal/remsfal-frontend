@@ -105,6 +105,10 @@ function navigateToTenancyDetails(id: string) {
   router.push("/project/" + projectStore.projectId + "/tenancies/" + id);
 }
 
+function navigateToNewTenancy() {
+  router.push(`/project/${projectStore.projectId}/tenancies/new-tenancy`);
+}
+
 onMounted(async () => {
   tenantData.value = await tenancyService.fetchTenantData();
   isLoading.value = false;
@@ -154,56 +158,10 @@ onMounted(async () => {
 
         <div class="flex justify-end mt-6">
           <Button type="button" icon="pi pi-plus" label="Neuen Mieter hinzufügen" class="mr-2 mb-2"
-            @click="openAddDialog" />
+            @click="navigateToNewTenancy" />
         </div>
       </div>
     </div>
-
-    <Dialog v-model:visible="dialogVisible" :header="isEditMode ? 'Mieter bearbeiten' : 'Neuen Mieter hinzufügen'"
-      modal>
-      <div class="p-fluid">
-        <div class="field">
-          <div class="flex items-center gap-4">
-            <label for="firstName" class="w-32">Vorname</label>
-            <InputText id="firstName" v-model="currentTenant.firstName" class="flex-1" />
-          </div>
-        </div>
-        <div class="field">
-          <div class="flex items-center gap-4">
-            <label for="lastName" class="w-32">Nachname</label>
-            <InputText id="lastName" v-model="currentTenant.lastName" class="flex-1" />
-          </div>
-        </div>
-        <div class="field">
-          <div class="flex items-center gap-4">
-            <label for="unitTitle" class="w-32">Wohneinheit</label>
-            <InputText id="unitTitle" v-model="currentTenant.unitTitle" class="flex-1" />
-          </div>
-        </div>
-        <div class="field">
-          <div class="flex items-center gap-4">
-            <label for="rentalObject" class="w-32">Mietgegenstand</label>
-            <InputText id="rentalObject" v-model="currentTenant.rentalObject" class="flex-1" />
-          </div>
-        </div>
-        <div class="field">
-          <div class="flex items-center gap-4">
-            <label for="rentalStart" class="w-32">Mietbeginn</label>
-            <Calendar id="rentalStart" v-model="currentTenant.rentalStart" class="flex-1" />
-          </div>
-        </div>
-        <div class="field">
-          <div class="flex items-center gap-4">
-            <label for="rentalEnd" class="w-32">Mietende</label>
-            <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" class="flex-1" />
-          </div>
-        </div>
-      </div>
-      <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="dialogVisible = false" />
-        <Button label="Speichern" icon="pi pi-check" @click="saveTenant" />
-      </template>
-    </Dialog>
 
     <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
       <div class="p-fluid">

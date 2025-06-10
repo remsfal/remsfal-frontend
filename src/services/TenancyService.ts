@@ -122,6 +122,14 @@ class TenancyService {
   async updateTenancyUnitItem(tenant: TenancyUnitItem): Promise<void> {
     // TODO: Implementieren
   }
+
+  async createTenancy(tenancy: TenancyItem): Promise<void> {
+    //TODO: Implementieren
+  }
+
+  async updateTenancy(tenancy: TenancyItem | null): Promise<void> {
+    //TODO: Implementieren
+  }
 }
 
 export const tenancyService: TenancyService = new TenancyService();
