@@ -152,6 +152,15 @@ const projectRoutes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: 'garage/:garageId',
+        name: 'GarageUpdate',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          garageId: route.params.garageId,
+        }),
+        component: () => import('@/views/ModifyGarageView.vue'),
+      },
+      {
         path: 'garage/:unitId',
         name: 'GarageView',
         props: (route: RouteLocationNormalizedLoaded) => ({
@@ -176,9 +185,12 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/TaskEdit.vue'),
       },
       {
-        path: 'building/:buildingId/apartments/:apartmentId/update',
-        name: 'UpdateApartmentView',
-        props: true,
+        path: 'apartment/:apartmentId',
+        name: 'ApartmentUpdate',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          apartmentId: route.params.apartmentId,
+        }),
         component: () => import('@/views/ModifyApartmentView.vue'),
       },
       {
