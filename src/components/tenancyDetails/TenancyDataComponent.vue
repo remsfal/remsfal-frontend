@@ -10,9 +10,9 @@ const { tenancy } = defineProps<{
 const emit = defineEmits<{ (e: 'onChange', tenancy: TenancyItem): void }>();
 
 const rentalActive = computed(() => {
-    if (!localTenancy.value.rentalStart || !localTenancy.value.rentalEnd) return false;
+    if (!localTenancy.value?.rentalStart || !localTenancy.value?.rentalEnd) return false;
     const now = new Date();
-    return now >= localTenancy.value.rentalStart && now <= localTenancy.value.rentalEnd;
+    return now >= localTenancy.value?.rentalStart && now <= localTenancy.value?.rentalEnd;
 });
 
 const localTenancy = ref<TenancyItem>(tenancy);

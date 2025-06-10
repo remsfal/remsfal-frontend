@@ -2,7 +2,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import Dialog from 'primevue/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import UnitsTableComponent from '../../../src/components/tenancyDetails/UnitsTableComponent.vue';
+import TenantsTableComponent from '../../../src/components/tenancyDetails/TenantsTableComponent.vue';
 
 // Mock PrimeVue configuration  to avoid errors during testing
 vi.mock('primevue/config', () => ({
@@ -17,7 +17,7 @@ describe('ProjectTenancies.vue', () => {
 
   beforeEach(() => {
     // Mount the component with PrimeVue plugin mocked
-    wrapper = mount(UnitsTableComponent, {
+    wrapper = mount(TenantsTableComponent, {
       global: {
         plugins: [PrimeVue],
       },

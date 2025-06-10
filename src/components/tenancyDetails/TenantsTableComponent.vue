@@ -19,7 +19,7 @@ const localTenants = ref<TenancyTenantItem[]>([]);
 watch(
     () => props.tenants,
     (newVal) => {
-        localTenants.value = newVal.map(t => ({ ...t }));
+        localTenants.value = newVal?.map(t => ({ ...t }));
     },
     { immediate: true, deep: true }
 );

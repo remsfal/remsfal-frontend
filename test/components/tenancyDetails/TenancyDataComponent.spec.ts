@@ -1,8 +1,8 @@
 import { mount, VueWrapper } from '@vue/test-utils';
+import { DatePicker } from 'primevue';
 import PrimeVue from 'primevue/config';
-import Dialog from 'primevue/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import UnitsTableComponent from '../../../src/components/tenancyDetails/UnitsTableComponent.vue';
+import TenancyDataComponent from '../../../src/components/tenancyDetails/TenancyDataComponent.vue';
 
 // Mock PrimeVue configuration  to avoid errors during testing
 vi.mock('primevue/config', () => ({
@@ -17,9 +17,22 @@ describe('ProjectTenancies.vue', () => {
 
   beforeEach(() => {
     // Mount the component with PrimeVue plugin mocked
-    wrapper = mount(UnitsTableComponent, {
+    wrapper = mount(TenancyDataComponent, {
       global: {
         plugins: [PrimeVue],
+      },
+      components: {
+        DatePicker,
+      },
+      props: {
+        tenancy: {
+          id: '1',
+          name: 'Test Tenancy',
+          startDate: '2023-01-01',
+          endDate: '2023-12-31',
+          status: 'active',
+          projectId: '123',
+        },
       },
     });
   });
