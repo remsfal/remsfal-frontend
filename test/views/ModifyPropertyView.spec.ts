@@ -87,4 +87,11 @@ describe('ModifyPropertyView.vue', () => {
       }),
     );
   });
+
+  it(' validates plotArea is positive', async () => {
+    wrapper.vm.plotArea = -100;
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.validationErrors).toContain('Grundstücksfläche darf nicht negativ sein.');
+    expect(wrapper.vm.isValid).toBe(false);
+  });
 });
