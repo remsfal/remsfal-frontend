@@ -52,15 +52,9 @@ describe('ModifyPropertyView.vue', () => {
 
   it('enables save button only if data is modified', async () => {
     const saveButton = wrapper.find('button[type="submit"]');
-
-    // Am Anfang nicht geändert => disabled
     expect(saveButton.element.disabled).toBe(true);
-
-    // Feld ändern
     await wrapper.find('input[type="text"]').setValue('New Title');
-
-    // Save Button aktivieren
-    expect(wrapper.vm.isModified).toBe(true);
+    expect(wrapper.vm.hasChanges).toBe(true);
     expect(saveButton.attributes('disabled')).toBeUndefined();
   });
 
