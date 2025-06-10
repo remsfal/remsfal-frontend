@@ -1,166 +1,178 @@
 <script setup lang="ts">
-import ReusableFormComponentVue from '@/components/ReusableFormComponent.vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { computed, onMounted, ref } from 'vue';
 import { garageService, type GarageUnit } from '@/services/GarageService';
 
 const props = defineProps<{
   projectId: string;
-  propertyId: string;
-  buildingId: string;
-  garageId?: string;
+  garageId: string;
 }>();
 
 const router = useRouter();
-const isEditMode = computed(() => !!props.garageId);
 
-const fields: {
-  name: string; // Field key
-  label: string; // Label for the field
-  type: 'text' | 'textarea' | 'checkbox' | 'select'; // Input type
-  options?: any[]; // For dropdowns
-  required?: boolean; // Is this field required
-  validations?: ((value: any) => string | null)[]; // Array of validation functions
-}[] = [
-  {
-    name: 'title',
-    label: 'Garage Title',
-    type: 'text',
-    required: true,
-    validations: [
-      (value: any): string | null =>
-        typeof value === 'string' && value.length < 3
-          ? 'Title must be at least 3 characters long.'
-          : null,
-    ],
-  },
-  {
-    name: 'description',
-    label: 'Description',
-    type: 'textarea',
-    required: true,
-    validations: undefined, // Explicitly define when no validations exist
-  },
-  {
-    name: 'location',
-    label: 'Location',
-    type: 'textarea',
-    required: true,
-    validations: undefined,
-  },
-  {
-    name: 'usableSpace',
-    label: 'Usable Space (m²)',
-    type: 'text',
-    required: true,
-    validations: [
-      (value: any): string | null => {
-        const numberValue = Number(value);
-        return isNaN(numberValue) || numberValue <= 0
-          ? 'Usable Space must be a positive number.'
-          : null;
-      },
-    ],
-    options: undefined, // Explicitly define when no options exist
-  },
-];
+// Formfelder
+const title = ref('');
+const description = ref('');
+const location = ref('');
+const usableSpace = ref<number | null>(null);
 
-const initialValues = ref({
+// Originalwerte zur Vergleichserkennung
+const originalValues = ref({
   title: '',
   description: '',
   location: '',
-  usableSpace: null,
+  usableSpace: null as number | null,
 });
 
-// fetch garage
-const fetchGarageData = async () => {
-  if (!isEditMode.value || !props.garageId) return;
+const hasChanges = computed(() => {
+  return (
+    title.value !== originalValues.value.title ||
+    description.value !== originalValues.value.description ||
+    location.value !== originalValues.value.location ||
+    usableSpace.value !== originalValues.value.usableSpace
+  );
+});
 
+const validationErrors = computed(() => {
+  const errors: string[] = [];
+  if (!title.value || title.value.length < 3) {
+    errors.push('Der Titel muss mindestens 3 Zeichen lang sein.');
+  }
+  if (!location.value) {
+    errors.push('Standort ist erforderlich.');
+  }
+  if (usableSpace.value !== null && usableSpace.value < 0) {
+    errors.push('Nutzfläche darf nicht negativ sein.');
+  }
+  return errors;
+});
+
+const isValid = computed(() => validationErrors.value.length === 0);
+
+const fetchGarageDetails = async () => {
   try {
-    const response: any = await garageService.getGarage(props.projectId, props.garageId);
-    // Populate the initialValues
-    initialValues.value = {
-      title: response.data.title || '',
-      description: response.data.description || '',
-      location: response.data.location || '',
-      usableSpace: response.data.usableSpace || '',
+    const data = await garageService.getGarage(props.projectId, props.garageId);
+    console.log('Garage-Daten vom Backend:', data); // Hier siehst du die Antwort
+    title.value = data.title || '';
+    description.value = data.description || '';
+    location.value = data.location || '';
+    usableSpace.value = data.usableSpace ?? null;
+
+    originalValues.value = {
+      title: title.value,
+      description: description.value,
+      location: location.value,
+      usableSpace: usableSpace.value,
     };
   } catch (error) {
-    console.error('Failed to fetch garage data:', error);
-    alert('Failed to fetch garage data. Please try again.');
+    console.error('Fehler beim Laden der Garage:', error);
   }
 };
+onMounted(() => {
+  if (props.garageId) {
+    fetchGarageDetails();
+  }
+});
 
-const handleSubmit = async (values: Record<string, any>) => {
-  // Validate required fields
-  if (!values.title || values.title.length < 3) {
-    alert('Title is required and must be at least 3 characters.');
+const save = async () => {
+  if (!isValid.value) {
+    alert('Bitte beheben Sie die Validierungsfehler.');
     return;
   }
 
-  if (!values.usableSpace || values.usableSpace <= 0) {
-    alert('Usable space must be a positive number.');
-    return;
-  }
-
-  const garage: GarageUnit = {
-    title: values.title,
-    description: values.description,
-    location: values.location,
-    usableSpace: parseFloat(values.usableSpace),
+  const payload: GarageUnit = {
+    title: title.value,
+    description: description.value,
+    location: location.value,
+    usableSpace: usableSpace.value!,
   };
 
   try {
-    if (isEditMode.value && props.garageId) {
-      // Update existing garage
-      const response = await garageService.updateGarage(props.projectId, props.garageId, garage);
-      console.log('Garage updated successfully:', response);
-      alert('Garage updated successfully!');
-    } else {
-      console.log('else');
-
-      // create a new garage
-      const response = await garageService.createGarage(
-        props.projectId,
-        props.buildingId,
-        garage,
-      );
-      console.log('Garage created successfully:', response);
-      alert('Garage created successfully!');
-      router.back();
-    }
-  } catch (error) {
-    console.error('Error submitting garage data:', error);
-    alert('Failed to submit garage data. Please try again.');
+    await garageService.updateGarage(props.projectId, props.garageId, payload);
+    alert('Garage erfolgreich gespeichert!');
+    window.location.reload();
+  } catch (err) {
+    console.error('Fehler beim Speichern:', err);
+    alert('Fehler beim Speichern');
   }
 };
-const handleCancel = () => {
-  router.back();
-};
 
-onMounted(fetchGarageData);
+const cancel = () => {
+  if (window.opener) {
+    window.close();
+  } else {
+    router.push(`/project/${props.projectId}/objects`);
+  }
+};
 </script>
 
 <template>
-  <div>
-    <ReusableFormComponentVue
-      :headline="isEditMode ? 'Edit Garage Form' : 'Garage Creation Form'"
-      :fields="fields"
-      :initialValues="initialValues"
-      saveButtonText="Save"
-      cancelButtonText="Cancel"
-      @submit="handleSubmit"
-      @cancel="handleCancel"
-    />
+  <div class="p-6 w-full">
+    <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
+      <h2 class="text-2xl font-semibold mb-6">Bearbeite Garage mit ID: {{ garageId }}</h2>
+      <form @submit.prevent="save">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <!-- Titel -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Titel</label>
+            <input v-model="title" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Beschreibung -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Beschreibung</label>
+            <textarea v-model="description" rows="3" class="form-textarea w-full" />
+          </div>
+
+          <!-- Standort -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Standort</label>
+            <input v-model="location" type="text" class="form-input w-full" />
+          </div>
+        </div>
+
+        <!-- Nutzfläche -->
+        <div>
+          <label class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
+          <input v-model.number="usableSpace" type="number" class="form-input w-full" />
+        </div>
+
+        <!-- Validierungsfehler -->
+        <div v-if="validationErrors.length" class="text-red-600 mt-4">
+          <ul>
+            <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+          </ul>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex justify-end space-x-4">
+          <button
+            type="submit"
+            :disabled="!hasChanges"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Speichern
+          </button>
+
+          <button
+            type="button"
+            class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+            @click="cancel"
+          >
+            Abbrechen
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
-<style>
-.garage-view {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+<style scoped>
+.form-input,
+.form-textarea {
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
 }
 </style>
