@@ -74,27 +74,33 @@ onMounted(async () => {
   }
 });
 
-const filteredMessages = computed(() =>
-  messages.value.filter(msg => {
-    if (filterType.value.length && !filterType.value.includes(msg.type)) return false;
-    if (filterContractor.value.length && !filterContractor.value.includes(msg.contractor)) return false;
-    if (filterProject.value.length && !filterProject.value.includes(msg.project)) return false;
-    if (filterUnit.value.length && !filterUnit.value.includes(msg.unit)) return false;
-    if (filterTenant.value.length && !filterTenant.value.includes(msg.tenant)) return false;
-    if (filterOwner.value.length && !filterOwner.value.includes(msg.owner)) return false;
-    if (filterStatus.value.length) {
-      const status = msg.isRead ? 'read' : 'unread';
-      if (!filterStatus.value.includes(status)) return false;
-    }
-    if (filterDateRange.value?.length === 2) {
-      const [from, to] = filterDateRange.value;
-      const start = new Date(from); start.setHours(0,0,0,0);
-      const end   = new Date(to);   end.setHours(23,59,59,999);
-      if (msg.receivedAt < start || msg.receivedAt > end) return false;
-    }
-    return true;
-  })
-);
+const filteredMessages = computed(() => {
+  let start: Date, end: Date;
+  const hasDateRange = filterDateRange.value?.length === 2;
+  if (hasDateRange) {
+    const [from, to] = filterDateRange.value!;
+    start = new Date(from); start.setHours(0, 0, 0, 0);
+    end   = new Date(to);   end.setHours(23, 59, 59, 999);
+  }
+
+  return messages.value.filter(msg => {
+    const status = msg.isRead ? 'read' : 'unread';
+
+    return (
+      (!filterType.value.length       || filterType.value.includes(msg.type))       &&
+      (!filterContractor.value.length || filterContractor.value.includes(msg.contractor)) &&
+      (!filterProject.value.length    || filterProject.value.includes(msg.project))    &&
+      (!filterUnit.value.length       || filterUnit.value.includes(msg.unit))         &&
+      (!filterTenant.value.length     || filterTenant.value.includes(msg.tenant))     &&
+      (!filterOwner.value.length      || filterOwner.value.includes(msg.owner))       &&
+      (!filterStatus.value.length     || filterStatus.value.includes(status))         &&
+      (
+        !hasDateRange
+        || (msg.receivedAt >= start! && msg.receivedAt <= end!)
+      )
+    );
+  });
+});
 
 const onRowClick = (e:{ originalEvent:MouseEvent; data:InboxMessage }) => {
   router.push({ name:'InboxDetail', params:{ id:e.data.id }});
