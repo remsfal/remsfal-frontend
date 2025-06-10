@@ -8,7 +8,7 @@
   "repository": "github:remsfal/remsfal-frontend",
   "scripts": {
     "dev": "vite",
-    "build": "run-s type-check \"build-only {@}\" --",
+    "build": "run-s type-check schema \"build-only {@}\" --",
     "preview": "vite preview",
     "coverage": "vitest run --coverage",
     "test": "run-s test:unit test:e2e",
@@ -25,7 +25,11 @@
     "lint:fix": "eslint --fix",
     "format": "prettier --write src/",
     "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'",
-    "stylelint:fix": "stylelint --fix '{src,public}/**/*.{vue,css,scss}'"
+    "stylelint:fix": "stylelint --fix '{src,public}/**/*.{vue,css,scss}'",
+    "schema": "run-s schema:chat schema:platform schema:notification",
+    "schema:chat": "openapi-typescript src/helper/api/chat-spec.json -o src/helper/api/chat-schema.ts",
+    "schema:platform": "openapi-typescript src/helper/api/platform-spec.json -o src/helper/api/platform-schema.ts",
+    "schema:notification": "openapi-typescript src/helper/api/notification-spec.json -o src/helper/api/notification-schema.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
@@ -38,6 +42,7 @@
     "axios": "^1.8.4",
     "chart.js": "4.4.8",
     "idb": "^8.0.2",
+    "openapi-typescript": "^7.7.1",
     "pinia": "^2.3.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.5",
