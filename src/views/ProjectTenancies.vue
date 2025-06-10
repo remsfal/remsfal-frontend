@@ -37,7 +37,6 @@ function confirmDeletion() {
 }
 
 function navigateToTenancyDetails(id: string) {
-  //richtige url bauen und nicht hardcodieren
   router.push('/project/' + projectStore.projectId + '/tenancies/' + id);
 }
 
