@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { propertyService } from '@/services/PropertyService';
+import { propertyService, type PropertyUnit } from '@/services/PropertyService';
 
 const props = defineProps<{
   projectId: string;
@@ -12,11 +12,12 @@ const router = useRouter();
 
 const title = ref('');
 const description = ref('');
-const district = ref<string>(''); // Gemarkung
-const corridor = ref<string>(''); // Flur
-const parcel = ref<string>(''); // Flurstück
-const landRegistry = ref<string>(''); // Liegenschaftsbuch
+const district = ref(''); // Gemarkung
+const corridor = ref(''); // Flur
+const parcel = ref(''); // Flurstück
+const landRegisterEntry = ref(''); // Liegenschaftsbuch
 const usageType = ref<string | null>(null); // Wirtschaftsart
+const plotArea = ref<number | null>(null); // Grundstücksfläche
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
   { label: 'GF Wohnen', value: 'GF Wohnen' },
@@ -79,23 +80,68 @@ const usageOptions = [
   { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' },
 ];
 
-const originalValues = ref<{
-  title: string;
-  description: string;
-  district: string;
-  corridor: string;
-  parcel: string;
-  landRegistry: string;
-  usageType: string | null;
-}>({
+const originalValues = ref({
   title: '',
   description: '',
   district: '',
   corridor: '',
   parcel: '',
-  landRegistry: '',
-  usageType: null,
+  landRegisterEntry: '',
+  usageType: null as string | null,
+  plotArea: null as number | null,
 });
+
+const hasChanges = computed(() => {
+  return (
+    title.value !== originalValues.value.title ||
+    description.value !== originalValues.value.description ||
+    district.value !== originalValues.value.district ||
+    corridor.value !== originalValues.value.corridor ||
+    parcel.value !== originalValues.value.parcel ||
+    landRegisterEntry.value !== originalValues.value.landRegisterEntry ||
+    usageType.value !== originalValues.value.usageType ||
+    plotArea.value !== originalValues.value.plotArea
+  );
+});
+
+const validationErrors = computed(() => {
+  const errors: string[] = [];
+
+  if (plotArea.value !== null && plotArea.value < 0) {
+    errors.push('Grundstücksfläche darf nicht negativ sein.');
+  }
+  return errors;
+});
+
+const isValid = computed(() => validationErrors.value.length === 0);
+
+const fetchPropertyDetails = async () => {
+  try {
+    const data = await propertyService.getProperty(props.projectId, props.unitId);
+    title.value = data.title || '';
+    description.value = data.description || '';
+    district.value = data.district || '';
+    corridor.value = data.corridor || '';
+    parcel.value = data.parcel || '';
+    landRegisterEntry.value = data.landRegisterEntry || '';
+    usageType.value = data.usageType || null;
+    plotArea.value = data.plotArea ?? null;
+
+    originalValues.value = {
+      title: title.value,
+      description: description.value,
+      district: district.value,
+      corridor: corridor.value,
+      parcel: parcel.value,
+      landRegisterEntry: landRegisterEntry.value,
+      usageType: usageType.value,
+      plotArea: plotArea.value,
+    };
+  } catch (err) {
+    console.error('Fehler beim Laden der Eigentumsdetails:', err);
+    alert('Fehler beim Laden der Eigentumsdetails.');
+  }
+};
 
 onMounted(() => {
   if (props.unitId) {
@@ -103,80 +149,46 @@ onMounted(() => {
   }
 });
 
-const fetchPropertyDetails = () => {
-  propertyService
-      .getProperty(props.projectId, props.unitId)
-      .then((property) => {
-        title.value = property.title || '';
-        description.value = property.description || '';
-        district.value = property.district || '';
-        corridor.value = property.corridor || '';
-        parcel.value = property.parcel || '';
-        landRegistry.value = property.landRegistry || '';
-        usageType.value = property.usageType || null;
+const updateProperty = async () => {
+  if (!isValid.value) {
+    alert('Bitte beheben Sie die Validierungsfehler.');
+    return;
+  }
 
+  const payload: PropertyUnit = {
+    title: title.value,
+    description: description.value,
+    district: district.value,
+    corridor: corridor.value,
+    parcel: parcel.value,
+    landRegisterEntry: landRegisterEntry.value,
+    usageType: usageType.value,
+    plotArea: plotArea.value,
+  };
 
-        originalValues.value = {
-          title: title.value,
-          description: description.value,
-          district: district.value,
-          corridor: corridor.value,
-          parcel: parcel.value,
-          landRegistry: landRegistry.value,
-          usageType: usageType.value,
-        };
-      })
-      .catch((err) => {
-        console.error('Fehler beim Laden der Objektdetails:', err);
-      });
-};
-
-
-const isModified = computed(() => {
-  return (
-      title.value !== originalValues.value.title ||
-      description.value !== originalValues.value.description ||
-      district.value !== originalValues.value.district ||
-      corridor.value !== originalValues.value.corridor ||
-      parcel.value !== originalValues.value.parcel ||
-      landRegistry.value !== originalValues.value.landRegistry ||
-      usageType.value !== originalValues.value.usageType
-  );
-});
-
-const updateProperty = () => {
-  propertyService
-      .updateProperty(props.projectId, props.unitId, {
-        title: title.value,
-        description: description.value,
-        district: district.value || '',
-        corridor: corridor.value || '',
-        parcel: parcel.value || '',
-        landRegistry: landRegistry.value || '',
-        usageType: usageType.value ?? null,
-        landRegisterEntry: '',
-        plotArea: 0,
-        effective_space: 0,
-      })
-      .then(() => {
-        router.push(`/project/${props.projectId}/objects`);
-      })
-      .catch((err) => {
-        console.error('Fehler beim Aktualisieren des Eigentums:', err);
-      });
+  try {
+    await propertyService.updateProperty(props.projectId, props.unitId, payload);
+    alert('Eigentum erfolgreich aktualisiert.');
+    window.location.reload();
+  } catch (err) {
+    console.error('Fehler beim Speichern:', err);
+    alert('Fehler beim Speichern');
+  }
 };
 
 const cancel = () => {
-  router.push(`/project/${props.projectId}/objects`);
+  if (window.opener) {
+    window.close();
+  } else {
+    router.push(`/project/${props.projectId}/objects`);
+  }
 };
 </script>
 
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">
-        Bearbeite Eigentum mit ID: {{ props.unitId }}
-      </h2>
+      <h2 class="text-2xl font-semibold mb-6">Bearbeite Eigentum mit ID: {{ props.unitId }}</h2>
 
       <form @submit.prevent="updateProperty">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
@@ -213,7 +225,7 @@ const cancel = () => {
           <!-- Liegenschaftsbuch -->
           <div>
             <label class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
-            <input v-model="landRegistry" type="text" class="form-input w-full" />
+            <input v-model="landRegisterEntry" type="text" class="form-input w-full" />
           </div>
 
           <!-- Wirtschaftsart -->
@@ -231,25 +243,30 @@ const cancel = () => {
             </select>
           </div>
 
-        </div>
+          <!-- Grundstücksfläche -->
+          <div>
+            <label class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
+            <input v-model.number="plotArea" type="number" class="form-input w-full" />
+          </div>
 
-        <!-- Buttons -->
-        <div class="mt-6 flex justify-end space-x-4">
-          <button
-            type="submit"
-            :disabled="!isModified"
-            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Speichern
-          </button>
+          <!-- Buttons -->
+          <div class="mt-6 flex justify-end space-x-4">
+            <button
+              type="submit"
+              :disabled="!hasChanges"
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Speichern
+            </button>
 
-          <button
-            type="button"
-            @click="cancel"
-            class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-          >
-            Abbrechen
-          </button>
+            <button
+              type="button"
+              class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+              @click="cancel"
+            >
+              Abbrechen
+            </button>
+          </div>
         </div>
       </form>
     </div>
