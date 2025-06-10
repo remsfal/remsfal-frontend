@@ -40,22 +40,18 @@ export default class ProjectService {
   }
 
   async searchProjects(projectId: string): Promise<ProjectList> {
-    return axios
-      .get(this.baseUrl, { params: { projectId: projectId } })
-      .then((response) => {
-        const projectList: ProjectList = response.data;
-        console.log('GET projects:', projectList);
-        return projectList;
+    return axios.get(this.baseUrl, { params: { projectId: projectId } }).then((response) => {
+      const projectList: ProjectList = response.data;
+      console.log('GET projects:', projectList);
+      return projectList;
     });
   }
 
   createProject(title: string): Promise<Project> {
-    return axios
-      .post(`${this.baseUrl}`, { title: title })
-      .then((response) => {
-        const project: Project = response.data;
-        console.log('POST create project:', project);
-        return project;
+    return axios.post(`${this.baseUrl}`, { title: title }).then((response) => {
+      const project: Project = response.data;
+      console.log('POST create project:', project);
+      return project;
     });
   }
 

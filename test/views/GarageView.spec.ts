@@ -42,7 +42,6 @@ vi.mock('@/components/ReusableFormComponent.vue', () => ({
 }));
 
 describe('GarageView.vue', () => {
-
   const defaultProps = {
     headline: 'Test Form',
     saveButtonText: 'Save',

@@ -38,7 +38,6 @@ const selectedTenant = ref<TenantItem | null>(null);
 // Validation errors
 const errors = ref<Record<string, string>>({});
 
-
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
   { label: 'GF Wohnen', value: 'GF Wohnen' },
@@ -58,20 +57,29 @@ const usageOptions = [
   { label: 'BF Lagerplatz', value: 'BF Lagerplatz' },
   { label: 'BF Versorgungsanlage', value: 'BF Versorgungsanlage' },
   { label: 'BF Entsorgungsanlage', value: 'BF Entsorgungsanlage' },
-  { label: 'Abbauland, noch nicht aufgeschlüsselt', value: 'Abbauland, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Abbauland, noch nicht aufgeschlüsselt',
+    value: 'Abbauland, noch nicht aufgeschlüsselt',
+  },
   { label: 'Sportfläche', value: 'Sportfläche' },
   { label: 'Kleingartenanlage', value: 'Kleingartenanlage' },
   { label: 'Wochenendgelände', value: 'Wochenendgelände' },
   { label: 'Andere Grünanlage', value: 'Andere Grünanlage' },
   { label: 'Campingplatz', value: 'Campingplatz' },
-  { label: 'Erholungsfläche, noch nicht aufgeschlüsselt', value: 'Erholungsfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Erholungsfläche, noch nicht aufgeschlüsselt',
+    value: 'Erholungsfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Straße', value: 'Straße' },
   { label: 'Weg', value: 'Weg' },
   { label: 'Platz', value: 'Platz' },
   { label: 'Bahngelände', value: 'Bahngelände' },
   { label: 'Flugplatz', value: 'Flugplatz' },
   { label: 'Verkehrsfläche Schiffsverkehr', value: 'Verkehrsfläche Schiffsverkehr' },
-  { label: 'Verkehrsfläche, noch nicht aufgeschlüsselt', value: 'Verkehrsfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Verkehrsfläche, noch nicht aufgeschlüsselt',
+    value: 'Verkehrsfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Grünland', value: 'Grünland' },
   { label: 'Ackerland', value: 'Ackerland' },
   { label: 'Gartenland', value: 'Gartenland' },
@@ -84,21 +92,27 @@ const usageOptions = [
   { label: 'Nadelwald', value: 'Nadelwald' },
   { label: 'Mischwald', value: 'Mischwald' },
   { label: 'Gehölz', value: 'Gehölz' },
-  { label: 'Waldfläche, noch nicht aufgeschlüsselt', value: 'Waldfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Waldfläche, noch nicht aufgeschlüsselt',
+    value: 'Waldfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Fließgewässer', value: 'Fließgewässer' },
   { label: 'Kanal', value: 'Kanal' },
   { label: 'Hafen', value: 'Hafen' },
   { label: 'Bach, Graben', value: 'Bach, Graben' },
   { label: 'Stehendes Gewässer', value: 'Stehendes Gewässer' },
   { label: 'Sumpf', value: 'Sumpf' },
-  { label: 'Wasserfläche, noch nicht aufgeschlüsselt', value: 'Wasserfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Wasserfläche, noch nicht aufgeschlüsselt',
+    value: 'Wasserfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Militärisches Übungsgelände', value: 'Militärisches Übungsgelände' },
   { label: 'Anderes Übungsgelände', value: 'Anderes Übungsgelände' },
   { label: 'Schutzfläche', value: 'Schutzfläche' },
   { label: 'Historische Anlage', value: 'Historische Anlage' },
   { label: 'Friedhof', value: 'Friedhof' },
   { label: 'Unland', value: 'Unland' },
-  { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' }
+  { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' },
 ];
 
 const originalValues = ref<{
@@ -152,14 +166,16 @@ const fetchPropertyDetails = () => {
       parcel.value = property.parcel || '';
       landRegistry.value = property.landRegistry || '';
       usageType.value = property.usageType || null;
-      plotArea.value = property.plotArea !== undefined && property.plotArea !== null ? String(property.plotArea) : null;
+      plotArea.value =
+        property.plotArea !== undefined && property.plotArea !== null
+          ? String(property.plotArea)
+          : null;
       tenant.value = property.tenant || '';
-
 
       if (property.tenant) {
         const [firstName, lastName] = property.tenant.split(' ');
         const foundTenant = tenants.value.find(
-          (t) => t.firstName === firstName && t.lastName === lastName
+          (t) => t.firstName === firstName && t.lastName === lastName,
         );
         selectedTenant.value = foundTenant || null;
       }
@@ -283,6 +299,7 @@ const cancel = () => {
   router.push(`/project/${props.projectId}/units`);
 };
 </script>
+
 <template>
   <div class="col-span-12">
     <h5>{{ t('property.update', { id: props.unitId }) }}</h5>
@@ -294,14 +311,29 @@ const cancel = () => {
         <template #content>
           <div class="p-fluid formgrid grid grid-cols-12 gap-4">
             <div class="input-container col-span-12">
-              <label class="label" for="title">{{ t('property.title') }} <span class="required-field">*</span></label>
-              <InputText id="title" v-model="title" type="text" :class="{ 'p-invalid': errors.title }" />
+              <label class="label" for="title"
+                >{{ t('property.title') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="title"
+                v-model="title"
+                type="text"
+                :class="{ 'p-invalid': errors.title }"
+              />
               <small v-if="errors.title" class="p-error">{{ errors.title }}</small>
             </div>
 
             <div class="input-container col-span-12">
-              <label class="label" for="description">{{ t('property.description') }} <span class="required-field">*</span></label>
-              <Textarea id="description" v-model="description" class="no-resize" rows="4" :class="{ 'p-invalid': errors.description }" />
+              <label class="label" for="description"
+                >{{ t('property.description') }} <span class="required-field">*</span></label
+              >
+              <Textarea
+                id="description"
+                v-model="description"
+                class="no-resize"
+                rows="4"
+                :class="{ 'p-invalid': errors.description }"
+              />
               <small v-if="errors.description" class="p-error">{{ errors.description }}</small>
             </div>
 
@@ -326,11 +358,17 @@ const cancel = () => {
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="plotArea">Fläche (m²) <span class="required-field">*</span></label>
-              <InputText id="plotArea" v-model="plotArea" type="number" :class="{ 'p-invalid': errors.plotArea }" />
+              <label class="label" for="plotArea"
+                >Fläche (m²) <span class="required-field">*</span></label
+              >
+              <InputText
+                id="plotArea"
+                v-model="plotArea"
+                type="number"
+                :class="{ 'p-invalid': errors.plotArea }"
+              />
               <small v-if="errors.plotArea" class="p-error">{{ errors.plotArea }}</small>
             </div>
-
 
             <div class="input-container col-span-6">
               <label class="label" for="usageType">{{ t('property.usageType') }}</label>
@@ -346,7 +384,9 @@ const cancel = () => {
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="selectedTenant">{{ t('rentableUnits.table.tenant') }} <span class="required-field">*</span></label>
+              <label class="label" for="selectedTenant"
+                >{{ t('rentableUnits.table.tenant') }} <span class="required-field">*</span></label
+              >
               <Dropdown
                 id="selectedTenant"
                 v-model="selectedTenant"
@@ -360,7 +400,7 @@ const cancel = () => {
                   <div v-if="slotProps.value">
                     {{ slotProps.value.firstName }} {{ slotProps.value.lastName }}
                   </div>
-                  <span v-else>{{ tenant || "Mieter auswählen" }}</span>
+                  <span v-else>{{ tenant || 'Mieter auswählen' }}</span>
                 </template>
                 <template #option="slotProps">
                   {{ slotProps.option.firstName }} {{ slotProps.option.lastName }}
@@ -379,32 +419,62 @@ const cancel = () => {
         <template #content>
           <div class="p-fluid formgrid grid grid-cols-12 gap-4">
             <div class="input-container col-span-12">
-              <label class="label" for="street">{{ t('property.address.street') }} <span class="required-field">*</span></label>
-              <InputText id="street" v-model="street" type="text" :class="{ 'p-invalid': errors.street }" />
+              <label class="label" for="street"
+                >{{ t('property.address.street') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="street"
+                v-model="street"
+                type="text"
+                :class="{ 'p-invalid': errors.street }"
+              />
               <small v-if="errors.street" class="p-error">{{ errors.street }}</small>
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="zip">{{ t('property.address.zip') }} <span class="required-field">*</span></label>
+              <label class="label" for="zip"
+                >{{ t('property.address.zip') }} <span class="required-field">*</span></label
+              >
               <InputText id="zip" v-model="zip" type="text" :class="{ 'p-invalid': errors.zip }" />
               <small v-if="errors.zip" class="p-error">{{ errors.zip }}</small>
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="city">{{ t('property.address.city') }} <span class="required-field">*</span></label>
-              <InputText id="city" v-model="city" type="text" :class="{ 'p-invalid': errors.city }" />
+              <label class="label" for="city"
+                >{{ t('property.address.city') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="city"
+                v-model="city"
+                type="text"
+                :class="{ 'p-invalid': errors.city }"
+              />
               <small v-if="errors.city" class="p-error">{{ errors.city }}</small>
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="province">{{ t('property.address.province') }} <span class="required-field">*</span></label>
-              <InputText id="province" v-model="province" type="text" :class="{ 'p-invalid': errors.province }" />
+              <label class="label" for="province"
+                >{{ t('property.address.province') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="province"
+                v-model="province"
+                type="text"
+                :class="{ 'p-invalid': errors.province }"
+              />
               <small v-if="errors.province" class="p-error">{{ errors.province }}</small>
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="country">{{ t('property.address.country') }} <span class="required-field">*</span></label>
-              <InputText id="country" v-model="country" type="text" :class="{ 'p-invalid': errors.country }" />
+              <label class="label" for="country"
+                >{{ t('property.address.country') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="country"
+                v-model="country"
+                type="text"
+                :class="{ 'p-invalid': errors.country }"
+              />
               <small v-if="errors.country" class="p-error">{{ errors.country }}</small>
             </div>
 

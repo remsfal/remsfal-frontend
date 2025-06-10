@@ -34,12 +34,10 @@ class BuildingService {
   }
 
   async getBuilding(projectId: string, buildingId: string): Promise<BuildingUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/buildings/${buildingId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    return axios.get(`${this.baseUrl}/${projectId}/buildings/${buildingId}`).then((response) => {
+      console.debug(response);
+      return response.data;
+    });
   }
 
   async updateBuilding(
@@ -56,11 +54,9 @@ class BuildingService {
   }
 
   async deleteBuilding(projectId: string, buildingId: string): Promise<void> {
-    return axios
-      .delete(`${this.baseUrl}/${projectId}/buildings/${buildingId}`)
-      .then((response) => {
-        console.debug(response);
-      });
+    return axios.delete(`${this.baseUrl}/${projectId}/buildings/${buildingId}`).then((response) => {
+      console.debug(response);
+    });
   }
 }
 

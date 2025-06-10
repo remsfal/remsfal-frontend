@@ -108,42 +108,42 @@ onMounted(async () => {
       <div v-if="!isLoading" class="col-span-12">
         <div class="card">
           <DataTable
-              :value="tenantData"
-              :rows="10"
-              :rowHover="true"
-              dataKey="id"
-              tableStyle="min-width: 60rem"
-              scrollable
-              scrollDirection="both"
-              scrollHeight="var(--custom-scroll-height)"
-              class="custom-scroll-height"
+            :value="tenantData"
+            :rows="10"
+            :rowHover="true"
+            dataKey="id"
+            tableStyle="min-width: 60rem"
+            scrollable
+            scrollDirection="both"
+            scrollHeight="var(--custom-scroll-height)"
+            class="custom-scroll-height"
           >
-            <Column field="firstName" header="Vorname" :sortable="true"/>
-            <Column field="lastName" header="Nachname" :sortable="true"/>
-            <Column field="unitTitle" header="Wohneinheit" :sortable="true"/>
-            <Column field="rentalObject" header="Mietgegenstand" :sortable="true"/>
-            <Column field="rentalStart" header="Mietbeginn" :sortable="true"/>
-            <Column field="rentalEnd" header="Mietende" :sortable="true"/>
+            <Column field="firstName" header="Vorname" :sortable="true" />
+            <Column field="lastName" header="Nachname" :sortable="true" />
+            <Column field="unitTitle" header="Wohneinheit" :sortable="true" />
+            <Column field="rentalObject" header="Mietgegenstand" :sortable="true" />
+            <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
+            <Column field="rentalEnd" header="Mietende" :sortable="true" />
             <Column frozen alignFrozen="right">
               <template #body="slotProps">
                 <div class="flex justify-end">
                   <Button
-                      icon="pi pi-pencil"
-                      severity="success"
-                      text
-                      raised
-                      rounded
-                      class="mb-2 mr-2"
-                      @click="openEditDialog(slotProps.data)"
+                    icon="pi pi-pencil"
+                    severity="success"
+                    text
+                    raised
+                    rounded
+                    class="mb-2 mr-2"
+                    @click="openEditDialog(slotProps.data)"
                   />
                   <Button
-                      icon="pi pi-trash"
-                      severity="danger"
-                      text
-                      raised
-                      rounded
-                      class="mb-2 mr-2"
-                      @click="confirmDelete(slotProps.data)"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    text
+                    raised
+                    rounded
+                    class="mb-2 mr-2"
+                    @click="confirmDelete(slotProps.data)"
                   />
                 </div>
               </template>
@@ -151,71 +151,77 @@ onMounted(async () => {
           </DataTable>
           <div class="flex justify-end mt-6">
             <Button
-                type="button"
-                icon="pi pi-plus"
-                label="Neuen Mieter hinzufügen"
-                class="mr-2 mb-2"
-                @click="openAddDialog"
+              type="button"
+              icon="pi pi-plus"
+              label="Neuen Mieter hinzufügen"
+              class="mr-2 mb-2"
+              @click="openAddDialog"
             />
           </div>
         </div>
       </div>
     </div>
 
-    <Dialog v-model:visible="dialogVisible" :header="isEditMode ? 'Mieter bearbeiten' : 'Neuen Mieter hinzufügen'" modal>
+    <Dialog
+      v-model:visible="dialogVisible"
+      :header="isEditMode ? 'Mieter bearbeiten' : 'Neuen Mieter hinzufügen'"
+      modal
+    >
       <div class="p-fluid">
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="firstName" class="w-32">Vorname</label>
-            <InputText id="firstName" v-model="currentTenant.firstName" class="flex-1"/>
+            <InputText id="firstName" v-model="currentTenant.firstName" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="lastName" class="w-32">Nachname</label>
-            <InputText id="lastName" v-model="currentTenant.lastName" class="flex-1"/>
+            <InputText id="lastName" v-model="currentTenant.lastName" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="unitTitle" class="w-32">Wohneinheit</label>
-            <InputText id="unitTitle" v-model="currentTenant.unitTitle" class="flex-1"/>
+            <InputText id="unitTitle" v-model="currentTenant.unitTitle" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="rentalObject" class="w-32">Mietgegenstand</label>
-            <InputText id="rentalObject" v-model="currentTenant.rentalObject" class="flex-1"/>
+            <InputText id="rentalObject" v-model="currentTenant.rentalObject" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="rentalStart" class="w-32">Mietbeginn</label>
-            <Calendar id="rentalStart" v-model="currentTenant.rentalStart" class="flex-1"/>
+            <Calendar id="rentalStart" v-model="currentTenant.rentalStart" class="flex-1" />
           </div>
         </div>
         <div class="field">
           <div class="flex items-center gap-4">
             <label for="rentalEnd" class="w-32">Mietende</label>
-            <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" class="flex-1"/>
+            <Calendar id="rentalEnd" v-model="currentTenant.rentalEnd" class="flex-1" />
           </div>
         </div>
       </div>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="dialogVisible = false"/>
-        <Button label="Speichern" icon="pi pi-check" @click="saveTenant"/>
+        <Button label="Abbrechen" icon="pi pi-times" @click="dialogVisible = false" />
+        <Button label="Speichern" icon="pi pi-check" @click="saveTenant" />
       </template>
     </Dialog>
 
     <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
       <div class="p-fluid">
-        <p>Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }} {{ tenantToDelete?.lastName }} löschen möchten?</p>
+        <p>
+          Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }}
+          {{ tenantToDelete?.lastName }} löschen möchten?
+        </p>
       </div>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false"/>
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion"/>
+        <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
+        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
       </template>
     </Dialog>
   </main>
 </template>
-

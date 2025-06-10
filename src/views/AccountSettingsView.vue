@@ -313,7 +313,9 @@ const isDisabled = computed(() => {
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="firstName">{{ t('accountSettings.userProfile.name') }}:</label>
+                <label class="label" for="firstName"
+                  >{{ t('accountSettings.userProfile.name') }}:</label
+                >
                 <InputText
                   id="firstName"
                   v-model="editedUserProfile.firstName"
@@ -408,7 +410,9 @@ const isDisabled = computed(() => {
                 >
               </div>
             </div>
-            <Message class="required" size="small" severity="secondary" variant="simple">*Pflichtfelder</Message>
+            <Message class="required" size="small" severity="secondary" variant="simple"
+              >*Pflichtfelder</Message
+            >
           </template>
         </Card>
         <Card>
@@ -604,7 +608,7 @@ const isDisabled = computed(() => {
           >
             <p>Daten konnten nicht gespeichert werden!</p>
           </Dialog>
-       </div>
+        </div>
       </div>
     </div>
   </div>

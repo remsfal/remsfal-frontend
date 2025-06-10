@@ -37,7 +37,7 @@ export default class TaskService {
   readonly baseUrl: string = '/api/v1/projects';
 
   //Get a list of tasks
-  getTasks(projectId: string, status?: 'OPEN' | null , ownerId?:string ): Promise<TaskList> {
+  getTasks(projectId: string, status?: 'OPEN' | null, ownerId?: string): Promise<TaskList> {
     if (status) {
       return axios.get(`${this.baseUrl}/${projectId}/tasks?status=${status}`).then((response) => {
         const taskList: TaskList = response.data;
@@ -106,16 +106,16 @@ export default class TaskService {
     ownerId: string,
   ) {
     return axios
-        .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
-          title: title,
-          description: description,
-          status: status,
-          ownerId: ownerId,
-        })
-        .then((response) => {
-          console.log('task updated', response.data);
-          return response.data;
-        })
-        .catch((error) => console.error(error));
+      .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
+        title: title,
+        description: description,
+        status: status,
+        ownerId: ownerId,
+      })
+      .then((response) => {
+        console.log('task updated', response.data);
+        return response.data;
+      })
+      .catch((error) => console.error(error));
   }
 }

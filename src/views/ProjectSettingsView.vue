@@ -41,7 +41,7 @@ watch(
     <template #content>
       <div class="flex flex-col gap-2">
         <label for="name">Name der Liegenschaft</label>
-        <InputText id="name" type="text" v-model="projectName" />
+        <InputText id="name" v-model="projectName" type="text" />
       </div>
     </template>
   </Card>

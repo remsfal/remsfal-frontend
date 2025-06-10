@@ -8,15 +8,14 @@ import i18n from '../../src/i18n/i18n';
 // Mock PrimeVue configuration and Dialog component to avoid errors during testing
 vi.mock('primevue/config', () => ({
   default: {
-    install: () => {
-    },
+    install: () => {},
     locale: 'en',
   },
 }));
 
 vi.mock('primevue/dialog', () => ({
   default: {
-    inheritAttrs: false,  // Prevents the passing of extraneous attributes to the root element
+    inheritAttrs: false, // Prevents the passing of extraneous attributes to the root element
     render: () => '<div class="mock-dialog"></div>', // Mock rendering
   },
 }));
@@ -36,7 +35,6 @@ describe('ProjectTenancies.vue', () => {
     });
   });
 
-
   it('renders correctly', () => {
     expect(wrapper.exists()).toBe(true);
   });
@@ -48,7 +46,6 @@ describe('ProjectTenancies.vue', () => {
     // Assert that the dialog is open
     expect(wrapper.vm.dialogVisible).toBe(true);
   });
-
 
   it('adds a new tenant', async () => {
     wrapper.vm.currentTenant.firstName = 'John';
@@ -64,7 +61,10 @@ describe('ProjectTenancies.vue', () => {
 
   it('should delete a tenant correctly', async () => {
     // Arrange: Assume there are tenants in the component's data
-    const initialTenants = [{ id: '1', name: 'Tenant 1' }, { id: '2', name: 'Tenant 2' }];
+    const initialTenants = [
+      { id: '1', name: 'Tenant 1' },
+      { id: '2', name: 'Tenant 2' },
+    ];
     wrapper.vm.tenantData = [...initialTenants]; // Manually set tenant data
 
     // Act: Call the deleteTenant method to delete tenant with id '1'

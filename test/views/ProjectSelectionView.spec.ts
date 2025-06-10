@@ -67,9 +67,9 @@ describe('ProjectSelectionView.vue', () => {
       getProjects: vi.fn().mockResolvedValue({ projects: [], total: 0 }),
     }));
 
-//    useRouter.mockReturnValue({
-//      push: vi.fn(),
-//    });
+    //    useRouter.mockReturnValue({
+    //      push: vi.fn(),
+    //    });
 
     useProjectStore.mockReturnValue({
       setSelectedProject: vi.fn(),

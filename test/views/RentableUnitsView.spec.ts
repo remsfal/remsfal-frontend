@@ -1,29 +1,24 @@
-import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ObjectDataView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
-import PrimeVue from "primevue/config";
-import i18n from "../../src/i18n/i18n";
-import Dialog from "primevue/dialog";
-import RentableUnitsView from '../../src/views/RentableUnitsView.vue'
-
-
-
-
+import PrimeVue from 'primevue/config';
+import i18n from '../../src/i18n/i18n';
+import Dialog from 'primevue/dialog';
+import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
 
 vi.mock('@/services/PropertyService');
 
 vi.mock('primevue/dialog', () => ({
   default: {
-    inheritAttrs: false,  // Prevents the passing of extraneous attributes to the root element
+    inheritAttrs: false, // Prevents the passing of extraneous attributes to the root element
     render: () => '<div class="mock-dialog"></div>', // Mock rendering
   },
 }));
 
 vi.mock('primevue/config', () => ({
   default: {
-    install: () => {
-    },
+    install: () => {},
     locale: 'en',
   },
 }));
@@ -194,7 +189,6 @@ describe('ObjectDataView', () => {
     expect(columnHeaderRow).not.toBeUndefined();
     expect(columnHeaderRow.text()).toContain('TitelTypBeschreibungMieterFläche');
 
-
     // Validate the data rows
     const propertyRow1 = rows[1];
     expect(propertyRow1).not.toBeUndefined();
@@ -212,13 +206,13 @@ describe('ObjectDataView', () => {
     const treeTable = wrapper.findComponent({ name: 'TreeTable' });
     expect(treeTable.exists()).toBe(true);
 
-        // Click "Alle ausklappen" button
-        const header = wrapper.find('.p-treetable-header');
-        const expandAllButton = header
-          .findAll('button')
-          .find((btn) => btn.text().includes('Alle ausklappen'));
-        expect(expandAllButton).not.toBeUndefined();
-        await expandAllButton.trigger('click');
+    // Click "Alle ausklappen" button
+    const header = wrapper.find('.p-treetable-header');
+    const expandAllButton = header
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle ausklappen'));
+    expect(expandAllButton).not.toBeUndefined();
+    await expandAllButton.trigger('click');
     /*
 
         await wrapper.vm.$nextTick();
@@ -367,9 +361,7 @@ describe('ObjectDataView', () => {
 
   it('Delete confirmation dialog should be displayed', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        { key: '1', data: { title: 'Test', type: 'Project' }, children: [] }
-      ],
+      properties: [{ key: '1', data: { title: 'Test', type: 'Project' }, children: [] }],
       first: 0,
       size: 1,
       total: 1,
@@ -386,13 +378,12 @@ describe('ObjectDataView', () => {
       },
     });
 
-    await flushPromises()
-
+    await flushPromises();
 
     const header = wrapper.find('.p-treetable-header');
     const expandAllButton = header
-        .findAll('button')
-        .find((btn) => btn.text().includes('Alle ausklappen'));
+      .findAll('button')
+      .find((btn) => btn.text().includes('Alle ausklappen'));
     expect(expandAllButton).not.toBeUndefined();
     await expandAllButton.trigger('click');
 
@@ -408,66 +399,56 @@ describe('ObjectDataView', () => {
 });
 
 describe('RentableUnitsView.vue', () => {
+  it('check if dialog exists', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
+      properties: [{ key: '1', data: { title: 'Test', type: 'Project' }, children: [] }],
+      first: 0,
+      size: 1,
+      total: 1,
+    } as any);
 
-    it('check if dialog exists', async () => {
+    await flushPromises();
+    const wrapper = mount(RentableUnitsView, {
+      global: {
+        plugins: [PrimeVue],
+        components: { Dialog },
+        stubs: { teleport: true },
+      },
+      props: { projectId: '1' },
+    });
 
-      vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-        properties: [
-          { key: '1', data: { title: 'Test', type: 'Project' }, children: [] }
-        ],
-        first:  0,
-        size:   1,
-        total:  1
-      } as any);
+    await flushPromises();
 
-      await flushPromises();
-      const wrapper = mount(RentableUnitsView, {
-        global: {
-          plugins: [PrimeVue],
-          components: { Dialog },
-          stubs: {teleport: true},
-        },
-        props: { projectId: '1' }
-      });
+    const expandBtn = wrapper
+      .find('.p-treetable-header')
+      .findAll('button')
+      .find((b) => b.text().includes('Alle ausklappen'));
+    expect(expandBtn).toBeDefined();
+    await expandBtn!.trigger('click');
+    await flushPromises();
 
+    const deleteBtn = wrapper.find('button.p-button-danger');
+    expect(deleteBtn.exists()).toBe(true);
+    await deleteBtn.trigger('click');
+    await flushPromises();
 
-      await flushPromises();
-
-      const expandBtn = wrapper
-          .find('.p-treetable-header')
-          .findAll('button')
-          .find(b => b.text().includes('Alle ausklappen'));
-      expect(expandBtn).toBeDefined();
-      await expandBtn!.trigger('click');
-      await flushPromises();
-
-
-      const deleteBtn = wrapper.find('button.p-button-danger');
-      expect(deleteBtn.exists()).toBe(true);
-      await deleteBtn.trigger('click');
-      await flushPromises();
-
-      const dialog = wrapper.findComponent(Dialog);
-      expect(dialog.exists()).toBe(true);
-      await wrapper.vm.$nextTick()
-
-  })
+    const dialog = wrapper.findComponent(Dialog);
+    expect(dialog.exists()).toBe(true);
+    await wrapper.vm.$nextTick();
+  });
   it('confirmDeleteNode sets nodeToDelete and showDeleteDialog', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        { key: '1', data: { title: 'Test', type: 'Project' }, children: [] }
-      ],
-      first:  0,
-      size:   1,
-      total:  1
+      properties: [{ key: '1', data: { title: 'Test', type: 'Project' }, children: [] }],
+      first: 0,
+      size: 1,
+      total: 1,
     } as any);
 
     const wrapper = mount(RentableUnitsView, {
       props: { projectId: '123' },
-      global: { plugins: [PrimeVue], components: { Dialog }, stubs: { teleport: true } }
+      global: { plugins: [PrimeVue], components: { Dialog }, stubs: { teleport: true } },
     });
     await flushPromises();
-
 
     expect(wrapper.vm.nodeToDelete).toBeNull();
     expect(wrapper.vm.showDeleteDialog).toBe(false);
@@ -479,9 +460,9 @@ describe('RentableUnitsView.vue', () => {
         title: 'ABCDF',
         description: '',
         tenant: '',
-        usable_space: 0
+        usable_space: 0,
       },
-      children: []
+      children: [],
     };
     wrapper.vm.confirmDeleteNode(sampleNode);
 
@@ -491,31 +472,30 @@ describe('RentableUnitsView.vue', () => {
 
   it('deleteConfirmed calls deleteProperty and closes dialog', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        { key: '1', data: { title: 'Test', type: 'Project' }, children: [] }
-      ],
-      first:  0,
-      size:   1,
-      total:  1
+      properties: [{ key: '1', data: { title: 'Test', type: 'Project' }, children: [] }],
+      first: 0,
+      size: 1,
+      total: 1,
     } as any);
 
     const deleteSpy = vi.mocked(propertyService.deleteProperty).mockResolvedValue(undefined);
 
     const wrapper = mount(RentableUnitsView, {
       props: { projectId: 'projId' },
-      global: { plugins: [PrimeVue], components: { Dialog }, stubs: { teleport: true } }
+      global: { plugins: [PrimeVue], components: { Dialog }, stubs: { teleport: true } },
     });
     await flushPromises();
 
-
-    const sampleNode = { key: '1', data: { type: EntityType.Property, title:'', description:'', tenant:'', usable_space:0 }, children: [] };
+    const sampleNode = {
+      key: '1',
+      data: { type: EntityType.Property, title: '', description: '', tenant: '', usable_space: 0 },
+      children: [],
+    };
     wrapper.vm.nodeToDelete = sampleNode;
     wrapper.vm.showDeleteDialog = true;
 
-
     wrapper.vm.deleteConfirmed();
     await flushPromises();
-
 
     expect(deleteSpy).toHaveBeenCalledWith('projId', '1');
     expect(wrapper.vm.showDeleteDialog).toBe(false);

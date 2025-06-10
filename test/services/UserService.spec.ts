@@ -3,7 +3,6 @@ import axios from 'axios';
 import UserService, { User, Address } from '../../src/services/UserService';
 
 describe('UserService', () => {
-
   const service = new UserService();
   const mockUser: User = {
     id: '1',

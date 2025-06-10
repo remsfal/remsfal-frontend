@@ -58,34 +58,25 @@ export interface PropertyUnit {
 class PropertyService {
   private readonly baseUrl: string = '/api/v1/projects';
 
-  async createProperty(
-    projectId: string,
-    property: PropertyUnit,
-  ): Promise<PropertyUnit> {
-    return axios
-      .post(`${this.baseUrl}/${projectId}/properties/`, property)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+  async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
+    return axios.post(`${this.baseUrl}/${projectId}/properties/`, property).then((response) => {
+      console.debug(response);
+      return response.data;
+    });
   }
 
   async getPropertyTree(projectId: string): Promise<PropertyList> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/properties`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      });
+    return axios.get(`${this.baseUrl}/${projectId}/properties`).then((response) => {
+      console.log('properties returned', response.data);
+      return response.data;
+    });
   }
 
   async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/properties/${propertyId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    return axios.get(`${this.baseUrl}/${projectId}/properties/${propertyId}`).then((response) => {
+      console.debug(response);
+      return response.data;
+    });
   }
 
   async updateProperty(

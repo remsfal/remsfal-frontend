@@ -22,7 +22,6 @@ const mockSite: SiteUnit = {
 };
 
 describe('SiteService', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -51,9 +50,7 @@ describe('SiteService', () => {
       mockedAxios.get.mockResolvedValue({ data: mockSite });
 
       const result = await siteService.getSite(projectId, siteId);
-      expect(mockedAxios.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${projectId}/sites/${siteId}`,
-      );
+      expect(mockedAxios.get).toHaveBeenCalledWith(`/api/v1/projects/${projectId}/sites/${siteId}`);
       expect(result).toEqual(mockSite);
     });
 
@@ -67,9 +64,7 @@ describe('SiteService', () => {
 
     it('should handle errors during site retrieval', async () => {
       mockedAxios.get.mockRejectedValue(new Error('Site retrieval error'));
-      await expect(siteService.getSite(projectId, siteId)).rejects.toThrow(
-        'Site retrieval error',
-      );
+      await expect(siteService.getSite(projectId, siteId)).rejects.toThrow('Site retrieval error');
     });
   });
 

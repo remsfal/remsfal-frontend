@@ -5,7 +5,6 @@ import { commercialService, type CommercialUnit } from '../../src/services/Comme
 vi.mock('axios');
 
 describe('CommercialService', () => {
-
   const mockProjectId = 'project123';
   const mockBuildingId = 'building123';
   const mockCommercialId = 'commercial123';
@@ -104,10 +103,7 @@ describe('CommercialService', () => {
       const mockResponse = { data: { success: true } };
       (axios.delete as vi.Mock).mockResolvedValue(mockResponse);
 
-      await commercialService.deleteCommercial(
-        mockProjectId,
-        mockCommercialId,
-      );
+      await commercialService.deleteCommercial(mockProjectId, mockCommercialId);
 
       expect(axios.delete).toHaveBeenCalledWith(
         `/api/v1/projects/${mockProjectId}/commercials/${mockCommercialId}`,

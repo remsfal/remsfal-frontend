@@ -7,7 +7,7 @@ import {
   toRentableUnitView,
 } from '@/services/PropertyService';
 import { useRouter } from 'vue-router';
-import Dialog from 'primevue/dialog'
+import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import { apartmentService } from '@/services/ApartmentService';
@@ -38,7 +38,6 @@ const expandedKeys = ref<TreeTableExpandedKeys>({});
 const selectedKey = ref<TreeTableSelectionKeys>({});
 const showDeleteDialog = ref(false);
 const nodeToDelete = ref<RentableUnitTreeNode | null>(null);
-
 
 const router = useRouter();
 
@@ -111,12 +110,12 @@ const onNodeSelect = (node: RentableUnitTreeNode) => {
     // For apartment type, navigate to apartment update view
     router.push({
       name: 'UpdateApartmentView',
-      params: { 
-        projectId: props.projectId, 
+      params: {
+        projectId: props.projectId,
         apartmentId: node.key,
         // Since we don't have a way to determine the building ID, we'll use a placeholder
         // This will need to be updated when more information is available
-        buildingId: '0'
+        buildingId: '0',
       },
     });
   } else {
@@ -183,9 +182,10 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
   isLoading.value = true;
   const entity = node.data.type;
 
-  const reload = () => fetchPropertyTree(props.projectId).finally(() => {
-    isLoading.value = false;
-  });
+  const reload = () =>
+    fetchPropertyTree(props.projectId).finally(() => {
+      isLoading.value = false;
+    });
 
   const handleError = (e: unknown) => {
     console.error(`Fehler beim Löschen der Einheit vom Typ ${entity}:`, e);
@@ -215,7 +215,6 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
       isLoading.value = false;
   }
 };
-
 </script>
 
 <template>
@@ -315,11 +314,27 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
         </div>
       </div>
     </div>
-    <Dialog v-model:visible="showDeleteDialog" header="Löschen bestätigen" modal data-testid="deleteDialog">
+    <Dialog
+      v-model:visible="showDeleteDialog"
+      header="Löschen bestätigen"
+      modal
+      data-testid="deleteDialog"
+    >
       <p>Bist du sicher, dass du dieses Objekt löschen möchtest?</p>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="showDeleteDialog = false" data-testid="cancelDelete"/>
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="deleteConfirmed" data-testid="confirmDeleteButton"/>
+        <Button
+          label="Abbrechen"
+          icon="pi pi-times"
+          data-testid="cancelDelete"
+          @click="showDeleteDialog = false"
+        />
+        <Button
+          label="Löschen"
+          icon="pi pi-check"
+          severity="danger"
+          data-testid="confirmDeleteButton"
+          @click="deleteConfirmed"
+        />
       </template>
     </Dialog>
   </main>

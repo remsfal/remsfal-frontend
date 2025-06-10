@@ -26,19 +26,13 @@ class GarageService {
   }
 
   async getGarage(projectId: string, garageId: string): Promise<GarageUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/garages/${garageId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    return axios.get(`${this.baseUrl}/${projectId}/garages/${garageId}`).then((response) => {
+      console.debug(response);
+      return response.data;
+    });
   }
 
-  async updateGarage(
-    projectId: string,
-    garageId: string,
-    garage: GarageUnit,
-  ): Promise<GarageUnit> {
+  async updateGarage(projectId: string, garageId: string, garage: GarageUnit): Promise<GarageUnit> {
     return axios
       .patch(`${this.baseUrl}/${projectId}/garages/${garageId}`, garage)
       .then((response) => {
@@ -48,11 +42,9 @@ class GarageService {
   }
 
   async deleteGarage(projectId: string, garageId: string): Promise<void> {
-    return axios
-      .delete(`${this.baseUrl}/${projectId}/garages/${garageId}`)
-      .then((response) => {
-        console.debug(response);
-      });
+    return axios.delete(`${this.baseUrl}/${projectId}/garages/${garageId}`).then((response) => {
+      console.debug(response);
+    });
   }
 }
 

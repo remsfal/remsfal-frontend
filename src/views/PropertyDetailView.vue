@@ -51,20 +51,29 @@ const usageOptions = [
   { label: 'BF Lagerplatz', value: 'BF Lagerplatz' },
   { label: 'BF Versorgungsanlage', value: 'BF Versorgungsanlage' },
   { label: 'BF Entsorgungsanlage', value: 'BF Entsorgungsanlage' },
-  { label: 'Abbauland, noch nicht aufgeschlüsselt', value: 'Abbauland, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Abbauland, noch nicht aufgeschlüsselt',
+    value: 'Abbauland, noch nicht aufgeschlüsselt',
+  },
   { label: 'Sportfläche', value: 'Sportfläche' },
   { label: 'Kleingartenanlage', value: 'Kleingartenanlage' },
   { label: 'Wochenendgelände', value: 'Wochenendgelände' },
   { label: 'Andere Grünanlage', value: 'Andere Grünanlage' },
   { label: 'Campingplatz', value: 'Campingplatz' },
-  { label: 'Erholungsfläche, noch nicht aufgeschlüsselt', value: 'Erholungsfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Erholungsfläche, noch nicht aufgeschlüsselt',
+    value: 'Erholungsfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Straße', value: 'Straße' },
   { label: 'Weg', value: 'Weg' },
   { label: 'Platz', value: 'Platz' },
   { label: 'Bahngelände', value: 'Bahngelände' },
   { label: 'Flugplatz', value: 'Flugplatz' },
   { label: 'Verkehrsfläche Schiffsverkehr', value: 'Verkehrsfläche Schiffsverkehr' },
-  { label: 'Verkehrsfläche, noch nicht aufgeschlüsselt', value: 'Verkehrsfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Verkehrsfläche, noch nicht aufgeschlüsselt',
+    value: 'Verkehrsfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Grünland', value: 'Grünland' },
   { label: 'Ackerland', value: 'Ackerland' },
   { label: 'Gartenland', value: 'Gartenland' },
@@ -77,21 +86,27 @@ const usageOptions = [
   { label: 'Nadelwald', value: 'Nadelwald' },
   { label: 'Mischwald', value: 'Mischwald' },
   { label: 'Gehölz', value: 'Gehölz' },
-  { label: 'Waldfläche, noch nicht aufgeschlüsselt', value: 'Waldfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Waldfläche, noch nicht aufgeschlüsselt',
+    value: 'Waldfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Fließgewässer', value: 'Fließgewässer' },
   { label: 'Kanal', value: 'Kanal' },
   { label: 'Hafen', value: 'Hafen' },
   { label: 'Bach, Graben', value: 'Bach, Graben' },
   { label: 'Stehendes Gewässer', value: 'Stehendes Gewässer' },
   { label: 'Sumpf', value: 'Sumpf' },
-  { label: 'Wasserfläche, noch nicht aufgeschlüsselt', value: 'Wasserfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Wasserfläche, noch nicht aufgeschlüsselt',
+    value: 'Wasserfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Militärisches Übungsgelände', value: 'Militärisches Übungsgelände' },
   { label: 'Anderes Übungsgelände', value: 'Anderes Übungsgelände' },
   { label: 'Schutzfläche', value: 'Schutzfläche' },
   { label: 'Historische Anlage', value: 'Historische Anlage' },
   { label: 'Friedhof', value: 'Friedhof' },
   { label: 'Unland', value: 'Unland' },
-  { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' }
+  { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' },
 ];
 
 onMounted(() => {
@@ -111,8 +126,18 @@ const fetchPropertyDetails = () => {
       parcel.value = property.parcel || '';
       landRegistry.value = property.landRegistry || '';
       usageType.value = property.usageType || null;
-      plotArea.value = property.plotArea !== undefined && property.plotArea !== null ? String(property.plotArea) : null;
-      console.log('Property plotArea:', property.plotArea, 'Type:', typeof property.plotArea, 'Converted value:', plotArea.value);
+      plotArea.value =
+        property.plotArea !== undefined && property.plotArea !== null
+          ? String(property.plotArea)
+          : null;
+      console.log(
+        'Property plotArea:',
+        property.plotArea,
+        'Type:',
+        typeof property.plotArea,
+        'Converted value:',
+        plotArea.value,
+      );
       tenant.value = property.tenant || '';
       street.value = property.street || '';
       zip.value = property.zip || '';
@@ -137,7 +162,7 @@ const fetchPropertyDetails = () => {
         city: city.value,
         province: province.value,
         country: country.value,
-        countryCode: countryCode.value
+        countryCode: countryCode.value,
       });
     })
     .catch((err) => {
@@ -174,7 +199,13 @@ const goBack = () => {
 
             <div class="input-container col-span-12">
               <label class="label" for="description">{{ t('property.description') }}</label>
-              <Textarea id="description" v-model="description" class="no-resize" rows="4" readonly />
+              <Textarea
+                id="description"
+                v-model="description"
+                class="no-resize"
+                rows="4"
+                readonly
+              />
             </div>
 
             <div class="input-container col-span-6">
@@ -269,12 +300,7 @@ const goBack = () => {
     </div>
 
     <div class="buttons-container centered-buttons mt-4">
-      <Button
-        class="mr-2"
-        icon="pi pi-pencil"
-        :label="t('button.edit')"
-        @click="navigateToEdit"
-      />
+      <Button class="mr-2" icon="pi pi-pencil" :label="t('button.edit')" @click="navigateToEdit" />
       <Button
         class="p-button-secondary"
         icon="pi pi-arrow-left"

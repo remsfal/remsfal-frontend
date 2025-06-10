@@ -126,7 +126,7 @@ const createProperty = async () => {
           <div v-if="slotProps.value">
             {{ slotProps.value.firstName }} {{ slotProps.value.lastName }}
           </div>
-          <span v-else>{{ tenant || "Mieter auswählen" }}</span>
+          <span v-else>{{ tenant || 'Mieter auswählen' }}</span>
         </template>
         <template #option="slotProps">
           {{ slotProps.option.firstName }} {{ slotProps.option.lastName }}
@@ -144,14 +144,17 @@ const createProperty = async () => {
       />
     </div>
 
-
-
     <div class="flex justify-end gap-2">
       <Button
         type="button"
         :label="t('button.cancel')"
         severity="secondary"
-        @click="() => { visible = false; resetForm(); }"
+        @click="
+          () => {
+            visible = false;
+            resetForm();
+          }
+        "
       ></Button>
       <Button type="button" :label="t('button.add')" @click="createProperty"></Button>
     </div>

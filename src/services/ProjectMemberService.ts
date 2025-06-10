@@ -25,9 +25,7 @@ class ProjectMemberService {
   private readonly baseUrl: string = '/api/v1/projects';
 
   async getMembers(projectId: string): Promise<MemberList> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/members`)
-      .then((response) => {
+    return axios.get(`${this.baseUrl}/${projectId}/members`).then((response) => {
       const list: MemberList = response.data;
       console.log('GET members:', list);
       return list;
@@ -85,14 +83,11 @@ class ProjectMemberService {
     try {
       console.log(`Attempting to remove member with projectId=${projectId}, memberId=${memberId}`);
 
-      const response = await axios.delete(
-        `${this.baseUrl}/${projectId}/members/${memberId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const response = await axios.delete(`${this.baseUrl}/${projectId}/members/${memberId}`, {
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
       console.log('Member removed successfully:', response.data);
       return response.data;
     } catch (error) {

@@ -24,7 +24,7 @@ const loadTasks = () => {
 
 onMounted(() => {
   loadTasks();
-})
+});
 </script>
 
 <template>
@@ -41,7 +41,7 @@ onMounted(() => {
     paginator
     tableStyle="min-width: 75rem"
   >
-    <Column :expander="true" headerStyle="width: 3rem"></Column>  
+    <Column :expander="true" headerStyle="width: 3rem"></Column>
     <Column field="title" header="Titel" style="min-width: 200px"></Column>
     <Column field="status" header="Status" style="min-width: 200px"></Column>
 

@@ -6,7 +6,6 @@ import ContractorService, {
 } from '../../src/services/ContractorService';
 
 describe('ContractorService', () => {
-
   const service = new ContractorService();
   const taskId = 'test-task';
 

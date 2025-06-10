@@ -3,7 +3,6 @@ import axios from 'axios';
 import TaskService, { Task, Status } from '../../src/services/TaskService';
 
 describe('TaskService', () => {
-
   const service = new TaskService();
   const projectId = 'test-project';
   const taskId = 'test-task';
@@ -47,9 +46,7 @@ describe('TaskService', () => {
     await service.getTasks(projectId, status);
 
     // Assert
-    expect(axios.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${projectId}/tasks?status=${status}`
-    );
+    expect(axios.get).toHaveBeenCalledWith(`/api/v1/projects/${projectId}/tasks?status=${status}`);
   });
 
   it('should call the API with owner query parameter when ownerId is provided', async () => {
@@ -63,9 +60,7 @@ describe('TaskService', () => {
     await service.getTasks(projectId, undefined, ownerId);
 
     // Assert
-    expect(axios.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${projectId}/tasks?owner=${ownerId}`
-    );
+    expect(axios.get).toHaveBeenCalledWith(`/api/v1/projects/${projectId}/tasks?owner=${ownerId}`);
   });
   it('should get a single task', async () => {
     const mockTask: Task = {

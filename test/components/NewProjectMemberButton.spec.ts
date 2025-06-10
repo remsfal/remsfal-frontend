@@ -45,7 +45,7 @@ describe('NewProjectMemberButton.vue', () => {
 
     // Klick auf Hinzufügen
     const buttons = document.querySelectorAll('button');
-    const addButton = Array.from(buttons).find(btn => btn.textContent?.includes('Hinzufügen'));
+    const addButton = Array.from(buttons).find((btn) => btn.textContent?.includes('Hinzufügen'));
     expect(addButton).toBeTruthy();
     addButton?.dispatchEvent(new Event('click'));
 

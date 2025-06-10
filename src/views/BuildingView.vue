@@ -76,7 +76,8 @@ const fetchBuildingDetails = () => {
       description.value = building.description || '';
       location.value = building.location || '';
       livingSpace.value = building.livingSpace !== undefined ? building.livingSpace : null;
-      commercialSpace.value = building.commercialSpace !== undefined ? building.commercialSpace : null;
+      commercialSpace.value =
+        building.commercialSpace !== undefined ? building.commercialSpace : null;
       usableSpace.value = building.usableSpace !== undefined ? building.usableSpace : null;
       heatingSpace.value = building.heatingSpace !== undefined ? building.heatingSpace : null;
       street.value = building.street || '';
@@ -100,7 +101,7 @@ const fetchBuildingDetails = () => {
         city: city.value,
         province: province.value,
         country: country.value,
-        countryCode: countryCode.value
+        countryCode: countryCode.value,
       });
 
       originalValues.value = {
@@ -116,7 +117,7 @@ const fetchBuildingDetails = () => {
         city: city.value,
         province: province.value,
         country: country.value,
-        countryCode: countryCode.value
+        countryCode: countryCode.value,
       };
     })
     .catch((err) => {
@@ -211,7 +212,7 @@ const updateBuilding = () => {
         city: city.value,
         province: province.value,
         country: country.value,
-        countryCode: countryCode.value
+        countryCode: countryCode.value,
       };
     })
     .catch((err) => {
@@ -235,8 +236,15 @@ const cancel = () => {
         <template #content>
           <div class="p-fluid formgrid grid grid-cols-12 gap-4">
             <div class="input-container col-span-12">
-              <label class="label" for="title">{{ t('building.title') }} <span class="required-field">*</span></label>
-              <InputText id="title" v-model="title" type="text" :class="{ 'p-invalid': errors.title }" />
+              <label class="label" for="title"
+                >{{ t('building.title') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="title"
+                v-model="title"
+                type="text"
+                :class="{ 'p-invalid': errors.title }"
+              />
               <small v-if="errors.title" class="p-error">{{ errors.title }}</small>
             </div>
 
@@ -280,32 +288,62 @@ const cancel = () => {
         <template #content>
           <div class="p-fluid formgrid grid grid-cols-12 gap-4">
             <div class="input-container col-span-12">
-              <label class="label" for="street">{{ t('property.address.street') }} <span class="required-field">*</span></label>
-              <InputText id="street" v-model="street" type="text" :class="{ 'p-invalid': errors.street }" />
+              <label class="label" for="street"
+                >{{ t('property.address.street') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="street"
+                v-model="street"
+                type="text"
+                :class="{ 'p-invalid': errors.street }"
+              />
               <small v-if="errors.street" class="p-error">{{ errors.street }}</small>
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="zip">{{ t('property.address.zip') }} <span class="required-field">*</span></label>
+              <label class="label" for="zip"
+                >{{ t('property.address.zip') }} <span class="required-field">*</span></label
+              >
               <InputText id="zip" v-model="zip" type="text" :class="{ 'p-invalid': errors.zip }" />
               <small v-if="errors.zip" class="p-error">{{ errors.zip }}</small>
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="city">{{ t('property.address.city') }} <span class="required-field">*</span></label>
-              <InputText id="city" v-model="city" type="text" :class="{ 'p-invalid': errors.city }" />
+              <label class="label" for="city"
+                >{{ t('property.address.city') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="city"
+                v-model="city"
+                type="text"
+                :class="{ 'p-invalid': errors.city }"
+              />
               <small v-if="errors.city" class="p-error">{{ errors.city }}</small>
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="province">{{ t('property.address.province') }} <span class="required-field">*</span></label>
-              <InputText id="province" v-model="province" type="text" :class="{ 'p-invalid': errors.province }" />
+              <label class="label" for="province"
+                >{{ t('property.address.province') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="province"
+                v-model="province"
+                type="text"
+                :class="{ 'p-invalid': errors.province }"
+              />
               <small v-if="errors.province" class="p-error">{{ errors.province }}</small>
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="country">{{ t('property.address.country') }} <span class="required-field">*</span></label>
-              <InputText id="country" v-model="country" type="text" :class="{ 'p-invalid': errors.country }" />
+              <label class="label" for="country"
+                >{{ t('property.address.country') }} <span class="required-field">*</span></label
+              >
+              <InputText
+                id="country"
+                v-model="country"
+                type="text"
+                :class="{ 'p-invalid': errors.country }"
+              />
               <small v-if="errors.country" class="p-error">{{ errors.country }}</small>
             </div>
 

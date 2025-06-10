@@ -120,11 +120,7 @@ const handleSubmit = async (values: Record<string, any>) => {
       console.log('else');
 
       // create a new garage
-      const response = await garageService.createGarage(
-        props.projectId,
-        props.buildingId,
-        garage,
-      );
+      const response = await garageService.createGarage(props.projectId, props.buildingId, garage);
       console.log('Garage created successfully:', response);
       alert('Garage created successfully!');
       router.back();
