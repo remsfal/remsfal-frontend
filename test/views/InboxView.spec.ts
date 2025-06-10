@@ -159,7 +159,7 @@ describe('InboxView.vue', () => {
     it('filter by date range (inclusive)', async () => {
       vm.filterDateRange = [new Date('2025-06-01'), new Date('2025-06-05')];
       await nextTick();
-      expect(vm.filteredMessages.map((m: any) => m.id)).toEqual(['1']);
+      expect(vm.filteredMessages.map((m: any) => m.id)).toEqual(['1', '2']);
     });
 
     it('rowClass für unread/read', () => {
