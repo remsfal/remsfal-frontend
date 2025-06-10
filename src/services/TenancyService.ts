@@ -30,7 +30,7 @@ export interface TenancyItem {
   active: boolean;
 }
 
-class TenancyService {
+export default class TenancyService {
   generateMockTenantData(): TenantItem[] {
     return [
       {

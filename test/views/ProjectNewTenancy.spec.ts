@@ -1,6 +1,5 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
-import Dialog from 'primevue/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '../../src/i18n/i18n';
 import ProjectNewTenancy from '../../src/views/ProjectNewTenancy.vue';
