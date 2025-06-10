@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { tenancyService, type TenancyTenantItem } from '@/services/TenancyService';
+import type { DataTablePassThroughMethodOptions } from 'primevue/datatable';
 import { ref } from 'vue';
 
 const { tenants } = defineProps<{
@@ -43,7 +44,7 @@ const onCellEditComplete = (event: any) => {
                 @cell-edit-complete="onCellEditComplete" class="custom-scroll-height" :pt="{
                     table: { style: 'min-width: 50rem' },
                     column: {
-                        bodycell: ({ state }) => ({
+                        bodycell: ({ state }: DataTablePassThroughMethodOptions) => ({
                             class: [{ '!py-0': state['d_editing'] }]
                         })
                     }

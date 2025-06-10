@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { tenancyService, type TenancyUnitItem } from '@/services/TenancyService';
-import { propertyService, EntityType, toRentableUnitView } from '@/services/PropertyService';
+import { propertyService, EntityType, toRentableUnitView, type RentableUnitTreeNode } from '@/services/PropertyService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Select, { type SelectChangeEvent } from 'primevue/select';
+import type { DataTablePassThroughMethodOptions, DataTableState } from 'primevue/datatable';
 
 const { listOfUnits } = defineProps<{
     listOfUnits: TenancyUnitItem[];
@@ -28,10 +29,10 @@ async function loadDropdownOptions() {
         }));
 
         const getAllUnits = (nodes: RentableUnitTreeNode[]): Array<{ label: string, value: string }> => {
-            return nodes.reduce((acc, node) => {
+            return nodes.reduce((acc: Array<{ label: string, value: string }>, node) => {
                 acc.push({
                     label: node.data.title || '',
-                    value: node.data.title
+                    value: node.data.title ?? ''
                 });
 
                 if (node.children && node.children.length > 0) {
@@ -97,7 +98,7 @@ const onCellEditComplete = async (event: any) => {
                 @cell-edit-complete="onCellEditComplete" class="custom-scroll-height" :pt="{
                     table: { style: 'min-width: 50rem' },
                     column: {
-                        bodycell: ({ state }) => ({
+                        bodycell: ({ state }: DataTablePassThroughMethodOptions) => ({
                             class: [{ '!py-0': state['d_editing'] }]
                         })
                     }
