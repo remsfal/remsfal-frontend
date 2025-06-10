@@ -103,7 +103,6 @@ const hasChanges = computed(() => {
     plotArea.value !== originalValues.value.plotArea
   );
 });
-const isModified = computed(() => hasChanges.value);
 
 const validationErrors = computed(() => {
   const errors: string[] = [];
