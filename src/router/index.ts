@@ -165,6 +165,15 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ApartmentUpdateView.vue'),
       },
       {
+        path: 'site/:unitId',
+        name: 'SiteView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/SiteUpdateView.vue'),
+      },
+      {
         path: 'commercial/:commercialId',
         name: 'CommercialUpdate',
         props: (route: RouteLocationNormalizedLoaded) => ({
