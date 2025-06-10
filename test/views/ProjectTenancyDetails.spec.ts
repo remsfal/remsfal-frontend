@@ -3,6 +3,7 @@ import PrimeVue from 'primevue/config';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '../../src/i18n/i18n';
 import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
+import tenancyService from '../../src/services/TenancyService';
 
 // Mock PrimeVue configuration to avoid errors during testing
 vi.mock('primevue/config', () => ({

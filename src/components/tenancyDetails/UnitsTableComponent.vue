@@ -29,7 +29,7 @@ const projectStore = useProjectStore();
 const rentalObjects = ref<Array<{ label: string; value: string }>>([]);
 const unitTypes = ref<Array<{ label: string; value: string }>>([]);
 
-async function loadDropdownOptions() {
+const loadDropdownOptions = async () => {
   try {
     const response = await propertyService.getPropertyTree(projectStore.projectId || '');
     const properties = response.properties;
