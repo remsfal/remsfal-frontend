@@ -111,22 +111,27 @@ class TenancyService {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async deleteTenancy(tenancyId: string): Promise<void> {
     // TODO: Implementieren
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancyTenantItem(tenant: TenancyTenantItem): Promise<void> {
     // TODO: Implementieren
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancyUnitItem(tenant: TenancyUnitItem): Promise<void> {
     // TODO: Implementieren
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async createTenancy(tenancy: TenancyItem): Promise<void> {
     //TODO: Implementieren
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancy(tenancy: TenancyItem | null): Promise<void> {
     //TODO: Implementieren
   }
