@@ -19,7 +19,7 @@ const localListOfUnits = ref<TenancyUnitItem[]>([]);
 watch(
     () => props.listOfUnits,
     (newVal) => {
-        localListOfUnits.value = newVal.map(t => ({ ...t }));
+        localListOfUnits.value = newVal?.map(t => ({ ...t }));
     },
     { immediate: true, deep: true }
 );
