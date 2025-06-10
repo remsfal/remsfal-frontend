@@ -1,101 +1,199 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
-import ReusableFormComponent from '@/components/ReusableFormComponent.vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { apartmentService, type ApartmentUnit } from '@/services/ApartmentService';
 
-// Router und Route für IDs
+const props = defineProps<{
+  projectId: string;
+  apartmentId: string;
+}>();
+
 const router = useRouter();
-const route = useRoute();
-const projectId = route.params.projectId as string;
-const buildingId = route.params.buildingId as string;
-const apartmentId = route.params.apartmentId as string;
 
-// Typ für Felder-Array
-interface Field {
-  name: string;
-  label: string;
-  type: "text" | "textarea" | "checkbox" | "select";
-  options?: any[];
-  required?: boolean;
-  validations?: ((value: any) => string | null)[];
-}
+// Refs für Felder
+const title = ref('');
+const location = ref('');
+const heatingSpace = ref<number | null>(null);
+const livingSpace = ref<number | null>(null);
+const usableSpace = ref<number | null>(null);
+const description = ref('');
 
-// Form Felder für Apartment Update
-const fields: Field[] = [
-  { name: 'title', type: 'text', label: 'Title', required: true },
-  { name: 'location', type: 'text', label: 'Location', required: true },
-  { name: 'heatingSpace', type: 'text', label: 'Heating Space (m²)', required: true, validations: [(value) => isNaN(Number(value)) ? 'Must be a number' : null] },
-  { name: 'livingSpace', type: 'text', label: 'Living Space (m²)', required: true, validations: [(value) => isNaN(Number(value)) ? 'Must be a number' : null] },
-  { name: 'description', type: 'textarea', label: 'Description', required: false },
-  { name: 'usableSpace', type: 'text', label: 'Usable Space (m²)', required: true, validations: [(value) => isNaN(Number(value)) ? 'Must be a number' : null] },
-];
+// Originalwerte
+const originalValues = ref({
+  title: '',
+  location: '',
+  heatingSpace: null as number | null,
+  livingSpace: null as number | null,
+  usableSpace: null as number | null,
+  description: '',
+});
 
-// Initialwerte und Laden-Status
-const initialValues = ref<Record<string, any>>({});
-const isLoading = ref(false);
+// Änderungen erkennen
+const hasChanges = computed(() => {
+  return (
+    title.value !== originalValues.value.title ||
+    location.value !== originalValues.value.location ||
+    heatingSpace.value !== originalValues.value.heatingSpace ||
+    livingSpace.value !== originalValues.value.livingSpace ||
+    usableSpace.value !== originalValues.value.usableSpace ||
+    description.value !== originalValues.value.description
+  );
+});
 
-// Apartment-Daten laden
-const fetchApartmentData = async () => {
-  isLoading.value = true;
+// Validierung
+const validationErrors = computed(() => {
+  const errors: string[] = [];
+  if (heatingSpace.value !== null && heatingSpace.value < 0)
+    errors.push('Heizfläche darf nicht negativ sein.');
+  if (livingSpace.value !== null && livingSpace.value < 0)
+    errors.push('Wohnfläche darf nicht negativ sein.');
+  if (usableSpace.value !== null && usableSpace.value < 0)
+    errors.push('Nutzfläche darf nicht negativ sein.');
+
+  return errors;
+});
+
+const isValid = computed(() => validationErrors.value.length === 0);
+
+// Daten laden
+const fetchApartment = async () => {
   try {
-    const response = await axios.get(
-        `/project/${projectId}/building/${buildingId}/apartments/${apartmentId}`
-    );
-    initialValues.value = response.data;
-  } catch (error) {
-    console.error('Error fetching apartment data:', error);
-    alert('Failed to load apartment data. Please try again.');
-  } finally {
-    isLoading.value = false;
+    const data = await apartmentService.getApartment(props.projectId, props.apartmentId);
+    title.value = data.title || '';
+    location.value = data.location || '';
+    heatingSpace.value = data.heatingSpace ?? null;
+    livingSpace.value = data.livingSpace ?? null;
+    usableSpace.value = data.usableSpace ?? null;
+    description.value = data.description || '';
+
+    originalValues.value = {
+      title: title.value,
+      location: location.value,
+      heatingSpace: heatingSpace.value,
+      livingSpace: livingSpace.value,
+      usableSpace: usableSpace.value,
+      description: description.value,
+    };
+  } catch (err) {
+    console.error('Fehler beim Laden der Wohnung:', err);
   }
 };
 
-// Daten an Backend senden
-const handleSubmit = async (formData: Record<string, any>) => {
-  isLoading.value = true;
+onMounted(() => {
+  if (props.apartmentId) {
+    fetchApartment();
+  }
+});
+
+// Speichern
+const save = async () => {
+  if (!isValid.value) {
+    alert('Bitte beheben Sie die Validierungsfehler.');
+    return;
+  }
+
+  const payload: ApartmentUnit = {
+    title: title.value,
+    location: location.value,
+    description: description.value,
+    heatingSpace: heatingSpace.value ?? undefined,
+    livingSpace: livingSpace.value ?? undefined,
+    usableSpace: usableSpace.value ?? undefined,
+  };
+
   try {
-    await axios.patch(
-        `/project/${projectId}/building/${buildingId}/apartments/${apartmentId}`,
-        formData
-    );
-    alert('Apartment updated successfully!');
-    router.push(`/project/${projectId}/buildings/${buildingId}`);
-  } catch (error) {
-    console.error('Error updating apartment:', error);
-    alert('Failed to update apartment. Please try again.');
-  } finally {
-    isLoading.value = false;
+    await apartmentService.updateApartment(props.projectId, props.apartmentId, payload);
+    alert('Apartment erfolgreich aktualisiert!');
+    window.location.reload();
+  } catch (err) {
+    console.error('Fehler beim Speichern:', err);
+    alert('Fehler beim Speichern des Apartments.');
   }
 };
-
-// Abbrechen Aktion
-const handleCancel = () => {
-  router.push(`/project/${projectId}/buildings/${buildingId}`);
+const cancel = () => {
+  if (window.opener) {
+    window.close();
+  } else {
+    router.push(`/project/${props.projectId}/objects`);
+  }
 };
-
-// Daten beim Laden abrufen
-onMounted(fetchApartmentData);
 </script>
 
 <template>
-  <div>
-    <h1>Update Apartment</h1>
-    <ReusableFormComponent
-        :headline="'Update Apartment'"
-        :saveButtonText="'Update'"
-        :cancelButtonText="'Cancel'"
-        :fields="fields"
-        :initialValues="initialValues"
-        @submit="handleSubmit"
-        @cancel="handleCancel"
-    />
+  <div class="p-6 w-full">
+    <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
+      <h2 class="text-2xl font-semibold mb-6">Bearbeite Apartment mit ID: {{ apartmentId }}</h2>
+
+      <form @submit.prevent="save">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <!-- Titel -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Titel</label>
+            <input v-model="title" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Beschreibung -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Beschreibung</label>
+            <textarea v-model="description" rows="3" class="form-textarea w-full" />
+          </div>
+
+          <!-- Standort -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Standort</label>
+            <input v-model="location" type="text" class="form-input w-full" />
+          </div>
+
+          <div>
+            <label class="block text-gray-700 mb-1">Heizfläche (m²)</label>
+            <input v-model.number="heatingSpace" type="number" class="form-input w-full" />
+          </div>
+
+          <div>
+            <label class="block text-gray-700 mb-1">Wohnfläche (m²)</label>
+            <input v-model.number="livingSpace" type="number" class="form-input w-full" />
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
+            <input v-model.number="usableSpace" type="number" class="form-input w-full" />
+          </div>
+        </div>
+
+        <!-- Validierungsfehler -->
+        <div v-if="validationErrors.length" class="text-red-600 mt-4">
+          <ul>
+            <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+          </ul>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex justify-end space-x-4">
+          <button
+            type="submit"
+            :disabled="!hasChanges"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Speichern
+          </button>
+
+          <button
+            type="button"
+            class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+            @click="cancel"
+          >
+            Abbrechen
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
 <style scoped>
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+.form-input,
+.form-textarea {
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
 }
 </style>
