@@ -90,27 +90,74 @@ const collapseAll = () => {
 };
 
 const onNodeSelect = (node: RentableUnitTreeNode) => {
-  const str = node.data.title! + selectedKey.value;
-  toast.add({
-    severity: 'success',
-    summary: 'Node Selected',
-    detail: str,
-    life: 3000,
-  });
+  // For property type, navigate to detail view
+  if (node.data.type === EntityType.Property) {
+    router.push({
+      name: 'PropertyDetailView',
+      params: { projectId: props.projectId, unitId: node.key },
+    });
+  } else if (node.data.type === EntityType.Building) {
+    // For building type, navigate to building view
+    router.push({
+      name: 'BuildingView',
+      params: { projectId: props.projectId, buildingId: node.key },
+    });
+  } else if (node.data.type === EntityType.Apartment) {
+    // For apartment type, navigate to apartment update view
+    router.push({
+      name: 'UpdateApartmentView',
+      params: { 
+        projectId: props.projectId, 
+        apartmentId: node.key,
+        // Since we don't have a way to determine the building ID, we'll use a placeholder
+        // This will need to be updated when more information is available
+        buildingId: '0'
+      },
+    });
+  } else {
+    // For other types, use the existing behavior
+    const view = toRentableUnitView(node.data.type);
+    router.push({
+      name: view,
+      params: { projectId: props.projectId, unitId: node.key },
+    });
+  }
   selectedKey.value.remove(node);
 };
 
 const onOpenInNewTab = (node: RentableUnitTreeNode) => {
-  const view = toRentableUnitView(node.data.type);
+  let routeName;
+  let params: Record<string, string> = { projectId: props.projectId };
+
+  // For property type, navigate to detail view
+  if (node.data.type === EntityType.Property) {
+    routeName = 'PropertyDetailView';
+    params.unitId = node.key;
+  } else if (node.data.type === EntityType.Building) {
+    // For building type, navigate to building view
+    routeName = 'BuildingView';
+    params.buildingId = node.key;
+  } else if (node.data.type === EntityType.Apartment) {
+    // For apartment type, navigate to apartment update view
+    routeName = 'UpdateApartmentView';
+    params.apartmentId = node.key;
+    params.buildingId = '0';
+  } else {
+    // For other types, use the existing behavior
+    routeName = toRentableUnitView(node.data.type);
+    params.unitId = node.key;
+  }
+
   toast.add({
     severity: 'success',
     summary: 'Node Selected',
-    detail: view,
+    detail: routeName,
     life: 3000,
   });
+
   const routeData = router.resolve({
-    name: view,
-    params: { projectId: props.projectId, unitId: node.key },
+    name: routeName,
+    params: params,
   });
   window.open(routeData.href, '_blank');
 };
@@ -193,7 +240,6 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                     class="mr-2 mb-2"
                     @click="collapseAll()"
                   />
-
                 </div>
               </div>
             </template>
@@ -205,7 +251,7 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
 
             <Column field="type" :header="t('rentableUnits.table.type')">
               <template #body="{ node }">
-                <div>{{ node.data.type }}</div>
+                <div>{{ t('rentableUnits.table.unitType.' + node.data.type) }}</div>
               </template>
             </Column>
 
@@ -226,7 +272,6 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                 <div>{{ node.data.usable_space }}</div>
               </template>
             </Column>
-
 
             <Column frozen alignFrozen="right">
               <template #body="{ node }">
