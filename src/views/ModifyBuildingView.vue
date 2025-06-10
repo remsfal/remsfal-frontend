@@ -479,7 +479,9 @@ const cancel = () => {
 <style scoped>
 .form-input,
 .form-textarea {
-  background-color: #f3f4f6;
+  background-color: #f9fafb;
   border-radius: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
 }
 </style>
