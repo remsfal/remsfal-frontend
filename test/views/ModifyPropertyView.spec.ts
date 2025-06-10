@@ -26,7 +26,7 @@ describe('ModifyPropertyView.vue', () => {
       district: 'Initial District',
       corridor: 'Initial Corridor',
       parcel: 'Initial Parcel',
-      landRegistry: 'Initial LandRegistry',
+      landRegisterEntry: 'Initial LandRegistry',
       usageType: null,
     });
 
@@ -46,7 +46,7 @@ describe('ModifyPropertyView.vue', () => {
     expect(wrapper.vm.district).toBe('Initial District');
     expect(wrapper.vm.corridor).toBe('Initial Corridor');
     expect(wrapper.vm.parcel).toBe('Initial Parcel');
-    expect(wrapper.vm.landRegistry).toBe('Initial LandRegistry');
+    expect(wrapper.vm.landRegisterEntry).toBe('Initial LandRegistry');
     expect(wrapper.vm.usageType).toBe(null);
   });
 
@@ -76,7 +76,7 @@ describe('ModifyPropertyView.vue', () => {
         district: 'Initial District',
         corridor: 'Initial Corridor',
         parcel: 'Initial Parcel',
-        landRegistry: 'Initial LandRegistry',
+        landRegisterEntry: 'Initial LandRegistry',
         usageType: null,
       }),
     );
