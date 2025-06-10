@@ -8,7 +8,7 @@ import type { paths as notificationPaths } from './notification-schema';
 export type paths = notificationPaths & chatPaths & platfromPaths;
 
 type Path = keyof paths;
-type Method = keyof paths[Path]; // "get" | "post" | "put" | ...
+type Method = keyof paths[Path];
 
 export type RequestParams<
   P extends Path,
