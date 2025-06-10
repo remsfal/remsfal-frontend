@@ -59,7 +59,7 @@ export async function typedRequest<
   const response = await axios.request({
     method,
     url,
-    params: queryParams, // query params
+    params: queryParams,
     data: options.body,
     ...options.config,
   });
