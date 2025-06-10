@@ -1,10 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
-import Dropdown from 'primevue/dropdown';
-import Button from 'primevue/button';
 import { propertyService } from '@/services/PropertyService';
 
 const props = defineProps<{
@@ -176,61 +172,94 @@ const cancel = () => {
 </script>
 
 <template>
-  <div class="col-span-12">
-    <div class="card">
-      <h5>Bearbeite Eigentum mit ID: {{ props.unitId }}</h5>
-      <div class="p-fluid formgrid grid grid-cols-12 gap-4">
-        <div class="field col-span-12">
-          <label for="title">Titel</label>
-          <InputText id="title" v-model="title" type="text"/>
+  <div class="p-6 w-full">
+    <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
+      <h2 class="text-2xl font-semibold mb-6">
+        Bearbeite Eigentum mit ID: {{ props.unitId }}
+      </h2>
+
+      <form @submit.prevent="updateProperty">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <!-- Titel -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Titel</label>
+            <input v-model="title" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Beschreibung -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Beschreibung</label>
+            <textarea v-model="description" rows="3" class="form-textarea w-full" />
+          </div>
+
+          <!-- Gemarkung -->
+          <div>
+            <label class="block text-gray-700 mb-1">Gemarkung</label>
+            <input v-model="district" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Flur -->
+          <div>
+            <label class="block text-gray-700 mb-1">Flur</label>
+            <input v-model="corridor" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Flurstück -->
+          <div>
+            <label class="block text-gray-700 mb-1">Flurstück</label>
+            <input v-model="parcel" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Liegenschaftsbuch -->
+          <div>
+            <label class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
+            <input v-model="landRegistry" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Wirtschaftsart -->
+          <div class="col-span-2">
+            <label class="block text-gray-700 mb-1">Wirtschaftsart</label>
+            <select v-model="usageType" class="form-input w-full">
+              <option value="" disabled>Bitte wählen</option>
+              <option
+                v-for="option in usageOptions"
+                :key="option.value ?? option.label"
+                :value="option.value"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
         </div>
-        <div class="field col-span-12">
-          <label for="description">Beschreibung</label>
-          <Textarea id="description" v-model="description" class="no-resize" rows="4"/>
+
+        <!-- Buttons -->
+        <div class="mt-6 flex justify-end space-x-4">
+          <button
+            type="submit"
+            :disabled="!isModified"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Speichern
+          </button>
+
+          <button
+            type="button"
+            @click="cancel"
+            class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+          >
+            Abbrechen
+          </button>
         </div>
-        <div class="field col-span-6">
-          <label for="district">Gemarkung</label>
-          <InputText id="district" v-model="district" type="text"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="corridor">Flur</label>
-          <InputText id="corridor" v-model="corridor" type="text"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="parcel">Flurstück</label>
-          <InputText id="parcel" v-model="parcel" type="text"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="landRegistry">Liegenschaftsbuch</label>
-          <InputText id="landRegistry" v-model="landRegistry" type="text"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="usageType">Wirtschaftsart</label>
-          <Dropdown
-              id="usageType"
-              v-model="usageType"
-              :options="usageOptions"
-              class="w-full"
-              filter
-              filterPlaceholder="Tippen Sie, um zu suchen..."
-              optionLabel="label"
-          />
-        </div>
-        <div class="field col-span-12 text-right">
-          <Button :disabled="!isModified" class="mr-2" icon="pi pi-check" label="Speichern" @click="updateProperty"/>
-          <Button class="p-button-secondary" icon="pi pi-times" label="Abbrechen" @click="cancel"/>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
 
-<style>
-.text-right {
-  text-align: right;
-}
-
-.no-resize {
-  resize: none;
+<style scoped>
+.form-input,
+.form-textarea{
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
 }
 </style>
