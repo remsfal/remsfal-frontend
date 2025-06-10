@@ -10,6 +10,11 @@ import { useRouter } from 'vue-router';
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button';
 import Column from 'primevue/column';
+import { apartmentService } from '@/services/ApartmentService';
+import { buildingService } from '@/services/BuildingService';
+import { garageService } from '@/services/GarageService';
+import { commercialService } from '@/services/CommercialService';
+import { siteService } from '@/services/SiteService';
 import { useI18n } from 'vue-i18n';
 
 import TreeTable, {
@@ -178,34 +183,39 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
   isLoading.value = true;
   const entity = node.data.type;
 
-  if (entity === EntityType.Property) {
-    propertyService
-      .deleteProperty(props.projectId, node.key)
-      .then(() => {
-        fetchPropertyTree(props.projectId).finally(() => {
-          isLoading.value = false;
-        });
-      })
-      .catch((err) => {
-        console.error('Error deleting property:', err);
-      });
-  }
-  if (entity === EntityType.Site) {
-    // TODO: implement delete site endpoint
-  }
-  if (entity === EntityType.Building) {
-    // TODO: implement delete building endpoint
-  }
-  if (entity === EntityType.Apartment) {
-    // TODO: implement delete apartment endpoint
-  }
-  if (entity === EntityType.Commercial) {
-    // TODO: implement delete commercial endpoint
-  }
-  if (entity === EntityType.Garage) {
-    // TODO: implement delete garage endpoint
+  const reload = () => fetchPropertyTree(props.projectId).finally(() => {
+    isLoading.value = false;
+  });
+
+  const handleError = (e: unknown) => {
+    console.error(`Fehler beim Löschen der Einheit vom Typ ${entity}:`, e);
+  };
+
+  switch (entity) {
+    case EntityType.Property:
+      propertyService.deleteProperty(props.projectId, node.key).then(reload).catch(handleError);
+      break;
+    case EntityType.Building:
+      buildingService.deleteBuilding(props.projectId, node.key).then(reload).catch(handleError);
+      break;
+    case EntityType.Apartment:
+      apartmentService.deleteApartment(props.projectId, node.key).then(reload).catch(handleError);
+      break;
+    case EntityType.Garage:
+      garageService.deleteGarage(props.projectId, node.key).then(reload).catch(handleError);
+      break;
+    case EntityType.Commercial:
+      commercialService.deleteCommercial(props.projectId, node.key).then(reload).catch(handleError);
+      break;
+    case EntityType.Site:
+      siteService.deleteSite(props.projectId, node.key).then(reload).catch(handleError);
+      break;
+    default:
+      console.warn(`Löschvorgang für Typ ${entity} nicht implementiert`);
+      isLoading.value = false;
   }
 };
+
 </script>
 
 <template>
