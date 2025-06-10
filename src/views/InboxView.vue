@@ -335,7 +335,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
             :rowClass="rowClass"
             class="min-w-full"
             rowHover
-            @row-click="onRowClick"
+            @rowClick="onRowClick"
           >
             <Column selectionMode="multiple" headerStyle="width:3rem" />
             <Column
