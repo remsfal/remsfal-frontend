@@ -5,24 +5,6 @@ import { typedRequest } from '../../../src/helper/api';
 
 vi.mock('axios');
 
-type paths = {
-  '/users/{userId}': {
-    get: {
-      parameters: {
-        path: { userId: string };
-        query?: { search?: string };
-      };
-      responses: {
-        200: {
-          content: {
-            'application/json': { id: string; name: string };
-          };
-        };
-      };
-    };
-  };
-};
-
 type Path = '/users/{userId}';
 type Method = 'get';
 
