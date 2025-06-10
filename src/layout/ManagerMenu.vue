@@ -20,13 +20,17 @@ const model = ref([
         to: `/project/${projectStore.projectId}/`,
       },
       {
+        label: 'managerMenu.home.managerDashboard',
+        icon: { type: 'pi', name: 'pi pi-fw pi-briefcase' },
+        to: projectStore.projectId ? `/project/${projectStore.projectId}/manager-dashboard` : '/',
+      },
+      {
         label: 'managerMenu.home.settings',
         icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
         to: `/project/${projectStore.projectId}/settings`,
       },
     ],
   },
-  // Manager.Menu.vue  – Ausschnitt masterData-Block angepasst
   {
     label: 'managerMenu.masterData',
     items: [
@@ -40,15 +44,13 @@ const model = ref([
         icon: { type: 'pi', name: 'pi pi-fw pi-users' },
         to: `/project/${projectStore.projectId}/tenancies`,
       },
-      /*  ➜  Neuer/angepasster Menüpunkt  */
       {
-        label: 'managerMenu.masterData.contractors',   // i18n-Key – übersetze z. B. „Dienstleister“
-        icon:  { type: 'pi', name: 'pi pi-fw pi-id-card' },
-        to: `/project/${projectStore.projectId}/providers`, // <-- neue Route
+        label: 'managerMenu.masterData.contractors',
+        icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+        to: `/project/${projectStore.projectId}/providers`,
       },
     ],
   },
-
   {
     label: 'managerMenu.taskManagement',
     items: [

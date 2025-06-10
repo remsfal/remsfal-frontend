@@ -87,6 +87,7 @@
   "managerMenu.home": "Home",
   "managerMenu.home.label": "Dashboard",
   "managerMenu.home.settings": "Einstellungen",
+  "managerMenu.home.managerDashboard": "Verwalter-Dashboard",
   "managerMenu.masterData": "Stammdaten",
   "managerMenu.masterData.properties": "Wirtschaftseinheiten",
   "managerMenu.masterData.tenants": "Mieter",

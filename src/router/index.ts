@@ -86,6 +86,12 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectDashboard.vue'),
       },
       {
+        path: 'manager-dashboard',
+        name: 'ManagerDashboard',
+        props: true,
+        component: () => import('@/views/ManagerDashboardView.vue'),
+      },
+      {
         path: 'settings',
         name: 'ProjectSettings',
         props: true,
