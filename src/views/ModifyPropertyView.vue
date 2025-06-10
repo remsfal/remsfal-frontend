@@ -15,7 +15,7 @@ const description = ref('');
 const district = ref(''); // Gemarkung
 const corridor = ref(''); // Flur
 const parcel = ref(''); // Flurstück
-const landRegistry = ref(''); // Liegenschaftsbuch
+const landRegisterEntry = ref(''); // Liegenschaftsbuch
 const usageType = ref<string | null>(null); // Wirtschaftsart
 const plotArea = ref<number | null>(null); // Grundstücksfläche
 const usageOptions = [
@@ -86,7 +86,7 @@ const originalValues = ref({
   district: '',
   corridor: '',
   parcel: '',
-  landRegistry: '',
+  landRegisterEntry: '',
   usageType: null as string | null,
   plotArea: null as number | null,
 });
@@ -98,7 +98,7 @@ const hasChanges = computed(() => {
     district.value !== originalValues.value.district ||
     corridor.value !== originalValues.value.corridor ||
     parcel.value !== originalValues.value.parcel ||
-    landRegistry.value !== originalValues.value.landRegistry ||
+    landRegisterEntry.value !== originalValues.value.landRegisterEntry ||
     usageType.value !== originalValues.value.usageType ||
     plotArea.value !== originalValues.value.plotArea
   );
@@ -123,7 +123,7 @@ const fetchPropertyDetails = async () => {
     district.value = data.district || '';
     corridor.value = data.corridor || '';
     parcel.value = data.parcel || '';
-    landRegistry.value = data.landRegistry || '';
+    landRegisterEntry.value = data.landRegisterEntry || '';
     usageType.value = data.usageType || null;
     plotArea.value = data.plotArea ?? null;
 
@@ -133,7 +133,7 @@ const fetchPropertyDetails = async () => {
       district: district.value,
       corridor: corridor.value,
       parcel: parcel.value,
-      landRegistry: landRegistry.value,
+      landRegisterEntry: landRegisterEntry.value,
       usageType: usageType.value,
       plotArea: plotArea.value,
     };
@@ -161,7 +161,7 @@ const updateProperty = async () => {
     district: district.value,
     corridor: corridor.value,
     parcel: parcel.value,
-    landRegistry: landRegistry.value,
+    landRegisterEntry: landRegisterEntry.value,
     usageType: usageType.value,
     plotArea: plotArea.value,
   };
@@ -225,7 +225,7 @@ const cancel = () => {
           <!-- Liegenschaftsbuch -->
           <div>
             <label class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
-            <input v-model="landRegistry" type="text" class="form-input w-full" />
+            <input v-model="landRegisterEntry" type="text" class="form-input w-full" />
           </div>
 
           <!-- Wirtschaftsart -->
