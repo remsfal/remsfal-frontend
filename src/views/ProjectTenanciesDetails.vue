@@ -72,7 +72,7 @@ function handleTenancyDataChange(updatedTenancy: TenancyItem) {
 
 <template>
   <div class="p-4">
-    <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @onChange="handleTenancyDataChange"/>
+    <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @onChange="handleTenancyDataChange" />
     <!-- Main Content -->
     <div class="grid grid-cols-1 gap-6">
       <!-- Tenants Section -->
@@ -81,25 +81,10 @@ function handleTenancyDataChange(updatedTenancy: TenancyItem) {
 
       <!-- Delete Button -->
       <div class="flex justify-end">
-        <Button
-          icon="pi pi-save"
-          label="Speichern"
-          text
-          raised
-          rounded
-          class="mb-2 mr-2 hover:bg-blue-600 transition-colors"
-          @click="updateTenancy(tenancy)"
-        />
-        <Button
-          icon="pi pi-trash"
-          label="Löschen"
-          severity="danger"
-          text
-          raised
-          rounded
-          class="mb-2 mr-2 hover:bg-red-600 transition-colors"
-          @click="confirmDelete()"
-        />
+        <Button icon="pi pi-save" label="Speichern" text raised rounded
+          class="mb-2 mr-2 hover:bg-blue-600 transition-colors" @click="updateTenancy(tenancy)" />
+        <Button icon="pi pi-trash" label="Löschen" severity="danger" text raised rounded
+          class="mb-2 mr-2 hover:bg-red-600 transition-colors" @click="confirmDelete()" />
       </div>
     </div>
   </div>
