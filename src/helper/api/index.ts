@@ -13,6 +13,7 @@ type Method = keyof paths[Path];
 export type RequestParams<
   P extends Path,
   M extends Method
+// eslint-disable-next-line @typescript-eslint/ban-types
 > = paths[P][M] extends { parameters?: infer Params } ? Params : {};
 
 export type RequestBody<
