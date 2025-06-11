@@ -4,6 +4,6 @@
   "compilerOptions": {
     "composite": true,
     "lib": ["dom", "es2023"],
-    "types": ["node", "jsdom"]
+    "types": ["node", "jsdom", "vite/client", "@vue/test-utils"]
   }
 }
