@@ -122,12 +122,45 @@
   "rentableUnits.table.description": "Description",
   "rentableUnits.table.tenant": "Tenant",
   "rentableUnits.table.area": "Area",
-  "rentableUnits.view.title": "Object Data View"
-
-
-
-
-
+  "rentableUnits.view.title": "Object Data View",
+  "toolbar.inbox": "Inbox",
+  "inbox.title": "Inbox",
+  "inbox.loading": "Loading messages…",
+  "inbox.empty": "No messages available.",
+  "inbox.column.type": "Type",
+  "inbox.column.contractor": "Sender",
+  "inbox.column.project": "Property",
+  "inbox.column.subject": "Subject",
+  "inbox.column.receivedAt": "Received At",
+  "inbox.column.status": "Status",
+  "inbox.status.read": "Read",
+  "inbox.status.unread": "Unread",
+  "inbox.filter.type": "Filter by type",
+  "inbox.filter.contractor": "Filter by contractor",
+  "inbox.filter.project": "Filter by property",
+  "inbox.filter.status": "Filter by status",
+  "inbox.filter.date": "Filter by date",
+  "inbox.filter.statusOptions.all": "All",
+  "inbox.filter.statusOptions.read": "Read",
+  "inbox.filter.statusOptions.unread": "Unread",
+  "inbox.actions.markRead": "Mark as Read",
+  "inbox.actions.markUnread": "Mark as Unread",
+  "inbox.actions.clearSelection": "Clear Selection",
+  "inbox.actions.markReadSelected": "Mark selected as read",
+  "inbox.actions.markUnreadSelected": "Mark selected as unread",
+  "inbox.actions.deleteSelected": "Delete selected",
+  "inbox.actions.clearFilters": "Clear filters",
+  "inbox.confirmDeleteTitle": "Delete Messages",
+  "inbox.confirmDeleteMessage": "Are you sure you want to delete {0} message(s)?",
+  "inbox.actions.confirm": "Confirm",
+  "inbox.actions.cancel": "Cancel",
+  "inbox.filter.unit": "Filter by unit",
+  "inbox.column.unit": "Unit",
+  "inbox.column.tenant": "Tenant",
+  "inbox.column.owner": "Owner",
+  "inbox.filter.tenant": "Filter by tenant",
+  "inbox.filter.owner": "Filter by owner",
+  "inbox.filter.title": "Filter"
 }
 
 

@@ -56,6 +56,17 @@ const fullscreenRoutes: RouteRecordRaw[] = [
         name: 'AccountSettings',
         component: () => import('@/views/AccountSettingsView.vue'),
       },
+      {
+        path: '/inbox',
+        name: 'Inbox',
+        component: () => import('@/views/InboxView.vue'),
+      },
+      {
+        path: '/inbox/:id',
+        name: 'InboxDetail',
+        component: () => import('@/views/InboxDetail.vue'),
+        props: true,
+      },
     ],
   },
 ];
