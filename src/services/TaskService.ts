@@ -11,6 +11,13 @@ export interface Task {
   blockedBy: string;
   duplicateOf: string;
   relatedTo: string;
+  type: TaskType;
+}
+
+enum TaskType {
+  TASK = 'TASK',
+  DEFECT = 'DEFECT',
+  MAINTENANCE = 'MAINTENANCE',
 }
 
 export enum Status {
@@ -32,6 +39,8 @@ export interface TaskItem {
   status: Status;
   owner: string;
 }
+
+
 
 export default class TaskService {
   readonly baseUrl: string = '/api/v1/projects';
@@ -87,6 +96,7 @@ export default class TaskService {
       description: description,
       status: Status.OPEN,
       ownerId: ownerId,
+      type: TaskType.TASK,
     };
 
     return axios.post<Task>(`${this.baseUrl}/${projectId}/tasks/`, newTask).then((response) => {
@@ -106,16 +116,16 @@ export default class TaskService {
     ownerId: string,
   ) {
     return axios
-        .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
-          title: title,
-          description: description,
-          status: status,
-          ownerId: ownerId,
-        })
-        .then((response) => {
-          console.log('task updated', response.data);
-          return response.data;
-        })
-        .catch((error) => console.error(error));
+      .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
+        title: title,
+        description: description,
+        status: status,
+        ownerId: ownerId,
+      })
+      .then((response) => {
+        console.log('task updated', response.data);
+        return response.data;
+      })
+      .catch((error) => console.error(error));
   }
 }

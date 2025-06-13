@@ -23,7 +23,7 @@ const createTask = () => {
   const projectId = props.projectId;
 
   taskService
-    .createTask(projectId, title.value, description.value, props.owner)
+    .createTask(projectId, title.value, description.value, props.owner,'TASK')
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;
