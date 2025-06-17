@@ -26,7 +26,7 @@ export type ResponseType<
   P extends Path,
   M extends Method
 > = paths[P][M] extends { responses: { 200: { content: { 'application/json': infer Res } } } }
-  ? Res& RequestParams<P, M>
+  ? Res
   : unknown;
 
 export async function typedRequest<
