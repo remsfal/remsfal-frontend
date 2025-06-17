@@ -86,6 +86,12 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectDashboard.vue'),
       },
       {
+        path: 'manager-dashboard',
+        name: 'ManagerDashboard',
+        props: true,
+        component: () => import('@/views/ManagerDashboardView.vue'),
+      },
+      {
         path: 'settings',
         name: 'ProjectSettings',
         props: true,
@@ -173,6 +179,12 @@ const projectRoutes: RouteRecordRaw[] = [
         }),
         component: () => import('@/views/CommercialUpdateView.vue'),
       },
+      {
+        path: 'providers',
+        name: 'Providers',
+        props: true,
+        component: () => import('@/views/ProviderView.vue'),
+      },
     ],
   },
 ];
@@ -213,5 +225,4 @@ const router = createRouter({
 });
 
 export { routes };
-
 export default router;
