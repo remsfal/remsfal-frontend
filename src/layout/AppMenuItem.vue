@@ -16,16 +16,16 @@ const { t } = useI18n();
 
 export interface MenuItem {
   label: string;
-  icon: { type: 'pi' | 'fa'; name: string | [string, string] } | null;
-  to: string | undefined;
-  url: string | undefined;
-  navigate: () => void;
-  command: (event: object) => void;
-  disabled: boolean;
-  visible: boolean;
-  class: string;
-  target: string;
-  items: MenuItem[];
+  icon?: { type: 'pi' | 'fa'; name: string | [string, string] } | null;
+  to?: string;
+  url?: string;
+  navigate?: () => void;
+  command?: (event: object) => void;
+  disabled?: boolean;
+  visible?: boolean;
+  class?: string;
+  target?: string;
+  items?: MenuItem[];
 }
 
 interface MenuItemProps {
