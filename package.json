@@ -41,7 +41,7 @@
     "pinia": "^2.3.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.4",
-    "vue": "^3.5.13",
+    "vue": "^3.5.16",
     "vue-axios": "^3.5.0",
     "vue-i18n": "^10.0.7",
     "vue-router": "^4.5.0"
@@ -57,8 +57,8 @@
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.15.18",
     "@vitejs/plugin-vue": "^5.2.4",
-    "@vitest/coverage-v8": "^3.1.2",
-    "@vue/devtools": "^7.7.5",
+    "@vitest/coverage-v8": "^3.2.3",
+    "@vue/devtools": "^7.7.7",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.5.1",
@@ -83,7 +83,7 @@
     "start-server-and-test": "^2.0.12",
     "stylelint": "^16.13.2",
     "stylelint-config-recommended-vue": "^1.5.0",
-    "stylelint-config-standard": "^36.0.1",
+    "stylelint-config-standard": "^38.0.0",
     "tailwindcss": "^4.1.6",
     "tailwindcss-primeui": "^0.6.1",
     "typescript": "^5.7.3",
@@ -92,11 +92,11 @@
     "vite": "^6.3.5",
     "vite-plugin-istanbul": "^7.0.0",
     "vite-plugin-vue-devtools": "^7.7.6",
-    "vitest": "^3.1.1",
+    "vitest": "^3.1.4",
     "vue-i18n-extract": "^2.0.7",
     "vue-tsc": "^2.2.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.40.2"
+    "@rollup/rollup-linux-x64-gnu": "4.43.0"
   }
 }
