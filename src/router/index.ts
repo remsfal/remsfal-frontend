@@ -113,6 +113,24 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ModifyPropertyView.vue'),
       },
       {
+        path: 'property/:unitId/detail',
+        name: 'PropertyDetailView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/PropertyDetailView.vue'),
+      },
+      {
+        path: 'building/:buildingId',
+        name: 'BuildingView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          buildingId: route.params.buildingId,
+        }),
+        component: () => import('@/views/BuildingView.vue'),
+      },
+      {
         path: 'site',
         children: [
           {

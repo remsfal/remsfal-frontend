@@ -8,6 +8,12 @@ export interface ApartmentUnit {
   livingSpace?: number;
   usableSpace?: number;
   heatingSpace?: number;
+  street?: string;
+  zip?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+  countryCode?: string;
 }
 
 class ApartmentService {
