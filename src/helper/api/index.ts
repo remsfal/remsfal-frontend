@@ -2,10 +2,10 @@ import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
 
 import type { paths as chatPaths } from './chat-schema';
-import type { paths as platfromPaths } from './platform-schema';
+import type { paths as platformPaths } from './platform-schema';
 import type { paths as notificationPaths } from './notification-schema';
 
-export type paths = notificationPaths & chatPaths & platfromPaths;
+export type paths = notificationPaths & chatPaths & platformPaths;
 
 type Path = keyof paths;
 type Method = keyof paths[Path];
@@ -26,7 +26,7 @@ export type ResponseType<
   P extends Path,
   M extends Method
 > = paths[P][M] extends { responses: { 200: { content: { 'application/json': infer Res } } } }
-  ? Res
+  ? Res& RequestParams<P, M>
   : unknown;
 
 export async function typedRequest<
@@ -36,7 +36,7 @@ export async function typedRequest<
   method: M,
   path: P,
   options: {
-    params?: RequestParams<P, M> & RequestParams<P, M>;
+    params?: RequestParams<P, M>;
     body?: RequestBody<P, M>;
     config?: AxiosRequestConfig;
   }
@@ -63,6 +63,6 @@ export async function typedRequest<
     data: options.body,
     ...options.config,
   });
-
+  console.debug(response)
   return response.data;
 }
