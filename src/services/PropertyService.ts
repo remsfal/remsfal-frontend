@@ -38,7 +38,7 @@ export interface PropertyUnit {
   title: string;
   description?: string;
   landRegisterEntry?: string;
-  plotArea?: number;
+  plotArea: number | null;
   effective_space?: number;
   district?: string; // Gemarkung
   corridor?: string; // Flur
