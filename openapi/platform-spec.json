@@ -217,6 +217,35 @@
           }
         }
       },
+      "ContractorJson" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          },
+          "projectId" : {
+            "type" : "string"
+          },
+          "companyName" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "phone" : {
+            "type" : "string",
+            "pattern" : "^\\+?[0-9]{10,14}$",
+            "maxLength" : 15
+          },
+          "email" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "trade" : {
+            "type" : "string",
+            "maxLength" : 255
+          }
+        }
+      },
       "CountryItemJson" : {
         "description" : "A country item of a list",
         "type" : "object",
@@ -1991,6 +2020,199 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/contractors" : {
+      "get" : {
+        "summary" : "Retrieve information for all contractors of a project.",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        }, {
+          "description" : "Maximum number of contractors to return",
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 100,
+            "exclusiveMinimum" : 0,
+            "default" : "10"
+          },
+          "required" : true
+        }, {
+          "description" : "Offset of the first contractor to return",
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "minimum" : 0,
+            "default" : "0"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The project does not exist"
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Create a new contractor for a project.",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ContractorJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Contractor created successfully",
+            "headers" : {
+              "Location" : {
+                "description" : "URL of the new contractor"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request message"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The project does not exist"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/contractors/{contractorId}" : {
+      "patch" : {
+        "summary" : "Update information of a specific contractor.",
+        "parameters" : [ {
+          "description" : "ID of the contractor",
+          "required" : true,
+          "name" : "contractorId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        }, {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ContractorJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The project or contractor does not exist"
+          }
+        }
+      },
+      "get" : {
+        "summary" : "Retrieve information of a specific contractor.",
+        "parameters" : [ {
+          "description" : "ID of the contractor",
+          "required" : true,
+          "name" : "contractorId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        }, {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        } ],
+        "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The project or contractor does not exist"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete an existing contractor.",
+        "parameters" : [ {
+          "description" : "ID of the contractor",
+          "required" : true,
+          "name" : "contractorId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        }, {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The contractor was deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The project or contractor does not exist"
           }
         }
       }
