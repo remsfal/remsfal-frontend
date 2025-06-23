@@ -62,6 +62,15 @@ describe('ModifyCommercialView.vue', () => {
     expect(wrapper.vm.isValid).toBe(false);
   });
 
+  it('validates description is not over 500 characters', async () => {
+    wrapper.vm.description = 'a'.repeat(501);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.validationErrors).toContain(
+      'Beschreibung darf maximal 500 Zeichen lang sein.',
+    );
+    expect(wrapper.vm.isValid).toBe(false);
+  });
+
   it('detects changes correctly', async () => {
     expect(wrapper.vm.hasChanges).toBe(false); // keine Änderungen nach Laden
 
@@ -99,5 +108,25 @@ describe('ModifyCommercialView.vue', () => {
         location: '',
       }),
     );
+  });
+
+  it('return if there is no projectId', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const wrapper = mount(Component, {
+      props: { projectId: '', unitId: 'commercial1' },
+    });
+    await wrapper.vm.fetchCommercialDetails();
+    expect(errorSpy).toHaveBeenCalledWith('Keine projectId');
+    errorSpy.mockRestore();
+  });
+
+  it('return if there is no unitId', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const wrapper = mount(Component, {
+      props: { projectId: 'project1', unitId: '' },
+    });
+    await wrapper.vm.fetchCommercialDetails();
+    expect(errorSpy).toHaveBeenCalledWith('Keine unitId');
+    errorSpy.mockRestore();
   });
 });

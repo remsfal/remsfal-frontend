@@ -96,4 +96,26 @@ describe('ApartmentUpdateView.vue', () => {
       }),
     );
   });
+
+  it('return if there is no projectId', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const wrapper = mount(Component, {
+      props: { projectId: '', unitId: 'apartment1' },
+    });
+    await wrapper.vm.fetchApartment();
+    expect(errorSpy).toHaveBeenCalledWith('Keine projectId');
+    errorSpy.mockRestore();
+  });
+
+  it('return if there is no unitId', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const wrapper = mount(Component, {
+      props: { projectId: 'project1', unitId: '' },
+    });
+    await wrapper.vm.fetchApartment();
+    expect(errorSpy).toHaveBeenCalledWith('Keine unitId');
+    errorSpy.mockRestore();
+  });
+
+
 });

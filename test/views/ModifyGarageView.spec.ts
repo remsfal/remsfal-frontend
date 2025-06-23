@@ -59,6 +59,15 @@ describe('ModifyGarageView.vue', () => {
     expect(wrapper.vm.isValid).toBe(false);
   });
 
+  it('validates description is not over 500 characters', async () => {
+    wrapper.vm.description = 'a'.repeat(501);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.validationErrors).toContain(
+      'Beschreibung darf maximal 500 Zeichen lang sein.',
+    );
+    expect(wrapper.vm.isValid).toBe(false);
+  });
+
   it('makes sure save button is enabled only if data is changed', async () => {
     const saveButton = wrapper.find('button[type="submit"]');
     expect((saveButton.element as HTMLButtonElement).disabled).toBe(true);

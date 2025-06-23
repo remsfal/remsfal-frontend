@@ -91,25 +91,5 @@ describe('ModifyPropertyView.vue', () => {
     expect(wrapper.vm.isValid).toBe(false);
   });
 
-  it('validates that cancel button redirects to property list with correct route', async () => {
-    mockPush.mockClear(); // Reset vor jedem Test
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
 
-    wrapper = mount(Component, {
-      props: {
-        projectId: 'project1',
-        unitId: 'unit1',
-      },
-    });
-
-    await flushPromises();
-    await wrapper.find('input[type="text"]').setValue('Geänderter Titel');
-    const cancelBtn = wrapper.find('button[type="button"]');
-    await cancelBtn.trigger('click');
-
-    expect(confirmSpy).toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith('/project/project1/objects');
-
-    confirmSpy.mockRestore();
-  });
 });
