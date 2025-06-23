@@ -27,10 +27,10 @@
     "format": "prettier --write src/",
     "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'",
     "stylelint:fix": "stylelint --fix '{src,public}/**/*.{vue,css,scss}'",
-    "schema": "run-s schema:chat schema:platform schema:notification",
-    "schema:chat": "openapi-typescript src/helper/api/chat-spec.json -o src/helper/api/chat-schema.ts",
-    "schema:platform": "openapi-typescript src/helper/api/platform-spec.json -o src/helper/api/platform-schema.ts",
-    "schema:notification": "openapi-typescript src/helper/api/notification-spec.json -o src/helper/api/notification-schema.ts"
+    "openapi": "run-p openapi:chat openapi:platform openapi:notification",
+    "openapi:chat": "openapi-typescript openapi/chat-spec.json -o src/services/api/chat-schema.ts",
+    "openapi:platform": "openapi-typescript openapi/platform-spec.json -o src/services/api/platform-schema.ts",
+    "openapi:notification": "openapi-typescript openapi/notification-spec.json -o src/services/api/notification-schema.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
