@@ -45,23 +45,13 @@ describe('ModifyGarageView.vue', () => {
     expect(wrapper.vm.usableSpace).toBe(100);
   });
 
-  it('validates usable space is positive', async () => {
-    wrapper.vm.usableSpace = -10;
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.validationErrors).toContain('Nutzfläche darf nicht negativ sein.');
-    expect(wrapper.vm.isValid).toBe(false);
-  });
-
-  it('validates title is not empty', async () => {
+  it('validates title is not empty, usable space is positive and description does not exceed 500 char', async () => {
     wrapper.vm.title = '';
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.validationErrors).toContain('Der Titel muss mindestens 3 Zeichen lang sein.');
-    expect(wrapper.vm.isValid).toBe(false);
-  });
-
-  it('validates description is not over 500 characters', async () => {
+    wrapper.vm.usableSpace = -10;
     wrapper.vm.description = 'a'.repeat(501);
     await wrapper.vm.$nextTick();
+    expect(wrapper.vm.validationErrors).toContain('Der Titel muss mindestens 3 Zeichen lang sein.');
+    expect(wrapper.vm.validationErrors).toContain('Nutzfläche darf nicht negativ sein.');
     expect(wrapper.vm.validationErrors).toContain(
       'Beschreibung darf maximal 500 Zeichen lang sein.',
     );

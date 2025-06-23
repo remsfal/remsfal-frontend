@@ -48,28 +48,19 @@ describe('ModifyCommercialView.vue', () => {
     expect(wrapper.vm.location).toBe('');
   });
 
-  it('validates commercial space is positive', async () => {
+  it('validates commercial space is positive, heating space is positive and description is not over 500 characters', async () => {
     wrapper.vm.commercialSpace = -10;
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.validationErrors).toContain('Gewerbefläche darf nicht negativ sein.');
-    expect(wrapper.vm.isValid).toBe(false);
-  });
-
-  it('validates heating space is positive', async () => {
     wrapper.vm.heatingSpace = -5;
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.validationErrors).toContain('Heizfläche darf nicht negativ sein.');
-    expect(wrapper.vm.isValid).toBe(false);
-  });
-
-  it('validates description is not over 500 characters', async () => {
     wrapper.vm.description = 'a'.repeat(501);
     await wrapper.vm.$nextTick();
+    expect(wrapper.vm.validationErrors).toContain('Gewerbefläche darf nicht negativ sein.');
+    expect(wrapper.vm.validationErrors).toContain('Heizfläche darf nicht negativ sein.');
     expect(wrapper.vm.validationErrors).toContain(
       'Beschreibung darf maximal 500 Zeichen lang sein.',
     );
     expect(wrapper.vm.isValid).toBe(false);
   });
+
 
   it('detects changes correctly', async () => {
     expect(wrapper.vm.hasChanges).toBe(false); // keine Änderungen nach Laden
