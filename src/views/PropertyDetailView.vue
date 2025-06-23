@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -7,7 +7,6 @@ import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import { propertyService } from '@/services/PropertyService';
-import { tenancyService, type TenantItem } from '@/services/TenancyService';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
@@ -31,13 +30,7 @@ const city = ref('');
 const province = ref('');
 const country = ref('');
 const countryCode = ref('');
-const tenant = ref<string>('');
-const tenants = ref<TenantItem[]>([]);
-const selectedTenant = ref<TenantItem | null>(null);
-
-// Validation errors
-const errors = ref<Record<string, string>>({});
-
+const tenant = ref('');
 
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
@@ -101,43 +94,9 @@ const usageOptions = [
   { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' }
 ];
 
-const originalValues = ref<{
-  title: string;
-  description: string;
-  district: string;
-  corridor: string;
-  parcel: string;
-  landRegistry: string;
-  usageType: string | null;
-  plotArea: string | null;
-  tenant: string;
-}>({
-  title: '',
-  description: '',
-  district: '',
-  corridor: '',
-  parcel: '',
-  landRegistry: '',
-  usageType: null,
-  plotArea: null,
-  tenant: '',
-});
-
 onMounted(() => {
   if (props.unitId) {
     fetchPropertyDetails();
-  }
-
-  tenancyService.fetchTenantData().then((data) => {
-    tenants.value = data;
-  });
-});
-
-watch(selectedTenant, (newValue) => {
-  if (newValue) {
-    tenant.value = `${newValue.firstName} ${newValue.lastName}`;
-  } else {
-    tenant.value = '';
   }
 });
 
@@ -153,18 +112,17 @@ const fetchPropertyDetails = () => {
       landRegistry.value = property.landRegistry || '';
       usageType.value = property.usageType || null;
       plotArea.value = property.plotArea !== undefined && property.plotArea !== null ? String(property.plotArea) : null;
+      console.log('Property plotArea:', property.plotArea, 'Type:', typeof property.plotArea, 'Converted value:', plotArea.value);
       tenant.value = property.tenant || '';
+      street.value = property.street || '';
+      zip.value = property.zip || '';
+      city.value = property.city || '';
+      province.value = property.province || '';
+      country.value = property.country || '';
+      countryCode.value = property.countryCode || '';
 
-
-      if (property.tenant) {
-        const [firstName, lastName] = property.tenant.split(' ');
-        const foundTenant = tenants.value.find(
-          (t) => t.firstName === firstName && t.lastName === lastName
-        );
-        selectedTenant.value = foundTenant || null;
-      }
-
-      originalValues.value = {
+      // Log the loaded data to help with debugging
+      console.log('Loaded property details:', {
         title: title.value,
         description: description.value,
         district: district.value,
@@ -174,118 +132,34 @@ const fetchPropertyDetails = () => {
         usageType: usageType.value,
         plotArea: plotArea.value,
         tenant: tenant.value,
-      };
+        street: street.value,
+        zip: zip.value,
+        city: city.value,
+        province: province.value,
+        country: country.value,
+        countryCode: countryCode.value
+      });
     })
     .catch((err) => {
       console.error('Fehler beim Laden der Objektdetails:', err);
     });
 };
 
-const isModified = computed(() => {
-  return (
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    district.value !== originalValues.value.district ||
-    corridor.value !== originalValues.value.corridor ||
-    parcel.value !== originalValues.value.parcel ||
-    landRegistry.value !== originalValues.value.landRegistry ||
-    usageType.value !== originalValues.value.usageType ||
-    plotArea.value !== originalValues.value.plotArea ||
-    tenant.value !== originalValues.value.tenant
-  );
-});
-
-const validateForm = (): boolean => {
-  errors.value = {};
-
-  // Validate title (required)
-  if (!title.value.trim()) {
-    errors.value.title = t('validation.required');
-  }
-
-  // Validate description (required)
-  if (!description.value.trim()) {
-    errors.value.description = t('validation.required');
-  }
-
-  // Validate address fields (required except countryCode)
-  if (!street.value.trim()) {
-    errors.value.street = t('validation.required');
-  }
-
-  if (!zip.value.trim()) {
-    errors.value.zip = t('validation.required');
-  }
-
-  if (!city.value.trim()) {
-    errors.value.city = t('validation.required');
-  }
-
-  if (!province.value.trim()) {
-    errors.value.province = t('validation.required');
-  }
-
-  if (!country.value.trim()) {
-    errors.value.country = t('validation.required');
-  }
-
-  // Validate tenant (required)
-  if (!tenant.value.trim()) {
-    errors.value.tenant = t('validation.required');
-  }
-
-  // Validate plotArea (required)
-  if (!plotArea.value) {
-    errors.value.plotArea = t('validation.required');
-  }
-
-  return Object.keys(errors.value).length === 0;
+const navigateToEdit = () => {
+  router.push({
+    name: 'PropertyView',
+    params: { projectId: props.projectId, unitId: props.unitId },
+  });
 };
 
-const updateProperty = () => {
-  if (!validateForm()) {
-    return;
-  }
-
-  propertyService
-    .updateProperty(props.projectId, props.unitId, {
-      title: title.value,
-      description: description.value,
-      district: district.value || '',
-      corridor: corridor.value || '',
-      parcel: parcel.value || '',
-      landRegistry: landRegistry.value || '',
-      usageType: usageType.value ?? null,
-      plotArea: plotArea.value ? Number(plotArea.value) : 0,
-      usable_space: plotArea.value ? Number(plotArea.value) : 0,
-      tenant: tenant.value || '',
-      street: street.value || '',
-      zip: zip.value || '',
-      city: city.value || '',
-      province: province.value || '',
-      country: country.value || '',
-      countryCode: countryCode.value || '',
-      effective_space: 0,
-    })
-    .then(() => {
-      // Redirect to PropertyDetailView instead of RentableUnitsView
-      router.push({
-        name: 'PropertyDetailView',
-        params: { projectId: props.projectId, unitId: props.unitId },
-      });
-    })
-    .catch((err) => {
-      console.error('Fehler beim Aktualisieren des Eigentums:', err);
-    });
-};
-
-const cancel = () => {
+const goBack = () => {
   router.push(`/project/${props.projectId}/units`);
 };
 </script>
+
 <template>
   <div class="col-span-12">
-    <h5>{{ t('property.update', { id: props.unitId }) }}</h5>
+    <h5>{{ t('property.view', { id: props.unitId }) }}</h5>
     <div class="card-container">
       <Card>
         <template #title>
@@ -294,43 +168,39 @@ const cancel = () => {
         <template #content>
           <div class="p-fluid formgrid grid grid-cols-12 gap-4">
             <div class="input-container col-span-12">
-              <label class="label" for="title">{{ t('property.title') }} <span class="required-field">*</span></label>
-              <InputText id="title" v-model="title" type="text" :class="{ 'p-invalid': errors.title }" />
-              <small v-if="errors.title" class="p-error">{{ errors.title }}</small>
+              <label class="label" for="title">{{ t('property.title') }}</label>
+              <InputText id="title" v-model="title" type="text" readonly />
             </div>
 
             <div class="input-container col-span-12">
-              <label class="label" for="description">{{ t('property.description') }} <span class="required-field">*</span></label>
-              <Textarea id="description" v-model="description" class="no-resize" rows="4" :class="{ 'p-invalid': errors.description }" />
-              <small v-if="errors.description" class="p-error">{{ errors.description }}</small>
+              <label class="label" for="description">{{ t('property.description') }}</label>
+              <Textarea id="description" v-model="description" class="no-resize" rows="4" readonly />
             </div>
 
             <div class="input-container col-span-6">
               <label class="label" for="district">{{ t('property.district') }}</label>
-              <InputText id="district" v-model="district" type="text" />
+              <InputText id="district" v-model="district" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
               <label class="label" for="corridor">{{ t('property.corridor') }}</label>
-              <InputText id="corridor" v-model="corridor" type="text" />
+              <InputText id="corridor" v-model="corridor" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
               <label class="label" for="parcel">{{ t('property.parcel') }}</label>
-              <InputText id="parcel" v-model="parcel" type="text" />
+              <InputText id="parcel" v-model="parcel" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
               <label class="label" for="landRegistry">{{ t('property.landRegister') }}</label>
-              <InputText id="landRegistry" v-model="landRegistry" type="text" />
+              <InputText id="landRegistry" v-model="landRegistry" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="plotArea">Fläche (m²) <span class="required-field">*</span></label>
-              <InputText id="plotArea" v-model="plotArea" type="number" :class="{ 'p-invalid': errors.plotArea }" />
-              <small v-if="errors.plotArea" class="p-error">{{ errors.plotArea }}</small>
+              <label class="label" for="plotArea">Fläche (m²)</label>
+              <InputText id="plotArea" v-model="plotArea" type="number" readonly />
             </div>
-
 
             <div class="input-container col-span-6">
               <label class="label" for="usageType">{{ t('property.usageType') }}</label>
@@ -339,34 +209,14 @@ const cancel = () => {
                 v-model="usageType"
                 :options="usageOptions"
                 class="w-full"
-                filter
-                filterPlaceholder="Tippen Sie, um zu suchen..."
                 optionLabel="label"
+                disabled
               />
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="selectedTenant">{{ t('rentableUnits.table.tenant') }} <span class="required-field">*</span></label>
-              <Dropdown
-                id="selectedTenant"
-                v-model="selectedTenant"
-                :options="tenants"
-                optionLabel="lastName"
-                placeholder="Mieter auswählen"
-                class="w-full"
-                :class="{ 'p-invalid': errors.tenant }"
-              >
-                <template #value="slotProps">
-                  <div v-if="slotProps.value">
-                    {{ slotProps.value.firstName }} {{ slotProps.value.lastName }}
-                  </div>
-                  <span v-else>{{ tenant || "Mieter auswählen" }}</span>
-                </template>
-                <template #option="slotProps">
-                  {{ slotProps.option.firstName }} {{ slotProps.option.lastName }}
-                </template>
-              </Dropdown>
-              <small v-if="errors.tenant" class="p-error">{{ errors.tenant }}</small>
+              <label class="label" for="tenant">{{ t('rentableUnits.table.tenant') }}</label>
+              <InputText id="tenant" v-model="tenant" type="text" readonly />
             </div>
           </div>
         </template>
@@ -379,33 +229,28 @@ const cancel = () => {
         <template #content>
           <div class="p-fluid formgrid grid grid-cols-12 gap-4">
             <div class="input-container col-span-12">
-              <label class="label" for="street">{{ t('property.address.street') }} <span class="required-field">*</span></label>
-              <InputText id="street" v-model="street" type="text" :class="{ 'p-invalid': errors.street }" />
-              <small v-if="errors.street" class="p-error">{{ errors.street }}</small>
+              <label class="label" for="street">{{ t('property.address.street') }}</label>
+              <InputText id="street" v-model="street" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="zip">{{ t('property.address.zip') }} <span class="required-field">*</span></label>
-              <InputText id="zip" v-model="zip" type="text" :class="{ 'p-invalid': errors.zip }" />
-              <small v-if="errors.zip" class="p-error">{{ errors.zip }}</small>
+              <label class="label" for="zip">{{ t('property.address.zip') }}</label>
+              <InputText id="zip" v-model="zip" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="city">{{ t('property.address.city') }} <span class="required-field">*</span></label>
-              <InputText id="city" v-model="city" type="text" :class="{ 'p-invalid': errors.city }" />
-              <small v-if="errors.city" class="p-error">{{ errors.city }}</small>
+              <label class="label" for="city">{{ t('property.address.city') }}</label>
+              <InputText id="city" v-model="city" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="province">{{ t('property.address.province') }} <span class="required-field">*</span></label>
-              <InputText id="province" v-model="province" type="text" :class="{ 'p-invalid': errors.province }" />
-              <small v-if="errors.province" class="p-error">{{ errors.province }}</small>
+              <label class="label" for="province">{{ t('property.address.province') }}</label>
+              <InputText id="province" v-model="province" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
-              <label class="label" for="country">{{ t('property.address.country') }} <span class="required-field">*</span></label>
-              <InputText id="country" v-model="country" type="text" :class="{ 'p-invalid': errors.country }" />
-              <small v-if="errors.country" class="p-error">{{ errors.country }}</small>
+              <label class="label" for="country">{{ t('property.address.country') }}</label>
+              <InputText id="country" v-model="country" type="text" readonly />
             </div>
 
             <div class="input-container col-span-6">
@@ -415,6 +260,7 @@ const cancel = () => {
                 v-model="countryCode"
                 type="text"
                 style="text-transform: uppercase"
+                readonly
               />
             </div>
           </div>
@@ -424,17 +270,16 @@ const cancel = () => {
 
     <div class="buttons-container centered-buttons mt-4">
       <Button
-        :disabled="!isModified"
         class="mr-2"
-        icon="pi pi-check"
-        :label="t('button.save')"
-        @click="updateProperty"
+        icon="pi pi-pencil"
+        :label="t('button.edit')"
+        @click="navigateToEdit"
       />
       <Button
         class="p-button-secondary"
-        icon="pi pi-times"
-        :label="t('button.cancel')"
-        @click="cancel"
+        icon="pi pi-arrow-left"
+        :label="t('button.back')"
+        @click="goBack"
       />
     </div>
   </div>
@@ -501,19 +346,10 @@ input:focus {
   box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 0.25);
 }
 
-.required-field {
-  color: red;
-  margin-left: 2px;
-}
-
-.p-invalid {
-  border-color: #f44336;
-}
-
-.p-error {
-  color: #f44336;
-  font-size: 0.875rem;
-  margin-top: 4px;
-  display: block;
+/* Read-only styling */
+input[readonly],
+textarea[readonly] {
+  background-color: #f8f9fa;
+  cursor: default;
 }
 </style>

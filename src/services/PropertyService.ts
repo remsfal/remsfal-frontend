@@ -40,13 +40,21 @@ export interface PropertyUnit {
   landRegisterEntry?: string;
   plotArea?: number;
   effective_space?: number;
-  district?: string; // Gemarkung
-  corridor?: string; // Flur
-  parcel?: string; // Flurstück
-  landRegistry?: string; // Liegenschaftsbuch
-  usageType?: string | null; // Wirtschaftsart
-}
+  usable_space?: number;
+  tenant?: string;
+  district?: string;
+  corridor?: string;
+  parcel?: string;
+  landRegistry?: string;
+  usageType?: string | null;
 
+  street?: string;
+  zip?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+  countryCode?: string;
+}
 class PropertyService {
   private readonly baseUrl: string = '/api/v1/projects';
 
