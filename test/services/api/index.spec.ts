@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import axios, { AxiosHeaders } from 'axios';
 import type { AxiosResponse } from 'axios';
-import { typedRequest } from '../../../src/helper/api';
+import { typedRequest } from '../../../src/services/api';
 
 vi.mock('axios');
 
