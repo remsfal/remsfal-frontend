@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { garageService, type GarageUnit } from '@/services/GarageService';
 import { useToast } from 'primevue/usetoast';
+import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -105,12 +106,7 @@ onMounted(() => {
 
 const save = async () => {
   if (!isValid.value) {
-    toast.add({
-      severity: 'error',
-      summary: 'Validierungsfehler',
-      detail: validationErrors.value.join('\n'),
-      life: 6000,
-    });
+    showValidationErrorToast(toast, validationErrors.value);
     return;
   }
 
@@ -132,28 +128,11 @@ const save = async () => {
     router.push(`/project/${props.projectId}/garage/${props.unitId}`);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
-    toast.add({
-      severity: 'error',
-      summary: 'Speicherfehler',
-      detail: 'Garage konnte nicht gespeichert werden.',
-      life: 6000,
-    });
+    showSavingErrorToast(toast, 'Garage konnte nicht gespeichert werden.');
   }
 };
 
-const cancel = () => {
-  if (hasChanges.value) {
-    const confirmLeave = confirm(
-      'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
-    );
-    if (!confirmLeave) return;
-  }
-  if (window.opener) {
-    window.close();
-  } else {
-    router.push(`/project/${props.projectId}/objects`);
-  }
-};
+const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
 <template>

@@ -3,6 +3,7 @@ import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { buildingService, type BuildingUnit } from '@/services/BuildingService';
 import { useToast } from 'primevue/usetoast';
+import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 const props = defineProps<{
   projectId: string;
   unitId: string;
@@ -361,12 +362,7 @@ onMounted(() => {
 
 const save = () => {
   if (!isValid.value) {
-    toast.add({
-      severity: 'error',
-      summary: 'Validierungsfehler',
-      detail: validationErrors.value.join('\n'),
-      life: 6000,
-    });
+    showValidationErrorToast(toast, validationErrors.value)
     return;
   }
   const payload: BuildingUnit = {
@@ -398,28 +394,11 @@ const save = () => {
     })
     .catch((err) => {
       console.error('Fehler beim Speichern:', err);
-      toast.add({
-        severity: 'error',
-        summary: 'Speicherfehler',
-        detail: 'Gebäude konnte nicht gespeichert werden.',
-        life: 6000,
-      });
+      showSavingErrorToast(toast, 'Gebäude konnte nicht gespeichert werden.', err);
     });
 };
 
-const cancel = () => {
-  if (hasChanges.value) {
-    const confirmLeave = confirm(
-      'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
-    );
-    if (!confirmLeave) return;
-  }
-  if (window.opener) {
-    window.close();
-  } else {
-    router.push(`/project/${props.projectId}/objects`);
-  }
-};
+const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
 <template>
