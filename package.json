@@ -8,7 +8,7 @@
   "repository": "github:remsfal/remsfal-frontend",
   "scripts": {
     "dev": "vite",
-    "build": "run-s type-check schema \"build-only {@}\" --",
+    "build": "run-s type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "coverage": "vitest run --coverage",
     "cypress": "cypress open",
