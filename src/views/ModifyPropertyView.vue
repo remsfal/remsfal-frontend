@@ -2,12 +2,14 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { propertyService, type PropertyUnit } from '@/services/PropertyService';
+import { useToast } from 'primevue/usetoast';
 
 const props = defineProps<{
   projectId: string;
   unitId: string;
 }>();
 
+const toast = useToast();
 const router = useRouter();
 
 const title = ref('');
@@ -107,7 +109,18 @@ const hasChanges = computed(() => {
 const validationErrors = computed(() => {
   const errors: string[] = [];
 
-  if (plotArea.value !== null && plotArea.value < 0) {
+  if (!title.value || title.value.length < 3) {
+    errors.push('Der Titel muss mindestens 3 Zeichen lang sein.');
+  }
+  if (description.value && description.value.length > 500) {
+    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
+  }
+  if (usageType.value === null) {
+    errors.push('Wirtschaftsart ist erforderlich.');
+  }
+  if (plotArea.value === null) {
+    errors.push('Grundstücksfläche ist erforderlich.');
+  } else if (plotArea.value < 0) {
     errors.push('Grundstücksfläche darf nicht negativ sein.');
   }
   return errors;
@@ -116,6 +129,14 @@ const validationErrors = computed(() => {
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchPropertyDetails = async () => {
+  if (!props.projectId) {
+    console.error('Keine projectId');
+    return;
+  }
+  if (!props.unitId) {
+    console.error('Keine unitId');
+    return;
+  }
   try {
     const data = await propertyService.getProperty(props.projectId, props.unitId);
     title.value = data.title || '';
@@ -139,19 +160,37 @@ const fetchPropertyDetails = async () => {
     };
   } catch (err) {
     console.error('Fehler beim Laden der Eigentumsdetails:', err);
-    alert('Fehler beim Laden der Eigentumsdetails.');
+    toast.add({
+      severity: 'error',
+      summary: 'Ladefehler',
+      detail: 'Eigentum konnte nicht geladen werden.',
+      life: 6000,
+    });
   }
 };
 
 onMounted(() => {
   if (props.unitId) {
     fetchPropertyDetails();
+  } else {
+    console.warn('❗️unitId fehlt – keine Daten können geladen werden.');
+    toast.add({
+      severity: 'warn',
+      summary: 'Ungültige ID',
+      detail: 'Grundstück konnte nicht geladen werden, da keine ID übergeben wurde.',
+      life: 6000,
+    });
   }
 });
 
-const updateProperty = async () => {
+const save = async () => {
   if (!isValid.value) {
-    alert('Bitte beheben Sie die Validierungsfehler.');
+    toast.add({
+      severity: 'error',
+      summary: 'Validierungsfehler',
+      detail: validationErrors.value.join('\n'),
+      life: 6000,
+    });
     return;
   }
 
@@ -168,15 +207,31 @@ const updateProperty = async () => {
 
   try {
     await propertyService.updateProperty(props.projectId, props.unitId, payload);
-    alert('Eigentum erfolgreich aktualisiert.');
-    window.location.reload();
+    toast.add({
+      severity: 'success',
+      summary: 'Erfolg',
+      detail: 'Eigentum erfolgreich gespeichert.',
+      life: 6000,
+    });
+    router.push(`/project/${props.projectId}/property/${props.unitId}`);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
-    alert('Fehler beim Speichern');
+    toast.add({
+      severity: 'error',
+      summary: 'Speicherfehler',
+      detail: 'Eigentum konnte nicht gespeichert werden.',
+      life: 6000,
+    });
   }
 };
 
 const cancel = () => {
+  if (hasChanges.value) {
+    const confirmLeave = confirm(
+      'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
+    );
+    if (!confirmLeave) return;
+  }
   if (window.opener) {
     window.close();
   } else {
@@ -190,7 +245,7 @@ const cancel = () => {
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
       <h2 class="text-2xl font-semibold mb-6">Bearbeite Eigentum mit ID: {{ props.unitId }}</h2>
 
-      <form @submit.prevent="updateProperty">
+      <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->
           <div class="col-span-2">
@@ -247,6 +302,13 @@ const cancel = () => {
           <div>
             <label class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
             <input v-model.number="plotArea" type="number" class="form-input w-full" />
+          </div>
+
+          <!-- Validierungsfehler -->
+          <div v-if="validationErrors.length" class="text-red-600 mt-4">
+            <ul>
+              <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+            </ul>
           </div>
 
           <!-- Buttons -->

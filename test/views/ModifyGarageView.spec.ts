@@ -1,11 +1,12 @@
-import { mount, VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import Component from '../../src/views/ModifyGarageView.vue';
 import { garageService } from '../../src/services/GarageService';
 
+const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({
-    push: vi.fn(),
+    push: mockPush,
   }),
 }));
 
@@ -29,7 +30,7 @@ describe('ModifyGarageView.vue', () => {
     wrapper = mount(Component, {
       props: {
         projectId: 'project1',
-        garageId: 'garage1',
+        unitId: 'garage1',
       },
     });
 
@@ -64,5 +65,49 @@ describe('ModifyGarageView.vue', () => {
     await wrapper.find('input[type="text"]').setValue('New Garage Title');
     await wrapper.vm.$nextTick();
     expect((saveButton.element as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('calls updateGarage service with correct data when saved', async () => {
+    (garageService.updateGarage as Mock).mockResolvedValue({});
+
+    // Werte ändern
+    wrapper.vm.title = 'New Garage Title';
+    wrapper.vm.description = 'Updated Description';
+    wrapper.vm.usableSpace = 120;
+
+    await wrapper.find('form').trigger('submit.prevent');
+
+    expect(garageService.updateGarage).toHaveBeenCalledWith(
+      'project1',
+      'garage1',
+      expect.objectContaining({
+        title: 'New Garage Title',
+        description: 'Updated Description',
+        location: 'Initial Location',
+        usableSpace: 120,
+      }),
+    );
+  });
+
+  it('validates that cancel button redirects to property list with correct route', async () => {
+    mockPush.mockClear(); // Reset vor jedem Test
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    wrapper = mount(Component, {
+      props: {
+        projectId: 'project1',
+        unitId: 'unit1',
+      },
+    });
+
+    await flushPromises();
+    await wrapper.find('input[type="text"]').setValue('Geänderter Titel');
+    const cancelBtn = wrapper.find('button[type="button"]');
+    await cancelBtn.trigger('click');
+
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/project/project1/objects');
+
+    confirmSpy.mockRestore();
   });
 });

@@ -32,7 +32,7 @@ describe('ApartmentUpdateView.vue', () => {
     wrapper = mount(Component, {
       props: {
         projectId: 'project1',
-        apartmentId: 'apartment1',
+        unitId: 'apartment1',
       },
     });
 
@@ -68,5 +68,32 @@ describe('ApartmentUpdateView.vue', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.validationErrors).toContain('Heizfläche darf nicht negativ sein.');
     expect(wrapper.vm.isValid).toBe(false);
+  });
+
+  it('calls updateApartment service with correct data when saved', async () => {
+    (apartmentService.updateApartment as Mock).mockResolvedValue({});
+
+    // Werte ändern
+    wrapper.vm.title = 'Updated Apartment Title';
+    wrapper.vm.description = 'Updated Apartment Description';
+    wrapper.vm.livingSpace = 120;
+    wrapper.vm.usableSpace = 90;
+    wrapper.vm.heatingSpace = 70;
+    wrapper.vm.location = 'Updated Location';
+
+    await wrapper.vm.save();
+
+    expect(apartmentService.updateApartment).toHaveBeenCalledWith(
+      'project1',
+      'apartment1',
+      expect.objectContaining({
+        title: 'Updated Apartment Title',
+        description: 'Updated Apartment Description',
+        livingSpace: 120,
+        usableSpace: 90,
+        heatingSpace: 70,
+        location: 'Updated Location',
+      }),
+    );
   });
 });

@@ -152,18 +152,10 @@ const projectRoutes: RouteRecordRaw[] = [
         ],
       },
       {
-        path: 'garage/:garageId',
-        name: 'GarageUpdate',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-          garageId: route.params.garageId,
-        }),
-        component: () => import('@/views/ModifyGarageView.vue'),
-      },
-      {
         path: 'garage/:unitId',
         name: 'GarageView',
-        props: (route: RouteLocationNormalizedLoaded) => ({
+        props: (route) => ({
+          projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
         component: () => import('@/views/ModifyGarageView.vue'),
@@ -185,35 +177,19 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/TaskEdit.vue'),
       },
       {
-        path: 'apartment/:apartmentId',
-        name: 'ApartmentUpdate',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-          apartmentId: route.params.apartmentId,
-        }),
-        component: () => import('@/views/ModifyApartmentView.vue'),
-      },
-      {
         path: 'apartment/:unitId',
         name: 'ApartmentView',
-        props: (route: RouteLocationNormalizedLoaded) => ({
+        props: (route) => ({
+          projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
         component: () => import('@/views/ModifyApartmentView.vue'),
       },
       {
-        path: 'commercial/:commercialId',
-        name: 'CommercialUpdate',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-          commercialId: route.params.commercialId,
-        }),
-        component: () => import('@/views/ModifyCommercialView.vue'),
-      },
-      {
         path: 'commercial/:unitId',
         name: 'CommercialView',
-        props: (route: RouteLocationNormalizedLoaded) => ({
+        props: (route) => ({
+          projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
         component: () => import('@/views/ModifyCommercialView.vue'),

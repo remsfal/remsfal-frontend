@@ -2,12 +2,14 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { garageService, type GarageUnit } from '@/services/GarageService';
+import { useToast } from 'primevue/usetoast';
 
 const props = defineProps<{
   projectId: string;
-  garageId: string;
+  unitId: string;
 }>();
 
+const toast = useToast();
 const router = useRouter();
 
 // Formfelder
@@ -41,8 +43,13 @@ const validationErrors = computed(() => {
   if (!location.value) {
     errors.push('Standort ist erforderlich.');
   }
-  if (usableSpace.value !== null && usableSpace.value < 0) {
+  if (usableSpace.value === null) {
+    errors.push('Nutzfläche ist erforderlich.');
+  } else if (usableSpace.value < 0) {
     errors.push('Nutzfläche darf nicht negativ sein.');
+  }
+  if (description.value && description.value.length > 500) {
+    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
   }
   return errors;
 });
@@ -50,8 +57,16 @@ const validationErrors = computed(() => {
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchGarageDetails = async () => {
+  if (!props.projectId) {
+    console.error('Keine projectId');
+    return;
+  }
+  if (!props.unitId) {
+    console.error('Keine unitId');
+    return;
+  }
   try {
-    const data = await garageService.getGarage(props.projectId, props.garageId);
+    const data = await garageService.getGarage(props.projectId, props.unitId);
     console.log('Garage-Daten vom Backend:', data); // Hier siehst du die Antwort
     title.value = data.title || '';
     description.value = data.description || '';
@@ -66,17 +81,36 @@ const fetchGarageDetails = async () => {
     };
   } catch (error) {
     console.error('Fehler beim Laden der Garage:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Ladefehler',
+      detail: 'Garage konnte nicht geladen werden.',
+      life: 6000,
+    });
   }
 };
 onMounted(() => {
-  if (props.garageId) {
+  if (props.unitId) {
     fetchGarageDetails();
+  } else {
+    console.warn('❗️unitId fehlt – keine Daten können geladen werden.');
+    toast.add({
+      severity: 'warn',
+      summary: 'Ungültige ID',
+      detail: 'Garage konnte nicht geladen werden, da keine ID übergeben wurde.',
+      life: 6000,
+    });
   }
 });
 
 const save = async () => {
   if (!isValid.value) {
-    alert('Bitte beheben Sie die Validierungsfehler.');
+    toast.add({
+      severity: 'error',
+      summary: 'Validierungsfehler',
+      detail: validationErrors.value.join('\n'),
+      life: 6000,
+    });
     return;
   }
 
@@ -88,16 +122,32 @@ const save = async () => {
   };
 
   try {
-    await garageService.updateGarage(props.projectId, props.garageId, payload);
-    alert('Garage erfolgreich gespeichert!');
-    window.location.reload();
+    await garageService.updateGarage(props.projectId, props.unitId, payload);
+    toast.add({
+      severity: 'success',
+      summary: 'Erfolg',
+      detail: 'Garage erfolgreich gespeichert.',
+      life: 6000,
+    });
+    router.push(`/project/${props.projectId}/garage/${props.unitId}`);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
-    alert('Fehler beim Speichern');
+    toast.add({
+      severity: 'error',
+      summary: 'Speicherfehler',
+      detail: 'Garage konnte nicht gespeichert werden.',
+      life: 6000,
+    });
   }
 };
 
 const cancel = () => {
+  if (hasChanges.value) {
+    const confirmLeave = confirm(
+      'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
+    );
+    if (!confirmLeave) return;
+  }
   if (window.opener) {
     window.close();
   } else {
@@ -109,7 +159,7 @@ const cancel = () => {
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Bearbeite Garage mit ID: {{ garageId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">Bearbeite Garage mit ID: {{ unitId }}</h2>
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->

@@ -2,11 +2,12 @@
 import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { buildingService, type BuildingUnit } from '@/services/BuildingService';
-
+import { useToast } from 'primevue/usetoast';
 const props = defineProps<{
   projectId: string;
   unitId: string;
 }>();
+const toast = useToast();
 
 const router = useRouter();
 
@@ -254,28 +255,47 @@ const hasChanges = computed(() => {
 const validationErrors = computed(() => {
   const errors: string[] = [];
 
-  if (livingSpace.value !== null && livingSpace.value < 0) {
+  if (livingSpace.value === null) {
+    errors.push('Wohnfläche ist erforderlich.');
+  } else if (livingSpace.value < 0) {
     errors.push('Wohnfläche darf nicht negativ sein.');
   }
 
-  if (commercialSpace.value !== null && commercialSpace.value < 0) {
+  if (commercialSpace.value === null) {
+    errors.push('Gewerbefläche ist erforderlich.');
+  } else if (commercialSpace.value < 0) {
     errors.push('Gewerbefläche darf nicht negativ sein.');
   }
 
-  if (usableSpace.value !== null && usableSpace.value < 0) {
+  if (usableSpace.value === null) {
+    errors.push('Nutzfläche ist erforderlich.');
+  } else if (usableSpace.value < 0) {
     errors.push('Nutzfläche darf nicht negativ sein.');
   }
 
-  if (heatingSpace.value !== null && heatingSpace.value < 0) {
+  if (heatingSpace.value === null) {
+    errors.push('Heizfläche ist erforderlich.');
+  } else if (heatingSpace.value < 0) {
     errors.push('Heizfläche darf nicht negativ sein.');
   }
 
+  if (description.value && description.value.length > 500) {
+    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
+  }
   return errors;
 });
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchBuildingDetails = () => {
+  if (!props.projectId) {
+    console.error('Keine projectId');
+    return;
+  }
+  if (!props.unitId) {
+    console.error('Keine unitId');
+    return;
+  }
   buildingService
     .getBuilding(props.projectId, props.unitId)
     .then((building) => {
@@ -316,18 +336,37 @@ const fetchBuildingDetails = () => {
     })
     .catch((err) => {
       console.error('Fehler beim Laden des Gebäudes:', err);
+      toast.add({
+        severity: 'error',
+        summary: 'Ladefehler',
+        detail: 'Gebäude konnte nicht geladen werden.',
+        life: 6000,
+      });
     });
 };
 
 onMounted(() => {
   if (props.unitId) {
     fetchBuildingDetails();
+  } else {
+    console.warn('❗️unitId fehlt – keine Daten können geladen werden.');
+    toast.add({
+      severity: 'warn',
+      summary: 'Ungültige ID',
+      detail: 'Gebäude konnte nicht geladen werden, da keine ID übergeben wurde.',
+      life: 6000,
+    });
   }
 });
 
 const save = () => {
   if (!isValid.value) {
-    alert('Bitte beheben Sie die Validierungsfehler.');
+    toast.add({
+      severity: 'error',
+      summary: 'Validierungsfehler',
+      detail: validationErrors.value.join('\n'),
+      life: 6000,
+    });
     return;
   }
   const payload: BuildingUnit = {
@@ -349,16 +388,32 @@ const save = () => {
   buildingService
     .updateBuilding(props.projectId, props.unitId, payload)
     .then(() => {
-      alert('Gebäude erfolgreich gespeichert');
-      window.location.reload();
+      toast.add({
+        severity: 'success',
+        summary: 'Erfolg',
+        detail: 'Gebäude erfolgreich gespeichert.',
+        life: 3000,
+      });
+      router.push(`/project/${props.projectId}/building/${props.unitId}`);
     })
     .catch((err) => {
       console.error('Fehler beim Speichern:', err);
-      alert('Fehler beim Speichern');
+      toast.add({
+        severity: 'error',
+        summary: 'Speicherfehler',
+        detail: 'Gebäude konnte nicht gespeichert werden.',
+        life: 6000,
+      });
     });
 };
 
 const cancel = () => {
+  if (hasChanges.value) {
+    const confirmLeave = confirm(
+      'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
+    );
+    if (!confirmLeave) return;
+  }
   if (window.opener) {
     window.close();
   } else {

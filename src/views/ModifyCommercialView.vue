@@ -2,12 +2,14 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { commercialService, type CommercialUnit } from '@/services/CommercialService';
+import { useToast } from 'primevue/usetoast';
 
 const props = defineProps<{
   projectId: string;
-  commercialId: string;
+  unitId: string;
 }>();
 
+const toast = useToast();
 const router = useRouter();
 
 // Felder als Refs
@@ -39,22 +41,37 @@ const hasChanges = computed(() => {
 const validationErrors = computed(() => {
   const errors: string[] = [];
 
-  if (commercialSpace.value !== null && commercialSpace.value < 0) {
+  if (commercialSpace.value === null) {
+    errors.push('Gewerbefläche ist erforderlich.');
+  } else if (commercialSpace.value < 0) {
     errors.push('Gewerbefläche darf nicht negativ sein.');
   }
 
-  if (heatingSpace.value !== null && heatingSpace.value < 0) {
+  if (heatingSpace.value === null) {
+    errors.push('Heizfläche ist erforderlich.');
+  } else if (heatingSpace.value < 0) {
     errors.push('Heizfläche darf nicht negativ sein.');
   }
 
+  if (description.value && description.value.length > 500) {
+    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
+  }
   return errors;
 });
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchCommercialDetails = async () => {
+  if (!props.projectId) {
+    console.error('Keine projectId');
+    return;
+  }
+  if (!props.unitId) {
+    console.error('Keine unitId');
+    return;
+  }
   try {
-    const data = await commercialService.getCommercial(props.projectId, props.commercialId);
+    const data = await commercialService.getCommercial(props.projectId, props.unitId);
     title.value = data.title || '';
     description.value = data.description || '';
     commercialSpace.value = data.commercialSpace ?? null;
@@ -70,18 +87,37 @@ const fetchCommercialDetails = async () => {
     };
   } catch (err) {
     console.error('Fehler beim Laden des Gewerbe:', err);
+    toast.add({
+      severity: 'error',
+      summary: 'Ladefehler',
+      detail: 'Gewerbe konnte nicht geladen werden.',
+      life: 6000,
+    });
   }
 };
 
 onMounted(() => {
-  if (props.commercialId) {
+  if (props.unitId) {
     fetchCommercialDetails();
+  } else {
+    console.warn('❗️unitId fehlt – keine Daten können geladen werden.');
+    toast.add({
+      severity: 'warn',
+      summary: 'Ungültige ID',
+      detail: 'Gewerbe konnte nicht geladen werden, da keine ID übergeben wurde.',
+      life: 6000,
+    });
   }
 });
 
 const save = async () => {
   if (!isValid.value) {
-    alert('Bitte beheben Sie die Validierungsfehler.');
+    toast.add({
+      severity: 'error',
+      summary: 'Validierungsfehler',
+      detail: validationErrors.value.join('\n'),
+      life: 6000,
+    });
     return;
   }
 
@@ -94,16 +130,32 @@ const save = async () => {
   };
 
   try {
-    await commercialService.updateCommercial(props.projectId, props.commercialId, payload);
-    alert('Gewerbe erfolgreich gespeichert');
-    window.location.reload();
+    await commercialService.updateCommercial(props.projectId, props.unitId, payload);
+    toast.add({
+      severity: 'success',
+      summary: 'Erfolg',
+      detail: 'Gewerbe erfolgreich gespeichert.',
+      life: 6000,
+    });
+    router.push(`/project/${props.projectId}/commercial/${props.unitId}`);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
-    alert('Fehler beim Speichern');
+    toast.add({
+      severity: 'error',
+      summary: 'Speicherfehler',
+      detail: 'Gewerbe konnte nicht gespeichert werden.',
+      life: 6000,
+    });
   }
 };
 
 const cancel = () => {
+  if (hasChanges.value) {
+    const confirmLeave = confirm(
+      'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
+    );
+    if (!confirmLeave) return;
+  }
   if (window.opener) {
     window.close();
   } else {
@@ -115,9 +167,7 @@ const cancel = () => {
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">
-        Bearbeite Gewerbe mit ID: {{ commercialId }}
-      </h2>
+      <h2 class="text-2xl font-semibold mb-6">Bearbeite Gewerbe mit ID: {{ unitId }}</h2>
 
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">

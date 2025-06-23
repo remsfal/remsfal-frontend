@@ -2,12 +2,13 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { apartmentService, type ApartmentUnit } from '@/services/ApartmentService';
+import { useToast } from 'primevue/usetoast';
 
 const props = defineProps<{
   projectId: string;
-  apartmentId: string;
+  unitId: string;
 }>();
-
+const toast = useToast();
 const router = useRouter();
 
 // Refs für Felder
@@ -43,13 +44,23 @@ const hasChanges = computed(() => {
 // Validierung
 const validationErrors = computed(() => {
   const errors: string[] = [];
-  if (heatingSpace.value !== null && heatingSpace.value < 0)
+  if (heatingSpace.value === null) {
+    errors.push('Heizfläche ist erforderlich.');
+  } else if (heatingSpace.value < 0) {
     errors.push('Heizfläche darf nicht negativ sein.');
-  if (livingSpace.value !== null && livingSpace.value < 0)
+  }
+  if (livingSpace.value === null) {
+    errors.push('Wohnfläche ist erforderlich.');
+  } else if (livingSpace.value < 0) {
     errors.push('Wohnfläche darf nicht negativ sein.');
-  if (usableSpace.value !== null && usableSpace.value < 0)
+  }
+  if (usableSpace.value === null) {
+    errors.push('Nutzfläche ist erforderlich.');
+  } else if (usableSpace.value < 0) {
     errors.push('Nutzfläche darf nicht negativ sein.');
-
+  }
+  if (description.value && description.value.length > 500)
+    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
   return errors;
 });
 
@@ -57,8 +68,16 @@ const isValid = computed(() => validationErrors.value.length === 0);
 
 // Daten laden
 const fetchApartment = async () => {
+  if (!props.projectId) {
+    console.error('Keine projectId');
+    return;
+  }
+  if (!props.unitId) {
+    console.error('Keine unitId');
+    return;
+  }
   try {
-    const data = await apartmentService.getApartment(props.projectId, props.apartmentId);
+    const data = await apartmentService.getApartment(props.projectId, props.unitId);
     title.value = data.title || '';
     location.value = data.location || '';
     heatingSpace.value = data.heatingSpace ?? null;
@@ -76,19 +95,38 @@ const fetchApartment = async () => {
     };
   } catch (err) {
     console.error('Fehler beim Laden der Wohnung:', err);
+    toast.add({
+      severity: 'error',
+      summary: 'Ladefehler',
+      detail: 'Wohnung konnte nicht geladen werden.',
+      life: 6000,
+    });
   }
 };
 
 onMounted(() => {
-  if (props.apartmentId) {
+  if (props.unitId) {
     fetchApartment();
+  } else {
+    console.warn('❗️unitId fehlt – keine Daten können geladen werden.');
+    toast.add({
+      severity: 'warn',
+      summary: 'Ungültige ID',
+      detail: 'Wohnung konnte nicht geladen werden, da keine ID übergeben wurde.',
+      life: 6000,
+    });
   }
 });
 
 // Speichern
 const save = async () => {
   if (!isValid.value) {
-    alert('Bitte beheben Sie die Validierungsfehler.');
+    toast.add({
+      severity: 'error',
+      summary: 'Validierungsfehler',
+      detail: validationErrors.value.join('\n'),
+      life: 6000,
+    });
     return;
   }
 
@@ -102,15 +140,31 @@ const save = async () => {
   };
 
   try {
-    await apartmentService.updateApartment(props.projectId, props.apartmentId, payload);
-    alert('Apartment erfolgreich aktualisiert!');
-    window.location.reload();
+    await apartmentService.updateApartment(props.projectId, props.unitId, payload);
+    toast.add({
+      severity: 'success',
+      summary: 'Erfolg',
+      detail: 'Apartment erfolgreich gespeichert.',
+      life: 6000,
+    });
+    router.push(`/project/${props.projectId}/apartment/${props.unitId}`);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
-    alert('Fehler beim Speichern des Apartments.');
+    toast.add({
+      severity: 'error',
+      summary: 'Speicherfehler',
+      detail: 'Apartment konnte nicht gespeichert werden.',
+      life: 6000,
+    });
   }
 };
 const cancel = () => {
+  if (hasChanges.value) {
+    const confirmLeave = confirm(
+      'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
+    );
+    if (!confirmLeave) return;
+  }
   if (window.opener) {
     window.close();
   } else {
@@ -122,7 +176,7 @@ const cancel = () => {
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Bearbeite Apartment mit ID: {{ apartmentId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">Bearbeite Apartment mit ID: {{ unitId }}</h2>
 
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">

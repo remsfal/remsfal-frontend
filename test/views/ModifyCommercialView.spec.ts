@@ -3,13 +3,14 @@ import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import Component from '../../src/views/ModifyCommercialView.vue';
 import { commercialService } from '../../src/services/CommercialService';
 
+const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({
-    push: vi.fn(),
+    push: mockPush,
   }),
 }));
 
-vi.mock('@/services/CommercialService', () => ({
+vi.mock('../../src/services/CommercialService', () => ({
   commercialService: {
     getCommercial: vi.fn(),
     updateCommercial: vi.fn(),
@@ -31,7 +32,7 @@ describe('ModifyCommercialView.vue', () => {
     wrapper = mount(Component, {
       props: {
         projectId: 'project1',
-        commercialId: 'commercial1',
+        unitId: 'commercial1',
       },
     });
 
@@ -74,5 +75,29 @@ describe('ModifyCommercialView.vue', () => {
     wrapper.vm.commercialSpace = -1; // invalid
     await wrapper.vm.save();
     expect(commercialService.updateCommercial).not.toHaveBeenCalled();
+  });
+
+  it('calls updateCommercial with correct data when saved', async () => {
+    (commercialService.updateCommercial as Mock).mockResolvedValue({});
+
+    // Werte ändern
+    wrapper.vm.title = 'Neuer Titel';
+    wrapper.vm.description = 'Neue Beschreibung';
+    wrapper.vm.commercialSpace = 150;
+    wrapper.vm.heatingSpace = 50;
+
+    await wrapper.vm.save();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'commercial1',
+      expect.objectContaining({
+        title: 'Neuer Titel',
+        description: 'Neue Beschreibung',
+        commercialSpace: 150,
+        heatingSpace: 50,
+        location: '',
+      }),
+    );
   });
 });
