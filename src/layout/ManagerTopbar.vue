@@ -7,6 +7,8 @@ import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
+import {inboxService, type InboxMessage } from '@/services/InboxService';
+import { ref } from 'vue';
 
 const { t } = useI18n();
 
@@ -41,10 +43,27 @@ const logout = () => {
 const login = (route: string) => {
   window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
 };
+
+const onInboxClick = () => {
+  router.push('/inbox');
+};
+
+const unreadCount = ref<number>(0);
+const loadUnreadCount = async () => {
+  try {
+    const data: InboxMessage[] = await inboxService.fetchInboxData();
+    unreadCount.value = data.filter(msg => !msg.isRead).length;
+  } catch (err) {
+    console.error('Fehler beim Laden der Inbox-Daten:', err);
+    unreadCount.value = 0;
+  }
+};
+loadUnreadCount();
+
 </script>
 
 <template>
-  <AppTopbar>
+  <AppTopbar >
     <Button
       v-if="sessionStore.user != null"
       class="layout-topbar-shortcut-button layout-topbar-action"
@@ -77,6 +96,17 @@ const login = (route: string) => {
     >
       <i class="pi pi-user"></i>
       <span>{{ sessionStore.user.email }}</span>
+    </Button>
+    <Button
+      v-if="sessionStore.user != null"
+      class="layout-topbar-shortcut-button layout-topbar-action"
+      @click="onInboxClick()"
+    >
+      <i class="pi pi-inbox"></i>
+      <span v-if="unreadCount > 0" class="unread-badge">
+        {{ unreadCount }}
+      </span>
+      <span>{{ t('toolbar.inbox') }}</span>
     </Button>
     <Button v-if="sessionStore.user != null" class="layout-topbar-action" @click="logout()">
       <i class="pi pi-sign-out"></i>
