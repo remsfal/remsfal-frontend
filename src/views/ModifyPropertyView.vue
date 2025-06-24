@@ -5,7 +5,6 @@ import { propertyService, type PropertyUnit } from '@/services/PropertyService';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
-
 const props = defineProps<{
   projectId: string;
   unitId: string;
@@ -175,7 +174,7 @@ onMounted(() => {
   if (props.unitId) {
     fetchPropertyDetails();
   } else {
-    console.warn('❗️unitId fehlt – keine Daten können geladen werden.');
+    console.warn('unitId fehlt – keine Daten können geladen werden.');
     toast.add({
       severity: 'warn',
       summary: 'Ungültige ID',
@@ -229,44 +228,44 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->
           <div class="col-span-2">
-            <label class="block text-gray-700 mb-1">Titel</label>
-            <input v-model="title" type="text" class="form-input w-full" />
+            <label for="title" class="block text-gray-700 mb-1">Titel</label>
+            <input id="title" v-model="title" type="text" class="form-input w-full" />
           </div>
 
           <!-- Beschreibung -->
           <div class="col-span-2">
-            <label class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea v-model="description" rows="3" class="form-textarea w-full" />
+            <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
+            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
           </div>
 
           <!-- Gemarkung -->
           <div>
-            <label class="block text-gray-700 mb-1">Gemarkung</label>
-            <input v-model="district" type="text" class="form-input w-full" />
+            <label for="district" class="block text-gray-700 mb-1">Gemarkung</label>
+            <input id="district" v-model="district" type="text" class="form-input w-full" />
           </div>
 
           <!-- Flur -->
           <div>
-            <label class="block text-gray-700 mb-1">Flur</label>
-            <input v-model="corridor" type="text" class="form-input w-full" />
+            <label for="corridor" class="block text-gray-700 mb-1">Flur</label>
+            <input id="corridor" v-model="corridor" type="text" class="form-input w-full" />
           </div>
 
           <!-- Flurstück -->
           <div>
-            <label class="block text-gray-700 mb-1">Flurstück</label>
-            <input v-model="parcel" type="text" class="form-input w-full" />
+            <label for="parcel" class="block text-gray-700 mb-1">Flurstück</label>
+            <input id="parcel" v-model="parcel" type="text" class="form-input w-full" />
           </div>
 
           <!-- Liegenschaftsbuch -->
           <div>
-            <label class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
-            <input v-model="landRegisterEntry" type="text" class="form-input w-full" />
+            <label for="landRegisterEntry" class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
+            <input id="landRegisterEntry" v-model="landRegisterEntry" type="text" class="form-input w-full" />
           </div>
 
           <!-- Wirtschaftsart -->
           <div class="col-span-2">
-            <label class="block text-gray-700 mb-1">Wirtschaftsart</label>
-            <select v-model="usageType" class="form-input w-full">
+            <label for="usageType" class="block text-gray-700 mb-1">Wirtschaftsart</label>
+            <select id="usageType" v-model="usageType" class="form-input w-full">
               <option value="" disabled>Bitte wählen</option>
               <option
                 v-for="option in usageOptions"
@@ -280,8 +279,8 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
           <!-- Grundstücksfläche -->
           <div>
-            <label class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
-            <input v-model.number="plotArea" type="number" class="form-input w-full" />
+            <label for="plotArea" class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
+            <input id="plotArea" v-model.number="plotArea" type="number" class="form-input w-full" />
           </div>
 
           <!-- Validierungsfehler -->

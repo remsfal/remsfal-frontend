@@ -102,7 +102,7 @@ onMounted(() => {
   if (props.unitId) {
     fetchCommercialDetails();
   } else {
-    console.warn('❗️unitId fehlt – keine Daten können geladen werden.');
+    console.warn('unitId fehlt – keine Daten können geladen werden.');
     toast.add({
       severity: 'warn',
       summary: 'Ungültige ID',
@@ -153,32 +153,32 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->
           <div class="col-span-2">
-            <label class="block text-gray-700 mb-1">Titel</label>
-            <input v-model="title" type="text" class="form-input w-full" />
+            <label for="title" class="block text-gray-700 mb-1">Titel</label>
+            <input id="title" v-model="title" type="text" class="form-input w-full" />
           </div>
 
           <!-- Beschreibung -->
           <div class="col-span-2">
-            <label class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea v-model="description" rows="3" class="form-textarea w-full" />
+            <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
+            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
           </div>
 
           <!-- Standort -->
           <div class="col-span-2">
-            <label class="block text-gray-700 mb-1">Standort</label>
-            <input v-model="location" type="text" class="form-input w-full" />
+            <label for="location" class="block text-gray-700 mb-1">Standort</label>
+            <input id="location" v-model="location" type="text" class="form-input w-full" />
           </div>
 
           <!-- Gewerbefläche -->
           <div>
-            <label class="block text-gray-700 mb-1">Gewerbefläche (m²)</label>
-            <input v-model.number="commercialSpace" type="number" class="form-input w-full" />
+            <label for="commercialSpace" class="block text-gray-700 mb-1">Gewerbefläche (m²)</label>
+            <input id="commercialSpace" v-model.number="commercialSpace" type="number" class="form-input w-full" />
           </div>
 
           <!-- Heizfläche -->
           <div>
-            <label class="block text-gray-700 mb-1">Heizfläche (m²)</label>
-            <input v-model.number="heatingSpace" type="number" class="form-input w-full" />
+            <label for="heatingSpace" class="block text-gray-700 mb-1">Heizfläche (m²)</label>
+            <input id="heatingSpace" v-model.number="heatingSpace" type="number" class="form-input w-full" />
           </div>
         </div>
 
