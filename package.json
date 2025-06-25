@@ -79,7 +79,7 @@
     "istanbul": "^0.4.5",
     "jsdom": "^26.1.0",
     "mocha": "^11.0.1",
-    "npm-run-all2": "^7.0.1",
+    "npm-run-all2": "^8.0.4",
     "nyc": "^17.1.0",
     "postcss": "^8.5.3",
     "prettier": "^3.4.2",
