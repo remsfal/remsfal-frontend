@@ -87,6 +87,7 @@
   "managerMenu.home": "Home",
   "managerMenu.home.label": "Dashboard",
   "managerMenu.home.settings": "Settings",
+  "managerMenu.home.managerDashboard": "Manager Dashboard",
   "managerMenu.masterData": "Master Data",
   "managerMenu.masterData.properties": "Rentable Units",
   "managerMenu.masterData.tenants": "Tenants",
