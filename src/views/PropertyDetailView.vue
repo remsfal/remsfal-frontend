@@ -115,60 +115,56 @@ onMounted(() => {
   }
 });
 
-const fetchPropertyDetails = () => {
-  propertyService
-    .getProperty(props.projectId, props.unitId)
-    .then((property) => {
-      title.value = property.title || '';
-      description.value = property.description || '';
-      district.value = property.district || '';
-      corridor.value = property.corridor || '';
-      parcel.value = property.parcel || '';
-      landRegistry.value = property.landRegistry || '';
-      usageType.value = property.usageType || null;
-      plotArea.value =
-        property.plotArea !== undefined && property.plotArea !== null
-          ? String(property.plotArea)
-          : null;
-      console.log(
-        'Property plotArea:',
-        property.plotArea,
-        'Type:',
-        typeof property.plotArea,
-        'Converted value:',
-        plotArea.value,
-      );
-      tenant.value = property.tenant || '';
-      street.value = property.street || '';
-      zip.value = property.zip || '';
-      city.value = property.city || '';
-      province.value = property.province || '';
-      country.value = property.country || '';
-      countryCode.value = property.countryCode || '';
+const isLoading = ref(false);
 
-      // Log the loaded data to help with debugging
-      console.log('Loaded property details:', {
-        title: title.value,
-        description: description.value,
-        district: district.value,
-        corridor: corridor.value,
-        parcel: parcel.value,
-        landRegistry: landRegistry.value,
-        usageType: usageType.value,
-        plotArea: plotArea.value,
-        tenant: tenant.value,
-        street: street.value,
-        zip: zip.value,
-        city: city.value,
-        province: province.value,
-        country: country.value,
-        countryCode: countryCode.value,
-      });
-    })
-    .catch((err) => {
-      console.error('Fehler beim Laden der Objektdetails:', err);
+const fetchPropertyDetails = async () => {
+  isLoading.value = true;
+  try {
+    const property = await propertyService.getProperty(props.projectId, props.unitId);
+
+    title.value = property.title || '';
+    description.value = property.description || '';
+    district.value = property.district || '';
+    corridor.value = property.corridor || '';
+    parcel.value = property.parcel || '';
+    landRegistry.value = property.landRegistry || '';
+    usageType.value = property.usageType || null;
+    plotArea.value =
+      property.plotArea !== undefined && property.plotArea !== null
+        ? String(property.plotArea)
+        : null;
+    tenant.value = property.tenant || '';
+    street.value = property.street || '';
+    zip.value = property.zip || '';
+    city.value = property.city || '';
+    province.value = property.province || '';
+    country.value = property.country || '';
+    countryCode.value = property.countryCode || '';
+
+    console.log('Loaded property details:', {
+      title: title.value,
+      description: description.value,
+      district: district.value,
+      corridor: corridor.value,
+      parcel: parcel.value,
+      landRegistry: landRegistry.value,
+      usageType: usageType.value,
+      plotArea: plotArea.value,
+      tenant: tenant.value,
+      street: street.value,
+      zip: zip.value,
+      city: city.value,
+      province: province.value,
+      country: country.value,
+      countryCode: countryCode.value,
     });
+  } catch (err) {
+    console.error('Error while loading property details:', err);
+  } finally {
+    isLoading.value = false;
+  }
 };
+
 
 const navigateToEdit = () => {
   router.push({
@@ -178,8 +174,17 @@ const navigateToEdit = () => {
 };
 
 const goBack = () => {
-  router.push(`/project/${props.projectId}/units`);
+  if (!props.projectId) {
+    console.warn('projectId is not defined – navigation aborted.');
+    return;
+  }
+
+  router.push({
+    name: 'ProjectUnitsView',
+    params: { projectId: props.projectId },
+  });
 };
+
 </script>
 
 <template>

@@ -166,5 +166,9 @@
   "apartment.livingSpace": "Wohnfläche (m²)",
   "apartment.usableSpace": "Nutzfläche (m²)",
   "apartment.heatingSpace": "Heizfläche (m²)",
+  "apartment.updatedSuccess": "Wohnung aktualisiert",
+  "apartment.updatedDetail": "Die Daten wurden erfolgreich gespeichert.",
+  "apartment.updateError": "Fehler beim Aktualisieren der Wohnung",
+  "apartment.updateErrorFallback": "Aktualisierung fehlgeschlagen. Bitte versuche es erneut.",
   "validation.required": "Dieses Feld ist erforderlich."
 }

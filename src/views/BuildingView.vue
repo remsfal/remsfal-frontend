@@ -175,10 +175,12 @@ const validateForm = (): boolean => {
   return Object.keys(errors.value).length === 0;
 };
 
+const isLoading = ref(false);
+
 const updateBuilding = () => {
-  if (!validateForm()) {
-    return;
-  }
+  if (!validateForm()) return;
+
+  isLoading.value = true;
 
   buildingService
     .updateBuilding(props.projectId, props.buildingId, {
@@ -197,8 +199,6 @@ const updateBuilding = () => {
       countryCode: countryCode.value || '',
     })
     .then(() => {
-      // Stay on the current page after saving
-      // Update originalValues to reflect the saved state
       originalValues.value = {
         title: title.value,
         description: description.value,
@@ -216,9 +216,13 @@ const updateBuilding = () => {
       };
     })
     .catch((err) => {
-      console.error('Fehler beim Aktualisieren des Gebäudes:', err);
+      console.error('Error updating building:', err); // Englisch!
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 };
+
 
 const cancel = () => {
   router.push(`/project/${props.projectId}/units`);

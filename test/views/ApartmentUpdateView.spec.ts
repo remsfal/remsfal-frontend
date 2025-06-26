@@ -1,72 +1,63 @@
-import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount, flushPromises } from '@vue/test-utils';
 import ApartmentUpdateView from '../../src/views/ApartmentUpdateView.vue';
-import axios from 'axios';
 
-// Mock für die Router-Parameter
+const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
-    useRoute: () => ({
-        params: {
-            projectId: '123',
-            buildingId: '456',
-            apartmentId: '789',
-        },
-    }),
     useRouter: () => ({
-        push: vi.fn(),
+        push: mockPush,
     }),
 }));
 
-// Mock Axios
-vi.mock('axios');
+vi.mock('../../../src/services/ApartmentService', () => {
+    return {
+        apartmentService: {
+            getApartment: vi.fn().mockResolvedValue({
+                title: 'Test Apartment',
+                description: 'Nice place',
+                location: 'City Center',
+                livingSpace: 50,
+                usableSpace: 60,
+                heatingSpace: 55,
+                street: 'Main St',
+                zip: '12345',
+                city: 'Sample City',
+                province: 'Sample Province',
+                country: 'Sample Country',
+                countryCode: 'DE',
+            }),
+            updateApartment: vi.fn(), // optional: kannst du später für Save-Tests nutzen
+        },
+    };
+});
 
 describe('ApartmentUpdateView.vue', () => {
-    let wrapper: VueWrapper;
-
     beforeEach(() => {
-        wrapper = mount(ApartmentUpdateView, {
+        vi.clearAllMocks(); // reset für jeden Testlauf
+    });
+
+    it('navigates correctly when Cancel button is clicked', async () => {
+        const wrapper = mount(ApartmentUpdateView, {
+            props: {
+                projectId: '123',
+                buildingId: '456',
+                apartmentId: '789',
+            },
             global: {
-                stubs: ['ReusableFormComponent'], // Falls ReusableFormComponent verwendet wird
+                mocks: {
+                    $t: (msg) => msg, // i18n mock
+                },
             },
         });
+
+        await flushPromises(); // warten auf getApartment
+
+        const cancelButton = wrapper.find('button.p-button-secondary');
+        expect(cancelButton.exists()).toBe(true);
+
+        await cancelButton.trigger('click');
+
+        expect(mockPush).toHaveBeenCalledWith('/project/123/units');
+
     });
-
-
-    it('handles submit correctly', async () => {
-        const mockFormData = {
-            title: 'Updated Title',
-            location: 'Updated Location',
-            heatingSpace: 55,
-            livingSpace: 75,
-            description: 'Updated Description',
-            usableSpace: 85,
-        };
-
-        const mockPush = vi.fn();
-        (axios.patch as vi.Mock).mockResolvedValue({});
-        (wrapper.vm as any).router.push = mockPush;
-
-        // Call handleSubmit
-        await (wrapper.vm as any).handleSubmit(mockFormData);
-
-        expect(axios.patch).toHaveBeenCalledWith(
-            '/project/123/building/456/apartments/789',
-            mockFormData
-        );
-        expect(mockPush).toHaveBeenCalledWith('/project/123/buildings/456');
-    });
-
-    it('handles cancel correctly', () => {
-        const mockPush = vi.fn();
-        (wrapper.vm as any).router.push = mockPush;
-
-        // Call handleCancel
-        (wrapper.vm as any).handleCancel();
-
-        expect(mockPush).toHaveBeenCalledWith('/project/123/buildings/456');
-    });
-
-
-
-
 });

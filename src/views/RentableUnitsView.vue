@@ -41,6 +41,26 @@ const nodeToDelete = ref<RentableUnitTreeNode | null>(null);
 
 const router = useRouter();
 
+function getRouteForNode(node: RentableUnitTreeNode, projectId: string) {
+  if (node.data.type === EntityType.Property) {
+    return { name: 'PropertyDetailView', params: { projectId, unitId: node.key } };
+  } else if (node.data.type === EntityType.Building) {
+    return { name: 'BuildingView', params: { projectId, buildingId: node.key } };
+  } else if (node.data.type === EntityType.Apartment) {
+    return {
+      name: 'UpdateApartmentView',
+      params: { projectId, apartmentId: node.key, buildingId: '0' },
+    };
+  } else {
+    return {
+      name: toRentableUnitView(node.data.type),
+      params: { projectId, unitId: node.key },
+    };
+  }
+}
+
+
+
 async function fetchPropertyTree(projectId: string): Promise<RentableUnitTreeNode[]> {
   return propertyService
     .getPropertyTree(projectId)
@@ -94,76 +114,22 @@ const collapseAll = () => {
 };
 
 const onNodeSelect = (node: RentableUnitTreeNode) => {
-  // For property type, navigate to detail view
-  if (node.data.type === EntityType.Property) {
-    router.push({
-      name: 'PropertyDetailView',
-      params: { projectId: props.projectId, unitId: node.key },
-    });
-  } else if (node.data.type === EntityType.Building) {
-    // For building type, navigate to building view
-    router.push({
-      name: 'BuildingView',
-      params: { projectId: props.projectId, buildingId: node.key },
-    });
-  } else if (node.data.type === EntityType.Apartment) {
-    // For apartment type, navigate to apartment update view
-    router.push({
-      name: 'UpdateApartmentView',
-      params: {
-        projectId: props.projectId,
-        apartmentId: node.key,
-        // Since we don't have a way to determine the building ID, we'll use a placeholder
-        // This will need to be updated when more information is available
-        buildingId: '0',
-      },
-    });
-  } else {
-    // For other types, use the existing behavior
-    const view = toRentableUnitView(node.data.type);
-    router.push({
-      name: view,
-      params: { projectId: props.projectId, unitId: node.key },
-    });
-  }
+  router.push(getRouteForNode(node, props.projectId));
   selectedKey.value.remove(node);
 };
 
-const onOpenInNewTab = (node: RentableUnitTreeNode) => {
-  let routeName;
-  let params: Record<string, string> = { projectId: props.projectId };
 
-  // For property type, navigate to detail view
-  if (node.data.type === EntityType.Property) {
-    routeName = 'PropertyDetailView';
-    params.unitId = node.key;
-  } else if (node.data.type === EntityType.Building) {
-    // For building type, navigate to building view
-    routeName = 'BuildingView';
-    params.buildingId = node.key;
-  } else if (node.data.type === EntityType.Apartment) {
-    // For apartment type, navigate to apartment update view
-    routeName = 'UpdateApartmentView';
-    params.apartmentId = node.key;
-    params.buildingId = '0';
-  } else {
-    // For other types, use the existing behavior
-    routeName = toRentableUnitView(node.data.type);
-    params.unitId = node.key;
-  }
+const onOpenInNewTab = (node: RentableUnitTreeNode) => {
+  const route = getRouteForNode(node, props.projectId);
+  const routeData = router.resolve(route);
+  window.open(routeData.href, '_blank');
 
   toast.add({
     severity: 'success',
-    summary: 'Node Selected',
-    detail: routeName,
+    summary: 'Node geöffnet',
+    detail: route.name?.toString() || '',
     life: 3000,
   });
-
-  const routeData = router.resolve({
-    name: routeName,
-    params: params,
-  });
-  window.open(routeData.href, '_blank');
 };
 
 const confirmDeleteNode = (node: RentableUnitTreeNode) => {

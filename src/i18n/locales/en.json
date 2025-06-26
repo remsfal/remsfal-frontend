@@ -160,5 +160,9 @@
   "apartment.livingSpace": "Living Space (m²)",
   "apartment.usableSpace": "Usable Space (m²)",
   "apartment.heatingSpace": "Heating Space (m²)",
+  "apartment.updatedSuccess": "Apartment updated",
+  "apartment.updatedDetail": "The data was successfully saved.",
+  "apartment.updateError": "Error updating apartment",
+  "apartment.updateErrorFallback": "Update failed. Please try again.",
   "validation.required": "This field is required."
 }

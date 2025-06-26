@@ -34,12 +34,17 @@ const resetForm = () => {
   selectedTenant.value = null;
 };
 
-// Fetch tenant data when component is mounted
+
 onMounted(async () => {
-  tenants.value = await tenancyService.fetchTenantData();
+  try {
+    tenants.value = await tenancyService.fetchTenantData();
+  } catch (error) {
+    console.error('Failed to load tenant data:', error);
+    alert('Fehler beim Laden der Mieter. Bitte versuchen Sie es später erneut.');
+  }
 });
 
-// Update tenant value when selectedTenant changes
+
 watch(selectedTenant, (newValue) => {
   if (newValue) {
     tenant.value = `${newValue.firstName} ${newValue.lastName}`;
@@ -48,12 +53,17 @@ watch(selectedTenant, (newValue) => {
   }
 });
 
-// Reset form when dialog is closed
-watch(visible, (newValue, oldValue) => {
-  if (oldValue === true && newValue === false) {
-    resetForm();
+
+watch(selectedTenant, (newValue) => {
+  if (newValue) {
+    const first = newValue.firstName ?? 'N/A';
+    const last = newValue.lastName ?? 'N/A';
+    tenant.value = `${first} ${last}`;
+  } else {
+    tenant.value = undefined;
   }
 });
+
 
 const createProperty = async () => {
   console.log('createProperty called');

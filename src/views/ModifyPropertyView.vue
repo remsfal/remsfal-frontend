@@ -214,46 +214,38 @@ const isModified = computed(() => {
 const validateForm = (): boolean => {
   errors.value = {};
 
-  // Validate title (required)
-  if (!title.value.trim()) {
+  const required = (val: string | null | undefined) =>
+    val !== null && val !== undefined && val.toString().trim().length > 0;
+
+  if (!required(title.value))
     errors.value.title = t('validation.required');
-  }
 
-  // Validate description (required)
-  if (!description.value.trim()) {
+  if (!required(description.value))
     errors.value.description = t('validation.required');
-  }
-
-  // Validate address fields (required except countryCode)
-  if (!street.value.trim()) {
-    errors.value.street = t('validation.required');
-  }
-
-  if (!zip.value.trim()) {
-    errors.value.zip = t('validation.required');
-  }
-
-  if (!city.value.trim()) {
-    errors.value.city = t('validation.required');
-  }
-
-  if (!province.value.trim()) {
-    errors.value.province = t('validation.required');
-  }
-
-  if (!country.value.trim()) {
-    errors.value.country = t('validation.required');
-  }
-
-  // Validate tenant (required)
-  if (!tenant.value.trim()) {
-    errors.value.tenant = t('validation.required');
-  }
-
-  // Validate plotArea (required)
-  if (!plotArea.value) {
+  if (!required(district.value))
+    errors.value.district = t('validation.required');
+  if (!required(corridor.value))
+    errors.value.corridor = t('validation.required');
+  if (!required(parcel.value))
+    errors.value.parcel = t('validation.required');
+  if (!required(landRegistry.value))
+    errors.value.landRegistry = t('validation.required');
+  if (!usageType.value)
+    errors.value.usageType = t('validation.required');
+  if (!required(plotArea.value))
     errors.value.plotArea = t('validation.required');
-  }
+  if (!required(tenant.value))
+    errors.value.tenant = t('validation.required');
+  if (!required(street.value))
+    errors.value.street = t('validation.required');
+  if (!required(zip.value))
+    errors.value.zip = t('validation.required');
+  if (!required(city.value))
+    errors.value.city = t('validation.required');
+  if (!required(province.value))
+    errors.value.province = t('validation.required');
+  if (!required(country.value))
+    errors.value.country = t('validation.required');
 
   return Object.keys(errors.value).length === 0;
 };
@@ -281,7 +273,8 @@ const updateProperty = () => {
       province: province.value || '',
       country: country.value || '',
       countryCode: countryCode.value || '',
-      effective_space: 0,
+      effective_space: plotArea.value ? Number(plotArea.value) : 0,
+
     })
     .then(() => {
       // Redirect to PropertyDetailView instead of RentableUnitsView

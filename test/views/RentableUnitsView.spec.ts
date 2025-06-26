@@ -8,7 +8,6 @@ import Dialog from 'primevue/dialog';
 import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
 
 vi.mock('@/services/PropertyService');
-
 vi.mock('primevue/dialog', () => ({
   default: {
     inheritAttrs: false, // Prevents the passing of extraneous attributes to the root element
