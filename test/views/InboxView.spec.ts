@@ -1,18 +1,17 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
-import InboxView from '../../src/views/InboxView.vue';
 import PrimeVue from 'primevue/config';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { nextTick } from 'vue';
 import i18n from '../../src/i18n/i18n';
 import { inboxService } from '../../src/services/InboxService';
-
+import InboxView from '../../src/views/InboxView.vue';
 
 // Mocks
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
 vi.mock('primevue/config', () => ({ default: { install: () => {}, locale: 'en' } }));
 vi.mock('@/services/InboxService', () => ({ inboxService: { fetchInboxData: vi.fn() } }));
-const mockFetch = inboxService.fetchInboxData as any;  // als any casten
+const mockFetch = inboxService.fetchInboxData as any; // als any casten
 
 // Stubs & global plugins
 const globalConfig = {
@@ -24,7 +23,7 @@ const globalConfig = {
     DatePicker: { template: '<div class="date-picker"><slot/></div>' },
     Dialog: { template: '<div><slot/></div>' },
     Button: { template: '<button><slot/></button>' },
-  }
+  },
 };
 
 // Helper function to mount the component with mock data
@@ -82,7 +81,10 @@ describe('InboxView.vue', () => {
     expect(vm.messages[0].isRead).toBe(false);
 
     // bulk actions
-    vm.messages = [{ id: 'a', isRead: false }, { id: 'b', isRead: true }];
+    vm.messages = [
+      { id: 'a', isRead: false },
+      { id: 'b', isRead: true },
+    ];
     vm.selectedMessages = [vm.messages[0], vm.messages[1]];
     vm.markReadSelected();
     await nextTick();
@@ -125,9 +127,39 @@ describe('InboxView.vue', () => {
 
   describe('computed filteredMessages', () => {
     const sampleData = [
-      { id: '1', type: 'A', contractor: 'X', project: 'P1', unit: 'U1', tenant: 'T1', owner: 'O1', isRead: false, receivedAt: new Date('2025-06-01T10:00:00Z') },
-      { id: '2', type: 'B', contractor: 'Y', project: 'P2', unit: 'U2', tenant: 'T2', owner: 'O2', isRead: true,  receivedAt: new Date('2025-06-05T23:59:59Z') },
-      { id: '3', type: 'A', contractor: 'X', project: 'P1', unit: 'U1', tenant: 'T1', owner: 'O1', isRead: false, receivedAt: new Date('2025-06-10T12:00:00Z') },
+      {
+        id: '1',
+        type: 'A',
+        contractor: 'X',
+        project: 'P1',
+        unit: 'U1',
+        tenant: 'T1',
+        owner: 'O1',
+        isRead: false,
+        receivedAt: new Date('2025-06-01T10:00:00Z'),
+      },
+      {
+        id: '2',
+        type: 'B',
+        contractor: 'Y',
+        project: 'P2',
+        unit: 'U2',
+        tenant: 'T2',
+        owner: 'O2',
+        isRead: true,
+        receivedAt: new Date('2025-06-05T23:59:59Z'),
+      },
+      {
+        id: '3',
+        type: 'A',
+        contractor: 'X',
+        project: 'P1',
+        unit: 'U1',
+        tenant: 'T1',
+        owner: 'O1',
+        isRead: false,
+        receivedAt: new Date('2025-06-10T12:00:00Z'),
+      },
     ];
 
     let vm: any;
@@ -157,7 +189,7 @@ describe('InboxView.vue', () => {
     });
 
     it('filter by date range (inclusive)', async () => {
-      vm.filterDateRange = [new Date('2025-06-01'), new Date('2025-06-05')];
+      vm.filterDateRange = [new Date('2025-06-01T00:00:00Z'), new Date('2025-06-05T23:59:59Z')];
       await nextTick();
       expect(vm.filteredMessages.map((m: any) => m.id)).toEqual(['1', '2']);
     });
