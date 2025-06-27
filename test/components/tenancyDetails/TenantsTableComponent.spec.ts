@@ -1,90 +1,60 @@
-import { mount, VueWrapper } from '@vue/test-utils';
-import PrimeVue from 'primevue/config';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
 import TenantsTableComponent from '../../../src/components/tenancyDetails/TenantsTableComponent.vue';
-import Button from 'primevue/button';
-import Card from 'primevue/card';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import InputText from 'primevue/inputtext';
+import { tenancyService } from '../../../src/services/TenancyService';
 
-// Mock PrimeVue to prevent plugin errors
-vi.mock('primevue/config', () => ({
-  default: {
-    install: () => {},
-    locale: 'en',
+vi.mock('@/services/TenancyService', () => ({
+  tenancyService: {
+    updateTenancyTenantItem: vi.fn(),
   },
 }));
 
-describe('TenantsTableComponent.vue', () => {
-  let wrapper: VueWrapper;
+describe('TenantsTableComponent', () => {
+  const tenantsMock = [{ id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@test.de' }];
 
-  const sampleTenants = [
-    {
-      id: 't1',
-      firstName: 'Alice',
-      lastName: 'Smith',
-      email: 'alice@example.com',
-    },
-  ];
-
-  beforeEach(() => {
-    wrapper = mount(TenantsTableComponent, {
-      global: {
-        plugins: [PrimeVue],
-        components: {
-          Button,
-          Card,
-          Column,
-          DataTable,
-          InputText,
-        },
-      },
-      props: {
-        tenants: sampleTenants,
-        isDeleteButtonEnabled: true,
-      },
+  it('renders tenant data in table', () => {
+    const wrapper = mount(TenantsTableComponent, {
+      props: { tenants: tenantsMock, isDeleteButtonEnabled: false },
     });
+
+    expect(wrapper.text()).toContain('Max');
+    expect(wrapper.text()).toContain('Mustermann');
+    expect(wrapper.text()).toContain('max@test.de');
   });
 
-  it('renders the component correctly', () => {
-    expect(wrapper.exists()).toBe(true);
-    expect(wrapper.text()).toContain('Mieter');
+  it('emits updated data when a cell is edited', async () => {
+    const wrapper = mount(TenantsTableComponent, {
+      props: { tenants: tenantsMock, isDeleteButtonEnabled: false },
+    });
+
+    const newData = { ...tenantsMock[0], firstName: 'Moritz' };
+    await wrapper.vm.onCellEditComplete({ newData, index: 0 });
+
+    expect(wrapper.emitted('onChange')).toBeTruthy();
+    expect(wrapper.emitted('onChange')![0][0][0].firstName).toBe('Moritz');
+    expect(tenancyService.updateTenancyTenantItem).toHaveBeenCalled();
   });
 
-  it('displays passed tenant data', () => {
-    expect(wrapper.text()).toContain('Alice');
-    expect(wrapper.text()).toContain('Smith');
-    expect(wrapper.text()).toContain('alice@example.com');
+  it('adds a new row when button is clicked', async () => {
+    const wrapper = mount(TenantsTableComponent, {
+      props: { tenants: tenantsMock, isDeleteButtonEnabled: true },
+    });
+
+    await wrapper.find('button').trigger('click');
+
+    // toBe(3) because onMounted adds a tenant, tenantsMock adds a tenant and the button click adds another one
+    expect(wrapper.vm.localTenants.length).toBe(3);
+    expect(wrapper.vm.localTenants[1].firstName).toBe('');
   });
 
-  it('adds a new tenant row when "Add" button is clicked', async () => {
-    const addButton = wrapper.find('button'); // Assumes first button is "Add"
-    await addButton.trigger('click');
+  it('deletes a row and emits change', async () => {
+    const wrapper = mount(TenantsTableComponent, {
+      props: { tenants: tenantsMock, isDeleteButtonEnabled: true },
+    });
 
-    // Should now be 2 tenants in the table
-    const rows = wrapper.findAll('td');
-    expect(rows.length).toBeGreaterThan(3); // One row added
-  });
+    await wrapper.vm.deleteRow(0);
 
-  it('deletes a tenant row when delete button is clicked', async () => {
-    const deleteButton = wrapper.find('button.p-button-danger');
-    expect(deleteButton.exists()).toBe(true);
-
-    await deleteButton.trigger('click');
-
-    const emitted = wrapper.emitted('on-change');
-    expect(emitted).toBeTruthy();
-    expect(emitted![emitted!.length - 1][0].length).toBe(0); // One tenant removed
-  });
-
-  it('emits updated tenants on cell edit complete', async () => {
-    const input = wrapper.find('input');
-    await input.setValue('Bob');
-    await input.trigger('blur'); // Triggers cellEditComplete
-
-    const emitted = wrapper.emitted('on-change');
-    expect(emitted).toBeTruthy();
-    expect(emitted![0][0][0].firstName).toBe('Bob');
+    //same prodecure as above, but now we delete the first row
+    expect(wrapper.vm.localTenants.length).toBe(1);
+    expect(wrapper.emitted('onChange')).toBeTruthy();
   });
 });

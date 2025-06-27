@@ -1,91 +1,57 @@
-import { mount, VueWrapper } from '@vue/test-utils';
-import PrimeVue from 'primevue/config';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
 import TenancyDataComponent from '../../../src/components/tenancyDetails/TenancyDataComponent.vue';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Card from 'primevue/card';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
 
-// Mock PrimeVue config to avoid plugin errors
-vi.mock('primevue/config', () => ({
-  default: {
-    install: () => {},
-    locale: 'en',
-  },
-}));
+describe('TenancyDataComponent', () => {
+  const today = new Date();
+  const past = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+  const future = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
 
-describe('TenancyDataComponent.vue', () => {
-  let wrapper: VueWrapper;
-
-  const sampleTenants = [
-    {
-      id: 'tenant-1',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-    },
-  ];
-
-  beforeEach(() => {
-    wrapper = mount(TenancyDataComponent, {
-      global: {
-        plugins: [PrimeVue],
-        components: {
-          Button,
-          InputText,
-          Card,
-          Column,
-          DataTable,
+  it('renders date pickers with initial values', () => {
+    const wrapper = mount(TenancyDataComponent, {
+      props: {
+        tenancy: {
+          rentalStart: past,
+          rentalEnd: future,
         },
       },
+    });
+
+    const inputs = wrapper.findAll('input[type="text"]');
+    expect(inputs.length).toBeGreaterThan(0); // DatePicker renders text inputs
+  });
+
+  it('computes rentalActive correctly', async () => {
+    const wrapper = mount(TenancyDataComponent, {
       props: {
-        tenants: sampleTenants,
-        isDeleteButtonEnabled: true,
+        tenancy: {
+          rentalStart: past,
+          rentalEnd: future,
+        },
       },
     });
+
+    const checkbox = wrapper.find('input[type="checkbox"]');
+    expect((checkbox.element as HTMLInputElement).checked).toBe(true);
   });
 
-  it('mounts the component correctly', () => {
-    expect(wrapper.exists()).toBe(true);
-  });
+  it('emits onChange when dates change', async () => {
+    const wrapper = mount(TenancyDataComponent, {
+      props: {
+        tenancy: {
+          rentalStart: past,
+          rentalEnd: future,
+        },
+      },
+    });
 
-  it('renders tenant rows correctly', () => {
-    const rows = wrapper.findAll('tr');
-    // 1 header + 1 data row
-    expect(rows.length).toBeGreaterThan(1);
-    expect(wrapper.text()).toContain('John');
-    expect(wrapper.text()).toContain('Doe');
-  });
+    const newTenancy = {
+      rentalStart: today,
+      rentalEnd: future,
+    };
+    wrapper.vm.localTenancy = newTenancy;
+    await wrapper.vm.$nextTick();
 
-  it('emits on-change event when cell is edited', async () => {
-    const input = wrapper.find('input');
-    await input.setValue('Jane');
-    await input.trigger('blur');
-
-    const emitted = wrapper.emitted('on-change');
-    expect(emitted).toBeTruthy();
-    expect(emitted![0][0][0].firstName).toBe('Jane');
-  });
-
-  it('adds a new tenant row on button click', async () => {
-    const addButton = wrapper.find('button'); // Neuen Mieter hinzufügen
-    await addButton.trigger('click');
-
-    const rows = wrapper.findAll('tr');
-    // Should now be more than one data row
-    expect(rows.length).toBeGreaterThan(2);
-  });
-
-  it('deletes a tenant row when delete button is clicked', async () => {
-    const deleteButtons = wrapper.findAll('button.p-button-danger');
-    expect(deleteButtons.length).toBeGreaterThan(0);
-
-    await deleteButtons[0].trigger('click');
-
-    const emitted = wrapper.emitted('on-change');
-    expect(emitted).toBeTruthy();
-    expect(emitted![emitted!.length - 1][0].length).toBe(0); // All tenants deleted
+    expect(wrapper.emitted('onChange')).toBeTruthy();
+    expect(wrapper.emitted('onChange')![0][0].rentalStart).toEqual(today);
   });
 });
