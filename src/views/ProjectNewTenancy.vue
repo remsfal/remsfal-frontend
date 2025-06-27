@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { tenancyService, type TenancyItem } from '@/services/TenancyService';
-import { useRouter } from 'vue-router';
-import { useProjectStore } from '@/stores/ProjectStore';
+import TenancyDataComponent from '@/components/tenancyDetails/TenancyDataComponent.vue';
 import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableComponent.vue';
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
-import TenancyDataComponent from '@/components/tenancyDetails/TenancyDataComponent.vue';
+import { tenancyService, type TenancyItem } from '@/services/TenancyService';
+import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
+import { computed, onMounted, ref, toRaw } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -54,6 +54,16 @@ function redirectToTenanciesList() {
   router.push(`/project/${projectStore.projectId}/tenancies/`);
 }
 
+function updateTenants(event: any) {
+  tenancy.value.listOfTenants = toRaw(event);
+  console.log(tenancy.value.listOfTenants);
+}
+
+function updateUnits(event: any) {
+  tenancy.value.listOfUnits = toRaw(event);
+  console.log(tenancy.value.listOfUnits);
+}
+
 onMounted(() => {
   rentalStart.value = new Date();
   rentalEnd.value = new Date(new Date().getFullYear() + 1);
@@ -64,36 +74,22 @@ onMounted(() => {
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold">Neuer Mietvertrag erstellen</h2>
-      <Button
-        label="Speichern & zur Übersicht"
-        icon="pi pi-save"
-        class="bg-green-600 hover:bg-green-700 transition-colors"
-        :disabled="!isValidForm"
-        @click="saveTenancy()"
-      />
+      <Button label="Speichern & zur Übersicht" icon="pi pi-save"
+        class="bg-green-600 hover:bg-green-700 transition-colors" :disabled="!isValidForm" @click="saveTenancy()" />
     </div>
 
     <div class="grid grid-cols-1 gap-6">
-      <TenancyDataComponent
-        v-if="tenancy"
-        :tenancy="tenancy"
-        @update:rentalStart="rentalStart = $event"
-        @update:rentalEnd="rentalEnd = $event"
-      />
+      <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @update:rentalStart="rentalStart = $event"
+        @update:rentalEnd="rentalEnd = $event" />
 
       <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div class="space-y-4">
-          <TenantsTableComponent
-            :tenants="tenancy.listOfTenants"
-            @update:tenants="tenancy.listOfTenants = $event"
-          />
+          <TenantsTableComponent :tenants="tenancy.listOfTenants" :isDeleteButtonEnabled="true"
+            @onChange=updateTenants />
         </div>
 
         <div class="space-y-4">
-          <UnitsTableComponent
-            :listOfUnits="tenancy.listOfUnits"
-            @update:units="tenancy.listOfUnits = $event"
-          />
+          <UnitsTableComponent :listOfUnits="tenancy.listOfUnits" :isDeleteButtonEnabled="true" @onChange=updateUnits />
         </div>
       </div>
     </div>

@@ -76,8 +76,8 @@ function handleTenancyDataChange(updatedTenancy: TenancyItem) {
     <!-- Main Content -->
     <div class="grid grid-cols-1 gap-6">
       <!-- Tenants Section -->
-      <TenantsTableComponent :tenants="tenancy?.listOfTenants || []" />
-      <UnitsTableComponent :listOfUnits="tenancy?.listOfUnits || []" />
+      <TenantsTableComponent :tenants="tenancy?.listOfTenants || []" :isDeleteButtonEnabled="false" />
+      <UnitsTableComponent :listOfUnits="tenancy?.listOfUnits || []" :isDeleteButtonEnabled="false" />
 
       <!-- Delete Button -->
       <div class="flex justify-end">
