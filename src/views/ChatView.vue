@@ -5,7 +5,6 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 
-// Nachrichtentyp inkl. optionalem "text" und "image"
 type ChatMessage = {
   sender: string
   text?: string
@@ -16,8 +15,6 @@ type ChatMessage = {
 const userName = ref('')
 const nameConfirmed = ref(false)
 const selectedFileName = ref('')
-
-// Nachrichtenliste mit korrektem Typ
 const messages = ref<ChatMessage[]>([
   {
     sender: 'System',
@@ -25,10 +22,9 @@ const messages = ref<ChatMessage[]>([
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 ])
-
 const newMessage = ref('')
+const emojis = ['😄', '🚀', '❤️']
 
-// Timestamp wird beim Senden neu generiert, daher in Funktion erzeugen
 function getTimestamp(): string {
   return new Date().toLocaleString('de-DE', {
     day: '2-digit',
@@ -39,13 +35,17 @@ function getTimestamp(): string {
   })
 }
 
-function sendMessage() {
-  if (!newMessage.value.trim()) return
+function createMessage(content: { text?: string; image?: string }) {
   messages.value.push({
     sender: userName.value || 'Du',
-    text: newMessage.value,
-    time: getTimestamp()
+    time: getTimestamp(),
+    ...content
   })
+}
+
+function sendMessage() {
+  if (!newMessage.value.trim()) return
+  createMessage({ text: newMessage.value })
   newMessage.value = ''
 }
 
@@ -57,35 +57,24 @@ function handleFileUpload(event: Event) {
 
   const reader = new FileReader()
   reader.onload = () => {
-    messages.value.push({
-      sender: userName.value || 'Du',
-      image: reader.result as string,
-      time: getTimestamp()
-    })
+    createMessage({ image: reader.result as string })
   }
 
   reader.readAsDataURL(file)
 }
 </script>
 
-
 <template>
   <div class="p-4 max-w-2xl mx-auto">
-    <!-- Name-Eingabe -->
     <div v-if="!nameConfirmed" class="flex items-center gap-2 mb-4">
       <InputText v-model="userName" placeholder="Dein Name..." class="flex-1" />
       <Button label="Start" :disabled="!userName" @click="nameConfirmed = true" />
     </div>
 
-    <!-- Chatbereich -->
     <div v-else>
       <Panel header="Projekt-Chat">
-        <!-- Nachrichtenanzeige -->
         <div v-for="(msg, index) in messages" :key="index" class="mb-3">
-          <Message
-              :severity="msg.sender === userName ? 'info' : 'success'"
-              :closable="false"
-          >
+          <Message :severity="msg.sender === userName ? 'info' : 'success'" :closable="false">
             <div>
               <strong>{{ msg.sender }}</strong>
               <span class="text-gray-400 text-xs ml-2">({{ msg.time }})</span>
@@ -100,14 +89,12 @@ function handleFileUpload(event: Event) {
           </Message>
         </div>
 
-        <!-- Emoji-Leiste -->
         <div class="flex gap-2 my-2">
-          <button @click="newMessage += ' 😄'">😄</button>
-          <button @click="newMessage += ' 🚀'">🚀</button>
-          <button @click="newMessage += ' ❤️'">❤️</button>
+          <button v-for="emoji in emojis" :key="emoji" @click="newMessage += ` ${emoji}`">
+            {{ emoji }}
+          </button>
         </div>
 
-        <!-- Nachrichteneingabe und Datei-Upload -->
         <div class="flex items-center gap-2 mt-3">
           <InputText
               v-model="newMessage"
@@ -116,7 +103,6 @@ function handleFileUpload(event: Event) {
               @keyup.enter="sendMessage"
           />
           <div class="flex items-center gap-2">
-            <!-- Dateiauswahl-Button -->
             <label class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded border border-blue-300 hover:bg-blue-200">
               📎 Datei auswählen
               <input
@@ -126,22 +112,14 @@ function handleFileUpload(event: Event) {
                   class="hidden"
               />
             </label>
-
-            <!-- Dateiname anzeigen (optional, wenn du willst) -->
             <span
                 class="text-sm px-2 py-1 border border-gray-300 rounded text-gray-600"
                 v-if="selectedFileName"
             >
-    {{ selectedFileName }}
-  </span>
+              {{ selectedFileName }}
+            </span>
           </div>
-
-          <Button
-              icon="pi pi-send"
-              label="Senden"
-              @click="sendMessage"
-              :disabled="!newMessage"
-          />
+          <Button icon="pi pi-send" label="Senden" @click="sendMessage" :disabled="!newMessage" />
         </div>
       </Panel>
     </div>
