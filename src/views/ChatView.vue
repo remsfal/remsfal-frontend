@@ -5,33 +5,128 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 
+const userName = ref('')
+const nameConfirmed = ref(false)
+const selectedFileName = ref('')
 const messages = ref([
-  { sender: 'System', text: 'Willkommen im Projekt-Chat.' },
-
+  { sender: 'System', text: 'Willkommen im Projekt-Chat.', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
 ])
-
 const newMessage = ref('')
+const timestamp = new Date().toLocaleString('de-DE', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit'
+})
 
 function sendMessage() {
   if (!newMessage.value.trim()) return
-  messages.value.push({ sender: 'Du', text: newMessage.value })
+  messages.value.push({
+    sender: userName.value || 'Du',
+    text: newMessage.value,
+    time: timestamp
+  })
+
+
   newMessage.value = ''
 }
+
+function handleFileUpload(event: Event) {
+  const file = (event.target as HTMLInputElement)?.files?.[0]
+  if (!file) return
+
+  selectedFileName.value = file.name
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    messages.value.push({
+      sender: userName.value || 'Du',
+      image: reader.result as string,
+      time: timestamp
+    })
+  }
+
+  reader.readAsDataURL(file)
+}
+
 </script>
 
 <template>
-  <div class="p-m-4">
-    <Panel header="Projekt-Chat">
-      <div v-for="(msg, index) in messages" :key="index" class="p-mb-2">
-        <Message :severity="msg.sender === 'Du' ? 'info' : 'success'" :closable="false">
-          <strong>{{ msg.sender }}:</strong> {{ msg.text }}
-        </Message>
-      </div>
+  <div class="p-4 max-w-2xl mx-auto">
+    <!-- Name-Eingabe -->
+    <div v-if="!nameConfirmed" class="flex items-center gap-2 mb-4">
+      <InputText v-model="userName" placeholder="Dein Name..." class="flex-1" />
+      <Button label="Start" :disabled="!userName" @click="nameConfirmed = true" />
+    </div>
 
-      <div class="p-d-flex p-ai-center p-mt-3">
-        <InputText v-model="newMessage" placeholder="Nachricht eingeben..." class="p-mr-2" @keyup.enter="sendMessage" />
-        <Button icon="pi pi-send" label="Senden" @click="sendMessage" :disabled="!newMessage" />
-      </div>
-    </Panel>
+    <!-- Chatbereich -->
+    <div v-else>
+      <Panel header="Projekt-Chat">
+        <!-- Nachrichtenanzeige -->
+        <div v-for="(msg, index) in messages" :key="index" class="mb-3">
+          <Message
+              :severity="msg.sender === userName ? 'info' : 'success'"
+              :closable="false"
+          >
+            <div>
+              <strong>{{ msg.sender }}</strong>
+              <span class="text-gray-400 text-xs ml-2">({{ msg.time }})</span>
+            </div>
+            <div v-if="msg.text" class="mt-1">{{ msg.text }}</div>
+            <img
+                v-if="msg.image"
+                :src="msg.image"
+                class="mt-2 max-w-xs rounded shadow"
+                alt="Upload"
+            />
+          </Message>
+        </div>
+
+        <!-- Emoji-Leiste -->
+        <div class="flex gap-2 my-2">
+          <button @click="newMessage += ' 😄'">😄</button>
+          <button @click="newMessage += ' 🚀'">🚀</button>
+          <button @click="newMessage += ' ❤️'">❤️</button>
+        </div>
+
+        <!-- Nachrichteneingabe und Datei-Upload -->
+        <div class="flex items-center gap-2 mt-3">
+          <InputText
+              v-model="newMessage"
+              placeholder="Nachricht eingeben..."
+              class="flex-1"
+              @keyup.enter="sendMessage"
+          />
+          <div class="flex items-center gap-2">
+            <!-- Dateiauswahl-Button -->
+            <label class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded border border-blue-300 hover:bg-blue-200">
+              📎 Datei auswählen
+              <input
+                  type="file"
+                  accept="image/*"
+                  @change="handleFileUpload"
+                  class="hidden"
+              />
+            </label>
+
+            <!-- Dateiname anzeigen (optional, wenn du willst) -->
+            <span
+                class="text-sm px-2 py-1 border border-gray-300 rounded text-gray-600"
+                v-if="selectedFileName"
+            >
+    {{ selectedFileName }}
+  </span>
+          </div>
+
+          <Button
+              icon="pi pi-send"
+              label="Senden"
+              @click="sendMessage"
+              :disabled="!newMessage"
+          />
+        </div>
+      </Panel>
+    </div>
   </div>
 </template>
