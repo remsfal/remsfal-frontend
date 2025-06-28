@@ -5,30 +5,47 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 
+// Nachrichtentyp inkl. optionalem "text" und "image"
+type ChatMessage = {
+  sender: string
+  text?: string
+  image?: string
+  time: string
+}
+
 const userName = ref('')
 const nameConfirmed = ref(false)
 const selectedFileName = ref('')
-const messages = ref([
-  { sender: 'System', text: 'Willkommen im Projekt-Chat.', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+
+// Nachrichtenliste mit korrektem Typ
+const messages = ref<ChatMessage[]>([
+  {
+    sender: 'System',
+    text: 'Willkommen im Projekt-Chat.',
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
 ])
+
 const newMessage = ref('')
-const timestamp = new Date().toLocaleString('de-DE', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit'
-})
+
+// Timestamp wird beim Senden neu generiert, daher in Funktion erzeugen
+function getTimestamp(): string {
+  return new Date().toLocaleString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
 function sendMessage() {
   if (!newMessage.value.trim()) return
   messages.value.push({
     sender: userName.value || 'Du',
     text: newMessage.value,
-    time: timestamp
+    time: getTimestamp()
   })
-
-
   newMessage.value = ''
 }
 
@@ -43,14 +60,14 @@ function handleFileUpload(event: Event) {
     messages.value.push({
       sender: userName.value || 'Du',
       image: reader.result as string,
-      time: timestamp
+      time: getTimestamp()
     })
   }
 
   reader.readAsDataURL(file)
 }
-
 </script>
+
 
 <template>
   <div class="p-4 max-w-2xl mx-auto">
