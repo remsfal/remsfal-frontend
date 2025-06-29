@@ -6,13 +6,12 @@ import PrimeVue from 'primevue/config';
 import i18n from '../../src/i18n/i18n';
 import { inboxService } from '../../src/services/InboxService';
 
-
 // Mocks
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
 vi.mock('primevue/config', () => ({ default: { install: () => {}, locale: 'en' } }));
 vi.mock('@/services/InboxService', () => ({ inboxService: { fetchInboxData: vi.fn() } }));
-const mockFetch = inboxService.fetchInboxData as any;  // als any casten
+const mockFetch = inboxService.fetchInboxData as any;  // cast as any
 
 // Stubs & global plugins
 const globalConfig = {
@@ -157,10 +156,15 @@ describe('InboxView.vue', () => {
     });
 
     it('filter by date range (inclusive)', async () => {
-      vm.filterDateRange = [new Date('2025-06-01'), new Date('2025-06-05')];
+      const start = new Date('2025-06-01T00:00:00Z');
+      const end = new Date('2025-06-05T23:59:59Z');
+      vm.filterDateRange = [start, end];
+    
       await nextTick();
+    
       expect(vm.filteredMessages.map((m: any) => m.id)).toEqual(['1', '2']);
     });
+    
 
     it('rowClass für unread/read', () => {
       expect(vm.rowClass(sampleData[0])).toBe('font-semibold');
