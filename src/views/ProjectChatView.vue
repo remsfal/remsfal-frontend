@@ -23,7 +23,9 @@ const messages = ref<ChatMessage[]>([
   }
 ])
 const newMessage = ref('')
-const emojis = ['😄', '🚀', '❤️']
+const emojis = ['😄', '🚀', '❤️','🙂']
+
+
 
 function getTimestamp(): string {
   return new Date().toLocaleString('de-DE', {
@@ -90,8 +92,14 @@ function handleFileUpload(event: Event) {
         </div>
 
         <div class="flex gap-2 my-2">
-          <button v-for="emoji in emojis" :key="emoji" @click="newMessage += ` ${emoji}`">
-            {{ emoji }}
+          <button
+              v-for="emoji in emojis"
+              :key="emoji"
+              @click="newMessage += ` ${emoji}`"
+              data-testid="emoji-button"
+          >
+
+          {{ emoji }}
           </button>
         </div>
 

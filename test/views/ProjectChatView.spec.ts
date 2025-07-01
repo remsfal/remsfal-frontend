@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import ChatView from '../../src/views/ChatView.vue'
+import ProjectChatView from '../../src/views/ProjectChatView.vue'
 import Button from 'primevue/button'
 
-describe('ChatView.vue', () => {
+describe('ProjectChatView.vue', () => {
     it('zeigt Eingabe für Benutzernamen', () => {
-        const wrapper = mount(ChatView)
+        const wrapper = mount(ProjectChatView)
         expect(wrapper.find('input[placeholder="Dein Name..."]').exists()).toBe(true)
 
     })
 
     it('wechselt in den Chatbereich nach Namenseingabe', async () => {
-        const wrapper = mount(ChatView)
+        const wrapper = mount(ProjectChatView)
         const input = wrapper.find('input')
         await input.setValue('Bilal')
         const button = wrapper.get('button')
@@ -21,7 +21,7 @@ describe('ChatView.vue', () => {
     })
 
     it('fügt eine Nachricht hinzu und leert das Eingabefeld', async () => {
-        const wrapper = mount(ChatView)
+        const wrapper = mount(ProjectChatView)
 
         // Name eingeben und Start klicken
         await wrapper.find('input').setValue('Bilal')
@@ -50,16 +50,23 @@ describe('ChatView.vue', () => {
 
 
     it('fügt Emoji zur Nachricht hinzu', async () => {
-        const wrapper = mount(ChatView)
+        const wrapper = mount(ProjectChatView)
+
         await wrapper.find('input').setValue('Bilal')
         await wrapper.get('button').trigger('click')
 
-        const emojiButton = wrapper.findAll('button').find(b => b.text() === '😄')
-        await emojiButton?.trigger('click')
+        const emojiButtons = wrapper.findAll('[data-testid="emoji-button"]')
+        expect(emojiButtons.length).toBeGreaterThan(0)
 
-        const input = wrapper.find('input[placeholder="Nachricht eingeben..."]')
-        expect((input.element as HTMLInputElement).value).toContain('😄')
+        const targetEmoji = '🙂'
+        const matchingButton = emojiButtons.find(button => button.text() === targetEmoji)
+        expect(matchingButton).toBeTruthy()
+
+        await matchingButton!.trigger('click')
+
+        expect(wrapper.text()).toContain(targetEmoji)
     })
+
 
     it('zeigt Dateiname nach Dateiupload', async () => {
         // ⬇️ DataTransfer polyfill (wichtig!)
@@ -73,7 +80,7 @@ describe('ChatView.vue', () => {
         }
         globalThis.DataTransfer = MockDataTransfer as any
 
-        const wrapper = mount(ChatView)
+        const wrapper = mount(ProjectChatView)
 
         await wrapper.find('input').setValue('Bilal')
         await wrapper.find('button').trigger('click')
