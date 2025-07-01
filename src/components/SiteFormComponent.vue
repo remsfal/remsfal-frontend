@@ -4,6 +4,8 @@ import ReusableForm from '../components/ReusableFormComponent.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
+import { currentTenants, formerTenants } from '../mocks/tenants';
+import type { Tenant } from '../mocks/tenants';
 
 const props = defineProps<{
   projectId: string;
@@ -16,8 +18,15 @@ const props = defineProps<{
   onCancel?: () => void;
   initialValues?: Record<string, unknown>;
 }>();
+const items = ref<Tenant[]>([...currentTenants]);
+const formerItems = ref<Tenant[]>([...formerTenants]);
 
-type FieldType = 'select' | 'textarea' | 'text' | 'checkbox';
+enum FieldType {
+  Select = 'select',
+  Textarea = 'textarea',
+  Text = 'text',
+  Checkbox = 'checkbox',
+}
 
 interface Field {
   name: string;
@@ -32,29 +41,29 @@ const fields: Field[] = [
   {
     name: 'title',
     label: 'Titel',
-    type: 'text',
+    type: FieldType.Text,
     required: true,
     validations: [
       (value: unknown) =>
-          typeof value === 'string' && value.length > 255
-              ? 'Ein Titel darf nicht mehr als 255 Zeichen lang sein.'
-              : null,
+        typeof value === 'string' && value.length > 255
+          ? 'Ein Titel darf nicht mehr als 255 Zeichen lang sein.'
+          : null,
     ],
   },
-  { name: 'description', label: 'Beschreibung', type: 'textarea' },
+  { name: 'description', label: 'Beschreibung', type: FieldType.Textarea },
   {
     name: 'usableSpace',
     label: 'Nutzfläche (qm)',
-    type: 'text',
+    type: FieldType.Text,
     validations: [
       (value: unknown) => (!isNaN(Number(value)) ? null : 'Muss eine Zahl sein'),
     ],
   },
-  { name: 'street', label: 'Straße und Hausnummer', type: 'text' },
-  { name: 'city', label: 'Stadt', type: 'text' },
-  { name: 'zip', label: 'PLZ', type: 'text' },
-  { name: 'province', label: 'Bundesland', type: 'text' },
-  { name: 'country', label: 'Land', type: 'text' },
+  { name: 'street', label: 'Straße und Hausnummer', type: FieldType.Text },
+  { name: 'city', label: 'Stadt', type: FieldType.Text },
+  { name: 'zip', label: 'PLZ', type: FieldType.Text },
+  { name: 'province', label: 'Bundesland', type: FieldType.Text },
+  { name: 'country', label: 'Land', type: FieldType.Text },
 ];
 
 const initialValues = ref<Record<string, unknown>>(props.initialValues ?? {
@@ -68,55 +77,8 @@ const initialValues = ref<Record<string, unknown>>(props.initialValues ?? {
   country: '',
 });
 
-interface Tenant {
-  id: number;
-  firstName: string;
-  lastName: string;
-  period: string;
-  price: number;
-  deposit: number;
-  extraCosts: number;
-  email: string;
-}
-
-const items = ref<Tenant[]>([
-  {
-    id: 1,
-    firstName: 'Lena',
-    lastName: 'Schneider',
-    period: '01.06.2025 - 11.06.2025',
-    price: 125,
-    deposit: 10,
-    extraCosts: 13,
-    email: 'lena.schneider@example.com',
-  },
-]);
-
-const formerItems = ref<Tenant[]>([
-  {
-    id: 2,
-    firstName: 'Tobias',
-    lastName: 'Keller',
-    period: '01.01.2023 - 31.12.2024',
-    price: 120,
-    deposit: 10,
-    extraCosts: 12,
-    email: 'tobias.keller@example.com',
-  },
-  {
-    id: 3,
-    firstName: 'Miriam',
-    lastName: 'Fischer',
-    period: '01.01.2021 - 31.12.2023',
-    price: 115,
-    deposit: 9,
-    extraCosts: 12,
-    email: 'miriam.fischer@example.com',
-  },
-]);
-
 const showFormer = ref(false);
-// Backend-Aufruf auskommentiert
+// Backend-Aufruf auskommentiert, da das backend mit den Daten noch nicht fertig ist.
 /*
 onMounted(async () => {
   const url = `/projects/${props.projectId}/sites/${props.siteId}/tenancies`;
@@ -136,13 +98,13 @@ onMounted(async () => {
 
 <template>
   <ReusableForm
-      :fields="fields"
-      :initialValues="initialValues"
-      :headline="headline"
-      :saveButtonText="saveButtonText"
-      :cancelButtonText="cancelButtonText"
-      :onSubmit="onSubmit"
-      :onCancel="onCancel"
+    :fields="fields"
+    :initialValues="initialValues"
+    :headline="headline"
+    :saveButtonText="saveButtonText"
+    :cancelButtonText="cancelButtonText"
+    :onSubmit="onSubmit"
+    :onCancel="onCancel"
   />
   <div class="p-6 max-w-4xl mx-auto mt-10 shadow-lg bg-white rounded">
     <h2 class="text-xl font-bold mb-4">Aktuelle Mieter</h2>
@@ -150,30 +112,30 @@ onMounted(async () => {
       <Column field="id" header="ID" />
       <Column field="firstName" header="Vorname" />
       <Column field="lastName" header="Nachname" />
+      <Column field="email" header="E-Mail" />
       <Column field="period" header="Zeitraum" />
       <Column field="price" header="Preis" />
       <Column field="deposit" header="Anzahlung" />
       <Column field="extraCosts" header="Extra Kosten" />
-      <Column field="email" header="E-Mail" />
     </DataTable>
     <Button
-        icon="pi pi-chevron-down"
-        class="mb-2"
-        @click="showFormer = !showFormer"
-        :aria-expanded="showFormer"
-        :label="showFormer ? 'Ehemalige Mieter ausblenden' : 'Ehemalige Mieter anzeigen'"
-    />
+      icon="pi pi-chevron-down"
+      class="mb-2"
+      @click="showFormer = !showFormer"
+      :aria-expanded="showFormer"
+      :label="showFormer ? 'Ehemalige Mieter ausblenden' : 'Ehemalige Mieter anzeigen'"
+    ></Button>
     <div v-if="showFormer" class="mt-4">
       <h2 class="text-xl font-bold mb-4">Ehemalige Mieter</h2>
       <DataTable :value="formerItems" class="w-full">
         <Column field="id" header="ID" />
         <Column field="firstName" header="Vorname" />
         <Column field="lastName" header="Nachname" />
+        <Column field="email" header="E-Mail" />
         <Column field="period" header="Zeitraum" />
         <Column field="price" header="Preis" />
         <Column field="deposit" header="Anzahlung" />
         <Column field="extraCosts" header="Extra Kosten" />
-        <Column field="email" header="E-Mail" />
       </DataTable>
     </div>
   </div>
