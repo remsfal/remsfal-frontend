@@ -151,7 +151,12 @@ onMounted(async () => {
       <Column field="firstName" header="Vorname" />
       <Column field="lastName" header="Nachname" />
       <Column field="period" header="Zeitraum" />
-      <Column field="price" header="Preis" />
+<Column field="price" header="Preis">
+  <template #body="{ data }">
+    {{ data.price.toFixed(2) }} €
+  </template>
+</Column>
+
       <Column field="deposit" header="Anzahlung" />
       <Column field="extraCosts" header="Extra Kosten" />
       <Column field="email" header="E-Mail" />
