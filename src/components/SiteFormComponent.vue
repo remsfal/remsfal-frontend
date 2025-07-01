@@ -144,7 +144,7 @@ onMounted(async () => {
       :onSubmit="onSubmit"
       :onCancel="onCancel"
   />
-  <div class="p-6 max-w-4xl mx-auto mt-10 shadow-lg bg-white rounded">
+  <div class="p-6 w-full mx-auto mt-10 shadow-lg bg-white rounded">
     <h2 class="text-xl font-bold mb-4">Aktuelle Mieter</h2>
     <DataTable :value="items" class="w-full mb-4">
       <Column field="id" header="ID" />
