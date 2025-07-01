@@ -160,6 +160,11 @@ onMounted(async () => {
       <Column field="deposit" header="Anzahlung" />
       <Column field="extraCosts" header="Extra Kosten" />
       <Column field="email" header="E-Mail" />
+  <template #empty>
+      <div class="text-center text-gray-500 py-4">
+         Keine Mieter vorhanden.
+       </div>
+      </template>
     </DataTable>
     <Button
         icon="pi pi-chevron-down"
