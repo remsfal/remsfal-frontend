@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import InboxView from '../../src/views/InboxView.vue';
@@ -30,10 +30,17 @@ const globalConfig = {
 async function mountWithData(data: any[]) {
   mockFetch.mockResolvedValue(data);
   const wrapper = mount(InboxView, { global: globalConfig });
+  // Await nextTick to ensure DOM updates complete (Sonar likes awaits)
+  await nextTick();
   return wrapper;
 }
 
 describe('InboxView.vue', () => {
+
+  afterEach(() => {
+    vi.restoreAllMocks();  // restore mocks after each test
+  });
+
   it('mounts and calls fetchInboxData, sets isLoading=false when no data', async () => {
     const wrapper = await mountWithData([]);
     expect(wrapper.exists()).toBe(true);
@@ -68,7 +75,7 @@ describe('InboxView.vue', () => {
     expect(vm.filterDateRange).toBeNull();
   });
 
-  it('markRead/UnreadSelected und einzelne toggles funktionieren', async () => {
+  it('markRead/UnreadSelected and single toggles work', async () => {
     const wrapper = await mountWithData([]);
     const vm = wrapper.vm as any;
 
@@ -95,7 +102,7 @@ describe('InboxView.vue', () => {
     expect(vm.selectedMessages).toEqual([]);
   });
 
-  it('deleteSelected, confirmDeleteSelected und cancelDelete funktionieren', async () => {
+  it('deleteSelected, confirmDeleteSelected and cancelDelete work', async () => {
     const wrapper = await mountWithData([]);
     const vm = wrapper.vm as any;
     vm.messages = [{ id: '1' }, { id: '2' }];
@@ -115,7 +122,7 @@ describe('InboxView.vue', () => {
     expect(vm.isDeleteDialogVisible).toBe(false);
   });
 
-  it('onRowClick navigates korrekt', async () => {
+  it('onRowClick navigates correctly', async () => {
     const wrapper = await mountWithData([]);
     const vm = wrapper.vm as any;
     vm.onRowClick({ originalEvent: new MouseEvent('click'), data: { id: 'xyz' } });
@@ -159,14 +166,11 @@ describe('InboxView.vue', () => {
       const start = new Date('2025-06-01T00:00:00Z');
       const end = new Date('2025-06-05T23:59:59Z');
       vm.filterDateRange = [start, end];
-    
       await nextTick();
-    
       expect(vm.filteredMessages.map((m: any) => m.id)).toEqual(['1', '2']);
     });
-    
 
-    it('rowClass für unread/read', () => {
+    it('rowClass for unread/read', () => {
       expect(vm.rowClass(sampleData[0])).toBe('font-semibold');
       expect(vm.rowClass(sampleData[1])).toBe('');
     });

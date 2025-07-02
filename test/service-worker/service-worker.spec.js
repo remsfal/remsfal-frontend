@@ -21,9 +21,10 @@ describe('Service Worker Tests', () => {
       waitUntil: vi.fn(),
     };
 
-    const installListener = self.addEventListener.mock.calls[0][1];
+    const installListener = self.addEventListener.mock.calls.find(([e]) => e === 'install')[1];
     installListener(installEvent);
 
+    // Wait for promises inside install event to settle
     await new Promise((resolve) => setImmediate(resolve));
 
     // Assertions
@@ -50,7 +51,7 @@ describe('Service Worker Tests', () => {
   });
 
   it('should delete old caches during activate event', async () => {
-    const cachesKeysStub = vi.fn().mockResolvedValue(['old-cache-v1', 'old-cache-v2']);
+    const cachesKeysStub = vi.fn().mockResolvedValue(['old-cache-v1', 'remsfal-v1']);
     global.caches.keys = cachesKeysStub;
 
     const deleteStub = vi.fn().mockResolvedValue(true);
@@ -60,17 +61,15 @@ describe('Service Worker Tests', () => {
       waitUntil: vi.fn(),
     };
 
-    const activateListener = self.addEventListener.mock.calls[1][1];
+    const activateListener = self.addEventListener.mock.calls.find(([e]) => e === 'activate')[1];
     activateListener(activateEvent);
 
     await new Promise((resolve) => setImmediate(resolve));
 
-    // Assertions
     expect(cachesKeysStub).toHaveBeenCalledTimes(1);
-    expect(deleteStub).toHaveBeenCalledTimes(2);
+    // Should delete only old caches, not current one
+    expect(deleteStub).toHaveBeenCalledTimes(1);
     expect(deleteStub).toHaveBeenCalledWith('old-cache-v1');
-    expect(deleteStub).toHaveBeenCalledWith('old-cache-v2');
-    expect(self.addEventListener).toHaveBeenCalledWith('install', expect.any(Function));
     expect(activateEvent.waitUntil).toHaveBeenCalledTimes(1);
   });
 
@@ -89,7 +88,7 @@ describe('Service Worker Tests', () => {
       respondWith: vi.fn(),
     };
 
-    const fetchListener = self.addEventListener.mock.calls[2][1];
+    const fetchListener = self.addEventListener.mock.calls.find(([e]) => e === 'fetch')[1];
     fetchListener(event);
 
     await new Promise((resolve) => setImmediate(resolve));
@@ -115,12 +114,11 @@ describe('Service Worker Tests', () => {
       ),
     };
 
-    const syncListener = self.addEventListener.mock.calls[3][1];
+    const syncListener = self.addEventListener.mock.calls.find(([e]) => e === 'sync')[1];
     syncListener(syncEvent);
 
     await new Promise((resolve) => setImmediate(resolve));
 
-    // Assertions
     expect(getAllProjectsMock).toHaveBeenCalledTimes(1);
     expect(deleteProjectMock).toHaveBeenCalledTimes(1);
     expect(fetchStub).toHaveBeenCalledTimes(1);
