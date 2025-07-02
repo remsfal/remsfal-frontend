@@ -959,6 +959,43 @@
           }
         }
       }
+    },
+    "/notification/test" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "link",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "template",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "to",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Send Test Email",
+        "tags" : [ "Mail Resource" ]
+      }
     }
   },
   "info" : {
