@@ -21,8 +21,6 @@ const tenancy = ref<TenancyItem>({
   active: false,
 });
 
-const rentalStart = ref<Date | null>(null);
-const rentalEnd = ref<Date | null>(null);
 
 const isValidForm = computed(() => {
   return (
@@ -38,8 +36,8 @@ async function saveTenancy() {
 
   const newTenancy: TenancyItem = {
     ...tenancy.value,
-    rentalStart: rentalStart.value!,
-    rentalEnd: rentalEnd.value!,
+    rentalStart: tenancy.value.rentalStart!,
+    rentalEnd: tenancy.value.rentalEnd!,
   };
 
   try {
@@ -65,8 +63,8 @@ function updateUnits(event: any) {
 }
 
 onMounted(() => {
-  rentalStart.value = new Date();
-  rentalEnd.value = new Date(new Date().getFullYear() + 1);
+  tenancy.value.rentalStart = new Date();
+  tenancy.value.rentalEnd = new Date(tenancy.value.rentalStart.getFullYear() + 1, tenancy.value.rentalStart.getMonth(), tenancy.value.rentalStart.getDate());
 });
 </script>
 
@@ -79,8 +77,8 @@ onMounted(() => {
     </div>
 
     <div class="grid grid-cols-1 gap-6">
-      <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @update:rentalStart="rentalStart = $event"
-        @update:rentalEnd="rentalEnd = $event" />
+      <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @update:rentalStart="tenancy.rentalStart = $event"
+        @update:rentalEnd="tenancy.rentalEnd = $event" />
 
       <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div class="space-y-4">
