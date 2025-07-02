@@ -46,6 +46,22 @@ describe('TenantsTableComponent', () => {
     expect(wrapper.vm.localTenants[1].firstName).toBe('');
   });
 
+  it('shows delete button when isDeleteButtonEnabled is true', () => {
+    const wrapper = mount(TenantsTableComponent, {
+      props: { tenants: tenantsMock, isDeleteButtonEnabled: true },
+    });
+
+    expect(wrapper.find('[class*="pi-trash"]').exists()).toBe(true);
+  });
+
+  it('doesnt show delete button when isDeleteButtonEnabled is false', () => {
+    const wrapper = mount(TenantsTableComponent, {
+      props: { tenants: tenantsMock, isDeleteButtonEnabled: false },
+    });
+
+    expect(wrapper.find('[class*="pi-trash"]').exists()).toBe(false);
+  });
+
   it('deletes a row and emits change', async () => {
     const wrapper = mount(TenantsTableComponent, {
       props: { tenants: tenantsMock, isDeleteButtonEnabled: true },
