@@ -115,6 +115,23 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectTenancies.vue'),
       },
       {
+        path: 'tenancies/:tenancyId',
+        name: 'ProjectTenancyDetails',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          tenancyId: route.params.tenancyId,
+        }),
+        component: () => import('@/views/ProjectTenanciesDetails.vue'),
+      },
+      {
+        path: 'tenancies/new-tenancy',
+        name: 'ProjectNewTenancy',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+        }),
+        component: () => import('@/views/ProjectNewTenancy.vue'),
+      },
+      {
         path: 'property/:unitId',
         name: 'PropertyView',
         props: (route: RouteLocationNormalizedLoaded) => ({
