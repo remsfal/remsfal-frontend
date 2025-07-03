@@ -190,4 +190,5 @@ describe('InboxView.vue', () => {
       expect(vm.rowClass(sampleData[1])).toBe('');
     });
   });
+  
 });
