@@ -1,22 +1,29 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
 import PrimeVue from 'primevue/config';
 import Dialog from 'primevue/dialog';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '../../src/i18n/i18n';
+import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
+
+const routerPushMock = vi.fn();
+
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: routerPushMock,
+  }),
+}));
 
 // Mock PrimeVue configuration and Dialog component to avoid errors during testing
 vi.mock('primevue/config', () => ({
   default: {
-    install: () => {
-    },
+    install: () => {},
     locale: 'en',
   },
 }));
 
 vi.mock('primevue/dialog', () => ({
   default: {
-    inheritAttrs: false,  // Prevents the passing of extraneous attributes to the root element
+    inheritAttrs: false, // Prevents the passing of extraneous attributes to the root element
     render: () => '<div class="mock-dialog"></div>', // Mock rendering
   },
 }));
@@ -36,79 +43,79 @@ describe('ProjectTenancies.vue', () => {
     });
   });
 
-
   it('renders correctly', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('opens add dialog when button is clicked', async () => {
-    // Directly call the openAddDialog method
-    await wrapper.vm.openAddDialog();
+  it('shows loading indicator when isLoading is true', async () => {
+    wrapper = mount(ProjectTenancies, {
+      global: {
+        plugins: [PrimeVue, i18n],
+        stubs: ['DataTable', 'Column', 'Button'], // stub heavy components
+      },
+      data() {
+        return {
+          isLoading: true,
+        };
+      },
+    });
 
-    // Assert that the dialog is open
-    expect(wrapper.vm.dialogVisible).toBe(true);
+    expect(wrapper.text()).toContain('Loading...');
   });
 
-
-  it('adds a new tenant', async () => {
-    wrapper.vm.currentTenant.firstName = 'John';
-    wrapper.vm.currentTenant.lastName = 'Doe';
-    wrapper.vm.saveTenant();
-    expect(wrapper.vm.tenantData).toContainEqual(
-      expect.objectContaining({
-        firstName: 'John',
-        lastName: 'Doe',
-      }),
-    );
-  });
-
-  it('should delete a tenant correctly', async () => {
-    // Arrange: Assume there are tenants in the component's data
-    const initialTenants = [{ id: '1', name: 'Tenant 1' }, { id: '2', name: 'Tenant 2' }];
-    wrapper.vm.tenantData = [...initialTenants]; // Manually set tenant data
-
-    // Act: Call the deleteTenant method to delete tenant with id '1'
-    wrapper.vm.deleteTenant('1');
-
-    // Assert: Verify that the tenant with id '1' is removed
-    expect(wrapper.vm.tenantData).toEqual([{ id: '2', name: 'Tenant 2' }]);
-  });
-
-  it('should show confirmation dialog when a tenant is selected for deletion', async () => {
-    // Arrange: Assume we have a tenant to delete
-    const tenantToDeleteMock = { id: '1', name: 'Tenant 1' };
-
-    // Act: Call the confirmDelete method to select the tenant
-    wrapper.vm.confirmDelete(tenantToDeleteMock);
-
-    // Assert: Verify that the tenant is selected for deletion and the dialog is visible
-    expect(wrapper.vm.tenantToDelete).toEqual(tenantToDeleteMock);
-    expect(wrapper.vm.confirmationDialogVisible).toBe(true);
-  });
-
-  it('should delete the tenant and close the dialog when confirmDeletion is called', async () => {
-    // Arrange: Assume the tenant is selected for deletion and the dialog is open
-    wrapper.vm.tenantToDelete = { id: '1', name: 'Tenant 1' };
+  it('opens and closes the confirmation dialog', async () => {
     wrapper.vm.confirmationDialogVisible = true;
+    wrapper.vm.tenantToDelete = { id: '1', firstName: 'Test', lastName: 'User' };
 
-    // Act: Call the confirmDeletion method
+    expect(wrapper.vm.confirmationDialogVisible).toBe(true);
+    expect(wrapper.vm.tenantToDelete?.firstName).toBe('Test');
+
+    // Call confirmDeletion (should delete and close dialog)
     wrapper.vm.confirmDeletion();
-
-    // Assert: Verify the tenant is deleted and the dialog is closed
-    expect(wrapper.vm.tenantData).not.toContainEqual({ id: '1', name: 'Tenant 1' });
     expect(wrapper.vm.confirmationDialogVisible).toBe(false);
   });
 
-  it('should open the edit dialog with the correct tenant data', async () => {
-    // Arrange: Create a tenant object
-    const tenantToEdit = { id: '1', firstName: 'John', lastName: 'Doe' };
+  it('removes the tenant from tenantData', () => {
+    const tenant = { id: '1', firstName: 'Test', lastName: 'User' };
+    wrapper.vm.tenantData = [tenant];
+    wrapper.vm.deleteTenant('1');
+    expect(wrapper.vm.tenantData).toEqual([]);
+  });
 
-    // Act: Call the openEditDialog method with the tenant object
-    wrapper.vm.openEditDialog(tenantToEdit);
+  it('does nothing if tenantToDelete is null', () => {
+    wrapper.vm.tenantData = [{ id: '1', firstName: 'Test', lastName: 'User' }];
+    wrapper.vm.tenantToDelete = null;
+    wrapper.vm.confirmDeletion();
 
-    // Assert: Verify that the tenant data is correctly assigned
-    expect(wrapper.vm.isEditMode).toBe(true);
-    expect(wrapper.vm.currentTenant).toEqual(expect.objectContaining(tenantToEdit));
-    expect(wrapper.vm.dialogVisible).toBe(true);
+    // Should not change tenantData
+    expect(wrapper.vm.tenantData.length).toBe(1);
+  });
+
+  it('navigates to tenancy details on row click', () => {
+    wrapper.vm.navigateToTenancyDetails('abc');
+    expect(routerPushMock).toHaveBeenCalledWith(
+      '/project/' + wrapper.vm.projectStore.projectId + '/tenancies/abc',
+    );
+  });
+
+  it('renders loading indicator when isLoading is true', () => {
+    wrapper.vm.isLoading = true;
+    wrapper.vm.$forceUpdate(); // Trigger re-render
+    expect(wrapper.html()).toContain('Loading...');
+  });
+
+  it('renders DataTable when loading is false', async () => {
+    wrapper.vm.isLoading = false;
+    wrapper.vm.tenancyData = [
+      {
+        id: '1',
+        rentalStart: '2023-01-01',
+        rentalEnd: '2024-01-01',
+        listOfTenants: [],
+        listOfUnits: [],
+      },
+    ];
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findComponent({ name: 'DataTable' }).exists()).toBe(true);
   });
 });

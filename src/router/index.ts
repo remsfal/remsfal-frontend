@@ -12,6 +12,7 @@ import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
+import ProjectChatView from '@/views/ProjectChatView.vue'
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -97,6 +98,13 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectDashboard.vue'),
       },
       {
+        path: 'chat',
+        name: 'ProjectChatView',
+        props: true,
+        component: ProjectChatView,
+      },
+
+      {
         path: 'settings',
         name: 'ProjectSettings',
         props: true,
@@ -115,6 +123,23 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectTenancies.vue'),
       },
       {
+        path: 'tenancies/:tenancyId',
+        name: 'ProjectTenancyDetails',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          tenancyId: route.params.tenancyId,
+        }),
+        component: () => import('@/views/ProjectTenanciesDetails.vue'),
+      },
+      {
+        path: 'tenancies/new-tenancy',
+        name: 'ProjectNewTenancy',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+        }),
+        component: () => import('@/views/ProjectNewTenancy.vue'),
+      },
+      {
         path: 'property/:unitId',
         name: 'PropertyView',
         props: (route: RouteLocationNormalizedLoaded) => ({
@@ -122,6 +147,15 @@ const projectRoutes: RouteRecordRaw[] = [
           unitId: route.params.unitId,
         }),
         component: () => import('@/views/ModifyPropertyView.vue'),
+      },
+      {
+        path: 'building/:unitId',
+        name: 'BuildingView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/ModifyBuildingView.vue'),
       },
       {
         path: 'site',
@@ -149,9 +183,18 @@ const projectRoutes: RouteRecordRaw[] = [
               buildingId: route.params.buildingId,
               garageId: route.params.garageId,
             }),
-            component: () => import('@/views/GarageView.vue'),
+            component: () => import('@/views/ModifyGarageView.vue'),
           },
         ],
+      },
+      {
+        path: 'garage/:unitId',
+        name: 'GarageView',
+        props: (route) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/ModifyGarageView.vue'),
       },
       {
         path: 'tasks',
@@ -170,10 +213,13 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/TaskEdit.vue'),
       },
       {
-        path: 'building/:buildingId/apartments/:apartmentId/update',
-        name: 'UpdateApartmentView',
-        props: true,
-        component: () => import('@/views/ApartmentUpdateView.vue'),
+        path: 'apartment/:unitId',
+        name: 'ApartmentView',
+        props: (route) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/ModifyApartmentView.vue'),
       },
       {
         path: 'site/:unitId',
@@ -185,13 +231,13 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/SiteUpdateView.vue'),
       },
       {
-        path: 'commercial/:commercialId',
-        name: 'CommercialUpdate',
-        props: (route: RouteLocationNormalizedLoaded) => ({
+        path: 'commercial/:unitId',
+        name: 'CommercialView',
+        props: (route) => ({
           projectId: route.params.projectId,
-          commercialId: route.params.commercialId,
+          unitId: route.params.unitId,
         }),
-        component: () => import('@/views/CommercialUpdateView.vue'),
+        component: () => import('@/views/ModifyCommercialView.vue'),
       },
     ],
   },

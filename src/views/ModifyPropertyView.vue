@@ -1,26 +1,26 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
-import Dropdown from 'primevue/dropdown';
-import Button from 'primevue/button';
-import { propertyService } from '@/services/PropertyService';
+import { propertyService, type PropertyUnit } from '@/services/PropertyService';
+import { useToast } from 'primevue/usetoast';
+import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
   unitId: string;
 }>();
 
+const toast = useToast();
 const router = useRouter();
 
 const title = ref('');
 const description = ref('');
-const district = ref<string>(''); // Gemarkung
-const corridor = ref<string>(''); // Flur
-const parcel = ref<string>(''); // Flurstück
-const landRegistry = ref<string>(''); // Liegenschaftsbuch
+const district = ref(''); // Gemarkung
+const corridor = ref(''); // Flur
+const parcel = ref(''); // Flurstück
+const landRegisterEntry = ref(''); // Liegenschaftsbuch
 const usageType = ref<string | null>(null); // Wirtschaftsart
+const plotArea = ref<number | null>(null); // Grundstücksfläche
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
   { label: 'GF Wohnen', value: 'GF Wohnen' },
@@ -83,154 +83,243 @@ const usageOptions = [
   { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' },
 ];
 
-const originalValues = ref<{
-  title: string;
-  description: string;
-  district: string;
-  corridor: string;
-  parcel: string;
-  landRegistry: string;
-  usageType: string | null;
-}>({
+const originalValues = ref({
   title: '',
   description: '',
   district: '',
   corridor: '',
   parcel: '',
-  landRegistry: '',
-  usageType: null,
+  landRegisterEntry: '',
+  usageType: null as string | null,
+  plotArea: null as number | null,
 });
+
+const hasChanges = computed(() => {
+  return (
+    title.value !== originalValues.value.title ||
+    description.value !== originalValues.value.description ||
+    district.value !== originalValues.value.district ||
+    corridor.value !== originalValues.value.corridor ||
+    parcel.value !== originalValues.value.parcel ||
+    landRegisterEntry.value !== originalValues.value.landRegisterEntry ||
+    usageType.value !== originalValues.value.usageType ||
+    plotArea.value !== originalValues.value.plotArea
+  );
+});
+
+const validationErrors = computed(() => {
+  const errors: string[] = [];
+
+  if (!title.value || title.value.length < 3) {
+    errors.push('Der Titel muss mindestens 3 Zeichen lang sein.');
+  }
+  if (description.value && description.value.length > 500) {
+    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
+  }
+  if (usageType.value === null) {
+    errors.push('Wirtschaftsart ist erforderlich.');
+  }
+  if (plotArea.value === null) {
+    errors.push('Grundstücksfläche ist erforderlich.');
+  } else if (plotArea.value < 0) {
+    errors.push('Grundstücksfläche darf nicht negativ sein.');
+  }
+  return errors;
+});
+
+const isValid = computed(() => validationErrors.value.length === 0);
+
+const fetchPropertyDetails = async () => {
+  if (!props.projectId) {
+    console.error('Keine projectId');
+    return;
+  }
+  if (!props.unitId) {
+    console.error('Keine unitId');
+    return;
+  }
+  try {
+    const data = await propertyService.getProperty(props.projectId, props.unitId);
+    title.value = data.title || '';
+    description.value = data.description || '';
+    district.value = data.district || '';
+    corridor.value = data.corridor || '';
+    parcel.value = data.parcel || '';
+    landRegisterEntry.value = data.landRegisterEntry || '';
+    usageType.value = data.usageType || null;
+    plotArea.value = data.plotArea ?? null;
+
+    originalValues.value = {
+      title: title.value,
+      description: description.value,
+      district: district.value,
+      corridor: corridor.value,
+      parcel: parcel.value,
+      landRegisterEntry: landRegisterEntry.value,
+      usageType: usageType.value,
+      plotArea: plotArea.value,
+    };
+  } catch (err) {
+    console.error('Fehler beim Laden der Eigentumsdetails:', err);
+    toast.add({
+      severity: 'error',
+      summary: 'Ladefehler',
+      detail: 'Eigentum konnte nicht geladen werden.',
+      life: 6000,
+    });
+  }
+};
 
 onMounted(() => {
   if (props.unitId) {
     fetchPropertyDetails();
+  } else {
+    console.warn('unitId fehlt – keine Daten können geladen werden.');
+    toast.add({
+      severity: 'warn',
+      summary: 'Ungültige ID',
+      detail: 'Grundstück konnte nicht geladen werden, da keine ID übergeben wurde.',
+      life: 6000,
+    });
   }
 });
 
-const fetchPropertyDetails = () => {
-  propertyService
-      .getProperty(props.projectId, props.unitId)
-      .then((property) => {
-        title.value = property.title || '';
-        description.value = property.description || '';
-        district.value = property.district || '';
-        corridor.value = property.corridor || '';
-        parcel.value = property.parcel || '';
-        landRegistry.value = property.landRegistry || '';
-        usageType.value = property.usageType || null;
+const save = async () => {
+  if (!isValid.value) {
+    showValidationErrorToast(toast, validationErrors.value);
+    return;
+  }
 
+  const payload: PropertyUnit = {
+    title: title.value,
+    description: description.value,
+    district: district.value,
+    corridor: corridor.value,
+    parcel: parcel.value,
+    landRegisterEntry: landRegisterEntry.value,
+    usageType: usageType.value,
+    plotArea: plotArea.value,
+  };
 
-        originalValues.value = {
-          title: title.value,
-          description: description.value,
-          district: district.value,
-          corridor: corridor.value,
-          parcel: parcel.value,
-          landRegistry: landRegistry.value,
-          usageType: usageType.value,
-        };
-      })
-      .catch((err) => {
-        console.error('Fehler beim Laden der Objektdetails:', err);
-      });
+  try {
+    await propertyService.updateProperty(props.projectId, props.unitId, payload);
+    toast.add({
+      severity: 'success',
+      summary: 'Erfolg',
+      detail: 'Eigentum erfolgreich gespeichert.',
+      life: 6000,
+    });
+    router.push(`/project/${props.projectId}/property/${props.unitId}`);
+  } catch (err) {
+    console.error('Fehler beim Speichern:', err);
+    showSavingErrorToast(toast, 'Eigentum konnte nicht gespeichert werden.');
+  }
 };
 
-
-const isModified = computed(() => {
-  return (
-      title.value !== originalValues.value.title ||
-      description.value !== originalValues.value.description ||
-      district.value !== originalValues.value.district ||
-      corridor.value !== originalValues.value.corridor ||
-      parcel.value !== originalValues.value.parcel ||
-      landRegistry.value !== originalValues.value.landRegistry ||
-      usageType.value !== originalValues.value.usageType
-  );
-});
-
-const updateProperty = () => {
-  propertyService
-      .updateProperty(props.projectId, props.unitId, {
-        title: title.value,
-        description: description.value,
-        district: district.value || '',
-        corridor: corridor.value || '',
-        parcel: parcel.value || '',
-        landRegistry: landRegistry.value || '',
-        usageType: usageType.value ?? null,
-        landRegisterEntry: '',
-        plotArea: 0,
-        effective_space: 0,
-      })
-      .then(() => {
-        router.push(`/project/${props.projectId}/objects`);
-      })
-      .catch((err) => {
-        console.error('Fehler beim Aktualisieren des Eigentums:', err);
-      });
-};
-
-const cancel = () => {
-  router.push(`/project/${props.projectId}/objects`);
-};
+const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
 <template>
-  <div class="col-span-12">
-    <div class="card">
-      <h5>Bearbeite Eigentum mit ID: {{ props.unitId }}</h5>
-      <div class="p-fluid formgrid grid grid-cols-12 gap-4">
-        <div class="field col-span-12">
-          <label for="title">Titel</label>
-          <InputText id="title" v-model="title" type="text"/>
+  <div class="p-6 w-full">
+    <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
+      <h2 class="text-2xl font-semibold mb-6">Bearbeite Eigentum mit ID: {{ props.unitId }}</h2>
+
+      <form @submit.prevent="save">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <!-- Titel -->
+          <div class="col-span-2">
+            <label for="title" class="block text-gray-700 mb-1">Titel</label>
+            <input id="title" v-model="title" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Beschreibung -->
+          <div class="col-span-2">
+            <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
+            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+          </div>
+
+          <!-- Gemarkung -->
+          <div>
+            <label for="district" class="block text-gray-700 mb-1">Gemarkung</label>
+            <input id="district" v-model="district" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Flur -->
+          <div>
+            <label for="corridor" class="block text-gray-700 mb-1">Flur</label>
+            <input id="corridor" v-model="corridor" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Flurstück -->
+          <div>
+            <label for="parcel" class="block text-gray-700 mb-1">Flurstück</label>
+            <input id="parcel" v-model="parcel" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Liegenschaftsbuch -->
+          <div>
+            <label for="landRegisterEntry" class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
+            <input id="landRegisterEntry" v-model="landRegisterEntry" type="text" class="form-input w-full" />
+          </div>
+
+          <!-- Wirtschaftsart -->
+          <div class="col-span-2">
+            <label for="usageType" class="block text-gray-700 mb-1">Wirtschaftsart</label>
+            <select id="usageType" v-model="usageType" class="form-input w-full">
+              <option value="" disabled>Bitte wählen</option>
+              <option
+                v-for="option in usageOptions"
+                :key="option.value ?? option.label"
+                :value="option.value"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Grundstücksfläche -->
+          <div>
+            <label for="plotArea" class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
+            <input id="plotArea" v-model.number="plotArea" type="number" class="form-input w-full" />
+          </div>
+
+          <!-- Validierungsfehler -->
+          <div v-if="validationErrors.length" class="text-red-600 mt-4">
+            <ul>
+              <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+            </ul>
+          </div>
+
+          <!-- Buttons -->
+          <div class="mt-6 flex justify-end space-x-4">
+            <button
+              type="submit"
+              :disabled="!hasChanges"
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Speichern
+            </button>
+
+            <button
+              type="button"
+              class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+              @click="cancel"
+            >
+              Abbrechen
+            </button>
+          </div>
         </div>
-        <div class="field col-span-12">
-          <label for="description">Beschreibung</label>
-          <Textarea id="description" v-model="description" class="no-resize" rows="4"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="district">Gemarkung</label>
-          <InputText id="district" v-model="district" type="text"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="corridor">Flur</label>
-          <InputText id="corridor" v-model="corridor" type="text"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="parcel">Flurstück</label>
-          <InputText id="parcel" v-model="parcel" type="text"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="landRegistry">Liegenschaftsbuch</label>
-          <InputText id="landRegistry" v-model="landRegistry" type="text"/>
-        </div>
-        <div class="field col-span-6">
-          <label for="usageType">Wirtschaftsart</label>
-          <Dropdown
-              id="usageType"
-              v-model="usageType"
-              :options="usageOptions"
-              class="w-full"
-              filter
-              filterPlaceholder="Tippen Sie, um zu suchen..."
-              optionLabel="label"
-          />
-        </div>
-        <div class="field col-span-12 text-right">
-          <Button :disabled="!isModified" class="mr-2" icon="pi pi-check" label="Speichern" @click="updateProperty"/>
-          <Button class="p-button-secondary" icon="pi pi-times" label="Abbrechen" @click="cancel"/>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
 
-<style>
-.text-right {
-  text-align: right;
-}
-
-.no-resize {
-  resize: none;
+<style scoped>
+.form-input,
+.form-textarea {
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
 }
 </style>
