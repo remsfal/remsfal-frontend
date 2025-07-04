@@ -12,6 +12,7 @@ import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
+import ProjectChatView from '@/views/ProjectChatView.vue'
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -96,6 +97,13 @@ const projectRoutes: RouteRecordRaw[] = [
         props: true,
         component: () => import('@/views/ProjectDashboard.vue'),
       },
+      {
+        path: 'chat',
+        name: 'ProjectChatView',
+        props: true,
+        component: ProjectChatView,
+      },
+
       {
         path: 'settings',
         name: 'ProjectSettings',
