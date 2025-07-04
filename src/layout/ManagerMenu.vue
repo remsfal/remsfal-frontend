@@ -108,8 +108,8 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         },
         {
           label: 'managerMenu.defectManagement.all',
-          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-          to: '/uikit/input',
+          icon: { type: 'pi', name: 'pi pi-fw pi-comments' },
+          to: `/project/${projectStore.projectId}/chat`,
         },
       ],
     },
