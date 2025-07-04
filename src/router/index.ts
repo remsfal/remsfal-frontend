@@ -222,6 +222,15 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ModifyApartmentView.vue'),
       },
       {
+        path: 'site/:unitId',
+        name: 'SiteView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/SiteUpdateView.vue'),
+      },
+      {
         path: 'commercial/:unitId',
         name: 'CommercialView',
         props: (route) => ({
@@ -272,3 +281,4 @@ const router = createRouter({
 export { routes };
 
 export default router;
+
