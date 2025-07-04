@@ -12,6 +12,7 @@ import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
+import ProjectChatView from '@/views/ProjectChatView.vue'
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -56,6 +57,17 @@ const fullscreenRoutes: RouteRecordRaw[] = [
         name: 'AccountSettings',
         component: () => import('@/views/AccountSettingsView.vue'),
       },
+      {
+        path: '/inbox',
+        name: 'Inbox',
+        component: () => import('@/views/InboxView.vue'),
+      },
+      {
+        path: '/inbox/:id',
+        name: 'InboxDetail',
+        component: () => import('@/views/InboxDetail.vue'),
+        props: true,
+      },
     ],
   },
 ];
@@ -86,6 +98,13 @@ const projectRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectDashboard.vue'),
       },
       {
+        path: 'chat',
+        name: 'ProjectChatView',
+        props: true,
+        component: ProjectChatView,
+      },
+
+      {
         path: 'settings',
         name: 'ProjectSettings',
         props: true,
@@ -102,6 +121,23 @@ const projectRoutes: RouteRecordRaw[] = [
         name: 'ProjectTenancies',
         props: true,
         component: () => import('@/views/ProjectTenancies.vue'),
+      },
+      {
+        path: 'tenancies/:tenancyId',
+        name: 'ProjectTenancyDetails',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          tenancyId: route.params.tenancyId,
+        }),
+        component: () => import('@/views/ProjectTenanciesDetails.vue'),
+      },
+      {
+        path: 'tenancies/new-tenancy',
+        name: 'ProjectNewTenancy',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+        }),
+        component: () => import('@/views/ProjectNewTenancy.vue'),
       },
       {
         path: 'property/:unitId',

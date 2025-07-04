@@ -52,6 +52,7 @@
         background-color: transparent;
         transition: background-color var(--element-transition-duration);
         cursor: pointer;
+        position: relative;
 
         &:hover {
             background-color: var(--surface-hover);
@@ -73,6 +74,24 @@
         &.layout-topbar-action-highlight {
             background-color: var(--primary-color);
             color: var(--primary-contrast-color);
+        }
+
+        .unread-badge {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background-color: #e53935;
+            color: white;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            line-height: 0.75rem;
+            min-width: 0.75rem;
+            height: 0.75rem;
+            padding: 0 0.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 1.5px white;
         }
     }
 
@@ -129,9 +148,9 @@
             background-color: var(--surface-overlay);
             transform-origin: top;
             box-shadow:
-                0 3px 5px rgb(0 0 0 / 0.02),
-                0 0 2px rgb(0 0 0 / 0.05),
-                0 1px 4px rgb(0 0 0 / 0.08);
+                    0 3px 5px rgb(0 0 0 / 0.02),
+                    0 0 2px rgb(0 0 0 / 0.05),
+                    0 1px 4px rgb(0 0 0 / 0.08);
             border-radius: var(--content-border-radius);
             padding: 1rem;
             right: 2rem;
@@ -159,6 +178,25 @@
                 span {
                     font-weight: 500;
                     display: block;
+                }
+
+                position: relative;
+
+                .unread-badge {
+                    top: 0.25rem;
+                    right: 0.25rem;
+                    background-color: #e53935;
+                    color: white;
+                    border-radius: 9999px;
+                    font-size: 0.65rem;
+                    line-height: 0.75rem;
+                    min-width: 0.75rem;
+                    height: 0.75rem;
+                    padding: 0 0.3rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 0 0 1.5px white;
                 }
             }
         }
