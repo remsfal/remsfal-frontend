@@ -104,6 +104,9 @@
     "vue-i18n-extract": "^2.0.7",
     "vue-tsc": "^2.2.0"
   },
+  "overrides": {
+    "glob": "^9.3.2"
+  },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.43.0"
   }
