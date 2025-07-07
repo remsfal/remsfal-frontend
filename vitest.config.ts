@@ -18,6 +18,7 @@ export default mergeConfig(
       exclude: [...configDefaults.exclude, 'e2e/*', 'test/service-worker/**'],
       setupFiles: [resolve(__dirname, 'test/setup/vitest.setup.ts')],
       root: fileURLToPath(new URL('./', import.meta.url)),
+      // include: ['src/**/*.test.ts', 'test/**/*.spec.ts'], // optional
     },
   }),
 );
