@@ -696,40 +696,6 @@ components:
       bearerFormat: JWT
       description: Authentication
 paths:
-  /api/v1/address:
-    get:
-      summary: Retrieve supported countries.
-      parameters:
-      - description: A zip code to map the city
-        name: zip
-        in: query
-        schema:
-          type: string
-          pattern: "^\\d{4,5}$"
-        required: true
-      responses:
-        "200":
-          description: A list of suggested cities
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/AddressJson"
-        "401":
-          description: No user authentication provided via session cookie
-  /api/v1/address/countries:
-    get:
-      summary: Retrieve supported countries.
-      responses:
-        "200":
-          description: A list of supported countries
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CountryListJson"
-        "401":
-          description: No user authentication provided via session cookie
   /notification/test:
     get:
       parameters:
