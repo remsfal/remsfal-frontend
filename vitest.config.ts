@@ -15,7 +15,7 @@ export default mergeConfig(
       mockReset: true,
       restoreMocks: true,
       clearMocks: true,
-      exclude: [...configDefaults.exclude, 'e2e/*', 'test/service-worker/**'],
+      exclude: [...configDefaults.exclude, 'e2e/*'],
       setupFiles: [resolve(__dirname, 'test/setup/vitest.setup.ts')],
       root: fileURLToPath(new URL('./', import.meta.url)),
     },
