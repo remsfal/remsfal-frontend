@@ -1,37 +1,39 @@
 import './setupMocks.js';
-import { expect, vi, afterEach } from 'vitest';
+import { expect } from 'chai';
+import sinon from 'sinon';
 
 import '../../public/service-worker.js';
 
 describe('Service Worker Tests', () => {
   afterEach(() => {
-    vi.restoreAllMocks();
+    // Restore all Sinon stubs
+    sinon.restore();
   });
 
   it('should listen for install event', () => {
-    expect(self.addEventListener).toHaveBeenCalledWith('install', expect.any(Function));
+    void expect(self.addEventListener.calledWith('install')).to.be.true;
   });
 
   it('should cache files during install event', async () => {
-    const addAllStub = vi.fn().mockResolvedValue();
-    const cachesOpenStub = vi.fn().mockResolvedValue({ addAll: addAllStub });
-    global.caches.open = cachesOpenStub;
+    const cachesOpenStub = global.caches.open;
+    const addAllStub = sinon.stub().resolves();
+
+    cachesOpenStub.resolves({ addAll: addAllStub });
 
     const installEvent = {
-      waitUntil: vi.fn(),
+      waitUntil: sinon.stub(),
     };
 
-    const installListener = self.addEventListener.mock.calls.find(([e]) => e === 'install')[1];
+    const installListener = self.addEventListener.getCall(0).args[1];
     installListener(installEvent);
 
-    // Wait for promises inside install event to settle
     await new Promise((resolve) => setImmediate(resolve));
 
     // Assertions
-    expect(cachesOpenStub).toHaveBeenCalledTimes(1);
-    expect(cachesOpenStub).toHaveBeenCalledWith('remsfal-v1');
-    expect(addAllStub).toHaveBeenCalledTimes(1);
-    expect(installEvent.waitUntil).toHaveBeenCalledTimes(1);
+    void expect(cachesOpenStub.calledOnce).to.be.true;
+    void expect(cachesOpenStub.calledWith('remsfal-v1')).to.be.true;
+    void expect(addAllStub.calledOnce).to.be.true;
+    void expect(installEvent.waitUntil.calledOnce).to.be.true;
 
     const expectedFiles = [
       '/',
@@ -43,84 +45,94 @@ describe('Service Worker Tests', () => {
       '/android-chrome-192x192.png',
       '/android-chrome-512x512.png',
     ];
-    expect(addAllStub).toHaveBeenCalledWith(expectedFiles);
+    void expect(addAllStub.calledWith(sinon.match.array.deepEquals(expectedFiles))).to.be.true;
   });
 
   it('should listen for activate event', () => {
-    expect(self.addEventListener).toHaveBeenCalledWith('activate', expect.any(Function));
+    void expect(self.addEventListener.calledWith('activate')).to.be.true;
   });
 
   it('should delete old caches during activate event', async () => {
-    const cachesKeysStub = vi.fn().mockResolvedValue(['old-cache-v1', 'remsfal-v1']);
-    global.caches.keys = cachesKeysStub;
+    const cachesKeysStub = global.caches.keys;
+    cachesKeysStub.resolves(['old-cache-v1', 'old-cache-v2']);
 
-    const deleteStub = vi.fn().mockResolvedValue(true);
-    global.caches.delete = deleteStub;
+    const deleteStub = global.caches.delete;
+    deleteStub.resolves(true);
 
     const activateEvent = {
-      waitUntil: vi.fn(),
+      waitUntil: sinon.stub(),
     };
 
-    const activateListener = self.addEventListener.mock.calls.find(([e]) => e === 'activate')[1];
+    const activateListener = self.addEventListener.getCall(1).args[1];
     activateListener(activateEvent);
 
     await new Promise((resolve) => setImmediate(resolve));
 
-    expect(cachesKeysStub).toHaveBeenCalledTimes(1);
-    // Should delete only old caches, not current one
-    expect(deleteStub).toHaveBeenCalledTimes(1);
-    expect(deleteStub).toHaveBeenCalledWith('old-cache-v1');
-    expect(activateEvent.waitUntil).toHaveBeenCalledTimes(1);
+    // Assertions
+    void expect(cachesKeysStub.calledOnce).to.be.true;
+    void expect(deleteStub.calledTwice).to.be.true;
+    void expect(deleteStub.calledWith('old-cache-v1')).to.be.true;
+    void expect(deleteStub.calledWith('old-cache-v2')).to.be.true;
+
+    void expect(activateEvent.waitUntil.calledOnce).to.be.true;
   });
 
   it('should handle fetch events with cache fallback', async () => {
-    const fetchStub = vi.spyOn(global, 'fetch').mockResolvedValue(new Response('mocked network response'));
+    const fetchStub = sinon.stub(global, 'fetch').resolves(new Response('mocked network response'));
 
     const cacheMock = {
-      put: vi.fn().mockResolvedValue(),
-      match: vi.fn().mockResolvedValue(null),
+      put: sinon.stub().resolves(),
+      match: sinon.stub().resolves(null),
     };
-    global.caches.open = vi.fn().mockResolvedValue(cacheMock);
+    global.caches.open.resolves(cacheMock);
 
     const absoluteUrl = 'https://example.com/test-resource';
     const event = {
       request: new Request(absoluteUrl),
-      respondWith: vi.fn(),
+      respondWith: sinon.stub(),
     };
 
-    const fetchListener = self.addEventListener.mock.calls.find(([e]) => e === 'fetch')[1];
+    const fetchListener = self.addEventListener.getCall(2).args[1];
     fetchListener(event);
 
     await new Promise((resolve) => setImmediate(resolve));
 
-    expect(fetchStub).toHaveBeenCalledWith(event.request);
-    expect(cacheMock.put).toHaveBeenCalled();
-    expect(event.respondWith).toHaveBeenCalled();
+    void expect(fetchStub.calledWith(event.request)).to.be.true;
+    void expect(cacheMock.put.called).to.be.true;
+    void expect(event.respondWith.called).to.be.true;
   });
 
   it('should handle sync events with tag "sync-projects"', async () => {
-    const getAllProjectsMock = vi.fn().mockResolvedValue([{ title: 'Offline Project', createdAt: 123456 }]);
+    const getAllProjectsMock = sinon
+      .stub()
+      .resolves([{ title: 'Offline Project', createdAt: 123456 }]);
     global.getAllProjects = getAllProjectsMock;
 
-    const deleteProjectMock = vi.fn().mockResolvedValue();
+    const deleteProjectMock = sinon.stub().resolves();
     global.deleteProject = deleteProjectMock;
 
-    const fetchStub = vi.spyOn(global, 'fetch').mockResolvedValue({ ok: true });
+    const fetchStub = sinon.stub(global, 'fetch').resolves({ ok: true });
 
     const syncEvent = {
       tag: 'sync-projects',
-      waitUntil: vi.fn().callsFake((promise) =>
-        promise.then(() => {}, () => {}),
+      waitUntil: sinon.stub().callsFake((promise) =>
+        promise.then(
+          () => {},
+          () => {},
+        ),
       ),
     };
 
-    const syncListener = self.addEventListener.mock.calls.find(([e]) => e === 'sync')[1];
+    const syncListener = self.addEventListener.getCall(3).args[1];
     syncListener(syncEvent);
 
     await new Promise((resolve) => setImmediate(resolve));
 
-    expect(getAllProjectsMock).toHaveBeenCalledTimes(1);
-    expect(deleteProjectMock).toHaveBeenCalledTimes(1);
-    expect(fetchStub).toHaveBeenCalledTimes(1);
+    // Assertions
+    void expect(syncEvent.waitUntil.called).to.be.true;
+    void expect(getAllProjectsMock.calledOnce).to.be.true;
+    void expect(deleteProjectMock.calledOnce).to.be.true;
+    void expect(fetchStub.calledOnce).to.be.true;
+    void expect(fetchStub.calledWithMatch('/api/v1/projects')).to.be.true;
   });
 });
