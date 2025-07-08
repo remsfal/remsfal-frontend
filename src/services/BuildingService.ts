@@ -9,6 +9,13 @@ export interface BuildingUnit {
   commercialSpace?: number;
   usableSpace?: number;
   heatingSpace?: number;
+  address?: {
+    street: string
+    city: string
+    province: string
+    zip: string
+    country: string
+  }
 }
 
 class BuildingService {

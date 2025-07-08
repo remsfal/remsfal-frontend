@@ -1292,6 +1292,220 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/v1/projects/{projectId}/contractors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all contractors of a project. */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Maximum number of contractors to return */
+                    limit: number;
+                    /** @description Offset of the first contractor to return */
+                    offset: number;
+                };
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new contractor for a project. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ContractorJson"];
+                };
+            };
+            responses: {
+                /** @description Contractor created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new contractor */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/contractors/{contractorId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a specific contractor. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the contractor */
+                    contractorId: string;
+                    /** @description ID of the project */
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or contractor does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing contractor. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the contractor */
+                    contractorId: string;
+                    /** @description ID of the project */
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The contractor was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or contractor does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a specific contractor. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the contractor */
+                    contractorId: string;
+                    /** @description ID of the project */
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ContractorJson"];
+                };
+            };
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or contractor does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/v1/projects/{projectId}/garages": {
         parameters: {
             query?: never;
@@ -3099,6 +3313,14 @@ export interface components {
             /** Format: float */
             heatingSpace?: number;
             tenancy?: components["schemas"]["TenancyJson"];
+        };
+        ContractorJson: {
+            id?: string;
+            projectId?: string;
+            companyName?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
         };
         /** @description A country item of a list */
         CountryItemJson: {

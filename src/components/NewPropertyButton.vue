@@ -33,6 +33,7 @@ const createProperty = async () => {
     .createProperty(props.projectId, {
       title: title.value!,
       description: description.value,
+      plotArea: null,
     })
     .then((newProperty) => {
       console.log('Property created:', newProperty);
