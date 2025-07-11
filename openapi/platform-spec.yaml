@@ -221,11 +221,6 @@ components:
           $ref: "#/components/schemas/LocalDate"
         lastLoginDate:
           $ref: "#/components/schemas/LocalDateTime"
-    Date:
-      type: string
-      format: date
-      examples:
-      - 2022-03-10
     GarageJson:
       description: A garage inside a building
       type: object
@@ -614,10 +609,6 @@ components:
         duplicateOf:
           type: string
           pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-        createdAt:
-          $ref: "#/components/schemas/Date"
-        modifiedAt:
-          $ref: "#/components/schemas/Date"
     TaskListJson:
       description: A list of tasks
       type: object

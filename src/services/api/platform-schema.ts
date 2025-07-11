@@ -3345,8 +3345,6 @@ export interface components {
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
-        /** Format: date */
-        Date: string;
         /** @description A garage inside a building */
         GarageJson: {
             id?: string;
@@ -3530,8 +3528,6 @@ export interface components {
             blockedBy?: string;
             relatedTo?: string;
             duplicateOf?: string;
-            createdAt?: components["schemas"]["Date"];
-            modifiedAt?: components["schemas"]["Date"];
         };
         /** @description A list of tasks */
         TaskListJson: {
