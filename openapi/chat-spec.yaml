@@ -31,29 +31,35 @@ components:
         country:
           $ref: "#/components/schemas/Locale"
     ApartmentJson:
-      description: An apartment inside a building
+      description: An apartment inside a building according to WoFIV
       type: object
       properties:
+        type:
+          $ref: "#/components/schemas/UnitType"
+        livingSpace:
+          type: number
+          format: float
+          minimum: 0
+        usableSpace:
+          type: number
+          format: float
+          minimum: 0
+        heatingSpace:
+          type: number
+          format: float
+          minimum: 0
+        space:
+          type: number
+          format: float
+        location:
+          type: string
+        description:
+          type: string
         id:
           type: string
         title:
           type: string
           maxLength: 255
-        location:
-          type: string
-        description:
-          type: string
-        livingSpace:
-          type: number
-          format: float
-        usableSpace:
-          type: number
-          format: float
-        heatingSpace:
-          type: number
-          format: float
-        tenancy:
-          $ref: "#/components/schemas/TenancyJson"
     BillingCycle:
       type: string
       enum:
@@ -63,8 +69,39 @@ components:
       description: A building as part of a property
       type: object
       properties:
-        tenancy:
-          $ref: "#/components/schemas/TenancyModel"
+        type:
+          $ref: "#/components/schemas/UnitType"
+        grossFloorArea:
+          type: number
+          format: float
+          minimum: 0
+        netFloorArea:
+          type: number
+          format: float
+          minimum: 0
+        constructionFloorArea:
+          type: number
+          format: float
+          minimum: 0
+        livingSpace:
+          type: number
+          format: float
+          minimum: 0
+        usableSpace:
+          type: number
+          format: float
+          minimum: 0
+        heatingSpace:
+          type: number
+          format: float
+          minimum: 0
+        space:
+          type: number
+          format: float
+        location:
+          type: string
+        description:
+          type: string
         id:
           type: string
         title:
@@ -72,22 +109,6 @@ components:
           maxLength: 255
         address:
           $ref: "#/components/schemas/AddressModel"
-        description:
-          type: string
-        livingSpace:
-          type: number
-          format: float
-        commercialSpace:
-          type: number
-          format: float
-        usableSpace:
-          type: number
-          format: float
-        heatingSpace:
-          type: number
-          format: float
-        differentHeatingSpace:
-          type: boolean
     ChatMessageJson:
       description: A single chat message
       type: object
@@ -132,26 +153,40 @@ components:
       description: An commercial inside a building
       type: object
       properties:
+        type:
+          $ref: "#/components/schemas/UnitType"
+        netFloorArea:
+          type: number
+          format: float
+          minimum: 0
+        usableFloorArea:
+          type: number
+          format: float
+          minimum: 0
+        technicalServicesArea:
+          type: number
+          format: float
+          minimum: 0
+        trafficArea:
+          type: number
+          format: float
+          minimum: 0
+        heatingSpace:
+          type: number
+          format: float
+          minimum: 0
+        space:
+          type: number
+          format: float
+        location:
+          type: string
+        description:
+          type: string
         id:
           type: string
         title:
           type: string
           maxLength: 255
-        location:
-          type: string
-        description:
-          type: string
-        commercialSpace:
-          type: number
-          format: float
-        usableSpace:
-          type: number
-          format: float
-        heatingSpace:
-          type: number
-          format: float
-        tenancy:
-          $ref: "#/components/schemas/TenancyJson"
     CountryItemJson:
       description: A country item of a list
       type: object
@@ -173,54 +208,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CountryItemJson"
-    CustomerModel:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-        active:
-          type: boolean
-        name:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        address:
-          $ref: "#/components/schemas/AddressModel"
-        mobilePhoneNumber:
-          type: string
-        businessPhoneNumber:
-          type: string
-        privatePhoneNumber:
-          type: string
-        registeredDate:
-          $ref: "#/components/schemas/LocalDate"
-        lastLoginDate:
-          $ref: "#/components/schemas/LocalDateTime"
-    Date:
-      type: string
-      format: date
-      examples:
-      - 2022-03-10
-    GarageJson:
-      description: A garage inside a building
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-          maxLength: 255
-        location:
-          type: string
-        description:
-          type: string
-        usableSpace:
-          type: number
-          format: float
     Instant:
       type: string
       format: date-time
@@ -375,46 +362,44 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProjectMemberJson"
-    PropertyItemJson:
-      description: A project item with the user's member role only
-      type: object
-      required:
-      - id
-      - title
-      - landRegisterEntry
-      - description
-      - plotArea
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        landRegisterEntry:
-          type: string
-        description:
-          type: string
-        plotArea:
-          type: integer
-          format: int32
     PropertyJson:
       description: A property
       type: object
       properties:
+        type:
+          $ref: "#/components/schemas/UnitType"
+        landRegistry:
+          type: string
+        cadastralDistrict:
+          type: string
+        sheetNumber:
+          type: string
+        plotNumber:
+          type: integer
+          format: int32
+          exclusiveMinimum: 0
+        cadastralSection:
+          type: string
+        plot:
+          type: string
+        economyType:
+          type: string
+        location:
+          type: string
+        plotArea:
+          type: integer
+          format: int32
+          minimum: 0
+        space:
+          type: number
+          format: float
+        description:
+          type: string
         id:
           type: string
         title:
           type: string
           maxLength: 255
-        landRegisterEntry:
-          type: string
-        description:
-          type: string
-        plotArea:
-          type: integer
-          format: int32
-        effectiveSpace:
-          type: number
-          format: float
     PropertyListJson:
       description: A list of properties
       type: object
@@ -424,8 +409,8 @@ components:
           items:
             $ref: "#/components/schemas/RentalUnitTreeNodeJson"
     RentJson:
-      type: object
       description: A rent of a tenancy
+      type: object
       required:
       - billingCycle
       - firstPaymentDate
@@ -439,30 +424,15 @@ components:
         basicRent:
           type: number
           format: float
+          minimum: 0
         operatingCostsPrepayment:
           type: number
           format: float
+          minimum: 0
         heatingCostsPrepayment:
           type: number
           format: float
-    RentModel:
-      type: object
-      properties:
-        billingCycle:
-          $ref: "#/components/schemas/BillingCycle"
-        firstPaymentDate:
-          $ref: "#/components/schemas/LocalDate"
-        lastPaymentDate:
-          $ref: "#/components/schemas/LocalDate"
-        basicRent:
-          type: number
-          format: float
-        operatingCostsPrepayment:
-          type: number
-          format: float
-        heatingCostsPrepayment:
-          type: number
-          format: float
+          minimum: 0
     RentalUnitNodeDataJson:
       type: object
       description: Encapsulated data of a project tree node
@@ -480,9 +450,14 @@ components:
           description: Title of the node
           examples:
           - Main Building
+        location:
+          type: string
+          description: Location of the rental unit
+          examples:
+          - first floor left
         description:
           type: string
-          description: Description of the node
+          description: Description of the rental unit
           examples:
           - A multi-story office building
         tenant:
@@ -490,7 +465,7 @@ components:
           description: Name of the tenant associated with this node
           examples:
           - "Doe, John"
-        usableSpace:
+        space:
           type: number
           format: float
           description: Usable space in square meters
@@ -522,6 +497,19 @@ components:
       description: A site as part of a property
       type: object
       properties:
+        type:
+          $ref: "#/components/schemas/UnitType"
+        outdoorArea:
+          type: number
+          format: float
+          minimum: 0
+        space:
+          type: number
+          format: float
+        location:
+          type: string
+        description:
+          type: string
         id:
           type: string
         title:
@@ -529,13 +517,6 @@ components:
           maxLength: 255
         address:
           $ref: "#/components/schemas/AddressJson"
-        description:
-          type: string
-        tenancy:
-          $ref: "#/components/schemas/TenancyJson"
-        usableSpace:
-          type: number
-          format: float
     Status:
       type: string
       enum:
@@ -544,15 +525,36 @@ components:
       - IN_PROGRESS
       - CLOSED
       - REJECTED
+    StorageJson:
+      description: A storage inside a building but with living space according to
+        WoFIV
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/UnitType"
+        usableSpace:
+          type: number
+          format: float
+          minimum: 0
+        heatingSpace:
+          type: number
+          format: float
+          minimum: 0
+        space:
+          type: number
+          format: float
+        location:
+          type: string
+        description:
+          type: string
+        id:
+          type: string
+        title:
+          type: string
+          maxLength: 255
     TaskItemJson:
       description: A task item with basic information
       type: object
-      required:
-      - id
-      - name
-      - title
-      - status
-      - owner
       properties:
         id:
           type: string
@@ -560,6 +562,8 @@ components:
           type: string
         title:
           type: string
+        type:
+          $ref: "#/components/schemas/Type"
         status:
           $ref: "#/components/schemas/Status"
         owner:
@@ -568,8 +572,8 @@ components:
       description: A task
       type: object
       properties:
-        type:
-          $ref: "#/components/schemas/Type"
+        reporterId:
+          type: string
         id:
           type: string
         projectId:
@@ -577,6 +581,8 @@ components:
         title:
           type: string
           maxLength: 255
+        type:
+          $ref: "#/components/schemas/Type"
         status:
           $ref: "#/components/schemas/Status"
         ownerId:
@@ -593,10 +599,6 @@ components:
         duplicateOf:
           type: string
           pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-        createdAt:
-          $ref: "#/components/schemas/Date"
-        modifiedAt:
-          $ref: "#/components/schemas/Date"
     TaskListJson:
       description: A list of tasks
       type: object
@@ -605,37 +607,87 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TaskItemJson"
+    TenancyItemJson:
+      description: A tenancy item with basic information from a tenant's perspective
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        rentalType:
+          description: "Type of the node (e.g., 'PROPERTY', 'BUILDING')"
+          type: string
+          examples:
+          - PROPERTY
+          $ref: "#/components/schemas/UnitType"
+        rentalTitle:
+          type: string
+          description: Title of the node
+          examples:
+          - Main Building
+        active:
+          type: boolean
+      required:
+      - rentalType
     TenancyJson:
-      type: object
       description: A tenancy of a rentable unit
+      type: object
       properties:
+        active:
+          type: boolean
         id:
           type: string
-        rent:
+        tenants:
           type: array
           items:
-            $ref: "#/components/schemas/RentJson"
-        tenant:
-          $ref: "#/components/schemas/UserJson"
+            $ref: "#/components/schemas/UserJson"
         startOfRental:
           $ref: "#/components/schemas/LocalDate"
         endOfRental:
           $ref: "#/components/schemas/LocalDate"
-    TenancyModel:
+    TenancyJson1:
+      description: A read-only tenancy of a rentable unit from a tenant's perspective
       type: object
       properties:
         id:
           type: string
-        rent:
-          type: array
-          items:
-            $ref: "#/components/schemas/RentModel"
-        tenant:
-          $ref: "#/components/schemas/CustomerModel"
+        rentalType:
+          description: "Type of the node (e.g., 'PROPERTY', 'BUILDING')"
+          type: string
+          examples:
+          - PROPERTY
+          $ref: "#/components/schemas/UnitType"
+        rentalTitle:
+          type: string
+          description: Title of the node
+          examples:
+          - Main Building
         startOfRental:
           $ref: "#/components/schemas/LocalDate"
         endOfRental:
           $ref: "#/components/schemas/LocalDate"
+        billingCycle:
+          $ref: "#/components/schemas/BillingCycle"
+        basicRent:
+          type: number
+          format: float
+        operatingCostsPrepayment:
+          type: number
+          format: float
+        heatingCostsPrepayment:
+          type: number
+          format: float
+      required:
+      - rentalType
+    TenancyListJson:
+      description: A list of tenancies from a tenant's perspective
+      type: object
+      properties:
+        tenancies:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenancyItemJson"
     Type:
       type: string
       enum:
@@ -653,8 +705,8 @@ components:
       - SITE
       - BUILDING
       - APARTMENT
+      - STORAGE
       - COMMERCIAL
-      - GARAGE
     UserJson:
       description: User information globally
       type: object
