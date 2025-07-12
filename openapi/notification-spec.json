@@ -970,24 +970,6 @@
     "/notification/test" : {
       "get" : {
         "parameters" : [ {
-          "name" : "link",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "name",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "template",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
           "name" : "to",
           "in" : "query",
           "schema" : {
@@ -1000,8 +982,8 @@
             "description" : "OK"
           }
         },
-        "summary" : "Send Test Email",
-        "tags" : [ "Mail Resource" ]
+        "summary" : "Send Test Emails",
+        "tags" : [ "Mailing Resource" ]
       }
     }
   },

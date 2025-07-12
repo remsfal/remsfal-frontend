@@ -11,13 +11,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Send Test Email */
+        /** Send Test Emails */
         get: {
             parameters: {
                 query: {
-                    link?: string;
-                    name?: string;
-                    template?: string;
                     to: string;
                 };
                 header?: never;

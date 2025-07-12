@@ -751,18 +751,6 @@ paths:
   /notification/test:
     get:
       parameters:
-      - name: link
-        in: query
-        schema:
-          type: string
-      - name: name
-        in: query
-        schema:
-          type: string
-      - name: template
-        in: query
-        schema:
-          type: string
       - name: to
         in: query
         schema:
@@ -771,9 +759,9 @@ paths:
       responses:
         "200":
           description: OK
-      summary: Send Test Email
+      summary: Send Test Emails
       tags:
-      - Mail Resource
+      - Mailing Resource
 info:
   title: remsfal-notification API
   version: 1.0.0-SNAPSHOT
