@@ -155,7 +155,7 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
   if (entity === EntityType.Commercial) {
     // TODO: implement delete commercial endpoint
   }
-  if (entity === EntityType.Garage) {
+  if (entity === EntityType.Storage) {
     // TODO: implement delete garage endpoint
   }
 };

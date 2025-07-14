@@ -183,7 +183,7 @@ const projectRoutes: RouteRecordRaw[] = [
               buildingId: route.params.buildingId,
               garageId: route.params.garageId,
             }),
-            component: () => import('@/views/ModifyGarageView.vue'),
+            component: () => import('@/views/ModifyStorageView.vue'),
           },
         ],
       },
@@ -194,7 +194,7 @@ const projectRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
-        component: () => import('@/views/ModifyGarageView.vue'),
+        component: () => import('@/views/ModifyStorageView.vue'),
       },
       {
         path: 'tasks',
