@@ -25,13 +25,6 @@ export default defineConfig({
       requireEnv: false,
     }),
   ],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern-compiler',
-      },
-    },
-  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
