@@ -11,13 +11,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Send Test Email */
+        /** Send Test Emails */
         get: {
             parameters: {
                 query: {
-                    link?: string;
-                    name?: string;
-                    template?: string;
                     to: string;
                 };
                 header?: never;
@@ -62,38 +59,46 @@ export interface components {
             zip?: string;
             country?: components["schemas"]["Locale"];
         };
-        /** @description An apartment inside a building */
+        /** @description An apartment inside a building according to WoFIV */
         ApartmentJson: {
-            id?: string;
-            title?: string;
-            location?: string;
-            description?: string;
+            type?: components["schemas"]["UnitType"];
             /** Format: float */
             livingSpace?: number;
             /** Format: float */
             usableSpace?: number;
             /** Format: float */
             heatingSpace?: number;
-            tenancy?: components["schemas"]["TenancyJson"];
+            /** Format: float */
+            space?: number;
+            location?: string;
+            description?: string;
+            id?: string;
+            title?: string;
         };
         /** @enum {string} */
         BillingCycle: "WEEKLY" | "MONTHLY";
         /** @description A building as part of a property */
         BuildingJson: {
-            tenancy?: components["schemas"]["TenancyModel"];
-            id?: string;
-            title?: string;
-            address?: components["schemas"]["AddressModel"];
-            description?: string;
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            grossFloorArea?: number;
+            /** Format: float */
+            netFloorArea?: number;
+            /** Format: float */
+            constructionFloorArea?: number;
             /** Format: float */
             livingSpace?: number;
-            /** Format: float */
-            commercialSpace?: number;
             /** Format: float */
             usableSpace?: number;
             /** Format: float */
             heatingSpace?: number;
-            differentHeatingSpace?: boolean;
+            /** Format: float */
+            space?: number;
+            location?: string;
+            description?: string;
+            id?: string;
+            title?: string;
+            address?: components["schemas"]["AddressModel"];
         };
         /** @description A single chat message */
         ChatMessageJson: {
@@ -119,17 +124,23 @@ export interface components {
         };
         /** @description An commercial inside a building */
         CommercialJson: {
-            id?: string;
-            title?: string;
-            location?: string;
-            description?: string;
+            type?: components["schemas"]["UnitType"];
             /** Format: float */
-            commercialSpace?: number;
+            netFloorArea?: number;
             /** Format: float */
-            usableSpace?: number;
+            usableFloorArea?: number;
+            /** Format: float */
+            technicalServicesArea?: number;
+            /** Format: float */
+            trafficArea?: number;
             /** Format: float */
             heatingSpace?: number;
-            tenancy?: components["schemas"]["TenancyJson"];
+            /** Format: float */
+            space?: number;
+            location?: string;
+            description?: string;
+            id?: string;
+            title?: string;
         };
         /** @description A country item of a list */
         CountryItemJson: {
@@ -139,31 +150,6 @@ export interface components {
         /** @description A list of countries */
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
-        };
-        CustomerModel: {
-            id?: string;
-            email?: string;
-            active?: boolean;
-            name?: string;
-            firstName?: string;
-            lastName?: string;
-            address?: components["schemas"]["AddressModel"];
-            mobilePhoneNumber?: string;
-            businessPhoneNumber?: string;
-            privatePhoneNumber?: string;
-            registeredDate?: components["schemas"]["LocalDate"];
-            lastLoginDate?: components["schemas"]["LocalDateTime"];
-        };
-        /** Format: date */
-        Date: string;
-        /** @description A garage inside a building */
-        GarageJson: {
-            id?: string;
-            title?: string;
-            location?: string;
-            description?: string;
-            /** Format: float */
-            usableSpace?: number;
         };
         /** Format: date-time */
         Instant: string;
@@ -234,25 +220,25 @@ export interface components {
         ProjectMemberListJson: {
             members: components["schemas"]["ProjectMemberJson"][];
         };
-        /** @description A project item with the user's member role only */
-        PropertyItemJson: {
-            id: string;
-            title: string;
-            landRegisterEntry: string;
-            description: string;
-            /** Format: int32 */
-            plotArea: number;
-        };
         /** @description A property */
         PropertyJson: {
-            id?: string;
-            title?: string;
-            landRegisterEntry?: string;
-            description?: string;
+            type?: components["schemas"]["UnitType"];
+            landRegistry?: string;
+            cadastralDistrict?: string;
+            sheetNumber?: string;
+            /** Format: int32 */
+            plotNumber?: number;
+            cadastralSection?: string;
+            plot?: string;
+            economyType?: string;
+            location?: string;
             /** Format: int32 */
             plotArea?: number;
             /** Format: float */
-            effectiveSpace?: number;
+            space?: number;
+            description?: string;
+            id?: string;
+            title?: string;
         };
         /** @description A list of properties */
         PropertyListJson: {
@@ -270,17 +256,6 @@ export interface components {
             /** Format: float */
             heatingCostsPrepayment?: number;
         };
-        RentModel: {
-            billingCycle?: components["schemas"]["BillingCycle"];
-            firstPaymentDate?: components["schemas"]["LocalDate"];
-            lastPaymentDate?: components["schemas"]["LocalDate"];
-            /** Format: float */
-            basicRent?: number;
-            /** Format: float */
-            operatingCostsPrepayment?: number;
-            /** Format: float */
-            heatingCostsPrepayment?: number;
-        };
         /** @description Encapsulated data of a project tree node */
         RentalUnitNodeDataJson: {
             id?: string;
@@ -288,7 +263,9 @@ export interface components {
             type: components["schemas"]["UnitType"];
             /** @description Title of the node */
             title?: string;
-            /** @description Description of the node */
+            /** @description Location of the rental unit */
+            location?: string;
+            /** @description Description of the rental unit */
             description?: string;
             /** @description Name of the tenant associated with this node */
             tenant?: string;
@@ -296,7 +273,7 @@ export interface components {
              * Format: float
              * @description Usable space in square meters
              */
-            usableSpace?: number;
+            space?: number;
         };
         /** @description A tree node representing a project entity */
         RentalUnitTreeNodeJson: {
@@ -309,64 +286,105 @@ export interface components {
         };
         /** @description A site as part of a property */
         SiteJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            outdoorArea?: number;
+            /** Format: float */
+            space?: number;
+            location?: string;
+            description?: string;
             id?: string;
             title?: string;
             address?: components["schemas"]["AddressJson"];
-            description?: string;
-            tenancy?: components["schemas"]["TenancyJson"];
-            /** Format: float */
-            usableSpace?: number;
         };
         /** @enum {string} */
         Status: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
+        /** @description A storage inside a building but with living space according to WoFIV */
+        StorageJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            usableSpace?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            /** Format: float */
+            space?: number;
+            location?: string;
+            description?: string;
+            id?: string;
+            title?: string;
+        };
         /** @description A task item with basic information */
         TaskItemJson: {
-            id: string;
-            name: string;
-            title: string;
-            status: components["schemas"]["Status"];
-            owner: string;
+            id?: string;
+            name?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+            owner?: string;
         };
         /** @description A task */
         TaskJson: {
-            type?: components["schemas"]["Type"];
+            reporterId?: string;
             id?: string;
             projectId?: string;
             title?: string;
+            type?: components["schemas"]["Type"];
             status?: components["schemas"]["Status"];
             ownerId?: string;
             description?: string;
             blockedBy?: string;
             relatedTo?: string;
             duplicateOf?: string;
-            createdAt?: components["schemas"]["Date"];
-            modifiedAt?: components["schemas"]["Date"];
         };
         /** @description A list of tasks */
         TaskListJson: {
             tasks?: components["schemas"]["TaskItemJson"][];
         };
+        /** @description A tenancy item with basic information from a tenant's perspective */
+        TenancyItemJson: {
+            id?: string;
+            name?: string;
+            /** @description Type of the node (e.g., 'PROPERTY', 'BUILDING') */
+            rentalType: components["schemas"]["UnitType"];
+            /** @description Title of the node */
+            rentalTitle?: string;
+            active?: boolean;
+        };
         /** @description A tenancy of a rentable unit */
         TenancyJson: {
+            active?: boolean;
             id?: string;
-            rent?: components["schemas"]["RentJson"][];
-            tenant?: components["schemas"]["UserJson"];
+            tenants?: components["schemas"]["UserJson"][];
             startOfRental?: components["schemas"]["LocalDate"];
             endOfRental?: components["schemas"]["LocalDate"];
         };
-        TenancyModel: {
+        /** @description A read-only tenancy of a rentable unit from a tenant's perspective */
+        TenancyJson1: {
             id?: string;
-            rent?: components["schemas"]["RentModel"][];
-            tenant?: components["schemas"]["CustomerModel"];
+            /** @description Type of the node (e.g., 'PROPERTY', 'BUILDING') */
+            rentalType: components["schemas"]["UnitType"];
+            /** @description Title of the node */
+            rentalTitle?: string;
             startOfRental?: components["schemas"]["LocalDate"];
             endOfRental?: components["schemas"]["LocalDate"];
+            billingCycle?: components["schemas"]["BillingCycle"];
+            /** Format: float */
+            basicRent?: number;
+            /** Format: float */
+            operatingCostsPrepayment?: number;
+            /** Format: float */
+            heatingCostsPrepayment?: number;
+        };
+        /** @description A list of tenancies from a tenant's perspective */
+        TenancyListJson: {
+            tenancies?: components["schemas"]["TenancyItemJson"][];
         };
         /** @enum {string} */
         Type: "TASK" | "DEFECT" | "MAINTENANCE";
         /** Format: uuid */
         UUID: string;
         /** @enum {string} */
-        UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "COMMERCIAL" | "GARAGE";
+        UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "STORAGE" | "COMMERCIAL";
         /** @description User information globally */
         UserJson: {
             active?: boolean;
