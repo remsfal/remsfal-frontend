@@ -7,7 +7,7 @@ import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
-import {inboxService, type InboxMessage } from '@/services/InboxService';
+import { inboxService, type InboxMessage } from '@/services/InboxService';
 import { ref } from 'vue';
 
 const { t } = useI18n();
@@ -52,18 +52,17 @@ const unreadCount = ref<number>(0);
 const loadUnreadCount = async () => {
   try {
     const data: InboxMessage[] = await inboxService.fetchInboxData();
-    unreadCount.value = data.filter(msg => !msg.isRead).length;
+    unreadCount.value = data.filter((msg) => !msg.isRead).length;
   } catch (err) {
     console.error('Fehler beim Laden der Inbox-Daten:', err);
     unreadCount.value = 0;
   }
 };
 loadUnreadCount();
-
 </script>
 
 <template>
-  <AppTopbar >
+  <AppTopbar>
     <Button
       v-if="sessionStore.user != null"
       class="layout-topbar-shortcut-button layout-topbar-action"

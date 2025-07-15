@@ -1,7 +1,7 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import Component from '../../src/views/ModifyGarageView.vue';
-import { garageService } from '../../src/services/GarageService';
+import Component from '../../src/views/StorageView.vue';
+import { storageService } from '../../src/services/StorageService';
 
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
@@ -10,19 +10,19 @@ vi.mock('vue-router', () => ({
   }),
 }));
 
-vi.mock('../../src/services/GarageService', () => ({
-  garageService: {
-    getGarage: vi.fn(),
-    updateGarage: vi.fn(),
+vi.mock('../../src/services/StorageService', () => ({
+  storageService: {
+    getStorage: vi.fn(),
+    updateStorage: vi.fn(),
   },
 }));
-describe('ModifyGarageView.vue', () => {
+describe('StorageView.vue', () => {
   let wrapper: VueWrapper<any>;
 
   beforeEach(async () => {
-    (garageService.getGarage as Mock).mockResolvedValue({
-      title: 'Initial Garage Title',
-      description: 'Initial Garage Description',
+    (storageService.getStorage as Mock).mockResolvedValue({
+      title: 'Initial Storage Title',
+      description: 'Initial Storage Description',
       location: 'Initial Location',
       usableSpace: 100,
     });
@@ -30,7 +30,7 @@ describe('ModifyGarageView.vue', () => {
     wrapper = mount(Component, {
       props: {
         projectId: 'project1',
-        unitId: 'garage1',
+        unitId: 'storage1',
       },
     });
 
@@ -38,9 +38,9 @@ describe('ModifyGarageView.vue', () => {
     await wrapper.vm.$nextTick();
   });
 
-  it('loads garage details on mount', () => {
-    expect(wrapper.vm.title).toBe('Initial Garage Title');
-    expect(wrapper.vm.description).toBe('Initial Garage Description');
+  it('loads storage details on mount', () => {
+    expect(wrapper.vm.title).toBe('Initial Storage Title');
+    expect(wrapper.vm.description).toBe('Initial Storage Description');
     expect(wrapper.vm.location).toBe('Initial Location');
     expect(wrapper.vm.usableSpace).toBe(100);
   });
@@ -61,26 +61,26 @@ describe('ModifyGarageView.vue', () => {
   it('makes sure save button is enabled only if data is changed', async () => {
     const saveButton = wrapper.find('button[type="submit"]');
     expect((saveButton.element as HTMLButtonElement).disabled).toBe(true);
-    await wrapper.find('input[type="text"]').setValue('New Garage Title');
+    await wrapper.find('input[type="text"]').setValue('New Storage Title');
     await wrapper.vm.$nextTick();
     expect((saveButton.element as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it('calls updateGarage service with correct data when saved', async () => {
-    (garageService.updateGarage as Mock).mockResolvedValue({});
+  it('calls updateStorage service with correct data when saved', async () => {
+    (storageService.updateStorage as Mock).mockResolvedValue({});
 
     // Werte ändern
-    wrapper.vm.title = 'New Garage Title';
+    wrapper.vm.title = 'New Storage Title';
     wrapper.vm.description = 'Updated Description';
     wrapper.vm.usableSpace = 120;
 
     await wrapper.find('form').trigger('submit.prevent');
 
-    expect(garageService.updateGarage).toHaveBeenCalledWith(
+    expect(storageService.updateStorage).toHaveBeenCalledWith(
       'project1',
-      'garage1',
+      'storage1',
       expect.objectContaining({
-        title: 'New Garage Title',
+        title: 'New Storage Title',
         description: 'Updated Description',
         location: 'Initial Location',
         usableSpace: 120,

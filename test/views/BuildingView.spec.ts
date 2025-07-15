@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import Component from '../../src/views/ModifyBuildingView.vue';
+import Component from '../../src/views/BuildingView.vue';
 import { buildingService } from '../../src/services/BuildingService';
 
 vi.mock('vue-router', () => ({
@@ -16,7 +16,7 @@ vi.mock('../../src/services/BuildingService', () => ({
   },
 }));
 
-describe('ModifyBuildingView.vue', () => {
+describe('BuildingView.vue', () => {
   let wrapper: VueWrapper<any>;
 
   beforeEach(async () => {

@@ -22,12 +22,12 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'managerMenu.home.label',
           icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
-          to: currentProjectId ? `/project/${currentProjectId}/` : '/',
+          to: currentProjectId ? `/projects/${currentProjectId}/dashboard` : '/',
         },
         {
           label: 'managerMenu.home.settings',
           icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
-          to: currentProjectId ? `/project/${currentProjectId}/settings` : '/',
+          to: currentProjectId ? `/projects/${currentProjectId}/settings` : '/',
         },
       ],
     },
@@ -37,17 +37,17 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'managerMenu.masterData.properties',
           icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-          to: currentProjectId ? `/project/${currentProjectId}/units` : '/',
+          to: currentProjectId ? `/projects/${currentProjectId}/units` : '/',
         },
         {
           label: 'managerMenu.masterData.tenants',
           icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-          to: currentProjectId ? `/project/${currentProjectId}/tenancies` : '/',
+          to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
         },
         {
           label: 'managerMenu.masterData.contractors',
           icon: { type: 'pi', name: 'pi pi-fw pi-users' },
-          to: currentProjectId ? `/project/${currentProjectId}/tenancies` : '/',
+          to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
         },
       ],
     },
@@ -94,22 +94,22 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'managerMenu.defectManagement.new',
           icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-          to: '/uikit/formlayout',
+          to: `/projects/${projectStore.projectId}/chat`,
         },
         {
           label: 'managerMenu.defectManagement.open',
           icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-          to: '/uikit/formlayout',
+          to: `/projects/${projectStore.projectId}/chat`,
         },
         {
           label: 'managerMenu.defectManagement.closed',
           icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-          to: '/uikit/formlayout',
+          to: `/projects/${projectStore.projectId}/chat`,
         },
         {
           label: 'managerMenu.defectManagement.all',
           icon: { type: 'pi', name: 'pi pi-fw pi-comments' },
-          to: `/project/${projectStore.projectId}/chat`,
+          to: `/projects/${projectStore.projectId}/chat`,
         },
       ],
     },
@@ -127,7 +127,7 @@ watch(
     projectId.value = newId;
     model.value = buildMenuModel(newId);
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

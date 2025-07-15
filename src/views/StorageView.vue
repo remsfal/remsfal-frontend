@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { garageService, type GarageUnit } from '@/services/GarageService';
+import { storageService, type StorageUnit } from '@/services/StorageService.ts';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
@@ -57,7 +57,7 @@ const validationErrors = computed(() => {
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
-const fetchGarageDetails = async () => {
+const fetchStorageDetails = async () => {
   if (!props.projectId) {
     console.error('Keine projectId');
     return;
@@ -67,8 +67,8 @@ const fetchGarageDetails = async () => {
     return;
   }
   try {
-    const data = await garageService.getGarage(props.projectId, props.unitId);
-    console.log('Garage-Daten vom Backend:', data); // Hier siehst du die Antwort
+    const data = await storageService.getStorage(props.projectId, props.unitId);
+    console.log('Storage-Daten vom Backend:', data); // Hier siehst du die Antwort
     title.value = data.title || '';
     description.value = data.description || '';
     location.value = data.location || '';
@@ -81,24 +81,24 @@ const fetchGarageDetails = async () => {
       usableSpace: usableSpace.value,
     };
   } catch (error) {
-    console.error('Fehler beim Laden der Garage:', error);
+    console.error('Fehler beim Laden der Storage:', error);
     toast.add({
       severity: 'error',
       summary: 'Ladefehler',
-      detail: 'Garage konnte nicht geladen werden.',
+      detail: 'Storage konnte nicht geladen werden.',
       life: 6000,
     });
   }
 };
 onMounted(() => {
   if (props.unitId) {
-    fetchGarageDetails();
+    fetchStorageDetails();
   } else {
     console.warn('unitId fehlt – keine Daten können geladen werden.');
     toast.add({
       severity: 'warn',
       summary: 'Ungültige ID',
-      detail: 'Garage konnte nicht geladen werden, da keine ID übergeben wurde.',
+      detail: 'Storage konnte nicht geladen werden, da keine ID übergeben wurde.',
       life: 6000,
     });
   }
@@ -110,7 +110,7 @@ const save = async () => {
     return;
   }
 
-  const payload: GarageUnit = {
+  const payload: StorageUnit = {
     title: title.value,
     description: description.value,
     location: location.value,
@@ -118,17 +118,17 @@ const save = async () => {
   };
 
   try {
-    await garageService.updateGarage(props.projectId, props.unitId, payload);
+    await storageService.updateStorage(props.projectId, props.unitId, payload);
     toast.add({
       severity: 'success',
       summary: 'Erfolg',
-      detail: 'Garage erfolgreich gespeichert.',
+      detail: 'Storage erfolgreich gespeichert.',
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/garage/${props.unitId}`);
+    router.push(`/project/${props.projectId}/storage/${props.unitId}`);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
-    showSavingErrorToast(toast, 'Garage konnte nicht gespeichert werden.');
+    showSavingErrorToast(toast, 'Storage konnte nicht gespeichert werden.');
   }
 };
 
@@ -138,7 +138,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Bearbeite Garage mit ID: {{ unitId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">Bearbeite Storage mit ID: {{ unitId }}</h2>
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->

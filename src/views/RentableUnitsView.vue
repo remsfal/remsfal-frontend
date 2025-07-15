@@ -7,7 +7,7 @@ import {
   toRentableUnitView,
 } from '@/services/PropertyService';
 import { useRouter } from 'vue-router';
-import Dialog from 'primevue/dialog'
+import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import { useI18n } from 'vue-i18n';
@@ -53,12 +53,14 @@ async function fetchPropertyTree(projectId: string): Promise<RentableUnitTreeNod
 onMounted(() => {
   fetchPropertyTree(props.projectId).finally(() => {
     isLoading.value = false;
+    expandAll();
   });
 });
 
 function onNewRentableUnit(title: string) {
   fetchPropertyTree(props.projectId).finally(() => {
     isLoading.value = false;
+    expandAll();
   });
   toast.add({
     severity: 'success',
@@ -90,29 +92,11 @@ const collapseAll = () => {
 };
 
 const onNodeSelect = (node: RentableUnitTreeNode) => {
-  const str = node.data.title! + selectedKey.value;
-  toast.add({
-    severity: 'success',
-    summary: 'Node Selected',
-    detail: str,
-    life: 3000,
-  });
-  selectedKey.value.remove(node);
-};
-
-const onOpenInNewTab = (node: RentableUnitTreeNode) => {
   const view = toRentableUnitView(node.data.type);
-  toast.add({
-    severity: 'success',
-    summary: 'Node Selected',
-    detail: view,
-    life: 3000,
-  });
-  const routeData = router.resolve({
+  router.push({
     name: view,
     params: { projectId: props.projectId, unitId: node.key },
   });
-  window.open(routeData.href, '_blank');
 };
 
 const confirmDeleteNode = (node: RentableUnitTreeNode) => {
@@ -155,7 +139,7 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
   if (entity === EntityType.Commercial) {
     // TODO: implement delete commercial endpoint
   }
-  if (entity === EntityType.Garage) {
+  if (entity === EntityType.Storage) {
     // TODO: implement delete garage endpoint
   }
 };
@@ -164,7 +148,9 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <h1>{{ t('rentableUnits.view.title') }}</h1>
+      <div class="col-span-12">
+        <h1 class="w-full">{{ t('rentableUnits.view.title') }}</h1>
+      </div>
       <div v-if="error" class="alert alert-error">{{ error }}</div>
       <div v-if="!error" class="col-span-12">
         <div class="card">
@@ -228,14 +214,14 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
             </Column>
 
 
-            <Column frozen alignFrozen="right">
+            <Column frozen alignFrozen="right" bodyClass="flex flex-wrap justify-end">
               <template #body="{ node }">
-                <div class="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    icon="pi pi-pencil"
-                    severity="success"
-                    @click="onOpenInNewTab(node)"
+                <div class="flex flex-wrap justify-end gap-2">
+                  <NewRentableUnitButton
+                    :projectId="props.projectId"
+                    :parentId="node.key"
+                    :type="node.data.type"
+                    @newUnit="onNewRentableUnit"
                   />
                   <Button
                     type="button"
@@ -243,12 +229,6 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                     severity="danger"
                     data-testid="deleteNode"
                     @click="confirmDeleteNode(node)"
-                  />
-                  <NewRentableUnitButton
-                    :projectId="props.projectId"
-                    :parentId="node.key"
-                    :type="node.data.type"
-                    @newUnit="onNewRentableUnit"
                   />
                 </div>
               </template>

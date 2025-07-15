@@ -1,6 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Component from '../../src/views/ModifyPropertyView.vue';
+import Component from '../../src/views/PropertyView.vue';
 import { propertyService } from '../../src/services/PropertyService';
 
 const mockPush = vi.fn();
@@ -17,7 +17,7 @@ vi.mock('../../src/services/PropertyService', () => ({
   },
 }));
 
-describe('ModifyPropertyView.vue', () => {
+describe('PropertyView.vue', () => {
   let wrapper;
 
   beforeEach(async () => {

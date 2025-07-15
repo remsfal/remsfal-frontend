@@ -7,8 +7,6 @@ import i18n from "../../src/i18n/i18n";
 import Dialog from "primevue/dialog";
 import RentableUnitsView from '../../src/views/RentableUnitsView.vue'
 
-
-
 vi.mock('@/services/PropertyService');
 
 vi.mock('primevue/dialog', () => ({
@@ -85,11 +83,11 @@ const initialComplexMockData = {
               children: [],
             },
             {
-              key: 'garage-id-1',
+              key: 'storage-id-1',
               data: {
-                type: EntityType.Garage,
-                title: 'Garage 1A',
-                description: 'First garage in Building 1',
+                type: EntityType.Storage,
+                title: 'Storage 1A',
+                description: 'First storage in Building 1',
                 tenant: '',
                 usable_space: 300,
               },
@@ -147,7 +145,7 @@ describe('ObjectDataView', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    expect(wrapper.find('h1').text()).toBe('Objektdaten Ansicht');
+    expect(wrapper.find('h1').text()).toBe('Wirtschaftseinheiten');
     expect(wrapper.findComponent({ name: 'TreeTable' }).exists()).toBe(true);
 
     expect(propertyService.getPropertyTree).toHaveBeenCalledWith('123');
@@ -258,12 +256,12 @@ describe('ObjectDataView', () => {
         expect(commercialRow.text()).toContain('500');
         expect(commercialRow.text()).toContain('First commercial in Building 1');
 
-        // Validate garage
-        const garageRow = rows[5];
-        expect(garageRow).not.toBeUndefined();
-        expect(garageRow.text()).toContain('Garage 1A');
-        expect(garageRow.text()).toContain('300');
-        expect(garageRow.text()).toContain('First garage in Building 1');
+        // Validate storage
+        const storageRow = rows[5];
+        expect(storageRow).not.toBeUndefined();
+        expect(storageRow.text()).toContain('Storage 1A');
+        expect(storageRow.text()).toContain('300');
+        expect(storageRow.text()).toContain('First storage in Building 1');
 
         // Validate site
         const siteRow = rows[7];
@@ -314,7 +312,7 @@ describe('ObjectDataView', () => {
       '/project/123/building/building-id-1',
       '/project/123/apartment/apartment-id-1',
       '/project/123/commercial/commercial-id-1',
-      '/project/123/garage/garage-id-1',
+      '/project/123/storage/storage-id-1',
       '/project/123/site/site-id-1',
       '/project/123/property/property-id-2',
     ];

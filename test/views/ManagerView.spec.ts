@@ -1,6 +1,6 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import ProjectSelectionView from '../../src/views/ProjectSelectionView.vue';
+import ProjectSelectionView from '../../src/views/ManagerView.vue';
 import ProjectService from '../../src/services/ProjectService';
 import { useProjectStore } from '../../src/stores/ProjectStore';
 import { nextTick } from 'vue';
@@ -54,7 +54,7 @@ vi.mock('primevue/dialog', async (importOriginal) => {
   };
 });
 
-describe('ProjectSelectionView.vue', () => {
+describe('ManagerView.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {

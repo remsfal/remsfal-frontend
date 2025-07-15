@@ -18,7 +18,7 @@ describe('ContractorView.vue', () => {
 
   it('renders the view correctly', () => {
     expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('h5').text()).toBe('Übersicht der Aufträge');
+    expect(wrapper.find('h5').text()).toBe('Übersicht aller Auftraggeber');
 
     const contractorTable = wrapper.findComponent({ name: 'ContractorTable' });
     expect(contractorTable.exists()).toBe(true);

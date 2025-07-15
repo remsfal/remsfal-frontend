@@ -3,6 +3,7 @@
 import { useUserSessionStore } from '@/stores/UserSession';
 import UserService, { type Address, type User } from '@/services/UserService';
 import { computed, onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router'
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
@@ -529,6 +530,15 @@ const isDisabled = computed(() => {
     <div>
       <div>
         <div class="buttons-container centered-buttons">
+          <Button severity="info">
+            <RouterLink to="/projects">Zur Verwalter Ansicht</RouterLink>
+          </Button>
+          <Button severity="info">
+            <RouterLink to="/tenancies">Zur Mieter Ansicht</RouterLink>
+          </Button>
+          <Button severity="info">
+            <RouterLink to="/customers">Zur Auftragnehmer Ansicht</RouterLink>
+          </Button>
           <Button
             v-if="changes"
             type="button"
@@ -663,10 +673,6 @@ input:focus {
   box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 0.25);
 }
 
-.title {
-  padding-bottom: 50px;
-}
-
 .buttons-container {
   display: grid;
   grid-template-columns: repeat(2, auto);
@@ -680,14 +686,6 @@ input:focus {
   background: url('data:image/svg+xml;utf8,<svg fill="%23999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')
     no-repeat right 10px center;
   background-size: 12px 12px;
-}
-
-.country-code {
-  width: fit-content;
-}
-
-.is-invalid {
-  border: 2px solid red;
 }
 
 .centered-buttons {

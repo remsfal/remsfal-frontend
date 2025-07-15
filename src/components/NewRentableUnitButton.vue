@@ -11,7 +11,7 @@ import { siteService } from '@/services/SiteService';
 import { buildingService } from '@/services/BuildingService';
 import { apartmentService } from '@/services/ApartmentService';
 import { commercialService } from '@/services/CommercialService';
-import { garageService } from '@/services/GarageService';
+import { storageService } from '@/services/StorageService.ts';
 
 const props = defineProps<{
   projectId: string;
@@ -64,8 +64,8 @@ const createRentableUnit = async () => {
       creationPromise = createCommercial();
       break;
     }
-    case EntityType.Garage: {
-      creationPromise = createGarage();
+    case EntityType.Storage: {
+      creationPromise = createStorage();
       break;
     }
   }
@@ -145,15 +145,15 @@ async function createCommercial(): Promise<void> {
     });
 }
 
-async function createGarage(): Promise<void> {
-  console.log('createGarage called');
-  return garageService
-    .createGarage(props.projectId, props.parentId!, {
+async function createStorage(): Promise<void> {
+  console.log('createStorage called');
+  return storageService
+    .createStorage(props.projectId, props.parentId!, {
       title: title.value!,
       description: description.value,
     })
-    .then((newGarage) => {
-      console.log('Garage created:', newGarage);
+    .then((newStorage) => {
+      console.log('Storage created:', newStorage);
       return Promise.resolve();
     });
 }
@@ -174,11 +174,11 @@ async function createGarage(): Promise<void> {
   </div>
   <div v-if="props.type === EntityType.Property">
     <SplitButton
-      label="Erstellen"
+      label="Anlage hinzufügen"
       severity="success"
       :model="[
         {
-          label: 'Gebäude erstellen',
+          label: 'Gebäude hinzufügen',
           icon: 'pi pi-building',
           command: () => {
             visible = true;
@@ -186,7 +186,7 @@ async function createGarage(): Promise<void> {
           },
         },
         {
-          label: 'Außenanlage erstellen',
+          label: 'Außenanlage hinzufügen',
           icon: 'pi pi-sun',
           command: () => {
             visible = true;
@@ -198,11 +198,11 @@ async function createGarage(): Promise<void> {
   </div>
   <div v-if="props.type === EntityType.Building">
     <SplitButton
-      label="Erstellen"
+      label="Einheit hinzufügen"
       severity="success"
       :model="[
         {
-          label: 'Wohnung erstellen',
+          label: 'Wohnung hinzufügen',
           icon: 'pi pi-building',
           command: () => {
             visible = true;
@@ -210,7 +210,7 @@ async function createGarage(): Promise<void> {
           },
         },
         {
-          label: 'Gewerbe erstellen',
+          label: 'Gewerbe hinzufügen',
           icon: 'pi pi-briefcase',
           command: () => {
             visible = true;
@@ -218,11 +218,11 @@ async function createGarage(): Promise<void> {
           },
         },
         {
-          label: 'Nebennutzungsraum erstellen',
+          label: 'Nebennutzungsraum hinzufügen',
           icon: 'pi pi-car',
           command: () => {
             visible = true;
-            newUnitType = EntityType.Garage;
+            newUnitType = EntityType.Storage;
           },
         },
       ]"
@@ -256,5 +256,3 @@ async function createGarage(): Promise<void> {
     </div>
   </Dialog>
 </template>
-
-<style scoped></style>

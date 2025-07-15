@@ -4,7 +4,7 @@ import type { TreeNode } from 'primevue/treenode';
 export enum EntityType {
   Apartment = 'APARTMENT',
   Commercial = 'COMMERCIAL',
-  Garage = 'GARAGE',
+  Storage = 'STORAGE',
   Site = 'SITE',
   Building = 'BUILDING',
   Project = 'PROJECT',
