@@ -145,7 +145,7 @@ describe('ObjectDataView', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    expect(wrapper.find('h1').text()).toBe('Objektdaten Ansicht');
+    expect(wrapper.find('h1').text()).toBe('Wirtschaftseinheiten');
     expect(wrapper.findComponent({ name: 'TreeTable' }).exists()).toBe(true);
 
     expect(propertyService.getPropertyTree).toHaveBeenCalledWith('123');
