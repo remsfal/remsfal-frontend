@@ -12,7 +12,6 @@ import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
-import ProjectChatView from '@/views/ProjectChatView.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
 import TenantTopbar from '@/layout/TenantTopbar.vue';
 
@@ -76,7 +75,7 @@ const fullscreenRoutes: RouteRecordRaw[] = [
 
 const managerRoutes: RouteRecordRaw[] = [
   {
-    path: '/project/:projectId',
+    path: '/projects/:projectId',
     components: {
       default: AppLayout,
       topbar: ManagerTopbar,
@@ -94,30 +93,85 @@ const managerRoutes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: '',
+        path: 'dashboard',
         name: 'ProjectDashboard',
         props: true,
         component: () => import('@/views/ProjectDashboard.vue'),
       },
-      {
-        path: 'chat',
-        name: 'ProjectChatView',
-        props: true,
-        component: ProjectChatView,
-      },
-
       {
         path: 'settings',
         name: 'ProjectSettings',
         props: true,
         component: () => import('@/views/ProjectSettingsView.vue'),
       },
+      /* --------------------------------------------------------------------
+       * Rentable Unit Views
+       * --------------------------------------------------------------------
+       */
       {
         path: 'units',
         name: 'RentableUnits',
         props: true,
         component: () => import('@/views/RentableUnitsView.vue'),
       },
+      {
+        path: 'units/property/:unitId',
+        name: 'PropertyView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/PropertyView.vue'),
+      },
+      {
+        path: 'units/site/:unitId',
+        name: 'SiteView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/SiteView.vue'),
+      },
+      {
+        path: 'units/building/:unitId',
+        name: 'BuildingView',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/BuildingView.vue'),
+      },
+      {
+        path: 'units/apartment/:unitId',
+        name: 'ApartmentView',
+        props: (route) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/ApartmentView.vue'),
+      },
+      {
+        path: 'units/storage/:unitId',
+        name: 'StorageView',
+        props: (route) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/StorageView.vue'),
+      },
+      {
+        path: 'units/commercial/:unitId',
+        name: 'CommercialView',
+        props: (route) => ({
+          projectId: route.params.projectId,
+          unitId: route.params.unitId,
+        }),
+        component: () => import('@/views/CommercialView.vue'),
+      },
+      /* --------------------------------------------------------------------
+       * Tenancy Views
+       * --------------------------------------------------------------------
+       */
       {
         path: 'tenancies',
         name: 'ProjectTenancies',
@@ -141,63 +195,14 @@ const managerRoutes: RouteRecordRaw[] = [
         }),
         component: () => import('@/views/ProjectNewTenancy.vue'),
       },
-      {
-        path: 'property/:unitId',
-        name: 'PropertyView',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-          unitId: route.params.unitId,
-        }),
-        component: () => import('@/views/ModifyPropertyView.vue'),
-      },
-      {
-        path: 'building/:unitId',
-        name: 'BuildingView',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-          unitId: route.params.unitId,
-        }),
-        component: () => import('@/views/ModifyBuildingView.vue'),
-      },
-      {
-        path: 'site',
-        children: [
-          {
-            path: ':siteId',
-            name: 'EditSite',
-            props: (route: RouteLocationNormalizedLoaded) => ({
-              projectId: route.params.project,
-              siteId: route.params.siteId,
-            }),
-            component: () => import('@/views/SiteUpdateView.vue'),
-          },
-        ],
-      },
-      {
-        path: 'property/:propertyId/building/:buildingId/garage',
-        children: [
-          {
-            path: ':garageId/edit',
-            name: 'EditGarage',
-            props: (route: RouteLocationNormalizedLoaded) => ({
-              projectId: route.params.projectId,
-              propertyId: route.params.propertyId,
-              buildingId: route.params.buildingId,
-              garageId: route.params.garageId,
-            }),
-            component: () => import('@/views/ModifyStorageView.vue'),
-          },
-        ],
-      },
-      {
-        path: 'garage/:unitId',
-        name: 'GarageView',
-        props: (route) => ({
-          projectId: route.params.projectId,
-          unitId: route.params.unitId,
-        }),
-        component: () => import('@/views/ModifyStorageView.vue'),
-      },
+      /* --------------------------------------------------------------------
+       * Contractor Views
+       * --------------------------------------------------------------------
+       */
+      /* --------------------------------------------------------------------
+       * Task Views
+       * --------------------------------------------------------------------
+       */
       {
         path: 'tasks',
         name: 'TaskOverview',
@@ -215,31 +220,10 @@ const managerRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/TaskEdit.vue'),
       },
       {
-        path: 'apartment/:unitId',
-        name: 'ApartmentView',
-        props: (route) => ({
-          projectId: route.params.projectId,
-          unitId: route.params.unitId,
-        }),
-        component: () => import('@/views/ModifyApartmentView.vue'),
-      },
-      {
-        path: 'site/:unitId',
-        name: 'SiteView',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-          unitId: route.params.unitId,
-        }),
-        component: () => import('@/views/SiteUpdateView.vue'),
-      },
-      {
-        path: 'commercial/:unitId',
-        name: 'CommercialView',
-        props: (route) => ({
-          projectId: route.params.projectId,
-          unitId: route.params.unitId,
-        }),
-        component: () => import('@/views/ModifyCommercialView.vue'),
+        path: 'chat',
+        name: 'ProjectChatView',
+        props: true,
+        component: () => import('@/views/ProjectChatView.vue'),
       },
     ],
   },

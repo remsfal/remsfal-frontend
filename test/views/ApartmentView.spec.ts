@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import Component from '../../src/views/ModifyApartmentView.vue';
+import Component from '../../src/views/ApartmentView.vue';
 import { apartmentService } from '../../src/services/ApartmentService';
 
 vi.mock('vue-router', () => ({

@@ -174,11 +174,11 @@ async function createStorage(): Promise<void> {
   </div>
   <div v-if="props.type === EntityType.Property">
     <SplitButton
-      label="Erstellen"
+      label="Anlage hinzufügen"
       severity="success"
       :model="[
         {
-          label: 'Gebäude erstellen',
+          label: 'Gebäude hinzufügen',
           icon: 'pi pi-building',
           command: () => {
             visible = true;
@@ -186,7 +186,7 @@ async function createStorage(): Promise<void> {
           },
         },
         {
-          label: 'Außenanlage erstellen',
+          label: 'Außenanlage hinzufügen',
           icon: 'pi pi-sun',
           command: () => {
             visible = true;
@@ -198,11 +198,11 @@ async function createStorage(): Promise<void> {
   </div>
   <div v-if="props.type === EntityType.Building">
     <SplitButton
-      label="Erstellen"
+      label="Einheit hinzufügen"
       severity="success"
       :model="[
         {
-          label: 'Wohnung erstellen',
+          label: 'Wohnung hinzufügen',
           icon: 'pi pi-building',
           command: () => {
             visible = true;
@@ -210,7 +210,7 @@ async function createStorage(): Promise<void> {
           },
         },
         {
-          label: 'Gewerbe erstellen',
+          label: 'Gewerbe hinzufügen',
           icon: 'pi pi-briefcase',
           command: () => {
             visible = true;
@@ -218,7 +218,7 @@ async function createStorage(): Promise<void> {
           },
         },
         {
-          label: 'Nebennutzungsraum erstellen',
+          label: 'Nebennutzungsraum hinzufügen',
           icon: 'pi pi-car',
           command: () => {
             visible = true;

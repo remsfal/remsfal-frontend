@@ -1,6 +1,6 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import Component from '../../src/views/ModifyStorageView.vue';
+import Component from '../../src/views/StorageView.vue';
 import { storageService } from '../../src/services/StorageService';
 
 const mockPush = vi.fn();
@@ -16,7 +16,7 @@ vi.mock('../../src/services/StorageService', () => ({
     updateStorage: vi.fn(),
   },
 }));
-describe('ModifyStorageView.vue', () => {
+describe('StorageView.vue', () => {
   let wrapper: VueWrapper<any>;
 
   beforeEach(async () => {
