@@ -1,66 +1,41 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
-import UserService, { User, Address } from '../../src/services/UserService';
+import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { setupServer } from 'msw/node';
+import { handlers } from '../../test/mocks/handlers'; 
+import UserService from '../../src/services/UserService';
 
-describe('UserService', () => {
+const server = setupServer(...handlers);
 
-  const service = new UserService();
-  const mockUser: User = {
-    id: '1',
-    email: 'test@example.com',
-    firstName: 'John',
-    lastName: 'Doe',
-    address: {
-      street: '123 Test St',
-      city: 'Test City',
-      province: 'Test Province',
-      zip: '12345',
-      countryCode: 'US',
-    },
-    mobilePhoneNumber: '1234567890',
-    businessPhoneNumber: '0987654321',
-    privatePhoneNumber: '1112223333',
-    registeredDate: '2023-01-01T00:00:00Z',
-    lastLoginDate: '2024-01-02T00:00:00Z',
-  };
+describe('UserService with MSW', () => {
+  const userService = new UserService();
 
-  beforeEach(() => {
-    vi.resetAllMocks();
+  beforeAll(() => server.listen());
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
+
+  test('getUser returns user data', async () => {
+    const user = await userService.getUser();
+    expect(user).toEqual({
+      id: 'user-123',
+      name: 'John Doe',
+      email: 'john@example.com',
+    });
   });
 
-  it('should fetch a user', async () => {
-    vi.spyOn(axios, 'get').mockResolvedValue({ data: mockUser });
-    const user = await service.getUser();
-    expect(user).toEqual(mockUser);
+  test('getCityFromZip returns addresses for valid zip', async () => {
+    const city = await userService.getCityFromZip('12345');
+    expect(city).toEqual([{ city: 'Sample City', state: 'SC', zip: '12345' }]);
   });
 
-  it('should retrieve city from zip code', async () => {
-    const mockAddress: Address[] = [
-      {
-        street: '124 Test St',
-        city: 'Test City',
-        province: 'Test Province',
-        zip: '12345',
-        countryCode: 'US',
-      },
-    ];
-    vi.spyOn(axios, 'get').mockResolvedValue({ data: mockAddress });
-    const city = await service.getCityFromZip('12345');
-    expect(city).toEqual(mockAddress);
+  test('updateUser returns updated user', async () => {
+    const updatedUser = await userService.updateUser({ name: 'Jane' });
+    expect(updatedUser).toMatchObject({
+      id: 'user-123',
+      name: 'Jane',
+    });
   });
 
-  it('should update a user', async () => {
-    const updatedUser: Partial<User> = { firstName: 'Jane', lastName: 'Doe' };
-    const updatedResponse = { ...mockUser, ...updatedUser };
-    vi.spyOn(axios, 'patch').mockResolvedValue({ data: updatedResponse });
-    const result = await service.updateUser(updatedUser);
-    expect(result?.firstName).toBe('Jane');
-    expect(result?.lastName).toBe('Doe');
-  });
-
-  it('should delete a user', async () => {
-    vi.spyOn(axios, 'delete').mockResolvedValue({});
-    const result = await service.deleteUser();
+  test('deleteUser returns true on success', async () => {
+    const result = await userService.deleteUser();
     expect(result).toBe(true);
   });
 });
