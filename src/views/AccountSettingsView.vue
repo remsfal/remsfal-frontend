@@ -1,26 +1,29 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
 import { useUserSessionStore } from '@/stores/UserSession';
-import UserService, { type Address, type User } from '@/services/UserService';
+// import UserService, { type Address, type User } from '@/services/UserService';
+import type { User, Address } from '@/types/user';
+import UserService from '@/services/UserService';
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router'
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const userProfile = ref({} as User); // Das gesamte Benutzerprofil
-const editedUserProfile = ref({} as User);
-const addressProfile = ref({} as Address);
-const editedAddress = ref({} as Address);
-const deleteAcc = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
+const userProfile = ref<User>({} as User);
+const editedUserProfile = ref<User>({} as User);
+const addressProfile = ref<Address>({} as Address);
+const editedAddress = ref<Address>({} as Address);
+const deleteAcc = ref(false);
 const changes = ref(false);
 const saveSuccess = ref(false);
 const saveError = ref(false);
+
 const countries = ref([
   { name: 'Australia', code: 'AU' },
   { name: 'Brazil', code: 'BR' },
@@ -58,7 +61,7 @@ const countries = ref([
   { name: 'Sweden', code: 'SE' },
 ]);
 
-const errorMessage = ref({
+const errorMessage = ref<Record<string, string>>({
   firstname: '',
   lastname: '',
   mobilePhoneNumber: '',
@@ -73,7 +76,7 @@ const errorMessage = ref({
 
 onMounted(() => {
   const sessionStore = useUserSessionStore();
-  userProfile.value.email = sessionStore.user?.email || ''; // Sicherstellen, dass userEmail initialisiert wird
+  userProfile.value.email = sessionStore.user?.email || '';
   fetchUserProfile();
 });
 
@@ -156,16 +159,14 @@ function deleteAccount() {
     .catch(() => console.error('Das Benutzerprofil konnte nicht gelöscht werden!'));
 }
 
-// Reverts all changes made to the user and address profiles
 function cancel() {
   editedUserProfile.value = { ...userProfile.value };
   editedAddress.value = { ...addressProfile.value };
   changes.value = false;
   Object.keys(errorMessage.value).forEach((key) => {
-    errorMessage.value[key as keyof typeof errorMessage.value] = '';
+    errorMessage.value[key] = '';
   });
 }
-
 // Validates a specific field in the user or address profile based on its type and content.
 // Uses regex patterns to enforce rules:
 // - Default: Only allows alphabetic characters and spaces.
@@ -213,7 +214,6 @@ function validateField(
     editedAddress.value,
   );
 }
-
 // Validates the entered country code by checking if it matches a known country.
 // If no match is found an error indicating the country code is invalid will be displayed.
 function updateCountryFromCode() {
@@ -250,7 +250,7 @@ async function getCity() {
   }
 }
 
-// Determines if there are any changes between the original user and address profiles and their edited
+//Determines if there are any changes between the original user and address profiles and their edited
 // versions. Returns `true` if differences are detected, otherwise `false`.
 function checkValues(
   userProfile: User,
@@ -267,34 +267,28 @@ function checkValues(
     return true;
   }
 }
-
 // Recursively compares two objects (User or Address) to check if they are identical.
 // - Returns `true` if the objects have the same structure and identical values for all keys.
 // - Returns `false` if the objects differ in keys or values.
-function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
+function compareObjects(obj1: any, obj2: any): boolean {
   if (obj1 === obj2) return true;
 
   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
     return false;
   }
 
-  const keys1 = Object.keys(obj1) as Array<keyof (User & Address)>;
-  const keys2 = Object.keys(obj2) as Array<keyof (User & Address)>;
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
 
   if (keys1.length !== keys2.length) return false;
 
   for (const key of keys1) {
-    if (
-      !keys2.includes(key) ||
-      !compareObjects(obj1[key as keyof typeof obj1], obj2[key as keyof typeof obj2])
-    ) {
-      return false;
-    }
-  }
+    if (!keys2.includes(key)) return false;
 
+    if (!compareObjects(obj1[key], obj2[key])) return false;
+  }
   return true;
 }
-
 // Check if any error message is not empty to disable save button
 const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
@@ -314,7 +308,9 @@ const isDisabled = computed(() => {
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="firstName">{{ t('accountSettings.userProfile.name') }}:</label>
+                <label class="label" for="firstName"
+                  >{{ t('accountSettings.userProfile.name') }}:</label
+                >
                 <InputText
                   id="firstName"
                   v-model="editedUserProfile.firstName"
@@ -409,7 +405,9 @@ const isDisabled = computed(() => {
                 >
               </div>
             </div>
-            <Message class="required" size="small" severity="secondary" variant="simple">*Pflichtfelder</Message>
+            <Message class="required" size="small" severity="secondary" variant="simple"
+              >*Pflichtfelder</Message
+            >
           </template>
         </Card>
         <Card>
@@ -614,7 +612,7 @@ const isDisabled = computed(() => {
           >
             <p>Daten konnten nicht gespeichert werden!</p>
           </Dialog>
-       </div>
+        </div>
       </div>
     </div>
   </div>

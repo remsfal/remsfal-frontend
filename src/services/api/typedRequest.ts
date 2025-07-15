@@ -29,6 +29,20 @@ export type ResponseType<
   ? Res
   : unknown;
 
+// Helper to flatten nested params like { query: { zip: '12345' } }
+// into { 'query[zip]': '12345' }
+function flattenParams(obj: Record<string, any>, prefix = ''): Record<string, any> {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    const fullKey = prefix ? `${prefix}[${key}]` : key;
+    if (typeof value === 'object' && value !== null) {
+      Object.assign(acc, flattenParams(value, fullKey));
+    } else {
+      acc[fullKey] = value;
+    }
+    return acc;
+  }, {} as Record<string, any>);
+}
+
 export async function typedRequest<
   P extends Path,
   M extends Method
@@ -56,13 +70,15 @@ export async function typedRequest<
     }
   }
 
+  const flattenedQueryParams = flattenParams(queryParams);
+
   const response = await axios.request({
     method,
     url,
-    params: queryParams,
+    params: flattenedQueryParams,
     data: options.body,
     ...options.config,
   });
-  console.debug(response)
+  console.debug(response);
   return response.data;
 }
