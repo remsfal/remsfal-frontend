@@ -2,10 +2,10 @@ import { typedRequest } from '../../src/services/api/typedRequest';
 import type { ResponseType } from '../../src/services/api/typedRequest';
 
 // Extract User type from OpenAPI paths
-type User = ResponseType<'/api/v1/user', 'get'>;
+export type User = ResponseType<'/api/v1/user', 'get'>;
 
-// Extract Address[] type from OpenAPI paths
-type AddressArray = ResponseType<'/api/v1/address', 'get'>;
+// Extract Address[] type from OpenAPI paths (already an array)
+export type Address = ResponseType<'/api/v1/address', 'get'>;
 
 export default class UserService {
   private readonly url = '/api/v1/user';
@@ -21,7 +21,8 @@ export default class UserService {
     }
   }
 
-  async getCityFromZip(zip: string): Promise<AddressArray | null> {
+  // Use 'Address' here, which is the full array type
+  async getCityFromZip(zip: string): Promise<Address | null> {
     try {
       const city = await typedRequest('get', '/api/v1/address', {
         params: { zip } as any, 
@@ -34,7 +35,6 @@ export default class UserService {
     }
   }
   
-
   async updateUser(updatedUser: Partial<User>): Promise<User | null> {
     try {
       const user = await typedRequest('patch', this.url, { body: updatedUser });
