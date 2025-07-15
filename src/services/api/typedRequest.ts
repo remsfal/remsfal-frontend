@@ -58,7 +58,9 @@ export async function typedRequest<
   let url = path as string;
   const rawParams = options.params || {};
 
-  const pathParamMatches = Array.from(url.matchAll(/{([^}]+)}/g));
+  // Updated regex: limit inside {} to max 100 chars to prevent potential DoS
+  const pathParamMatches = Array.from(url.matchAll(/{([^}]{1,100})}/g));
+
   const queryParams: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(rawParams)) {
@@ -79,6 +81,7 @@ export async function typedRequest<
     data: options.body,
     ...options.config,
   });
+
   console.debug(response);
   return response.data;
 }
