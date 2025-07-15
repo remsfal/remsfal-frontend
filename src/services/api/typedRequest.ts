@@ -56,13 +56,12 @@ export async function typedRequest<
   }
 ): Promise<ResponseType<P, M>> {
   let url = path as string;
-  const rawParams = options.params || {};
+  const rawParams = options.params ?? {}; // ✅ safer default
 
-  // Updated regex: limit inside {} to max 100 chars to prevent potential DoS
+  //  Safer regex with max 100 chars inside {}
   const pathParamMatches = Array.from(url.matchAll(/{([^}]{1,100})}/g));
 
   const queryParams: Record<string, unknown> = {};
-
   for (const [key, value] of Object.entries(rawParams)) {
     const isPathParam = pathParamMatches.find((match) => match[1] === key);
     if (isPathParam) {

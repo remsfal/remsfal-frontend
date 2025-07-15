@@ -27,17 +27,20 @@ export default class UserService {
 
   async getCityFromZip(zip: string): Promise<Address[] | null> {
     try {
-      // Notice we keep the nested query param here:
+      // Keep nested query param structure
       const cityRaw = await typedRequest('get', '/api/v1/address', {
         params: { query: { zip } },
       });
+  
       const cityNormalized = (cityRaw as Partial<AddressFallback>[]).map(normalizeAddress);
-      return cityNormalized.length > 0 ? (cityNormalized as Address[]) : null;
+  
+      return cityNormalized.length > 0 ? cityNormalized : null;
     } catch (error) {
       console.error('GET city failed:', error);
       return null;
     }
   }
+  
 
   async updateUser(updatedUser: Partial<User>): Promise<User | null> {
     try {

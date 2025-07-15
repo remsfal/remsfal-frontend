@@ -1,4 +1,3 @@
-import 'vitest';
 import { beforeAll, afterAll, afterEach } from 'vitest';
 import { server } from './server';  
 

@@ -1,7 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
 import { useUserSessionStore } from '@/stores/UserSession';
-// import UserService, { type Address, type User } from '@/services/UserService';
 import type { User, Address } from '@/types/user';
 import UserService from '@/services/UserService';
 import { computed, onMounted, ref } from 'vue';
