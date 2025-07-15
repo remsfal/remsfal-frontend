@@ -127,7 +127,7 @@ watch(
     projectId.value = newId;
     model.value = buildMenuModel(newId);
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

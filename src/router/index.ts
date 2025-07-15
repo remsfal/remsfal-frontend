@@ -12,7 +12,9 @@ import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
-import ProjectChatView from '@/views/ProjectChatView.vue'
+import ProjectChatView from '@/views/ProjectChatView.vue';
+import TenantMenu from '@/layout/TenantMenu.vue';
+import TenantTopbar from '@/layout/TenantTopbar.vue';
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -45,7 +47,7 @@ const fullscreenRoutes: RouteRecordRaw[] = [
       {
         path: '/projects',
         name: 'ProjectSelection',
-        component: () => import('@/views/ProjectSelectionView.vue'),
+        component: () => import('@/views/ManagerView.vue'),
       },
       {
         path: '/new-project',
@@ -72,7 +74,7 @@ const fullscreenRoutes: RouteRecordRaw[] = [
   },
 ];
 
-const projectRoutes: RouteRecordRaw[] = [
+const managerRoutes: RouteRecordRaw[] = [
   {
     path: '/project/:projectId',
     components: {
@@ -243,9 +245,33 @@ const projectRoutes: RouteRecordRaw[] = [
   },
 ];
 
+const tenantRoutes: RouteRecordRaw[] = [
+  {
+    path: '/tenancies',
+    components: {
+      default: AppLayout,
+      topbar: TenantTopbar,
+      sidebar: TenantMenu,
+    },
+    props: {
+      default: {
+        fullscreen: false,
+      },
+    },
+    children: [
+      {
+        path: '',
+        name: 'TenantView',
+        props: true,
+        component: () => import('@/views/TenantView.vue'),
+      },
+    ],
+  },
+];
+
 const contractorRoutes: RouteRecordRaw[] = [
   {
-    path: '/contractor',
+    path: '/customers',
     components: {
       default: AppLayout,
       topbar: ContractorTopbar,
@@ -269,7 +295,8 @@ const contractorRoutes: RouteRecordRaw[] = [
 
 const routes: Readonly<RouteRecordRaw[]> = [
   ...fullscreenRoutes,
-  ...projectRoutes,
+  ...managerRoutes,
+  ...tenantRoutes,
   ...contractorRoutes,
 ];
 
@@ -281,4 +308,3 @@ const router = createRouter({
 export { routes };
 
 export default router;
-
