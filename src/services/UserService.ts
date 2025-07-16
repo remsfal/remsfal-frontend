@@ -1,80 +1,66 @@
-import axios from 'axios';
+import { typedRequest } from '../../src/services/api/typedRequest';
+import type { User, Address, AddressFallback } from '@/types/user';
 
-export interface Address {
-  street: string;
-  city: string;
-  province: string;
-  zip: string;
-  countryCode: string;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  address: Address;
-  mobilePhoneNumber: string;
-  businessPhoneNumber: string;
-  privatePhoneNumber: string;
-  registeredDate: string;
-  lastLoginDate: string;
+function normalizeAddress(addr: Partial<AddressFallback>): AddressFallback {
+  return {
+    street: addr.street ?? '',
+    city: addr.city ?? '',
+    province: addr.province ?? '',
+    zip: addr.zip ?? '',
+    countryCode: addr.countryCode ?? '',
+  };
 }
 
 export default class UserService {
-  private readonly url: string = '/api/v1/user';
+  private readonly url = '/api/v1/user';
 
-  getUser(): Promise<User | void> {
-    return axios
-      .get(`${this.url}`)
-      .then((response) => {
-        const user: User = response.data;
-        console.log('GET user:', user);
-        return user;
-      })
-      .catch((error) => {
-        console.error('GET user failed:', error);
-      });
+  async getUser(): Promise<User | null> {
+    try {
+      const user = await typedRequest('get', this.url, {});
+      console.log('GET user:', user);
+      return user as User;
+    } catch (error) {
+      console.error('GET user failed:', error);
+      return null;
+    }
   }
 
-  getCityFromZip(zip: string): Promise<Address[] | void> {
-    return axios
-      .get(`/api/v1/address`, {
-        params: { zip: zip },
-      })
-      .then((response) => {
-        const city: Address[] = response.data;
-        console.log('GET user:', city);
-        return city;
-      })
-      .catch((error) => {
-        console.error('GET user failed:', error);
+  async getCityFromZip(zip: string): Promise<Address[] | null> {
+    try {
+      // Keep nested query param structure
+      const cityRaw = await typedRequest('get', '/api/v1/address', {
+        params: { query: { zip } },
       });
+  
+      const cityNormalized = (cityRaw as Partial<AddressFallback>[]).map(normalizeAddress);
+  
+      return cityNormalized.length > 0 ? cityNormalized : null;
+    } catch (error) {
+      console.error('GET city failed:', error);
+      return null;
+    }
+  }
+  
+
+  async updateUser(updatedUser: Partial<User>): Promise<User | null> {
+    try {
+      const user = await typedRequest('patch', this.url, { body: updatedUser });
+      console.log('PATCH user:', user);
+      return user as User;
+    } catch (error) {
+      console.error('PATCH user failed:', error);
+      return null;
+    }
   }
 
-  updateUser(updatedUser: Partial<User>): Promise<User | void> {
-    return axios
-      .patch(`${this.url}`, updatedUser)
-      .then((response) => {
-        const user: User = response.data;
-        console.log('PATCH user:', user);
-        return user;
-      })
-      .catch((error) => {
-        console.error('PATCH user failed:', error);
-      });
-  }
-
-  deleteUser(): Promise<boolean> {
-    return axios
-      .delete(`${this.url}`)
-      .then(() => {
-        console.log('DELETE user');
-        return true;
-      })
-      .catch((error) => {
-        console.error('DELETE user failed:', error);
-        return false;
-      });
+  async deleteUser(): Promise<boolean> {
+    try {
+      await typedRequest('delete', this.url, {});
+      console.log('DELETE user');
+      return true;
+    } catch (error) {
+      console.error('DELETE user failed:', error);
+      return false;
+    }
   }
 }
