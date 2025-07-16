@@ -1808,9 +1808,9 @@
         }
       }
     },
-    "/api/v1/projects/{projectId}/buildings/{buildingId}/garages" : {
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/storages" : {
       "post" : {
-        "summary" : "Create a new garage.",
+        "summary" : "Create a new storage.",
         "parameters" : [ {
           "description" : "ID of the building",
           "required" : true,
@@ -1840,32 +1840,32 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Garage created successfully",
+            "description" : "Storage created successfully",
             "headers" : {
               "Location" : {
-                "description" : "URL of the new garage"
+                "description" : "URL of the new storage"
               }
             }
           }
         }
       }
     },
-    "/api/v1/projects/{projectId}/buildings/{buildingId}/garages/{garageId}" : {
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/storages/{storageId}" : {
       "patch" : {
-        "summary" : "Update information of a garage.",
+        "summary" : "Update information of a storage.",
         "parameters" : [ {
-          "description" : "ID of the garage",
+          "description" : "ID of the project",
           "required" : true,
-          "name" : "garageId",
+          "name" : "projectId",
           "in" : "path",
           "schema" : {
             "type" : "string",
             "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the storage",
           "required" : true,
-          "name" : "projectId",
+          "name" : "storageId",
           "in" : "path",
           "schema" : {
             "type" : "string",
@@ -1887,24 +1887,24 @@
             "description" : "No user authentication provided via session cookie"
           },
           "404" : {
-            "description" : "The garage does not exist"
+            "description" : "The storage does not exist"
           }
         }
       },
       "get" : {
-        "summary" : "Retrieve information of a garage.",
+        "summary" : "Retrieve information of a storage.",
         "parameters" : [ {
-          "description" : "ID of the garage",
+          "description" : "ID of the project",
           "required" : true,
-          "name" : "garageId",
+          "name" : "projectId",
           "in" : "path",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the storage",
           "required" : true,
-          "name" : "projectId",
+          "name" : "storageId",
           "in" : "path",
           "schema" : {
             "type" : "string"
@@ -1912,25 +1912,25 @@
         } ],
         "responses" : {
           "404" : {
-            "description" : "The garage does not exist"
+            "description" : "The storage does not exist"
           }
         }
       },
       "delete" : {
-        "summary" : "Delete an existing garage.",
+        "summary" : "Delete an existing storage.",
         "parameters" : [ {
-          "description" : "ID of the garage",
+          "description" : "ID of the project",
           "required" : true,
-          "name" : "garageId",
+          "name" : "projectId",
           "in" : "path",
           "schema" : {
             "type" : "string",
             "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the storage",
           "required" : true,
-          "name" : "projectId",
+          "name" : "storageId",
           "in" : "path",
           "schema" : {
             "type" : "string",
@@ -1939,7 +1939,7 @@
         } ],
         "responses" : {
           "204" : {
-            "description" : "The garage was deleted successfully"
+            "description" : "The storage was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -2273,137 +2273,6 @@
           },
           "404" : {
             "description" : "The project or contractor does not exist"
-          }
-        }
-      }
-    },
-    "/api/v1/projects/{projectId}/garages" : {
-      "post" : {
-        "summary" : "Create a new garage.",
-        "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/StorageJson"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Garage created successfully",
-            "headers" : {
-              "Location" : {
-                "description" : "URL of the new garage"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/projects/{projectId}/garages/{garageId}" : {
-      "patch" : {
-        "summary" : "Update information of a garage.",
-        "parameters" : [ {
-          "description" : "ID of the garage",
-          "required" : true,
-          "name" : "garageId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/StorageJson"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The garage does not exist"
-          }
-        }
-      },
-      "get" : {
-        "summary" : "Retrieve information of a garage.",
-        "parameters" : [ {
-          "description" : "ID of the garage",
-          "required" : true,
-          "name" : "garageId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "404" : {
-            "description" : "The garage does not exist"
-          }
-        }
-      },
-      "delete" : {
-        "summary" : "Delete an existing garage.",
-        "parameters" : [ {
-          "description" : "ID of the garage",
-          "required" : true,
-          "name" : "garageId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "The garage was deleted successfully"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
           }
         }
       }
@@ -3134,9 +3003,9 @@
         }
       }
     },
-    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/garages" : {
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages" : {
       "post" : {
-        "summary" : "Create a new garage.",
+        "summary" : "Create a new storage.",
         "parameters" : [ {
           "description" : "ID of the building",
           "required" : true,
@@ -3166,32 +3035,32 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Garage created successfully",
+            "description" : "Storage created successfully",
             "headers" : {
               "Location" : {
-                "description" : "URL of the new garage"
+                "description" : "URL of the new storage"
               }
             }
           }
         }
       }
     },
-    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/garages/{garageId}" : {
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages/{storageId}" : {
       "patch" : {
-        "summary" : "Update information of a garage.",
+        "summary" : "Update information of a storage.",
         "parameters" : [ {
-          "description" : "ID of the garage",
+          "description" : "ID of the project",
           "required" : true,
-          "name" : "garageId",
+          "name" : "projectId",
           "in" : "path",
           "schema" : {
             "type" : "string",
             "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the storage",
           "required" : true,
-          "name" : "projectId",
+          "name" : "storageId",
           "in" : "path",
           "schema" : {
             "type" : "string",
@@ -3213,24 +3082,24 @@
             "description" : "No user authentication provided via session cookie"
           },
           "404" : {
-            "description" : "The garage does not exist"
+            "description" : "The storage does not exist"
           }
         }
       },
       "get" : {
-        "summary" : "Retrieve information of a garage.",
+        "summary" : "Retrieve information of a storage.",
         "parameters" : [ {
-          "description" : "ID of the garage",
+          "description" : "ID of the project",
           "required" : true,
-          "name" : "garageId",
+          "name" : "projectId",
           "in" : "path",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the storage",
           "required" : true,
-          "name" : "projectId",
+          "name" : "storageId",
           "in" : "path",
           "schema" : {
             "type" : "string"
@@ -3238,25 +3107,25 @@
         } ],
         "responses" : {
           "404" : {
-            "description" : "The garage does not exist"
+            "description" : "The storage does not exist"
           }
         }
       },
       "delete" : {
-        "summary" : "Delete an existing garage.",
+        "summary" : "Delete an existing storage.",
         "parameters" : [ {
-          "description" : "ID of the garage",
+          "description" : "ID of the project",
           "required" : true,
-          "name" : "garageId",
+          "name" : "projectId",
           "in" : "path",
           "schema" : {
             "type" : "string",
             "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the storage",
           "required" : true,
-          "name" : "projectId",
+          "name" : "storageId",
           "in" : "path",
           "schema" : {
             "type" : "string",
@@ -3265,7 +3134,7 @@
         } ],
         "responses" : {
           "204" : {
-            "description" : "The garage was deleted successfully"
+            "description" : "The storage was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -3543,6 +3412,137 @@
         "responses" : {
           "204" : {
             "description" : "The site was deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/storages" : {
+      "post" : {
+        "summary" : "Create a new storage.",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StorageJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Storage created successfully",
+            "headers" : {
+              "Location" : {
+                "description" : "URL of the new storage"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/storages/{storageId}" : {
+      "patch" : {
+        "summary" : "Update information of a storage.",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        }, {
+          "description" : "ID of the storage",
+          "required" : true,
+          "name" : "storageId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StorageJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The storage does not exist"
+          }
+        }
+      },
+      "get" : {
+        "summary" : "Retrieve information of a storage.",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ID of the storage",
+          "required" : true,
+          "name" : "storageId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "The storage does not exist"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete an existing storage.",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        }, {
+          "description" : "ID of the storage",
+          "required" : true,
+          "name" : "storageId",
+          "in" : "path",
+          "schema" : {
+            "type" : "string",
+            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The storage was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
