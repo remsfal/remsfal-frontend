@@ -389,6 +389,7 @@ export interface components {
         UserJson: {
             active?: boolean;
             id?: string;
+            userRoles?: components["schemas"]["UserRole"][];
             email?: string;
             firstName?: string;
             lastName?: string;
@@ -399,6 +400,8 @@ export interface components {
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
+        /** @enum {string} */
+        UserRole: "MANAGER" | "TENANT" | "CONTRACTOR";
     };
     responses: never;
     parameters: never;

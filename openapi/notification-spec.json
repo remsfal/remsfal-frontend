@@ -919,6 +919,13 @@
           "id" : {
             "type" : "string"
           },
+          "userRoles" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/UserRole"
+            }
+          },
           "email" : {
             "type" : "string",
             "maxLength" : 255
@@ -955,6 +962,10 @@
             "$ref" : "#/components/schemas/LocalDateTime"
           }
         }
+      },
+      "UserRole" : {
+        "type" : "string",
+        "enum" : [ "MANAGER", "TENANT", "CONTRACTOR" ]
       }
     },
     "securitySchemes" : {
