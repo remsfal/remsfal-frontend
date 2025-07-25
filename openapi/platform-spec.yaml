@@ -736,6 +736,11 @@ components:
           type: boolean
         id:
           type: string
+        userRoles:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/UserRole"
         email:
           type: string
           maxLength: 255
@@ -762,6 +767,12 @@ components:
           $ref: "#/components/schemas/LocalDate"
         lastLoginDate:
           $ref: "#/components/schemas/LocalDateTime"
+    UserRole:
+      type: string
+      enum:
+      - MANAGER
+      - TENANT
+      - CONTRACTOR
   securitySchemes:
     SecurityScheme:
       type: http
