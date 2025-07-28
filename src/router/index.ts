@@ -14,6 +14,7 @@ import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
 import TenantTopbar from '@/layout/TenantTopbar.vue';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -277,7 +278,21 @@ const contractorRoutes: RouteRecordRaw[] = [
   },
 ];
 
+const dynamicRootRoute: RouteRecordRaw = {
+  path: '/',
+  redirect: () => {
+    const sessionStore = useUserSessionStore();
+    const roles = sessionStore.user?.userRoles || [];
+
+    if (roles.includes('MANAGER')) return { name: 'ProjectSelection' };
+    if (roles.includes('CONTRACTOR')) return { name: 'ContractorView' };
+    if (roles.includes('TENANT')) return { name: 'TenantView' };
+    return { name: 'ProjectSelection' };
+  },
+};
+
 const routes: Readonly<RouteRecordRaw[]> = [
+  dynamicRootRoute,
   ...fullscreenRoutes,
   ...managerRoutes,
   ...tenantRoutes,
