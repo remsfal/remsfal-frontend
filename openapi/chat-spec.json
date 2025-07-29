@@ -286,6 +286,11 @@
           }
         }
       },
+      "Date" : {
+        "type" : "string",
+        "format" : "date",
+        "examples" : [ "2022-03-10" ]
+      },
       "Instant" : {
         "type" : "string",
         "format" : "date-time",
@@ -735,6 +740,27 @@
           }
         }
       },
+      "TaskItemJson1" : {
+        "description" : "A task item with basic information from a tenant's perspective",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          }
+        }
+      },
       "TaskJson" : {
         "description" : "A task",
         "type" : "object",
@@ -779,6 +805,34 @@
           }
         }
       },
+      "TaskJson1" : {
+        "description" : "A task from a tenant's perspective",
+        "type" : "object",
+        "properties" : {
+          "reporterId" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Date"
+          }
+        }
+      },
       "TaskListJson" : {
         "description" : "A list of tasks",
         "type" : "object",
@@ -787,6 +841,18 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/TaskItemJson"
+            }
+          }
+        }
+      },
+      "TaskListJson1" : {
+        "description" : "A list of tasks from a tenant's perspective",
+        "type" : "object",
+        "properties" : {
+          "tasks" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaskItemJson1"
             }
           }
         }
@@ -1750,7 +1816,7 @@
     }
   },
   "info" : {
-    "title" : "remsfal-chat API",
+    "title" : "remsfal-ticketing API",
     "version" : "1.0.0-SNAPSHOT"
   },
   "servers" : [ {

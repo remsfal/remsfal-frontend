@@ -3389,6 +3389,176 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenancies/{tenancyId}/{rentalType}/{rentalId}tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all tasks. */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Filter to return only tasks with a specific status */
+                    status?: components["schemas"]["Status"];
+                };
+                header?: never;
+                path: {
+                    /** @description ID of the rental */
+                    rentalId: string;
+                    /** @description Type of the rental */
+                    rentalType: string;
+                    /** @description ID of the tenancy */
+                    tenancyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new task. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the rental */
+                    rentalId: string;
+                    /** @description Type of the rental */
+                    rentalType: string;
+                    /** @description ID of the tenancy */
+                    tenancyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TaskJson1"];
+                };
+            };
+            responses: {
+                /** @description Task created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new task */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenancies/{tenancyId}/{rentalType}/{rentalId}tasks/{taskId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a task. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the rental */
+                    rentalId: string;
+                    /** @description Type of the rental */
+                    rentalType: string;
+                    /** @description ID of the task */
+                    taskId: string;
+                    /** @description ID of the tenancy */
+                    tenancyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The property does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update information of a task. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the rental */
+                    rentalId: string;
+                    /** @description Type of the rental */
+                    rentalType: string;
+                    /** @description ID of the task */
+                    taskId: string;
+                    /** @description ID of the tenancy */
+                    tenancyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TaskJson1"];
+                };
+            };
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The task does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/v1/user": {
         parameters: {
             query?: never;
@@ -3657,6 +3827,8 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
+        /** Format: date */
+        Date: string;
         /** Format: date-time */
         Instant: string;
         /** Format: date */
@@ -3828,6 +4000,14 @@ export interface components {
             status?: components["schemas"]["Status"];
             owner?: string;
         };
+        /** @description A task item with basic information from a tenant's perspective */
+        TaskItemJson1: {
+            id?: string;
+            name?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+        };
         /** @description A task */
         TaskJson: {
             reporterId?: string;
@@ -3842,9 +4022,23 @@ export interface components {
             relatedTo?: string;
             duplicateOf?: string;
         };
+        /** @description A task from a tenant's perspective */
+        TaskJson1: {
+            reporterId?: string;
+            id?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+            description?: string;
+            createdAt?: components["schemas"]["Date"];
+        };
         /** @description A list of tasks */
         TaskListJson: {
             tasks?: components["schemas"]["TaskItemJson"][];
+        };
+        /** @description A list of tasks from a tenant's perspective */
+        TaskListJson1: {
+            tasks?: components["schemas"]["TaskItemJson1"][];
         };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {
