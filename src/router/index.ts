@@ -14,6 +14,7 @@ import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
 import TenantTopbar from '@/layout/TenantTopbar.vue';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -286,8 +287,34 @@ const routes: Readonly<RouteRecordRaw[]> = [
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: routes,
+  routes,
 });
+
+/* --------------------------------------------------------------------------
+ * Role-Based Redirect After Login
+ * -------------------------------------------------------------------------- */
+router.beforeEach((to, from, next) => {
+  const sessionStore = useUserSessionStore();
+  const isLoggedIn = !!sessionStore.user;
+  const roles = sessionStore.user?.userRoles || [];
+
+  // If trying to access LandingPage while logged in, redirect to appropriate view
+  if (to.name === 'LandingPage' && isLoggedIn) {
+    if (roles.includes('MANAGER')) {
+      return next({ name: 'ProjectSelection' });
+    } else if (roles.includes('CONTRACTOR')) {
+      return next({ name: 'ContractorView' });
+    } else if (roles.includes('TENANT')) {
+      return next({ name: 'TenantView' });
+    } else {
+      return next({ name: 'ProjectSelection' }); // fallback
+    }
+  }
+
+  // Proceed normally otherwise
+  next();
+});
+
 
 export { routes };
 
