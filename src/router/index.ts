@@ -278,21 +278,7 @@ const contractorRoutes: RouteRecordRaw[] = [
   },
 ];
 
-const dynamicRootRoute: RouteRecordRaw = {
-  path: '/',
-  redirect: () => {
-    const sessionStore = useUserSessionStore();
-    const roles = sessionStore.user?.userRoles || [];
-
-    if (roles.includes('MANAGER')) return { name: 'ProjectSelection' };
-    if (roles.includes('CONTRACTOR')) return { name: 'ContractorView' };
-    if (roles.includes('TENANT')) return { name: 'TenantView' };
-    return { name: 'ProjectSelection' };
-  },
-};
-
 const routes: Readonly<RouteRecordRaw[]> = [
-  dynamicRootRoute,
   ...fullscreenRoutes,
   ...managerRoutes,
   ...tenantRoutes,
@@ -301,8 +287,34 @@ const routes: Readonly<RouteRecordRaw[]> = [
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: routes,
+  routes,
 });
+
+/* --------------------------------------------------------------------------
+ * Role-Based Redirect After Login
+ * -------------------------------------------------------------------------- */
+router.beforeEach((to, from, next) => {
+  const sessionStore = useUserSessionStore();
+  const isLoggedIn = !!sessionStore.user;
+  const roles = sessionStore.user?.userRoles || [];
+
+  // If trying to access LandingPage while logged in, redirect to appropriate view
+  if (to.name === 'LandingPage' && isLoggedIn) {
+    if (roles.includes('MANAGER')) {
+      return next({ name: 'ProjectSelection' });
+    } else if (roles.includes('CONTRACTOR')) {
+      return next({ name: 'ContractorView' });
+    } else if (roles.includes('TENANT')) {
+      return next({ name: 'TenantView' });
+    } else {
+      return next({ name: 'ProjectSelection' }); // fallback
+    }
+  }
+
+  // Proceed normally otherwise
+  next();
+});
+
 
 export { routes };
 
