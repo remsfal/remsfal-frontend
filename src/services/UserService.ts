@@ -1,7 +1,27 @@
 import { typedRequest } from '../../src/services/api/typedRequest';
-import type { User, Address, AddressFallback } from '@/types/user';
+import type { ResponseType } from '../../src/services/api/typedRequest';
 
-function normalizeAddress(addr: Partial<AddressFallback>): AddressFallback {
+type User = ResponseType<'/api/v1/user', 'get'>;
+
+// Extend AddressRaw to include 'state' since your MSW mock returns it
+type AddressRaw = {
+  street?: string;
+  city?: string;
+  state?: string;
+  province?: string;
+  zip?: string;
+  countryCode?: string;
+}[];
+
+type AddressFallback = {
+  street: string;
+  city: string;
+  province: string;
+  zip: string;
+  countryCode: string;
+};
+
+function normalizeAddress(addr: Partial<AddressRaw[number]>): AddressFallback {
   return {
     street: addr.street ?? '',
     city: addr.city ?? '',
@@ -25,22 +45,20 @@ export default class UserService {
     }
   }
 
-  async getCityFromZip(zip: string): Promise<Address[] | null> {
+  async getCityFromZip(zip: string): Promise<AddressFallback[] | null> {
     try {
-      // Keep nested query param structure
-      const cityRaw = await typedRequest('get', '/api/v1/address', {
+      // Cast the unknown response to the expected type to avoid TS errors
+      const cityRaw = (await typedRequest('get', '/api/v1/address', {
         params: { query: { zip } },
-      });
-  
-      const cityNormalized = (cityRaw as Partial<AddressFallback>[]).map(normalizeAddress);
-  
+      })) as Partial<AddressRaw[number]>[];
+
+      const cityNormalized = cityRaw.map(normalizeAddress);
       return cityNormalized.length > 0 ? cityNormalized : null;
     } catch (error) {
       console.error('GET city failed:', error);
       return null;
     }
   }
-  
 
   async updateUser(updatedUser: Partial<User>): Promise<User | null> {
     try {
