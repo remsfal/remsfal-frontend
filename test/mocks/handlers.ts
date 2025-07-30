@@ -19,29 +19,29 @@ export const handlers = [
     { once: true }
   ),
 
-  // Mock GET /address?query[zip]=12345
-  http.get(`${API_BASE}/address`, ({ request }) => {
-    const url = new URL(request.url, 'http://localhost');
-    const zip = url.searchParams.get('query[zip]');
+ // Mock GET /address?query[zip]=12345
+http.get(`${API_BASE}/address`, ({ request }) => {
+  const url = new URL(request.url, 'http://localhost');
+  const zip = url.searchParams.get('query[zip]');
 
-    if (zip === '12345') {
-      return HttpResponse.json(
-        [
-          {
-            city: 'Sample City',
-            state: 'SC',
-            zip: '12345',
-            province: '',
-            street: '',
-            countryCode: 'US',
-          },
-        ],
-        { status: 200 }
-      );
-    }
+  if (zip === '12345') {
+    return HttpResponse.json(
+      [
+        {
+          city: 'Sample City',
+          countryCode: '',
+          province: '',
+          street: '',
+          zip: '12345',
+        },
+      ],
+      { status: 200 }
+    );
+  }
 
-    return HttpResponse.json([], { status: 200 });
-  }),
+  return HttpResponse.json([], { status: 200 });
+}),
+
 
   // Mock PATCH /user with type assertion to fix spread error
   http.patch(`${API_BASE}/user`, async ({ request }) => {

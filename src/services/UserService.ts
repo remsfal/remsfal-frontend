@@ -13,6 +13,7 @@ export interface AddressFallback {
 // Fallback interface for user with all needed fields
 export interface UserFallback {
   id: string;
+  name?: string;
   email: string;
   firstName: string;
   lastName: string;
