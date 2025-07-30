@@ -56,9 +56,9 @@ export async function typedRequest<
   }
 ): Promise<ResponseType<P, M>> {
   let url = path as string;
-  const rawParams = options.params ?? {}; // ✅ safer default
+  const rawParams = options.params ?? {}; // safer default
 
-  //  Safer regex with max 100 chars inside {}
+  // Replace path params like {id}
   const pathParamMatches = Array.from(url.matchAll(/{([^}]{1,100})}/g));
 
   const queryParams: Record<string, unknown> = {};
@@ -81,6 +81,6 @@ export async function typedRequest<
     ...options.config,
   });
 
-  console.debug(response);
+  console.debug('typedRequest response:', response);
   return response.data;
 }

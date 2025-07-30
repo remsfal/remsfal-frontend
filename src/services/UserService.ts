@@ -1,9 +1,41 @@
 import { typedRequest } from '../../src/services/api/typedRequest';
 import type { ResponseType } from '../../src/services/api/typedRequest';
 
-type User = ResponseType<'/api/v1/user', 'get'>;
+// Fallback interface for address
+export interface AddressFallback {
+  street: string;
+  city: string;
+  province: string;
+  zip: string;
+  countryCode: string;
+}
 
-// Extend AddressRaw to include 'state' since your MSW mock returns it
+// Fallback interface for user with all needed fields
+export interface UserFallback {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  address: AddressFallback;
+  mobilePhoneNumber: string;
+  businessPhoneNumber: string;
+  privatePhoneNumber: string;
+  registeredDate: string;
+  lastLoginDate: string;
+}
+
+// Use the typed response if available, fallback to manual interface
+export type User = [ResponseType<'/api/v1/user', 'get'>] extends [unknown]
+  ? UserFallback
+  : ResponseType<'/api/v1/user', 'get'>;
+
+export type Address = [ResponseType<'/api/v1/address', 'get'>] extends [unknown]
+  ? AddressFallback
+  : ResponseType<'/api/v1/address', 'get'>;
+
+const USER_ENDPOINT = '/api/v1/user' as const;
+const ADDRESS_ENDPOINT = '/api/v1/address' as const;
+
 type AddressRaw = {
   street?: string;
   city?: string;
@@ -12,14 +44,6 @@ type AddressRaw = {
   zip?: string;
   countryCode?: string;
 }[];
-
-type AddressFallback = {
-  street: string;
-  city: string;
-  province: string;
-  zip: string;
-  countryCode: string;
-};
 
 function normalizeAddress(addr: Partial<AddressRaw[number]>): AddressFallback {
   return {
@@ -32,13 +56,12 @@ function normalizeAddress(addr: Partial<AddressRaw[number]>): AddressFallback {
 }
 
 export default class UserService {
-  private readonly url = '/api/v1/user';
-
   async getUser(): Promise<User | null> {
     try {
-      const user = await typedRequest('get', this.url, {});
+      // Cast the response to User explicitly
+      const user = (await typedRequest('get', USER_ENDPOINT, {})) as User;
       console.log('GET user:', user);
-      return user as User;
+      return user;
     } catch (error) {
       console.error('GET user failed:', error);
       return null;
@@ -47,11 +70,10 @@ export default class UserService {
 
   async getCityFromZip(zip: string): Promise<AddressFallback[] | null> {
     try {
-      // Cast the unknown response to the expected type to avoid TS errors
-      const cityRaw = (await typedRequest('get', '/api/v1/address', {
+      // Cast the response to Address[] explicitly
+      const cityRaw = (await typedRequest('get', ADDRESS_ENDPOINT, {
         params: { query: { zip } },
-      })) as Partial<AddressRaw[number]>[];
-
+      })) as Address[];
       const cityNormalized = cityRaw.map(normalizeAddress);
       return cityNormalized.length > 0 ? cityNormalized : null;
     } catch (error) {
@@ -62,9 +84,12 @@ export default class UserService {
 
   async updateUser(updatedUser: Partial<User>): Promise<User | null> {
     try {
-      const user = await typedRequest('patch', this.url, { body: updatedUser });
+      // Cast the response to User explicitly
+      const user = (await typedRequest('patch', USER_ENDPOINT, {
+        body: updatedUser,
+      })) as User;
       console.log('PATCH user:', user);
-      return user as User;
+      return user;
     } catch (error) {
       console.error('PATCH user failed:', error);
       return null;
@@ -73,7 +98,7 @@ export default class UserService {
 
   async deleteUser(): Promise<boolean> {
     try {
-      await typedRequest('delete', this.url, {});
+      await typedRequest('delete', USER_ENDPOINT, {});
       console.log('DELETE user');
       return true;
     } catch (error) {
