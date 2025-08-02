@@ -1,6 +1,8 @@
-import axios from 'axios';
+import { typedRequest } from '../../src/services/api/typedRequest';
+import type { ResponseType } from '../../src/services/api/typedRequest';
 
-export interface Address {
+// Fallback interface for address
+export interface AddressFallback {
   street: string;
   city: string;
   province: string;
@@ -8,12 +10,14 @@ export interface Address {
   countryCode: string;
 }
 
-export interface User {
+// Fallback interface for user with all needed fields
+export interface UserFallback {
   id: string;
+  name?: string;
   email: string;
   firstName: string;
   lastName: string;
-  address: Address;
+  address: AddressFallback;
   mobilePhoneNumber: string;
   businessPhoneNumber: string;
   privatePhoneNumber: string;
@@ -21,60 +25,86 @@ export interface User {
   lastLoginDate: string;
 }
 
+// Use the typed response if available, fallback to manual interface
+export type User = [ResponseType<'/api/v1/user', 'get'>] extends [unknown]
+  ? UserFallback
+  : ResponseType<'/api/v1/user', 'get'>;
+
+export type Address = [ResponseType<'/api/v1/address', 'get'>] extends [unknown]
+  ? AddressFallback
+  : ResponseType<'/api/v1/address', 'get'>;
+
+const USER_ENDPOINT = '/api/v1/user' as const;
+const ADDRESS_ENDPOINT = '/api/v1/address' as const;
+
+type AddressRaw = {
+  street?: string;
+  city?: string;
+  state?: string;
+  province?: string;
+  zip?: string;
+  countryCode?: string;
+}[];
+
+function normalizeAddress(addr: Partial<AddressRaw[number]>): AddressFallback {
+  return {
+    street: addr.street ?? '',
+    city: addr.city ?? '',
+    province: addr.province ?? '',
+    zip: addr.zip ?? '',
+    countryCode: addr.countryCode ?? '',
+  };
+}
+
 export default class UserService {
-  private readonly url: string = '/api/v1/user';
-
-  getUser(): Promise<User | void> {
-    return axios
-      .get(`${this.url}`)
-      .then((response) => {
-        const user: User = response.data;
-        console.log('GET user:', user);
-        return user;
-      })
-      .catch((error) => {
-        console.error('GET user failed:', error);
-      });
+  async getUser(): Promise<User | null> {
+    try {
+      // Cast the response to User explicitly
+      const user = (await typedRequest('get', USER_ENDPOINT, {})) as User;
+      console.log('GET user:', user);
+      return user;
+    } catch (error) {
+      console.error('GET user failed:', error);
+      return null;
+    }
   }
 
-  getCityFromZip(zip: string): Promise<Address[] | void> {
-    return axios
-      .get(`/api/v1/address`, {
-        params: { zip: zip },
-      })
-      .then((response) => {
-        const city: Address[] = response.data;
-        console.log('GET user:', city);
-        return city;
-      })
-      .catch((error) => {
-        console.error('GET user failed:', error);
-      });
+  async getCityFromZip(zip: string): Promise<AddressFallback[] | null> {
+    try {
+      // Cast the response to Address[] explicitly
+      const cityRaw = (await typedRequest('get', ADDRESS_ENDPOINT, {
+        params: { query: { zip } },
+      })) as Address[];
+      const cityNormalized = cityRaw.map(normalizeAddress);
+      return cityNormalized.length > 0 ? cityNormalized : null;
+    } catch (error) {
+      console.error('GET city failed:', error);
+      return null;
+    }
   }
 
-  updateUser(updatedUser: Partial<User>): Promise<User | void> {
-    return axios
-      .patch(`${this.url}`, updatedUser)
-      .then((response) => {
-        const user: User = response.data;
-        console.log('PATCH user:', user);
-        return user;
-      })
-      .catch((error) => {
-        console.error('PATCH user failed:', error);
-      });
+  async updateUser(updatedUser: Partial<User>): Promise<User | null> {
+    try {
+      // Cast the response to User explicitly
+      const user = (await typedRequest('patch', USER_ENDPOINT, {
+        body: updatedUser,
+      })) as User;
+      console.log('PATCH user:', user);
+      return user;
+    } catch (error) {
+      console.error('PATCH user failed:', error);
+      return null;
+    }
   }
 
-  deleteUser(): Promise<boolean> {
-    return axios
-      .delete(`${this.url}`)
-      .then(() => {
-        console.log('DELETE user');
-        return true;
-      })
-      .catch((error) => {
-        console.error('DELETE user failed:', error);
-        return false;
-      });
+  async deleteUser(): Promise<boolean> {
+    try {
+      await typedRequest('delete', USER_ENDPOINT, {});
+      console.log('DELETE user');
+      return true;
+    } catch (error) {
+      console.error('DELETE user failed:', error);
+      return false;
+    }
   }
 }

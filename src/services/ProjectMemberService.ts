@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { typedRequest } from '@/services/api/typedRequest';
 import { ref } from 'vue';
 
 export const memberRoles = ref([
@@ -9,111 +9,89 @@ export const memberRoles = ref([
   { label: 'Kollaborateur', value: 'COLLABORATOR' },
 ]);
 
+export type MemberRole  = 'PROPRIETOR' | 'MANAGER' | 'LESSOR' | 'STAFF' | 'COLLABORATOR' 
+
+
 export interface Member {
   id?: string;
   name?: string;
   email?: string;
-  role?: string | null;
-  isActive?: boolean;
+  role: MemberRole;
+  active?: boolean;      
+  privileged?: boolean;  
 }
+
 
 export interface MemberList {
   members: Member[];
 }
 
 class ProjectMemberService {
-  private readonly baseUrl: string = '/api/v1/projects';
-
+  private readonly baseUrl = '/api/v1/projects';
+  
   async getMembers(projectId: string): Promise<MemberList> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/members`)
-      .then((response) => {
-      const list: MemberList = response.data;
-      console.log('GET members:', list);
-      return list;
-    });
-  }
-
-  async addMember(projectId: string, member: Member): Promise<Member> {
-    try {
-      console.log(`Adding member to project ${projectId}:`, member);
-
-      const response = await axios.post(`${this.baseUrl}/${projectId}/members`, {
-        email: member.email,
-        role: member.role,
-      });
-
-      console.log('Member added successfully:', response.data);
-      return response.data;
-    } catch (error) {
-      this.handleError(error);
-      throw error;
-    }
-  }
-
-  async updateMemberRole(projectId: string, member: Member): Promise<Member> {
-    const originalMember = { ...member };
-
-    try {
-      const payload = {
-        role: member.role,
-      };
-      console.log('Sending request to update member role:', payload);
-      const response = await axios.patch(
-        `${this.baseUrl}/${projectId}/members/${member.id}`,
-        payload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      console.log('Member role updated successfully:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error(
-        'Failed to update member role, rolling back to original state:',
-        originalMember,
-      );
-      member.role = originalMember.role;
-      this.handleError(error);
-      throw error;
-    }
-  }
-
-  async removeMember(projectId: string, memberId: string): Promise<void> {
-    try {
-      console.log(`Attempting to remove member with projectId=${projectId}, memberId=${memberId}`);
-
-      const response = await axios.delete(
-        `${this.baseUrl}/${projectId}/members/${memberId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      console.log('Member removed successfully:', response.data);
-      return response.data;
-    } catch (error) {
-      this.handleError(error);
-      throw error;
-    }
-  }
-
-  private handleError(error: unknown) {
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        console.error('Server error:', error.response.status);
-      } else if (error.request) {
-        console.error('Network error: No response from server.');
-      } else {
-        console.error('Error in setting up request:', error.message);
+    const response = await typedRequest<
+      '/api/v1/projects/{projectId}/members',  // exact path string as in your OpenAPI paths
+      'get'
+    >(
+      'get',
+      `${this.baseUrl}/{projectId}/members`,
+      {
+        pathParams: { projectId },
       }
-    } else {
-      console.error('Unexpected error:', error);
-    }
+    );
+    console.log('Backend response for getMembers:', response); 
+  
+    return response as MemberList;  // cast to fallback interface if TS complains
   }
+  
+  async addMember(projectId: string, member: Member): Promise<Member> {
+    if (!member.role) throw new Error('Member role is required');
+  
+    const response = await typedRequest<'/api/v1/projects/{projectId}/members', 'post'>(
+      'post',
+      '/api/v1/projects/{projectId}/members',
+      {
+        pathParams: { projectId },
+        body: {
+          email: member.email,
+          role: member.role,
+        },
+      }
+    );
+    console.log('Member added successfully:', response);
+    return response;
+  }
+  
+  async updateMemberRole(projectId: string, member: Member): Promise<Member> {
+    if (!member.id) throw new Error('Member id is required for update');
+    if (!member.role) throw new Error('Member role is required');
+  
+    const response = await typedRequest<
+      '/api/v1/projects/{projectId}/members/{memberId}',
+      'patch'
+    >(
+      'patch',
+      `${this.baseUrl}/{projectId}/members/{memberId}`,
+      {
+        pathParams: { projectId, memberId: member.id },
+        body: { role: member.role },
+      }
+    );
+  
+    console.log('Member role updated successfully:', response);
+    return response as Member;
+  }
+  
+  async removeMember(projectId: string, memberId: string): Promise<{ success: boolean }> {
+    await typedRequest(
+      'delete',
+      `${this.baseUrl}/{projectId}/members/{memberId}`,
+      { pathParams: { projectId, memberId } }
+    );
+    console.log('Member removed successfully');
+    return { success: true };
+  }  
 }
 
-export const projectMemberService: ProjectMemberService = new ProjectMemberService();
+export const projectMemberService = new ProjectMemberService();
