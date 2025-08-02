@@ -83,15 +83,15 @@ class ProjectMemberService {
     return response as Member;
   }
   
-  async removeMember(projectId: string, memberId: string): Promise<void> {
-    await typedRequest<
-      '/api/v1/projects/{projectId}/members/{memberId}',
-      'delete'
-    >('delete', `${this.baseUrl}/{projectId}/members/{memberId}`, {
-      pathParams: { projectId, memberId },
-    });
+  async removeMember(projectId: string, memberId: string): Promise<{ success: boolean }> {
+    await typedRequest(
+      'delete',
+      `${this.baseUrl}/{projectId}/members/{memberId}`,
+      { pathParams: { projectId, memberId } }
+    );
     console.log('Member removed successfully');
-  }
+    return { success: true };
+  }  
 }
 
 export const projectMemberService = new ProjectMemberService();
