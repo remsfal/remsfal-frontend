@@ -73,7 +73,7 @@ export async function typedRequest<
   const rawParams = options.params ?? {};
 
   // Replace path parameters like {id} with actual values from options.pathParams
-  const pathParamMatches = Array.from(url.matchAll(/{([^}]+)}/g));
+  const pathParamMatches = Array.from(url.matchAll(/{([a-zA-Z0-9_]{1,30})}/g));
   for (const match of pathParamMatches) {
     const paramName = match[1];
     const value = options.pathParams?.[paramName];
