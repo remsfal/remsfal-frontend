@@ -37,7 +37,7 @@ export const handlers = [
   }),
 
   // GET project members
-  http.get(`${API_BASE}/projects/:projectId/members`, ({ params }) => {
+  http.get(`${API_BASE}/projects/:projectId/members`, () => {
     return HttpResponse.json(
       {
         members: [
@@ -96,6 +96,6 @@ export const handlers = [
 
   // DELETE remove member
   http.delete(`${API_BASE}/projects/:projectId/members/:memberId`, () => {
-    return new HttpResponse(null, { status: 204 });
+    return HttpResponse.json({ success: true }, { status: 200 }); // Important: changed to return `{ success: true }`
   }),
 ];
