@@ -96,6 +96,6 @@ export const handlers = [
 
   // DELETE remove member
   http.delete(`${API_BASE}/projects/:projectId/members/:memberId`, () => {
-    return HttpResponse.json({ success: true }, { status: 200 }); // Important: changed to return `{ success: true }`
+    return HttpResponse.json({ success: true }, { status: 200 });
   }),
-];
+]

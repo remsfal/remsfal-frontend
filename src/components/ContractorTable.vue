@@ -9,22 +9,21 @@ const isLoading = ref(false);
 const tasks = ref<TaskItemJson[]>([]);
 const expandedRows = ref<Record<string, boolean>>({});
 
-const loadTasks = () => {
+const loadTasks = async () => {
   isLoading.value = true;
-  contractorService
-    .getTasks()
-    .then((taskList: TaskListJson) => {
-      tasks.value = taskList.tasks;
-      isLoading.value = false;
-    })
-    .catch(() => {
-      isLoading.value = false;
-    });
+  try {
+    const taskList: TaskListJson = await contractorService.getTasks();
+    tasks.value = taskList.tasks;
+  } catch (error) {
+    console.error('Failed to load tasks', error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 onMounted(() => {
   loadTasks();
-})
+});
 </script>
 
 <template>
@@ -36,19 +35,17 @@ onMounted(() => {
     rowHover
     :rows="10"
     dataKey="id"
-    :totalRecords="tasks.length"
-    lazy
     paginator
     tableStyle="min-width: 75rem"
   >
-    <Column :expander="true" headerStyle="width: 3rem"></Column>  
-    <Column field="title" header="Titel" style="min-width: 200px"></Column>
-    <Column field="status" header="Status" style="min-width: 200px"></Column>
+    <Column :expander="true" headerStyle="width: 3rem" />
+    <Column field="title" header="Titel" style="min-width: 200px" />
+    <Column field="status" header="Status" style="min-width: 200px" />
 
     <template #expansion="slotProps">
       <div class="p-4">
         <h4>Details für "{{ slotProps.data.title }}"</h4>
-        <p><strong>Beschreibung:</strong> {{ slotProps.data.description }}</p>
+        <p><strong>Beschreibung:</strong> {{ slotProps.data.description || 'Keine Beschreibung' }}</p>
         <p><strong>Status:</strong> {{ slotProps.data.status }}</p>
       </div>
     </template>
