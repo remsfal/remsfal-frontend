@@ -4,6 +4,7 @@ import axios from 'axios';
 export interface UserInfo {
   id: string;
   email: string;
+  userRoles: string[];
 }
 
 export const useUserSessionStore = defineStore('user-session', {
