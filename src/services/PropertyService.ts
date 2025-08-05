@@ -42,12 +42,13 @@ export interface PropertyUnit {
   cadastralDistrict?: string;    // Gemarkung
   sheetNumber?: string;           // Blattnummer
   plotNumber?: number;            // Flurstücknummer
-  effectiveSpace?: number;
+  effectiveSpace?: number| null;
   district?: string;              // Optional additional location info
   corridor?: string;              // Flur
   parcel?: string;                // Flurstück
-  usageType?: string;             // Wirtschaftsart
+  usageType?: string | null;      // <-- allow null explicitly here
 }
+
 
 class PropertyService {
   private readonly baseUrl = '/api/v1/projects';
