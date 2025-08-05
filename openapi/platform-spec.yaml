@@ -860,6 +860,12 @@ paths:
                 $ref: "#/components/schemas/CountryListJson"
         "401":
           description: No user authentication provided via session cookie
+  /api/v1/authentication/jwks:
+    get:
+      summary: Expose the JSON Web Key Set used to sign tokens.
+      responses:
+        "200":
+          description: JWKS containing the public keys
   /api/v1/authentication/login:
     get:
       summary: Login user via oauth flow.
