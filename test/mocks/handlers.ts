@@ -27,7 +27,7 @@ export const handlers = [
 
   // PATCH user update
   http.patch(`${API_BASE}/user`, async ({ request }) => {
-    const updatedUser = (await request.json()) as Record<string, any>;
+    const updatedUser = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json({ ...updatedUser, id: 'user-123' }, { status: 200 });
   }),
 
@@ -98,4 +98,105 @@ export const handlers = [
   http.delete(`${API_BASE}/projects/:projectId/members/:memberId`, () => {
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
-]
+
+  // GET commercial unit
+  http.get(`${API_BASE}/projects/:projectId/commercials/:commercialId`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.commercialId,
+      title: 'Commercial Space 1',
+      location: 'Downtown',
+      description: 'A spacious commercial area',
+      commercialSpace: 100,
+      usableSpace: 80,
+      heatingSpace: 60,
+    });
+  }),
+
+  // POST create commercial
+  http.post(`${API_BASE}/projects/:projectId/buildings/:buildingId/commercials`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: 'commercial-new-id',
+      ...body,
+    });
+  }),
+
+  // PATCH update commercial
+  http.patch(`${API_BASE}/projects/:projectId/commercials/:commercialId`, async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: params.commercialId,
+      ...body,
+    });
+  }),
+
+  // DELETE commercial
+  http.delete(`${API_BASE}/projects/:projectId/commercials/:commercialId`, () => {
+    return HttpResponse.json({ success: true }, { status: 200 });
+  }),
+
+  // -------- PROPERTY SERVICE HANDLERS --------
+
+  // POST create property
+  http.post(`${API_BASE}/projects/:projectId/properties`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: 'property-new-id',
+      ...body,
+    });
+  }),
+
+  // GET property tree (list)
+  http.get(`${API_BASE}/projects/:projectId/properties`, () => {
+    // example tree structure:
+    return HttpResponse.json({
+      properties: [
+        {
+          key: 'property-1',
+          data: {
+            type: 'PROPERTY',
+            title: 'Property One',
+            description: 'Main property',
+            tenant: 'Tenant A',
+            usable_space: 120,
+          },
+          children: [],
+        },
+      ],
+    });
+  }),
+
+  // GET single property by id
+  http.get(`${API_BASE}/projects/:projectId/properties/:propertyId`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.propertyId,
+      type: 'PROPERTY',
+      title: 'Property ' + params.propertyId,
+      description: 'Sample property description',
+      landRegistry: 'LR-123',
+      cadastralDistrict: 'District 9',
+      sheetNumber: 'Sheet 5',
+      plotNumber: 7,
+      effectiveSpace: 100,
+      district: 'Central',
+      corridor: '1A',
+      parcel: 'Parcel 22',
+      usageType: 'Residential',
+    });
+  }),
+
+  // PATCH update property
+  http.patch(`${API_BASE}/projects/:projectId/units/:unitId/property`, async ({ request, params }) => {
+    const body = await request.json() as Record<string, unknown>;
+    return HttpResponse.json({
+      id: `${params.unitId}-property`,
+      ...body,
+      updatedAt: new Date().toISOString(),
+    });
+  }),
+
+  // DELETE property
+  http.delete(`${API_BASE}/projects/:projectId/properties/:propertyId`, () => {
+    return HttpResponse.json({ success: true }, { status: 200 });
+  }),
+];
