@@ -173,17 +173,17 @@ export const handlers = [
       type: 'PROPERTY',
       title: 'Property ' + params.propertyId,
       description: 'Sample property description',
-      landRegistry: 'LR-123',
-      cadastralDistrict: 'District 9',
+      landRegisterEntry: 'LR-123',          
+      district: 'District 9',                
       sheetNumber: 'Sheet 5',
-      plotNumber: 7,
-      effectiveSpace: 100,
-      district: 'Central',
+      plotArea: 7,                          
+      effectiveSpace: 100,                   
       corridor: '1A',
       parcel: 'Parcel 22',
       usageType: 'Residential',
     });
   }),
+  
 
   // PATCH update property
   http.patch(`${API_BASE}/projects/:projectId/units/:unitId/property`, async ({ request, params }) => {
