@@ -61,10 +61,16 @@ const validationErrors = computed(() => {
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchCommercialDetails = async () => {
-  if (!props.projectId || !props.unitId) {
-    console.error('projectId or unitId is missing');
+  if (!props.projectId) {
+    console.error('Keine projectId');
     return;
   }
+
+  if (!props.unitId) {
+    console.error('Keine unitId');
+    return;
+  }
+
   try {
     const data = await commercialService.getCommercial(props.projectId, props.unitId);
     title.value = data.title || '';
