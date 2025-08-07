@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
@@ -12,6 +13,7 @@ const props = defineProps<{
 
 const toast = useToast();
 const router = useRouter();
+const { t } = useI18n();
 
 const title = ref('');
 const description = ref('');
@@ -41,33 +43,29 @@ const validationErrors = computed(() => {
   const errors: string[] = [];
 
   if (commercialSpace.value === null) {
-    errors.push('Gewerbefläche ist erforderlich.');
+    errors.push(t('commercialUnit.validation.commercialRequired'));
   } else if (commercialSpace.value < 0) {
-    errors.push('Gewerbefläche darf nicht negativ sein.');
+    errors.push(t('commercialUnit.validation.commercialNegative'));
   }
 
   if (heatingSpace.value === null) {
-    errors.push('Heizfläche ist erforderlich.');
+    errors.push(t('commercialUnit.validation.heatingRequired'));
   } else if (heatingSpace.value < 0) {
-    errors.push('Heizfläche darf nicht negativ sein.');
+    errors.push(t('commercialUnit.validation.heatingNegative'));
   }
 
   if (description.value && description.value.length > 500) {
-    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
+    errors.push(t('commercialUnit.validation.descriptionTooLong'));
   }
+
   return errors;
 });
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchCommercialDetails = async () => {
-  if (!props.projectId) {
-    console.error('Keine projectId');
-    return;
-  }
-
-  if (!props.unitId) {
-    console.error('Keine unitId');
+  if (!props.projectId || !props.unitId) {
+    console.error('Missing projectId or unitId');
     return;
   }
 
@@ -90,8 +88,8 @@ const fetchCommercialDetails = async () => {
     console.error('Error loading commercial unit:', err);
     toast.add({
       severity: 'error',
-      summary: 'Load Error',
-      detail: 'Could not load commercial unit.',
+      summary: t('commercialUnit.loadErrorTitle'),
+      detail: t('commercialUnit.loadErrorDetail'),
       life: 6000,
     });
   }
@@ -103,8 +101,8 @@ onMounted(() => {
   } else {
     toast.add({
       severity: 'warn',
-      summary: 'Invalid ID',
-      detail: 'No commercial unit ID provided.',
+      summary: t('commercialUnit.missingIdTitle'),
+      detail: t('commercialUnit.missingIdDetail'),
       life: 6000,
     });
   }
@@ -128,14 +126,14 @@ const save = async () => {
     await commercialService.updateCommercial(props.projectId, props.unitId, payload);
     toast.add({
       severity: 'success',
-      summary: 'Success',
-      detail: 'Commercial unit saved successfully.',
+      summary: t('commercialUnit.saveSuccessTitle'),
+      detail: t('commercialUnit.saveSuccessDetail'),
       life: 6000,
     });
     router.push(`/project/${props.projectId}/commercial/${props.unitId}`);
   } catch (err) {
     console.error('Error saving commercial unit:', err);
-    showSavingErrorToast(toast, 'Could not save commercial unit.');
+    showSavingErrorToast(toast, t('commercialUnit.saveError'));
   }
 };
 
@@ -145,32 +143,38 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Edit Commercial Unit with ID: {{ unitId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">
+        {{ t('commercialUnit.editTitle', { id: unitId }) }}
+      </h2>
 
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
-            <label for="title" class="block text-gray-700 mb-1">Title</label>
+            <label for="title" class="block text-gray-700 mb-1">{{ t('rentableUnits.form.title') }}</label>
             <input id="title" v-model="title" type="text" class="form-input w-full" />
           </div>
 
           <div class="col-span-2">
-            <label for="description" class="block text-gray-700 mb-1">Description</label>
+            <label for="description" class="block text-gray-700 mb-1">{{ t('rentableUnits.form.description') }}</label>
             <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
           </div>
 
           <div class="col-span-2">
-            <label for="location" class="block text-gray-700 mb-1">Location</label>
+            <label for="location" class="block text-gray-700 mb-1">{{ t('property.address') }}</label>
             <input id="location" v-model="location" type="text" class="form-input w-full" />
           </div>
 
           <div>
-            <label for="commercialSpace" class="block text-gray-700 mb-1">Commercial Space (m²)</label>
+            <label for="commercialSpace" class="block text-gray-700 mb-1">
+              {{ t('commercialUnit.commercialSpace') }} (m²)
+            </label>
             <input id="commercialSpace" v-model.number="commercialSpace" type="number" class="form-input w-full" />
           </div>
 
           <div>
-            <label for="heatingSpace" class="block text-gray-700 mb-1">Heating Space (m²)</label>
+            <label for="heatingSpace" class="block text-gray-700 mb-1">
+              {{ t('commercialUnit.heatingSpace') }} (m²)
+            </label>
             <input id="heatingSpace" v-model.number="heatingSpace" type="number" class="form-input w-full" />
           </div>
         </div>
@@ -187,7 +191,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             :disabled="!hasChanges"
             class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Save
+            {{ t('button.save') }}
           </button>
 
           <button
@@ -195,7 +199,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
             @click="cancel"
           >
-            Cancel
+            {{ t('button.cancel') }}
           </button>
         </div>
       </form>
