@@ -2,10 +2,12 @@ import { typedRequest } from '../../src/services/api/typedRequest';
 import type { ResponseType } from '../../src/services/api/typedRequest';
 
 export type User = ResponseType<'/api/v1/user', 'get'>;
-export type Address = ResponseType<'/api/v1/address', 'get'>;
+export type Addresses = ResponseType<'/api/v1/address', 'get'>;
+export type Address = Addresses extends (infer U)[] ? U : never;
 
 const USER_ENDPOINT = '/api/v1/user' as const;
 const ADDRESS_ENDPOINT = '/api/v1/address' as const;
+
 
 export default class UserService {
   async getUser(): Promise<User | null> {
@@ -18,7 +20,7 @@ export default class UserService {
     }
   }
 
-  async getCityFromZip(zip: string): Promise<Address | null> {
+  async getCityFromZip(zip: string): Promise<Addresses | null> {
     try {
       const addresses = await typedRequest('get', ADDRESS_ENDPOINT, {
         params: { query: { zip } },
@@ -33,8 +35,7 @@ export default class UserService {
       return null;
     }
   }
-  
-  
+
   async updateUser(updatedUser: Partial<User>): Promise<User | null> {
     try {
       const user = await typedRequest('patch', USER_ENDPOINT, { body: updatedUser });
