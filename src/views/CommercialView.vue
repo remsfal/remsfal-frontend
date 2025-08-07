@@ -63,9 +63,13 @@ const validationErrors = computed(() => {
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
-const fetchCommercialDetails = async () => {
-  if (!props.projectId || !props.unitId) {
-    console.error('Missing projectId or unitId');
+async function fetchCommercialDetails() {
+  if (!props.projectId) {
+    console.error('Keine projectId');
+    return;
+  }
+  if (!props.unitId) {
+    console.error('Keine unitId');
     return;
   }
 
@@ -93,7 +97,7 @@ const fetchCommercialDetails = async () => {
       life: 6000,
     });
   }
-};
+}
 
 onMounted(() => {
   if (props.unitId) {
@@ -138,6 +142,9 @@ const save = async () => {
 };
 
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
+
+// This is the crucial line to expose the fetchCommercialDetails method externally
+defineExpose({ fetchCommercialDetails });
 </script>
 
 <template>

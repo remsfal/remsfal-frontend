@@ -20,10 +20,19 @@ export const handlers = [
     const url = new URL(request.url, 'http://localhost');
     const zip = url.searchParams.get('query[zip]');
     if (zip === '12345') {
-      return HttpResponse.json([{ city: 'Sample City', zip: '12345' }], { status: 200 });
+      return HttpResponse.json([
+        {
+          city: 'Sample City',
+          countryCode: '',
+          province: '',
+          street: '',
+          zip: '12345',
+        },
+      ], { status: 200 });
     }
     return HttpResponse.json([], { status: 200 });
   }),
+  
 
   // PATCH user update
   http.patch(`${API_BASE}/user`, async ({ request }) => {

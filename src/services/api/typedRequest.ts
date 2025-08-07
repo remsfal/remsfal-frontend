@@ -5,15 +5,11 @@ import type { paths as chatPaths } from './chat-schema';
 import type { paths as platformPaths } from './platform-schema';
 import type { paths as notificationPaths } from './notification-schema';
 
-// Correctly combine all OpenAPI paths
+// Combine all OpenAPI paths
 export type paths = chatPaths & platformPaths & notificationPaths;
 
 type Path = keyof paths;
-
-// Restrict Method to known HTTP verbs that can appear as keys in paths[Path]
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options';
-
-// Intersection ensures M is both a valid HTTP method and a key in paths[Path]
 type Method = HttpMethod & keyof paths[Path];
 
 // Extract request params if defined in OpenAPI
@@ -55,10 +51,12 @@ function flattenParams(obj: Record<string, any>, prefix = ''): Record<string, an
   }, {} as Record<string, any>);
 }
 
-// Main typedRequest function with full typings and path param support
+// Main typedRequest with optional response type override (4th generic ResOverride)
 export async function typedRequest<
   P extends Path,
-  M extends Method
+  M extends Method,
+  ReqOverride = unknown,
+  ResOverride = unknown
 >(
   method: M,
   path: P,
@@ -68,7 +66,7 @@ export async function typedRequest<
     config?: AxiosRequestConfig;
     pathParams?: Record<string, string | number>;
   } = {}
-): Promise<ResponseType<P, M>> {
+): Promise<[ResOverride] extends [unknown] ? ResponseType<P, M> : ResOverride> {
   let url = path as string;
   const rawParams = options.params ?? {};
 
@@ -83,7 +81,7 @@ export async function typedRequest<
     url = url.replace(`{${paramName}}`, encodeURIComponent(String(value)));
   }
 
-  // Extract and flatten query parameters (exclude path params)
+  // Flatten query params, excluding path params
   const queryParams: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(rawParams)) {
     if (!pathParamMatches.some((match) => match[1] === key)) {

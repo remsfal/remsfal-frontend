@@ -12,11 +12,11 @@ import Message from 'primevue/message';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const userProfile = ref<User | null>(null);
+const editedUserProfile = ref<User | null>(null);
+const addressProfile = ref<Address | null>(null);
+const editedAddress = ref<Address | null>(null);
 
-const userProfile = ref({} as User); // Das gesamte Benutzerprofil
-const editedUserProfile = ref({} as User);
-const addressProfile = ref({} as Address);
-const editedAddress = ref({} as Address);
 const deleteAcc = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
 const changes = ref(false);
 const saveSuccess = ref(false);
