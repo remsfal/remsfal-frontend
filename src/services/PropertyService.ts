@@ -38,15 +38,18 @@ export interface PropertyUnit {
   type?: 'PROPERTY' | 'SITE' | 'BUILDING' | 'APARTMENT' | 'STORAGE' | 'COMMERCIAL';
   title: string;
   description?: string;
-  landRegistry?: string;         // Liegenschaftsbuch
-  cadastralDistrict?: string;    // Gemarkung
-  sheetNumber?: string;           // Blattnummer
-  plotNumber?: number;            // Flurstücknummer
-  effectiveSpace?: number| null;
-  district?: string;              // Optional additional location info
-  corridor?: string;              // Flur
-  parcel?: string;                // Flurstück
-  usageType?: string | null;      // <-- allow null explicitly here
+  landRegistry?: string;
+  cadastralDistrict?: string;
+  sheetNumber?: string;
+  plotNumber?: number;
+  effectiveSpace?: number | null;
+  district?: string;
+  corridor?: string;
+  parcel?: string;
+  usageType?: string | null;
+
+  // Change plotArea to only allow number or undefined, NO null
+  plotArea?: number;
 }
 
 
