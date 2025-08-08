@@ -208,6 +208,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CountryItemJson"
+    Date:
+      type: string
+      format: date
+      examples:
+      - 2022-03-10
     Instant:
       type: string
       format: date-time
@@ -568,6 +573,20 @@ components:
           $ref: "#/components/schemas/Status"
         owner:
           type: string
+    TaskItemJson1:
+      description: A task item with basic information from a tenant's perspective
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        type:
+          $ref: "#/components/schemas/Type"
+        status:
+          $ref: "#/components/schemas/Status"
     TaskJson:
       description: A task
       type: object
@@ -599,6 +618,25 @@ components:
         duplicateOf:
           type: string
           pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    TaskJson1:
+      description: A task from a tenant's perspective
+      type: object
+      properties:
+        reporterId:
+          type: string
+        id:
+          type: string
+        title:
+          type: string
+          maxLength: 255
+        type:
+          $ref: "#/components/schemas/Type"
+        status:
+          $ref: "#/components/schemas/Status"
+        description:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/Date"
     TaskListJson:
       description: A list of tasks
       type: object
@@ -607,6 +645,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TaskItemJson"
+    TaskListJson1:
+      description: A list of tasks from a tenant's perspective
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskItemJson1"
     TenancyItemJson:
       description: A tenancy item with basic information from a tenant's perspective
       type: object
@@ -715,6 +761,11 @@ components:
           type: boolean
         id:
           type: string
+        userRoles:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/UserRole"
         email:
           type: string
           maxLength: 255
@@ -741,6 +792,12 @@ components:
           $ref: "#/components/schemas/LocalDate"
         lastLoginDate:
           $ref: "#/components/schemas/LocalDateTime"
+    UserRole:
+      type: string
+      enum:
+      - MANAGER
+      - TENANT
+      - CONTRACTOR
   securitySchemes:
     SecurityScheme:
       type: http
@@ -1300,7 +1357,7 @@ paths:
         "401":
           description: No user authentication provided via session cookie
 info:
-  title: remsfal-chat API
+  title: remsfal-ticketing API
   version: 1.0.0-SNAPSHOT
 servers:
 - url: http://localhost:8081

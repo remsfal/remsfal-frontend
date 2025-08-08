@@ -991,7 +991,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/buildings/{buildingId}/garages": {
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/storages": {
         parameters: {
             query?: never;
             header?: never;
@@ -1000,7 +1000,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new garage. */
+        /** Create a new storage. */
         post: {
             parameters: {
                 query?: never;
@@ -1019,10 +1019,10 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Garage created successfully */
+                /** @description Storage created successfully */
                 201: {
                     headers: {
-                        /** @description URL of the new garage */
+                        /** @description URL of the new storage */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
@@ -1036,29 +1036,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/buildings/{buildingId}/garages/{garageId}": {
+    "/api/v1/projects/{projectId}/buildings/{buildingId}/storages/{storageId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of a garage. */
+        /** Retrieve information of a storage. */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the garage */
-                    garageId: string;
                     /** @description ID of the project */
                     projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description The garage does not exist */
+                /** @description The storage does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -1069,22 +1069,22 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Delete an existing garage. */
+        /** Delete an existing storage. */
         delete: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the garage */
-                    garageId: string;
                     /** @description ID of the project */
                     projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description The garage was deleted successfully */
+                /** @description The storage was deleted successfully */
                 204: {
                     headers: {
                         [name: string]: unknown;
@@ -1102,16 +1102,16 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Update information of a garage. */
+        /** Update information of a storage. */
         patch: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the garage */
-                    garageId: string;
                     /** @description ID of the project */
                     projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
                 };
                 cookie?: never;
             };
@@ -1128,7 +1128,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description The garage does not exist */
+                /** @description The storage does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -1496,152 +1496,6 @@ export interface paths {
                     content?: never;
                 };
                 /** @description The project or contractor does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/api/v1/projects/{projectId}/garages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create a new garage. */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the project */
-                    projectId: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["StorageJson"];
-                };
-            };
-            responses: {
-                /** @description Garage created successfully */
-                201: {
-                    headers: {
-                        /** @description URL of the new garage */
-                        Location?: unknown;
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/projects/{projectId}/garages/{garageId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve information of a garage. */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the garage */
-                    garageId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The garage does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Delete an existing garage. */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the garage */
-                    garageId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The garage was deleted successfully */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        /** Update information of a garage. */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the garage */
-                    garageId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["StorageJson"];
-                };
-            };
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The garage does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -2449,7 +2303,7 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/garages": {
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages": {
         parameters: {
             query?: never;
             header?: never;
@@ -2458,7 +2312,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new garage. */
+        /** Create a new storage. */
         post: {
             parameters: {
                 query?: never;
@@ -2477,10 +2331,10 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Garage created successfully */
+                /** @description Storage created successfully */
                 201: {
                     headers: {
-                        /** @description URL of the new garage */
+                        /** @description URL of the new storage */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
@@ -2494,29 +2348,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/garages/{garageId}": {
+    "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages/{storageId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of a garage. */
+        /** Retrieve information of a storage. */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the garage */
-                    garageId: string;
                     /** @description ID of the project */
                     projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description The garage does not exist */
+                /** @description The storage does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -2527,22 +2381,22 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Delete an existing garage. */
+        /** Delete an existing storage. */
         delete: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the garage */
-                    garageId: string;
                     /** @description ID of the project */
                     projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description The garage was deleted successfully */
+                /** @description The storage was deleted successfully */
                 204: {
                     headers: {
                         [name: string]: unknown;
@@ -2560,16 +2414,16 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Update information of a garage. */
+        /** Update information of a storage. */
         patch: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the garage */
-                    garageId: string;
                     /** @description ID of the project */
                     projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
                 };
                 cookie?: never;
             };
@@ -2586,7 +2440,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description The garage does not exist */
+                /** @description The storage does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -2881,6 +2735,152 @@ export interface paths {
                     content?: never;
                 };
                 /** @description The site does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/storages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new storage. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StorageJson"];
+                };
+            };
+            responses: {
+                /** @description Storage created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new storage */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/storages/{storageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a storage. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The storage does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing storage. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The storage was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of a storage. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: string;
+                    /** @description ID of the storage */
+                    storageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StorageJson"];
+                };
+            };
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The storage does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -3389,6 +3389,176 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenancies/{tenancyId}/{rentalType}/{rentalId}tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all tasks. */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Filter to return only tasks with a specific status */
+                    status?: components["schemas"]["Status"];
+                };
+                header?: never;
+                path: {
+                    /** @description ID of the rental */
+                    rentalId: string;
+                    /** @description Type of the rental */
+                    rentalType: string;
+                    /** @description ID of the tenancy */
+                    tenancyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new task. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the rental */
+                    rentalId: string;
+                    /** @description Type of the rental */
+                    rentalType: string;
+                    /** @description ID of the tenancy */
+                    tenancyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TaskJson1"];
+                };
+            };
+            responses: {
+                /** @description Task created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new task */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenancies/{tenancyId}/{rentalType}/{rentalId}tasks/{taskId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a task. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the rental */
+                    rentalId: string;
+                    /** @description Type of the rental */
+                    rentalType: string;
+                    /** @description ID of the task */
+                    taskId: string;
+                    /** @description ID of the tenancy */
+                    tenancyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The property does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update information of a task. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the rental */
+                    rentalId: string;
+                    /** @description Type of the rental */
+                    rentalType: string;
+                    /** @description ID of the task */
+                    taskId: string;
+                    /** @description ID of the tenancy */
+                    tenancyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TaskJson1"];
+                };
+            };
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The task does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/v1/user": {
         parameters: {
           query?: never;
@@ -3666,6 +3836,8 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
+        /** Format: date */
+        Date: string;
         /** Format: date-time */
         Instant: string;
         /** Format: date */
@@ -3837,6 +4009,14 @@ export interface components {
             status?: components["schemas"]["Status"];
             owner?: string;
         };
+        /** @description A task item with basic information from a tenant's perspective */
+        TaskItemJson1: {
+            id?: string;
+            name?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+        };
         /** @description A task */
         TaskJson: {
             reporterId?: string;
@@ -3851,9 +4031,23 @@ export interface components {
             relatedTo?: string;
             duplicateOf?: string;
         };
+        /** @description A task from a tenant's perspective */
+        TaskJson1: {
+            reporterId?: string;
+            id?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+            description?: string;
+            createdAt?: components["schemas"]["Date"];
+        };
         /** @description A list of tasks */
         TaskListJson: {
             tasks?: components["schemas"]["TaskItemJson"][];
+        };
+        /** @description A list of tasks from a tenant's perspective */
+        TaskListJson1: {
+            tasks?: components["schemas"]["TaskItemJson1"][];
         };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {
@@ -3904,6 +4098,7 @@ export interface components {
         UserJson: {
             active?: boolean;
             id?: string;
+            userRoles?: components["schemas"]["UserRole"][];
             email?: string;
             firstName?: string;
             lastName?: string;
@@ -3914,6 +4109,8 @@ export interface components {
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
+        /** @enum {string} */
+        UserRole: "MANAGER" | "TENANT" | "CONTRACTOR";
     };
     responses: never;
     parameters: never;

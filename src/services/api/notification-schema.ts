@@ -151,6 +151,8 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
+        /** Format: date */
+        Date: string;
         /** Format: date-time */
         Instant: string;
         /** Format: date */
@@ -322,6 +324,14 @@ export interface components {
             status?: components["schemas"]["Status"];
             owner?: string;
         };
+        /** @description A task item with basic information from a tenant's perspective */
+        TaskItemJson1: {
+            id?: string;
+            name?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+        };
         /** @description A task */
         TaskJson: {
             reporterId?: string;
@@ -336,9 +346,23 @@ export interface components {
             relatedTo?: string;
             duplicateOf?: string;
         };
+        /** @description A task from a tenant's perspective */
+        TaskJson1: {
+            reporterId?: string;
+            id?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+            description?: string;
+            createdAt?: components["schemas"]["Date"];
+        };
         /** @description A list of tasks */
         TaskListJson: {
             tasks?: components["schemas"]["TaskItemJson"][];
+        };
+        /** @description A list of tasks from a tenant's perspective */
+        TaskListJson1: {
+            tasks?: components["schemas"]["TaskItemJson1"][];
         };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {
@@ -389,6 +413,7 @@ export interface components {
         UserJson: {
             active?: boolean;
             id?: string;
+            userRoles?: components["schemas"]["UserRole"][];
             email?: string;
             firstName?: string;
             lastName?: string;
@@ -399,6 +424,8 @@ export interface components {
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
+        /** @enum {string} */
+        UserRole: "MANAGER" | "TENANT" | "CONTRACTOR";
     };
     responses: never;
     parameters: never;
