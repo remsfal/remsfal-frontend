@@ -115,7 +115,7 @@ components:
       properties:
         messageId:
           $ref: "#/components/schemas/UUID"
-        chatSessionId:
+        sessionId:
           $ref: "#/components/schemas/UUID"
         senderId:
           $ref: "#/components/schemas/UUID"
@@ -126,6 +126,8 @@ components:
         url:
           type: string
         createdAt:
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
           $ref: "#/components/schemas/Instant"
     ChatMessageListJson:
       description: A list of chat messages

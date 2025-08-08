@@ -155,7 +155,7 @@
           "messageId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "chatSessionId" : {
+          "sessionId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "senderId" : {
@@ -171,6 +171,9 @@
             "type" : "string"
           },
           "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
             "$ref" : "#/components/schemas/Instant"
           }
         }
