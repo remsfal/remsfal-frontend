@@ -10,7 +10,7 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import type {paths} from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
-
+import { RouterLink } from 'vue-router'
 
 const { t } = useI18n();
 
