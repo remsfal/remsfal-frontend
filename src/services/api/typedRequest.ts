@@ -51,11 +51,10 @@ function flattenParams(obj: Record<string, any>, prefix = ''): Record<string, an
   }, {} as Record<string, any>);
 }
 
-// Main typedRequest with optional response type override (4th generic ResOverride)
+// Main typedRequest with optional response type override (ResOverride)
 export async function typedRequest<
   P extends Path,
   M extends Method,
-  ReqOverride = unknown,
   ResOverride = unknown
 >(
   method: M,
