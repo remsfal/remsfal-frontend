@@ -1,21 +1,30 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
-import UserService, { type Address, type User } from '@/services/UserService';
-import { computed, onMounted, ref } from 'vue';
-import { RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
-import { useI18n } from 'vue-i18n';
+import type {paths} from '@/services/api/platform-schema';
+import UserService from '@/services/UserService';
+
 
 const { t } = useI18n();
-const userProfile = ref<User | null>(null);
-const editedUserProfile = ref<User | null>(null);
+
+type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
+type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
+type AddressListResponse = paths['/api/v1/address']['get']['responses'][200]['content']['application/json'];
+type Address = AddressListResponse extends (infer U)[] ? U : never;
+type User = UserGetResponse & { address?: Address };
+
+const userProfile = ref<UserGetResponse | null>(null);
+const editedUserProfile = ref<Partial<UserPatchRequestBody>>({});
+
 const addressProfile = ref<Address | null>(null);
-const editedAddress = ref<Address | null>(null);
+const editedAddress = ref<Partial<Address>>({});
 
 const deleteAcc = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
 const changes = ref(false);
@@ -73,7 +82,12 @@ const errorMessage = ref({
 
 onMounted(() => {
   const sessionStore = useUserSessionStore();
-  userProfile.value.email = sessionStore.user?.email || ''; // Sicherstellen, dass userEmail initialisiert wird
+
+  if (!userProfile.value) {
+    userProfile.value = {};  // initialize as empty object so you can safely set email
+  }
+  userProfile.value.email = sessionStore.user?.email || '';
+
   fetchUserProfile();
 });
 
@@ -94,15 +108,20 @@ async function fetchUserProfile() {
   }
 }
 
-function getUpdatedValue(field: keyof User): string {
-  const value = editedUserProfile.value?.[field] || userProfile.value?.[field];
+function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string {
+  const value =
+    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
   return typeof value === 'string' ? value : '';
 }
 
+
 function getUpdatedAddressValue(field: keyof Address): string {
-  const value = editedAddress.value?.[field] || addressProfile.value?.[field];
+  const value =
+    (editedAddress.value as Record<keyof Address, unknown>)?.[field] ??
+    (addressProfile.value as Record<keyof Address, unknown>)?.[field];
   return typeof value === 'string' ? value : '';
 }
+
 
 async function saveProfile(): Promise<void> {
   try {
@@ -178,10 +197,11 @@ function validateField(
   type: 'name' | 'phone' | 'address',
   errorKey: keyof typeof errorMessage.value,
 ) {
+  // Get the value from editedUserProfile or editedAddress depending on field
   const value =
-    field in editedUserProfile.value
-      ? editedUserProfile.value[field as keyof User]
-      : editedAddress.value[field as keyof Address];
+    field in (editedUserProfile.value ?? {})
+      ? editedUserProfile.value?.[field as keyof User]
+      : editedAddress.value?.[field as keyof Address];
 
   const regexMap = {
     default: /^[A-Za-zÄÖÜäöüß\s]+$/,
@@ -206,19 +226,37 @@ function validateField(
     }
   }
 
-  changes.value = checkValues(
-    userProfile.value,
-    editedUserProfile.value,
-    addressProfile.value,
-    editedAddress.value,
-  );
+  // Only call checkValues if all profiles exist and are non-null
+  if (
+    userProfile.value &&
+    editedUserProfile.value &&
+    addressProfile.value &&
+    editedAddress.value
+  ) {
+    changes.value = checkValues(
+      userProfile.value,
+      editedUserProfile.value as User,
+      addressProfile.value,
+      editedAddress.value as Address,
+    );
+  } else {
+    changes.value = false;
+  }
 }
+
 
 // Validates the entered country code by checking if it matches a known country.
 // If no match is found an error indicating the country code is invalid will be displayed.
 function updateCountryFromCode() {
+  const code = editedAddress.value?.countryCode?.toUpperCase();
+
+  if (!code) {
+    errorMessage.value.countryCode = 'Ungültiges Länderkürzel!';
+    return;
+  }
+
   const matchingCountry = countries.value.find(
-    (country) => country.code === editedAddress.value.countryCode.toUpperCase(),
+    (country) => country.code === code,
   );
 
   if (!matchingCountry) {
@@ -229,13 +267,23 @@ function updateCountryFromCode() {
   }
 }
 
+
 // Fetches city, province, and country code based on the entered zip code.
 // Displays an error message if the zip code is invalid or the service call fails.
 async function getCity() {
   const userService = new UserService();
-  const address = await userService.getCityFromZip(editedAddress.value.zip);
+
+  const zip = editedAddress.value.zip;
+  if (!zip) {
+    errorMessage.value.zip = 'Bitte geben Sie eine Postleitzahl ein!';
+    return;
+  }
+
   try {
     errorMessage.value.zip = 'Bitte eingeben!';
+
+    const address = await userService.getCityFromZip(zip);
+
     if (address) {
       editedAddress.value.city = address[0].city;
       editedAddress.value.province = address[0].province;
@@ -249,6 +297,7 @@ async function getCity() {
     errorMessage.value.zip = 'Postleitzahl bitte überprüfen!';
   }
 }
+
 
 // Determines if there are any changes between the original user and address profiles and their edited
 // versions. Returns `true` if differences are detected, otherwise `false`.
