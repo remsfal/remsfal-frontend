@@ -85,7 +85,7 @@ async function createProperty(): Promise<void> {
     .createProperty(props.projectId, {
       title: title.value!,
       description: description.value,
-      plotArea: null,
+      plotArea: 0,
     })
     .then((newProperty) => {
       console.log('Property created:', newProperty);

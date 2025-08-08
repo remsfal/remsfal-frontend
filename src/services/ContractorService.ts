@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { typedRequest } from '@/services/api/typedRequest';
 
 export interface TaskItemJson {
   id: string;
@@ -17,29 +17,22 @@ export default class ContractorService {
   private readonly baseUrl: string = '/api/v1/contractors';
 
   async getTasks(): Promise<TaskListJson> {
-    const url = `${this.baseUrl}/tasks`;
-    return axios.get(url).then((response) => {
-      const taskList: TaskListJson = response.data;
-      console.log('GET tasks:', taskList);
-      return taskList;
-    });
+    const response = await typedRequest<any, 'get'>(
+      'get',
+      `${this.baseUrl}/tasks`
+    );
+    console.log('GET tasks:', response);
+    return response as TaskListJson;
   }
 
   async getTask(taskId: string): Promise<TaskItemJson> {
-    const url = `${this.baseUrl}/tasks/${taskId}`;
-    return axios
-      .get(url)
-      .then((response) => {
-        const task: TaskItemJson = response.data;
-        console.log('GET task by ID', task);
-        return task;
-      })
-      .catch((error) => {
-        console.log('Task retrieval error', error.request.status);
-        console.error(error.request.status);
-        throw error.request.status;
-      });
+    const response = await typedRequest<any, 'get'>(
+      'get',
+      `${this.baseUrl}/tasks/${taskId}`
+    );
+    console.log('GET task by ID:', response);
+    return response as TaskItemJson;
   }
 }
 
-export const contractorService: ContractorService = new ContractorService();
+export const contractorService = new ContractorService();

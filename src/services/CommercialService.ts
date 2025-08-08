@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { typedRequest } from '../../src/services/api/typedRequest';
 
 export interface CommercialUnit {
   id?: string;
@@ -11,50 +11,48 @@ export interface CommercialUnit {
 }
 
 class CommercialService {
-  private readonly baseUrl: string = '/api/v1/projects';
+  private readonly baseUrl = '/api/v1/projects';
 
   async createCommercial(
     projectId: string,
     buildingId: string,
-    commercial: CommercialUnit,
+    commercial: CommercialUnit
   ): Promise<CommercialUnit> {
-    return axios
-      .post(`${this.baseUrl}/${projectId}/buildings/${buildingId}/commercials`, commercial)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    const path = '/api/v1/projects/{projectId}/buildings/{buildingId}/commercials' as const;
+    const result = await typedRequest('post', path, {
+      body: commercial,
+      pathParams: { projectId, buildingId },
+    });
+    return result as CommercialUnit;
   }
-
+  
   async getCommercial(projectId: string, commercialId: string): Promise<CommercialUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/commercials/${commercialId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    const path = '/api/v1/projects/{projectId}/commercials/{commercialId}';
+    const result = await typedRequest('get', path, {
+      pathParams: { projectId, commercialId },
+    });
+    return result as CommercialUnit;
   }
 
   async updateCommercial(
     projectId: string,
     commercialId: string,
-    commercial: CommercialUnit,
+    commercial: CommercialUnit
   ): Promise<CommercialUnit> {
-    return axios
-      .patch(`${this.baseUrl}/${projectId}/commercials/${commercialId}`, commercial)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    const path = '/api/v1/projects/{projectId}/commercials/{commercialId}' as const;
+    const result = await typedRequest('patch', path, {
+      body: commercial,
+      pathParams: { projectId, commercialId },
+    });
+    return result as CommercialUnit;
   }
-
+  
   async deleteCommercial(projectId: string, commercialId: string): Promise<void> {
-    return axios
-      .delete(`${this.baseUrl}/${projectId}/commercials/${commercialId}`)
-      .then((response) => {
-        console.debug(response);
-      });
-  }
+    const path = '/api/v1/projects/{projectId}/commercials/{commercialId}' as const;
+    await typedRequest('delete', path, {
+      pathParams: { projectId, commercialId },
+    });
+  }  
 }
 
-export const commercialService: CommercialService = new CommercialService();
+export const commercialService = new CommercialService();

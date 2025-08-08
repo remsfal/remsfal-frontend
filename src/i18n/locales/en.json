@@ -160,7 +160,21 @@
   "inbox.column.owner": "Owner",
   "inbox.filter.tenant": "Filter by tenant",
   "inbox.filter.owner": "Filter by owner",
-  "inbox.filter.title": "Filter"
+  "inbox.filter.title": "Filter",
+  "commercialUnit.editTitle": "Edit commercial unit with ID: {id}",
+  "commercialUnit.commercialSpace": "Commercial Space",
+  "commercialUnit.heatingSpace": "Heating Space",
+  "commercialUnit.validation.commercialRequired": "Commercial space is required.",
+  "commercialUnit.validation.commercialNegative": "Commercial space cannot be negative.",
+  "commercialUnit.validation.heatingRequired": "Heating space is required.",
+  "commercialUnit.validation.heatingNegative": "Heating space cannot be negative.",
+  "commercialUnit.validation.descriptionTooLong": "Description must be no longer than 500 characters.",
+  "commercialUnit.loadErrorTitle": "Load Error",
+  "commercialUnit.loadErrorDetail": "Could not load commercial unit.",
+  "commercialUnit.missingIdTitle": "Invalid ID",
+  "commercialUnit.missingIdDetail": "No commercial unit ID provided.",
+  "commercialUnit.saveSuccessTitle": "Success",
+  "commercialUnit.saveSuccessDetail": "Commercial unit saved successfully.",
+  "commercialUnit.saveError": "Could not save commercial unit.",
+  "property.address": "Address"
 }
-
-

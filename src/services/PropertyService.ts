@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { typedRequest } from '@/services/api/typedRequest';
 import type { TreeNode } from 'primevue/treenode';
 
 export enum EntityType {
@@ -35,71 +35,95 @@ export interface PropertyList {
 
 export interface PropertyUnit {
   id?: string;
+  type?: 'PROPERTY' | 'SITE' | 'BUILDING' | 'APARTMENT' | 'STORAGE' | 'COMMERCIAL';
   title: string;
   description?: string;
-  landRegisterEntry?: string;
-  plotArea: number | null;
-  effective_space?: number;
-  district?: string; // Gemarkung
-  corridor?: string; // Flur
-  parcel?: string; // Flurstück
-  landRegistry?: string; // Liegenschaftsbuch
-  usageType?: string | null; // Wirtschaftsart
+  landRegistry?: string;
+  cadastralDistrict?: string;
+  sheetNumber?: string;
+  plotNumber?: number;
+  effectiveSpace?: number | null;
+  district?: string;
+  corridor?: string;
+  parcel?: string;
+  usageType?: string | null;
+
+  // Change plotArea to only allow number or undefined, NO null
+  plotArea?: number;
 }
 
+
 class PropertyService {
-  private readonly baseUrl: string = '/api/v1/projects';
+  private readonly baseUrl = '/api/v1/projects';
 
   async createProperty(
     projectId: string,
-    property: PropertyUnit,
+    property: PropertyUnit
   ): Promise<PropertyUnit> {
-    return axios
-      .post(`${this.baseUrl}/${projectId}/properties/`, property)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    const response = await typedRequest<
+      "/api/v1/projects/{projectId}/properties",
+      "post"
+    >('post', `${this.baseUrl}/{projectId}/properties`, {
+      pathParams: { projectId },
+      body: property,
+    });
+    console.debug(response);
+    return response as PropertyUnit;
   }
 
   async getPropertyTree(projectId: string): Promise<PropertyList> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/properties`)
-      .then((response) => {
-        console.log('properties returned', response.data);
-        return response.data;
-      });
+    const response = await typedRequest<
+      "/api/v1/projects/{projectId}/properties",
+      "get"
+    >('get', `${this.baseUrl}/{projectId}/properties`, {
+      pathParams: { projectId },
+    });
+    console.log('properties returned', response);
+    return response as PropertyList;
   }
 
-  async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/properties/${propertyId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+  async getProperty(
+    projectId: string,
+    propertyId: string
+  ): Promise<PropertyUnit> {
+    const response = await typedRequest<
+      "/api/v1/projects/{projectId}/properties/{propertyId}",
+      "get"
+    >('get', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
+      pathParams: { projectId, propertyId },
+    });
+    console.debug(response);
+    return response as PropertyUnit;
   }
 
   async updateProperty(
     projectId: string,
     propertyId: string,
-    property: PropertyUnit,
+    property: PropertyUnit
   ): Promise<PropertyUnit> {
-    return axios
-      .patch(`${this.baseUrl}/${projectId}/properties/${propertyId}`, property)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    const response = await typedRequest<
+      "/api/v1/projects/{projectId}/properties/{propertyId}",
+      "patch"
+    >('patch', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
+      pathParams: { projectId, propertyId },
+      body: property,
+    });
+    console.debug(response);
+    return response as PropertyUnit;
   }
 
-  async deleteProperty(projectId: string, propertyId: string): Promise<void> {
-    return axios
-      .delete(`${this.baseUrl}/${projectId}/properties/${propertyId}`)
-      .then((response) => {
-        console.debug(response);
-      });
+  async deleteProperty(
+    projectId: string,
+    propertyId: string
+  ): Promise<void> {
+    await typedRequest<
+      "/api/v1/projects/{projectId}/properties/{propertyId}",
+      "delete"
+    >('delete', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
+      pathParams: { projectId, propertyId },
+    });
+    console.debug(`Deleted property ${propertyId} from project ${projectId}`);
   }
 }
 
-export const propertyService: PropertyService = new PropertyService();
+export const propertyService = new PropertyService();

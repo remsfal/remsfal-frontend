@@ -1,59 +1,71 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
-import ContractorService, {
-  TaskItemJson,
-  TaskListJson,
-} from '../../src/services/ContractorService';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import ContractorService from '../../src/services/ContractorService';
+import { server } from '../mocks/server';
+import { http, HttpResponse } from 'msw';
 
-describe('ContractorService', () => {
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
+describe('ContractorService (MSW with http)', () => {
   const service = new ContractorService();
   const taskId = 'test-task';
 
-  beforeEach(() => {
-    vi.resetAllMocks();
-  });
-
   it('should get a list of tasks', async () => {
-    const mockTasks: TaskItemJson[] = [
-      {
-        id: '1',
-        title: 'Task 1',
-        description: 'Description 1',
-        status: 'OPEN',
-      },
-    ];
+    // Mock GET /api/v1/contractors/tasks
+    server.use(
+      http.get('/api/v1/contractors/tasks', () => {
+        return HttpResponse.json({
+          tasks: [
+            {
+              id: taskId,
+              title: 'Task 1',
+              description: 'Description 1',
+              status: 'OPEN',  // matches TaskStatus type
+            },
+          ],
+        });
+      }),
+    );
 
-    vi.spyOn(axios, 'get').mockResolvedValue({ data: { tasks: mockTasks } });
+    const taskList = await service.getTasks();
 
-    const taskList: TaskListJson = await service.getTasks();
     expect(taskList.tasks.length).toBe(1);
     expect(taskList.tasks[0].title).toBe('Task 1');
+    expect(taskList.tasks[0].status).toBe('OPEN');
   });
 
   it('should get a single task', async () => {
-    const mockTask: TaskItemJson = {
-      id: '1',
-      title: 'Task 1',
-      description: 'Description 1',
-      status: 'OPEN',
-    };
+    // Mock GET /api/v1/contractors/tasks/:taskId
+    server.use(
+      http.get('/api/v1/contractors/tasks/:taskId', (req) => {
+        const { taskId } = req.params;
+        if (taskId === 'test-task') {
+          return HttpResponse.json({
+            id: 'test-task',
+            title: 'Task 1',
+            description: 'Description 1',
+            status: 'IN_PROGRESS',
+          });
+        }
+        return HttpResponse.json({ message: 'Not Found' }, { status: 404 });
+      }),
+    );
 
-    vi.spyOn(axios, 'get').mockResolvedValue({ data: mockTask });
+    const task = await service.getTask(taskId);
 
-    const task: TaskItemJson = await service.getTask(taskId);
     expect(task.title).toBe('Task 1');
+    expect(task.status).toBe('IN_PROGRESS');
   });
 
   it('should handle task retrieval error', async () => {
-    vi.spyOn(axios, 'get').mockRejectedValue({
-      request: { status: 404 },
-    });
+    // Mock 404 for any task ID
+    server.use(
+      http.get('/api/v1/contractors/tasks/:taskId', () => {
+        return HttpResponse.json({ message: 'Not Found' }, { status: 404 });
+      }),
+    );
 
-    try {
-      await service.getTask(taskId);
-    } catch (error) {
-      expect(error).toBe(404);
-    }
+    await expect(service.getTask('non-existing')).rejects.toThrow();
   });
 });
