@@ -103,12 +103,13 @@ export interface components {
         /** @description A single chat message */
         ChatMessageJson: {
             messageId?: components["schemas"]["UUID"];
-            chatSessionId?: components["schemas"]["UUID"];
+            sessionId?: components["schemas"]["UUID"];
             senderId?: components["schemas"]["UUID"];
             contentType?: string;
             content?: string;
             url?: string;
             createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
         };
         /** @description A list of chat messages */
         ChatMessageListJson: {
