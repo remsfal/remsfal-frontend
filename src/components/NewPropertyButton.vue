@@ -29,11 +29,15 @@ const createProperty = async () => {
   }
 
   visible.value = false;
+
+  // Provide a default number or undefined for plotArea, but never null
+  const plotAreaValue = 0; // or undefined if backend accepts missing field
+
   propertyService
     .createProperty(props.projectId, {
       title: title.value!,
       description: description.value,
-      plotArea: null,
+      plotArea: plotAreaValue,
     })
     .then((newProperty) => {
       console.log('Property created:', newProperty);

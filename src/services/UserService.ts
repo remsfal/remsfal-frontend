@@ -1,80 +1,42 @@
-import axios from 'axios';
-
-export interface Address {
-  street: string;
-  city: string;
-  province: string;
-  zip: string;
-  countryCode: string;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  address: Address;
-  mobilePhoneNumber: string;
-  businessPhoneNumber: string;
-  privatePhoneNumber: string;
-  registeredDate: string;
-  lastLoginDate: string;
-}
+import { typedRequest } from '../../src/services/api/typedRequest';
 
 export default class UserService {
-  private readonly url: string = '/api/v1/user';
+  private static readonly USER_ENDPOINT = '/api/v1/user' as const;
+  private static readonly ADDRESS_ENDPOINT = '/api/v1/address' as const;
 
-  getUser(): Promise<User | void> {
-    return axios
-      .get(`${this.url}`)
-      .then((response) => {
-        const user: User = response.data;
-        console.log('GET user:', user);
-        return user;
-      })
-      .catch((error) => {
-        console.error('GET user failed:', error);
-      });
+  // Get current user data, typed from OpenAPI
+  async getUser() {
+    return typedRequest('get', UserService.USER_ENDPOINT);
   }
 
-  getCityFromZip(zip: string): Promise<Address[] | void> {
-    return axios
-      .get(`/api/v1/address`, {
-        params: { zip: zip },
-      })
-      .then((response) => {
-        const city: Address[] = response.data;
-        console.log('GET user:', city);
-        return city;
-      })
-      .catch((error) => {
-        console.error('GET user failed:', error);
-      });
+  // Get city info from zip code, typed from OpenAPI
+  getCityFromZip(zip: string) {
+    return typedRequest<'/api/v1/address', 'get'>('get', '/api/v1/address', {
+      params: {
+        query: { zip }
+      }
+    });
+  }
+  
+
+  // Update user with partial data, typed from OpenAPI
+  async updateUser(updatedUser: Partial<any>) {
+    // If you want to use the exact request body type from OpenAPI, 
+    // replace `Partial<any>` with proper RequestBody type from OpenAPI
+    return typedRequest('patch', UserService.USER_ENDPOINT, {
+      body: updatedUser,
+    });
   }
 
-  updateUser(updatedUser: Partial<User>): Promise<User | void> {
-    return axios
-      .patch(`${this.url}`, updatedUser)
-      .then((response) => {
-        const user: User = response.data;
-        console.log('PATCH user:', user);
-        return user;
-      })
-      .catch((error) => {
-        console.error('PATCH user failed:', error);
-      });
-  }
-
-  deleteUser(): Promise<boolean> {
-    return axios
-      .delete(`${this.url}`)
-      .then(() => {
-        console.log('DELETE user');
-        return true;
-      })
-      .catch((error) => {
-        console.error('DELETE user failed:', error);
-        return false;
-      });
+  // Delete user, returns boolean success
+  async deleteUser() {
+    try {
+      await typedRequest('delete', UserService.USER_ENDPOINT);
+      console.log('DELETE user');
+      return true;
+    } catch (error) {
+      console.error('DELETE user failed:', error);
+      return false;
+    }
   }
 }

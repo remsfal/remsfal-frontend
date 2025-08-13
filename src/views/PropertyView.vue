@@ -15,12 +15,13 @@ const router = useRouter();
 
 const title = ref('');
 const description = ref('');
-const district = ref(''); // Gemarkung
+const district = ref(''); // Gemarkung (cadastralDistrict)
 const corridor = ref(''); // Flur
 const parcel = ref(''); // Flurstück
-const landRegisterEntry = ref(''); // Liegenschaftsbuch
+const landRegisterEntry = ref(''); // Liegenschaftsbuch (landRegistry)
 const usageType = ref<string | null>(null); // Wirtschaftsart
-const plotArea = ref<number | null>(null); // Grundstücksfläche
+const plotArea = ref<number | null>(null); // Grundstücksfläche (effectiveSpace)
+
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
   { label: 'GF Wohnen', value: 'GF Wohnen' },
@@ -83,27 +84,27 @@ const usageOptions = [
   { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' },
 ];
 
-const originalValues = ref({
+const originalValues = ref<PropertyUnit>({
   title: '',
   description: '',
   district: '',
   corridor: '',
   parcel: '',
-  landRegisterEntry: '',
-  usageType: null as string | null,
-  plotArea: null as number | null,
+  landRegistry: '',
+  usageType: null,
+  effectiveSpace: null,
 });
 
 const hasChanges = computed(() => {
   return (
     title.value !== originalValues.value.title ||
     description.value !== originalValues.value.description ||
-    district.value !== originalValues.value.district ||
+    district.value !== originalValues.value.cadastralDistrict ||
     corridor.value !== originalValues.value.corridor ||
     parcel.value !== originalValues.value.parcel ||
-    landRegisterEntry.value !== originalValues.value.landRegisterEntry ||
+    landRegisterEntry.value !== originalValues.value.landRegistry ||
     usageType.value !== originalValues.value.usageType ||
-    plotArea.value !== originalValues.value.plotArea
+    plotArea.value !== originalValues.value.effectiveSpace
   );
 });
 
@@ -142,22 +143,22 @@ const fetchPropertyDetails = async () => {
     const data = await propertyService.getProperty(props.projectId, props.unitId);
     title.value = data.title || '';
     description.value = data.description || '';
-    district.value = data.district || '';
+    district.value = data.cadastralDistrict || '';
     corridor.value = data.corridor || '';
     parcel.value = data.parcel || '';
-    landRegisterEntry.value = data.landRegisterEntry || '';
+    landRegisterEntry.value = data.landRegistry || '';
     usageType.value = data.usageType || null;
-    plotArea.value = data.plotArea ?? null;
+    plotArea.value = data.effectiveSpace ?? null;
 
     originalValues.value = {
       title: title.value,
       description: description.value,
-      district: district.value,
+      cadastralDistrict: district.value,
       corridor: corridor.value,
       parcel: parcel.value,
-      landRegisterEntry: landRegisterEntry.value,
+      landRegistry: landRegisterEntry.value,
       usageType: usageType.value,
-      plotArea: plotArea.value,
+      effectiveSpace: plotArea.value,
     };
   } catch (err) {
     console.error('Fehler beim Laden der Eigentumsdetails:', err);
@@ -193,12 +194,12 @@ const save = async () => {
   const payload: PropertyUnit = {
     title: title.value,
     description: description.value,
-    district: district.value,
+    cadastralDistrict: district.value,
     corridor: corridor.value,
     parcel: parcel.value,
-    landRegisterEntry: landRegisterEntry.value,
+    landRegistry: landRegisterEntry.value,
     usageType: usageType.value,
-    plotArea: plotArea.value,
+    effectiveSpace: plotArea.value,
   };
 
   try {
@@ -218,6 +219,7 @@ const save = async () => {
 
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
+
 
 <template>
   <div class="p-6 w-full">

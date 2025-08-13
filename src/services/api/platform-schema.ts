@@ -3595,106 +3595,115 @@ export interface paths {
     };
     "/api/v1/user": {
         parameters: {
+          query?: never;
+          header?: never;
+          path?: never;
+          cookie?: never;
+        };
+        /** Retrieve information of this user identified by the cookie. */
+        get: {
+          parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
-        };
-        /** Retrieve information of this user identified by the cookie. */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
+          };
+          requestBody?: never;
+          responses: {
+            /** @description Successful user retrieval */
+            200: {
+              content: {
+                "application/json": components["schemas"]["UserJson"];
+              };
+              headers?: {
+                [name: string]: unknown;
+              };
             };
-            requestBody?: never;
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The user does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
+            /** @description No user authentication provided via session cookie */
+            401: {
+              headers: {
+                [name: string]: unknown;
+              };
+              content?: never;
             };
+            /** @description The user does not exist */
+            404: {
+              headers: {
+                [name: string]: unknown;
+              };
+              content?: never;
+            };
+          };
         };
         put?: never;
         post?: never;
         /** Delete this user identified by the cookie. */
         delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
+          parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+          };
+          requestBody?: never;
+          responses: {
+            /** @description The user was deleted successfully */
+            204: {
+              headers: {
+                [name: string]: unknown;
+              };
+              content?: never;
             };
-            requestBody?: never;
-            responses: {
-                /** @description The user was deleted successfully */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The user does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
+            /** @description No user authentication provided via session cookie */
+            401: {
+              headers: {
+                [name: string]: unknown;
+              };
+              content?: never;
             };
+            /** @description The user does not exist */
+            404: {
+              headers: {
+                [name: string]: unknown;
+              };
+              content?: never;
+            };
+          };
         };
         options?: never;
         head?: never;
         /** Update information of this user identified by the cookie. */
         patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
+          parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+          };
+          requestBody: {
+            content: {
+              "application/json": components["schemas"]["UserJson"];
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UserJson"];
-                };
+          };
+          responses: {
+            /** @description No user authentication provided via session cookie */
+            401: {
+              headers: {
+                [name: string]: unknown;
+              };
+              content?: never;
             };
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The user does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
+            /** @description The user does not exist */
+            404: {
+              headers: {
+                [name: string]: unknown;
+              };
+              content?: never;
             };
+          };
         };
         trace?: never;
-    };
+      };
     "/zeebe/start": {
         parameters: {
             query?: never;
