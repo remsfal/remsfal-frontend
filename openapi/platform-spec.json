@@ -155,7 +155,7 @@
           "messageId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "chatSessionId" : {
+          "sessionId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "senderId" : {
@@ -171,6 +171,9 @@
             "type" : "string"
           },
           "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
             "$ref" : "#/components/schemas/Instant"
           }
         }
@@ -1122,6 +1125,16 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/jwks" : {
+      "get" : {
+        "summary" : "Expose the JSON Web Key Set used to sign tokens.",
+        "responses" : {
+          "200" : {
+            "description" : "JWKS containing the public keys"
           }
         }
       }

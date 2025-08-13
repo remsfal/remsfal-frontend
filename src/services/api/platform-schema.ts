@@ -93,6 +93,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/authentication/jwks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Expose the JSON Web Key Set used to sign tokens. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description JWKS containing the public keys */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/authentication/login": {
         parameters: {
             query?: never;
@@ -3780,12 +3814,13 @@ export interface components {
         /** @description A single chat message */
         ChatMessageJson: {
             messageId?: components["schemas"]["UUID"];
-            chatSessionId?: components["schemas"]["UUID"];
+            sessionId?: components["schemas"]["UUID"];
             senderId?: components["schemas"]["UUID"];
             contentType?: string;
             content?: string;
             url?: string;
             createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
         };
         /** @description A list of chat messages */
         ChatMessageListJson: {
