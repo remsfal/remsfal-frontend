@@ -5,6 +5,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '../../src/i18n/i18n';
 import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
 
+// Fix for "window is not defined" error in test environment
+if (typeof window === 'undefined') {
+  (global as any).window = {};
+}
+
 const routerPushMock = vi.fn();
 
 vi.mock('vue-router', () => ({
