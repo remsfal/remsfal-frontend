@@ -1,110 +1,101 @@
-import axios from 'axios';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { projectMemberService, type Member } from '../../src/services/ProjectMemberService';
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import type { Mock } from 'vitest';
+import { server } from '../mocks/server';
+import { http, HttpResponse } from 'msw';
 
-vi.mock('axios');
-const mockedAxios = axios as unknown as {
-  get: Mock;
-  post: Mock;
-  patch: Mock;
-  delete: Mock;
-};
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
-describe('projectMemberService', () => {
+describe('projectMemberService (MSW)', () => {
   const projectId = 'project123';
   const member: Member = {
     id: 'member123',
     email: 'test@example.com',
-    role: 'developer',
+    role: 'COLLABORATOR',
   };
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should fetch members for a project', async () => {
-    const mockMembers = [
-      { id: '1', email: 'user1@example.com', role: 'admin' },
-      { id: '2', email: 'user2@example.com', role: 'developer' },
-    ];
-    mockedAxios.get.mockResolvedValue({ data: { members: mockMembers } });
-
     const result = await projectMemberService.getMembers(projectId);
 
-    expect(mockedAxios.get).toHaveBeenCalledWith(`/api/v1/projects/${projectId}/members`);
-    expect(result.members).toEqual(mockMembers);
+    expect(result.members).toHaveLength(2);
+    expect(result.members[0]).toMatchObject({ role: 'MANAGER' });
   });
 
   it('should handle errors when fetching members', async () => {
-    const error = new Error('Network Error');
-    mockedAxios.get.mockRejectedValue(error);
+    // Override handler using http.get()
+    server.use(
+      http.get('/api/v1/projects/:projectId/members', () => {
+        return HttpResponse.json(
+          { message: 'Internal Server Error' },
+          { status: 500 },
+        );
+      }),
+    );
 
-    await expect(projectMemberService.getMembers(projectId)).rejects.toThrow(error);
+    await expect(projectMemberService.getMembers(projectId)).rejects.toThrow();
   });
 
   it('should add a member to a project', async () => {
-    const mockResponse = { id: 'member123', email: member.email, role: member.role };
-    mockedAxios.post.mockResolvedValue({ data: mockResponse });
+    const newMember = await projectMemberService.addMember(projectId, member);
 
-    const result = await projectMemberService.addMember(projectId, member);
-
-    expect(mockedAxios.post).toHaveBeenCalledWith(`/api/v1/projects/${projectId}/members`, {
+    expect(newMember).toMatchObject({
       email: member.email,
       role: member.role,
     });
-    expect(result).toEqual(mockResponse);
   });
 
   it('should handle errors when adding a member', async () => {
-    const error = new Error('Failed to add member');
-    mockedAxios.post.mockRejectedValue(error);
+    server.use(
+      http.post('/api/v1/projects/:projectId/members', () => {
+        return HttpResponse.json(
+          { message: 'Bad Request' },
+          { status: 400 },
+        );
+      }),
+    );
 
-    await expect(projectMemberService.addMember(projectId, member)).rejects.toThrow(error);
+    await expect(projectMemberService.addMember(projectId, member)).rejects.toThrow();
   });
 
   it('should update a member role in a project', async () => {
-    const mockResponse = { id: member.id, email: member.email, role: 'manager' };
-    mockedAxios.patch.mockResolvedValue({ data: mockResponse });
+    const updatedMember = await projectMemberService.updateMemberRole(projectId, member);
 
-    const result = await projectMemberService.updateMemberRole(projectId, member);
-
-    expect(mockedAxios.patch).toHaveBeenCalledWith(
-      `/api/v1/projects/${projectId}/members/${member.id}`,
-      { role: 'developer' },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    expect(result).toEqual(mockResponse);
+    expect(updatedMember).toMatchObject({
+      id: member.id,
+      role: member.role,
+    });
   });
 
   it('should handle errors when updating a member role', async () => {
-    const error = new Error('Failed to update member role');
-    mockedAxios.patch.mockRejectedValue(error);
+    server.use(
+      http.patch('/api/v1/projects/:projectId/members/:memberId', () => {
+        return HttpResponse.json(
+          { message: 'Not Found' },
+          { status: 404 },
+        );
+      }),
+    );
 
-    await expect(projectMemberService.updateMemberRole(projectId, member)).rejects.toThrow(error);
+    await expect(projectMemberService.updateMemberRole(projectId, member)).rejects.toThrow();
   });
 
   it('should remove a member from a project', async () => {
-    const mockResponse = { success: true };
-    mockedAxios.delete.mockResolvedValue({ data: mockResponse });
+    const response = await projectMemberService.removeMember(projectId, member.id!);
 
-    const result = await projectMemberService.removeMember(projectId, member.id!);
-
-    expect(mockedAxios.delete).toHaveBeenCalledWith(
-      `/api/v1/projects/${projectId}/members/${member.id}`,
-      {
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    expect(result).toEqual(mockResponse);
+    expect(response).toEqual({ success: true });
   });
 
   it('should handle errors when removing a member', async () => {
-    const error = new Error('Failed to remove member');
-    mockedAxios.delete.mockRejectedValue(error);
+    server.use(
+      http.delete('/api/v1/projects/:projectId/members/:memberId', () => {
+        return HttpResponse.json(
+          { message: 'Forbidden' },
+          { status: 403 },
+        );
+      }),
+    );
 
-    await expect(projectMemberService.removeMember(projectId, member.id!)).rejects.toThrow(error);
+    await expect(projectMemberService.removeMember(projectId, member.id!)).rejects.toThrow();
   });
 });
