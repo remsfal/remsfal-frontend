@@ -1,19 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { taskService } from '@/services/TaskService';
+import { taskService, type TaskDetail } from '@/services/TaskService';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import type { components } from '@/services/api/platform-schema';
-
-// Use OpenAPI-generated Task type
-type Task = components['schemas']['TaskJson'];
 
 const route = useRoute();
 const router = useRouter();
-const task = ref<Task | null>(null);
-const originalTask = ref<Task | null>(null);
+const task = ref<TaskDetail | null>(null);
+const originalTask = ref<TaskDetail | null>(null);
 const errors = ref<{ [key: string]: string }>({});
 const loading = ref(false);
 const isExpanded = ref(false);
@@ -34,7 +30,7 @@ const validateTask = (): boolean => {
   return Object.keys(errors.value).length === 0;
 };
 
-const startEditing = (row: Task, field: keyof Task) => {
+const startEditing = (row: TaskDetail, field: keyof TaskDetail) => {
   (row as any).editing = field;
   nextTick(() => {
     const inputElement = document.querySelector('.editable-input') as HTMLElement | null;
@@ -42,7 +38,7 @@ const startEditing = (row: Task, field: keyof Task) => {
   });
 };
 
-const stopEditing = (row: Task) => {
+const stopEditing = (row: TaskDetail) => {
   (row as any).editing = null;
 };
 
@@ -54,9 +50,7 @@ onMounted(async () => {
     task.value = await taskService.getTask(projectId, taskId);
     if (task.value) originalTask.value = JSON.parse(JSON.stringify(task.value));
   } catch (error) {
-    alert(
-      `Aufgabe konnte nicht geladen werden: ${error}\n\nBitte überprüfen Sie, ob Sie eingeloggt sind.`,
-    );
+    alert(`Aufgabe konnte nicht geladen werden: ${error}`);
   } finally {
     loading.value = false;
   }
@@ -65,13 +59,11 @@ onMounted(async () => {
 const saveTask = async () => {
   if (!task.value) return;
 
-  // Prüfen auf Änderungen
   if (originalTask.value && JSON.stringify(task.value) === JSON.stringify(originalTask.value)) {
     alert('Keine Änderungen zum Speichern vorhanden.');
     return;
   }
 
-  // Validierung
   if (!validateTask()) {
     const errorMessages = Object.values(errors.value).join('');
     alert(`Fehler beim Speichern, weil folgende Daten fehlen:${errorMessages}`);
@@ -81,9 +73,7 @@ const saveTask = async () => {
   try {
     const projectId = route.params.projectId as string;
     const taskId = route.params.taskid as string;
-
-    // OpenAPI-kompatibles Body-Objekt
-    const body: Partial<Task> = {
+    const body: Partial<TaskDetail> = {
       title: task.value.title,
       description: task.value.description,
       status: task.value.status,

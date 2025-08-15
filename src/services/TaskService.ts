@@ -1,7 +1,7 @@
 import { typedRequest } from '@/services/api/typedRequest';
-import type { RequestBody, ResponseType } from '@/services/api/typedRequest';
+import type { RequestBody } from '@/services/api/typedRequest';
+import type { components } from '@/services/api/platform-schema';
 
-// Runtime-safe Status object
 export const Status = {
   PENDING: 'PENDING' as const,
   OPEN: 'OPEN' as const,
@@ -12,20 +12,21 @@ export const Status = {
 
 export type Status = typeof Status[keyof typeof Status];
 
-// Extract Task types from OpenAPI responses
-export type TaskItem =
-  ResponseType<'/api/v1/projects/{projectId}/tasks', 'get'> extends { tasks: Array<infer T> }
-    ? T
-    : never;
+// A single task entry
+export type TaskItem = components['schemas']['TaskJson'];
 
-export type TaskDetail = ResponseType<'/api/v1/projects/{projectId}/tasks/{taskId}', 'get'>;
+// Full task detail (same type, but kept for clarity if you want separate naming)
+export type TaskDetail = components['schemas']['TaskJson'];
 
 export type CreateTaskBody = RequestBody<'/api/v1/projects/{projectId}/tasks', 'post'>;
 export type ModifyTaskBody = RequestBody<'/api/v1/projects/{projectId}/tasks/{taskId}', 'patch'>;
 
 export class TaskService {
-  // Get all tasks for a project, optionally filtered by status or owner
-  async getTasks(projectId: string, status?: Status | null, ownerId?: string): Promise<ResponseType<'/api/v1/projects/{projectId}/tasks', 'get'>> {
+  async getTasks(
+    projectId: string,
+    status?: Status | null,
+    ownerId?: string
+  ): Promise<{ tasks: TaskItem[] }> {
     return typedRequest<'/api/v1/projects/{projectId}/tasks', 'get'>(
       'get',
       '/api/v1/projects/{projectId}/tasks',
@@ -37,37 +38,33 @@ export class TaskService {
             ...(ownerId ? { owner: ownerId } : {}),
           },
         },
-      },
-    ) as Promise<ResponseType<'/api/v1/projects/{projectId}/tasks', 'get'>>;
+      }
+    ) as Promise<{ tasks: TaskItem[] }>;
   }
 
-  // Get a single task by ID
   async getTask(projectId: string, taskId: string): Promise<TaskDetail> {
     return typedRequest<'/api/v1/projects/{projectId}/tasks/{taskId}', 'get'>(
       'get',
       '/api/v1/projects/{projectId}/tasks/{taskId}',
-      { params: { path: { projectId, taskId } } },
+      { params: { path: { projectId, taskId } } }
     ) as Promise<TaskDetail>;
   }
 
-  // Create a new task
-  async createTask(projectId: string, body: CreateTaskBody): Promise<ResponseType<'/api/v1/projects/{projectId}/tasks', 'post'>> {
+  async createTask(projectId: string, body: CreateTaskBody) {
     return typedRequest<'/api/v1/projects/{projectId}/tasks', 'post'>(
       'post',
       '/api/v1/projects/{projectId}/tasks',
       { params: { path: { projectId } }, body },
-    ) as Promise<ResponseType<'/api/v1/projects/{projectId}/tasks', 'post'>>;
+    );
   }
 
-  // Modify an existing task
-  async modifyTask(projectId: string, taskId: string, body: ModifyTaskBody): Promise<ResponseType<'/api/v1/projects/{projectId}/tasks/{taskId}', 'patch'>> {
+  async modifyTask(projectId: string, taskId: string, body: ModifyTaskBody) {
     return typedRequest<'/api/v1/projects/{projectId}/tasks/{taskId}', 'patch'>(
       'patch',
       '/api/v1/projects/{projectId}/tasks/{taskId}',
       { params: { path: { projectId, taskId } }, body },
-    ) as Promise<ResponseType<'/api/v1/projects/{projectId}/tasks/{taskId}', 'patch'>>;
+    );
   }
 }
 
-// Single instance export
 export const taskService = new TaskService();
