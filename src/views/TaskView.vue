@@ -3,7 +3,8 @@ import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import TaskService, { Status, type TaskItem } from '@/services/TaskService';
+import { TaskService } from '@/services/TaskService';
+import type { Status, TaskItem } from '@/services/TaskService';
 import TaskTable from '@/components/TaskTable.vue';
 
 const props = defineProps<{
@@ -23,7 +24,11 @@ const createTask = () => {
   const projectId = props.projectId;
 
   taskService
-    .createTask(projectId, title.value, description.value, props.owner)
+    .createTask(projectId, {
+      title: title.value,
+      description: description.value,
+      ownerId: props.owner,
+    })
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;
@@ -39,29 +44,31 @@ const loadTasks = () => {
   taskService
     .getTasks(projectId)
     .then((tasklist) => {
-      tasks.value = tasklist.tasks;
+      tasks.value = (tasklist as { tasks: TaskItem[] }).tasks;
     })
     .catch((error) => {
       console.error('Error loading tasks:', error);
     });
 };
+
 const loadTaskswithOpenStatus = () => {
   const projectId = props.projectId;
   taskService
-    .getTasks(projectId,'OPEN')
+    .getTasks(projectId, 'OPEN')
     .then((tasklist) => {
-      taskbyStatusOpen.value = tasklist.tasks;
+      taskbyStatusOpen.value = (tasklist as { tasks: TaskItem[] }).tasks;
     })
     .catch((error) => {
       console.error('Error loading tasks:', error);
     });
 };
+
 const loadMyTasks = () => {
   const projectId = props.projectId;
   taskService
-    .getTasks(projectId,null, props.owner)
+    .getTasks(projectId, null, props.owner)
     .then((tasklist) => {
-      myTasks.value = tasklist.tasks;
+      myTasks.value = (tasklist as { tasks: TaskItem[] }).tasks;
     })
     .catch((error) => {
       console.error('Error loading tasks:', error);

@@ -1,19 +1,19 @@
-<script setup lang="ts">
+\<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { apartmentService, type ApartmentUnit } from '@/services/ApartmentService';
+import { apartmentService } from '@/services/ApartmentService';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
-
 
 const props = defineProps<{
   projectId: string;
   unitId: string;
 }>();
+
 const toast = useToast();
 const router = useRouter();
 
-// Refs für Felder
+// Refs for form fields
 const title = ref('');
 const location = ref('');
 const heatingSpace = ref<number | null>(null);
@@ -21,7 +21,7 @@ const livingSpace = ref<number | null>(null);
 const usableSpace = ref<number | null>(null);
 const description = ref('');
 
-// Originalwerte
+// Original values to detect changes
 const originalValues = ref({
   title: '',
   location: '',
@@ -31,55 +31,54 @@ const originalValues = ref({
   description: '',
 });
 
-// Änderungen erkennen
-const hasChanges = computed(() => {
-  return (
-    title.value !== originalValues.value.title ||
-    location.value !== originalValues.value.location ||
-    heatingSpace.value !== originalValues.value.heatingSpace ||
-    livingSpace.value !== originalValues.value.livingSpace ||
-    usableSpace.value !== originalValues.value.usableSpace ||
-    description.value !== originalValues.value.description
-  );
-});
+// Detect changes
+const hasChanges = computed(() => 
+  title.value !== originalValues.value.title ||
+  location.value !== originalValues.value.location ||
+  heatingSpace.value !== originalValues.value.heatingSpace ||
+  livingSpace.value !== originalValues.value.livingSpace ||
+  usableSpace.value !== originalValues.value.usableSpace ||
+  description.value !== originalValues.value.description
+);
 
-// Validierung
+// Validation
 const validationErrors = computed(() => {
   const errors: string[] = [];
-  if (heatingSpace.value === null) {
-    errors.push('Heizfläche ist erforderlich.');
-  } else if (heatingSpace.value < 0) {
-    errors.push('Heizfläche darf nicht negativ sein.');
-  }
-  if (livingSpace.value === null) {
-    errors.push('Wohnfläche ist erforderlich.');
-  } else if (livingSpace.value < 0) {
-    errors.push('Wohnfläche darf nicht negativ sein.');
-  }
-  if (usableSpace.value === null) {
-    errors.push('Nutzfläche ist erforderlich.');
-  } else if (usableSpace.value < 0) {
-    errors.push('Nutzfläche darf nicht negativ sein.');
-  }
+  if (heatingSpace.value === null) errors.push('Heizfläche ist erforderlich.');
+  else if (heatingSpace.value < 0) errors.push('Heizfläche darf nicht negativ sein.');
+  
+  if (livingSpace.value === null) errors.push('Wohnfläche ist erforderlich.');
+  else if (livingSpace.value < 0) errors.push('Wohnfläche darf nicht negativ sein.');
+
+  if (usableSpace.value === null) errors.push('Nutzfläche ist erforderlich.');
+  else if (usableSpace.value < 0) errors.push('Nutzfläche darf nicht negativ sein.');
+
   if (description.value && description.value.length > 500)
     errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
+
   return errors;
 });
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
-// Daten laden
+// Load apartment data
 const fetchApartment = async () => {
-  if (!props.projectId) {
-    console.error('Keine projectId');
-    return;
-  }
-  if (!props.unitId) {
-    console.error('Keine unitId');
-    return;
-  }
+  if (!props.projectId || !props.unitId) return;
+
   try {
-    const data = await apartmentService.getApartment(props.projectId, props.unitId);
+    const data = await apartmentService.getApartment(
+      props.projectId, 
+      props.unitId
+    ) as {
+      title?: string;
+      location?: string;
+      heatingSpace?: number | null;
+      livingSpace?: number | null;
+      usableSpace?: number | null;
+      description?: string;
+    };
+
+    // assign to reactive refs
     title.value = data.title || '';
     location.value = data.location || '';
     heatingSpace.value = data.heatingSpace ?? null;
@@ -87,13 +86,14 @@ const fetchApartment = async () => {
     usableSpace.value = data.usableSpace ?? null;
     description.value = data.description || '';
 
+    // normalize data for originalValues
     originalValues.value = {
-      title: title.value,
-      location: location.value,
-      heatingSpace: heatingSpace.value,
-      livingSpace: livingSpace.value,
-      usableSpace: usableSpace.value,
-      description: description.value,
+      title: data.title || '',
+      location: data.location || '',
+      heatingSpace: data.heatingSpace ?? null,
+      livingSpace: data.livingSpace ?? null,
+      usableSpace: data.usableSpace ?? null,
+      description: data.description || '',
     };
   } catch (err) {
     console.error('Fehler beim Laden der Wohnung:', err);
@@ -107,10 +107,8 @@ const fetchApartment = async () => {
 };
 
 onMounted(() => {
-  if (props.unitId) {
-    fetchApartment();
-  } else {
-    console.warn('unitId fehlt – keine Daten können geladen werden.');
+  if (props.unitId) fetchApartment();
+  else {
     toast.add({
       severity: 'warn',
       summary: 'Ungültige ID',
@@ -120,14 +118,14 @@ onMounted(() => {
   }
 });
 
-// Speichern
+// Save
 const save = async () => {
   if (!isValid.value) {
     showValidationErrorToast(toast, validationErrors.value);
     return;
   }
 
-  const payload: ApartmentUnit = {
+  const payload = {
     title: title.value,
     location: location.value,
     description: description.value,
@@ -150,6 +148,8 @@ const save = async () => {
     showSavingErrorToast(toast, 'Apartment konnte nicht gespeichert werden.');
   }
 };
+
+// Cancel
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
