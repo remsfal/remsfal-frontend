@@ -1,16 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import ContractorTable from '@/components/ContractorTable.vue';
-import { tenancyService, type GetTenanciesResponse } from '@/services/TenancyService';
+import { tenancyService, type GetTenanciesResponse, type TenancyJson } from '@/services/TenancyService';
 
 const tenanciesResponse = ref<GetTenanciesResponse | null>(null);
 const loading = ref(true);
 
+// Optional: fetch a single tenancy
+const tenancyId = ref<string>('');
+const rentalId = ref<string>('');
+const tenancy = ref<TenancyJson | null>(null);
+
 onMounted(async () => {
   try {
     tenanciesResponse.value = await tenancyService.fetchTenancies();
+
+    if (tenancyId.value && rentalId.value) {
+      tenancy.value = await tenancyService.fetchTenancy(tenancyId.value, rentalId.value);
+    }
   } catch (err) {
-    console.error('Failed to fetch tenancies', err);
+    console.error('Failed to fetch tenancy data', err);
   } finally {
     loading.value = false;
   }
@@ -30,5 +39,15 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
+    <div v-if="tenancy" class="mt-6">
+      <h6>Single Tenancy Details</h6>
+      <p>ID: {{ tenancy.id }}</p>
+      <p>Start of Rental: {{ tenancy.startOfRental }}</p>
+      <p>End of Rental: {{ tenancy.endOfRental }}</p>
+      <p>Active: {{ tenancy.active }}</p>
+    </div>
+
+    <div v-else-if="!loading">No tenancy data found.</div>
   </main>
 </template>
