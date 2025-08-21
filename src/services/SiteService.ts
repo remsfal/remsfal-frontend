@@ -1,58 +1,74 @@
-import axios from 'axios';
+import { typedRequest } from '@/services/api/typedRequest';
+import type { RequestBody, ResponseType } from '@/services/api/typedRequest';
+import type { components, paths } from '../../src/services/api/platform-schema';
 
-export interface SiteUnit {
-  id?: string;
-  title: string;
-  description?: string;
-  location?: string;
-  usableSpace?: number;
-}
+export type SiteUnit = components['schemas']['SiteJson'];
+
+export type CreateSiteBody = RequestBody<
+  '/api/v1/projects/{projectId}/properties/{propertyId}/sites',
+  'post'
+>;
+
+export type UpdateSiteBody = RequestBody<
+  '/api/v1/projects/{projectId}/sites/{siteId}',
+  'patch'
+>;
+
+export type GetSiteResponse = ResponseType<
+  '/api/v1/projects/{projectId}/sites/{siteId}',
+  'get'
+>;
 
 class SiteService {
-  private readonly baseUrl: string = '/api/v1/projects';
-
   async createSite(
     projectId: string,
     propertyId: string,
-    site: SiteUnit,
+    body: CreateSiteBody
   ): Promise<SiteUnit> {
-    return axios
-      .post(`${this.baseUrl}/${projectId}/properties/${propertyId}/sites`, site)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    return typedRequest<
+      '/api/v1/projects/{projectId}/properties/{propertyId}/sites',
+      'post',
+      SiteUnit
+    >('post', '/api/v1/projects/{projectId}/properties/{propertyId}/sites', {
+      pathParams: { projectId, propertyId },
+      body,
+    });
   }
 
-  async getSite(projectId: string, siteId: string): Promise<SiteUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/sites/${siteId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+  async getSite(projectId: string, siteId: string): Promise<GetSiteResponse> {
+    return typedRequest<
+      '/api/v1/projects/{projectId}/sites/{siteId}',
+      'get',
+      GetSiteResponse
+    >('get', '/api/v1/projects/{projectId}/sites/{siteId}', {
+      pathParams: { projectId, siteId },
+    });
   }
 
   async updateSite(
     projectId: string,
     siteId: string,
-    site: SiteUnit,
+    body: UpdateSiteBody
   ): Promise<SiteUnit> {
-    return axios
-      .patch(`${this.baseUrl}/${projectId}/sites/${siteId}`, site)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    return typedRequest<
+      '/api/v1/projects/{projectId}/sites/{siteId}',
+      'patch',
+      SiteUnit
+    >('patch', '/api/v1/projects/{projectId}/sites/{siteId}', {
+      pathParams: { projectId, siteId },
+      body,
+    });
   }
 
   async deleteSite(projectId: string, siteId: string): Promise<void> {
-    return axios
-      .delete(`${this.baseUrl}/${projectId}/sites/${siteId}`)
-      .then((response) => {
-        console.debug(response);
-      });
+    return typedRequest<
+      '/api/v1/projects/{projectId}/sites/{siteId}',
+      'delete',
+      void
+    >('delete', '/api/v1/projects/{projectId}/sites/{siteId}', {
+      pathParams: { projectId, siteId },
+    });
   }
 }
 
-export const siteService: SiteService = new SiteService();
+export const siteService = new SiteService();

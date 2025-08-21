@@ -1,140 +1,61 @@
-export interface TenantItem {
-  id: string;
-  firstName: string;
-  lastName: string;
-  unitTitle: string;
-  rentalObject: string;
-  rentalStart: Date;
-  rentalEnd: Date;
-}
+import { typedRequest } from '../../src/services/api/typedRequest';
+import type { paths } from '../../src/services/api/platform-schema';
 
-export interface TenancyUnitItem {
-  id: string;
-  rentalObject: string;
-  unitTitle: string;
-}
+// Response type for fetching all tenancies (works because 200 exists)
+type GetTenanciesResponse =
+  paths['/api/v1/tenancies']['get']['responses']['200']['content']['application/json'];
 
-export interface TenancyTenantItem {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
-export interface TenancyItem {
-  id: string;
-  listOfTenants: TenancyTenantItem[];
-  listOfUnits: TenancyUnitItem[];
-  rentalStart: Date;
-  rentalEnd: Date;
-  active: boolean;
-}
+// TEMPORARY: Response type for single tenancy
+// Since the backend spec doesn't have 200 yet, we use unknown
+type GetTenancyResponse = unknown;
 
 export default class TenancyService {
-  generateMockTenantData(): TenantItem[] {
-    return [
-      {
-        id: '1',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        unitTitle: 'Wohnung 101',
-        rentalObject: 'Wohnung',
-        rentalStart: new Date('2020-01-01'),
-        rentalEnd: new Date('2025-12-31'),
-      },
-      {
-        id: '2',
-        firstName: 'Erika',
-        lastName: 'Musterfrau',
-        unitTitle: 'Wohnung 202',
-        rentalObject: 'Wohnung',
-        rentalStart: new Date('2021-05-01'),
-        rentalEnd: new Date('2026-04-30'),
-      },
-    ];
+  // Fetch all tenancies
+  async fetchTenancies(): Promise<GetTenanciesResponse> {
+    return typedRequest('get', '/api/v1/tenancies');
   }
 
-  async fetchTenantData(): Promise<TenantItem[]> {
-    // Hier könnte später ein API-Call eingefügt werden
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(this.generateMockTenantData());
-      }, 500);
-    });
+  // Fetch a single tenancy by tenancyId and rentalId
+  async fetchTenancy(tenancyId: string, rentalId: string): Promise<GetTenancyResponse> {
+    try {
+      return await typedRequest('get', '/api/v1/tenancies/{tenancyId}/apartments/{rentalId}', {
+        pathParams: { tenancyId, rentalId },
+      });
+    } catch (err: any) {
+      if (err.status === 404) return null; // handle not found
+      throw err;
+    }
   }
 
-  generateMockTenancyData(): TenancyItem[] {
-    return [
-      {
-        id: '1',
-        listOfTenants: [
-          { id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max.mustermann@sample.com' },
-          {
-            id: '2',
-            firstName: 'Erika',
-            lastName: 'Musterfrau',
-            email: 'erika.musterfrau@sample.com',
-          },
-        ],
-        listOfUnits: [
-          { id: '1', rentalObject: 'Wohnung', unitTitle: 'Wohnung 101' },
-          { id: '2', rentalObject: 'Wohnung', unitTitle: 'Wohnung 202' },
-        ],
-        rentalStart: new Date('2020-01-01'),
-        rentalEnd: new Date('2024-12-31'),
-        active: false,
-      },
-      {
-        id: '2',
-        listOfTenants: [
-          { id: '3', firstName: 'Hans', lastName: 'Schmidt', email: 'hans.schmidt@sample.com' },
-        ],
-        listOfUnits: [{ id: '3', rentalObject: 'Wohnung', unitTitle: 'Wohnung 303' }],
-        rentalStart: new Date('2021-05-01'),
-        rentalEnd: new Date('2026-04-30'),
-        active: true,
-      },
-    ];
-  }
-
-  loadMockTenancyData(id: string): TenancyItem | null {
-    const tenancyData = this.generateMockTenancyData();
-    return tenancyData.find((tenancy) => tenancy.id === id) || null;
-  }
-
-  async fetchTenancyData(): Promise<TenancyItem[]> {
-    // Hier könnte später ein API-Call eingefügt werden
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(this.generateMockTenancyData());
-      }, 500);
-    });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async deleteTenancy(tenancyId: string): Promise<void> {
-    // TODO: Implementieren
+    // TODO: Implement
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancyTenantItem(tenant: TenancyTenantItem): Promise<void> {
-    // TODO: Implementieren
+    // TODO: Implement
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancyUnitItem(tenant: TenancyUnitItem): Promise<void> {
-    // TODO: Implementieren
+    // TODO: Implement
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async createTenancy(tenancy: TenancyItem): Promise<void> {
-    //TODO: Implementieren
+    // TODO: Implement
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancy(tenancy: TenancyItem | null): Promise<void> {
-    //TODO: Implementieren
+    // TODO: Implement
   }
 }
 
-export const tenancyService: TenancyService = new TenancyService();
+// TEMPORARY: Replace with generated types from backend spec when available
+// Temporary types until backend spec is fixed
+export type TenancyItem = {
+  rentalStart?: Date;
+  rentalEnd?: Date;
+  // add other fields you actually use
+};
+export type TenancyTenantItem = unknown;
+export type TenancyUnitItem = unknown;
+
+export const tenancyService = new TenancyService();

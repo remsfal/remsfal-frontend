@@ -2,12 +2,16 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { buildingService } from '@/services/BuildingService';
+import type { components } from '../../src/services/api/platform-schema';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{ projectId: string; unitId: string }>();
 const router = useRouter();
 const toast = useToast();
+
+type BuildingResponse = components['schemas']['BuildingJson'];
+type UpdateBuildingRequest = Partial<BuildingResponse>;
 
 // Dropdown countries
 const countries = [
@@ -336,21 +340,24 @@ const save = () => {
     showValidationErrorToast(toast, validationErrors.value);
     return;
   }
+
+  // adapt payload to match expected schema change when backend updates (country must be object!)
   const payload = {
-    title: title.value,
-    description: description.value,
-    address: {
-      street: street.value,
-      city: city.value,
-      province: province.value,
-      zip: zip.value,
-      country: country.value,
-    },
-    livingSpace: livingSpace.value ?? undefined,
-    commercialSpace: commercialSpace.value ?? undefined,
-    usableSpace: usableSpace.value ?? undefined,
-    heatingSpace: heatingSpace.value ?? undefined,
-  };
+  title: title.value,
+  description: description.value,
+  address: {
+    street: street.value,
+    city: city.value,
+    province: province.value,
+    zip: zip.value,
+    country: { country: country.value },
+  },
+  livingSpace: livingSpace.value ?? undefined,
+  commercialSpace: commercialSpace.value ?? undefined,
+  usableSpace: usableSpace.value ?? undefined,
+  heatingSpace: heatingSpace.value ?? undefined,
+} as unknown as UpdateBuildingRequest;
+
 
   buildingService
     .updateBuilding(props.projectId, props.unitId, payload)
