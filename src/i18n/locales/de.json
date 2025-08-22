@@ -166,5 +166,21 @@
   "inbox.column.owner": "Eigentümer*in",
   "inbox.filter.tenant": "Mietpartei filtern",
   "inbox.filter.owner": "Eigentümer*in filtern",
-  "inbox.filter.title": "Filter"
+  "inbox.filter.title": "Filter",
+  "commercialUnit.editTitle": "Wirtschaftseinheit mit ID: {id} bearbeiten",
+  "commercialUnit.commercialSpace": "Gewerbefläche",
+  "commercialUnit.heatingSpace": "Heizfläche",
+  "commercialUnit.validation.commercialRequired": "Gewerbefläche ist erforderlich.",
+  "commercialUnit.validation.commercialNegative": "Gewerbefläche darf nicht negativ sein.",
+  "commercialUnit.validation.heatingRequired": "Heizfläche ist erforderlich.",
+  "commercialUnit.validation.heatingNegative": "Heizfläche darf nicht negativ sein.",
+  "commercialUnit.validation.descriptionTooLong": "Beschreibung darf maximal 500 Zeichen lang sein.",
+  "commercialUnit.loadErrorTitle": "Ladefehler",
+  "commercialUnit.loadErrorDetail": "Wirtschaftseinheit konnte nicht geladen werden.",
+  "commercialUnit.missingIdTitle": "Ungültige ID",
+  "commercialUnit.missingIdDetail": "Keine Wirtschafts-ID angegeben.",
+  "commercialUnit.saveSuccessTitle": "Erfolg",
+  "commercialUnit.saveSuccessDetail": "Wirtschaftseinheit erfolgreich gespeichert.",
+  "commercialUnit.saveError": "Wirtschaftseinheit konnte nicht gespeichert werden.",
+  "property.address": "Adresse"
 }
