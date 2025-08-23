@@ -10,6 +10,8 @@ export let lastCreatedCommercial: Record<string, unknown> | null = null;
 export let lastUpdatedCommercial: Record<string, unknown> | null = null;
 export let lastCreatedSite: Record<string, unknown> | null = null;
 export let lastUpdatedSite: Record<string, unknown> | null = null;
+export let lastCreatedTask: Record<string, unknown> | null = null;
+export let lastUpdatedTask: Record<string, unknown> | null = null;
 
 
 export const handlers = [
@@ -425,5 +427,67 @@ http.patch(`${API_BASE}/projects/:projectId/sites/:siteId`, async ({ request, pa
   // DELETE site
   http.delete(`${API_BASE}/projects/:projectId/sites/:siteId`, () => {
     return HttpResponse.json({ success: true }, { status: 200 });
+  }),
+
+  // GET list of tasks
+  http.get(`${API_BASE}/projects/:projectId/tasks`, ({ params, request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status') ?? undefined;
+    const owner = url.searchParams.get('owner') ?? undefined;
+
+    const tasks = [
+      {
+        id: 'test-task',
+        title: 'Test Task',
+        description: 'Test Description',
+        status: status ?? 'OPEN',
+        ownerId: owner ?? 'owner1',
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        blocked_by: '',
+        duplicate_of: '',
+        related_to: '',
+      },
+    ];
+
+    return HttpResponse.json({ tasks });
+  }),
+
+  // GET single task
+  http.get(`${API_BASE}/projects/:projectId/tasks/:taskId`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.taskId,
+      title: 'Test Task',
+      description: 'Test Description',
+      status: 'OPEN',
+      ownerId: 'owner1',
+      created_at: new Date().toISOString(),
+      modified_at: new Date().toISOString(),
+      blocked_by: '',
+      duplicate_of: '',
+      related_to: '',
+    });
+  }),
+
+  // POST create task
+  http.post(`${API_BASE}/projects/:projectId/tasks`, async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    lastCreatedTask = { ...body, projectId: params.projectId };
+    return HttpResponse.json({
+      id: 'new-task-id',
+      projectId: params.projectId,
+      ...body,
+    });
+  }),
+
+  // PATCH update task
+  http.patch(`${API_BASE}/projects/:projectId/tasks/:taskId`, async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    lastUpdatedTask = { ...body, id: params.taskId, projectId: params.projectId };
+    return HttpResponse.json({
+      id: params.taskId,
+      projectId: params.projectId,
+      ...body,
+    });
   }),
 ];
