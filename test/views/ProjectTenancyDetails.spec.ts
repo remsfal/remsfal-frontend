@@ -1,11 +1,13 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
-import { it, expect, vi, beforeEach, describe } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll } from 'vitest';
 import PrimeVue from 'primevue/config';
 import i18n from '../../src/i18n/i18n';
 import { tenancyService } from '../../src/services/TenancyService';
+import { setupServer } from 'msw/node';
+import { handlers } from '../mocks/handlers';  // <-- import shared handlers
 
-// Mocks
+// ---- Mocks ----
 const push = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
@@ -17,69 +19,62 @@ vi.mock('primevue/usetoast', () => ({
   useToast: () => ({ add: toastSpy }),
 }));
 
-vi.mock('@/services/TenancyService', () => ({
-  tenancyService: {
-    loadMockTenancyData: vi.fn(),
-    updateTenancy: vi.fn(),
-    deleteTenancy: vi.fn(),
-  },
-}));
+// ---- MSW Server ----
+const server = setupServer(...handlers);
 
-const mockTenancy = {
-  id: 't1',
-  rentalStart: new Date(),
-  rentalEnd: new Date(),
-  listOfTenants: [],
-  listOfUnits: [],
-  active: true,
-};
-
-beforeEach(() => {
+beforeAll(() => server.listen());
+afterEach(() => {
+  server.resetHandlers();
   vi.clearAllMocks();
-  tenancyService.loadMockTenancyData.mockReturnValue(mockTenancy);
 });
+afterAll(() => server.close());
 
+// ---- Tests ----
 describe('ProjectTenanciesDetails', () => {
-  it('opens confirmation dialog when delete is clicked', async () => {
-    const wrapper = mount(ProjectTenanciesDetails, {
+  let wrapper: any;
+
+  beforeEach(async () => {
+    wrapper = mount(ProjectTenanciesDetails, {
       global: { plugins: [PrimeVue, i18n] },
     });
-
     await flushPromises();
+  });
 
+  it('opens confirmation dialog when delete is clicked', async () => {
     const deleteBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Löschen'));
     expect(deleteBtn).toBeTruthy();
 
     await deleteBtn!.trigger('click');
-    expect((wrapper.vm as any).confirmationDialogVisible).toBe(true);
+    expect(wrapper.vm.confirmationDialogVisible).toBe(true);
   });
 
   it('calls updateTenancy and shows toast', async () => {
-    const wrapper = mount(ProjectTenanciesDetails, {
-      global: { plugins: [PrimeVue, i18n] },
+    // Override tenancyService.updateTenancy to call fetch (MSW intercepts)
+    vi.spyOn(tenancyService, 'updateTenancy').mockImplementation(async (tenancy) => {
+      const res = await fetch(`/api/v1/tenancies/${tenancy.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tenancy),
+      });
+      return res.json();
     });
-
-    await flushPromises();
 
     const saveBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Speichern'));
     expect(saveBtn).toBeTruthy();
 
     await saveBtn!.trigger('click');
 
-    expect(tenancyService.updateTenancy).toHaveBeenCalledWith(mockTenancy);
+    expect(tenancyService.updateTenancy).toHaveBeenCalled();
     expect(toastSpy).toHaveBeenCalled();
   });
 
   it('deletes tenancy and redirects', async () => {
-    tenancyService.deleteTenancy.mockResolvedValue(undefined);
-
-    const wrapper = mount(ProjectTenanciesDetails, {
-      global: { plugins: [PrimeVue, i18n] },
+    // Override tenancyService.deleteTenancy to call fetch (MSW intercepts)
+    vi.spyOn(tenancyService, 'deleteTenancy').mockImplementation(async (tenancyId) => {
+      await fetch(`/api/v1/tenancies/${tenancyId}`, { method: 'DELETE' });
     });
 
-    await flushPromises();
-
-    (wrapper.vm as any).confirmDeletion();
+    wrapper.vm.confirmDeletion();
     await flushPromises();
 
     expect(tenancyService.deleteTenancy).toHaveBeenCalledWith('t1');

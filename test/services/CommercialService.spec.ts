@@ -1,69 +1,23 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
-import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server'; // your MSW server setup
-import { commercialService, type CommercialUnit } from '../../src/services/CommercialService';
+import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { setupServer } from 'msw/node';
+import { handlers } from '../../test/mocks/handlers'; 
+import { commercialService } from '../../src/services/CommercialService';
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+const server = setupServer(...handlers);
 
-describe('CommercialService (MSW with http)', () => {
-  const mockProjectId = 'project123';
-  const mockBuildingId = 'building123';
-  const mockCommercialId = 'commercial123';
+describe('CommercialService with MSW', () => {
+  const projectId = 'project-1';
+  const buildingId = 'building-1';
+  const commercialId = 'commercial-1';
 
-  const mockCommercial: CommercialUnit = {
-    title: 'Commercial Space 1',
-    location: 'Downtown',
-    description: 'A spacious commercial area',
-    commercialSpace: 100,
-    usableSpace: 80,
-    heatingSpace: 60,
-  };
+  beforeAll(() => server.listen());
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
 
-  it('should create a commercial item', async () => {
-    server.use(
-      http.post(`/api/v1/projects/:projectId/buildings/:buildingId/commercials`, async ({ request }) => {
-        const body = (await request.json()) as CommercialUnit;
-        return HttpResponse.json({
-          id: 'commercial-new-id',
-          ...body,
-        });
-      }),
-    );
-
-    const result = await commercialService.createCommercial(mockProjectId, mockBuildingId, mockCommercial);
-
-    expect(result).toMatchObject({
-      id: 'commercial-new-id',
-      title: mockCommercial.title,
-      location: mockCommercial.location,
-      description: mockCommercial.description,
-      commercialSpace: mockCommercial.commercialSpace,
-      usableSpace: mockCommercial.usableSpace,
-      heatingSpace: mockCommercial.heatingSpace,
-    });
-  });
-
-  it('should get a commercial item', async () => {
-    server.use(
-      http.get(`/api/v1/projects/:projectId/commercials/:commercialId`, ({ params }) => {
-        return HttpResponse.json({
-          id: params.commercialId,
-          title: 'Commercial Space 1',
-          location: 'Downtown',
-          description: 'A spacious commercial area',
-          commercialSpace: 100,
-          usableSpace: 80,
-          heatingSpace: 60,
-        });
-      }),
-    );
-
-    const result = await commercialService.getCommercial(mockProjectId, mockCommercialId);
-
-    expect(result).toMatchObject({
-      id: mockCommercialId,
+  test('getCommercial returns commercial data', async () => {
+    const commercial = await commercialService.getCommercial(projectId, commercialId);
+    expect(commercial).toEqual({
+      id: commercialId,
       title: 'Commercial Space 1',
       location: 'Downtown',
       description: 'A spacious commercial area',
@@ -73,34 +27,34 @@ describe('CommercialService (MSW with http)', () => {
     });
   });
 
-  it('should update a commercial item', async () => {
-    server.use(
-      http.patch(`/api/v1/projects/:projectId/commercials/:commercialId`, async ({ request, params }) => {
-        const body = (await request.json()) as CommercialUnit;
-        return HttpResponse.json({
-          id: params.commercialId,
-          ...body,
-        });
-      }),
-    );
+  test('createCommercial returns newly created commercial', async () => {
+    const newCommercial = {
+      title: 'New Commercial',
+      location: 'Midtown',
+      description: 'Test description',
+      commercialSpace: 50,
+      usableSpace: 40,
+      heatingSpace: 30,
+    };
 
-    const updatedCommercial = { ...mockCommercial, title: 'Updated Commercial' };
-    const result = await commercialService.updateCommercial(mockProjectId, mockCommercialId, updatedCommercial);
-
-    expect(result).toMatchObject({
-      id: mockCommercialId,
-      title: 'Updated Commercial',
-      location: updatedCommercial.location,
+    const created = await commercialService.createCommercial(projectId, buildingId, newCommercial);
+    expect(created).toMatchObject({
+      id: 'commercial-new-id',
+      ...newCommercial,
     });
   });
 
-  it('should delete a commercial item', async () => {
-    server.use(
-      http.delete(`/api/v1/projects/:projectId/commercials/:commercialId`, () => {
-        return HttpResponse.json({ success: true }, { status: 200 });
-      }),
-    );
+  test('updateCommercial returns updated commercial', async () => {
+    const updates = { title: 'Updated Title', usableSpace: 75 };
 
-    await expect(commercialService.deleteCommercial(mockProjectId, mockCommercialId)).resolves.toBeUndefined();
+    const updated = await commercialService.updateCommercial(projectId, commercialId, updates);
+    expect(updated).toMatchObject({
+      id: commercialId,
+      ...updates,
+    });
+  });
+
+  test('deleteCommercial succeeds', async () => {
+    await expect(commercialService.deleteCommercial(projectId, commercialId)).resolves.toBeUndefined();
   });
 });

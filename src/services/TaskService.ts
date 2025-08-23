@@ -4,6 +4,14 @@ import type { components, paths } from '../../src/services/api/platform-schema';
 // Reuse backend enums directly
 export type Status = components['schemas']['TaskJson']['status'];
 
+export const StatusValues = {
+  PENDING: "PENDING",
+  OPEN: "OPEN",
+  IN_PROGRESS: "IN_PROGRESS",
+  CLOSED: "CLOSED",
+  REJECTED: "REJECTED",
+} as const;
+
 // Full task type directly from backend
 export type TaskItem = components['schemas']['TaskJson'];
 export type TaskDetail = components['schemas']['TaskJson'];
