@@ -1225,6 +1225,16 @@
           "required" : true
         } ],
         "responses" : {
+          "200" : {
+            "description" : "A list of projects was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectListJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
@@ -1284,6 +1294,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "The project was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -1305,6 +1325,16 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "The requested project was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2381,6 +2411,16 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "A list of all existing members was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectMemberListJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2413,7 +2453,7 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Member added successfully",
+            "description" : "A new member was successfully added",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -2464,6 +2504,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing member was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectMemberJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -4239,22 +4289,36 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "Information about the logged in user was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The user does not exist"
           }
         }
       },
       "get" : {
         "summary" : "Retrieve information of this user identified by the cookie.",
         "responses" : {
+          "200" : {
+            "description" : "Information about the logged in user was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The user does not exist"
           }
         }
       },
@@ -4262,13 +4326,10 @@
         "summary" : "Delete this user identified by the cookie.",
         "responses" : {
           "204" : {
-            "description" : "The user was deleted successfully"
+            "description" : "The former logged in user was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The user does not exist"
           }
         }
       }

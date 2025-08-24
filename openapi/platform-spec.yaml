@@ -930,6 +930,12 @@ paths:
           default: "0"
         required: true
       responses:
+        "200":
+          description: A list of projects was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectListJson"
         "401":
           description: No user authentication provided via session cookie
     post:
@@ -968,6 +974,12 @@ paths:
               $ref: "#/components/schemas/ProjectJson"
         required: true
       responses:
+        "200":
+          description: The project was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -983,6 +995,12 @@ paths:
           type: string
           pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
       responses:
+        "200":
+          description: The requested project was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -1741,6 +1759,12 @@ paths:
           type: string
           pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
       responses:
+        "200":
+          description: A list of all existing members was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectMemberListJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -1763,7 +1787,7 @@ paths:
         required: true
       responses:
         "200":
-          description: Member added successfully
+          description: A new member was successfully added
           content:
             application/json:
               schema:
@@ -1797,6 +1821,12 @@ paths:
               $ref: "#/components/schemas/ProjectMemberJson"
         required: true
       responses:
+        "200":
+          description: An existing member was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectMemberJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3048,26 +3078,32 @@ paths:
               $ref: "#/components/schemas/UserJson"
         required: true
       responses:
+        "200":
+          description: Information about the logged in user was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserJson"
         "401":
           description: No user authentication provided via session cookie
-        "404":
-          description: The user does not exist
     get:
       summary: Retrieve information of this user identified by the cookie.
       responses:
+        "200":
+          description: Information about the logged in user was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserJson"
         "401":
           description: No user authentication provided via session cookie
-        "404":
-          description: The user does not exist
     delete:
       summary: Delete this user identified by the cookie.
       responses:
         "204":
-          description: The user was deleted successfully
+          description: The former logged in user was deleted successfully
         "401":
           description: No user authentication provided via session cookie
-        "404":
-          description: The user does not exist
   /zeebe/start:
     post:
       requestBody:
