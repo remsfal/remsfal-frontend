@@ -93,6 +93,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/authentication/jwks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Expose the JSON Web Key Set used to sign tokens. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description JWKS containing the public keys */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/authentication/login": {
         parameters: {
             query?: never;
@@ -223,6 +257,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description A list of projects was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectListJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -298,6 +341,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description The requested project was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -364,6 +416,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description The project was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1526,6 +1587,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description A list of all existing members was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectMemberListJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1560,7 +1630,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Member added successfully */
+                /** @description A new member was successfully added */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1660,6 +1730,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing member was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectMemberJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3561,115 +3640,103 @@ export interface paths {
     };
     "/api/v1/user": {
         parameters: {
-          query?: never;
-          header?: never;
-          path?: never;
-          cookie?: never;
-        };
-        /** Retrieve information of this user identified by the cookie. */
-        get: {
-          parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
-          };
-          requestBody?: never;
-          responses: {
-            /** @description Successful user retrieval */
-            200: {
-              content: {
-                "application/json": components["schemas"]["UserJson"];
-              };
-              headers?: {
-                [name: string]: unknown;
-              };
+        };
+        /** Retrieve information of this user identified by the cookie. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-            /** @description No user authentication provided via session cookie */
-            401: {
-              headers: {
-                [name: string]: unknown;
-              };
-              content?: never;
+            requestBody?: never;
+            responses: {
+                /** @description Information about the logged in user was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
-            /** @description The user does not exist */
-            404: {
-              headers: {
-                [name: string]: unknown;
-              };
-              content?: never;
-            };
-          };
         };
         put?: never;
         post?: never;
         /** Delete this user identified by the cookie. */
         delete: {
-          parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-          };
-          requestBody?: never;
-          responses: {
-            /** @description The user was deleted successfully */
-            204: {
-              headers: {
-                [name: string]: unknown;
-              };
-              content?: never;
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-            /** @description No user authentication provided via session cookie */
-            401: {
-              headers: {
-                [name: string]: unknown;
-              };
-              content?: never;
+            requestBody?: never;
+            responses: {
+                /** @description The former logged in user was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
-            /** @description The user does not exist */
-            404: {
-              headers: {
-                [name: string]: unknown;
-              };
-              content?: never;
-            };
-          };
         };
         options?: never;
         head?: never;
         /** Update information of this user identified by the cookie. */
         patch: {
-          parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-          };
-          requestBody: {
-            content: {
-              "application/json": components["schemas"]["UserJson"];
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-          };
-          responses: {
-            /** @description No user authentication provided via session cookie */
-            401: {
-              headers: {
-                [name: string]: unknown;
-              };
-              content?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserJson"];
+                };
             };
-            /** @description The user does not exist */
-            404: {
-              headers: {
-                [name: string]: unknown;
-              };
-              content?: never;
+            responses: {
+                /** @description Information about the logged in user was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
-          };
         };
         trace?: never;
-      };
+    };
     "/zeebe/start": {
         parameters: {
             query?: never;
@@ -3780,12 +3847,13 @@ export interface components {
         /** @description A single chat message */
         ChatMessageJson: {
             messageId?: components["schemas"]["UUID"];
-            chatSessionId?: components["schemas"]["UUID"];
+            sessionId?: components["schemas"]["UUID"];
             senderId?: components["schemas"]["UUID"];
             contentType?: string;
             content?: string;
             url?: string;
             createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
         };
         /** @description A list of chat messages */
         ChatMessageListJson: {
