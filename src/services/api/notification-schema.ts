@@ -152,13 +152,25 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
-        /** Format: date */
+        /**
+         * Format: date
+         * @example 2022-03-10
+         */
         Date: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @example 2022-03-10T16:15:50Z
+         */
         Instant: string;
-        /** Format: date */
+        /**
+         * Format: date
+         * @example 2022-03-10
+         */
         LocalDate: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50
+         */
         LocalDateTime: string;
         Locale: {
             language?: string;
@@ -195,6 +207,7 @@ export interface components {
             /**
              * Format: int32
              * @description Index of the first element in projects list of total available entries, starting at 1
+             * @example 1
              */
             first: number;
             /**
@@ -262,25 +275,44 @@ export interface components {
         /** @description Encapsulated data of a project tree node */
         RentalUnitNodeDataJson: {
             id?: string;
-            /** @description Type of the node (e.g., 'PROPERTY', 'BUILDING') */
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
             type: components["schemas"]["UnitType"];
-            /** @description Title of the node */
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
             title?: string;
-            /** @description Location of the rental unit */
+            /**
+             * @description Location of the rental unit
+             * @example first floor left
+             */
             location?: string;
-            /** @description Description of the rental unit */
+            /**
+             * @description Description of the rental unit
+             * @example A multi-story office building
+             */
             description?: string;
-            /** @description Name of the tenant associated with this node */
+            /**
+             * @description Name of the tenant associated with this node
+             * @example Doe, John
+             */
             tenant?: string;
             /**
              * Format: float
              * @description Usable space in square meters
+             * @example 350.5
              */
             space?: number;
         };
         /** @description A tree node representing a project entity */
         RentalUnitTreeNodeJson: {
-            /** @description Key of the node */
+            /**
+             * @description Key of the node
+             * @example Property 1
+             */
             key: string;
             /** @description Data encapsulating node attributes */
             data?: components["schemas"]["RentalUnitNodeDataJson"];
@@ -369,9 +401,15 @@ export interface components {
         TenancyItemJson: {
             id?: string;
             name?: string;
-            /** @description Type of the node (e.g., 'PROPERTY', 'BUILDING') */
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
             rentalType: components["schemas"]["UnitType"];
-            /** @description Title of the node */
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
             rentalTitle?: string;
             active?: boolean;
         };
@@ -386,9 +424,15 @@ export interface components {
         /** @description A read-only tenancy of a rentable unit from a tenant's perspective */
         TenancyJson1: {
             id?: string;
-            /** @description Type of the node (e.g., 'PROPERTY', 'BUILDING') */
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
             rentalType: components["schemas"]["UnitType"];
-            /** @description Title of the node */
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
             rentalTitle?: string;
             startOfRental?: components["schemas"]["LocalDate"];
             endOfRental?: components["schemas"]["LocalDate"];
