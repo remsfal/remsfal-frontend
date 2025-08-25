@@ -2,20 +2,24 @@
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { ref, onMounted } from 'vue';
-import { type TaskListJson, type TaskItemJson } from '@/services/ContractorService';
+import type { components } from '../../src/services/api/platform-schema';
 import { contractorService } from '@/services/ContractorService';
 
+type TaskListJson = components['schemas']['TaskListJson'];
+type TaskJson = components['schemas']['TaskJson'];
+
 const isLoading = ref(false);
-const tasks = ref<TaskItemJson[]>([]);
+const tasks = ref<TaskJson[]>([]);
 const expandedRows = ref<Record<string, boolean>>({});
 
 const loadTasks = async () => {
   isLoading.value = true;
   try {
     const taskList: TaskListJson = await contractorService.getTasks();
-    tasks.value = taskList.tasks;
+    tasks.value = taskList.tasks ?? [];
   } catch (error) {
     console.error('Failed to load tasks', error);
+    tasks.value = [];
   } finally {
     isLoading.value = false;
   }
@@ -45,7 +49,9 @@ onMounted(() => {
     <template #expansion="slotProps">
       <div class="p-4">
         <h4>Details für "{{ slotProps.data.title }}"</h4>
-        <p><strong>Beschreibung:</strong> {{ slotProps.data.description || 'Keine Beschreibung' }}</p>
+        <p>
+          <strong>Beschreibung:</strong> {{ slotProps.data.description || 'Keine Beschreibung' }}
+        </p>
         <p><strong>Status:</strong> {{ slotProps.data.status }}</p>
       </div>
     </template>

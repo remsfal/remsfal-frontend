@@ -7,12 +7,11 @@ describe('ProjectChatView.vue', () => {
     it('zeigt Eingabe für Benutzernamen', () => {
         const wrapper = mount(ProjectChatView)
         expect(wrapper.find('input[placeholder="Dein Name..."]').exists()).toBe(true)
-
     })
 
     it('wechselt in den Chatbereich nach Namenseingabe', async () => {
         const wrapper = mount(ProjectChatView)
-        const input = wrapper.find('input')
+        const input = wrapper.find('input') 
         await input.setValue('Bilal')
         const button = wrapper.get('button')
         await button.trigger('click')
@@ -24,30 +23,29 @@ describe('ProjectChatView.vue', () => {
         const wrapper = mount(ProjectChatView)
 
         // Name eingeben und Start klicken
-        await wrapper.find('input').setValue('Bilal')
-        let buttons = wrapper.findAllComponents(Button)
-        await buttons[0].trigger('click')
+        const nameInput = wrapper.find('input')
+        await nameInput.setValue('Bilal')
+        const buttonsBefore = wrapper.findAllComponents(Button)
+        await buttonsBefore[0].trigger('click')
 
-        await flushPromises() // DOM nach dem Klick auf „Start“ abwarten
+        await flushPromises() // DOM nach dem Klick abwarten
 
         // Nachricht schreiben
-        const input = wrapper.find('input[placeholder="Nachricht eingeben..."]')
-        await input.setValue('Testnachricht')
+        const messageInput = wrapper.find<HTMLInputElement>('input[placeholder="Nachricht eingeben..."]')
+        await messageInput.setValue('Testnachricht')
 
         // Buttons nach DOM-Update neu holen
-        buttons = wrapper.findAllComponents(Button)
+        const buttons = wrapper.findAllComponents(Button)
         const sendenButton = buttons.find(b => b.text() === 'Senden')
-
         expect(sendenButton).toBeTruthy()
         await sendenButton!.trigger('click')
 
-        // Erwartung: Nachricht ist da
+        // Nachricht sollte angezeigt werden
         expect(wrapper.text()).toContain('Testnachricht')
 
-        // Erwartung: Eingabefeld ist leer
-        expect(input.element.value).toBe('')
+        // Eingabefeld sollte leer sein
+        expect(messageInput.element.value).toBe('')
     })
-
 
     it('fügt Emoji zur Nachricht hinzu', async () => {
         const wrapper = mount(ProjectChatView)
@@ -63,20 +61,14 @@ describe('ProjectChatView.vue', () => {
         expect(matchingButton).toBeTruthy()
 
         await matchingButton!.trigger('click')
-
         expect(wrapper.text()).toContain(targetEmoji)
     })
 
-
     it('zeigt Dateiname nach Dateiupload', async () => {
-        // ⬇️ DataTransfer polyfill (wichtig!)
+        // ⬇️ DataTransfer Polyfill
         class MockDataTransfer {
             files: File[] = []
-            items = {
-                add: (file: File) => {
-                    this.files.push(file)
-                }
-            }
+            items = { add: (file: File) => this.files.push(file) }
         }
         globalThis.DataTransfer = MockDataTransfer as any
 
@@ -91,14 +83,10 @@ describe('ProjectChatView.vue', () => {
         const dataTransfer = new DataTransfer()
         dataTransfer.items.add(file)
 
-        Object.defineProperty(inputEl, 'files', {
-            value: dataTransfer.files,
-            writable: false,
-        })
+        Object.defineProperty(inputEl, 'files', { value: dataTransfer.files, writable: false })
 
         await wrapper.find('input[type="file"]').trigger('change')
 
         expect(wrapper.html()).toContain('bild.png')
     })
-
 })

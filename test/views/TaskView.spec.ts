@@ -1,28 +1,61 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll, afterAll, afterEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
-import TaskService, { Status, TaskItem } from '../../src/services/TaskService';
+import { setupServer } from 'msw/node';
+import { http, HttpResponse } from 'msw';
+import { StatusValues } from '../../src/services/TaskService';
 
+// --- MSW server setup ---
+const API_BASE = '/api/v1';
+
+const server = setupServer(
+  // GET tasks handler
+  http.get(`${API_BASE}/projects/:projectId/tasks`, ({ request }) => {
+    const url = new URL(request.url, 'http://localhost');
+    const owner = url.searchParams.get('owner');
+
+    return HttpResponse.json({
+      tasks: [
+        {
+          id: '1',
+          title: 'Task 1',
+          name: 'task1',
+          status: StatusValues.OPEN,
+          owner: owner ?? 'user1',
+        },
+        {
+          id: '2',
+          title: 'Task 2',
+          name: 'task2',
+          status: StatusValues.OPEN,
+          owner: owner ?? 'user1',
+        },
+      ],
+    });
+  })
+);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+// --- Test suite ---
 describe('TaskView', () => {
-  let wrapper: VueWrapper;
-
+  let wrapper: VueWrapper<any>;
   const projectId = '1';
   const owner = 'user1';
-  const service = new TaskService();
 
   beforeEach(() => {
     wrapper = mount(TaskView, {
       props: { projectId, owner },
       data() {
-        return {
-          visible: false, // Initial visibility state
-        };
+        return { visible: false };
       },
     });
   });
 
   describe('Button rendering and interaction', () => {
-    it('renders the button when owner is defined', () => {
+    it('renders the "Aufgabe erstellen" button when owner is defined', () => {
       const button = wrapper.find('.my-btn');
       expect(button.exists()).toBe(true);
       expect(button.text()).toBe('Aufgabe erstellen');
@@ -41,8 +74,8 @@ describe('TaskView', () => {
       expect(header.text()).toBe('Meine Aufgaben');
     });
 
-    it('renders "Offene Aufgaben" when status prop is defined and owner is undefined', async () => {
-      await wrapper.setProps({ owner: null, status: 'OPEN' });
+    it('renders "Offene Aufgaben" when status prop is defined and owner is null', async () => {
+      await wrapper.setProps({ owner: null, status: StatusValues.OPEN });
       const header = wrapper.find('h2');
       expect(header.text()).toBe('Offene Aufgaben');
     });
@@ -54,37 +87,15 @@ describe('TaskView', () => {
     });
   });
 
-  describe('Task fetching', () => {
-    it('should return a list of tasks', async () => {
-      // Arrange
-      const projectId = 'test-project';
-      const mockTasks: TaskItem[] = [
-        {
-          id: '1',
-          title: 'Task 1',
-          name: 'task1',
-          status: Status['OPEN'],
-          owner: 'owner1',
-        },
-        {
-          id: '2',
-          title: 'Task 2',
-          name: 'task2',
-          status: Status['OPEN'],
-          owner: 'owner1',
-        },
-      ];
-      const mockTaskList = { tasks: mockTasks };
+  describe('Task fetching via MSW', () => {
+    it('loads and displays tasks from the API', async () => {
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 50));
 
-      // Act
-      vi.spyOn(service, 'getTasks').mockImplementation(() => Promise.resolve(mockTaskList));
-      const result = await service.getTasks(projectId);
-
-      // Assert
-      expect(result).toEqual(mockTaskList);
-      expect(result.tasks).toHaveLength(2);
-      expect(result.tasks[0].id).toBe('1');
-      expect(result.tasks[1].id).toBe('2');
+      const taskEls = wrapper.findAll('li');
+      expect(taskEls.length).toBe(2);
+      expect(taskEls[0].text()).toContain('Task 1');
+      expect(taskEls[1].text()).toContain('Task 2');
     });
   });
 });

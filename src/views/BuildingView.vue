@@ -1,18 +1,19 @@
 <script lang="ts" setup>
-import { computed, ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { buildingService, type BuildingUnit } from '@/services/BuildingService';
+import { buildingService } from '@/services/BuildingService';
+import type { components } from '../../src/services/api/platform-schema';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
-const props = defineProps<{
-  projectId: string;
-  unitId: string;
-}>();
+
+const props = defineProps<{ projectId: string; unitId: string }>();
+const router = useRouter();
 const toast = useToast();
 
-const router = useRouter();
+type BuildingResponse = components['schemas']['BuildingJson'];
+type UpdateBuildingRequest = Partial<BuildingResponse>;
 
-// Länder für Dropdown
+// Dropdown countries
 const countries = [
   { name: 'Afghanistan', code: 'AF' },
   { name: 'Albanien', code: 'AL' },
@@ -207,7 +208,7 @@ const countries = [
   { name: 'Simbabwe', code: 'ZW' },
 ];
 
-// Einzelne refs für Felder
+// Form fields
 const title = ref('');
 const description = ref('');
 const livingSpace = ref<number | null>(null);
@@ -215,30 +216,29 @@ const commercialSpace = ref<number | null>(null);
 const usableSpace = ref<number | null>(null);
 const heatingSpace = ref<number | null>(null);
 
-// Adresse einzeln
 const street = ref('');
 const city = ref('');
 const province = ref('');
 const zip = ref('');
 const country = ref('');
 
-// Originalwerte zum Vergleich
+// Original values with correct typing
 const originalValues = ref({
-  title: '',
-  description: '',
+  title: '' as string,
+  description: '' as string,
   livingSpace: null as number | null,
   commercialSpace: null as number | null,
   usableSpace: null as number | null,
   heatingSpace: null as number | null,
-  street: '',
-  city: '',
-  province: '',
-  zip: '',
-  country: '',
+  street: '' as string,
+  city: '' as string,
+  province: '' as string,
+  zip: '' as string,
+  country: '' as string,
 });
 
-const hasChanges = computed(() => {
-  return (
+const hasChanges = computed(
+  () =>
     title.value !== originalValues.value.title ||
     description.value !== originalValues.value.description ||
     livingSpace.value !== originalValues.value.livingSpace ||
@@ -249,70 +249,45 @@ const hasChanges = computed(() => {
     city.value !== originalValues.value.city ||
     province.value !== originalValues.value.province ||
     zip.value !== originalValues.value.zip ||
-    country.value !== originalValues.value.country
-  );
-});
+    country.value !== originalValues.value.country,
+);
 
 const validationErrors = computed(() => {
   const errors: string[] = [];
-
-  if (livingSpace.value === null) {
-    errors.push('Wohnfläche ist erforderlich.');
-  } else if (livingSpace.value < 0) {
-    errors.push('Wohnfläche darf nicht negativ sein.');
-  }
-
-  if (commercialSpace.value === null) {
-    errors.push('Gewerbefläche ist erforderlich.');
-  } else if (commercialSpace.value < 0) {
-    errors.push('Gewerbefläche darf nicht negativ sein.');
-  }
-
-  if (usableSpace.value === null) {
-    errors.push('Nutzfläche ist erforderlich.');
-  } else if (usableSpace.value < 0) {
-    errors.push('Nutzfläche darf nicht negativ sein.');
-  }
-
-  if (heatingSpace.value === null) {
-    errors.push('Heizfläche ist erforderlich.');
-  } else if (heatingSpace.value < 0) {
-    errors.push('Heizfläche darf nicht negativ sein.');
-  }
-
-  if (description.value && description.value.length > 500) {
+  if (livingSpace.value === null || livingSpace.value < 0)
+    errors.push('Wohnfläche ist erforderlich und darf nicht negativ sein.');
+  if (commercialSpace.value === null || commercialSpace.value < 0)
+    errors.push('Gewerbefläche ist erforderlich und darf nicht negativ sein.');
+  if (usableSpace.value === null || usableSpace.value < 0)
+    errors.push('Nutzfläche ist erforderlich und darf nicht negativ sein.');
+  if (heatingSpace.value === null || heatingSpace.value < 0)
+    errors.push('Heizfläche ist erforderlich und darf nicht negativ sein.');
+  if (description.value && description.value.length > 500)
     errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
-  }
   return errors;
 });
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchBuildingDetails = () => {
-  if (!props.projectId) {
-    console.error('Keine projectId');
-    return;
-  }
-  if (!props.unitId) {
-    console.error('Keine unitId');
-    return;
-  }
+  if (!props.projectId || !props.unitId) return;
+
   buildingService
     .getBuilding(props.projectId, props.unitId)
-    .then((building) => {
-      title.value = building.title || '';
-      description.value = building.description || '';
-      livingSpace.value = building.livingSpace ?? null;
-      commercialSpace.value = building.commercialSpace ?? null;
-      usableSpace.value = building.usableSpace ?? null;
-      heatingSpace.value = building.heatingSpace ?? null;
+    .then((b: any) => {
+      title.value = b.title || '';
+      description.value = b.description || '';
+      livingSpace.value = b.livingSpace ?? null;
+      commercialSpace.value = b.commercialSpace ?? null;
+      usableSpace.value = b.usableSpace ?? null;
+      heatingSpace.value = b.heatingSpace ?? null;
 
-      if (building.address) {
-        street.value = building.address.street || '';
-        city.value = building.address.city || '';
-        province.value = building.address.province || '';
-        zip.value = building.address.zip || '';
-        country.value = country.value = building.address.country?.replace(/^_/, '') || '';
+      if (b.address) {
+        street.value = b.address.street || '';
+        city.value = b.address.city || '';
+        province.value = b.address.province || '';
+        zip.value = b.address.zip || '';
+        country.value = country.value = b.address.country?.replace(/^_/, '') || '';
       } else {
         street.value = '';
         city.value = '';
@@ -362,24 +337,27 @@ onMounted(() => {
 
 const save = () => {
   if (!isValid.value) {
-    showValidationErrorToast(toast, validationErrors.value)
+    showValidationErrorToast(toast, validationErrors.value);
     return;
   }
-  const payload: BuildingUnit = {
-    title: title.value,
-    description: description.value,
-    address: {
-      street: street.value,
-      city: city.value,
-      province: province.value,
-      zip: zip.value,
-      country: country.value,
-    },
-    livingSpace: livingSpace.value ?? undefined,
-    commercialSpace: commercialSpace.value ?? undefined,
-    usableSpace: usableSpace.value ?? undefined,
-    heatingSpace: heatingSpace.value ?? undefined,
-  };
+
+  // adapt payload to match expected schema change when backend updates (country must be object!)
+  const payload = {
+  title: title.value,
+  description: description.value,
+  address: {
+    street: street.value,
+    city: city.value,
+    province: province.value,
+    zip: zip.value,
+    country: { country: country.value },
+  },
+  livingSpace: livingSpace.value ?? undefined,
+  commercialSpace: commercialSpace.value ?? undefined,
+  usableSpace: usableSpace.value ?? undefined,
+  heatingSpace: heatingSpace.value ?? undefined,
+} as unknown as UpdateBuildingRequest;
+
 
   buildingService
     .updateBuilding(props.projectId, props.unitId, payload)
@@ -417,7 +395,12 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            ></textarea>
           </div>
 
           <!-- Adresse - Straße -->
@@ -458,25 +441,45 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Wohnfläche -->
           <div>
             <label for="livingSpace" class="block text-gray-700 mb-1">Wohnfläche (m²)</label>
-            <input id="livingSpace" v-model.number="livingSpace" type="number" class="form-input w-full" />
+            <input
+              id="livingSpace"
+              v-model.number="livingSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
 
           <!-- Gewerbefläche -->
           <div>
             <label for="commercialSpace" class="block text-gray-700 mb-1">Gewerbefläche (m²)</label>
-            <input id="commercialSpace" v-model.number="commercialSpace" type="number" class="form-input w-full" />
+            <input
+              id="commercialSpace"
+              v-model.number="commercialSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
 
           <!-- Nutzfläche -->
           <div>
             <label for="usableSpace" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
-            <input id="usableSpace" v-model.number="usableSpace" type="number" class="form-input w-full" />
+            <input
+              id="usableSpace"
+              v-model.number="usableSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
 
           <!-- Heizfläche -->
           <div>
             <label for="heatingSpace" class="block text-gray-700 mb-1">Heizfläche (m²)</label>
-            <input id="heatingSpace" v-model.number="heatingSpace" type="number" class="form-input w-full" />
+            <input
+              id="heatingSpace"
+              v-model.number="heatingSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
         </div>
 

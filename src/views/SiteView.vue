@@ -9,55 +9,58 @@ const props = defineProps<{
   siteId: string;
 }>();
 
-const initialValues: Record<string, any> = ref({});
+const initialValues = ref<Partial<SiteUnit>>({});
+
+const loading = ref(false);
+const error = ref<string | null>(null);
 
 onMounted(async () => {
   if (!props.siteId) return;
   try {
     console.log('Fetching site data...');
-    const site = await siteService.getSite(props.projectId, props.siteId);
+    // Cast response to SiteUnit to remove 'unknown'
+    const site = (await siteService.getSite(props.projectId, props.siteId)) as SiteUnit;
+
     initialValues.value.title = site.title;
     initialValues.value.description = site.description;
-//    initialValues.value.usableSpace = site.usableSpace.toString();
-//    initialValues.value.street = site.address.street;
-//    initialValues.value.city = site.address.city;
-//    initialValues.value.zip = site.address.zip;
-//    initialValues.value.province = site.address.province;
-//    initialValues.value.country = site.address.country;
+    //    initialValues.value.usableSpace = site.usableSpace.toString();
+    //    initialValues.value.street = site.address?.street;
+    //    initialValues.value.city = site.address?.city;
+    //    initialValues.value.zip = site.address?.zip;
+    //    initialValues.value.province = site.address?.province;
+    //    initialValues.value.country = site.address?.country;
 
     console.log('Site data:', initialValues.value);
-  } catch (error) {
-    console.error('Error fetching site data:', error);
+  } catch (err) {
+    console.error('Error fetching site data:', err);
   }
 });
 
-const loading = ref(false);
-const error = ref<string | null>(null);
-
 // Submit handler
-const handleSubmit = async (formValues: any) => {
+const handleSubmit = async (formValues: Partial<SiteUnit>) => {
   loading.value = true;
   error.value = null;
 
-//  const address: AddressItem = {
-//    street: formValues.street,
-//    city: formValues.city,
-//    zip: formValues.zip,
-//    province: formValues.province,
-//    country: formValues.country,
-//  };
+  //  const address: AddressItem = {
+  //    street: formValues.street,
+  //    city: formValues.city,
+  //    zip: formValues.zip,
+  //    province: formValues.province,
+  //    country: formValues.country,
+  //  };
 
-  const site: SiteUnit = {
+  const siteUpdate: Partial<SiteUnit> = {
     title: formValues.title,
     description: formValues.description,
-    usableSpace: parseFloat(formValues.usableSpace),
-//    address: address,
+    space: formValues.space !== undefined ? parseFloat(String(formValues.space)) : undefined,
+    //    address: address,
+    address: formValues.address,
   };
 
   try {
     // Create the site
-    console.log('Creating site:', site);
-    await siteService.updateSite(props.projectId, props.siteId, site);
+    console.log('Updating site:', siteUpdate);
+    await siteService.updateSite(props.projectId, props.siteId, siteUpdate);
     // Here we could handle how to go back to the previous page
   } catch (err) {
     error.value = 'Außenanlage konnte nicht aktualisiert werden.' + err;
