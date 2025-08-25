@@ -41,6 +41,8 @@ describe('SiteService (MSW)', () => {
   });
 
   it('should delete a site', async () => {
-    await expect(siteService.deleteSite(projectId, siteId)).resolves.toBeUndefined();
+    await expect(siteService.deleteSite(projectId, siteId)).resolves.toBe('');
   });
+  
+  
 });

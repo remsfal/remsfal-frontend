@@ -66,7 +66,7 @@ const loadTaskswithOpenStatus = () => {
 const loadMyTasks = () => {
   const projectId = props.projectId;
   taskService
-    .getTasks(projectId, null, props.owner)
+    .getTasks(projectId, undefined, props.owner) // <-- use undefined instead of null
     .then((tasklist) => {
       myTasks.value = (tasklist as { tasks: TaskItem[] }).tasks;
     })
@@ -74,6 +74,7 @@ const loadMyTasks = () => {
       console.error('Error loading tasks:', error);
     });
 };
+
 
 onMounted(() => {
   loadTasks();

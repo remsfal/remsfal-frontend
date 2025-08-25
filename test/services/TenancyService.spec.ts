@@ -16,8 +16,9 @@ describe('TenancyService with MSW', () => {
     const tenancies = await tenancyService.fetchTenancyData();
     expect(tenancies.length).toBeGreaterThan(0);
     expect(tenancies[0]).toHaveProperty('id');
-    expect(tenancies[0]).toHaveProperty('listOfTenants');
+    expect(tenancies[0]).toHaveProperty('tenants'); //
   });
+  
 
   test('fetchTenantData returns flattened list of tenants', async () => {
     const tenants = await tenancyService.fetchTenantData();

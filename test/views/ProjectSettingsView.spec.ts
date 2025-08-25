@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
-import { projectMemberService, type GetMembersResponse }  from '../../src/services/ProjectMemberService';
+import { projectMemberService, type GetMembersResponse } from '../../src/services/ProjectMemberService';
 
 // ---- Router mock ----
 const routerPushMock = vi.fn();
@@ -21,21 +21,25 @@ describe('ProjectSettingsView.vue', () => {
   };
 
   beforeEach(async () => {
-    vi.clearAllMocks(); // clear first
+    vi.clearAllMocks();
 
-    // Mock the service method
+    // Mock service methods
     vi.spyOn(projectMemberService, 'getMembers').mockResolvedValue(mockMembers);
+    vi.spyOn(projectMemberService, 'updateMemberRole').mockResolvedValue({
+      id: '1',
+      email: 'test1@example.com',
+      role: 'MANAGER',
+    });
 
     wrapper = mount(ProjectSettingsView, {
       props: { projectId: 'test-project-id' },
     });
 
-    // Wait for any async fetch
+    // wait for fetchMembers
     await wrapper.vm.$nextTick();
   });
 
   test('loads project member settings successfully', async () => {
-    // Wait for DOM update
     await wrapper.vm.$nextTick();
 
     const rows = wrapper.findAll('td');
@@ -46,5 +50,23 @@ describe('ProjectSettingsView.vue', () => {
 
   test('calls getMembers with correct projectId', () => {
     expect(projectMemberService.getMembers).toHaveBeenCalledWith('test-project-id');
+  });
+
+  test('updates a member role successfully', async () => {
+    // grab first select (role for first member)
+    const select = wrapper.findAllComponents({ name: 'Select' })[0];
+
+    // simulate role change
+    await select.vm.$emit('change', {
+      id: '1',
+      email: 'test1@example.com',
+      role: 'MANAGER',
+    });
+
+    expect(projectMemberService.updateMemberRole).toHaveBeenCalledWith(
+      'test-project-id',
+      '1',
+      { role: 'MANAGER' }
+    );
   });
 });

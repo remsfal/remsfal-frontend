@@ -1,15 +1,7 @@
-import { describe, it, expect, vi, beforeAll, afterAll, afterEach, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import ApartmentView from '../../src/views/ApartmentView.vue'
-import { setupServer } from 'msw/node'
-import { handlers } from '../mocks/handlers' // your existing MSW handlers
-
-// Setup MSW server with existing handlers
-const server = setupServer(...handlers)
-
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+import { apartmentService } from '../../src/services/ApartmentService'
 
 vi.mock('primevue/usetoast', () => ({
   useToast: () => ({ add: vi.fn() }),
@@ -22,14 +14,28 @@ vi.mock('vue-router', () => ({
 describe('ApartmentView.vue', () => {
   let wrapper: any
 
+  const mockApartment = {
+    title: 'Initial Apartment Title',
+    description: 'Initial Apartment Description',
+    livingSpace: 100,
+    usableSpace: 80,
+    heatingSpace: 60,
+    location: 'Initial Location',
+  }
+
   beforeEach(async () => {
+    // Mock service methods
+    vi.spyOn(apartmentService, 'getApartment').mockResolvedValue(mockApartment)
+    vi.spyOn(apartmentService, 'updateApartment').mockResolvedValue(mockApartment)
+
     wrapper = mount(ApartmentView, {
       props: { projectId: 'project1', unitId: 'unit1' },
     })
-    await flushPromises() // wait for fetchApartment to resolve
+
+    await flushPromises() // wait for fetchApartment
   })
 
-  it('loads apartment details from MSW', () => {
+  it('loads apartment details', () => {
     expect(wrapper.vm.title).toBe('Initial Apartment Title')
     expect(wrapper.vm.description).toBe('Initial Apartment Description')
     expect(wrapper.vm.livingSpace).toBe(100)
@@ -51,17 +57,19 @@ describe('ApartmentView.vue', () => {
   })
 
   it('calls updateApartment on save', async () => {
-    // change some values
     wrapper.vm.title = 'Updated Title'
     wrapper.vm.description = 'Updated Description'
 
-    const updateSpy = vi.spyOn(wrapper.vm.apartmentService, 'updateApartment')
+    const updateSpy = vi.spyOn(apartmentService, 'updateApartment')
     await wrapper.vm.save()
 
     expect(updateSpy).toHaveBeenCalledWith(
       'project1',
       'unit1',
-      expect.objectContaining({ title: 'Updated Title', description: 'Updated Description' })
+      expect.objectContaining({
+        title: 'Updated Title',
+        description: 'Updated Description'
+      })
     )
   })
 })

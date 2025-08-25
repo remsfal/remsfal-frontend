@@ -43,21 +43,22 @@ const hasChanges = computed(() => {
 const validationErrors = computed(() => {
   const errors: string[] = [];
   if (!title.value || title.value.length < 3) {
-    errors.push('Title must be at least 3 characters long.');
+    errors.push('Der Titel muss mindestens 3 Zeichen lang sein.');
   }
   if (!location.value) {
-    errors.push('Location is required.');
+    errors.push('Standort ist erforderlich.');
   }
   if (usableSpace.value === null) {
-    errors.push('Usable space is required.');
+    errors.push('Nutzfläche ist erforderlich.');
   } else if (usableSpace.value < 0) {
-    errors.push('Usable space cannot be negative.');
+    errors.push('Nutzfläche darf nicht negativ sein.');
   }
   if (description.value && description.value.length > 500) {
-    errors.push('Description cannot exceed 500 characters.');
+    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
   }
   return errors;
 });
+
 
 const isValid = computed(() => validationErrors.value.length === 0);
 

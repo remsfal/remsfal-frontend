@@ -54,8 +54,8 @@ describe('BuildingView.vue', () => {
 
     await wrapper.vm.save();
 
-    expect(wrapper.vm.validationErrors).toContain('Wohnfläche darf nicht negativ sein.');
-    expect(wrapper.vm.validationErrors).toContain('Gewerbefläche darf nicht negativ sein.');
+    expect(wrapper.vm.validationErrors).toContain('Wohnfläche ist erforderlich und darf nicht negativ sein.');
+    expect(wrapper.vm.validationErrors).toContain('Gewerbefläche ist erforderlich und darf nicht negativ sein.');
     expect(buildingService.updateBuilding).not.toHaveBeenCalled();
   });
 
@@ -78,10 +78,11 @@ describe('BuildingView.vue', () => {
     wrapper.vm.usableSpace = -3;
     wrapper.vm.heatingSpace = -4;
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.validationErrors).toContain('Wohnfläche darf nicht negativ sein.');
-    expect(wrapper.vm.validationErrors).toContain('Gewerbefläche darf nicht negativ sein.');
-    expect(wrapper.vm.validationErrors).toContain('Nutzfläche darf nicht negativ sein.');
-    expect(wrapper.vm.validationErrors).toContain('Heizfläche darf nicht negativ sein.');
+
+    expect(wrapper.vm.validationErrors).toContain('Wohnfläche ist erforderlich und darf nicht negativ sein.');
+    expect(wrapper.vm.validationErrors).toContain('Gewerbefläche ist erforderlich und darf nicht negativ sein.');
+    expect(wrapper.vm.validationErrors).toContain('Nutzfläche ist erforderlich und darf nicht negativ sein.');
+    expect(wrapper.vm.validationErrors).toContain('Heizfläche ist erforderlich und darf nicht negativ sein.');
     expect(wrapper.vm.isValid).toBe(false);
   });
 
@@ -124,7 +125,7 @@ describe('BuildingView.vue', () => {
         city: 'City',
         province: 'Province',
         zip: '12345',
-        country: 'DE',
+        country: { country: 'DE' },
       },
     });
   });

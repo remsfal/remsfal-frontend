@@ -1,11 +1,9 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
-import { describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import PrimeVue from 'primevue/config';
 import i18n from '../../src/i18n/i18n';
 import { tenancyService } from '../../src/services/TenancyService';
-import { setupServer } from 'msw/node';
-import { handlers } from '../mocks/handlers';  // <-- import shared handlers
 
 // ---- Mocks ----
 const push = vi.fn();
@@ -19,17 +17,25 @@ vi.mock('primevue/usetoast', () => ({
   useToast: () => ({ add: toastSpy }),
 }));
 
-// ---- MSW Server ----
-const server = setupServer(...handlers);
+// ---- Mock tenancyService methods ----
+const mockTenancy = {
+  id: 't1',
+  active: true,
+  tenants: [],
+  startOfRental: '2025-01-01',
+  endOfRental: '2025-12-31',
+};
 
-beforeAll(() => server.listen());
-afterEach(() => {
-  server.resetHandlers();
-  vi.clearAllMocks();
+vi.spyOn(tenancyService, 'loadTenancyData').mockResolvedValue(mockTenancy);
+vi.spyOn(tenancyService, 'updateTenancy').mockResolvedValue(undefined);
+vi.spyOn(tenancyService, 'deleteTenancy').mockResolvedValue(undefined);
+
+// ---- Mock window.location.href ----
+Object.defineProperty(window, 'location', {
+  value: { href: 'http://localhost/project/1/tenancies/t1' },
+  writable: true,
 });
-afterAll(() => server.close());
 
-// ---- Tests ----
 describe('ProjectTenanciesDetails', () => {
   let wrapper: any;
 
@@ -38,6 +44,10 @@ describe('ProjectTenanciesDetails', () => {
       global: { plugins: [PrimeVue, i18n] },
     });
     await flushPromises();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it('opens confirmation dialog when delete is clicked', async () => {
@@ -49,32 +59,19 @@ describe('ProjectTenanciesDetails', () => {
   });
 
   it('calls updateTenancy and shows toast', async () => {
-    // Override tenancyService.updateTenancy to call fetch (MSW intercepts)
-    vi.spyOn(tenancyService, 'updateTenancy').mockImplementation(async (tenancy) => {
-      const res = await fetch(`/api/v1/tenancies/${tenancy.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tenancy),
-      });
-      return res.json();
-    });
-
     const saveBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Speichern'));
     expect(saveBtn).toBeTruthy();
 
     await saveBtn!.trigger('click');
+    await flushPromises();
 
-    expect(tenancyService.updateTenancy).toHaveBeenCalled();
+    expect(tenancyService.updateTenancy).toHaveBeenCalledWith(mockTenancy);
     expect(toastSpy).toHaveBeenCalled();
   });
 
   it('deletes tenancy and redirects', async () => {
-    // Override tenancyService.deleteTenancy to call fetch (MSW intercepts)
-    vi.spyOn(tenancyService, 'deleteTenancy').mockImplementation(async (tenancyId) => {
-      await fetch(`/api/v1/tenancies/${tenancyId}`, { method: 'DELETE' });
-    });
-
-    wrapper.vm.confirmDeletion();
+    wrapper.vm.confirmationDialogVisible = true;
+    await wrapper.vm.confirmDeletion();
     await flushPromises();
 
     expect(tenancyService.deleteTenancy).toHaveBeenCalledWith('t1');

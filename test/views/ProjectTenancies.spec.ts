@@ -23,10 +23,14 @@ vi.mock('primevue/dialog', () => ({
   },
 }));
 
+// ---- Pinia store mock ----
+vi.mock('@/stores/ProjectStore', () => ({
+  useProjectStore: () => ({ projectId: 'proj-1' }),
+}));
+
 describe('ProjectTenancies.vue', () => {
   let wrapper: VueWrapper<any>;
 
-  // ---- Mock tenancyService ----
   const mockTenants = [
     { id: '1', firstName: 'John', lastName: 'Doe' },
   ];
@@ -43,11 +47,6 @@ describe('ProjectTenancies.vue', () => {
         plugins: [PrimeVue, i18n],
         components: { Dialog },
       },
-      data() {
-        return {
-          projectStore: { projectId: 'proj-1' },
-        };
-      },
     });
 
     // Wait for onMounted fetch
@@ -60,7 +59,7 @@ describe('ProjectTenancies.vue', () => {
 
   it('shows loading indicator while fetching', async () => {
     wrapper.vm.isLoading = true;
-    wrapper.vm.$forceUpdate();
+    await wrapper.vm.$nextTick(); // ensure DOM updates
     expect(wrapper.html()).toContain('Loading...');
   });
 
