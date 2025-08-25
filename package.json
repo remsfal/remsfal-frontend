@@ -71,7 +71,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.21",
-    "chai": "^5.2.1",
+    "chai": "^6.0.1",
     "cypress": "^14.5.4",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "9.1.0",
