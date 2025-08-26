@@ -1,52 +1,53 @@
 import { typedRequest } from '../../src/services/api/typedRequest';
-import type { paths, components } from '../../src/services/api/platform-schema'; // generated OpenAPI types
+import type { components } from '../../src/services/api/platform-schema'; // generated OpenAPI types
 
-type UserJson = components["schemas"]["UserJson"];
 type TenancyJson = components["schemas"]["TenancyJson"];
-type TenancyItemJson = components["schemas"]["TenancyItemJson"];
+type TenancyListJson = TenancyJson[]; // assuming the endpoint returns an array of tenancies
 
 export default class TenancyService {
-  // Fetch all tenants from backend
-  async fetchTenantData(): Promise<UserJson[]> {
-    const tenancies = await this.fetchTenancyData();
-    return tenancies.flatMap(t => t.tenants || []);
-  }
-  
   // Fetch all tenancies from backend
-  async fetchTenancyData(): Promise<TenancyJson[]> {
-    return typedRequest<'/api/v1/tenancies', 'get', TenancyJson[]>('get', '/api/v1/tenancies');
+  async fetchTenancyData(): Promise<TenancyListJson> {
+    return typedRequest<'/api/v1/tenancies', 'get', TenancyListJson>(
+      'get',
+      '/api/v1/tenancies'
+    );
+  }
+
+  // Fetch flattened list of tenants from all tenancies
+  async fetchTenantData(): Promise<components['schemas']['UserJson'][]> {
+    const tenancies = await this.fetchTenancyData(); // returns array
+    return tenancies.flatMap(t => t.tenants ?? []); // flatten tenants array
   }
 
   // Load a specific tenancy by ID
   async loadTenancyData(id: string): Promise<TenancyJson | null> {
-    const allTenancies = await this.fetchTenancyData();
-    return allTenancies.find((tenancy) => tenancy.id === id) || null;
+    const tenancies = await this.fetchTenancyData(); // returns array directly
+    return tenancies.find(t => t.id === id) || null;
   }
-  
 
   // Delete a tenancy by ID
   async deleteTenancy(tenancyId: string): Promise<void> {
-    // TODO: Implementieren
+    // TODO: Implement API call
   }
 
   // Update a tenant item
-  async updateTenancyTenantItem(tenant: UserJson): Promise<void> {
-    // TODO: Implementieren
+  async updateTenancyTenantItem(tenant: components['schemas']['UserJson']): Promise<void> {
+    // TODO: Implement API call
   }
 
   // Update a tenancy unit/item
-  async updateTenancyUnitItem(unit: TenancyItemJson): Promise<void> {
-    // TODO: Implementieren
+  async updateTenancyUnitItem(unit: components['schemas']['TenancyItemJson']): Promise<void> {
+    // TODO: Implement API call
   }
 
   // Create a new tenancy
   async createTenancy(tenancy: TenancyJson): Promise<void> {
-    // TODO: Implementieren
+    // TODO: Implement API call
   }
 
   // Update an existing tenancy
   async updateTenancy(tenancy: TenancyJson): Promise<void> {
-    // TODO: Implementieren
+    // TODO: Implement API call
   }
 }
 

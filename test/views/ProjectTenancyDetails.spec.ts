@@ -17,7 +17,12 @@ vi.mock('primevue/usetoast', () => ({
   useToast: () => ({ add: toastSpy }),
 }));
 
-// ---- Mock tenancyService methods ----
+// ---- Mock window.location.href ----
+Object.defineProperty(window, 'location', {
+  value: { href: 'http://localhost/project/1/tenancies/t1' },
+  writable: true,
+});
+
 const mockTenancy = {
   id: 't1',
   active: true,
@@ -26,20 +31,15 @@ const mockTenancy = {
   endOfRental: '2025-12-31',
 };
 
-vi.spyOn(tenancyService, 'loadTenancyData').mockResolvedValue(mockTenancy);
-vi.spyOn(tenancyService, 'updateTenancy').mockResolvedValue(undefined);
-vi.spyOn(tenancyService, 'deleteTenancy').mockResolvedValue(undefined);
-
-// ---- Mock window.location.href ----
-Object.defineProperty(window, 'location', {
-  value: { href: 'http://localhost/project/1/tenancies/t1' },
-  writable: true,
-});
-
 describe('ProjectTenanciesDetails', () => {
   let wrapper: any;
 
   beforeEach(async () => {
+    // re-apply mocks here (so they're active after vi.clearAllMocks)
+    vi.spyOn(tenancyService, 'loadTenancyData').mockResolvedValue(mockTenancy);
+    vi.spyOn(tenancyService, 'updateTenancy').mockResolvedValue(undefined);
+    vi.spyOn(tenancyService, 'deleteTenancy').mockResolvedValue(undefined);
+
     wrapper = mount(ProjectTenanciesDetails, {
       global: { plugins: [PrimeVue, i18n] },
     });
