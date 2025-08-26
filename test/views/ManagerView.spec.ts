@@ -1,4 +1,5 @@
-import { shallowMount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ProjectSelectionView from '../../src/views/ManagerView.vue';
 import ProjectService from '../../src/services/ProjectService';
@@ -67,9 +68,9 @@ describe('ManagerView.vue', () => {
       getProjects: vi.fn().mockResolvedValue({ projects: [], total: 0 }),
     }));
 
-//    useRouter.mockReturnValue({
-//      push: vi.fn(),
-//    });
+    //    useRouter.mockReturnValue({
+    //      push: vi.fn(),
+    //    });
 
     useProjectStore.mockReturnValue({
       setSelectedProject: vi.fn(),

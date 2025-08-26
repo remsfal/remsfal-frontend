@@ -47,7 +47,7 @@ describe('ProjectTenanciesDetails', () => {
 
     await flushPromises();
 
-    const deleteBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Löschen'));
+    const deleteBtn = wrapper.findAll('button').find(btn => btn.text().includes('Löschen'));
     expect(deleteBtn).toBeTruthy();
 
     await deleteBtn!.trigger('click');
@@ -61,7 +61,7 @@ describe('ProjectTenanciesDetails', () => {
 
     await flushPromises();
 
-    const saveBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Speichern'));
+    const saveBtn = wrapper.findAll('button').find(btn => btn.text().includes('Speichern'));
     expect(saveBtn).toBeTruthy();
 
     await saveBtn!.trigger('click');

@@ -28,7 +28,8 @@ export function useLayout() {
   ) => {
     if (item !== undefined && typeof item !== 'string') {
       layoutState.activeMenuItem = item.value;
-    } else {
+    }
+    else {
       layoutState.activeMenuItem = item;
     }
   };
@@ -40,7 +41,7 @@ export function useLayout() {
       return;
     }
 
-    document.startViewTransition(() => executeDarkModeToggle());
+    document.startViewTransition(() => { executeDarkModeToggle(); });
   };
 
   const executeDarkModeToggle = () => {
@@ -55,7 +56,8 @@ export function useLayout() {
 
     if (window.innerWidth > 991) {
       layoutState.staticMenuDesktopInactive = !layoutState.staticMenuDesktopInactive;
-    } else {
+    }
+    else {
       layoutState.staticMenuMobileActive = !layoutState.staticMenuMobileActive;
     }
   };

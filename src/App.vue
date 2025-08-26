@@ -31,12 +31,15 @@ const containerClass = computed(() => {
 </script>
 
 <template>
-  <div class="layout-wrapper" :class="containerClass">
+  <div
+    class="layout-wrapper"
+    :class="containerClass"
+  >
     <!-- Sakai AppLayout used as Named Router View -->
     <RouterView name="topbar" />
     <RouterView name="sidebar" />
     <RouterView />
-    <div class="layout-mask animate-fadein"></div>
+    <div class="layout-mask animate-fadein" />
   </div>
   <Toast />
 </template>

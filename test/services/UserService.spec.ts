@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { setupServer } from 'msw/node';
-import { handlers } from '../../test/mocks/handlers'; 
+import { handlers } from '../mocks/handlers';
 import UserService from '../../src/services/UserService';
 
 const server = setupServer(...handlers);
@@ -8,9 +8,9 @@ const server = setupServer(...handlers);
 describe('UserService with MSW', () => {
   const userService = new UserService();
 
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  beforeAll(() => { server.listen(); });
+  afterEach(() => { server.resetHandlers(); });
+  afterAll(() => { server.close(); });
 
   test('getUser returns user data', async () => {
     const user = await userService.getUser();
@@ -33,18 +33,17 @@ describe('UserService with MSW', () => {
       },
     ]);
   });
-  
+
   test('updateUser returns updated user', async () => {
-    const updatedUser = await userService.updateUser({ 
+    const updatedUser = await userService.updateUser({
       // cast to `any` to bypass TS check
-      ...( { name: 'Jane' } as any )
+      ...({ name: 'Jane' } as any),
     });
     expect(updatedUser).toMatchObject({
       id: 'user-123',
       name: 'Jane',
     });
   });
-  
 
   test('deleteUser returns true on success', async () => {
     const result = await userService.deleteUser();

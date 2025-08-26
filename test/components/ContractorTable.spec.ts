@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import ContractorTable from '../../src/components/ContractorTable.vue';
 import { contractorService } from '../../src/services/ContractorService';
 

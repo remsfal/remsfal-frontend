@@ -1,5 +1,7 @@
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import type { VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
+import type { Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Component from '../../src/views/StorageView.vue';
 import { storageService } from '../../src/services/StorageService';
 

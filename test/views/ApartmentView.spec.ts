@@ -1,5 +1,7 @@
-import { mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import type { Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Component from '../../src/views/ApartmentView.vue';
 import { apartmentService } from '../../src/services/ApartmentService';
 
@@ -116,6 +118,4 @@ describe('ApartmentUpdateView.vue', () => {
     expect(errorSpy).toHaveBeenCalledWith('Keine unitId');
     errorSpy.mockRestore();
   });
-
-
 });

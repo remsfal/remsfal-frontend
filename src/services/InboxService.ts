@@ -1,17 +1,17 @@
 export interface InboxMessage {
-  id: string;
-  type: 'Rechnung' | 'Nachricht';
-  contractor: string;
-  project: string;
-  unit: string;
-  tenant: string;
-  owner: string;
-  senderName: string;
-  senderEmail: string;
-  subject: string;
-  body: string;
-  receivedAt: Date;
-  isRead: boolean;
+  id: string
+  type: 'Rechnung' | 'Nachricht'
+  contractor: string
+  project: string
+  unit: string
+  tenant: string
+  owner: string
+  senderName: string
+  senderEmail: string
+  subject: string
+  body: string
+  receivedAt: Date
+  isRead: boolean
 }
 
 class InboxService {

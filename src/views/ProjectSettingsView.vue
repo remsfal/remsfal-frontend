@@ -6,7 +6,7 @@ import { ref, onMounted, watch } from 'vue';
 import { projectService } from '@/services/ProjectService';
 
 const props = defineProps<{
-  projectId: string;
+  projectId: string
 }>();
 
 const projectName = ref('');
@@ -15,7 +15,8 @@ const fetchProject = async (id: string) => {
   try {
     const project = await projectService.getProject(id);
     projectName.value = project.title;
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error fetching project:', error);
   }
 };
@@ -36,17 +37,23 @@ watch(
 <template>
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
-      <div class="font-semibold text-xl">Liegenschaftseinstellungen</div>
+      <div class="font-semibold text-xl">
+        Liegenschaftseinstellungen
+      </div>
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
         <label for="name">Name der Liegenschaft</label>
-        <InputText id="name" type="text" v-model="projectName" />
+        <InputText
+          id="name"
+          v-model="projectName"
+          type="text"
+        />
       </div>
     </template>
   </Card>
 
-  <ProjectMemberSettings :projectId="props.projectId" />
+  <ProjectMemberSettings :project-id="props.projectId" />
 </template>
 
 <style scoped></style>

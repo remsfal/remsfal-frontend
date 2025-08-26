@@ -22,7 +22,6 @@ const mockSite: SiteUnit = {
 };
 
 describe('SiteService', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });

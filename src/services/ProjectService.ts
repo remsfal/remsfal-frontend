@@ -1,35 +1,35 @@
 import axios from 'axios';
 
 export interface ProjectItem {
-  id: string;
-  name: string;
-  memberRole: string;
+  id: string
+  name: string
+  memberRole: string
 }
 
 export interface ProjectList {
-  first: number;
-  size: number;
-  total: number;
-  projects: ProjectItem[];
+  first: number
+  size: number
+  total: number
+  projects: ProjectItem[]
 }
 
 export interface Project {
-  id: string;
-  title: string;
+  id: string
+  title: string
 }
 
 export interface AddressItem {
-  street?: string;
-  city?: string;
-  province?: string;
-  zip?: string;
-  country?: string;
+  street?: string
+  city?: string
+  province?: string
+  zip?: string
+  country?: string
 }
 
 export default class ProjectService {
   private readonly baseUrl: string = '/api/v1/projects';
 
-  async getProjects(offset: number = 0, limit: number = 10): Promise<ProjectList> {
+  async getProjects(offset = 0, limit = 10): Promise<ProjectList> {
     return axios
       .get(this.baseUrl, { params: { limit: limit, offset: offset } })
       .then((response) => {
@@ -46,17 +46,17 @@ export default class ProjectService {
         const projectList: ProjectList = response.data;
         console.log('GET projects:', projectList);
         return projectList;
-    });
+      });
   }
 
   createProject(title: string): Promise<Project> {
     return axios
-      .post(`${this.baseUrl}`, { title: title })
+      .post(this.baseUrl, { title: title })
       .then((response) => {
         const project: Project = response.data;
         console.log('POST create project:', project);
         return project;
-    });
+      });
   }
 
   getProject(projectId: string) {

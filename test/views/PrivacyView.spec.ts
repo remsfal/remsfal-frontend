@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import PrivacyView from '../../src/views/PrivacyView.vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
@@ -7,7 +8,7 @@ import Button from 'primevue/button';
 describe('PrivacyView', () => {
   let wrapper: VueWrapper;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     wrapper = mount(PrivacyView, {
       global: {
         components: {
@@ -32,13 +33,13 @@ describe('PrivacyView', () => {
     });
   });
 
-  it('renders the title', async () => {
+  it('renders the title', () => {
     const title = wrapper.find('.p-card-title');
     expect(title.exists()).toBe(true);
     expect(title.text()).toBe('Datenschutzerklärung');
   });
 
-  it('renders the content', async () => {
+  it('renders the content', () => {
     const content = wrapper.find('.p-card-content');
     expect(content.exists()).toBe(true);
     expect(content.text()).toContain(
@@ -48,7 +49,7 @@ describe('PrivacyView', () => {
     expect(content.text()).toContain('E-Mail: info@remsfal.de');
   });
 
-  it('renders the footer', async () => {
+  it('renders the footer', () => {
     const footer = wrapper.find('.p-card-footer');
     expect(footer.exists()).toBe(true);
     expect(footer.text()).toContain('open privacy by opr.vc');

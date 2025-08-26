@@ -52,8 +52,9 @@ const unreadCount = ref<number>(0);
 const loadUnreadCount = async () => {
   try {
     const data: InboxMessage[] = await inboxService.fetchInboxData();
-    unreadCount.value = data.filter((msg) => !msg.isRead).length;
-  } catch (err) {
+    unreadCount.value = data.filter(msg => !msg.isRead).length;
+  }
+  catch (err) {
     console.error('Fehler beim Laden der Inbox-Daten:', err);
     unreadCount.value = 0;
   }
@@ -68,14 +69,17 @@ loadUnreadCount();
       class="layout-topbar-shortcut-button layout-topbar-action"
       @click="onHomeClick()"
     >
-      <i class="pi pi-home"></i>
+      <i class="pi pi-home" />
       <span>{{ t('toolbar.projects') }}</span>
     </Button>
-    <div v-if="sessionStore.user != null" class="layout-topbar-action">
+    <div
+      v-if="sessionStore.user != null"
+      class="layout-topbar-action"
+    >
       <Select
         v-model="projectStore.selectedProject"
         :options="projectStore.projectList"
-        optionLabel="name"
+        option-label="name"
         :placeholder="t('toolbar.project.placeholder')"
         @change="onProjectSelectionChange($event)"
       />
@@ -85,7 +89,7 @@ loadUnreadCount();
       class="layout-topbar-shortcut-button layout-topbar-action"
       @click="onNewProjectClick()"
     >
-      <i class="pi pi-plus"></i>
+      <i class="pi pi-plus" />
       <span>{{ t('toolbar.newProject') }}</span>
     </Button>
     <Button
@@ -93,7 +97,7 @@ loadUnreadCount();
       class="layout-topbar-action"
       @click="onAccountSettingsClick()"
     >
-      <i class="pi pi-user"></i>
+      <i class="pi pi-user" />
       <span>{{ sessionStore.user.email }}</span>
     </Button>
     <Button
@@ -101,14 +105,21 @@ loadUnreadCount();
       class="layout-topbar-shortcut-button layout-topbar-action"
       @click="onInboxClick()"
     >
-      <i class="pi pi-inbox"></i>
-      <span v-if="unreadCount > 0" class="unread-badge">
+      <i class="pi pi-inbox" />
+      <span
+        v-if="unreadCount > 0"
+        class="unread-badge"
+      >
         {{ unreadCount }}
       </span>
       <span>{{ t('toolbar.inbox') }}</span>
     </Button>
-    <Button v-if="sessionStore.user != null" class="layout-topbar-action" @click="logout()">
-      <i class="pi pi-sign-out"></i>
+    <Button
+      v-if="sessionStore.user != null"
+      class="layout-topbar-action"
+      @click="logout()"
+    >
+      <i class="pi pi-sign-out" />
       <span>{{ t('toolbar.logout') }}</span>
     </Button>
     <Button
@@ -116,9 +127,9 @@ loadUnreadCount();
       class="layout-topbar-action"
       @click="login('/projects')"
     >
-      <i class="pi pi-sign-in"></i>
+      <i class="pi pi-sign-in" />
       <span>{{ t('toolbar.login') }}</span>
     </Button>
-    <LocaleSwitch></LocaleSwitch>
+    <LocaleSwitch />
   </AppTopbar>
 </template>

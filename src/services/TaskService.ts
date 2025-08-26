@@ -1,16 +1,16 @@
 import axios from 'axios';
 
 export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: Status;
-  ownerId: string;
-  createdAt: Date;
-  modifiedAt: Date;
-  blockedBy: string;
-  duplicateOf: string;
-  relatedTo: string;
+  id: string
+  title: string
+  description: string
+  status: Status
+  ownerId: string
+  createdAt: Date
+  modifiedAt: Date
+  blockedBy: string
+  duplicateOf: string
+  relatedTo: string
 }
 
 export enum Status {
@@ -22,22 +22,22 @@ export enum Status {
 }
 
 export interface TaskList {
-  tasks: TaskItem[];
+  tasks: TaskItem[]
 }
 
 export interface TaskItem {
-  id: string;
-  name: string;
-  title: string;
-  status: Status;
-  owner: string;
+  id: string
+  name: string
+  title: string
+  status: Status
+  owner: string
 }
 
 export default class TaskService {
   readonly baseUrl: string = '/api/v1/projects';
 
-  //Get a list of tasks
-  getTasks(projectId: string, status?: 'OPEN' | null , ownerId?:string ): Promise<TaskList> {
+  // Get a list of tasks
+  getTasks(projectId: string, status?: 'OPEN' | null, ownerId?: string): Promise<TaskList> {
     if (status) {
       return axios.get(`${this.baseUrl}/${projectId}/tasks?status=${status}`).then((response) => {
         const taskList: TaskList = response.data;
@@ -59,7 +59,8 @@ export default class TaskService {
       return taskList;
     });
   }
-  //Get a single task
+
+  // Get a single task
   getTask(projectId: string, taskId: string) {
     return axios
       .get(`${this.baseUrl}/${projectId}/tasks/${taskId}`)
@@ -75,7 +76,7 @@ export default class TaskService {
       });
   }
 
-  //Create a task
+  // Create a task
   createTask(
     projectId: string,
     title: string,
@@ -96,7 +97,7 @@ export default class TaskService {
     });
   }
 
-  //modify a task
+  // modify a task
   modifyTask(
     projectId: string,
     taskId: string,
@@ -106,16 +107,16 @@ export default class TaskService {
     ownerId: string,
   ) {
     return axios
-        .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
-          title: title,
-          description: description,
-          status: status,
-          ownerId: ownerId,
-        })
-        .then((response) => {
-          console.log('task updated', response.data);
-          return response.data;
-        })
-        .catch((error) => console.error(error));
+      .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
+        title: title,
+        description: description,
+        status: status,
+        ownerId: ownerId,
+      })
+      .then((response) => {
+        console.log('task updated', response.data);
+        return response.data;
+      })
+      .catch((error) => { console.error(error); });
   }
 }

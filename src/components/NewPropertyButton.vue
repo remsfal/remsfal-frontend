@@ -8,11 +8,9 @@ import Textarea from 'primevue/textarea';
 import { propertyService } from '@/services/PropertyService';
 
 const props = defineProps<{
-  projectId: string;
+  projectId: string
 }>();
-const emit = defineEmits<{
-  (e: 'newUnit', title: string): void;
-}>();
+const emit = defineEmits<(e: 'newUnit', title: string) => void>();
 
 const { t } = useI18n();
 
@@ -35,7 +33,7 @@ const createProperty = async () => {
 
   propertyService
     .createProperty(props.projectId, {
-      title: title.value!,
+      title: title.value,
       description: description.value,
       plotArea: plotAreaValue,
     })
@@ -65,7 +63,10 @@ const createProperty = async () => {
     :style="{ width: '35rem' }"
   >
     <div class="flex items-center gap-6 mb-6">
-      <label for="title" class="font-semibold w-24">Titel</label>
+      <label
+        for="title"
+        class="font-semibold w-24"
+      >Titel</label>
       <InputText
         id="title"
         v-model="title"
@@ -76,8 +77,16 @@ const createProperty = async () => {
       />
     </div>
     <div class="flex items-center gap-6 mb-20">
-      <label for="description" class="font-semibold w-24">Beschreibung</label>
-      <Textarea id="description" v-model="description" rows="4" class="flex-auto" />
+      <label
+        for="description"
+        class="font-semibold w-24"
+      >Beschreibung</label>
+      <Textarea
+        id="description"
+        v-model="description"
+        rows="4"
+        class="flex-auto"
+      />
     </div>
     <div class="flex justify-end gap-2">
       <Button
@@ -85,8 +94,12 @@ const createProperty = async () => {
         :label="t('button.cancel')"
         severity="secondary"
         @click="visible = false"
-      ></Button>
-      <Button type="button" :label="t('button.add')" @click="createProperty"></Button>
+      />
+      <Button
+        type="button"
+        :label="t('button.add')"
+        @click="createProperty"
+      />
     </div>
   </Dialog>
 </template>

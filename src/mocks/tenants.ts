@@ -1,12 +1,12 @@
 export interface Tenant {
-  id: number;
-  firstName: string;
-  lastName: string;
-  period: string;
-  price: number;
-  deposit: number;
-  extraCosts: number;
-  email: string;
+  id: number
+  firstName: string
+  lastName: string
+  period: string
+  price: number
+  deposit: number
+  extraCosts: number
+  email: string
 }
 
 export const currentTenants: Tenant[] = [

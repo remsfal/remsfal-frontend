@@ -2,9 +2,9 @@ import { openDB } from 'idb';
 
 interface ProjectDB {
   projects: {
-    key: number; // timestamp as key
-    value: { title: string; createdAt: number };
-  };
+    key: number // timestamp as key
+    value: { title: string, createdAt: number }
+  }
 }
 
 export async function initDB() {

@@ -1,0 +1,31 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+
+    "test/**/*.ts",
+    "test/**/*.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+
+    "cypress/**/*.ts",
+    "cypress/**/*.tsx",
+
+    "vite.config.ts",
+    "vitest.config.ts",
+    "cypress.config.ts",
+    "*.config.ts",
+    "*.config.mts",
+    "*.config.cts"
+  ],
+  "exclude": ["node_modules", "dist", "coverage"],
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "types": ["node", "vitest/globals", "cypress"]
+  }
+}

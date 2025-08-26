@@ -14,13 +14,11 @@ import { commercialService } from '@/services/CommercialService';
 import { storageService } from '@/services/StorageService.ts';
 
 const props = defineProps<{
-  projectId: string;
-  parentId?: string;
-  type: EntityType;
+  projectId: string
+  parentId?: string
+  type: EntityType
 }>();
-const emit = defineEmits<{
-  (e: 'newUnit', title: string): void;
-}>();
+const emit = defineEmits<(e: 'newUnit', title: string) => void>();
 
 const { t } = useI18n();
 
@@ -229,9 +227,17 @@ async function createStorage(): Promise<void> {
     />
   </div>
 
-  <Dialog v-model:visible="visible" modal header="Einheit hinzufügen" :style="{ width: '35rem' }">
+  <Dialog
+    v-model:visible="visible"
+    modal
+    header="Einheit hinzufügen"
+    :style="{ width: '35rem' }"
+  >
     <div class="flex items-center gap-6 mb-6">
-      <label for="title" class="font-semibold w-24">Titel</label>
+      <label
+        for="title"
+        class="font-semibold w-24"
+      >Titel</label>
       <InputText
         id="title"
         v-model="title"
@@ -242,8 +248,16 @@ async function createStorage(): Promise<void> {
       />
     </div>
     <div class="flex items-center gap-6 mb-20">
-      <label for="description" class="font-semibold w-24">Beschreibung</label>
-      <Textarea id="description" v-model="description" rows="4" class="flex-auto" />
+      <label
+        for="description"
+        class="font-semibold w-24"
+      >Beschreibung</label>
+      <Textarea
+        id="description"
+        v-model="description"
+        rows="4"
+        class="flex-auto"
+      />
     </div>
     <div class="flex justify-end gap-2">
       <Button
@@ -251,8 +265,12 @@ async function createStorage(): Promise<void> {
         :label="t('button.cancel')"
         severity="secondary"
         @click="visible = false"
-      ></Button>
-      <Button type="button" :label="t('button.add')" @click="createRentableUnit"></Button>
+      />
+      <Button
+        type="button"
+        :label="t('button.add')"
+        @click="createRentableUnit"
+      />
     </div>
   </Dialog>
 </template>

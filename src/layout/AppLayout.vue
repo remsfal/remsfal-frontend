@@ -5,7 +5,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { RouterView } from 'vue-router';
 
 const props = defineProps<{
-  fullscreen: boolean;
+  fullscreen: boolean
 }>();
 
 const { layoutState, isSidebarActive, setFullscreen } = useLayout();
@@ -22,7 +22,8 @@ onBeforeUpdate(() => {
 watch(isSidebarActive, (newVal) => {
   if (newVal) {
     bindOutsideClickListener();
-  } else {
+  }
+  else {
     unbindOutsideClickListener();
   }
 });
@@ -52,10 +53,10 @@ function isOutsideClicked(event: Event) {
   const topbarEl = document.querySelector('.layout-menu-button');
 
   return !(
-    sidebarEl!.isSameNode(event.target as Node) ||
-    sidebarEl!.contains(event.target as Node) ||
-    topbarEl!.isSameNode(event.target as Node) ||
-    topbarEl!.contains(event.target as Node)
+    sidebarEl!.isSameNode(event.target as Node)
+    || sidebarEl!.contains(event.target as Node)
+    || topbarEl!.isSameNode(event.target as Node)
+    || topbarEl!.contains(event.target as Node)
   );
 }
 </script>
@@ -65,10 +66,10 @@ function isOutsideClicked(event: Event) {
     <main>
       <div class="layout-main">
         <div class="flex flex-col gap-8">
-          <RouterView></RouterView>
+          <RouterView />
         </div>
       </div>
     </main>
-    <AppFooter></AppFooter>
+    <AppFooter />
   </div>
 </template>

@@ -7,8 +7,8 @@ import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
-  projectId: string;
-  unitId: string;
+  projectId: string
+  unitId: string
 }>();
 
 const toast = useToast();
@@ -31,11 +31,11 @@ const originalValues = ref({
 
 const hasChanges = computed(() => {
   return (
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    commercialSpace.value !== originalValues.value.commercialSpace ||
-    heatingSpace.value !== originalValues.value.heatingSpace ||
-    location.value !== originalValues.value.location
+    title.value !== originalValues.value.title
+    || description.value !== originalValues.value.description
+    || commercialSpace.value !== originalValues.value.commercialSpace
+    || heatingSpace.value !== originalValues.value.heatingSpace
+    || location.value !== originalValues.value.location
   );
 });
 
@@ -44,13 +44,15 @@ const validationErrors = computed(() => {
 
   if (commercialSpace.value === null) {
     errors.push(t('commercialUnit.validation.commercialRequired'));
-  } else if (commercialSpace.value < 0) {
+  }
+  else if (commercialSpace.value < 0) {
     errors.push(t('commercialUnit.validation.commercialNegative'));
   }
 
   if (heatingSpace.value === null) {
     errors.push(t('commercialUnit.validation.heatingRequired'));
-  } else if (heatingSpace.value < 0) {
+  }
+  else if (heatingSpace.value < 0) {
     errors.push(t('commercialUnit.validation.heatingNegative'));
   }
 
@@ -88,7 +90,8 @@ async function fetchCommercialDetails() {
       heatingSpace: heatingSpace.value,
       location: location.value,
     };
-  } catch (err) {
+  }
+  catch (err) {
     console.error('Error loading commercial unit:', err);
     toast.add({
       severity: 'error',
@@ -102,7 +105,8 @@ async function fetchCommercialDetails() {
 onMounted(() => {
   if (props.unitId) {
     fetchCommercialDetails();
-  } else {
+  }
+  else {
     toast.add({
       severity: 'warn',
       summary: t('commercialUnit.missingIdTitle'),
@@ -135,7 +139,8 @@ const save = async () => {
       life: 6000,
     });
     router.push(`/project/${props.projectId}/commercial/${props.unitId}`);
-  } catch (err) {
+  }
+  catch (err) {
     console.error('Error saving commercial unit:', err);
     showSavingErrorToast(toast, t('commercialUnit.saveError'));
   }
@@ -157,38 +162,86 @@ defineExpose({ fetchCommercialDetails });
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
-            <label for="title" class="block text-gray-700 mb-1">{{ t('rentableUnits.form.title') }}</label>
-            <input id="title" v-model="title" type="text" class="form-input w-full" />
+            <label
+              for="title"
+              class="block text-gray-700 mb-1"
+            >{{ t('rentableUnits.form.title') }}</label>
+            <input
+              id="title"
+              v-model="title"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <div class="col-span-2">
-            <label for="description" class="block text-gray-700 mb-1">{{ t('rentableUnits.form.description') }}</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <label
+              for="description"
+              class="block text-gray-700 mb-1"
+            >{{ t('rentableUnits.form.description') }}</label>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            />
           </div>
 
           <div class="col-span-2">
-            <label for="location" class="block text-gray-700 mb-1">{{ t('property.address') }}</label>
-            <input id="location" v-model="location" type="text" class="form-input w-full" />
+            <label
+              for="location"
+              class="block text-gray-700 mb-1"
+            >{{ t('property.address') }}</label>
+            <input
+              id="location"
+              v-model="location"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <div>
-            <label for="commercialSpace" class="block text-gray-700 mb-1">
+            <label
+              for="commercialSpace"
+              class="block text-gray-700 mb-1"
+            >
               {{ t('commercialUnit.commercialSpace') }} (m²)
             </label>
-            <input id="commercialSpace" v-model.number="commercialSpace" type="number" class="form-input w-full" />
+            <input
+              id="commercialSpace"
+              v-model.number="commercialSpace"
+              type="number"
+              class="form-input w-full"
+            >
           </div>
 
           <div>
-            <label for="heatingSpace" class="block text-gray-700 mb-1">
+            <label
+              for="heatingSpace"
+              class="block text-gray-700 mb-1"
+            >
               {{ t('commercialUnit.heatingSpace') }} (m²)
             </label>
-            <input id="heatingSpace" v-model.number="heatingSpace" type="number" class="form-input w-full" />
+            <input
+              id="heatingSpace"
+              v-model.number="heatingSpace"
+              type="number"
+              class="form-input w-full"
+            >
           </div>
         </div>
 
-        <div v-if="validationErrors.length" class="text-red-600 mt-4">
+        <div
+          v-if="validationErrors.length"
+          class="text-red-600 mt-4"
+        >
           <ul>
-            <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+            <li
+              v-for="(error, i) in validationErrors"
+              :key="i"
+            >
+              {{ error }}
+            </li>
           </ul>
         </div>
 

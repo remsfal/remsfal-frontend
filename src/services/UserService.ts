@@ -13,15 +13,14 @@ export default class UserService {
   getCityFromZip(zip: string) {
     return typedRequest<'/api/v1/address', 'get'>('get', '/api/v1/address', {
       params: {
-        query: { zip }
-      }
+        query: { zip },
+      },
     });
   }
-  
 
   // Update user with partial data, typed from OpenAPI
   async updateUser(updatedUser: Partial<any>) {
-    // If you want to use the exact request body type from OpenAPI, 
+    // If you want to use the exact request body type from OpenAPI,
     // replace `Partial<any>` with proper RequestBody type from OpenAPI
     return typedRequest('patch', UserService.USER_ENDPOINT, {
       body: updatedUser,
@@ -34,7 +33,8 @@ export default class UserService {
       await typedRequest('delete', UserService.USER_ENDPOINT);
       console.log('DELETE user');
       return true;
-    } catch (error) {
+    }
+    catch (error) {
       console.error('DELETE user failed:', error);
       return false;
     }

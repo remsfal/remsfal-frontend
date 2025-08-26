@@ -69,7 +69,7 @@ describe('TenantsTableComponent', () => {
 
     await wrapper.vm.deleteRow(0);
 
-    //same prodecure as above, but now we delete the first row
+    // same prodecure as above, but now we delete the first row
     expect(wrapper.vm.localTenants.length).toBe(1);
     expect(wrapper.emitted('onChange')).toBeTruthy();
   });

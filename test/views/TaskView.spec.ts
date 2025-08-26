@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
-import TaskService, { Status, TaskItem } from '../../src/services/TaskService';
+import type { TaskItem } from '../../src/services/TaskService';
+import TaskService, { Status } from '../../src/services/TaskService';
 
 describe('TaskView', () => {
   let wrapper: VueWrapper;
@@ -63,14 +65,14 @@ describe('TaskView', () => {
           id: '1',
           title: 'Task 1',
           name: 'task1',
-          status: Status['OPEN'],
+          status: Status.OPEN,
           owner: 'owner1',
         },
         {
           id: '2',
           title: 'Task 2',
           name: 'task2',
-          status: Status['OPEN'],
+          status: Status.OPEN,
           owner: 'owner1',
         },
       ];

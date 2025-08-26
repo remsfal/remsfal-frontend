@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import NewProjectMemberButton from '../../src/components/NewProjectMemberButton.vue';
 import { projectMemberService } from '../../src/services/ProjectMemberService';
 
@@ -35,7 +36,7 @@ describe('NewProjectMemberButton.vue', () => {
     await wrapper.vm.$nextTick();
 
     // Ungültige E-Mail eingeben
-    const emailInput = document.querySelector('input#email') as HTMLInputElement;
+    const emailInput = document.querySelector('input#email')!;
     expect(emailInput).toBeTruthy();
     emailInput.value = 'ungueltig';
     emailInput.dispatchEvent(new Event('input'));

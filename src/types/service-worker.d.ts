@@ -1,5 +1,5 @@
 interface ServiceWorkerRegistration {
   sync: {
-    register: (tag: string) => Promise<void>;
-  };
+    register: (tag: string) => Promise<void>
+  }
 }

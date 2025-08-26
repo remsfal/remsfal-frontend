@@ -6,8 +6,8 @@ import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
-  projectId: string;
-  unitId: string;
+  projectId: string
+  unitId: string
 }>();
 
 const toast = useToast();
@@ -97,14 +97,14 @@ const originalValues = ref<PropertyUnit>({
 
 const hasChanges = computed(() => {
   return (
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    district.value !== originalValues.value.cadastralDistrict ||
-    corridor.value !== originalValues.value.corridor ||
-    parcel.value !== originalValues.value.parcel ||
-    landRegisterEntry.value !== originalValues.value.landRegistry ||
-    usageType.value !== originalValues.value.usageType ||
-    plotArea.value !== originalValues.value.effectiveSpace
+    title.value !== originalValues.value.title
+    || description.value !== originalValues.value.description
+    || district.value !== originalValues.value.cadastralDistrict
+    || corridor.value !== originalValues.value.corridor
+    || parcel.value !== originalValues.value.parcel
+    || landRegisterEntry.value !== originalValues.value.landRegistry
+    || usageType.value !== originalValues.value.usageType
+    || plotArea.value !== originalValues.value.effectiveSpace
   );
 });
 
@@ -122,7 +122,8 @@ const validationErrors = computed(() => {
   }
   if (plotArea.value === null) {
     errors.push('Grundstücksfläche ist erforderlich.');
-  } else if (plotArea.value < 0) {
+  }
+  else if (plotArea.value < 0) {
     errors.push('Grundstücksfläche darf nicht negativ sein.');
   }
   return errors;
@@ -160,7 +161,8 @@ const fetchPropertyDetails = async () => {
       usageType: usageType.value,
       effectiveSpace: plotArea.value,
     };
-  } catch (err) {
+  }
+  catch (err) {
     console.error('Fehler beim Laden der Eigentumsdetails:', err);
     toast.add({
       severity: 'error',
@@ -174,7 +176,8 @@ const fetchPropertyDetails = async () => {
 onMounted(() => {
   if (props.unitId) {
     fetchPropertyDetails();
-  } else {
+  }
+  else {
     console.warn('unitId fehlt – keine Daten können geladen werden.');
     toast.add({
       severity: 'warn',
@@ -211,7 +214,8 @@ const save = async () => {
       life: 6000,
     });
     router.push(`/project/${props.projectId}/property/${props.unitId}`);
-  } catch (err) {
+  }
+  catch (err) {
     console.error('Fehler beim Speichern:', err);
     showSavingErrorToast(toast, 'Eigentum konnte nicht gespeichert werden.');
   }
@@ -220,55 +224,116 @@ const save = async () => {
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
-
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Bearbeite Eigentum mit ID: {{ props.unitId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">
+        Bearbeite Eigentum mit ID: {{ props.unitId }}
+      </h2>
 
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->
           <div class="col-span-2">
-            <label for="title" class="block text-gray-700 mb-1">Titel</label>
-            <input id="title" v-model="title" type="text" class="form-input w-full" />
+            <label
+              for="title"
+              class="block text-gray-700 mb-1"
+            >Titel</label>
+            <input
+              id="title"
+              v-model="title"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Beschreibung -->
           <div class="col-span-2">
-            <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <label
+              for="description"
+              class="block text-gray-700 mb-1"
+            >Beschreibung</label>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            />
           </div>
 
           <!-- Gemarkung -->
           <div>
-            <label for="district" class="block text-gray-700 mb-1">Gemarkung</label>
-            <input id="district" v-model="district" type="text" class="form-input w-full" />
+            <label
+              for="district"
+              class="block text-gray-700 mb-1"
+            >Gemarkung</label>
+            <input
+              id="district"
+              v-model="district"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Flur -->
           <div>
-            <label for="corridor" class="block text-gray-700 mb-1">Flur</label>
-            <input id="corridor" v-model="corridor" type="text" class="form-input w-full" />
+            <label
+              for="corridor"
+              class="block text-gray-700 mb-1"
+            >Flur</label>
+            <input
+              id="corridor"
+              v-model="corridor"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Flurstück -->
           <div>
-            <label for="parcel" class="block text-gray-700 mb-1">Flurstück</label>
-            <input id="parcel" v-model="parcel" type="text" class="form-input w-full" />
+            <label
+              for="parcel"
+              class="block text-gray-700 mb-1"
+            >Flurstück</label>
+            <input
+              id="parcel"
+              v-model="parcel"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Liegenschaftsbuch -->
           <div>
-            <label for="landRegisterEntry" class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
-            <input id="landRegisterEntry" v-model="landRegisterEntry" type="text" class="form-input w-full" />
+            <label
+              for="landRegisterEntry"
+              class="block text-gray-700 mb-1"
+            >Liegenschaftsbuch</label>
+            <input
+              id="landRegisterEntry"
+              v-model="landRegisterEntry"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Wirtschaftsart -->
           <div class="col-span-2">
-            <label for="usageType" class="block text-gray-700 mb-1">Wirtschaftsart</label>
-            <select id="usageType" v-model="usageType" class="form-input w-full">
-              <option value="" disabled>Bitte wählen</option>
+            <label
+              for="usageType"
+              class="block text-gray-700 mb-1"
+            >Wirtschaftsart</label>
+            <select
+              id="usageType"
+              v-model="usageType"
+              class="form-input w-full"
+            >
+              <option
+                value=""
+                disabled
+              >
+                Bitte wählen
+              </option>
               <option
                 v-for="option in usageOptions"
                 :key="option.value ?? option.label"
@@ -281,14 +346,30 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
           <!-- Grundstücksfläche -->
           <div>
-            <label for="plotArea" class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
-            <input id="plotArea" v-model.number="plotArea" type="number" class="form-input w-full" />
+            <label
+              for="plotArea"
+              class="block text-gray-700 mb-1"
+            >Grundstücksfläche (m²)</label>
+            <input
+              id="plotArea"
+              v-model.number="plotArea"
+              type="number"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Validierungsfehler -->
-          <div v-if="validationErrors.length" class="text-red-600 mt-4">
+          <div
+            v-if="validationErrors.length"
+            class="text-red-600 mt-4"
+          >
             <ul>
-              <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+              <li
+                v-for="(error, i) in validationErrors"
+                :key="i"
+              >
+                {{ error }}
+              </li>
             </ul>
           </div>
 

@@ -3,9 +3,9 @@ import ContractorService from '../../src/services/ContractorService';
 import { server } from '../mocks/server';
 import { http, HttpResponse } from 'msw';
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+beforeAll(() => { server.listen(); });
+afterEach(() => { server.resetHandlers(); });
+afterAll(() => { server.close(); });
 
 describe('ContractorService (MSW with http)', () => {
   const service = new ContractorService();
@@ -21,7 +21,7 @@ describe('ContractorService (MSW with http)', () => {
               id: taskId,
               title: 'Task 1',
               description: 'Description 1',
-              status: 'OPEN',  // matches TaskStatus type
+              status: 'OPEN', // matches TaskStatus type
             },
           ],
         });

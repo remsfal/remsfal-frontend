@@ -4,25 +4,25 @@ import { onMounted, ref } from 'vue';
 import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 
 const props = defineProps<{
-  projectId: string;
-  unitId?: string;
-  buildingId?: string;
-  commercialId?: string;
-  headline: string; // Optional headline text
-  saveButtonText: string; // Text for the save button
-  cancelButtonText: string; // Text for the cancel button
-  submit?: () => void; // Submit handler
-  cancel?: () => void; // Cancel handler
+  projectId: string
+  unitId?: string
+  buildingId?: string
+  commercialId?: string
+  headline: string // Optional headline text
+  saveButtonText: string // Text for the save button
+  cancelButtonText: string // Text for the cancel button
+  submit?: () => void // Submit handler
+  cancel?: () => void // Cancel handler
 }>();
 
-const fields: {
-  name: string;
-  label: string;
-  type: 'text' | 'textarea' | 'checkbox' | 'select';
-  options?: any[];
-  required?: boolean;
-  validations?: ((value: any) => string | null)[];
-}[] = [
+const fields: Array<{
+  name: string
+  label: string
+  type: 'text' | 'textarea' | 'checkbox' | 'select'
+  options?: any[]
+  required?: boolean
+  validations?: Array<(value: any) => string | null>
+}> = [
   { name: 'title', label: 'Titel', type: 'text', required: true },
   { name: 'location', label: 'Standort', type: 'textarea', required: false },
   {
@@ -76,7 +76,8 @@ onMounted(async () => {
   if (props.commercialId) {
     try {
       initialCommercialData.value = await commercialService.getCommercial(props.projectId, props.commercialId);
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error fetching commercial data:', error);
     }
   }
@@ -87,9 +88,9 @@ onMounted(async () => {
   <ReusableForm
     :headline="props.headline"
     :fields="fields"
-    :initialValues="initialCommercialData"
-    :saveButtonText="props.saveButtonText"
-    :cancelButtonText="props.cancelButtonText"
+    :initial-values="initialCommercialData"
+    :save-button-text="props.saveButtonText"
+    :cancel-button-text="props.cancelButtonText"
     @submit="props.submit"
     @cancel="props.cancel"
   />

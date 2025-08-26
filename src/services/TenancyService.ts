@@ -1,33 +1,33 @@
 export interface TenantItem {
-  id: string;
-  firstName: string;
-  lastName: string;
-  unitTitle: string;
-  rentalObject: string;
-  rentalStart: Date;
-  rentalEnd: Date;
+  id: string
+  firstName: string
+  lastName: string
+  unitTitle: string
+  rentalObject: string
+  rentalStart: Date
+  rentalEnd: Date
 }
 
 export interface TenancyUnitItem {
-  id: string;
-  rentalObject: string;
-  unitTitle: string;
+  id: string
+  rentalObject: string
+  unitTitle: string
 }
 
 export interface TenancyTenantItem {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
+  id: string
+  firstName: string
+  lastName: string
+  email: string
 }
 
 export interface TenancyItem {
-  id: string;
-  listOfTenants: TenancyTenantItem[];
-  listOfUnits: TenancyUnitItem[];
-  rentalStart: Date;
-  rentalEnd: Date;
-  active: boolean;
+  id: string
+  listOfTenants: TenancyTenantItem[]
+  listOfUnits: TenancyUnitItem[]
+  rentalStart: Date
+  rentalEnd: Date
+  active: boolean
 }
 
 export default class TenancyService {
@@ -99,7 +99,7 @@ export default class TenancyService {
 
   loadMockTenancyData(id: string): TenancyItem | null {
     const tenancyData = this.generateMockTenancyData();
-    return tenancyData.find((tenancy) => tenancy.id === id) || null;
+    return tenancyData.find(tenancy => tenancy.id === id) || null;
   }
 
   async fetchTenancyData(): Promise<TenancyItem[]> {
@@ -128,12 +128,12 @@ export default class TenancyService {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async createTenancy(tenancy: TenancyItem): Promise<void> {
-    //TODO: Implementieren
+    // TODO: Implementieren
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancy(tenancy: TenancyItem | null): Promise<void> {
-    //TODO: Implementieren
+    // TODO: Implementieren
   }
 }
 

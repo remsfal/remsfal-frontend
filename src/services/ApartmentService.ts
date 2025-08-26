@@ -1,13 +1,13 @@
 import axios from 'axios';
 
 export interface ApartmentUnit {
-  id?: string;
-  title: string;
-  description?: string;
-  location?: string;
-  livingSpace?: number;
-  usableSpace?: number;
-  heatingSpace?: number;
+  id?: string
+  title: string
+  description?: string
+  location?: string
+  livingSpace?: number
+  usableSpace?: number
+  heatingSpace?: number
 }
 
 class ApartmentService {

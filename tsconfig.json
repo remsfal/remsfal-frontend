@@ -9,6 +9,9 @@
     },
     {
       "path": "./tsconfig.vitest.json"
+    },
+    {
+      "path": "./tsconfig.eslint.json"
     }
   ],
   "compilerOptions": {
@@ -16,6 +19,10 @@
     "moduleResolution": "Bundler",
     "target": "ESNext",
     "jsx": "preserve",
+    "strict": true,
     "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
   }
 }

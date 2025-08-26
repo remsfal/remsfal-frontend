@@ -5,8 +5,8 @@ import { buildingService, type BuildingUnit } from '@/services/BuildingService';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 const props = defineProps<{
-  projectId: string;
-  unitId: string;
+  projectId: string
+  unitId: string
 }>();
 const toast = useToast();
 
@@ -239,17 +239,17 @@ const originalValues = ref({
 
 const hasChanges = computed(() => {
   return (
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    livingSpace.value !== originalValues.value.livingSpace ||
-    commercialSpace.value !== originalValues.value.commercialSpace ||
-    usableSpace.value !== originalValues.value.usableSpace ||
-    heatingSpace.value !== originalValues.value.heatingSpace ||
-    street.value !== originalValues.value.street ||
-    city.value !== originalValues.value.city ||
-    province.value !== originalValues.value.province ||
-    zip.value !== originalValues.value.zip ||
-    country.value !== originalValues.value.country
+    title.value !== originalValues.value.title
+    || description.value !== originalValues.value.description
+    || livingSpace.value !== originalValues.value.livingSpace
+    || commercialSpace.value !== originalValues.value.commercialSpace
+    || usableSpace.value !== originalValues.value.usableSpace
+    || heatingSpace.value !== originalValues.value.heatingSpace
+    || street.value !== originalValues.value.street
+    || city.value !== originalValues.value.city
+    || province.value !== originalValues.value.province
+    || zip.value !== originalValues.value.zip
+    || country.value !== originalValues.value.country
   );
 });
 
@@ -258,25 +258,29 @@ const validationErrors = computed(() => {
 
   if (livingSpace.value === null) {
     errors.push('Wohnfläche ist erforderlich.');
-  } else if (livingSpace.value < 0) {
+  }
+  else if (livingSpace.value < 0) {
     errors.push('Wohnfläche darf nicht negativ sein.');
   }
 
   if (commercialSpace.value === null) {
     errors.push('Gewerbefläche ist erforderlich.');
-  } else if (commercialSpace.value < 0) {
+  }
+  else if (commercialSpace.value < 0) {
     errors.push('Gewerbefläche darf nicht negativ sein.');
   }
 
   if (usableSpace.value === null) {
     errors.push('Nutzfläche ist erforderlich.');
-  } else if (usableSpace.value < 0) {
+  }
+  else if (usableSpace.value < 0) {
     errors.push('Nutzfläche darf nicht negativ sein.');
   }
 
   if (heatingSpace.value === null) {
     errors.push('Heizfläche ist erforderlich.');
-  } else if (heatingSpace.value < 0) {
+  }
+  else if (heatingSpace.value < 0) {
     errors.push('Heizfläche darf nicht negativ sein.');
   }
 
@@ -313,7 +317,8 @@ const fetchBuildingDetails = () => {
         province.value = building.address.province || '';
         zip.value = building.address.zip || '';
         country.value = country.value = building.address.country?.replace(/^_/, '') || '';
-      } else {
+      }
+      else {
         street.value = '';
         city.value = '';
         province.value = '';
@@ -349,7 +354,8 @@ const fetchBuildingDetails = () => {
 onMounted(() => {
   if (props.unitId) {
     fetchBuildingDetails();
-  } else {
+  }
+  else {
     console.warn('unitId fehlt – keine Daten können geladen werden.');
     toast.add({
       severity: 'warn',
@@ -362,7 +368,7 @@ onMounted(() => {
 
 const save = () => {
   if (!isValid.value) {
-    showValidationErrorToast(toast, validationErrors.value)
+    showValidationErrorToast(toast, validationErrors.value);
     return;
   }
   const payload: BuildingUnit = {
@@ -404,52 +410,118 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Bearbeite Gebäude mit ID: {{ unitId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">
+        Bearbeite Gebäude mit ID: {{ unitId }}
+      </h2>
 
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->
           <div class="col-span-2">
-            <label for="title" class="block text-gray-700 mb-1">Titel</label>
-            <input id="title" v-model="title" type="text" class="form-input w-full" />
+            <label
+              for="title"
+              class="block text-gray-700 mb-1"
+            >Titel</label>
+            <input
+              id="title"
+              v-model="title"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Beschreibung -->
           <div class="col-span-2">
-            <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <label
+              for="description"
+              class="block text-gray-700 mb-1"
+            >Beschreibung</label>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            />
           </div>
 
           <!-- Adresse - Straße -->
           <div>
-            <label for="street" class="block text-gray-700 mb-1">Straße</label>
-            <input id="street" v-model="street" type="text" class="form-input w-full" />
+            <label
+              for="street"
+              class="block text-gray-700 mb-1"
+            >Straße</label>
+            <input
+              id="street"
+              v-model="street"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Stadt -->
           <div>
-            <label for="city" class="block text-gray-700 mb-1">Stadt</label>
-            <input id="city" v-model="city" type="text" class="form-input w-full" />
+            <label
+              for="city"
+              class="block text-gray-700 mb-1"
+            >Stadt</label>
+            <input
+              id="city"
+              v-model="city"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Provinz / Bundesland -->
           <div>
-            <label for="province" class="block text-gray-700 mb-1">Provinz / Bundesland</label>
-            <input id="province" v-model="province" type="text" class="form-input w-full" />
+            <label
+              for="province"
+              class="block text-gray-700 mb-1"
+            >Provinz / Bundesland</label>
+            <input
+              id="province"
+              v-model="province"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- PLZ -->
           <div>
-            <label for="zip" class="block text-gray-700 mb-1">PLZ</label>
-            <input id="zip" v-model="zip" type="text" class="form-input w-full" />
+            <label
+              for="zip"
+              class="block text-gray-700 mb-1"
+            >PLZ</label>
+            <input
+              id="zip"
+              v-model="zip"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Land -->
           <div>
-            <label for="country" class="block text-gray-700 mb-1">Land</label>
-            <select id="country" v-model="country" class="form-input w-full">
-              <option value="" disabled>Bitte Land wählen</option>
-              <option v-for="c in countries" :key="c.code" :value="c.code">
+            <label
+              for="country"
+              class="block text-gray-700 mb-1"
+            >Land</label>
+            <select
+              id="country"
+              v-model="country"
+              class="form-input w-full"
+            >
+              <option
+                value=""
+                disabled
+              >
+                Bitte Land wählen
+              </option>
+              <option
+                v-for="c in countries"
+                :key="c.code"
+                :value="c.code"
+              >
                 {{ c.name }}
               </option>
             </select>
@@ -457,33 +529,73 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
           <!-- Wohnfläche -->
           <div>
-            <label for="livingSpace" class="block text-gray-700 mb-1">Wohnfläche (m²)</label>
-            <input id="livingSpace" v-model.number="livingSpace" type="number" class="form-input w-full" />
+            <label
+              for="livingSpace"
+              class="block text-gray-700 mb-1"
+            >Wohnfläche (m²)</label>
+            <input
+              id="livingSpace"
+              v-model.number="livingSpace"
+              type="number"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Gewerbefläche -->
           <div>
-            <label for="commercialSpace" class="block text-gray-700 mb-1">Gewerbefläche (m²)</label>
-            <input id="commercialSpace" v-model.number="commercialSpace" type="number" class="form-input w-full" />
+            <label
+              for="commercialSpace"
+              class="block text-gray-700 mb-1"
+            >Gewerbefläche (m²)</label>
+            <input
+              id="commercialSpace"
+              v-model.number="commercialSpace"
+              type="number"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Nutzfläche -->
           <div>
-            <label for="usableSpace" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
-            <input id="usableSpace" v-model.number="usableSpace" type="number" class="form-input w-full" />
+            <label
+              for="usableSpace"
+              class="block text-gray-700 mb-1"
+            >Nutzfläche (m²)</label>
+            <input
+              id="usableSpace"
+              v-model.number="usableSpace"
+              type="number"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Heizfläche -->
           <div>
-            <label for="heatingSpace" class="block text-gray-700 mb-1">Heizfläche (m²)</label>
-            <input id="heatingSpace" v-model.number="heatingSpace" type="number" class="form-input w-full" />
+            <label
+              for="heatingSpace"
+              class="block text-gray-700 mb-1"
+            >Heizfläche (m²)</label>
+            <input
+              id="heatingSpace"
+              v-model.number="heatingSpace"
+              type="number"
+              class="form-input w-full"
+            >
           </div>
         </div>
 
         <!-- Validierungsfehler -->
-        <div v-if="validationErrors.length" class="text-red-600 mt-4">
+        <div
+          v-if="validationErrors.length"
+          class="text-red-600 mt-4"
+        >
           <ul>
-            <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+            <li
+              v-for="(error, i) in validationErrors"
+              :key="i"
+            >
+              {{ error }}
+            </li>
           </ul>
         </div>
 

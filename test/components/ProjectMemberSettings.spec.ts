@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import ProjectMemberSettings from '../../src/components/ProjectMemberSettings.vue';
 import { type MemberList, projectMemberService } from '../../src/services/ProjectMemberService';
 
