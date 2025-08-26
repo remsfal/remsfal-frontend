@@ -9,11 +9,9 @@ import type { Member, MemberRole } from '@/services/ProjectMemberService';
 import { memberRoles, projectMemberService } from '@/services/ProjectMemberService';
 
 const props = defineProps<{
-  projectId: string;
+  projectId: string
 }>();
-const emit = defineEmits<{
-  (e: 'newMember', email: string): void;
-}>();
+const emit = defineEmits<(e: 'newMember', email: string) => void>();
 
 const { t } = useI18n();
 
@@ -33,7 +31,8 @@ const addMember = async () => {
     isEmailInvalid.value = true;
     emailErrorMessage.value = 'Bitte eine gültige E-Mail-Adresse eingeben';
     return;
-  } else {
+  }
+  else {
     isEmailInvalid.value = false;
     emailErrorMessage.value = '';
   }
@@ -42,7 +41,8 @@ const addMember = async () => {
     isRoleInvalid.value = true;
     roleErrorMessage.value = 'Bitte eine gültige Rolle auswählen';
     return;
-  } else {
+  }
+  else {
     isRoleInvalid.value = false;
     roleErrorMessage.value = '';
   }
@@ -60,8 +60,9 @@ const addMember = async () => {
     emit('newMember', newMemberEmail.value);
     newMemberEmail.value = '';
     newMemberRole.value = null;
-  } catch (error) {
-    const err = error as { response?: { data: any }; message: string };
+  }
+  catch (error) {
+    const err = error as { response?: { data: any }, message: string };
     console.error('Failed to add member:', err.response?.data || err.message);
   }
 };
@@ -83,7 +84,10 @@ const addMember = async () => {
   >
     <div class="flex flex-col gap-1 mb-6">
       <div class="flex items-center gap-6">
-        <label for="email" class="font-semibold w-24">E-Mail Adresse</label>
+        <label
+          for="email"
+          class="font-semibold w-24"
+        >E-Mail Adresse</label>
         <InputText
           id="email"
           v-model="newMemberEmail"
@@ -94,22 +98,31 @@ const addMember = async () => {
           :invalid="isEmailInvalid"
         />
       </div>
-      <small v-if="isEmailInvalid" class="text-red-500 ml-28">{{ emailErrorMessage }}</small>
+      <small
+        v-if="isEmailInvalid"
+        class="text-red-500 ml-28"
+      >{{ emailErrorMessage }}</small>
     </div>
 
     <div class="flex items-center gap-6 mb-2">
-      <label for="role" class="font-semibold w-24">Mitgliedsrolle</label>
+      <label
+        for="role"
+        class="font-semibold w-24"
+      >Mitgliedsrolle</label>
       <Select
         v-model="newMemberRole"
-        inputId="role"
+        input-id="role"
         :options="memberRoles"
-        optionLabel="label"
-        optionValue="value"
+        option-label="label"
+        option-value="value"
         class="w-full"
         :class="{ 'p-invalid': isRoleInvalid }"
       />
     </div>
-    <small v-if="isRoleInvalid" class="text-red-500 ml-28">{{ roleErrorMessage }}</small>
+    <small
+      v-if="isRoleInvalid"
+      class="text-red-500 ml-28"
+    >{{ roleErrorMessage }}</small>
 
     <div class="flex justify-end gap-2 mt-6">
       <Button
@@ -117,8 +130,12 @@ const addMember = async () => {
         :label="t('button.cancel')"
         severity="secondary"
         @click="visible = false"
-      ></Button>
-      <Button type="button" :label="t('button.add')" @click="addMember"></Button>
+      />
+      <Button
+        type="button"
+        :label="t('button.add')"
+        @click="addMember"
+      />
     </div>
   </Dialog>
 </template>

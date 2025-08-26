@@ -72,30 +72,68 @@ function handleTenancyDataChange(updatedTenancy: TenancyItem) {
 
 <template>
   <div class="p-4">
-    <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @onChange="handleTenancyDataChange" />
+    <TenancyDataComponent
+      v-if="tenancy"
+      :tenancy="tenancy"
+      @on-change="handleTenancyDataChange"
+    />
     <!-- Main Content -->
     <div class="grid grid-cols-1 gap-6">
       <!-- Tenants Section -->
-      <TenantsTableComponent :tenants="tenancy?.listOfTenants || []" :isDeleteButtonEnabled="false" />
-      <UnitsTableComponent :listOfUnits="tenancy?.listOfUnits || []" :isDeleteButtonEnabled="false" />
+      <TenantsTableComponent
+        :tenants="tenancy?.listOfTenants || []"
+        :is-delete-button-enabled="false"
+      />
+      <UnitsTableComponent
+        :list-of-units="tenancy?.listOfUnits || []"
+        :is-delete-button-enabled="false"
+      />
 
       <!-- Delete Button -->
       <div class="flex justify-end">
-        <Button icon="pi pi-save" label="Speichern" text raised rounded
-          class="mb-2 mr-2 hover:bg-blue-600 transition-colors" @click="updateTenancy(tenancy)" />
-        <Button icon="pi pi-trash" label="Löschen" severity="danger" text raised rounded
-          class="mb-2 mr-2 hover:bg-red-600 transition-colors" @click="confirmDelete()" />
+        <Button
+          icon="pi pi-save"
+          label="Speichern"
+          text
+          raised
+          rounded
+          class="mb-2 mr-2 hover:bg-blue-600 transition-colors"
+          @click="updateTenancy(tenancy)"
+        />
+        <Button
+          icon="pi pi-trash"
+          label="Löschen"
+          severity="danger"
+          text
+          raised
+          rounded
+          class="mb-2 mr-2 hover:bg-red-600 transition-colors"
+          @click="confirmDelete()"
+        />
       </div>
     </div>
   </div>
 
-  <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
+  <Dialog
+    v-model:visible="confirmationDialogVisible"
+    header="Bestätigung"
+    modal
+  >
     <div class="p-fluid">
       <p>Sind Sie sicher, dass Sie den Mietvertrag mit der ID {{ tenancy?.id }} löschen möchten?</p>
     </div>
     <template #footer>
-      <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
-      <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
+      <Button
+        label="Abbrechen"
+        icon="pi pi-times"
+        @click="confirmationDialogVisible = false"
+      />
+      <Button
+        label="Löschen"
+        icon="pi pi-check"
+        severity="danger"
+        @click="confirmDeletion"
+      />
     </template>
   </Dialog>
 </template>

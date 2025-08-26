@@ -6,8 +6,8 @@ import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
-  projectId: string;
-  unitId: string;
+  projectId: string
+  unitId: string
 }>();
 
 const toast = useToast();
@@ -29,10 +29,10 @@ const originalValues = ref({
 
 const hasChanges = computed(() => {
   return (
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    location.value !== originalValues.value.location ||
-    usableSpace.value !== originalValues.value.usableSpace
+    title.value !== originalValues.value.title
+    || description.value !== originalValues.value.description
+    || location.value !== originalValues.value.location
+    || usableSpace.value !== originalValues.value.usableSpace
   );
 });
 
@@ -46,7 +46,8 @@ const validationErrors = computed(() => {
   }
   if (usableSpace.value === null) {
     errors.push('Nutzfläche ist erforderlich.');
-  } else if (usableSpace.value < 0) {
+  }
+  else if (usableSpace.value < 0) {
     errors.push('Nutzfläche darf nicht negativ sein.');
   }
   if (description.value && description.value.length > 500) {
@@ -80,7 +81,8 @@ const fetchStorageDetails = async () => {
       location: location.value,
       usableSpace: usableSpace.value,
     };
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Fehler beim Laden der Storage:', error);
     toast.add({
       severity: 'error',
@@ -93,7 +95,8 @@ const fetchStorageDetails = async () => {
 onMounted(() => {
   if (props.unitId) {
     fetchStorageDetails();
-  } else {
+  }
+  else {
     console.warn('unitId fehlt – keine Daten können geladen werden.');
     toast.add({
       severity: 'warn',
@@ -126,7 +129,8 @@ const save = async () => {
       life: 6000,
     });
     router.push(`/project/${props.projectId}/storage/${props.unitId}`);
-  } catch (err) {
+  }
+  catch (err) {
     console.error('Fehler beim Speichern:', err);
     showSavingErrorToast(toast, 'Storage konnte nicht gespeichert werden.');
   }
@@ -138,37 +142,79 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Bearbeite Storage mit ID: {{ unitId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">
+        Bearbeite Storage mit ID: {{ unitId }}
+      </h2>
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->
           <div class="col-span-2">
-            <label for="title" class="block text-gray-700 mb-1">Titel</label>
-            <input id="title" v-model="title" type="text" class="form-input w-full" />
+            <label
+              for="title"
+              class="block text-gray-700 mb-1"
+            >Titel</label>
+            <input
+              id="title"
+              v-model="title"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Beschreibung -->
           <div class="col-span-2">
-            <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <label
+              for="description"
+              class="block text-gray-700 mb-1"
+            >Beschreibung</label>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            />
           </div>
 
           <!-- Standort -->
           <div class="col-span-2">
-            <label for="location" class="block text-gray-700 mb-1">Standort</label>
-            <input id="location" v-model="location" type="text" class="form-input w-full" />
+            <label
+              for="location"
+              class="block text-gray-700 mb-1"
+            >Standort</label>
+            <input
+              id="location"
+              v-model="location"
+              type="text"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Nutzfläche -->
           <div>
-            <label for="usableSpace" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
-            <input id="usableSpace" v-model.number="usableSpace" type="number" class="form-input w-full" />
+            <label
+              for="usableSpace"
+              class="block text-gray-700 mb-1"
+            >Nutzfläche (m²)</label>
+            <input
+              id="usableSpace"
+              v-model.number="usableSpace"
+              type="number"
+              class="form-input w-full"
+            >
           </div>
         </div>
         <!-- Validierungsfehler -->
-        <div v-if="validationErrors.length" class="text-red-600 mt-4">
+        <div
+          v-if="validationErrors.length"
+          class="text-red-600 mt-4"
+        >
           <ul>
-            <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+            <li
+              v-for="(error, i) in validationErrors"
+              :key="i"
+            >
+              {{ error }}
+            </li>
           </ul>
         </div>
 

@@ -14,9 +14,11 @@ const loadTasks = async () => {
   try {
     const taskList: TaskListJson = await contractorService.getTasks();
     tasks.value = taskList.tasks;
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Failed to load tasks', error);
-  } finally {
+  }
+  finally {
     isLoading.value = false;
   }
 };
@@ -28,19 +30,30 @@ onMounted(() => {
 
 <template>
   <DataTable
-    v-model:expandedRows="expandedRows"
+    v-model:expanded-rows="expandedRows"
     :value="tasks"
     scrollable
     :loading="isLoading"
-    rowHover
+    row-hover
     :rows="10"
-    dataKey="id"
+    data-key="id"
     paginator
-    tableStyle="min-width: 75rem"
+    table-style="min-width: 75rem"
   >
-    <Column :expander="true" headerStyle="width: 3rem" />
-    <Column field="title" header="Titel" style="min-width: 200px" />
-    <Column field="status" header="Status" style="min-width: 200px" />
+    <Column
+      :expander="true"
+      header-style="width: 3rem"
+    />
+    <Column
+      field="title"
+      header="Titel"
+      style="min-width: 200px"
+    />
+    <Column
+      field="status"
+      header="Status"
+      style="min-width: 200px"
+    />
 
     <template #expansion="slotProps">
       <div class="p-4">

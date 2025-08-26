@@ -1,5 +1,7 @@
-import { mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import type { Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Component from '../../src/views/CommercialView.vue';
 import { commercialService } from '../../src/services/CommercialService';
 
@@ -18,7 +20,7 @@ vi.mock('../../src/services/CommercialService', () => ({
 }));
 
 describe('CommercialView.vue', () => {
-  let wrapper: VueWrapper<any>
+  let wrapper: VueWrapper<any>;
 
   beforeEach(async () => {
     (commercialService.getCommercial as Mock).mockResolvedValue({
@@ -60,7 +62,6 @@ describe('CommercialView.vue', () => {
     );
     expect(wrapper.vm.isValid).toBe(false);
   });
-
 
   it('detects changes correctly', async () => {
     expect(wrapper.vm.hasChanges).toBe(false); // keine Änderungen nach Laden

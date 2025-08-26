@@ -42,7 +42,10 @@ const close = () => {
         :modal="true"
       >
         <div style="margin-top: 1.2em">
-          <NewProjectForm @abort="close" @submit="close"></NewProjectForm>
+          <NewProjectForm
+            @abort="close"
+            @submit="close"
+          />
         </div>
       </Dialog>
     </div>

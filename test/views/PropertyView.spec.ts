@@ -24,12 +24,12 @@ describe('PropertyView.vue', () => {
     (propertyService.getProperty as any).mockResolvedValue({
       title: 'Initial Property Title',
       description: 'Initial Property Description',
-      cadastralDistrict: 'Initial District',     // updated key
+      cadastralDistrict: 'Initial District', // updated key
       corridor: 'Initial Corridor',
       parcel: 'Initial Parcel',
-      landRegistry: 'Initial LandRegistry',       // updated key
+      landRegistry: 'Initial LandRegistry', // updated key
       usageType: 'GF Wohnen',
-      effectiveSpace: 100,                         // updated key
+      effectiveSpace: 100, // updated key
     });
 
     wrapper = mount(Component, {
@@ -45,12 +45,12 @@ describe('PropertyView.vue', () => {
   it('loads property details on mount', () => {
     expect(wrapper.vm.title).toBe('Initial Property Title');
     expect(wrapper.vm.description).toBe('Initial Property Description');
-    expect(wrapper.vm.district).toBe('Initial District');           // should match component's data property name
+    expect(wrapper.vm.district).toBe('Initial District'); // should match component's data property name
     expect(wrapper.vm.corridor).toBe('Initial Corridor');
     expect(wrapper.vm.parcel).toBe('Initial Parcel');
     expect(wrapper.vm.landRegisterEntry).toBe('Initial LandRegistry'); // check if your component uses 'landRegisterEntry' or 'landRegistry' and be consistent
     expect(wrapper.vm.usageType).toBe('GF Wohnen');
-    expect(wrapper.vm.plotArea).toBe(100);                           // if your component uses 'plotArea' or 'effectiveSpace' property name for the UI, keep consistent
+    expect(wrapper.vm.plotArea).toBe(100); // if your component uses 'plotArea' or 'effectiveSpace' property name for the UI, keep consistent
   });
 
   it('enables save button only if data is modified', async () => {

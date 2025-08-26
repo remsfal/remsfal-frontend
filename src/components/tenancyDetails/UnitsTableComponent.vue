@@ -11,13 +11,11 @@ import Select from 'primevue/select';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
-  listOfUnits: TenancyUnitItem[];
-  isDeleteButtonEnabled: boolean;
+  listOfUnits: TenancyUnitItem[]
+  isDeleteButtonEnabled: boolean
 }>();
 
-const emit = defineEmits<{
-  (e: 'onChange', listOfUnits: TenancyUnitItem[]): void;
-}>();
+const emit = defineEmits<(e: 'onChange', listOfUnits: TenancyUnitItem[]) => void>();
 
 const localListOfUnits = ref<TenancyUnitItem[]>([]);
 
@@ -26,13 +24,13 @@ watch(
   (newVal) => {
     localListOfUnits.value = newVal?.map(t => ({ ...t }));
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 const projectStore = useProjectStore();
 
-const rentalObjects = ref<Array<{ label: string; value: string }>>([]);
-const unitTypes = ref<Array<{ label: string; value: string }>>([]);
+const rentalObjects = ref<Array<{ label: string, value: string }>>([]);
+const unitTypes = ref<Array<{ label: string, value: string }>>([]);
 
 const loadDropdownOptions = async () => {
   try {
@@ -42,15 +40,15 @@ const loadDropdownOptions = async () => {
     console.log('Loaded properties:', properties);
 
     const entityTypes = Object.values(EntityType);
-    rentalObjects.value = entityTypes.map((entity) => ({
+    rentalObjects.value = entityTypes.map(entity => ({
       label: entity,
       value: entity,
     }));
 
     const getAllUnits = (
       nodes: RentableUnitTreeNode[],
-    ): Array<{ label: string; value: string }> => {
-      return nodes.reduce((acc: Array<{ label: string; value: string }>, node) => {
+    ): Array<{ label: string, value: string }> => {
+      return nodes.reduce((acc: Array<{ label: string, value: string }>, node) => {
         acc.push({
           label: node.data.title || '',
           value: node.data.title ?? '',
@@ -65,12 +63,13 @@ const loadDropdownOptions = async () => {
     };
 
     unitTypes.value = [
-      ...new Map(getAllUnits(properties).map((item) => [item.value, item])).values(),
+      ...new Map(getAllUnits(properties).map(item => [item.value, item])).values(),
     ];
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Failed to load dropdown options:', error);
   }
-}
+};
 
 onMounted(() => {
   loadDropdownOptions();
@@ -124,32 +123,70 @@ const displayedColumns = computed(() => {
 </script>
 
 <template>
-  <div class="text-lg font-semibold text-[2rem]">Mietobjekte</div>
+  <div class="text-lg font-semibold text-[2rem]">
+    Mietobjekte
+  </div>
   <Card>
     <template #header>
-      <Button label="Neues Mietobjekt hinzufügen" icon="pi pi-plus" class="ml-6 mt-4" @click="addNewRow" />
+      <Button
+        label="Neues Mietobjekt hinzufügen"
+        icon="pi pi-plus"
+        class="ml-6 mt-4"
+        @click="addNewRow"
+      />
     </template>
     <template #content>
-      <DataTable :value="localListOfUnits" :rows="10" :rowHover="true" dataKey="id" tableStyle="min-width: 60rem"
-        scrollable scrollDirection="both" scrollHeight="var(--custom-scroll-height)" editMode="cell"
-        class="custom-scroll-height" :pt="{
+      <DataTable
+        :value="localListOfUnits"
+        :rows="10"
+        :row-hover="true"
+        data-key="id"
+        table-style="min-width: 60rem"
+        scrollable
+        scroll-direction="both"
+        scroll-height="var(--custom-scroll-height)"
+        edit-mode="cell"
+        class="custom-scroll-height"
+        :pt="{
           table: { style: 'min-width: 50rem' },
           column: {
             bodycell: ({ state }: DataTablePassThroughMethodOptions) => ({
               class: [{ '!py-0': state['d_editing'] }],
             }),
           },
-        }" @cellEditComplete="onCellEditComplete">
-        <Column v-for="(col) in displayedColumns" :key="col.field" :field="col.field" :header="col.header" sortable
-          style="width: 25%">
+        }"
+        @cell-edit-complete="onCellEditComplete"
+      >
+        <Column
+          v-for="(col) in displayedColumns"
+          :key="col.field"
+          :field="col.field"
+          :header="col.header"
+          sortable
+          style="width: 25%"
+        >
           <template #editor="{ data, field }">
-            <Select v-model="data[field]" :options="field === 'rentalObject' ? rentalObjects : unitTypes"
-              v-if="col.field !== 'actions'" optionLabel="label" optionValue="value" placeholder="Auswählen..."
-              filter />
+            <Select
+              v-if="col.field !== 'actions'"
+              v-model="data[field]"
+              :options="field === 'rentalObject' ? rentalObjects : unitTypes"
+              option-label="label"
+              option-value="value"
+              placeholder="Auswählen..."
+              filter
+            />
           </template>
 
-          <template v-if="col.field === 'actions'" #body="{ index }">
-            <Button icon="pi pi-trash" severity="danger" text @click="deleteRow(index)" />
+          <template
+            v-if="col.field === 'actions'"
+            #body="{ index }"
+          >
+            <Button
+              icon="pi pi-trash"
+              severity="danger"
+              text
+              @click="deleteRow(index)"
+            />
           </template>
         </Column>
       </DataTable>

@@ -1,4 +1,5 @@
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import { useUserSessionStore } from '../../src/stores/UserSession';
@@ -23,7 +24,6 @@ describe('ContractorMenu.vue', () => {
     const submenus = wrapper.findAll('.layout-submenu');
     expect(submenus.length).toBe(2);
   });
-
 
   it('should render the correct menu labels', async () => {
     await wrapper.vm.$nextTick();
@@ -59,5 +59,4 @@ describe('ContractorMenu.vue', () => {
     await wrapper.find('.pi-home').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/contractor');
   });
-
 });

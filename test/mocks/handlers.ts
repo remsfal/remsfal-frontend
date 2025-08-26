@@ -11,7 +11,7 @@ export const handlers = [
         name: 'John Doe',
         email: 'john@example.com',
       },
-      { status: 200 }
+      { status: 200 },
     );
   }, { once: true }),
 
@@ -32,7 +32,6 @@ export const handlers = [
     }
     return HttpResponse.json([], { status: 200 });
   }),
-  
 
   // PATCH user update
   http.patch(`${API_BASE}/user`, async ({ request }) => {
@@ -68,13 +67,13 @@ export const handlers = [
           },
         ],
       },
-      { status: 200 }
+      { status: 200 },
     );
   }),
 
   // POST add new member
   http.post(`${API_BASE}/projects/:projectId/members`, async ({ request }) => {
-    const body = (await request.json()) as { email: string; role: string };
+    const body = (await request.json()) as { email: string, role: string };
     return HttpResponse.json(
       {
         id: 'new-id-123',
@@ -83,7 +82,7 @@ export const handlers = [
         active: true,
         privileged: false,
       },
-      { status: 200 }
+      { status: 200 },
     );
   }),
 
@@ -99,7 +98,7 @@ export const handlers = [
         active: true,
         privileged: false,
       },
-      { status: 200 }
+      { status: 200 },
     );
   }),
 
@@ -182,17 +181,16 @@ export const handlers = [
       type: 'PROPERTY',
       title: 'Property ' + params.propertyId,
       description: 'Sample property description',
-      landRegisterEntry: 'LR-123',          
-      district: 'District 9',                
+      landRegisterEntry: 'LR-123',
+      district: 'District 9',
       sheetNumber: 'Sheet 5',
-      plotArea: 7,                          
-      effectiveSpace: 100,                   
+      plotArea: 7,
+      effectiveSpace: 100,
       corridor: '1A',
       parcel: 'Parcel 22',
       usageType: 'Residential',
     });
   }),
-  
 
   // PATCH update property
   http.patch(`${API_BASE}/projects/:projectId/units/:unitId/property`, async ({ request, params }) => {

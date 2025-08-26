@@ -61,7 +61,6 @@ describe('ProjectDashboard.vue', () => {
     expect(text).toContain('Fällig am');
     expect(text).toContain('Status');
 
-    expect(wrapper.findAllComponents(Chart).length).toBeGreaterThanOrEqual(4); 
-
+    expect(wrapper.findAllComponents(Chart).length).toBeGreaterThanOrEqual(4);
   });
 });

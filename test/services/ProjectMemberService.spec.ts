@@ -3,9 +3,9 @@ import { projectMemberService, type Member } from '../../src/services/ProjectMem
 import { server } from '../mocks/server';
 import { http, HttpResponse } from 'msw';
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+beforeAll(() => { server.listen(); });
+afterEach(() => { server.resetHandlers(); });
+afterAll(() => { server.close(); });
 
 describe('projectMemberService (MSW)', () => {
   const projectId = 'project123';

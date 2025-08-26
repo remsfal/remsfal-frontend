@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 export interface StorageUnit {
-  id?: string;
-  title: string;
-  description?: string;
-  location?: string;
-  usableSpace?: number;
-  heatingSpace?: number;
+  id?: string
+  title: string
+  description?: string
+  location?: string
+  usableSpace?: number
+  heatingSpace?: number
 }
 
 class StorageService {

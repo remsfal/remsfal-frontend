@@ -40,8 +40,8 @@ describe('InboxService', () => {
   it('should respect message read/unread status', () => {
     const messages = inboxService.generateMockInboxData();
 
-    const readMessages = messages.filter((msg) => msg.isRead);
-    const unreadMessages = messages.filter((msg) => !msg.isRead);
+    const readMessages = messages.filter(msg => msg.isRead);
+    const unreadMessages = messages.filter(msg => !msg.isRead);
 
     expect(readMessages.length).toBe(2);
     expect(unreadMessages.length).toBe(5);

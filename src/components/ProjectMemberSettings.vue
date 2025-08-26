@@ -11,7 +11,7 @@ import { onMounted, ref } from 'vue';
 import { type Member, memberRoles, projectMemberService } from '@/services/ProjectMemberService';
 
 const props = defineProps<{
-  projectId: string;
+  projectId: string
 }>();
 
 const { t } = useI18n();
@@ -35,8 +35,9 @@ const updateMemberRole = async (member: Member) => {
   console.log('Member object passed to updateMemberRole:', member);
   try {
     await projectMemberService.updateMemberRole(props.projectId, member);
-  } catch (error) {
-    const err = error as { response?: { data: any }; message: string };
+  }
+  catch (error) {
+    const err = error as { response?: { data: any }, message: string };
     console.error('Failed to update member role:', err.response?.data || err.message);
   }
 };
@@ -54,8 +55,9 @@ const removeMember = async (memberId: string) => {
     await projectMemberService.removeMember(props.projectId, memberId);
     await fetchMembers();
     console.log('Member removed successfully');
-  } catch (error) {
-    const err = error as { response?: { data: any }; message: string };
+  }
+  catch (error) {
+    const err = error as { response?: { data: any }, message: string };
     console.error('Failed to remove member:', err.response?.data || err.message);
   }
 };
@@ -78,19 +80,24 @@ function onNewMember(email: string) {
 <template>
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
-      <div class="font-semibold text-xl">{{ t('projectSettings.projectMemberTable.title') }}</div>
+      <div class="font-semibold text-xl">
+        {{ t('projectSettings.projectMemberTable.title') }}
+      </div>
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
         <DataTable :value="members">
-          <Column field="email" header="Email"></Column>
+          <Column
+            field="email"
+            header="Email"
+          />
           <Column header="Rolle">
             <template #body="slotProps">
               <Select
                 v-model="slotProps.data.role"
                 :options="memberRoles"
-                optionLabel="label"
-                optionValue="value"
+                option-label="label"
+                option-value="value"
                 @change="updateMemberRole(slotProps.data)"
               />
             </template>
@@ -108,7 +115,10 @@ function onNewMember(email: string) {
         </DataTable>
       </div>
       <div class="flex justify-end basis-auto mt-6">
-        <NewProjectMemberButton :projectId="projectId" @newMember="onNewMember" />
+        <NewProjectMemberButton
+          :project-id="projectId"
+          @new-member="onNewMember"
+        />
       </div>
     </template>
   </Card>

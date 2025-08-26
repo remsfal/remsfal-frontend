@@ -34,17 +34,25 @@ function onPageChange(event: DataTablePageEvent): void {
     :value="projectStore.projects"
     scrollable
     :loading="isLoading"
-    rowHover
+    row-hover
     :rows="10"
-    dataKey="id"
-    :totalRecords="projectStore.totalProjects"
+    data-key="id"
+    :total-records="projectStore.totalProjects"
     lazy
     paginator
-    tableStyle="min-width: 75rem"
-    @rowClick="onRowClick"
+    table-style="min-width: 75rem"
+    @row-click="onRowClick"
     @page="onPageChange"
   >
-    <Column field="name" :header="t('projectTable.title')" style="min-width: 200px"></Column>
-    <Column field="memberRole" :header="t('projectTable.role')" style="min-width: 200px"></Column>
+    <Column
+      field="name"
+      :header="t('projectTable.title')"
+      style="min-width: 200px"
+    />
+    <Column
+      field="memberRole"
+      :header="t('projectTable.role')"
+      style="min-width: 200px"
+    />
   </DataTable>
 </template>

@@ -4,9 +4,9 @@ import SiteFormComponent from '../components/SiteFormComponent.vue';
 import { siteService, type SiteUnit } from '@/services/SiteService';
 
 const props = defineProps<{
-  projectId: string;
-  propertyId?: string;
-  siteId: string;
+  projectId: string
+  propertyId?: string
+  siteId: string
 }>();
 
 const initialValues: Record<string, any> = ref({});
@@ -18,15 +18,16 @@ onMounted(async () => {
     const site = await siteService.getSite(props.projectId, props.siteId);
     initialValues.value.title = site.title;
     initialValues.value.description = site.description;
-//    initialValues.value.usableSpace = site.usableSpace.toString();
-//    initialValues.value.street = site.address.street;
-//    initialValues.value.city = site.address.city;
-//    initialValues.value.zip = site.address.zip;
-//    initialValues.value.province = site.address.province;
-//    initialValues.value.country = site.address.country;
+    //    initialValues.value.usableSpace = site.usableSpace.toString();
+    //    initialValues.value.street = site.address.street;
+    //    initialValues.value.city = site.address.city;
+    //    initialValues.value.zip = site.address.zip;
+    //    initialValues.value.province = site.address.province;
+    //    initialValues.value.country = site.address.country;
 
     console.log('Site data:', initialValues.value);
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error fetching site data:', error);
   }
 });
@@ -39,19 +40,19 @@ const handleSubmit = async (formValues: any) => {
   loading.value = true;
   error.value = null;
 
-//  const address: AddressItem = {
-//    street: formValues.street,
-//    city: formValues.city,
-//    zip: formValues.zip,
-//    province: formValues.province,
-//    country: formValues.country,
-//  };
+  //  const address: AddressItem = {
+  //    street: formValues.street,
+  //    city: formValues.city,
+  //    zip: formValues.zip,
+  //    province: formValues.province,
+  //    country: formValues.country,
+  //  };
 
   const site: SiteUnit = {
     title: formValues.title,
     description: formValues.description,
     usableSpace: parseFloat(formValues.usableSpace),
-//    address: address,
+    //    address: address,
   };
 
   try {
@@ -59,9 +60,11 @@ const handleSubmit = async (formValues: any) => {
     console.log('Creating site:', site);
     await siteService.updateSite(props.projectId, props.siteId, site);
     // Here we could handle how to go back to the previous page
-  } catch (err) {
+  }
+  catch (err) {
     error.value = 'Außenanlage konnte nicht aktualisiert werden.' + err;
-  } finally {
+  }
+  finally {
     loading.value = false;
   }
 };
@@ -76,18 +79,25 @@ const handleCancel = () => {
 <template>
   <div>
     <SiteFormComponent
-      :projectId="projectId"
-      :propertyId="propertyId"
-      :siteId="siteId"
+      :project-id="projectId"
+      :property-id="propertyId"
+      :site-id="siteId"
       headline="Außenanlage bearbeiten"
-      saveButtonText="Speichern"
-      cancelButtonText="Abbrechen"
-      :onSubmit="handleSubmit"
-      :onCancel="handleCancel"
-      :initialValues="initialValues"
+      save-button-text="Speichern"
+      cancel-button-text="Abbrechen"
+      :on-submit="handleSubmit"
+      :on-cancel="handleCancel"
+      :initial-values="initialValues"
     />
-    <div v-if="loading">Senden...</div>
-    <div v-if="error" class="error-message">{{ error }}</div>
+    <div v-if="loading">
+      Senden...
+    </div>
+    <div
+      v-if="error"
+      class="error-message"
+    >
+      {{ error }}
+    </div>
   </div>
 </template>
 

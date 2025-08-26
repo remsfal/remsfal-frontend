@@ -33,7 +33,8 @@ export function handleCancel(hasChanges: Ref<boolean>, router: Router, projectId
   }
   if (window.opener) {
     window.close();
-  } else {
+  }
+  else {
     navigateToObjects(router, projectId);
   }
 }

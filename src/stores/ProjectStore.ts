@@ -4,15 +4,15 @@ import { projectService, type ProjectList, type ProjectItem } from '@/services/P
 export const useProjectStore = defineStore('project-store', {
   state: () => {
     return {
-      projects: <ProjectItem[]>[],
+      projects: [] as ProjectItem[],
       selectedProject: undefined as ProjectItem | undefined,
       totalProjects: Number(0),
       firstOffset: Number(0),
     };
   },
   getters: {
-    projectList: (state) => state.projects,
-    projectSelection: (state) => state.selectedProject,
+    projectList: state => state.projects,
+    projectSelection: state => state.selectedProject,
     projectId: (state) => {
       if (state.selectedProject !== undefined) {
         return state.selectedProject!.id;
@@ -71,12 +71,12 @@ export const useProjectStore = defineStore('project-store', {
         console.log('Project is already selected');
         return;
       }
-      if (this.projects.find((p) => p.id === projectId)) {
-        this.setSelectedProject(this.projects.findLast((p) => p.id === projectId));
+      if (this.projects.find(p => p.id === projectId)) {
+        this.setSelectedProject(this.projects.findLast(p => p.id === projectId));
         return;
       }
       this.searchProjects(projectId).finally(() => {
-        this.setSelectedProject(this.projects?.findLast((p) => p.id === projectId));
+        this.setSelectedProject(this.projects?.findLast(p => p.id === projectId));
       });
     },
   },

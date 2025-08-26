@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import LandingPage from '../../src/views/LandingPageView.vue';
 
 describe('LandingPageView', () => {

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import LegalNoticeView from '../../src/views/LegalNoticeView.vue';
 
 describe('LegalNoticeView.vue', () => {

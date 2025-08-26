@@ -89,7 +89,7 @@ const managerRoutes: RouteRecordRaw[] = [
     },
     beforeEnter: (to: RouteLocationNormalized) => {
       const projectStore = useProjectStore();
-      projectStore.searchSelectedProject(<string>to.params.projectId);
+      projectStore.searchSelectedProject((to.params.projectId as string));
       console.log('Router enter project: ' + to.params.projectId);
     },
     children: [
@@ -145,7 +145,7 @@ const managerRoutes: RouteRecordRaw[] = [
       {
         path: 'units/apartment/:unitId',
         name: 'ApartmentView',
-        props: (route) => ({
+        props: route => ({
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
@@ -154,7 +154,7 @@ const managerRoutes: RouteRecordRaw[] = [
       {
         path: 'units/storage/:unitId',
         name: 'StorageView',
-        props: (route) => ({
+        props: route => ({
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
@@ -163,7 +163,7 @@ const managerRoutes: RouteRecordRaw[] = [
       {
         path: 'units/commercial/:unitId',
         name: 'CommercialView',
-        props: (route) => ({
+        props: route => ({
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
@@ -278,7 +278,7 @@ const contractorRoutes: RouteRecordRaw[] = [
   },
 ];
 
-const routes: Readonly<RouteRecordRaw[]> = [
+const routes: readonly RouteRecordRaw[] = [
   ...fullscreenRoutes,
   ...managerRoutes,
   ...tenantRoutes,
@@ -301,20 +301,22 @@ router.beforeEach((to, from, next) => {
   // If trying to access LandingPage while logged in, redirect to appropriate view
   if (to.name === 'LandingPage' && isLoggedIn) {
     if (roles.includes('MANAGER')) {
-      return next({ name: 'ProjectSelection' });
-    } else if (roles.includes('CONTRACTOR')) {
-      return next({ name: 'ContractorView' });
-    } else if (roles.includes('TENANT')) {
-      return next({ name: 'TenantView' });
-    } else {
-      return next({ name: 'ProjectSelection' }); // fallback
+      next({ name: 'ProjectSelection' }); return;
+    }
+    else if (roles.includes('CONTRACTOR')) {
+      next({ name: 'ContractorView' }); return;
+    }
+    else if (roles.includes('TENANT')) {
+      next({ name: 'TenantView' }); return;
+    }
+    else {
+      next({ name: 'ProjectSelection' }); return; // fallback
     }
   }
 
   // Proceed normally otherwise
   next();
 });
-
 
 export { routes };
 

@@ -16,53 +16,52 @@ export function toRentableUnitView(entity: EntityType): string {
 }
 
 export interface RentableUnitNodeData {
-  type: EntityType;
-  title?: string;
-  description?: string;
-  tenant?: string;
-  usable_space?: number;
+  type: EntityType
+  title?: string
+  description?: string
+  tenant?: string
+  usable_space?: number
 }
 
 export interface RentableUnitTreeNode extends TreeNode {
-  key: string;
-  data: RentableUnitNodeData;
-  children: RentableUnitTreeNode[];
+  key: string
+  data: RentableUnitNodeData
+  children: RentableUnitTreeNode[]
 }
 
 export interface PropertyList {
-  properties: RentableUnitTreeNode[];
+  properties: RentableUnitTreeNode[]
 }
 
 export interface PropertyUnit {
-  id?: string;
-  type?: 'PROPERTY' | 'SITE' | 'BUILDING' | 'APARTMENT' | 'STORAGE' | 'COMMERCIAL';
-  title: string;
-  description?: string;
-  landRegistry?: string;
-  cadastralDistrict?: string;
-  sheetNumber?: string;
-  plotNumber?: number;
-  effectiveSpace?: number | null;
-  district?: string;
-  corridor?: string;
-  parcel?: string;
-  usageType?: string | null;
+  id?: string
+  type?: 'PROPERTY' | 'SITE' | 'BUILDING' | 'APARTMENT' | 'STORAGE' | 'COMMERCIAL'
+  title: string
+  description?: string
+  landRegistry?: string
+  cadastralDistrict?: string
+  sheetNumber?: string
+  plotNumber?: number
+  effectiveSpace?: number | null
+  district?: string
+  corridor?: string
+  parcel?: string
+  usageType?: string | null
 
   // Change plotArea to only allow number or undefined, NO null
-  plotArea?: number;
+  plotArea?: number
 }
-
 
 class PropertyService {
   private readonly baseUrl = '/api/v1/projects';
 
   async createProperty(
     projectId: string,
-    property: PropertyUnit
+    property: PropertyUnit,
   ): Promise<PropertyUnit> {
     const response = await typedRequest<
-      "/api/v1/projects/{projectId}/properties",
-      "post"
+      '/api/v1/projects/{projectId}/properties',
+      'post'
     >('post', `${this.baseUrl}/{projectId}/properties`, {
       pathParams: { projectId },
       body: property,
@@ -73,8 +72,8 @@ class PropertyService {
 
   async getPropertyTree(projectId: string): Promise<PropertyList> {
     const response = await typedRequest<
-      "/api/v1/projects/{projectId}/properties",
-      "get"
+      '/api/v1/projects/{projectId}/properties',
+      'get'
     >('get', `${this.baseUrl}/{projectId}/properties`, {
       pathParams: { projectId },
     });
@@ -84,11 +83,11 @@ class PropertyService {
 
   async getProperty(
     projectId: string,
-    propertyId: string
+    propertyId: string,
   ): Promise<PropertyUnit> {
     const response = await typedRequest<
-      "/api/v1/projects/{projectId}/properties/{propertyId}",
-      "get"
+      '/api/v1/projects/{projectId}/properties/{propertyId}',
+      'get'
     >('get', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
       pathParams: { projectId, propertyId },
     });
@@ -99,11 +98,11 @@ class PropertyService {
   async updateProperty(
     projectId: string,
     propertyId: string,
-    property: PropertyUnit
+    property: PropertyUnit,
   ): Promise<PropertyUnit> {
     const response = await typedRequest<
-      "/api/v1/projects/{projectId}/properties/{propertyId}",
-      "patch"
+      '/api/v1/projects/{projectId}/properties/{propertyId}',
+      'patch'
     >('patch', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
       pathParams: { projectId, propertyId },
       body: property,
@@ -114,11 +113,11 @@ class PropertyService {
 
   async deleteProperty(
     projectId: string,
-    propertyId: string
+    propertyId: string,
   ): Promise<void> {
     await typedRequest<
-      "/api/v1/projects/{projectId}/properties/{propertyId}",
-      "delete"
+      '/api/v1/projects/{projectId}/properties/{propertyId}',
+      'delete'
     >('delete', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
       pathParams: { projectId, propertyId },
     });

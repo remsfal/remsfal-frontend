@@ -21,13 +21,12 @@ const tenancy = ref<TenancyItem>({
   active: false,
 });
 
-
 const isValidForm = computed(() => {
   return (
-    tenancy.value.rentalStart &&
-    tenancy.value.rentalEnd &&
-    tenancy.value.listOfTenants.length > 0 &&
-    tenancy.value.listOfUnits.length > 0
+    tenancy.value.rentalStart
+    && tenancy.value.rentalEnd
+    && tenancy.value.listOfTenants.length > 0
+    && tenancy.value.listOfUnits.length > 0
   );
 });
 
@@ -43,7 +42,8 @@ async function saveTenancy() {
   try {
     await tenancyService.createTenancy(newTenancy);
     redirectToTenanciesList();
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Fehler beim Erstellen des Mietvertrags:', error);
   }
 }
@@ -71,23 +71,41 @@ onMounted(() => {
 <template>
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold">Neuer Mietvertrag erstellen</h2>
-      <Button label="Speichern & zur Übersicht" icon="pi pi-save"
-        class="bg-green-600 hover:bg-green-700 transition-colors" :disabled="!isValidForm" @click="saveTenancy()" />
+      <h2 class="text-2xl font-bold">
+        Neuer Mietvertrag erstellen
+      </h2>
+      <Button
+        label="Speichern & zur Übersicht"
+        icon="pi pi-save"
+        class="bg-green-600 hover:bg-green-700 transition-colors"
+        :disabled="!isValidForm"
+        @click="saveTenancy()"
+      />
     </div>
 
     <div class="grid grid-cols-1 gap-6">
-      <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @update:rentalStart="tenancy.rentalStart = $event"
-        @update:rentalEnd="tenancy.rentalEnd = $event" />
+      <TenancyDataComponent
+        v-if="tenancy"
+        :tenancy="tenancy"
+        @update:rental-start="tenancy.rentalStart = $event"
+        @update:rental-end="tenancy.rentalEnd = $event"
+      />
 
       <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div class="space-y-4">
-          <TenantsTableComponent :tenants="tenancy.listOfTenants" :isDeleteButtonEnabled="true"
-            @onChange=updateTenants />
+          <TenantsTableComponent
+            :tenants="tenancy.listOfTenants"
+            :is-delete-button-enabled="true"
+            @on-change="updateTenants"
+          />
         </div>
 
         <div class="space-y-4">
-          <UnitsTableComponent :listOfUnits="tenancy.listOfUnits" :isDeleteButtonEnabled="true" @onChange=updateUnits />
+          <UnitsTableComponent
+            :list-of-units="tenancy.listOfUnits"
+            :is-delete-button-enabled="true"
+            @on-change="updateUnits"
+          />
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import ReusableFormComponent from '../../src/components/ReusableFormComponent.vue';
 
 describe('MyFormComponent', () => {

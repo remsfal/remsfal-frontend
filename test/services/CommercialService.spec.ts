@@ -3,9 +3,9 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server'; // your MSW server setup
 import { commercialService, type CommercialUnit } from '../../src/services/CommercialService';
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+beforeAll(() => { server.listen(); });
+afterEach(() => { server.resetHandlers(); });
+afterAll(() => { server.close(); });
 
 describe('CommercialService (MSW with http)', () => {
   const mockProjectId = 'project123';
@@ -23,7 +23,7 @@ describe('CommercialService (MSW with http)', () => {
 
   it('should create a commercial item', async () => {
     server.use(
-      http.post(`/api/v1/projects/:projectId/buildings/:buildingId/commercials`, async ({ request }) => {
+      http.post('/api/v1/projects/:projectId/buildings/:buildingId/commercials', async ({ request }) => {
         const body = (await request.json()) as CommercialUnit;
         return HttpResponse.json({
           id: 'commercial-new-id',
@@ -47,7 +47,7 @@ describe('CommercialService (MSW with http)', () => {
 
   it('should get a commercial item', async () => {
     server.use(
-      http.get(`/api/v1/projects/:projectId/commercials/:commercialId`, ({ params }) => {
+      http.get('/api/v1/projects/:projectId/commercials/:commercialId', ({ params }) => {
         return HttpResponse.json({
           id: params.commercialId,
           title: 'Commercial Space 1',
@@ -75,7 +75,7 @@ describe('CommercialService (MSW with http)', () => {
 
   it('should update a commercial item', async () => {
     server.use(
-      http.patch(`/api/v1/projects/:projectId/commercials/:commercialId`, async ({ request, params }) => {
+      http.patch('/api/v1/projects/:projectId/commercials/:commercialId', async ({ request, params }) => {
         const body = (await request.json()) as CommercialUnit;
         return HttpResponse.json({
           id: params.commercialId,
@@ -96,7 +96,7 @@ describe('CommercialService (MSW with http)', () => {
 
   it('should delete a commercial item', async () => {
     server.use(
-      http.delete(`/api/v1/projects/:projectId/commercials/:commercialId`, () => {
+      http.delete('/api/v1/projects/:projectId/commercials/:commercialId', () => {
         return HttpResponse.json({ success: true }, { status: 200 });
       }),
     );

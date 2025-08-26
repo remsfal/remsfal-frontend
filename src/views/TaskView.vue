@@ -3,13 +3,14 @@ import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import TaskService, { Status, type TaskItem } from '@/services/TaskService';
+import type { Status } from '@/services/TaskService';
+import TaskService, { type TaskItem } from '@/services/TaskService';
 import TaskTable from '@/components/TaskTable.vue';
 
 const props = defineProps<{
-  projectId: string;
-  owner?: string;
-  status?: Status;
+  projectId: string
+  owner?: string
+  status?: Status
 }>();
 const taskService = new TaskService();
 const title = ref<string>('');
@@ -48,7 +49,7 @@ const loadTasks = () => {
 const loadTaskswithOpenStatus = () => {
   const projectId = props.projectId;
   taskService
-    .getTasks(projectId,'OPEN')
+    .getTasks(projectId, 'OPEN')
     .then((tasklist) => {
       taskbyStatusOpen.value = tasklist.tasks;
     })
@@ -59,7 +60,7 @@ const loadTaskswithOpenStatus = () => {
 const loadMyTasks = () => {
   const projectId = props.projectId;
   taskService
-    .getTasks(projectId,null, props.owner)
+    .getTasks(projectId, null, props.owner)
     .then((tasklist) => {
       myTasks.value = tasklist.tasks;
     })
@@ -106,31 +107,64 @@ watch(
         :style="{ width: '50rem' }"
       >
         <div class="flex items-center gap-6 mb-6">
-          <label for="title" class="font-semibold w-24">Titel</label>
-          <InputText id="title" v-model="title" class="flex-auto" autocomplete="off" />
+          <label
+            for="title"
+            class="font-semibold w-24"
+          >Titel</label>
+          <InputText
+            id="title"
+            v-model="title"
+            class="flex-auto"
+            autocomplete="off"
+          />
         </div>
         <div class="flex items-center gap-6 mb-20">
-          <label for="description" class="font-semibold w-24">Beschreibung</label>
-          <InputText id="description" v-model="description" class="flex-auto" autocomplete="off" />
+          <label
+            for="description"
+            class="font-semibold w-24"
+          >Beschreibung</label>
+          <InputText
+            id="description"
+            v-model="description"
+            class="flex-auto"
+            autocomplete="off"
+          />
         </div>
         <div class="flex justify-end gap-2">
-          <Button type="button" label="Abbrechen" severity="secondary" @click="visible = false" />
-          <Button type="button" label="Erstellen" @click="createTask" />
+          <Button
+            type="button"
+            label="Abbrechen"
+            severity="secondary"
+            @click="visible = false"
+          />
+          <Button
+            type="button"
+            label="Erstellen"
+            @click="createTask"
+          />
         </div>
       </Dialog>
 
       <div class="task-list-wrapper">
         <div v-if="owner">
           <TaskTable :tasks="myTasks">
-            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+            <Button
+              label="Aufgabe erstellen"
+              class="my-btn"
+              @click="visible = true"
+            />
           </TaskTable>
         </div>
         <div v-else-if="status">
-          <TaskTable :tasks="taskbyStatusOpen"> </TaskTable>
+          <TaskTable :tasks="taskbyStatusOpen" />
         </div>
         <div v-else>
           <TaskTable :tasks="tasks">
-            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+            <Button
+              label="Aufgabe erstellen"
+              class="my-btn"
+              @click="visible = true"
+            />
           </TaskTable>
         </div>
       </div>

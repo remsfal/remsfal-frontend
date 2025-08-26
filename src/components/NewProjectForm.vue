@@ -9,7 +9,7 @@ import { saveProject } from '@/helper/indexeddb';
 import { useI18n } from 'vue-i18n';
 
 const emit = defineEmits<{
-  abort: [];
+  abort: []
 }>();
 
 const { t } = useI18n();
@@ -23,7 +23,8 @@ const router = useRouter();
 watch(projectTitle, (newProjectTitle) => {
   if (newProjectTitle.length > maxLength) {
     errorMessage.value = t('newProjectForm.title.error', { maxLength: maxLength });
-  } else {
+  }
+  else {
     errorMessage.value = '';
   }
 });
@@ -53,7 +54,8 @@ async function createProject() {
       name: 'ProjectDashboard',
       params: { projectId: newProject.id },
     });
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Failed to create project online. Saving offline:', error);
 
     // Optional: Save the title locally in case of an error
@@ -68,7 +70,10 @@ function abort() {
 </script>
 
 <template>
-  <form class="flex flex-col gap-2 w-[34rem]" @submit.prevent="createProject">
+  <form
+    class="flex flex-col gap-2 w-[34rem]"
+    @submit.prevent="createProject"
+  >
     <span class="p-float-label">
       <InputText
         id="value"
@@ -79,25 +84,27 @@ function abort() {
       />
       <label for="value">{{ t('newProjectForm.input.name') }}</label>
     </span>
-    <small id="text-error" class="p-error">
+    <small
+      id="text-error"
+      class="p-error"
+    >
       {{ errorMessage || '&nbsp;' }}
     </small>
     <div class="flex justify-end gap-2">
-    <Button
-    type="reset"
-    :label="t('button.cancel')"
-    icon="pi pi-times"
-    iconPos="left"
-    severity="secondary"
-    @click="abort"
-    />
-    <Button
-    type="submit"
-    :label="t('button.create')"
-    icon="pi pi-plus"
-    iconPos="left"
-    />
+      <Button
+        type="reset"
+        :label="t('button.cancel')"
+        icon="pi pi-times"
+        icon-pos="left"
+        severity="secondary"
+        @click="abort"
+      />
+      <Button
+        type="submit"
+        :label="t('button.create')"
+        icon="pi pi-plus"
+        icon-pos="left"
+      />
     </div>
-
   </form>
 </template>

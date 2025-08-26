@@ -5,7 +5,7 @@ import NewProjectForm from '@/components/NewProjectForm.vue';
 <template>
   <div class="grid grid-cols-12 gap-4 items-center justify-center">
     <div class="card flex mt-8">
-      <NewProjectForm></NewProjectForm>
+      <NewProjectForm />
     </div>
   </div>
 </template>

@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 export interface BuildingUnit {
-  id?: string;
-  title: string;
-  description?: string;
-  location?: string;
-  livingSpace?: number;
-  commercialSpace?: number;
-  usableSpace?: number;
-  heatingSpace?: number;
+  id?: string
+  title: string
+  description?: string
+  location?: string
+  livingSpace?: number
+  commercialSpace?: number
+  usableSpace?: number
+  heatingSpace?: number
   address?: {
     street: string
     city: string

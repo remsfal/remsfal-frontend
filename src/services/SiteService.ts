@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 export interface SiteUnit {
-  id?: string;
-  title: string;
-  description?: string;
-  location?: string;
-  usableSpace?: number;
+  id?: string
+  title: string
+  description?: string
+  location?: string
+  usableSpace?: number
 }
 
 class SiteService {

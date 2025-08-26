@@ -7,26 +7,26 @@ import Checkbox from 'primevue/checkbox';
 import Select from 'primevue/select';
 
 const props = defineProps<{
-  headline?: string; // Optional headline text
-  saveButtonText?: string; // Text for the save button
-  cancelButtonText?: string; // Text for the cancel button
-  fields: {
-    name: string; // Field key
-    label: string; // Label for the field
-    type: 'text' | 'textarea' | 'checkbox' | 'select'; // Input type
-    options?: any[]; // For dropdowns
-    required?: boolean; // Is this field required
-    validations?: ((value: any) => string | null)[]; // Array of validation functions
-  }[];
-  initialValues?: Record<string, any>; // Initial form values
-  onSubmit?: (values: Record<string, any>) => void; // Submit handler
-  onCancel?: () => void; // Cancel handler
+  headline?: string // Optional headline text
+  saveButtonText?: string // Text for the save button
+  cancelButtonText?: string // Text for the cancel button
+  fields: Array<{
+    name: string // Field key
+    label: string // Label for the field
+    type: 'text' | 'textarea' | 'checkbox' | 'select' // Input type
+    options?: any[] // For dropdowns
+    required?: boolean // Is this field required
+    validations?: Array<(value: any) => string | null> // Array of validation functions
+  }>
+  initialValues?: Record<string, any> // Initial form values
+  onSubmit?: (values: Record<string, any>) => void // Submit handler
+  onCancel?: () => void // Cancel handler
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:values', value: Record<string, any>): void;
-  (e: 'submit', value: Record<string, any>): void;
-  (e: 'cancel'): void;
+  (e: 'update:values', value: Record<string, any>): void
+  (e: 'submit', value: Record<string, any>): void
+  (e: 'cancel'): void
 }>();
 
 const formValues = ref({ ...props.initialValues });
@@ -71,14 +71,15 @@ const validateField = (field: (typeof props.fields)[0]) => {
   // Update validation errors for the field
   if (errors.length > 0) {
     validationErrors.value[field.name] = errors.join(' ');
-  } else {
+  }
+  else {
     delete validationErrors.value[field.name];
   }
 };
 
 // Validate the entire form
 const validateForm = () => {
-  props.fields.forEach((field) => validateField(field));
+  props.fields.forEach((field) => { validateField(field); });
 };
 
 watch(
@@ -107,11 +108,17 @@ const handleCancel = () => {
 
 <template>
   <div class="form-container">
-    <h2 v-if="headline">{{ headline }}</h2>
+    <h2 v-if="headline">
+      {{ headline }}
+    </h2>
     <div class="form-fields">
-      <div v-for="field in fields" :key="field.name" class="field">
+      <div
+        v-for="field in fields"
+        :key="field.name"
+        class="field"
+      >
         <label :for="field.name">{{ field.label }}</label>
-        <br />
+        <br>
 
         <!-- Text Field -->
         <InputText
@@ -148,14 +155,17 @@ const handleCancel = () => {
           :id="field.name"
           v-model="formValues[field.name]"
           :options="field.options"
-          optionValue="value"
-          optionLabel="label"
+          option-value="value"
+          option-label="label"
           :name="field.name"
           @change="validateField(field)"
         />
-        <br />
+        <br>
         <!-- Validation Error Messages -->
-        <span v-if="validationErrors[field.name]" class="error-message">
+        <span
+          v-if="validationErrors[field.name]"
+          class="error-message"
+        >
           {{ validationErrors[field.name] }}
         </span>
       </div>

@@ -8,16 +8,16 @@ import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
-import type {paths} from '@/services/api/platform-schema';
+import type { paths } from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
-import { RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router';
 
 const { t } = useI18n();
 
 type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
 type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
 type AddressListResponse = paths['/api/v1/address']['get']['responses'][200]['content']['application/json'];
-type Address = AddressListResponse extends (infer U)[] ? U : never;
+type Address = AddressListResponse extends Array<infer U> ? U : never;
 type User = UserGetResponse & { address?: Address };
 
 const userProfile = ref<UserGetResponse | null>(null);
@@ -84,7 +84,7 @@ onMounted(() => {
   const sessionStore = useUserSessionStore();
 
   if (!userProfile.value) {
-    userProfile.value = {};  // initialize as empty object so you can safely set email
+    userProfile.value = {}; // initialize as empty object so you can safely set email
   }
   userProfile.value.email = sessionStore.user?.email || '';
 
@@ -103,25 +103,24 @@ async function fetchUserProfile() {
         editedAddress.value = { ...userProfile.value.address };
       }
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Das Benutzerprofil konnte nicht gefunden werden', error);
   }
 }
 
 function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string {
-  const value =
-    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
+  const value
+    = editedUserProfile.value[field] ?? userProfile.value?.[field];
   return typeof value === 'string' ? value : '';
 }
-
 
 function getUpdatedAddressValue(field: keyof Address): string {
-  const value =
-    (editedAddress.value as Record<keyof Address, unknown>)?.[field] ??
-    (addressProfile.value as Record<keyof Address, unknown>)?.[field];
+  const value
+    = (editedAddress.value as Record<keyof Address, unknown>)?.[field]
+      ?? (addressProfile.value as Record<keyof Address, unknown>)?.[field];
   return typeof value === 'string' ? value : '';
 }
-
 
 async function saveProfile(): Promise<void> {
   try {
@@ -150,7 +149,8 @@ async function saveProfile(): Promise<void> {
     const updatedUser = await userService.updateUser(user);
     console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
     saveSuccess.value = true;
-  } catch (e) {
+  }
+  catch (e) {
     console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
     alert('Fehler beim Aktualisieren des Benutzerprofils!');
     saveError.value = true;
@@ -160,7 +160,7 @@ async function saveProfile(): Promise<void> {
 function validateAddress(address: Partial<Address>): boolean {
   return Object.values(address)
     .filter((value): value is string => typeof value === 'string')
-    .every((value) => value.trim().length > 0);
+    .every(value => value.trim().length > 0);
 }
 
 function logout(): void {
@@ -171,8 +171,8 @@ function deleteAccount() {
   const userService = new UserService();
   userService
     .deleteUser()
-    .then(() => logout())
-    .catch(() => console.error('Das Benutzerprofil konnte nicht gelöscht werden!'));
+    .then(() => { logout(); })
+    .catch(() => { console.error('Das Benutzerprofil konnte nicht gelöscht werden!'); });
 }
 
 // Reverts all changes made to the user and address profiles
@@ -198,9 +198,9 @@ function validateField(
   errorKey: keyof typeof errorMessage.value,
 ) {
   // Get the value from editedUserProfile or editedAddress depending on field
-  const value =
-    field in (editedUserProfile.value ?? {})
-      ? editedUserProfile.value?.[field as keyof User]
+  const value
+    = field in (editedUserProfile.value ?? {})
+      ? editedUserProfile.value?.[field]
       : editedAddress.value?.[field as keyof Address];
 
   const regexMap = {
@@ -213,37 +213,41 @@ function validateField(
   if ((type === 'name' || type === 'address') && typeof value === 'string') {
     if (!value || value.length === 0) {
       errorMessage.value[errorKey] = 'Bitte eingeben!';
-    } else if (!regex.test(value)) {
+    }
+    else if (!regex.test(value)) {
       errorMessage.value[errorKey] = 'Eingabe bitte überprüfen!';
-    } else {
+    }
+    else {
       errorMessage.value[errorKey] = '';
     }
-  } else {
+  }
+  else {
     if (typeof value === 'string' && value.length > 0 && !/^\+?[1-9]\d{1,14}$/.test(value)) {
       errorMessage.value[errorKey] = 'Telefonnummer ist ungültig!';
-    } else {
+    }
+    else {
       errorMessage.value[errorKey] = '';
     }
   }
 
   // Only call checkValues if all profiles exist and are non-null
   if (
-    userProfile.value &&
-    editedUserProfile.value &&
-    addressProfile.value &&
-    editedAddress.value
+    userProfile.value
+    && editedUserProfile.value
+    && addressProfile.value
+    && editedAddress.value
   ) {
     changes.value = checkValues(
       userProfile.value,
-      editedUserProfile.value as User,
+      editedUserProfile.value,
       addressProfile.value,
       editedAddress.value as Address,
     );
-  } else {
+  }
+  else {
     changes.value = false;
   }
 }
-
 
 // Validates the entered country code by checking if it matches a known country.
 // If no match is found an error indicating the country code is invalid will be displayed.
@@ -256,17 +260,17 @@ function updateCountryFromCode() {
   }
 
   const matchingCountry = countries.value.find(
-    (country) => country.code === code,
+    country => country.code === code,
   );
 
   if (!matchingCountry) {
     errorMessage.value.countryCode = 'Ungültiges Länderkürzel!';
-  } else {
+  }
+  else {
     editedAddress.value.countryCode = matchingCountry.code;
     errorMessage.value.countryCode = '';
   }
 }
-
 
 // Fetches city, province, and country code based on the entered zip code.
 // Displays an error message if the zip code is invalid or the service call fails.
@@ -292,12 +296,12 @@ async function getCity() {
       errorMessage.value.city = '';
       errorMessage.value.province = '';
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.log(error);
     errorMessage.value.zip = 'Postleitzahl bitte überprüfen!';
   }
 }
-
 
 // Determines if there are any changes between the original user and address profiles and their edited
 // versions. Returns `true` if differences are detected, otherwise `false`.
@@ -308,11 +312,12 @@ function checkValues(
   editedAddress: Address,
 ): boolean {
   if (
-    compareObjects(userProfile || {}, editedUserProfile || {}) &&
-    compareObjects(addressProfile || {}, editedAddress || {})
+    compareObjects(userProfile || {}, editedUserProfile || {})
+    && compareObjects(addressProfile || {}, editedAddress || {})
   ) {
     return false;
-  } else {
+  }
+  else {
     return true;
   }
 }
@@ -334,8 +339,8 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
 
   for (const key of keys1) {
     if (
-      !keys2.includes(key) ||
-      !compareObjects(obj1[key as keyof typeof obj1], obj2[key as keyof typeof obj2])
+      !keys2.includes(key)
+      || !compareObjects(obj1[key], obj2[key])
     ) {
       return false;
     }
@@ -346,7 +351,7 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
 
 // Check if any error message is not empty to disable save button
 const isDisabled = computed(() => {
-  return Object.values(errorMessage.value).some((message) => message !== '');
+  return Object.values(errorMessage.value).some(message => message !== '');
 });
 </script>
 
@@ -363,7 +368,10 @@ const isDisabled = computed(() => {
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="firstName">{{ t('accountSettings.userProfile.name') }}:</label>
+                <label
+                  class="label"
+                  for="firstName"
+                >{{ t('accountSettings.userProfile.name') }}:</label>
                 <InputText
                   id="firstName"
                   v-model="editedUserProfile.firstName"
@@ -377,12 +385,16 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.firstname }}</Message
                 >
+                  {{ errorMessage.firstname }}
+                </Message>
               </div>
 
               <div class="input-container">
-                <label class="label" for="lastName">Nachname*:</label>
+                <label
+                  class="label"
+                  for="lastName"
+                >Nachname*:</label>
                 <InputText
                   id="lastName"
                   v-model="editedUserProfile.lastName"
@@ -396,17 +408,34 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.lastname }}</Message
                 >
+                  {{ errorMessage.lastname }}
+                </Message>
               </div>
 
               <div class="input-container">
-                <label class="label" for="eMail">E-Mail:</label>
-                <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
-                <Message class="error" size="small" severity="error" variant="simple"></Message>
+                <label
+                  class="label"
+                  for="eMail"
+                >E-Mail:</label>
+                <InputText
+                  id="eMail"
+                  v-model="editedUserProfile.email"
+                  disabled
+                  required
+                />
+                <Message
+                  class="error"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                />
               </div>
               <div class="input-container">
-                <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
+                <label
+                  class="label"
+                  for="mobilePhoneNumber"
+                >Mobile Telefonnummer:</label>
                 <InputText
                   id="mobilePhoneNumber"
                   v-model="editedUserProfile.mobilePhoneNumber"
@@ -419,11 +448,15 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.mobilePhoneNumber }}</Message
                 >
+                  {{ errorMessage.mobilePhoneNumber }}
+                </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="businessPhoneNumber">Geschäftliche Telefonnummer:</label>
+                <label
+                  class="label"
+                  for="businessPhoneNumber"
+                >Geschäftliche Telefonnummer:</label>
                 <InputText
                   id="businessPhoneNumber"
                   v-model="editedUserProfile.businessPhoneNumber"
@@ -436,12 +469,16 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.businessPhoneNumber }}</Message
                 >
+                  {{ errorMessage.businessPhoneNumber }}
+                </Message>
               </div>
 
               <div class="input-container">
-                <label class="label" for="privatePhoneNumber">Handynummer:</label>
+                <label
+                  class="label"
+                  for="privatePhoneNumber"
+                >Handynummer:</label>
                 <InputText
                   id="privatePhoneNumber"
                   v-model="editedUserProfile.privatePhoneNumber"
@@ -454,11 +491,19 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.privatePhoneNumber }}</Message
                 >
+                  {{ errorMessage.privatePhoneNumber }}
+                </Message>
               </div>
             </div>
-            <Message class="required" size="small" severity="secondary" variant="simple">*Pflichtfelder</Message>
+            <Message
+              class="required"
+              size="small"
+              severity="secondary"
+              variant="simple"
+            >
+              *Pflichtfelder
+            </Message>
           </template>
         </Card>
         <Card>
@@ -468,7 +513,10 @@ const isDisabled = computed(() => {
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="street">Straße und Hausnummer*:</label>
+                <label
+                  class="label"
+                  for="street"
+                >Straße und Hausnummer*:</label>
                 <InputText
                   id="street"
                   v-model="editedAddress.street"
@@ -481,11 +529,15 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.street }}</Message
                 >
+                  {{ errorMessage.street }}
+                </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Postleitzahl*:</label>
+                <label
+                  class="label"
+                  for="zip"
+                >Postleitzahl*:</label>
                 <InputText
                   id="zip"
                   v-model="editedAddress.zip"
@@ -498,11 +550,15 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.zip }}</Message
                 >
+                  {{ errorMessage.zip }}
+                </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Stadt*:</label>
+                <label
+                  class="label"
+                  for="zip"
+                >Stadt*:</label>
                 <InputText
                   id="city"
                   v-model="editedAddress.city"
@@ -515,11 +571,15 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.city }}</Message
                 >
+                  {{ errorMessage.city }}
+                </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Bundesland*:</label>
+                <label
+                  class="label"
+                  for="zip"
+                >Bundesland*:</label>
                 <InputText
                   id="province"
                   v-model="editedAddress.province"
@@ -532,27 +592,48 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.province }}</Message
                 >
+                  {{ errorMessage.province }}
+                </Message>
               </div>
               <div class="input-container">
-                <label for="country" class="label">Land*:</label>
+                <label
+                  for="country"
+                  class="label"
+                >Land*:</label>
                 <select
                   id="country"
                   v-model="editedAddress.countryCode"
                   class="select-country"
                   @change="updateCountryFromCode"
                 >
-                  <option disabled value="">Land auswählen*</option>
-                  <option v-for="country in countries" :key="country.code" :value="country.code">
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Land auswählen*
+                  </option>
+                  <option
+                    v-for="country in countries"
+                    :key="country.code"
+                    :value="country.code"
+                  >
                     {{ country.name }}
                   </option>
                 </select>
-                <Message class="error" size="small" severity="error" variant="simple"></Message>
+                <Message
+                  class="error"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                />
               </div>
 
               <div class="input-container">
-                <label for="countryCode" class="label">Länderkürzel*:</label>
+                <label
+                  for="countryCode"
+                  class="label"
+                >Länderkürzel*:</label>
                 <InputText
                   id="countryCode"
                   v-model="editedAddress.countryCode"
@@ -567,11 +648,18 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.countryCode }}</Message
                 >
+                  {{ errorMessage.countryCode }}
+                </Message>
               </div>
             </div>
-            <Message class="required" size="small" variant="simple">*Pflichtfelder</Message>
+            <Message
+              class="required"
+              size="small"
+              variant="simple"
+            >
+              *Pflichtfelder
+            </Message>
           </template>
         </Card>
       </div>
@@ -580,13 +668,19 @@ const isDisabled = computed(() => {
       <div>
         <div class="buttons-container centered-buttons">
           <Button severity="info">
-            <RouterLink to="/projects">Zur Verwalter Ansicht</RouterLink>
+            <RouterLink to="/projects">
+              Zur Verwalter Ansicht
+            </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/tenancies">Zur Mieter Ansicht</RouterLink>
+            <RouterLink to="/tenancies">
+              Zur Mieter Ansicht
+            </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/customers">Zur Auftragnehmer Ansicht</RouterLink>
+            <RouterLink to="/customers">
+              Zur Auftragnehmer Ansicht
+            </RouterLink>
           </Button>
           <Button
             v-if="changes"
@@ -663,7 +757,7 @@ const isDisabled = computed(() => {
           >
             <p>Daten konnten nicht gespeichert werden!</p>
           </Dialog>
-       </div>
+        </div>
       </div>
     </div>
   </div>

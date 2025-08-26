@@ -87,6 +87,8 @@ jobs:
         # The `npm ci` command can only install with an existing package-lock.json
       - name: Test with Coverage Information (coverage)
         run: npm run coverage
+      - name: Lint and report (lint:report)
+        run: npm run lint:report
       - name: SonarCloud Scan on PR
         uses: SonarSource/sonarcloud-github-action@master
         if: github.event.workflow_run.event == 'pull_request'

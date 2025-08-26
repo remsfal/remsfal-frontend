@@ -6,7 +6,8 @@ export function registerServiceWorker() {
       navigator.serviceWorker.register('/service-worker.js').catch((error) => {
         console.error('Service Worker registration failed:', error);
       });
-    } else {
+    }
+    else {
       console.warn('Service Worker is disabled in the current environment.');
     }
   }

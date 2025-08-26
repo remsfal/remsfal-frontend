@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import NewProjectView from '../../src/views/NewProjectView.vue';
 import router from '../../src/router';
 import { saveProject } from '../../src/helper/indexeddb';

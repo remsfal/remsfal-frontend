@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
-import TaskService, { Task, Status } from '../../src/services/TaskService';
+import type { Task } from '../../src/services/TaskService';
+import TaskService, { Status } from '../../src/services/TaskService';
 
 describe('TaskService', () => {
-
   const service = new TaskService();
   const projectId = 'test-project';
   const taskId = 'test-task';
@@ -48,7 +48,7 @@ describe('TaskService', () => {
 
     // Assert
     expect(axios.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${projectId}/tasks?status=${status}`
+      `/api/v1/projects/${projectId}/tasks?status=${status}`,
     );
   });
 
@@ -64,7 +64,7 @@ describe('TaskService', () => {
 
     // Assert
     expect(axios.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${projectId}/tasks?owner=${ownerId}`
+      `/api/v1/projects/${projectId}/tasks?owner=${ownerId}`,
     );
   });
   it('should get a single task', async () => {

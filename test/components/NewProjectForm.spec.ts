@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import type { VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import NewProjectForm from '../../src/components/NewProjectForm.vue'; // update the path accordingly
 import { projectService } from '../../src/services/ProjectService';
 import { useProjectStore } from '../../src/stores/ProjectStore';
@@ -47,7 +48,7 @@ describe('NewProjectForm.vue', () => {
 
   it('should navigate to ProjectSelection on abort', async () => {
     const buttons = wrapper.findAll('button');
-    const abortButton = buttons.find((btn) => btn.text() === 'Abbrechen');
+    const abortButton = buttons.find(btn => btn.text() === 'Abbrechen');
     expect(abortButton).toBeTruthy();
     await abortButton!.trigger('click');
     expect(pushSpy).toHaveBeenCalledWith({ name: 'ProjectSelection' });
