@@ -37,6 +37,7 @@ export class TaskService {
             ...(ownerId ? { owner: ownerId } : {}),
           },
         },
+        pathParams: { projectId }, // needed for runtime URL replacement
       }
     ) as Promise<{ tasks: TaskItem[] }>;
   }
@@ -45,7 +46,10 @@ export class TaskService {
     return typedRequest<'/api/v1/projects/{projectId}/tasks/{taskId}', 'get'>(
       'get',
       '/api/v1/projects/{projectId}/tasks/{taskId}',
-      { params: { path: { projectId, taskId } } }
+      {
+        params: { path: { projectId, taskId } },
+        pathParams: { projectId, taskId },
+      }
     ) as Promise<TaskDetail>;
   }
 
@@ -53,7 +57,11 @@ export class TaskService {
     return typedRequest<'/api/v1/projects/{projectId}/tasks', 'post'>(
       'post',
       '/api/v1/projects/{projectId}/tasks',
-      { params: { path: { projectId } }, body }
+      {
+        params: { path: { projectId } },
+        pathParams: { projectId },
+        body,
+      }
     );
   }
 
@@ -61,7 +69,11 @@ export class TaskService {
     return typedRequest<'/api/v1/projects/{projectId}/tasks/{taskId}', 'patch'>(
       'patch',
       '/api/v1/projects/{projectId}/tasks/{taskId}',
-      { params: { path: { projectId, taskId } }, body }
+      {
+        params: { path: { projectId, taskId } },
+        pathParams: { projectId, taskId },
+        body,
+      }
     );
   }
 }
