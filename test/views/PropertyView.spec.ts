@@ -48,11 +48,11 @@ describe('PropertyView.vue', () => {
       title: 'Initial Property Title',
       description: 'Initial Property Description',
       cadastralDistrict: 'Initial District',
-      corridor: 'Initial Corridor',
-      parcel: 'Initial Parcel',
+      cadastralSection: 'Initial Corridor',   
+      plot: 'Initial Parcel',                 
       landRegistry: 'Initial LandRegistry',
-      usageType: 'GF Wohnen',
-      effectiveSpace: 100,
+      economyType: 'GF Wohnen',               
+      plotArea: 100,                          
     });
 
     wrapper = mount(Component, {
@@ -75,10 +75,12 @@ describe('PropertyView.vue', () => {
 
   it('enables save button only if data is modified', async () => {
     const saveButton = wrapper.find('button[type="submit"]');
-    expect(saveButton.element.disabled).toBe(true);
-    await wrapper.find('input[type="text"]').setValue('New Title');
+    expect(saveButton.element.disabled).toBe(true); 
+
+    await wrapper.find('input#title').setValue('New Title');
+
     expect(wrapper.vm.hasChanges).toBe(true);
-    expect(saveButton.attributes('disabled')).toBeUndefined();
+    expect(saveButton.attributes('disabled')).toBeUndefined(); 
   });
 
   it('calls updateProperty service with correct data when saved', async () => {
@@ -100,11 +102,11 @@ describe('PropertyView.vue', () => {
         title: 'New Title',
         description: 'Initial Property Description',
         cadastralDistrict: 'Initial District',
-        corridor: 'Initial Corridor',
-        parcel: 'Initial Parcel',
+        cadastralSection: 'Initial Corridor', 
+        plot: 'Initial Parcel',              
         landRegistry: 'Initial LandRegistry',
-        usageType: 'GF Wohnen',
-        effectiveSpace: 100,
+        economyType: 'GF Wohnen',             
+        plotArea: 100,                        
       }),
     );
   });

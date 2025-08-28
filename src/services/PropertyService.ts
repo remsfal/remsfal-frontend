@@ -1,16 +1,35 @@
 import { typedRequest } from '@/services/api/typedRequest';
-import type { components, paths } from '../../src/services/api/platform-schema';
+import type { components } from '../../src/services/api/platform-schema';
+import type { TreeNode } from 'primevue/treenode';
 
+/** -------------------- OLD TYPES & UTILS -------------------- **/
+
+// Backend-driven types for properties and tree nodes
 export type PropertyUnit = components['schemas']['PropertyJson'];
 export type PropertyList = components['schemas']['PropertyListJson'];
+export type RentableUnitTreeNode = components['schemas']['RentalUnitTreeNodeJson'];
+export type RentalUnitNodeData = components['schemas']['RentalUnitNodeDataJson'];
+
+export enum EntityType {
+  Apartment = 'APARTMENT',
+  Commercial = 'COMMERCIAL',
+  Storage = 'STORAGE',
+  Site = 'SITE',
+  Building = 'BUILDING',
+  Project = 'PROJECT',
+  Property = 'PROPERTY',
+}
+
+export function toRentableUnitView(entity: components['schemas']['UnitType']): string {
+  return entity[0].toUpperCase() + entity.substring(1).toLowerCase() + 'View';
+}
+
+/** -------------------- SERVICE -------------------- **/
 
 class PropertyService {
   private readonly baseUrl = '/api/v1/projects';
 
-  async createProperty(
-    projectId: string,
-    property: PropertyUnit
-  ): Promise<PropertyUnit> {
+  async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
     return typedRequest<
       '/api/v1/projects/{projectId}/properties',
       'post',

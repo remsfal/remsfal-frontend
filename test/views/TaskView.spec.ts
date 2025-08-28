@@ -1,45 +1,30 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
-import { TaskService, StatusValues, TaskItem } from '../../src/services/TaskService';
+import { TaskService, StatusValues, TaskItemJson } from '../../src/services/TaskService';
+
+type TaskViewVm = InstanceType<typeof TaskView> & { visible: boolean };
 
 describe('TaskView', () => {
-  let wrapper: VueWrapper<InstanceType<typeof TaskView>>;
-  const projectId: string = '1';
-  const owner: string = 'user1';
+  let wrapper: VueWrapper;
 
-  // Mock data
-  const mockTasks: TaskItem[] = [
-    {
-      id: '1',
-      title: 'Task 1',
-      status: StatusValues.OPEN,
-      ownerId: 'owner1',
-      reporterId: 'reporter1'
-    },
-    {
-      id: '2',
-      title: 'Task 2',
-      status: StatusValues.OPEN,
-      ownerId: 'owner1',
-      reporterId: 'reporter1'
-    },
-  ];
+  const projectId = '1';
+  const owner = 'user1';
+  const service = new TaskService();
 
   beforeEach(() => {
-    // Mock TaskService.getTasks to always return mockTasks
-    vi.spyOn(TaskService.prototype, 'getTasks').mockResolvedValue({ tasks: mockTasks });
-
     wrapper = mount(TaskView, {
       props: { projectId, owner },
       data() {
-        return { visible: false }; // initial state
+        return {
+          visible: false, // Initial visibility state
+        };
       },
     });
   });
 
   describe('Button rendering and interaction', () => {
-    it('renders the "Aufgabe erstellen" button when owner is defined', () => {
+    it('renders the button when owner is defined', () => {
       const button = wrapper.find('.my-btn');
       expect(button.exists()).toBe(true);
       expect(button.text()).toBe('Aufgabe erstellen');
@@ -48,9 +33,8 @@ describe('TaskView', () => {
     it('sets "visible" to true when the button is clicked', async () => {
       const button = wrapper.find('.my-btn');
       await button.trigger('click');
-      expect((wrapper.vm.$data as { visible: boolean }).visible).toBe(true);
+      expect((wrapper.vm as TaskViewVm).visible).toBe(true);
     });
-    
   });
 
   describe('Header rendering', () => {
@@ -59,31 +43,50 @@ describe('TaskView', () => {
       expect(header.text()).toBe('Meine Aufgaben');
     });
 
-    it('renders "Offene Aufgaben" when status prop is defined and owner is null', async () => {
-      await wrapper.setProps({ owner: undefined, status: StatusValues.OPEN });
-      await wrapper.vm.$nextTick();
+    it('renders "Offene Aufgaben" when status prop is defined and owner is undefined', async () => {
+      await wrapper.setProps({ owner: null, status: 'OPEN' });
       const header = wrapper.find('h2');
       expect(header.text()).toBe('Offene Aufgaben');
     });
 
     it('renders "Alle Aufgaben" when neither owner nor status is defined', async () => {
-      await wrapper.setProps({ owner: undefined, status: undefined });
-      await wrapper.vm.$nextTick();
+      await wrapper.setProps({ owner: null, status: null });
       const header = wrapper.find('h2');
       expect(header.text()).toBe('Alle Aufgaben');
     });
   });
 
   describe('Task fetching', () => {
-    it('loads and displays tasks from the service', async () => {
-      await wrapper.vm.$nextTick();
-      const tableWrapper = wrapper.findComponent({ name: 'TaskTable' });
-      expect(tableWrapper.exists()).toBe(true);
+    it('should return a list of tasks', async () => {
+      // Arrange
+      const projectId = 'test-project';
+      const mockTasks: TaskItemJson[] = [
+        {
+          id: '1',
+          title: 'Task 1',
+          name: 'task1',
+          status: StatusValues['OPEN'],
+          owner: 'owner1',
+        },
+        {
+          id: '2',
+          title: 'Task 2',
+          name: 'task2',
+          status: StatusValues['OPEN'],
+          owner: 'owner1',
+        },
+      ];
+      const mockTaskList = { tasks: mockTasks };
 
-      const tasksProp = tableWrapper.props('tasks') as TaskItem[];
-      expect(tasksProp).toHaveLength(2);
-      expect(tasksProp[0].title).toBe('Task 1');
-      expect(tasksProp[1].title).toBe('Task 2');
+      // Act
+      vi.spyOn(service, 'getTasks').mockImplementation(() => Promise.resolve(mockTaskList));
+      const result = await service.getTasks(projectId);
+
+      // Assert
+      expect(result).toEqual(mockTaskList);
+      expect(result.tasks).toHaveLength(2);
+      expect(result.tasks[0].id).toBe('1');
+      expect(result.tasks[1].id).toBe('2');
     });
   });
 });

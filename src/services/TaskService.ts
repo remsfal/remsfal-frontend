@@ -15,7 +15,7 @@ export const StatusValues = {
 // Full task type directly from backend
 export type TaskItem = components['schemas']['TaskJson'];
 export type TaskDetail = components['schemas']['TaskJson'];
-
+export type TaskItemJson = components["schemas"]["TaskItemJson"];
 // Request bodies directly from OpenAPI paths
 export type CreateTaskBody = paths['/api/v1/projects/{projectId}/tasks']['post']['requestBody']['content']['application/json'];
 export type ModifyTaskBody = paths['/api/v1/projects/{projectId}/tasks/{taskId}']['patch']['requestBody']['content']['application/json'];
