@@ -3,6 +3,8 @@ import type { components } from '../../src/services/api/platform-schema'; // gen
 
 type TenancyJson = components["schemas"]["TenancyJson"];
 type TenancyListJson = TenancyJson[]; // assuming the endpoint returns an array of tenancies
+export type TenancyItem = components['schemas']['TenancyItemJson'];
+
 
 export default class TenancyService {
   // Fetch all tenancies from backend

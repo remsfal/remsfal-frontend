@@ -4,8 +4,7 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
-import type { Status as TaskStatusType } from '@/services/TaskService';
-import { Status } from '@/services/TaskService'; // runtime-safe Status object
+import { StatusValues } from '@/services/TaskService'; // runtime-safe Status object
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -75,7 +74,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
             router.push({
               name: 'TaskOverview',
               params: { projectId: currentProjectId },
-              query: { status: Status.OPEN },
+              query: { status: StatusValues.OPEN },
             });
           },
         },

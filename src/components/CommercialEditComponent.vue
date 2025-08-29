@@ -24,9 +24,9 @@ const fields: {
   validations?: ((value: any) => string | null)[];
 }[] = [
   { name: 'title', label: 'Titel', type: 'text', required: true },
-  { name: 'location', label: 'Standort', type: 'textarea', required: false },
+  { name: 'location', label: 'Standort', type: 'textarea' },
   {
-    name: 'commercialSpace',
+    name: 'netFloorArea',
     label: 'Gewerbefläche (qm)',
     type: 'text',
     validations: [
@@ -35,7 +35,7 @@ const fields: {
     ],
   },
   {
-    name: 'usableSpace',
+    name: 'usableFloorArea',
     label: 'Nutzfläche (qm)',
     type: 'text',
     validations: [
@@ -44,7 +44,7 @@ const fields: {
     ],
   },
   {
-    name: 'heatingSpace',
+    name: 'technicalServicesArea',
     label: 'Heizfläche (qm)',
     type: 'text',
     validations: [
@@ -66,16 +66,19 @@ const fields: {
 const initialCommercialData = ref<CommercialUnit>({
   title: '',
   location: '',
-  commercialSpace: 0,
-  usableSpace: 0,
-  heatingSpace: 0,
+  netFloorArea: 0,
+  usableFloorArea: 0,
+  technicalServicesArea: 0,
   description: '',
 });
 
 onMounted(async () => {
   if (props.commercialId) {
     try {
-      initialCommercialData.value = await commercialService.getCommercial(props.projectId, props.commercialId);
+      initialCommercialData.value = await commercialService.getCommercial(
+        props.projectId,
+        props.commercialId,
+      );
     } catch (error) {
       console.error('Error fetching commercial data:', error);
     }
