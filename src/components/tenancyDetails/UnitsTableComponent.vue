@@ -8,7 +8,7 @@ import Column from 'primevue/column';
 import type { DataTablePassThroughMethodOptions } from 'primevue/datatable';
 import DataTable from 'primevue/datatable';
 import Select from 'primevue/select';
-import { computed, onMounted, ref, watch, toRef } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import type { components } from '@/services/api/platform-schema';
 
 // OpenAPI type

@@ -1,6 +1,6 @@
 import { typedRequest } from '@/services/api/typedRequest';
 import type { RequestBody, ResponseType } from '@/services/api/typedRequest';
-import type { components, paths } from '../../src/services/api/platform-schema';
+import type { components } from '../../src/services/api/platform-schema';
 
 export type SiteUnit = components['schemas']['SiteJson'];
 

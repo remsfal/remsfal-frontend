@@ -1,6 +1,5 @@
 import { typedRequest } from '@/services/api/typedRequest';
 import type { components } from '../../src/services/api/platform-schema';
-import type { TreeNode } from 'primevue/treenode';
 
 /** -------------------- OLD TYPES & UTILS -------------------- **/
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { tenancyService } from '@/services/TenancyService';
 import type { components } from '@/services/api/platform-schema';
 import DatePicker from 'primevue/datepicker';
 import { computed, ref, watch } from 'vue';
