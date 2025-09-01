@@ -67,12 +67,11 @@ function redirectToTenanciesList() {
 }
 
 function updateTenancy(tenancy: TenancyItem | null) {
-  if (!tenancy) return;
   tenancyService.updateTenancy(tenancy);
   toast.add({
     severity: 'success',
     summary: 'Speichern erfolgreich',
-    detail: `Der Mietvertrag mit der ID ${tenancy.id} wurde erfolgreich aktualisiert.`,
+    detail: `Der Mietvertrag mit der ID ${tenancy?.id} wurde erfolgreich aktualisiert.`,
     life: 3000,
   });
 }

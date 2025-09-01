@@ -1,15 +1,12 @@
 import { typedRequest } from '../../src/services/api/typedRequest';
-import type { components } from '../../src/services/api/platform-schema'; // generated OpenAPI types
+import type { components } from '../../src/services/api/platform-schema';
 
-type TenancyJson = components["schemas"]["TenancyJson"];
-type TenancyListJson = TenancyJson[]; // assuming the endpoint returns an array of tenancies
 export type TenancyItem = components['schemas']['TenancyItemJson'];
 export type TenancyTenantItem = components['schemas']['UserJson'];
-
-
+export type TenancyJson = components['schemas']['TenancyJson'];
+export type TenancyListJson = TenancyJson[];
 
 export default class TenancyService {
-  // Fetch all tenancies from backend
   async fetchTenancyData(): Promise<TenancyListJson> {
     return typedRequest<'/api/v1/tenancies', 'get', TenancyListJson>(
       'get',
@@ -17,36 +14,36 @@ export default class TenancyService {
     );
   }
 
-  // Fetch flattened list of tenants from all tenancies
-  async fetchTenantData(): Promise<components['schemas']['UserJson'][]> {
-    const tenancies = await this.fetchTenancyData(); // returns array
-    return tenancies.flatMap(t => t.tenants ?? []); // flatten tenants array
+  async fetchTenantData(): Promise<TenancyTenantItem[]> {
+    const tenancies = await this.fetchTenancyData();
+    return tenancies.flatMap(t => t.tenants ?? []);
   }
 
-  // Load a specific tenancy by ID
   async loadTenancyData(id: string): Promise<TenancyJson | null> {
-    const tenancies = await this.fetchTenancyData(); // returns array directly
+    const tenancies = await this.fetchTenancyData();
     return tenancies.find(t => t.id === id) || null;
   }
 
-   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   async deleteTenancy(tenancyId: string): Promise<void> {
-    // TODO: Implementieren
+  async deleteTenancy(_tenancyId: string): Promise<void> {
+    // TODO: Implement API call
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async updateTenancyTenantItem(tenant: TenancyTenantItem): Promise<void> {
-    // TODO: Implementieren
+  async updateTenancyTenantItem(_tenant: TenancyTenantItem): Promise<void> {
+    // TODO: Implement API call
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async createTenancy(tenancy: TenancyItem): Promise<void> {
-    //TODO: Implementieren
+  async createTenancy(_tenancy: TenancyJson): Promise<void> {
+    // TODO: Implement API call
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async updateTenancy(tenancy: TenancyItem | null): Promise<void> {
-    //TODO: Implementieren
+  async updateTenancy(_tenancy: TenancyJson | null): Promise<void> {
+    // TODO: Implement API call
+  }
+
+  //  Correct type for units
+  async updateTenancyUnitItem(unit: TenancyItem): Promise<void> {
+    // TODO: Implement API call
+    console.log('Updating unit', unit);
   }
 }
 
