@@ -448,7 +448,7 @@ export const handlers = [
 
   // GET list of tasks
 // GET list of tasks
-http.get(`${API_BASE}/projects/:projectId/tasks`, ({ params, request }) => {
+http.get(`${API_BASE}/projects/:projectId/tasks`, ({ request }) => {
   const url = new URL(request.url);
   const status = url.searchParams.get('status') ?? undefined;
   const owner = url.searchParams.get('owner') ?? undefined;

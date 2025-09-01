@@ -25,18 +25,22 @@ export default class TenancyService {
   }
 
   async deleteTenancy(_tenancyId: string): Promise<void> {
+    void _tenancyId; // suppress unused parameter warning
     // TODO: Implement API call
   }
 
   async updateTenancyTenantItem(_tenant: TenancyTenantItem): Promise<void> {
+    void _tenant; // suppress unused parameter warning
     // TODO: Implement API call
   }
 
   async createTenancy(_tenancy: TenancyJson): Promise<void> {
+    void _tenancy; // suppress unused parameter warning
     // TODO: Implement API call
   }
 
   async updateTenancy(_tenancy: TenancyJson | null): Promise<void> {
+    void _tenancy; // suppress unused parameter warning
     // TODO: Implement API call
   }
 
