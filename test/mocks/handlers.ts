@@ -488,7 +488,7 @@ http.get(`${API_BASE}/projects/:projectId/tasks`, ({ params, request }) => {
   }),
 
   // POST create task
-  http.post(`${API_BASE}/projects/:projectId/tasks`, async ({ request, params }) => {
+  http.post(`${API_BASE}/projects/:projectId/tasks`, async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown> | undefined;
     const task = { ...(body ?? {}), id: 'new-task-id' };
     lastCreatedTask = task;

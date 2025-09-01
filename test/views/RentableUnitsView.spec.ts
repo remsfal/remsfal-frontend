@@ -5,7 +5,6 @@ import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
 import PrimeVue from 'primevue/config';
 import i18n from '../../src/i18n/i18n';
-import Dialog from 'primevue/dialog';
 
 vi.mock('@/services/PropertyService');
 

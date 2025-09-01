@@ -15,7 +15,6 @@ const loading = ref(false);
 const isExpanded = ref(false);
 
 const statusOptions = ['PENDING', 'OPEN', 'IN_PROGRESS', 'CLOSED', 'REJECTED'] as const;
-type Status = (typeof statusOptions)[number];
 
 const toggleExpansion = () => {
   isExpanded.value = !isExpanded.value;
