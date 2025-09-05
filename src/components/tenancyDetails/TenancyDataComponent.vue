@@ -10,7 +10,7 @@ const { tenancy } = defineProps<{
   tenancy: TenancyJson;
 }>();
 
-const emit = defineEmits<{ (e: 'onChange', tenancy: TenancyJson): void }>();
+const emit = defineEmits<(e: 'onChange', tenancy: TenancyJson) => void>();
 
 // Local reactive copy of tenancy
 const localTenancy = ref<TenancyJson>({ ...tenancy });

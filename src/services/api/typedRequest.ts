@@ -58,7 +58,7 @@ export async function typedRequest<
 ): Promise<Res> {
   let url = path as string;
 
-  const pathParamMatches = Array.from(url.matchAll(/{([a-zA-Z0-9_]+)}/g));
+  const pathParamMatches = Array.from(url.matchAll(/{(\w+)}/g));
   for (const match of pathParamMatches) {
     const paramName = match[1];
     const value = options.pathParams?.[paramName];

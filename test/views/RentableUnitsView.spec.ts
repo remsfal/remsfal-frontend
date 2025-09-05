@@ -1,6 +1,5 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import ObjectDataView from '../../src/views/RentableUnitsView.vue';
 import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
 import PrimeVue from 'primevue/config';
@@ -8,21 +7,7 @@ import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/PropertyService');
 
-vi.mock('primevue/dialog', () => ({
-  default: {
-    inheritAttrs: false,
-    render: () => '<div class="mock-dialog"></div>',
-  },
-}));
-
-vi.mock('primevue/config', () => ({
-  default: {
-    install: () => {},
-    locale: 'en',
-  },
-}));
-
-describe('ObjectDataView', () => {
+describe('RentableUnitsView', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
@@ -43,9 +28,9 @@ describe('ObjectDataView', () => {
       total: 1,
     } as any);
 
-    wrapper = mount(ObjectDataView, {
+    wrapper = mount(RentableUnitsView, {
       props: { projectId: '123' },
-      global: { plugins: [PrimeVue, i18n] },
+      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
     });
 
     await flushPromises();
@@ -58,9 +43,9 @@ describe('ObjectDataView', () => {
   it('displays an error when fetch fails', async () => {
     vi.mocked(propertyService.getPropertyTree).mockRejectedValueOnce(new Error('Fetch failed'));
 
-    wrapper = mount(ObjectDataView, {
+    wrapper = mount(RentableUnitsView, {
       props: { projectId: '123' },
-      global: { plugins: [PrimeVue, i18n] },
+      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
     });
 
     await flushPromises();
@@ -68,45 +53,10 @@ describe('ObjectDataView', () => {
     expect(wrapper.find('.alert-error').text()).toBe('Failed to fetch object data: Fetch failed');
   });
 
-  it('Delete confirmation dialog should be displayed', async () => {
+  it('opens delete confirmation dialog when delete button is clicked', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
       properties: [
-        { key: '1', data: { title: 'Test', type: EntityType.Project }, children: [] },
-      ],
-      first: 0,
-      size: 1,
-      total: 1,
-    } as any);
-
-    wrapper = mount(ObjectDataView, {
-      props: { projectId: '1' },
-      attachTo: document.body,
-      global: { plugins: [PrimeVue, i18n] },
-    });
-
-    await flushPromises();
-
-    const deleteBtn = wrapper.find('[data-testid="deleteNode"]');
-    expect(deleteBtn.exists()).toBe(true);
-
-    await deleteBtn.trigger('click');
-    await flushPromises();
-
-    expect((wrapper.vm as any).showDeleteDialog).toBe(true);
-  });
-});
-
-describe('RentableUnitsView', () => {
-  let wrapper: VueWrapper;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('renders dialog correctly', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        { key: '1', data: { title: 'Test', type: EntityType.Property, usable_space: 0 }, children: [] },
+        { key: '1', data: { title: 'Test', type: EntityType.Property }, children: [] },
       ],
       first: 0,
       size: 1,
@@ -116,10 +66,7 @@ describe('RentableUnitsView', () => {
     wrapper = mount(RentableUnitsView, {
       props: { projectId: '1' },
       attachTo: document.body,
-      global: {
-        plugins: [PrimeVue],
-        stubs: { teleport: true },
-      },
+      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
     });
 
     await flushPromises();
@@ -137,7 +84,7 @@ describe('RentableUnitsView', () => {
     wrapper = mount(RentableUnitsView, {
       props: { projectId: '123' },
       attachTo: document.body,
-      global: { plugins: [PrimeVue], stubs: { teleport: true } },
+      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
     });
 
     await flushPromises();
@@ -159,7 +106,7 @@ describe('RentableUnitsView', () => {
     wrapper = mount(RentableUnitsView, {
       props: { projectId: 'projId' },
       attachTo: document.body,
-      global: { plugins: [PrimeVue], stubs: { teleport: true } },
+      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
     });
 
     await flushPromises();
