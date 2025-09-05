@@ -5,16 +5,18 @@ import { http, HttpResponse } from 'msw';
 
 const API_BASE = '/api/v1';
 
-// Store the last (or single) PATCH request for assertions
-let lastUpdatedProperty: Record<string, unknown> | null = null;
-let lastUpdatedTenancy: Record<string, unknown> | null = null;
-export let lastUpdatedApartment: Record<string, unknown> | null = null;
-export let lastCreatedCommercial: Record<string, unknown> | null = null;
-export let lastUpdatedCommercial: Record<string, unknown> | null = null;
-export let lastCreatedSite: Record<string, unknown> | null = null;
-export let lastUpdatedSite: Record<string, unknown> | null = null;
-export let lastCreatedTask: Record<string, unknown> | null = null;
-export let lastUpdatedTask: Record<string, unknown> | null = null;
+// Use a single exported object to hold all last-request values
+export const lastRequests: Record<string, Record<string, unknown> | null> = {
+  property: null,
+  tenancy: null,
+  apartment: null,
+  createdCommercial: null,
+  updatedCommercial: null,
+  createdSite: null,
+  updatedSite: null,
+  createdTask: null,
+  updatedTask: null,
+};
 
 export const handlers = [
   // GET user once
@@ -146,11 +148,11 @@ export const handlers = [
     `${API_BASE}/projects/:projectId/buildings/:buildingId/commercials`,
     async ({ request, params }) => {
       const body = (await request.json()) as Record<string, unknown>;
-      lastCreatedCommercial = {
+      lastRequests.createdCommercial = {
         ...body,
         projectId: params.projectId,
         buildingId: params.buildingId,
-      }; // track payload
+      };
       return HttpResponse.json({
         id: 'commercial-new-id',
         ...body,
@@ -163,7 +165,7 @@ export const handlers = [
     `${API_BASE}/projects/:projectId/commercials/:commercialId`,
     async ({ request, params }) => {
       const body = (await request.json()) as Record<string, unknown>;
-      lastUpdatedCommercial = { ...body, id: params.commercialId }; // track updated payload
+      lastRequests.updatedCommercial = { ...body, id: params.commercialId };
       return HttpResponse.json({
         id: params.commercialId,
         ...body,
@@ -189,7 +191,6 @@ export const handlers = [
 
   // GET property tree (list)
   http.get(`${API_BASE}/projects/:projectId/properties`, () => {
-    // example tree structure:
     return HttpResponse.json({
       properties: [
         {
@@ -229,10 +230,10 @@ export const handlers = [
   http.patch(
     `${API_BASE}/projects/:projectId/units/:unitId/property`,
     async ({ request, params }) => {
-      const body = (await request.json()) as Record<string, unknown>;
+      lastRequests.property = (await request.json()) as Record<string, unknown>;
       return HttpResponse.json({
         id: `${params.unitId}-property`,
-        ...body,
+        ...lastRequests.property,
         updatedAt: new Date().toISOString(),
       });
     },
@@ -285,54 +286,37 @@ export const handlers = [
     return HttpResponse.json({ success: true, id: params.storageId }, { status: 200 });
   }),
 
-  // PATCH update property (single call)
-  http.patch(
-    `${API_BASE}/projects/:projectId/units/:unitId/property`,
-    async ({ request, params }) => {
-      // Capture the payload of this single PATCH call
-      lastUpdatedProperty = (await request.json()) as Record<string, unknown>;
-
-      return HttpResponse.json({
-        id: `${params.unitId}-property`,
-        ...lastUpdatedProperty,
-        updatedAt: new Date().toISOString(),
-      });
-    },
-  ),
-
   // -------- TENANCIES SERVICE HANDLERS --------
 
   // GET all tenancies
- http.get(`${API_BASE}/tenancies`, () => {
-  return HttpResponse.json(
-    [
-      {
-        id: 't1',
-        rentalStart: new Date().toISOString(),
-        rentalEnd: new Date().toISOString(),
-        tenants: [{ id: 'u1', name: 'Max Mustermann', email: 'max@example.com' }], // <-- changed
-        listOfUnits: [{ id: 'unit1', title: 'Unit 1' }],
-        active: true,
-      },
-      {
-        id: 't2',
-        rentalStart: new Date().toISOString(),
-        rentalEnd: new Date().toISOString(),
-        tenants: [], // <-- changed
-        listOfUnits: [],
-        active: true,
-      },
-    ],
-    { status: 200 },
-  );
-}),
+  http.get(`${API_BASE}/tenancies`, () => {
+    return HttpResponse.json(
+      [
+        {
+          id: 't1',
+          rentalStart: new Date().toISOString(),
+          rentalEnd: new Date().toISOString(),
+          tenants: [{ id: 'u1', name: 'Max Mustermann', email: 'max@example.com' }],
+          listOfUnits: [{ id: 'unit1', title: 'Unit 1' }],
+          active: true,
+        },
+        {
+          id: 't2',
+          rentalStart: new Date().toISOString(),
+          rentalEnd: new Date().toISOString(),
+          tenants: [],
+          listOfUnits: [],
+          active: true,
+        },
+      ],
+      { status: 200 },
+    );
+  }),
 
   // PATCH update tenancy
   http.patch(`${API_BASE}/tenancies/:tenancyId`, async ({ request, params }) => {
-    const body = (await request.json()) as Record<string, unknown> | undefined;
-    lastUpdatedTenancy = body ?? null;
-
-    return HttpResponse.json({ id: params.tenancyId, ...lastUpdatedTenancy }, { status: 200 });
+    lastRequests.tenancy = (await request.json()) as Record<string, unknown> | null;
+    return HttpResponse.json({ id: params.tenancyId, ...lastRequests.tenancy }, { status: 200 });
   }),
 
   // DELETE tenancy
@@ -344,18 +328,15 @@ export const handlers = [
   http.get(
     `${API_BASE}/projects/:projectId/buildings/:buildingId/apartments/:apartmentId`,
     ({ params }) => {
-      return HttpResponse.json(
-        {
-          id: params.apartmentId,
-          title: 'Initial Apartment Title',
-          description: 'Initial Apartment Description',
-          livingSpace: 100,
-          usableSpace: 80,
-          heatingSpace: 60,
-          location: 'Initial Location',
-        },
-        { status: 200 },
-      );
+      return HttpResponse.json({
+        id: params.apartmentId,
+        title: 'Initial Apartment Title',
+        description: 'Initial Apartment Description',
+        livingSpace: 100,
+        usableSpace: 80,
+        heatingSpace: 60,
+        location: 'Initial Location',
+      });
     },
   ),
 
@@ -363,16 +344,11 @@ export const handlers = [
   http.patch(
     `${API_BASE}/projects/:projectId/buildings/:buildingId/apartments/:apartmentId`,
     async ({ request, params }) => {
-      const body = (await request.json()) as Record<string, unknown>;
-      lastUpdatedApartment = body;
-
-      return HttpResponse.json(
-        {
-          id: params.apartmentId,
-          ...body,
-        },
-        { status: 200 },
-      );
+      lastRequests.apartment = (await request.json()) as Record<string, unknown>;
+      return HttpResponse.json({
+        id: params.apartmentId,
+        ...lastRequests.apartment,
+      });
     },
   ),
 
@@ -381,15 +357,12 @@ export const handlers = [
     `${API_BASE}/projects/:projectId/buildings/:buildingId/apartments`,
     async ({ request, params }) => {
       const body = (await request.json()) as Record<string, unknown>;
-      return HttpResponse.json(
-        {
-          id: 'new-apartment-id',
-          projectId: params.projectId,
-          buildingId: params.buildingId,
-          ...body,
-        },
-        { status: 200 },
-      );
+      return HttpResponse.json({
+        id: 'new-apartment-id',
+        projectId: params.projectId,
+        buildingId: params.buildingId,
+        ...body,
+      });
     },
   ),
 
@@ -407,7 +380,7 @@ export const handlers = [
       id: params.siteId,
       title: 'New Site',
       description: 'A description of the new site.',
-      space: 1000, // match your test
+      space: 1000,
       address: {
         street: 'Main St',
         city: 'Sample City',
@@ -422,57 +395,53 @@ export const handlers = [
   http.post(
     `${API_BASE}/projects/:projectId/properties/:propertyId/sites`,
     async ({ request, params }) => {
-      const body = (await request.json()) as Record<string, unknown> | undefined;
-      lastCreatedSite = body ?? null; // fallback to null if undefined
+      lastRequests.createdSite = (await request.json()) as Record<string, unknown> | null;
       return HttpResponse.json({
         id: 'new-site-id',
         projectId: params.projectId,
         propertyId: params.propertyId,
-        ...(body ?? {}),
+        ...(lastRequests.createdSite ?? {}),
       });
     },
   ),
 
   // PATCH update site
-  // PATCH update site
   http.patch(`${API_BASE}/projects/:projectId/sites/:siteId`, async ({ request, params }) => {
-    const body = (await request.json()) as Record<string, unknown> | undefined;
-    lastUpdatedSite = body ?? null;
+    lastRequests.updatedSite = (await request.json()) as Record<string, unknown> | null;
     return HttpResponse.json({
       id: params.siteId,
-      ...(body ?? {}),
+      ...(lastRequests.updatedSite ?? {}),
     });
   }),
 
   // DELETE site
   http.delete(`${API_BASE}/projects/:projectId/sites/:siteId`, () => {
-    return new HttpResponse(null, { status: 204 }); // resolves to undefined
+    return new HttpResponse(null, { status: 204 });
   }),
 
   // GET list of tasks
-// GET list of tasks
-http.get(`${API_BASE}/projects/:projectId/tasks`, ({ request }) => {
-  const url = new URL(request.url);
-  const status = url.searchParams.get('status') ?? undefined;
-  const owner = url.searchParams.get('owner') ?? undefined;
+  http.get(`${API_BASE}/projects/:projectId/tasks`, ({ request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status') ?? undefined;
+    const owner = url.searchParams.get('owner') ?? undefined;
 
-  const tasks = [
-    {
-      id: 'test-task',
-      title: 'Test Task',
-      description: 'Test Description',
-      status: status ?? 'OPEN',
-      ownerId: owner ?? 'owner1',
-      created_at: new Date().toISOString(),
-      modified_at: new Date().toISOString(),
-      blocked_by: '',
-      duplicate_of: '',
-      related_to: '',
-    },
-  ];
+    const tasks = [
+      {
+        id: 'test-task',
+        title: 'Test Task',
+        description: 'Test Description',
+        status: status ?? 'OPEN',
+        ownerId: owner ?? 'owner1',
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        blocked_by: '',
+        duplicate_of: '',
+        related_to: '',
+      },
+    ];
 
-  return HttpResponse.json({ tasks });
-}),
+    return HttpResponse.json({ tasks });
+  }),
 
   // GET single task
   http.get(`${API_BASE}/projects/:projectId/tasks/:taskId`, ({ params }) => {
@@ -493,16 +462,14 @@ http.get(`${API_BASE}/projects/:projectId/tasks`, ({ request }) => {
   // POST create task
   http.post(`${API_BASE}/projects/:projectId/tasks`, async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown> | undefined;
-    const task = { ...(body ?? {}), id: 'new-task-id' };
-    lastCreatedTask = task;
-    return HttpResponse.json(task);
+    lastRequests.createdTask = { ...(body ?? {}), id: 'new-task-id' };
+    return HttpResponse.json(lastRequests.createdTask);
   }),
 
   // PATCH modify task
   http.patch(`${API_BASE}/projects/:projectId/tasks/:taskId`, async ({ request, params }) => {
     const body = (await request.json()) as Record<string, unknown> | undefined;
-    const task = { id: params.taskId, ...(body ?? {}) };
-    lastUpdatedTask = task;
-    return HttpResponse.json(task);
+    lastRequests.updatedTask = { id: params.taskId, ...(body ?? {}) };
+    return HttpResponse.json(lastRequests.updatedTask);
   }),
 ];
