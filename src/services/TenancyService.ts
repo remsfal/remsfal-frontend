@@ -24,26 +24,30 @@ export default class TenancyService {
     return tenancies.find(t => t.id === id) || null;
   }
 
-  async deleteTenancy(_tenancyId: string): Promise<void> {
-    // TODO: Implement API call
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async deleteTenancy(tenancyId: string): Promise<void> {
+    // TODO: Implementieren
   }
 
-  async updateTenancyTenantItem(_tenant: TenancyTenantItem): Promise<void> {
-    // TODO: Implement API call
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async updateTenancyTenantItem(tenant: TenancyTenantItem): Promise<void> {
+    // TODO: Implementieren
   }
 
-  async createTenancy(_tenancy: TenancyJson): Promise<void> {
-    // TODO: Implement API call
-  }
-
-  async updateTenancy(_tenancy: TenancyJson | null): Promise<void> {
-    // TODO: Implement API call
-  }
-
-  // Correct type for units
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancyUnitItem(unit: TenancyItem): Promise<void> {
     // TODO: Implement API call
     console.log('Updating unit', unit);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async createTenancy(tenancy: TenancyItem): Promise<void> {
+    //TODO: Implementieren
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async updateTenancy(tenancy: TenancyItem | null): Promise<void> {
+    //TODO: Implementieren
   }
 }
 
