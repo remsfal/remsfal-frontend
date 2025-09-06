@@ -1,6 +1,3 @@
-/* eslint-disable import/no-mutable-exports */
-/* eslint-disable sonarjs/no-mutable-exports */
-
 import { http, HttpResponse } from 'msw';
 
 const API_BASE = '/api/v1';
