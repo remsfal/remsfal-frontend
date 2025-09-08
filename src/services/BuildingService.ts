@@ -1,10 +1,11 @@
 import { typedRequest } from '../../src/services/api/typedRequest';
-import type { paths,components } from '../../src/services/api/platform-schema'; // generated OpenAPI types
+import type { paths, components } from '../../src/services/api/platform-schema';
 
+// OpenAPI schema types
 export type CreateBuildingRequest =
   paths['/api/v1/projects/{projectId}/properties/{propertyId}/buildings']['post']['requestBody']['content']['application/json'];
 
-  // There is no GET success response, so we fallback to BuildingJson directly wait until backend update 
+// There is no GET success response, so we fallback to BuildingJson directly wait until backend update 
 export type BuildingResponse = components['schemas']['BuildingJson'];
 
 export type UpdateBuildingRequest =

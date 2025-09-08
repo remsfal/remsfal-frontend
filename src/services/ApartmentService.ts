@@ -26,12 +26,12 @@ export default class ApartmentService {
 
   getApartment(projectId: string, apartmentId: string) {
     return typedRequest<
-      '/api/v1/projects/{projectId}/buildings/{buildingId}/apartments/{apartmentId}',
+      '/api/v1/projects/{projectId}/apartments/{apartmentId}',
       'get',
       ApartmentResponse
     >(
       'get',
-      `${ApartmentService.BASE_ENDPOINT}/{projectId}/buildings/{buildingId}/apartments/{apartmentId}`,
+      `${ApartmentService.BASE_ENDPOINT}/{projectId}/apartments/{apartmentId}`,
       {
         pathParams: { projectId, apartmentId },
       },
@@ -40,12 +40,12 @@ export default class ApartmentService {
 
   updateApartment(projectId: string, apartmentId: string, apartment: UpdateApartmentRequest) {
     return typedRequest<
-      '/api/v1/projects/{projectId}/buildings/{buildingId}/apartments/{apartmentId}',
+      '/api/v1/projects/{projectId}/apartments/{apartmentId}',
       'patch',
       ApartmentResponse
     >(
       'patch',
-      `${ApartmentService.BASE_ENDPOINT}/{projectId}/buildings/{buildingId}/apartments/{apartmentId}`,
+      `${ApartmentService.BASE_ENDPOINT}/{projectId}/apartments/{apartmentId}`,
       {
         pathParams: { projectId, apartmentId },
         body: apartment,
@@ -56,11 +56,11 @@ export default class ApartmentService {
   async deleteApartment(projectId: string, apartmentId: string) {
     try {
       await typedRequest<
-        '/api/v1/projects/{projectId}/buildings/{buildingId}/apartments/{apartmentId}',
+        '/api/v1/projects/{projectId}/apartments/{apartmentId}',
         'delete'
       >(
         'delete',
-        `${ApartmentService.BASE_ENDPOINT}/{projectId}/buildings/{buildingId}/apartments/{apartmentId}`,
+        `${ApartmentService.BASE_ENDPOINT}/{projectId}/apartments/{apartmentId}`,
         {
           pathParams: { projectId, apartmentId },
         },
