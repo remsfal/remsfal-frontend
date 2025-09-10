@@ -3,6 +3,7 @@ import { typedRequest } from '@/services/api/typedRequest';
 import type { components } from '@/services/api/platform-schema';
 
 export type Commercial = components['schemas']['CommercialJson'];
+export type CommercialUnit = components['schemas']['CommercialJson'];
 
 export default class CommercialService {
   static readonly BASE_PATH = '/api/v1/projects' as const;
