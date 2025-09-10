@@ -55,6 +55,6 @@ describe('CommercialService with MSW', () => {
   });
 
   test('deleteCommercial succeeds', async () => {
-    await expect(commercialService.deleteCommercial(projectId, commercialId)).resolves.toEqual({ success: true });
-  });
+    await expect(commercialService.deleteCommercial(projectId, commercialId)).resolves.toBe(true);
+  });  
 });
