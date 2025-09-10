@@ -1,73 +1,71 @@
 import { typedRequest } from '@/services/api/typedRequest';
-import type { RequestBody, ResponseType } from '@/services/api/typedRequest';
-import type { components } from '../../src/services/api/platform-schema';
+import type { components } from '@/services/api/platform-schema';
 
 export type SiteUnit = components['schemas']['SiteJson'];
 
-export type CreateSiteBody = RequestBody<
-  '/api/v1/projects/{projectId}/properties/{propertyId}/sites',
-  'post'
->;
+export default class SiteService {
+  static readonly BASE_PATH = '/api/v1/projects' as const;
 
-export type UpdateSiteBody = RequestBody<
-  '/api/v1/projects/{projectId}/sites/{siteId}',
-  'patch'
->;
-
-export type GetSiteResponse = ResponseType<
-  '/api/v1/projects/{projectId}/sites/{siteId}',
-  'get'
->;
-
-class SiteService {
-  async createSite(
-    projectId: string,
-    propertyId: string,
-    body: CreateSiteBody
-  ): Promise<SiteUnit> {
-    return typedRequest<
+  // Create a new site
+  async createSite(projectId: string, propertyId: string, data: SiteUnit): Promise<SiteUnit> {
+    const site = await typedRequest<
       '/api/v1/projects/{projectId}/properties/{propertyId}/sites',
       'post',
       SiteUnit
-    >('post', '/api/v1/projects/{projectId}/properties/{propertyId}/sites', {
+    >('post', `${SiteService.BASE_PATH}/{projectId}/properties/{propertyId}/sites`, {
       pathParams: { projectId, propertyId },
-      body,
+      body: data,
     });
+    console.log('POST create site:', site);
+    return site;
   }
 
-  async getSite(projectId: string, siteId: string): Promise<GetSiteResponse> {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/sites/{siteId}',
-      'get',
-      GetSiteResponse
-    >('get', '/api/v1/projects/{projectId}/sites/{siteId}', {
-      pathParams: { projectId, siteId },
-    });
+  // Get a single site
+  async getSite(projectId: string, siteId: string): Promise<SiteUnit> {
+    try {
+      const site = await typedRequest<
+        '/api/v1/projects/{projectId}/sites/{siteId}',
+        'get',
+        SiteUnit
+      >('get', `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`, {
+        pathParams: { projectId, siteId },
+      });
+      console.log('GET site:', site);
+      return site;
+    } catch (error: any) {
+      console.error('site retrieval error', error?.response?.status || error);
+      throw error?.response?.status || error;
+    }
   }
 
-  async updateSite(
-    projectId: string,
-    siteId: string,
-    body: UpdateSiteBody
-  ): Promise<SiteUnit> {
-    return typedRequest<
+  // Update a site
+  async updateSite(projectId: string, siteId: string, data: SiteUnit): Promise<SiteUnit> {
+    const updated = await typedRequest<
       '/api/v1/projects/{projectId}/sites/{siteId}',
       'patch',
       SiteUnit
-    >('patch', '/api/v1/projects/{projectId}/sites/{siteId}', {
+    >('patch', `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`, {
       pathParams: { projectId, siteId },
-      body,
+      body: data,
     });
+    console.log('PATCH update site:', updated);
+    return updated;
   }
 
-  async deleteSite(projectId: string, siteId: string): Promise<void> {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/sites/{siteId}',
-      'delete',
-      void
-    >('delete', '/api/v1/projects/{projectId}/sites/{siteId}', {
-      pathParams: { projectId, siteId },
-    });
+  // Delete a site (returns boolean for success/failure)
+  async deleteSite(projectId: string, siteId: string): Promise<boolean> {
+    try {
+      await typedRequest<'/api/v1/projects/{projectId}/sites/{siteId}', 'delete'>(
+        'delete',
+        `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`,
+        { pathParams: { projectId, siteId } },
+      );
+      console.log('DELETE site successful', siteId);
+      return true;
+    } catch (error) {
+      console.error('DELETE site failed:', error);
+      return false;
+    }
   }
 }
 
