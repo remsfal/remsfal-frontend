@@ -1,63 +1,80 @@
 // src/services/CommercialService.ts
-import { typedRequest } from './api/typedRequest';
-import type { paths, components } from './api/platform-schema';
+import { typedRequest } from '@/services/api/typedRequest';
+import type { components } from '@/services/api/platform-schema';
 
-function apiPath<P extends keyof paths>(path: P): P {
-  return path;
-}
+export type Commercial = components['schemas']['CommercialJson'];
 
-export type CommercialJson = components['schemas']['CommercialJson'];
+export default class CommercialService {
+  static readonly BASE_PATH = '/api/v1/projects' as const;
 
-export type CreateCommercialRequest =
-  paths['/api/v1/projects/{projectId}/buildings/{buildingId}/commercials']['post']['requestBody']['content']['application/json'];
-
-export type CommercialUnit =
-  paths['/api/v1/projects/{projectId}/commercials/{commercialId}']['patch']['requestBody']['content']['application/json'];
-
-export const commercialService = {
-  createCommercial: (
-    projectId: string,
-    buildingId: string,
-    commercial: CreateCommercialRequest,
-  ): Promise<CommercialJson> =>
-    typedRequest<
+  // Create a new commercial unit
+  async createCommercial(projectId: string, buildingId: string, data: Commercial): Promise<Commercial> {
+    const commercial = await typedRequest<
       '/api/v1/projects/{projectId}/buildings/{buildingId}/commercials',
       'post',
-      CommercialJson
-    >('post', apiPath('/api/v1/projects/{projectId}/buildings/{buildingId}/commercials'), {
-      pathParams: { projectId, buildingId },
-      body: commercial,
-    }),
+      Commercial
+    >(
+      'post',
+      `${CommercialService.BASE_PATH}/{projectId}/buildings/{buildingId}/commercials`,
+      { pathParams: { projectId, buildingId }, body: data },
+    );
+    console.log('POST create commercial:', commercial);
+    return commercial;
+  }
 
-  getCommercial: (projectId: string, commercialId: string): Promise<CommercialJson> =>
-    typedRequest<'/api/v1/projects/{projectId}/commercials/{commercialId}', 'get', CommercialJson>(
-      'get',
-      apiPath('/api/v1/projects/{projectId}/commercials/{commercialId}'),
-      {
-        pathParams: { projectId, commercialId },
-      },
-    ),
+  // Get a single commercial unit
+  async getCommercial(projectId: string, commercialId: string): Promise<Commercial> {
+    try {
+      const commercial = await typedRequest<
+        '/api/v1/projects/{projectId}/commercials/{commercialId}',
+        'get',
+        Commercial
+      >(
+        'get',
+        `${CommercialService.BASE_PATH}/{projectId}/commercials/{commercialId}`,
+        { pathParams: { projectId, commercialId } },
+      );
+      console.log('GET commercial:', commercial);
+      return commercial;
+    } catch (error: any) {
+      console.error('commercial retrieval error', error?.response?.status || error);
+      throw error?.response?.status || error;
+    }
+  }
 
-  updateCommercial: (
-    projectId: string,
-    commercialId: string,
-    commercial: CommercialUnit,
-  ): Promise<CommercialJson> =>
-    typedRequest<
+  // Update a commercial unit
+  async updateCommercial(projectId: string, commercialId: string, data: Commercial): Promise<Commercial> {
+    const updated = await typedRequest<
       '/api/v1/projects/{projectId}/commercials/{commercialId}',
       'patch',
-      CommercialJson
-    >('patch', apiPath('/api/v1/projects/{projectId}/commercials/{commercialId}'), {
-      pathParams: { projectId, commercialId },
-      body: commercial,
-    }),
+      Commercial
+    >(
+      'patch',
+      `${CommercialService.BASE_PATH}/{projectId}/commercials/{commercialId}`,
+      { pathParams: { projectId, commercialId }, body: data },
+    );
+    console.log('PATCH update commercial:', updated);
+    return updated;
+  }
 
-  deleteCommercial: (projectId: string, commercialId: string): Promise<void> =>
-    typedRequest<'/api/v1/projects/{projectId}/commercials/{commercialId}', 'delete', void>(
-      'delete',
-      apiPath('/api/v1/projects/{projectId}/commercials/{commercialId}'),
-      {
-        pathParams: { projectId, commercialId },
-      },
-    ),
-};
+  // Delete a commercial unit (returns boolean for success/failure)
+  async deleteCommercial(projectId: string, commercialId: string): Promise<boolean> {
+    try {
+      await typedRequest<
+        '/api/v1/projects/{projectId}/commercials/{commercialId}',
+        'delete'
+      >(
+        'delete',
+        `${CommercialService.BASE_PATH}/{projectId}/commercials/{commercialId}`,
+        { pathParams: { projectId, commercialId } },
+      );
+      console.log('DELETE commercial successful', commercialId);
+      return true;
+    } catch (error) {
+      console.error('DELETE commercial failed:', error);
+      return false;
+    }
+  }
+}
+
+export const commercialService = new CommercialService();
