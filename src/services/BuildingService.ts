@@ -1,65 +1,53 @@
-import { typedRequest } from '../../src/services/api/typedRequest';
-import type { paths, components } from '../../src/services/api/platform-schema';
+import { typedRequest } from '@/services/api/typedRequest';
+import type { components } from '@/services/api/platform-schema';
 
 // OpenAPI schema types
-export type CreateBuildingRequest =
-  paths['/api/v1/projects/{projectId}/properties/{propertyId}/buildings']['post']['requestBody']['content']['application/json'];
-
-// There is no GET success response, so we fallback to BuildingJson directly wait until backend update 
-export type BuildingResponse = components['schemas']['BuildingJson'];
-
-export type UpdateBuildingRequest =
-  paths['/api/v1/projects/{projectId}/buildings/{buildingId}']['patch']['requestBody']['content']['application/json'];
+export type Building = components['schemas']['BuildingJson'];
 
 export default class BuildingService {
-  private static readonly BASE_ENDPOINT = '/api/v1/projects' as const;
+  static readonly BASE_PATH = '/api/v1/projects' as const;
 
-  createBuilding(projectId: string, propertyId: string, building: CreateBuildingRequest) {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/properties/{propertyId}/buildings',
+  // Create a new building
+  async createBuilding(projectId: string, propertyId: string, building: Building): Promise<Building> {
+    const created = await typedRequest<'/api/v1/projects/{projectId}/properties/{propertyId}/buildings', 'post', Building>(
       'post',
-      BuildingResponse
-    >('post', `${BuildingService.BASE_ENDPOINT}/{projectId}/properties/{propertyId}/buildings`, {
-      pathParams: { projectId, propertyId },
-      body: building,
-    });
+      `${BuildingService.BASE_PATH}/{projectId}/properties/{propertyId}/buildings`,
+      { pathParams: { projectId, propertyId }, body: building },
+    );
+    console.log('POST create building:', created);
+    return created;
   }
 
-  getBuilding(projectId: string, buildingId: string) {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/buildings/{buildingId}',
+  // Get a single building
+  async getBuilding(projectId: string, buildingId: string): Promise<Building> {
+    const building = await typedRequest<'/api/v1/projects/{projectId}/buildings/{buildingId}', 'get', Building>(
       'get',
-      BuildingResponse
-    >('get', `${BuildingService.BASE_ENDPOINT}/{projectId}/buildings/{buildingId}`, {
-      pathParams: { projectId, buildingId },
-    });
+      `${BuildingService.BASE_PATH}/{projectId}/buildings/{buildingId}`,
+      { pathParams: { projectId, buildingId } },
+    );
+    console.log('GET building:', building);
+    return building;
   }
 
-  updateBuilding(projectId: string, buildingId: string, building: UpdateBuildingRequest) {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/buildings/{buildingId}',
+  // Update a building
+  async updateBuilding(projectId: string, buildingId: string, building: Building): Promise<Building> {
+    const updated = await typedRequest<'/api/v1/projects/{projectId}/buildings/{buildingId}', 'patch', Building>(
       'patch',
-      BuildingResponse
-    >('patch', `${BuildingService.BASE_ENDPOINT}/{projectId}/buildings/{buildingId}`, {
-      pathParams: { projectId, buildingId },
-      body: building,
-    });
+      `${BuildingService.BASE_PATH}/{projectId}/buildings/{buildingId}`,
+      { pathParams: { projectId, buildingId }, body: building },
+    );
+    console.log('PATCH update building:', updated);
+    return updated;
   }
 
-  async deleteBuilding(projectId: string, buildingId: string) {
-    try {
-      await typedRequest<
-        '/api/v1/projects/{projectId}/buildings/{buildingId}',
-        'delete'
-      >('delete', `${BuildingService.BASE_ENDPOINT}/{projectId}/buildings/{buildingId}`, {
-        pathParams: { projectId, buildingId },
-      });
-      console.log('DELETE building successful');
-      return true;
-    } catch (error) {
-      console.error('DELETE building failed:', error);
-      return false;
-    }
+  // Delete a building
+  async deleteBuilding(projectId: string, buildingId: string): Promise<void> {
+    await typedRequest<'/api/v1/projects/{projectId}/buildings/{buildingId}', 'delete'>(
+      'delete',
+      `${BuildingService.BASE_PATH}/{projectId}/buildings/{buildingId}`,
+      { pathParams: { projectId, buildingId } },
+    );
+    console.log('DELETE building', buildingId);
   }
 }
 
