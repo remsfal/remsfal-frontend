@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-  storageService,
-  type UpdateStorageBody,
-  type GetStorageResponse,
-} from '@/services/StorageService';
+import { storageService, type Storage } from '@/services/StorageService';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
@@ -59,20 +55,13 @@ const validationErrors = computed(() => {
   return errors;
 });
 
-
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchStorageDetails = async () => {
   if (!props.projectId || !props.unitId) return;
 
   try {
-    const response = (await storageService.getStorage(
-      props.projectId,
-      props.unitId,
-    )) as GetStorageResponse; // Force TS to treat it correctly
-
-    // If API wraps in `data`, unwrap it
-    const data = (response as any).data ?? response;
+    const data: Storage = await storageService.getStorage(props.projectId, props.unitId);
 
     title.value = data.title ?? '';
     description.value = data.description ?? '';
@@ -116,7 +105,7 @@ const save = async () => {
   }
 
   // Prepare typed payload
-  const payload: UpdateStorageBody = {
+  const payload: Storage = {
     title: title.value,
     description: description.value,
     location: location.value,
