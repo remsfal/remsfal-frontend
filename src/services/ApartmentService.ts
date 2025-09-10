@@ -1,52 +1,78 @@
-import { typedRequest } from '../../src/services/api/typedRequest';
-import type { paths, components } from '../../src/services/api/platform-schema';
+import { typedRequest } from '@/services/api/typedRequest';
+import type { components } from '@/services/api/platform-schema';
 
-// --- Unified type export ---
 export type Apartment = components['schemas']['ApartmentJson'];
 
-// --- Service ---
-class ApartmentService {
-  private static readonly BASE_ENDPOINT = '/api/v1/projects' as const;
+export default class ApartmentService {
+  static readonly BASE_PATH = '/api/v1/projects' as const;
 
-  create(projectId: string, buildingId: string, apartment: Apartment) {
-    return typedRequest<
+  // Create a new apartment
+  async createApartment(projectId: string, buildingId: string, data: Apartment): Promise<Apartment> {
+    const apartment = await typedRequest<
       '/api/v1/projects/{projectId}/buildings/{buildingId}/apartments',
       'post',
       Apartment
-    >('post', `${ApartmentService.BASE_ENDPOINT}/{projectId}/buildings/{buildingId}/apartments`, {
-      pathParams: { projectId, buildingId },
-      body: apartment,
-    });
+    >(
+      'post',
+      `${ApartmentService.BASE_PATH}/{projectId}/buildings/{buildingId}/apartments`,
+      { pathParams: { projectId, buildingId }, body: data },
+    );
+    console.log('POST create apartment:', apartment);
+    return apartment;
   }
 
-  get(projectId: string, apartmentId: string) {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-      'get',
-      Apartment
-    >('get', `${ApartmentService.BASE_ENDPOINT}/{projectId}/apartments/{apartmentId}`, {
-      pathParams: { projectId, apartmentId },
-    });
+  // Get a single apartment
+  async getApartment(projectId: string, apartmentId: string): Promise<Apartment> {
+    try {
+      const apartment = await typedRequest<
+        '/api/v1/projects/{projectId}/apartments/{apartmentId}',
+        'get',
+        Apartment
+      >(
+        'get',
+        `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
+        { pathParams: { projectId, apartmentId } },
+      );
+      console.log('GET apartment:', apartment);
+      return apartment;
+    } catch (error: any) {
+      console.error('apartment retrieval error', error?.response?.status || error);
+      throw error?.response?.status || error;
+    }
   }
 
-  update(projectId: string, apartmentId: string, apartment: Apartment) {
-    return typedRequest<
+  // Update an apartment
+  async updateApartment(projectId: string, apartmentId: string, data: Apartment): Promise<Apartment> {
+    const updated = await typedRequest<
       '/api/v1/projects/{projectId}/apartments/{apartmentId}',
       'patch',
       Apartment
-    >('patch', `${ApartmentService.BASE_ENDPOINT}/{projectId}/apartments/{apartmentId}`, {
-      pathParams: { projectId, apartmentId },
-      body: apartment,
-    });
+    >(
+      'patch',
+      `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
+      { pathParams: { projectId, apartmentId }, body: data },
+    );
+    console.log('PATCH update apartment:', updated);
+    return updated;
   }
 
-  delete(projectId: string, apartmentId: string) {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-      'delete'
-    >('delete', `${ApartmentService.BASE_ENDPOINT}/{projectId}/apartments/{apartmentId}`, {
-      pathParams: { projectId, apartmentId },
-    });
+  // Delete an apartment (returns boolean for success/failure)
+  async deleteApartment(projectId: string, apartmentId: string): Promise<boolean> {
+    try {
+      await typedRequest<
+        '/api/v1/projects/{projectId}/apartments/{apartmentId}',
+        'delete'
+      >(
+        'delete',
+        `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
+        { pathParams: { projectId, apartmentId } },
+      );
+      console.log('DELETE apartment successful', apartmentId);
+      return true;
+    } catch (error) {
+      console.error('DELETE apartment failed:', error);
+      return false;
+    }
   }
 }
 
