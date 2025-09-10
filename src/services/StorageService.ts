@@ -1,67 +1,73 @@
+// src/services/StorageService.ts
 import { typedRequest } from '@/services/api/typedRequest';
-import type { RequestBody, ResponseType } from '@/services/api/typedRequest';
+import type { components } from '@/services/api/platform-schema';
 
-// Request bodies from OpenAPI paths
-export type CreateStorageBody = RequestBody<
-  '/api/v1/projects/{projectId}/buildings/{buildingId}/storages',
-  'post'
->;
-export type UpdateStorageBody = RequestBody<
-  '/api/v1/projects/{projectId}/storages/{storageId}',
-  'patch'
->;
+export type Storage = components['schemas']['StorageJson'];
 
-// Responses from OpenAPI paths
-export type GetStorageResponse = ResponseType<
-  '/api/v1/projects/{projectId}/storages/{storageId}',
-  'get'
->;
+export default class StorageService {
+  static readonly BASE_PATH = '/api/v1/projects' as const;
 
-export class StorageService {
-  async createStorage(
-    projectId: string,
-    buildingId: string,
-    body: CreateStorageBody,
-  ): Promise<ResponseType<'/api/v1/projects/{projectId}/buildings/{buildingId}/storages', 'post'>> {
-    return typedRequest(
-      'post',
+  // Create a new storage
+  async createStorage(projectId: string, buildingId: string, data: Storage): Promise<Storage> {
+    const storage = await typedRequest<
       '/api/v1/projects/{projectId}/buildings/{buildingId}/storages',
-      { pathParams: { projectId, buildingId }, body }
+      'post',
+      Storage
+    >(
+      'post',
+      `${StorageService.BASE_PATH}/{projectId}/buildings/{buildingId}/storages`,
+      { pathParams: { projectId, buildingId }, body: data },
     );
+    console.log('POST create storage:', storage);
+    return storage;
   }
 
-  async getStorage(
-    projectId: string,
-    storageId: string
-  ): Promise<GetStorageResponse> {
-    return typedRequest(
-      'get',
+  // Get a single storage
+  async getStorage(projectId: string, storageId: string): Promise<Storage> {
+    try {
+      const storage = await typedRequest<
+        '/api/v1/projects/{projectId}/storages/{storageId}',
+        'get',
+        Storage
+      >(
+        'get',
+        `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
+        { pathParams: { projectId, storageId } },
+      );
+      console.log('GET storage:', storage);
+      return storage;
+    } catch (error: any) {
+      console.error('Storage retrieval error', error?.response?.status || error);
+      throw error?.response?.status || error;
+    }
+  }
+
+  // Update a storage
+  async updateStorage(projectId: string, storageId: string, data: Storage): Promise<Storage> {
+    const updated = await typedRequest<
       '/api/v1/projects/{projectId}/storages/{storageId}',
-      { pathParams: { projectId, storageId } }
-    );
-  }
-
-  async updateStorage(
-    projectId: string,
-    storageId: string,
-    body: UpdateStorageBody
-  ): Promise<ResponseType<'/api/v1/projects/{projectId}/storages/{storageId}', 'patch'>> {
-    return typedRequest(
       'patch',
-      '/api/v1/projects/{projectId}/storages/{storageId}',
-      { pathParams: { projectId, storageId }, body }
+      Storage
+    >(
+      'patch',
+      `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
+      { pathParams: { projectId, storageId }, body: data },
     );
+    console.log('PATCH update storage:', updated);
+    return updated;
   }
 
-  async deleteStorage(
-    projectId: string,
-    storageId: string
-  ): Promise<void> {
-    return typedRequest(
-      'delete',
+  // Delete a storage
+  async deleteStorage(projectId: string, storageId: string): Promise<void> {
+    await typedRequest<
       '/api/v1/projects/{projectId}/storages/{storageId}',
-      { pathParams: { projectId, storageId } }
+      'delete'
+    >(
+      'delete',
+      `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
+      { pathParams: { projectId, storageId } },
     );
+    console.log('DELETE storage:', storageId);
   }
 }
 
