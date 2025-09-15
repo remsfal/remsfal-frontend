@@ -39,7 +39,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@primevue/themes": "^4.3.7",
-    "axios": "^1.8.4",
+    "axios": "^1.12.2",
     "chart.js": "^4.4.8",
     "chartjs-plugin-datalabels": "^2.2.0",
     "idb": "^8.0.3",
