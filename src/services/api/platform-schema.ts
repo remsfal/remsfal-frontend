@@ -40,6 +40,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         put?: never;
@@ -78,6 +85,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -273,6 +287,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         put?: never;
@@ -310,6 +331,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -359,6 +387,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The project does not exist */
                 404: {
                     headers: {
@@ -397,6 +432,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         options?: never;
@@ -429,6 +471,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4039,6 +4088,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         put?: never;
@@ -4062,6 +4118,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4096,6 +4159,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
