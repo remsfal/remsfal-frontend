@@ -8,15 +8,18 @@ import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
-import type {paths} from '@/services/api/platform-schema';
+import type { paths } from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
-import { RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router';
 
 const { t } = useI18n();
 
-type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
-type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
-type AddressListResponse = paths['/api/v1/address']['get']['responses'][200]['content']['application/json'];
+type UserGetResponse =
+  paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
+type UserPatchRequestBody =
+  paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
+type AddressListResponse =
+  paths['/api/v1/address']['get']['responses'][200]['content']['application/json'];
 type Address = AddressListResponse extends (infer U)[] ? U : never;
 type User = UserGetResponse & { address?: Address };
 
@@ -84,7 +87,7 @@ onMounted(() => {
   const sessionStore = useUserSessionStore();
 
   if (!userProfile.value) {
-    userProfile.value = {};  // initialize as empty object so you can safely set email
+    userProfile.value = {}; // initialize as empty object so you can safely set email
   }
   userProfile.value.email = sessionStore.user?.email || '';
 
@@ -114,14 +117,12 @@ function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string
   return typeof value === 'string' ? value : '';
 }
 
-
 function getUpdatedAddressValue(field: keyof Address): string {
   const value =
     (editedAddress.value as Record<keyof Address, unknown>)?.[field] ??
     (addressProfile.value as Record<keyof Address, unknown>)?.[field];
   return typeof value === 'string' ? value : '';
 }
-
 
 async function saveProfile(): Promise<void> {
   try {
@@ -227,12 +228,7 @@ function validateField(
   }
 
   // Only call checkValues if all profiles exist and are non-null
-  if (
-    userProfile.value &&
-    editedUserProfile.value &&
-    addressProfile.value &&
-    editedAddress.value
-  ) {
+  if (userProfile.value && editedUserProfile.value && addressProfile.value && editedAddress.value) {
     changes.value = checkValues(
       userProfile.value,
       editedUserProfile.value as User,
@@ -244,7 +240,6 @@ function validateField(
   }
 }
 
-
 // Validates the entered country code by checking if it matches a known country.
 // If no match is found an error indicating the country code is invalid will be displayed.
 function updateCountryFromCode() {
@@ -255,9 +250,7 @@ function updateCountryFromCode() {
     return;
   }
 
-  const matchingCountry = countries.value.find(
-    (country) => country.code === code,
-  );
+  const matchingCountry = countries.value.find((country) => country.code === code);
 
   if (!matchingCountry) {
     errorMessage.value.countryCode = 'Ungültiges Länderkürzel!';
@@ -266,7 +259,6 @@ function updateCountryFromCode() {
     errorMessage.value.countryCode = '';
   }
 }
-
 
 // Fetches city, province, and country code based on the entered zip code.
 // Displays an error message if the zip code is invalid or the service call fails.
@@ -297,7 +289,6 @@ async function getCity() {
     errorMessage.value.zip = 'Postleitzahl bitte überprüfen!';
   }
 }
-
 
 // Determines if there are any changes between the original user and address profiles and their edited
 // versions. Returns `true` if differences are detected, otherwise `false`.
@@ -363,7 +354,9 @@ const isDisabled = computed(() => {
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="firstName">{{ t('accountSettings.userProfile.name') }}:</label>
+                <label class="label" for="firstName"
+                  >{{ t('accountSettings.userProfile.name') }}:</label
+                >
                 <InputText
                   id="firstName"
                   v-model="editedUserProfile.firstName"
@@ -458,7 +451,9 @@ const isDisabled = computed(() => {
                 >
               </div>
             </div>
-            <Message class="required" size="small" severity="secondary" variant="simple">*Pflichtfelder</Message>
+            <Message class="required" size="small" severity="secondary" variant="simple"
+              >*Pflichtfelder</Message
+            >
           </template>
         </Card>
         <Card>
@@ -663,7 +658,7 @@ const isDisabled = computed(() => {
           >
             <p>Daten konnten nicht gespeichert werden!</p>
           </Dialog>
-       </div>
+        </div>
       </div>
     </div>
   </div>

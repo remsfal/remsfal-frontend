@@ -18,12 +18,12 @@ onMounted(async () => {
     const site = await siteService.getSite(props.projectId, props.siteId);
     initialValues.value.title = site.title;
     initialValues.value.description = site.description;
-//    initialValues.value.usableSpace = site.usableSpace.toString();
-//    initialValues.value.street = site.address.street;
-//    initialValues.value.city = site.address.city;
-//    initialValues.value.zip = site.address.zip;
-//    initialValues.value.province = site.address.province;
-//    initialValues.value.country = site.address.country;
+    //    initialValues.value.usableSpace = site.usableSpace.toString();
+    //    initialValues.value.street = site.address.street;
+    //    initialValues.value.city = site.address.city;
+    //    initialValues.value.zip = site.address.zip;
+    //    initialValues.value.province = site.address.province;
+    //    initialValues.value.country = site.address.country;
 
     console.log('Site data:', initialValues.value);
   } catch (error) {
@@ -39,19 +39,19 @@ const handleSubmit = async (formValues: any) => {
   loading.value = true;
   error.value = null;
 
-//  const address: AddressItem = {
-//    street: formValues.street,
-//    city: formValues.city,
-//    zip: formValues.zip,
-//    province: formValues.province,
-//    country: formValues.country,
-//  };
+  //  const address: AddressItem = {
+  //    street: formValues.street,
+  //    city: formValues.city,
+  //    zip: formValues.zip,
+  //    province: formValues.province,
+  //    country: formValues.country,
+  //  };
 
   const site: SiteUnit = {
     title: formValues.title,
     description: formValues.description,
     usableSpace: parseFloat(formValues.usableSpace),
-//    address: address,
+    //    address: address,
   };
 
   try {

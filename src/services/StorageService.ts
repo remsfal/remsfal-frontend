@@ -26,12 +26,10 @@ class StorageService {
   }
 
   async getStorage(projectId: string, storageId: string): Promise<StorageUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/storages/${storageId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    return axios.get(`${this.baseUrl}/${projectId}/storages/${storageId}`).then((response) => {
+      console.debug(response);
+      return response.data;
+    });
   }
 
   async updateStorage(
@@ -48,11 +46,9 @@ class StorageService {
   }
 
   async deleteStorage(projectId: string, storageId: string): Promise<void> {
-    return axios
-      .delete(`${this.baseUrl}/${projectId}/storages/${storageId}`)
-      .then((response) => {
-        console.debug(response);
-      });
+    return axios.delete(`${this.baseUrl}/${projectId}/storages/${storageId}`).then((response) => {
+      console.debug(response);
+    });
   }
 }
 

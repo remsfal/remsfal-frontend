@@ -72,7 +72,6 @@ onMounted(async () => {
           class="custom-scroll-height cursor-pointer"
           @rowClick="navigateToTenancyDetails($event.data.id)"
         >
-        
           <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
           <Column field="rentalEnd" header="Mietende" :sortable="true" />
 

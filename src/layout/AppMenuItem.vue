@@ -91,7 +91,7 @@ const itemClick = (event: Event, item: MenuItem) => {
 };
 
 const checkActiveRoute = (item: MenuItem) => {
-  if(item.to === undefined) {
+  if (item.to === undefined) {
     return false;
   }
   return route.path.includes(item.to);

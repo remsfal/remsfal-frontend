@@ -55,9 +55,7 @@ const fields: Field[] = [
     name: 'usableSpace',
     label: 'Nutzfläche (qm)',
     type: FieldType.Text,
-    validations: [
-      (value: unknown) => (!isNaN(Number(value)) ? null : 'Muss eine Zahl sein'),
-    ],
+    validations: [(value: unknown) => (!isNaN(Number(value)) ? null : 'Muss eine Zahl sein')],
   },
   { name: 'street', label: 'Straße und Hausnummer', type: FieldType.Text },
   { name: 'city', label: 'Stadt', type: FieldType.Text },
@@ -66,16 +64,18 @@ const fields: Field[] = [
   { name: 'country', label: 'Land', type: FieldType.Text },
 ];
 
-const initialValues = ref<Record<string, unknown>>(props.initialValues ?? {
-  title: '',
-  description: '',
-  usableSpace: '',
-  street: '',
-  city: '',
-  zip: '',
-  province: '',
-  country: '',
-});
+const initialValues = ref<Record<string, unknown>>(
+  props.initialValues ?? {
+    title: '',
+    description: '',
+    usableSpace: '',
+    street: '',
+    city: '',
+    zip: '',
+    province: '',
+    country: '',
+  },
+);
 
 const showFormer = ref(false);
 // Backend-Aufruf auskommentiert, da das backend mit den Daten noch nicht fertig ist.
@@ -93,7 +93,6 @@ onMounted(async () => {
   }
 });
 */
-
 </script>
 
 <template>
@@ -140,7 +139,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-
-
-

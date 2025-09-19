@@ -28,18 +28,18 @@ const filterUnit = ref<string[]>([]);
 const filterTenant = ref<string[]>([]);
 const filterOwner = ref<string[]>([]);
 const filterStatus = ref<string[]>([]);
-const filterDateRange = ref<Date[]|null>(null);
+const filterDateRange = ref<Date[] | null>(null);
 
 // Options
-const typeOptions = ref<{ label:string; value:string }[]>([]);
-const contractorOptions = ref<{ label:string; value:string }[]>([]);
-const projectOptions = ref<{ label:string; value:string }[]>([]);
-const unitOptions = ref<{ label:string; value:string }[]>([]);
-const tenantOptions = ref<{ label:string; value:string }[]>([]);
-const ownerOptions = ref<{ label:string; value:string }[]>([]);
+const typeOptions = ref<{ label: string; value: string }[]>([]);
+const contractorOptions = ref<{ label: string; value: string }[]>([]);
+const projectOptions = ref<{ label: string; value: string }[]>([]);
+const unitOptions = ref<{ label: string; value: string }[]>([]);
+const tenantOptions = ref<{ label: string; value: string }[]>([]);
+const ownerOptions = ref<{ label: string; value: string }[]>([]);
 const statusOptions = [
-  { label: t('inbox.filter.statusOptions.read'),   value: 'read' },
-  { label: t('inbox.filter.statusOptions.unread'), value: 'unread' }
+  { label: t('inbox.filter.statusOptions.read'), value: 'read' },
+  { label: t('inbox.filter.statusOptions.unread'), value: 'unread' },
 ];
 
 onMounted(async () => {
@@ -54,7 +54,7 @@ onMounted(async () => {
     const tenants = new Set<string>();
     const owners = new Set<string>();
 
-    data.forEach(msg => {
+    data.forEach((msg) => {
       types.add(msg.type);
       contractors.add(msg.contractor);
       projects.add(msg.project);
@@ -63,12 +63,12 @@ onMounted(async () => {
       owners.add(msg.owner);
     });
 
-    typeOptions.value       = [...types].map(v => ({ label: v, value: v }));
-    contractorOptions.value = [...contractors].map(v => ({ label: v, value: v }));
-    projectOptions.value    = [...projects].map(v => ({ label: v, value: v }));
-    unitOptions.value       = [...units].map(v => ({ label: v, value: v }));
-    tenantOptions.value     = [...tenants].map(v => ({ label: v, value: v }));
-    ownerOptions.value      = [...owners].map(v => ({ label: v, value: v }));
+    typeOptions.value = [...types].map((v) => ({ label: v, value: v }));
+    contractorOptions.value = [...contractors].map((v) => ({ label: v, value: v }));
+    projectOptions.value = [...projects].map((v) => ({ label: v, value: v }));
+    unitOptions.value = [...units].map((v) => ({ label: v, value: v }));
+    tenantOptions.value = [...tenants].map((v) => ({ label: v, value: v }));
+    ownerOptions.value = [...owners].map((v) => ({ label: v, value: v }));
   } finally {
     isLoading.value = false;
   }
@@ -79,70 +79,80 @@ const filteredMessages = computed(() => {
   const hasDateRange = filterDateRange.value?.length === 2;
   if (hasDateRange) {
     const [from, to] = filterDateRange.value!;
-    start = new Date(from); start.setHours(0, 0, 0, 0);
-    end   = new Date(to);   end.setHours(23, 59, 59, 999);
+    start = new Date(from);
+    start.setHours(0, 0, 0, 0);
+    end = new Date(to);
+    end.setHours(23, 59, 59, 999);
   }
 
-  return messages.value.filter(msg => {
+  return messages.value.filter((msg) => {
     const status = msg.isRead ? 'read' : 'unread';
 
     return (
-      (!filterType.value.length       || filterType.value.includes(msg.type))       &&
+      (!filterType.value.length || filterType.value.includes(msg.type)) &&
       (!filterContractor.value.length || filterContractor.value.includes(msg.contractor)) &&
-      (!filterProject.value.length    || filterProject.value.includes(msg.project))    &&
-      (!filterUnit.value.length       || filterUnit.value.includes(msg.unit))         &&
-      (!filterTenant.value.length     || filterTenant.value.includes(msg.tenant))     &&
-      (!filterOwner.value.length      || filterOwner.value.includes(msg.owner))       &&
-      (!filterStatus.value.length     || filterStatus.value.includes(status))         &&
-      (
-        !hasDateRange
-        || (msg.receivedAt >= start! && msg.receivedAt <= end!)
-      )
+      (!filterProject.value.length || filterProject.value.includes(msg.project)) &&
+      (!filterUnit.value.length || filterUnit.value.includes(msg.unit)) &&
+      (!filterTenant.value.length || filterTenant.value.includes(msg.tenant)) &&
+      (!filterOwner.value.length || filterOwner.value.includes(msg.owner)) &&
+      (!filterStatus.value.length || filterStatus.value.includes(status)) &&
+      (!hasDateRange || (msg.receivedAt >= start! && msg.receivedAt <= end!))
     );
   });
 });
 
-const onRowClick = (e:{ originalEvent:MouseEvent; data:InboxMessage }) => {
-  router.push({ name:'InboxDetail', params:{ id:e.data.id }});
+const onRowClick = (e: { originalEvent: MouseEvent; data: InboxMessage }) => {
+  router.push({ name: 'InboxDetail', params: { id: e.data.id } });
 };
 
-const markAsRead = (msg:InboxMessage) => {
-  msg.isRead = true; messages.value = [...messages.value];
+const markAsRead = (msg: InboxMessage) => {
+  msg.isRead = true;
+  messages.value = [...messages.value];
 };
-const markAsUnread = (msg:InboxMessage) => {
-  msg.isRead = false; messages.value = [...messages.value];
+const markAsUnread = (msg: InboxMessage) => {
+  msg.isRead = false;
+  messages.value = [...messages.value];
 };
 const markReadSelected = () => {
-  selectedMessages.value.forEach(m=>m.isRead=true);
-  messages.value=[...messages.value];
-  selectedMessages.value=[];
+  selectedMessages.value.forEach((m) => (m.isRead = true));
+  messages.value = [...messages.value];
+  selectedMessages.value = [];
 };
 const markUnreadSelected = () => {
-  selectedMessages.value.forEach(m=>m.isRead=false);
-  messages.value=[...messages.value];
-  selectedMessages.value=[];
+  selectedMessages.value.forEach((m) => (m.isRead = false));
+  messages.value = [...messages.value];
+  selectedMessages.value = [];
 };
-const deleteSelected = () => { isDeleteDialogVisible.value=true; };
+const deleteSelected = () => {
+  isDeleteDialogVisible.value = true;
+};
 const confirmDeleteSelected = () => {
-  const ids = new Set(selectedMessages.value.map(m=>m.id));
-  messages.value = messages.value.filter(m=>!ids.has(m.id));
-  selectedMessages.value=[]; isDeleteDialogVisible.value=false;
+  const ids = new Set(selectedMessages.value.map((m) => m.id));
+  messages.value = messages.value.filter((m) => !ids.has(m.id));
+  selectedMessages.value = [];
+  isDeleteDialogVisible.value = false;
 };
-const cancelDelete = () => { isDeleteDialogVisible.value=false; };
+const cancelDelete = () => {
+  isDeleteDialogVisible.value = false;
+};
 const clearFilters = () => {
-  filterType.value=[]; filterContractor.value=[]; filterProject.value=[];
-  filterUnit.value=[]; filterTenant.value=[]; filterOwner.value=[];
-  filterStatus.value=[]; filterDateRange.value=null;
+  filterType.value = [];
+  filterContractor.value = [];
+  filterProject.value = [];
+  filterUnit.value = [];
+  filterTenant.value = [];
+  filterOwner.value = [];
+  filterStatus.value = [];
+  filterDateRange.value = null;
 };
 
-const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
+const rowClass = (data: InboxMessage) => (!data.isRead ? 'font-semibold' : '');
 </script>
 
 <template>
   <main class="w-full px-6 py-8">
     <h1 class="text-2xl font-semibold mb-4">{{ t('inbox.title') }}</h1>
     <div class="card p-4 flex gap-6 -mx-6">
-
       <!-- Sidebar -->
       <aside class="w-72 flex-shrink-0 space-y-4 pr-4">
         <h2 class="text-lg font-semibold">{{ t('inbox.filter.title') }}</h2>
@@ -160,8 +170,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           />
           <i
             v-if="filterType.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
+            class="pi pi-times text-green-500 cursor-pointer absolute right-9 top-1/2 -translate-y-1/2"
             @click="filterType = []"
           />
         </div>
@@ -179,8 +188,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           />
           <i
             v-if="filterContractor.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
+            class="pi pi-times text-green-500 cursor-pointer absolute right-9 top-1/2 -translate-y-1/2"
             @click="filterContractor = []"
           />
         </div>
@@ -198,8 +206,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           />
           <i
             v-if="filterProject.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
+            class="pi pi-times text-green-500 cursor-pointer absolute right-9 top-1/2 -translate-y-1/2"
             @click="filterProject = []"
           />
         </div>
@@ -217,8 +224,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           />
           <i
             v-if="filterUnit.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
+            class="pi pi-times text-green-500 cursor-pointer absolute right-9 top-1/2 -translate-y-1/2"
             @click="filterUnit = []"
           />
         </div>
@@ -236,8 +242,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           />
           <i
             v-if="filterTenant.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
+            class="pi pi-times text-green-500 cursor-pointer absolute right-9 top-1/2 -translate-y-1/2"
             @click="filterTenant = []"
           />
         </div>
@@ -255,8 +260,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           />
           <i
             v-if="filterOwner.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
+            class="pi pi-times text-green-500 cursor-pointer absolute right-9 top-1/2 -translate-y-1/2"
             @click="filterOwner = []"
           />
         </div>
@@ -274,8 +278,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           />
           <i
             v-if="filterStatus.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
+            class="pi pi-times text-green-500 cursor-pointer absolute right-9 top-1/2 -translate-y-1/2"
             @click="filterStatus = []"
           />
         </div>
@@ -293,8 +296,7 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           />
           <i
             v-if="filterDateRange?.length === 2"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
+            class="pi pi-times text-green-500 cursor-pointer absolute right-9 top-1/2 -translate-y-1/2"
             @click="filterDateRange = null"
           />
         </div>
@@ -345,20 +347,27 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           >
             <Column selectionMode="multiple" headerStyle="width:3rem" />
             <Column
-              frozen alignFrozen="left"
-              headerStyle="width:4rem" :header="t('inbox.column.status')"
+              frozen
+              alignFrozen="left"
+              headerStyle="width:4rem"
+              :header="t('inbox.column.status')"
             >
               <template #body="slot">
                 <div class="flex justify-center">
                   <Button
                     v-if="!slot.data.isRead"
                     icon="pi pi-envelope"
-                    text rounded title="Als gelesen markieren"
+                    text
+                    rounded
+                    title="Als gelesen markieren"
                     @click.stop="markAsRead(slot.data)"
                     class="h-8 w-8"
                   />
                   <Button
-                    v-else text rounded title="Als ungelesen markieren"
+                    v-else
+                    text
+                    rounded
+                    title="Als ungelesen markieren"
                     @click.stop="markAsUnread(slot.data)"
                     class="h-8 w-8 text-gray-400"
                   />
@@ -366,32 +375,40 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
               </template>
             </Column>
 
-            <Column field="contractor"    :header="t('inbox.column.contractor')" sortable />
-            <Column field="type"          :header="t('inbox.column.type')"       sortable />
-            <Column field="subject"       :header="t('inbox.column.subject')"    sortable />
-            <Column field="project"       :header="t('inbox.column.project')"    sortable />
-            <Column field="unit"          :header="t('inbox.column.unit')"       sortable />
-            <Column field="tenant"        :header="t('inbox.column.tenant')"     sortable />
-            <Column field="owner"         :header="t('inbox.column.owner')"      sortable />
-            <Column field="receivedAt"    :header="t('inbox.column.receivedAt')" sortable />
+            <Column field="contractor" :header="t('inbox.column.contractor')" sortable />
+            <Column field="type" :header="t('inbox.column.type')" sortable />
+            <Column field="subject" :header="t('inbox.column.subject')" sortable />
+            <Column field="project" :header="t('inbox.column.project')" sortable />
+            <Column field="unit" :header="t('inbox.column.unit')" sortable />
+            <Column field="tenant" :header="t('inbox.column.tenant')" sortable />
+            <Column field="owner" :header="t('inbox.column.owner')" sortable />
+            <Column field="receivedAt" :header="t('inbox.column.receivedAt')" sortable />
           </DataTable>
         </div>
 
         <Dialog
           v-model:visible="isDeleteDialogVisible"
           :header="t('inbox.confirmDeleteTitle')"
-          modal :closable="false"
+          modal
+          :closable="false"
           class="w-11/12 md:w-6/12 lg:w-4/12"
         >
           <p class="p-2">{{ t('inbox.confirmDeleteMessage', [selectedMessages.length]) }}</p>
           <template #footer>
-            <Button :label="t('inbox.actions.cancel')" text class="p-button-text" @click="cancelDelete" />
-            <Button :label="t('inbox.actions.confirm')" severity="danger" @click="confirmDeleteSelected" />
+            <Button
+              :label="t('inbox.actions.cancel')"
+              text
+              class="p-button-text"
+              @click="cancelDelete"
+            />
+            <Button
+              :label="t('inbox.actions.confirm')"
+              severity="danger"
+              @click="confirmDeleteSelected"
+            />
           </template>
         </Dialog>
       </section>
     </div>
   </main>
 </template>
-
-

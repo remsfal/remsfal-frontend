@@ -21,7 +21,6 @@ const tenancy = ref<TenancyItem>({
   active: false,
 });
 
-
 const isValidForm = computed(() => {
   return (
     tenancy.value.rentalStart &&
@@ -64,7 +63,11 @@ function updateUnits(event: any) {
 
 onMounted(() => {
   tenancy.value.rentalStart = new Date();
-  tenancy.value.rentalEnd = new Date(tenancy.value.rentalStart.getFullYear() + 1, tenancy.value.rentalStart.getMonth(), tenancy.value.rentalStart.getDate());
+  tenancy.value.rentalEnd = new Date(
+    tenancy.value.rentalStart.getFullYear() + 1,
+    tenancy.value.rentalStart.getMonth(),
+    tenancy.value.rentalStart.getDate(),
+  );
 });
 </script>
 
@@ -72,22 +75,38 @@ onMounted(() => {
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold">Neuer Mietvertrag erstellen</h2>
-      <Button label="Speichern & zur Übersicht" icon="pi pi-save"
-        class="bg-green-600 hover:bg-green-700 transition-colors" :disabled="!isValidForm" @click="saveTenancy()" />
+      <Button
+        label="Speichern & zur Übersicht"
+        icon="pi pi-save"
+        class="bg-green-600 hover:bg-green-700 transition-colors"
+        :disabled="!isValidForm"
+        @click="saveTenancy()"
+      />
     </div>
 
     <div class="grid grid-cols-1 gap-6">
-      <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @update:rentalStart="tenancy.rentalStart = $event"
-        @update:rentalEnd="tenancy.rentalEnd = $event" />
+      <TenancyDataComponent
+        v-if="tenancy"
+        :tenancy="tenancy"
+        @update:rentalStart="tenancy.rentalStart = $event"
+        @update:rentalEnd="tenancy.rentalEnd = $event"
+      />
 
       <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div class="space-y-4">
-          <TenantsTableComponent :tenants="tenancy.listOfTenants" :isDeleteButtonEnabled="true"
-            @onChange=updateTenants />
+          <TenantsTableComponent
+            :tenants="tenancy.listOfTenants"
+            :isDeleteButtonEnabled="true"
+            @onChange="updateTenants"
+          />
         </div>
 
         <div class="space-y-4">
-          <UnitsTableComponent :listOfUnits="tenancy.listOfUnits" :isDeleteButtonEnabled="true" @onChange=updateUnits />
+          <UnitsTableComponent
+            :listOfUnits="tenancy.listOfUnits"
+            :isDeleteButtonEnabled="true"
+            @onChange="updateUnits"
+          />
         </div>
       </div>
     </div>
