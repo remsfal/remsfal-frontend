@@ -70,7 +70,7 @@
     "@vue/devtools": "^8.0.1",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/test-utils": "^2.4.6",
-    "@vue/tsconfig": "^0.7.0",
+    "@vue/tsconfig": "^0.8.1",
     "autoprefixer": "^10.4.21",
     "chai": "^6.0.1",
     "cypress": "^14.5.4",
