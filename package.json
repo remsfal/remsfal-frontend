@@ -22,6 +22,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint --quiet",
+    "lint:report": "mkdir -p reports && eslint --format json --output-file reports/eslint-report.json",
     "lint:fix": "eslint --fix",
     "format": "prettier --write src/",
     "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'",
