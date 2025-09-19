@@ -48,7 +48,7 @@ const loadTasks = () => {
 const loadTaskswithOpenStatus = () => {
   const projectId = props.projectId;
   taskService
-    .getTasks(projectId,'OPEN')
+    .getTasks(projectId, 'OPEN')
     .then((tasklist) => {
       taskbyStatusOpen.value = tasklist.tasks;
     })
@@ -59,7 +59,7 @@ const loadTaskswithOpenStatus = () => {
 const loadMyTasks = () => {
   const projectId = props.projectId;
   taskService
-    .getTasks(projectId,null, props.owner)
+    .getTasks(projectId, null, props.owner)
     .then((tasklist) => {
       myTasks.value = tasklist.tasks;
     })

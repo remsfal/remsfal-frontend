@@ -76,15 +76,36 @@ function handleTenancyDataChange(updatedTenancy: TenancyItem) {
     <!-- Main Content -->
     <div class="grid grid-cols-1 gap-6">
       <!-- Tenants Section -->
-      <TenantsTableComponent :tenants="tenancy?.listOfTenants || []" :isDeleteButtonEnabled="false" />
-      <UnitsTableComponent :listOfUnits="tenancy?.listOfUnits || []" :isDeleteButtonEnabled="false" />
+      <TenantsTableComponent
+        :tenants="tenancy?.listOfTenants || []"
+        :isDeleteButtonEnabled="false"
+      />
+      <UnitsTableComponent
+        :listOfUnits="tenancy?.listOfUnits || []"
+        :isDeleteButtonEnabled="false"
+      />
 
       <!-- Delete Button -->
       <div class="flex justify-end">
-        <Button icon="pi pi-save" label="Speichern" text raised rounded
-          class="mb-2 mr-2 hover:bg-blue-600 transition-colors" @click="updateTenancy(tenancy)" />
-        <Button icon="pi pi-trash" label="Löschen" severity="danger" text raised rounded
-          class="mb-2 mr-2 hover:bg-red-600 transition-colors" @click="confirmDelete()" />
+        <Button
+          icon="pi pi-save"
+          label="Speichern"
+          text
+          raised
+          rounded
+          class="mb-2 mr-2 hover:bg-blue-600 transition-colors"
+          @click="updateTenancy(tenancy)"
+        />
+        <Button
+          icon="pi pi-trash"
+          label="Löschen"
+          severity="danger"
+          text
+          raised
+          rounded
+          class="mb-2 mr-2 hover:bg-red-600 transition-colors"
+          @click="confirmDelete()"
+        />
       </div>
     </div>
   </div>

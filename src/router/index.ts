@@ -315,7 +315,6 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-
 export { routes };
 
 export default router;

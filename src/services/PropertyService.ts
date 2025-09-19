@@ -52,43 +52,38 @@ export interface PropertyUnit {
   plotArea?: number;
 }
 
-
 class PropertyService {
   private readonly baseUrl = '/api/v1/projects';
 
-  async createProperty(
-    projectId: string,
-    property: PropertyUnit
-  ): Promise<PropertyUnit> {
-    const response = await typedRequest<
-      "/api/v1/projects/{projectId}/properties",
-      "post"
-    >('post', `${this.baseUrl}/{projectId}/properties`, {
-      pathParams: { projectId },
-      body: property,
-    });
+  async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
+    const response = await typedRequest<'/api/v1/projects/{projectId}/properties', 'post'>(
+      'post',
+      `${this.baseUrl}/{projectId}/properties`,
+      {
+        pathParams: { projectId },
+        body: property,
+      },
+    );
     console.debug(response);
     return response as PropertyUnit;
   }
 
   async getPropertyTree(projectId: string): Promise<PropertyList> {
-    const response = await typedRequest<
-      "/api/v1/projects/{projectId}/properties",
-      "get"
-    >('get', `${this.baseUrl}/{projectId}/properties`, {
-      pathParams: { projectId },
-    });
+    const response = await typedRequest<'/api/v1/projects/{projectId}/properties', 'get'>(
+      'get',
+      `${this.baseUrl}/{projectId}/properties`,
+      {
+        pathParams: { projectId },
+      },
+    );
     console.log('properties returned', response);
     return response as PropertyList;
   }
 
-  async getProperty(
-    projectId: string,
-    propertyId: string
-  ): Promise<PropertyUnit> {
+  async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
     const response = await typedRequest<
-      "/api/v1/projects/{projectId}/properties/{propertyId}",
-      "get"
+      '/api/v1/projects/{projectId}/properties/{propertyId}',
+      'get'
     >('get', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
       pathParams: { projectId, propertyId },
     });
@@ -99,11 +94,11 @@ class PropertyService {
   async updateProperty(
     projectId: string,
     propertyId: string,
-    property: PropertyUnit
+    property: PropertyUnit,
   ): Promise<PropertyUnit> {
     const response = await typedRequest<
-      "/api/v1/projects/{projectId}/properties/{propertyId}",
-      "patch"
+      '/api/v1/projects/{projectId}/properties/{propertyId}',
+      'patch'
     >('patch', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
       pathParams: { projectId, propertyId },
       body: property,
@@ -112,16 +107,14 @@ class PropertyService {
     return response as PropertyUnit;
   }
 
-  async deleteProperty(
-    projectId: string,
-    propertyId: string
-  ): Promise<void> {
-    await typedRequest<
-      "/api/v1/projects/{projectId}/properties/{propertyId}",
-      "delete"
-    >('delete', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
-      pathParams: { projectId, propertyId },
-    });
+  async deleteProperty(projectId: string, propertyId: string): Promise<void> {
+    await typedRequest<'/api/v1/projects/{projectId}/properties/{propertyId}', 'delete'>(
+      'delete',
+      `${this.baseUrl}/{projectId}/properties/{propertyId}`,
+      {
+        pathParams: { projectId, propertyId },
+      },
+    );
     console.debug(`Deleted property ${propertyId} from project ${projectId}`);
   }
 }

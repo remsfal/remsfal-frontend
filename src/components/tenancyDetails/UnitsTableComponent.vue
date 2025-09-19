@@ -24,9 +24,9 @@ const localListOfUnits = ref<TenancyUnitItem[]>([]);
 watch(
   () => props.listOfUnits,
   (newVal) => {
-    localListOfUnits.value = newVal?.map(t => ({ ...t }));
+    localListOfUnits.value = newVal?.map((t) => ({ ...t }));
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 const projectStore = useProjectStore();
@@ -70,7 +70,7 @@ const loadDropdownOptions = async () => {
   } catch (error) {
     console.error('Failed to load dropdown options:', error);
   }
-}
+};
 
 onMounted(() => {
   loadDropdownOptions();
@@ -127,25 +127,53 @@ const displayedColumns = computed(() => {
   <div class="text-lg font-semibold text-[2rem]">Mietobjekte</div>
   <Card>
     <template #header>
-      <Button label="Neues Mietobjekt hinzufügen" icon="pi pi-plus" class="ml-6 mt-4" @click="addNewRow" />
+      <Button
+        label="Neues Mietobjekt hinzufügen"
+        icon="pi pi-plus"
+        class="ml-6 mt-4"
+        @click="addNewRow"
+      />
     </template>
     <template #content>
-      <DataTable :value="localListOfUnits" :rows="10" :rowHover="true" dataKey="id" tableStyle="min-width: 60rem"
-        scrollable scrollDirection="both" scrollHeight="var(--custom-scroll-height)" editMode="cell"
-        class="custom-scroll-height" :pt="{
+      <DataTable
+        :value="localListOfUnits"
+        :rows="10"
+        :rowHover="true"
+        dataKey="id"
+        tableStyle="min-width: 60rem"
+        scrollable
+        scrollDirection="both"
+        scrollHeight="var(--custom-scroll-height)"
+        editMode="cell"
+        class="custom-scroll-height"
+        :pt="{
           table: { style: 'min-width: 50rem' },
           column: {
             bodycell: ({ state }: DataTablePassThroughMethodOptions) => ({
               class: [{ '!py-0': state['d_editing'] }],
             }),
           },
-        }" @cellEditComplete="onCellEditComplete">
-        <Column v-for="(col) in displayedColumns" :key="col.field" :field="col.field" :header="col.header" sortable
-          style="width: 25%">
+        }"
+        @cellEditComplete="onCellEditComplete"
+      >
+        <Column
+          v-for="col in displayedColumns"
+          :key="col.field"
+          :field="col.field"
+          :header="col.header"
+          sortable
+          style="width: 25%"
+        >
           <template #editor="{ data, field }">
-            <Select v-model="data[field]" :options="field === 'rentalObject' ? rentalObjects : unitTypes"
-              v-if="col.field !== 'actions'" optionLabel="label" optionValue="value" placeholder="Auswählen..."
-              filter />
+            <Select
+              v-model="data[field]"
+              :options="field === 'rentalObject' ? rentalObjects : unitTypes"
+              v-if="col.field !== 'actions'"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Auswählen..."
+              filter
+            />
           </template>
 
           <template v-if="col.field === 'actions'" #body="{ index }">

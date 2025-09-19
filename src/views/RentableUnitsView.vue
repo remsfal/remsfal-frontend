@@ -34,7 +34,6 @@ const selectedKey = ref<TreeTableSelectionKeys>({});
 const showDeleteDialog = ref(false);
 const nodeToDelete = ref<RentableUnitTreeNode | null>(null);
 
-
 const router = useRouter();
 
 async function fetchPropertyTree(projectId: string): Promise<RentableUnitTreeNode[]> {
@@ -179,7 +178,6 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                     class="mr-2 mb-2"
                     @click="collapseAll()"
                   />
-
                 </div>
               </div>
             </template>
@@ -213,7 +211,6 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
               </template>
             </Column>
 
-
             <Column frozen alignFrozen="right" bodyClass="flex flex-wrap justify-end">
               <template #body="{ node }">
                 <div class="flex flex-wrap justify-end gap-2">
@@ -240,11 +237,27 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
         </div>
       </div>
     </div>
-    <Dialog v-model:visible="showDeleteDialog" header="Löschen bestätigen" modal data-testid="deleteDialog">
+    <Dialog
+      v-model:visible="showDeleteDialog"
+      header="Löschen bestätigen"
+      modal
+      data-testid="deleteDialog"
+    >
       <p>Bist du sicher, dass du dieses Objekt löschen möchtest?</p>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="showDeleteDialog = false" data-testid="cancelDelete"/>
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="deleteConfirmed" data-testid="confirmDeleteButton"/>
+        <Button
+          label="Abbrechen"
+          icon="pi pi-times"
+          @click="showDeleteDialog = false"
+          data-testid="cancelDelete"
+        />
+        <Button
+          label="Löschen"
+          icon="pi pi-check"
+          severity="danger"
+          @click="deleteConfirmed"
+          data-testid="confirmDeleteButton"
+        />
       </template>
     </Dialog>
   </main>

@@ -157,17 +157,28 @@ defineExpose({ fetchCommercialDetails });
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
-            <label for="title" class="block text-gray-700 mb-1">{{ t('rentableUnits.form.title') }}</label>
+            <label for="title" class="block text-gray-700 mb-1">{{
+              t('rentableUnits.form.title')
+            }}</label>
             <input id="title" v-model="title" type="text" class="form-input w-full" />
           </div>
 
           <div class="col-span-2">
-            <label for="description" class="block text-gray-700 mb-1">{{ t('rentableUnits.form.description') }}</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <label for="description" class="block text-gray-700 mb-1">{{
+              t('rentableUnits.form.description')
+            }}</label>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            ></textarea>
           </div>
 
           <div class="col-span-2">
-            <label for="location" class="block text-gray-700 mb-1">{{ t('property.address') }}</label>
+            <label for="location" class="block text-gray-700 mb-1">{{
+              t('property.address')
+            }}</label>
             <input id="location" v-model="location" type="text" class="form-input w-full" />
           </div>
 
@@ -175,14 +186,24 @@ defineExpose({ fetchCommercialDetails });
             <label for="commercialSpace" class="block text-gray-700 mb-1">
               {{ t('commercialUnit.commercialSpace') }} (m²)
             </label>
-            <input id="commercialSpace" v-model.number="commercialSpace" type="number" class="form-input w-full" />
+            <input
+              id="commercialSpace"
+              v-model.number="commercialSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
 
           <div>
             <label for="heatingSpace" class="block text-gray-700 mb-1">
               {{ t('commercialUnit.heatingSpace') }} (m²)
             </label>
-            <input id="heatingSpace" v-model.number="heatingSpace" type="number" class="form-input w-full" />
+            <input
+              id="heatingSpace"
+              v-model.number="heatingSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
         </div>
 

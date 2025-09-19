@@ -83,21 +83,15 @@ function abort() {
       {{ errorMessage || '&nbsp;' }}
     </small>
     <div class="flex justify-end gap-2">
-    <Button
-    type="reset"
-    :label="t('button.cancel')"
-    icon="pi pi-times"
-    iconPos="left"
-    severity="secondary"
-    @click="abort"
-    />
-    <Button
-    type="submit"
-    :label="t('button.create')"
-    icon="pi pi-plus"
-    iconPos="left"
-    />
+      <Button
+        type="reset"
+        :label="t('button.cancel')"
+        icon="pi pi-times"
+        iconPos="left"
+        severity="secondary"
+        @click="abort"
+      />
+      <Button type="submit" :label="t('button.create')" icon="pi pi-plus" iconPos="left" />
     </div>
-
   </form>
 </template>

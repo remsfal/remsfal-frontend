@@ -73,7 +73,7 @@ onMounted(async () => {
       task.value.relatedTo = task.value.relatedTo || 'Nicht angegeben';
 
       // Originalwerte speichern
-      originalTask.value = JSON.parse(JSON.stringify(task.value)); 
+      originalTask.value = JSON.parse(JSON.stringify(task.value));
     }
   } catch (error) {
     alert(
@@ -119,7 +119,7 @@ const saveTask = async () => {
       task.value.description,
       task.value.status,
       task.value.ownerId,
-    );   
+    );
     originalTask.value = JSON.parse(JSON.stringify(task.value));
 
     loading.value = true;
@@ -131,7 +131,6 @@ const saveTask = async () => {
     alert('Aufgabe konnte nicht gespeichert werden !: ' + error);
   }
 };
-
 </script>
 
 <template>

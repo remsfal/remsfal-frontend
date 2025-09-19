@@ -27,12 +27,10 @@ class ApartmentService {
   }
 
   async getApartment(projectId: string, apartmentId: string): Promise<ApartmentUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/apartments/${apartmentId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+    return axios.get(`${this.baseUrl}/${projectId}/apartments/${apartmentId}`).then((response) => {
+      console.debug(response);
+      return response.data;
+    });
   }
 
   async updateApartment(

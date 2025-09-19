@@ -13,26 +13,21 @@ type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'option
 type Method = HttpMethod & keyof paths[Path];
 
 // Extract request params if defined in OpenAPI
-export type RequestParams<
-  P extends Path,
-  M extends Method
-> = paths[P][M] extends { parameters?: infer Params } ? Params : unknown;
+export type RequestParams<P extends Path, M extends Method> = paths[P][M] extends {
+  parameters?: infer Params;
+}
+  ? Params
+  : unknown;
 
 // Extract request body if defined in OpenAPI
-export type RequestBody<
-  P extends Path,
-  M extends Method
-> = paths[P][M] extends {
+export type RequestBody<P extends Path, M extends Method> = paths[P][M] extends {
   requestBody?: { content: { 'application/json': infer Body } };
 }
   ? Body
   : undefined;
 
 // Extract 200 OK response type if defined in OpenAPI
-export type ResponseType<
-  P extends Path,
-  M extends Method
-> = paths[P][M] extends {
+export type ResponseType<P extends Path, M extends Method> = paths[P][M] extends {
   responses: { 200: { content: { 'application/json': infer Res } } };
 }
   ? Res
@@ -40,23 +35,22 @@ export type ResponseType<
 
 // Utility to flatten nested query parameters into query string keys
 function flattenParams(obj: Record<string, any>, prefix = ''): Record<string, any> {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    const fullKey = prefix ? `${prefix}[${key}]` : key;
-    if (typeof value === 'object' && value !== null) {
-      Object.assign(acc, flattenParams(value, fullKey));
-    } else {
-      acc[fullKey] = value;
-    }
-    return acc;
-  }, {} as Record<string, any>);
+  return Object.entries(obj).reduce(
+    (acc, [key, value]) => {
+      const fullKey = prefix ? `${prefix}[${key}]` : key;
+      if (typeof value === 'object' && value !== null) {
+        Object.assign(acc, flattenParams(value, fullKey));
+      } else {
+        acc[fullKey] = value;
+      }
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
 }
 
 // Main typedRequest with optional response type override (ResOverride)
-export async function typedRequest<
-  P extends Path,
-  M extends Method,
-  ResOverride = unknown
->(
+export async function typedRequest<P extends Path, M extends Method, ResOverride = unknown>(
   method: M,
   path: P,
   options: {
@@ -64,7 +58,7 @@ export async function typedRequest<
     body?: RequestBody<P, M>;
     config?: AxiosRequestConfig;
     pathParams?: Record<string, string | number>;
-  } = {}
+  } = {},
 ): Promise<[ResOverride] extends [unknown] ? ResponseType<P, M> : ResOverride> {
   let url = path as string;
   const rawParams = options.params ?? {};

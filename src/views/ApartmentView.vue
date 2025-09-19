@@ -5,7 +5,6 @@ import { apartmentService, type ApartmentUnit } from '@/services/ApartmentServic
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
-
 const props = defineProps<{
   projectId: string;
   unitId: string;
@@ -169,7 +168,12 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            ></textarea>
           </div>
 
           <!-- Standort -->
@@ -180,17 +184,32 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
           <div>
             <label for="heatingSpace" class="block text-gray-700 mb-1">Heizfläche (m²)</label>
-            <input id="heatingSpace" v-model.number="heatingSpace" type="number" class="form-input w-full" />
+            <input
+              id="heatingSpace"
+              v-model.number="heatingSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
 
           <div>
             <label for="livingSpace" class="block text-gray-700 mb-1">Wohnfläche (m²)</label>
-            <input id="livingSpace" v-model.number="livingSpace" type="number" class="form-input w-full" />
+            <input
+              id="livingSpace"
+              v-model.number="livingSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
 
           <div class="col-span-2">
             <label for="usableSpace" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
-            <input id="usableSpace" v-model.number="usableSpace" type="number" class="form-input w-full" />
+            <input
+              id="usableSpace"
+              v-model.number="usableSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
         </div>
 

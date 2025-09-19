@@ -75,7 +75,10 @@ const initialCommercialData = ref<CommercialUnit>({
 onMounted(async () => {
   if (props.commercialId) {
     try {
-      initialCommercialData.value = await commercialService.getCommercial(props.projectId, props.commercialId);
+      initialCommercialData.value = await commercialService.getCommercial(
+        props.projectId,
+        props.commercialId,
+      );
     } catch (error) {
       console.error('Error fetching commercial data:', error);
     }

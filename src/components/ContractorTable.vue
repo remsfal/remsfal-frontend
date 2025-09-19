@@ -45,7 +45,9 @@ onMounted(() => {
     <template #expansion="slotProps">
       <div class="p-4">
         <h4>Details für "{{ slotProps.data.title }}"</h4>
-        <p><strong>Beschreibung:</strong> {{ slotProps.data.description || 'Keine Beschreibung' }}</p>
+        <p>
+          <strong>Beschreibung:</strong> {{ slotProps.data.description || 'Keine Beschreibung' }}
+        </p>
         <p><strong>Status:</strong> {{ slotProps.data.status }}</p>
       </div>
     </template>
