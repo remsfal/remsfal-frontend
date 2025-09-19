@@ -1105,8 +1105,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/address/countries" : {
@@ -1125,8 +1131,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/authentication/jwks" : {
@@ -1237,8 +1249,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "post" : {
         "summary" : "Create a new project",
@@ -1273,8 +1291,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}" : {
@@ -1316,8 +1340,14 @@
           },
           "404" : {
             "description" : "The project does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "get" : {
         "summary" : "Retrieve information of a project",
@@ -1347,8 +1377,14 @@
           },
           "404" : {
             "description" : "The project does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "delete" : {
         "summary" : "Delete an existing project",
@@ -1368,8 +1404,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}/apartments" : {
@@ -4729,8 +4771,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "get" : {
         "summary" : "Retrieve information of this user identified by the cookie.",
@@ -4747,8 +4795,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "delete" : {
         "summary" : "Delete this user identified by the cookie.",
@@ -4758,8 +4812,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/zeebe/start" : {
