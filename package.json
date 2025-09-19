@@ -22,6 +22,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint --quiet",
+    "lint:report": "mkdir -p reports && eslint --format json --output-file reports/eslint-report.json",
     "lint:fix": "eslint --fix",
     "format": "prettier --write src/",
     "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'",
@@ -56,7 +57,7 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.14.5",
     "@intlify/eslint-plugin-vue-i18n": "^3.2.0",
-    "@pinia/testing": "^0.1.7",
+    "@pinia/testing": "^1.0.2",
     "@primevue/auto-import-resolver": "^4.3.5",
     "@redocly/cli": "^1.34.5",
     "@stylistic/eslint-plugin-js": "^4.4.1",

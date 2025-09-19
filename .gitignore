@@ -25,6 +25,9 @@ lib-cov
 coverage
 *.lcov
 
+# ESLint and other reports
+reports/
+
 # nyc test coverage
 .nyc_output
 
