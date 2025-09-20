@@ -1,82 +1,51 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
 import ProjectSelectionView from '../../src/views/ManagerView.vue';
-import ProjectService from '../../src/services/ProjectService';
+import { projectService } from '../../src/services/ProjectService';
 import { useProjectStore } from '../../src/stores/ProjectStore';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 
-vi.mock('@/services/ProjectService');
+// Mock projectService singleton
+vi.mock('@/services/ProjectService', () => ({
+  projectService: {
+    getProjects: vi.fn(),
+  },
+}));
+
+// Mock Pinia store
 vi.mock('@/stores/ProjectStore', () => ({
   useProjectStore: vi.fn(),
 }));
-vi.mock('primevue/datatable', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    actual,
-    default: {
-      name: 'DataTable',
-      template: '<div><slot /></div>',
-    },
-  };
-});
 
-vi.mock('primevue/column', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    actual,
-    default: {
-      name: 'Column',
-      template: '<div><slot /></div>',
-    },
-  };
-});
-
-vi.mock('primevue/button', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    actual,
-    default: {
-      name: 'Button',
-      template: '<button><slot /></button>',
-    },
-  };
-});
-
-vi.mock('primevue/dialog', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    actual,
-    default: {
-      name: 'Dialog',
-      template: '<div><slot /></div>',
-    },
-  };
-});
+// PrimeVue stubs
+vi.mock('primevue/datatable', () => ({
+  default: { name: 'DataTable', template: '<div><slot /></div>' },
+}));
+vi.mock('primevue/column', () => ({
+  default: { name: 'Column', template: '<div><slot /></div>' },
+}));
+vi.mock('primevue/button', () => ({
+  default: { name: 'Button', template: '<button><slot /></button>' },
+}));
+vi.mock('primevue/dialog', () => ({
+  default: { name: 'Dialog', template: '<div><slot /></div>' },
+}));
 
 describe('ManagerView.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    // Create and set Pinia instance
     const pinia = createPinia();
     setActivePinia(pinia);
 
-    // Mock implementations
-    ProjectService.mockImplementation(() => ({
-      getProjects: vi.fn().mockResolvedValue({ projects: [], total: 0 }),
-    }));
+    (projectService.getProjects as Mock).mockResolvedValue({ projects: [], total: 0 });
 
-//    useRouter.mockReturnValue({
-//      push: vi.fn(),
-//    });
-
-    useProjectStore.mockReturnValue({
+    (useProjectStore as unknown as Mock).mockReturnValue({
       setSelectedProject: vi.fn(),
       projectId: '123',
     });
 
-    // Mount the component with Pinia
     wrapper = shallowMount(ProjectSelectionView);
   });
 
@@ -86,12 +55,14 @@ describe('ManagerView.vue', () => {
   });
 
   it('opens and closes the dialog', async () => {
-    expect(wrapper.vm.display).toBe(false);
-    wrapper.vm.open();
+    const vm = wrapper.vm as any;
+
+    expect(vm.display).toBe(false);
+    vm.open();
     await nextTick();
-    expect(wrapper.vm.display).toBe(true);
-    wrapper.vm.close();
+    expect(vm.display).toBe(true);
+    vm.close();
     await nextTick();
-    expect(wrapper.vm.display).toBe(false);
+    expect(vm.display).toBe(false);
   });
 });

@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { tenancyService, type TenantItem, type TenancyItem } from '@/services/TenancyService';
+import { tenancyService } from '@/services/TenancyService';
+import type { components } from '@/services/api/platform-schema';
+
+type TenantItem = components['schemas']['UserJson'];
+type TenancyItem = components['schemas']['TenancyJson'];
+
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -30,7 +35,8 @@ function deleteTenant(tenantId: string) {
 }
 
 function confirmDeletion() {
-  if (tenantToDelete.value) {
+  if (tenantToDelete.value?.id) {
+    // only if id exists
     deleteTenant(tenantToDelete.value.id);
   }
   confirmationDialogVisible.value = false;
@@ -72,7 +78,6 @@ onMounted(async () => {
           class="custom-scroll-height cursor-pointer"
           @rowClick="navigateToTenancyDetails($event.data.id)"
         >
-        
           <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
           <Column field="rentalEnd" header="Mietende" :sortable="true" />
 

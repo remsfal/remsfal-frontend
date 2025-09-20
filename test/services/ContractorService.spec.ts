@@ -21,7 +21,7 @@ describe('ContractorService (MSW with http)', () => {
               id: taskId,
               title: 'Task 1',
               description: 'Description 1',
-              status: 'OPEN',  // matches TaskStatus type
+              status: 'OPEN',
             },
           ],
         });
@@ -29,10 +29,11 @@ describe('ContractorService (MSW with http)', () => {
     );
 
     const taskList = await service.getTasks();
+    const tasks = taskList.tasks ?? []; // <-- safe default
 
-    expect(taskList.tasks.length).toBe(1);
-    expect(taskList.tasks[0].title).toBe('Task 1');
-    expect(taskList.tasks[0].status).toBe('OPEN');
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].title).toBe('Task 1');
+    expect(tasks[0].status).toBe('OPEN');
   });
 
   it('should get a single task', async () => {

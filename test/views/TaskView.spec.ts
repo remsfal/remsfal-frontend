@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
-import TaskService, { Status, TaskItem } from '../../src/services/TaskService';
+import { TaskService, StatusValues, TaskItemJson } from '../../src/services/TaskService';
+
+type TaskViewVm = InstanceType<typeof TaskView> & { visible: boolean };
 
 describe('TaskView', () => {
   let wrapper: VueWrapper;
@@ -31,7 +33,7 @@ describe('TaskView', () => {
     it('sets "visible" to true when the button is clicked', async () => {
       const button = wrapper.find('.my-btn');
       await button.trigger('click');
-      expect(wrapper.vm.visible).toBe(true);
+      expect((wrapper.vm as TaskViewVm).visible).toBe(true);
     });
   });
 
@@ -58,19 +60,19 @@ describe('TaskView', () => {
     it('should return a list of tasks', async () => {
       // Arrange
       const projectId = 'test-project';
-      const mockTasks: TaskItem[] = [
+      const mockTasks: TaskItemJson[] = [
         {
           id: '1',
           title: 'Task 1',
           name: 'task1',
-          status: Status['OPEN'],
+          status: StatusValues['OPEN'],
           owner: 'owner1',
         },
         {
           id: '2',
           title: 'Task 2',
           name: 'task2',
-          status: Status['OPEN'],
+          status: StatusValues['OPEN'],
           owner: 'owner1',
         },
       ];

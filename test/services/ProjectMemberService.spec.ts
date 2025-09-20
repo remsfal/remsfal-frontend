@@ -23,13 +23,9 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should handle errors when fetching members', async () => {
-    // Override handler using http.get()
     server.use(
       http.get('/api/v1/projects/:projectId/members', () => {
-        return HttpResponse.json(
-          { message: 'Internal Server Error' },
-          { status: 500 },
-        );
+        return HttpResponse.json({ message: 'Internal Server Error' }, { status: 500 });
       }),
     );
 
@@ -48,10 +44,7 @@ describe('projectMemberService (MSW)', () => {
   it('should handle errors when adding a member', async () => {
     server.use(
       http.post('/api/v1/projects/:projectId/members', () => {
-        return HttpResponse.json(
-          { message: 'Bad Request' },
-          { status: 400 },
-        );
+        return HttpResponse.json({ message: 'Bad Request' }, { status: 400 });
       }),
     );
 
@@ -59,7 +52,9 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should update a member role in a project', async () => {
-    const updatedMember = await projectMemberService.updateMemberRole(projectId, member);
+    const updatedMember = await projectMemberService.updateMemberRole(projectId, member.id!, {
+      role: member.role,
+    });
 
     expect(updatedMember).toMatchObject({
       id: member.id,
@@ -70,29 +65,23 @@ describe('projectMemberService (MSW)', () => {
   it('should handle errors when updating a member role', async () => {
     server.use(
       http.patch('/api/v1/projects/:projectId/members/:memberId', () => {
-        return HttpResponse.json(
-          { message: 'Not Found' },
-          { status: 404 },
-        );
+        return HttpResponse.json({ message: 'Not Found' }, { status: 404 });
       }),
     );
 
-    await expect(projectMemberService.updateMemberRole(projectId, member)).rejects.toThrow();
+    await expect(
+      projectMemberService.updateMemberRole(projectId, member.id!, { role: member.role }),
+    ).rejects.toThrow();
   });
 
   it('should remove a member from a project', async () => {
-    const response = await projectMemberService.removeMember(projectId, member.id!);
-
-    expect(response).toEqual({ success: true });
+    await expect(projectMemberService.removeMember(projectId, member.id!)).resolves.toBeUndefined();
   });
 
   it('should handle errors when removing a member', async () => {
     server.use(
       http.delete('/api/v1/projects/:projectId/members/:memberId', () => {
-        return HttpResponse.json(
-          { message: 'Forbidden' },
-          { status: 403 },
-        );
+        return HttpResponse.json({ message: 'Forbidden' }, { status: 403 });
       }),
     );
 

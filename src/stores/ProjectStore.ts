@@ -1,83 +1,79 @@
 import { defineStore } from 'pinia';
-import { projectService, type ProjectList, type ProjectItem } from '@/services/ProjectService';
+import { projectService } from '@/services/ProjectService';
+import type { ProjectList, ProjectItem } from '@/services/ProjectService';
 
 export const useProjectStore = defineStore('project-store', {
   state: () => {
     return {
-      projects: <ProjectItem[]>[],
+      projects: [] as ProjectItem[],
       selectedProject: undefined as ProjectItem | undefined,
-      totalProjects: Number(0),
-      firstOffset: Number(0),
+      totalProjects: 0,
+      firstOffset: 0,
     };
   },
   getters: {
     projectList: (state) => state.projects,
     projectSelection: (state) => state.selectedProject,
-    projectId: (state) => {
-      if (state.selectedProject !== undefined) {
-        return state.selectedProject!.id;
-      }
-    },
+    projectId: (state) => state.selectedProject?.id,
   },
   actions: {
-    refreshProjectList() {
-      projectService
-        .getProjects()
-        .then((projectList: ProjectList) => {
-          this.projects = projectList.projects;
-          this.totalProjects = projectList.total;
-          this.firstOffset = projectList.first;
-          console.log('Refreshed project list: ', this.projects);
-        })
-        .catch((error) => {
-          // Handle the error here
-          console.error('An error occurred while refreshing projects:', error);
-        });
+    async refreshProjectList() {
+      try {
+        const projectList: ProjectList = await projectService.getProjects();
+        this.projects = projectList.projects ?? [];
+        this.totalProjects = projectList.total;
+        this.firstOffset = projectList.first;
+        console.log('Refreshed project list:', this.projects);
+      } catch (error) {
+        console.error('An error occurred while refreshing projects:', error);
+      }
     },
-    fetchProjects(offset: number, limit: number): Promise<void> {
-      return projectService
-        .getProjects(offset, limit)
-        .then((projectList: ProjectList) => {
-          this.projects = projectList.projects;
-          this.totalProjects = projectList.total;
-          this.firstOffset = projectList.first;
-          console.log('Fetched project list: ', this.projects);
-        })
-        .catch((error) => {
-          // Handle the error here
-          console.error('An error occurred while fetching projects:', error);
-        });
+
+    async fetchProjects(offset: number, limit: number): Promise<void> {
+      try {
+        const projectList: ProjectList = await projectService.getProjects(offset, limit);
+        this.projects = projectList.projects ?? [];
+        this.totalProjects = projectList.total;
+        this.firstOffset = projectList.first;
+        console.log('Fetched project list:', this.projects);
+      } catch (error) {
+        console.error('An error occurred while fetching projects:', error);
+      }
     },
-    searchProjects(projectId: string): Promise<void> {
-      return projectService
-        .searchProjects(projectId)
-        .then((projectList: ProjectList) => {
-          this.projects = projectList.projects;
-          this.totalProjects = projectList.total;
-          this.firstOffset = projectList.first;
-          console.log('Searched project list: ', this.projects);
-        })
-        .catch((error) => {
-          // Handle the error here
-          console.error('An error occurred while fetching projects:', error);
-        });
+
+    async searchProjects(projectId: string): Promise<void> {
+      try {
+        const projectList: ProjectList = await projectService.searchProjects(projectId);
+        this.projects = projectList.projects ?? [];
+        this.totalProjects = projectList.total;
+        this.firstOffset = projectList.first;
+        console.log('Searched project list:', this.projects);
+      } catch (error) {
+        console.error('An error occurred while searching projects:', error);
+      }
     },
+
     setSelectedProject(selection: ProjectItem | undefined) {
       this.selectedProject = selection;
-      console.log('Project selection changed: ', this.selectedProject);
+      console.log('Project selection changed:', this.selectedProject);
     },
-    searchSelectedProject(projectId: string) {
+
+    async searchSelectedProject(projectId: string) {
       if (projectId === this.selectedProject?.id) {
         console.log('Project is already selected');
         return;
       }
-      if (this.projects.find((p) => p.id === projectId)) {
-        this.setSelectedProject(this.projects.findLast((p) => p.id === projectId));
+
+      // Try to find in current projects list first
+      const localMatch = this.projects.findLast((p) => p.id === projectId);
+      if (localMatch) {
+        this.setSelectedProject(localMatch);
         return;
       }
-      this.searchProjects(projectId).finally(() => {
-        this.setSelectedProject(this.projects?.findLast((p) => p.id === projectId));
-      });
+
+      // Otherwise fetch from API
+      await this.searchProjects(projectId);
+      this.setSelectedProject(this.projects.findLast((p) => p.id === projectId));
     },
   },
 });

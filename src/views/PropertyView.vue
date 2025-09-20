@@ -41,20 +41,29 @@ const usageOptions = [
   { label: 'BF Lagerplatz', value: 'BF Lagerplatz' },
   { label: 'BF Versorgungsanlage', value: 'BF Versorgungsanlage' },
   { label: 'BF Entsorgungsanlage', value: 'BF Entsorgungsanlage' },
-  { label: 'Abbauland, noch nicht aufgeschlüsselt', value: 'Abbauland, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Abbauland, noch nicht aufgeschlüsselt',
+    value: 'Abbauland, noch nicht aufgeschlüsselt',
+  },
   { label: 'Sportfläche', value: 'Sportfläche' },
   { label: 'Kleingartenanlage', value: 'Kleingartenanlage' },
   { label: 'Wochenendgelände', value: 'Wochenendgelände' },
   { label: 'Andere Grünanlage', value: 'Andere Grünanlage' },
   { label: 'Campingplatz', value: 'Campingplatz' },
-  { label: 'Erholungsfläche, noch nicht aufgeschlüsselt', value: 'Erholungsfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Erholungsfläche, noch nicht aufgeschlüsselt',
+    value: 'Erholungsfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Straße', value: 'Straße' },
   { label: 'Weg', value: 'Weg' },
   { label: 'Platz', value: 'Platz' },
   { label: 'Bahngelände', value: 'Bahngelände' },
   { label: 'Flugplatz', value: 'Flugplatz' },
   { label: 'Verkehrsfläche Schiffsverkehr', value: 'Verkehrsfläche Schiffsverkehr' },
-  { label: 'Verkehrsfläche, noch nicht aufgeschlüsselt', value: 'Verkehrsfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Verkehrsfläche, noch nicht aufgeschlüsselt',
+    value: 'Verkehrsfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Grünland', value: 'Grünland' },
   { label: 'Ackerland', value: 'Ackerland' },
   { label: 'Gartenland', value: 'Gartenland' },
@@ -67,14 +76,20 @@ const usageOptions = [
   { label: 'Nadelwald', value: 'Nadelwald' },
   { label: 'Mischwald', value: 'Mischwald' },
   { label: 'Gehölz', value: 'Gehölz' },
-  { label: 'Waldfläche, noch nicht aufgeschlüsselt', value: 'Waldfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Waldfläche, noch nicht aufgeschlüsselt',
+    value: 'Waldfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Fließgewässer', value: 'Fließgewässer' },
   { label: 'Kanal', value: 'Kanal' },
   { label: 'Hafen', value: 'Hafen' },
   { label: 'Bach, Graben', value: 'Bach, Graben' },
   { label: 'Stehendes Gewässer', value: 'Stehendes Gewässer' },
   { label: 'Sumpf', value: 'Sumpf' },
-  { label: 'Wasserfläche, noch nicht aufgeschlüsselt', value: 'Wasserfläche, noch nicht aufgeschlüsselt' },
+  {
+    label: 'Wasserfläche, noch nicht aufgeschlüsselt',
+    value: 'Wasserfläche, noch nicht aufgeschlüsselt',
+  },
   { label: 'Militärisches Übungsgelände', value: 'Militärisches Übungsgelände' },
   { label: 'Anderes Übungsgelände', value: 'Anderes Übungsgelände' },
   { label: 'Schutzfläche', value: 'Schutzfläche' },
@@ -84,27 +99,21 @@ const usageOptions = [
   { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' },
 ];
 
-const originalValues = ref<PropertyUnit>({
-  title: '',
-  description: '',
-  district: '',
-  corridor: '',
-  parcel: '',
-  landRegistry: '',
-  usageType: null,
-  effectiveSpace: null,
-});
+const originalValues = ref<PropertyUnit | null>(null); // no fallback
 
 const hasChanges = computed(() => {
+  if (!originalValues.value) return false;
+  const orig = originalValues.value as any;
+
   return (
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    district.value !== originalValues.value.cadastralDistrict ||
-    corridor.value !== originalValues.value.corridor ||
-    parcel.value !== originalValues.value.parcel ||
-    landRegisterEntry.value !== originalValues.value.landRegistry ||
-    usageType.value !== originalValues.value.usageType ||
-    plotArea.value !== originalValues.value.effectiveSpace
+    title.value !== orig.title ||
+    description.value !== orig.description ||
+    district.value !== orig.cadastralDistrict ||
+    corridor.value !== orig.cadastralSection || // map cadastralSection
+    parcel.value !== orig.plot || // map plot
+    landRegisterEntry.value !== orig.landRegistry ||
+    usageType.value !== orig.economyType || // map economyType
+    plotArea.value !== orig.plotArea // map plotArea
   );
 });
 
@@ -131,35 +140,23 @@ const validationErrors = computed(() => {
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchPropertyDetails = async () => {
-  if (!props.projectId) {
-    console.error('Keine projectId');
-    return;
-  }
-  if (!props.unitId) {
-    console.error('Keine unitId');
-    return;
-  }
+  if (!props.projectId || !props.unitId) return;
+
   try {
     const data = await propertyService.getProperty(props.projectId, props.unitId);
+
+    // Map backend fields to frontend refs
     title.value = data.title || '';
     description.value = data.description || '';
     district.value = data.cadastralDistrict || '';
-    corridor.value = data.corridor || '';
-    parcel.value = data.parcel || '';
+    corridor.value = data.cadastralSection || ''; // map cadastralSection
+    parcel.value = data.plot || ''; // map plot
     landRegisterEntry.value = data.landRegistry || '';
-    usageType.value = data.usageType || null;
-    plotArea.value = data.effectiveSpace ?? null;
+    usageType.value = data.economyType || null; // map economyType
+    plotArea.value = data.plotArea ?? null; // map plotArea
 
-    originalValues.value = {
-      title: title.value,
-      description: description.value,
-      cadastralDistrict: district.value,
-      corridor: corridor.value,
-      parcel: parcel.value,
-      landRegistry: landRegisterEntry.value,
-      usageType: usageType.value,
-      effectiveSpace: plotArea.value,
-    };
+    // Store original values for change detection
+    originalValues.value = { ...data };
   } catch (err) {
     console.error('Fehler beim Laden der Eigentumsdetails:', err);
     toast.add({
@@ -175,7 +172,6 @@ onMounted(() => {
   if (props.unitId) {
     fetchPropertyDetails();
   } else {
-    console.warn('unitId fehlt – keine Daten können geladen werden.');
     toast.add({
       severity: 'warn',
       summary: 'Ungültige ID',
@@ -195,11 +191,11 @@ const save = async () => {
     title: title.value,
     description: description.value,
     cadastralDistrict: district.value,
-    corridor: corridor.value,
-    parcel: parcel.value,
+    cadastralSection: corridor.value, // frontend corridor → backend cadastralSection
+    plot: parcel.value, // frontend parcel → backend plot
     landRegistry: landRegisterEntry.value,
-    usageType: usageType.value,
-    effectiveSpace: plotArea.value,
+    economyType: usageType.value ?? undefined, // convert null → undefined
+    plotArea: plotArea.value ?? undefined, // convert null → undefined
   };
 
   try {
@@ -220,7 +216,6 @@ const save = async () => {
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
-
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
@@ -237,7 +232,12 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            ></textarea>
           </div>
 
           <!-- Gemarkung -->
@@ -260,8 +260,15 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
           <!-- Liegenschaftsbuch -->
           <div>
-            <label for="landRegisterEntry" class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
-            <input id="landRegisterEntry" v-model="landRegisterEntry" type="text" class="form-input w-full" />
+            <label for="landRegisterEntry" class="block text-gray-700 mb-1"
+              >Liegenschaftsbuch</label
+            >
+            <input
+              id="landRegisterEntry"
+              v-model="landRegisterEntry"
+              type="text"
+              class="form-input w-full"
+            />
           </div>
 
           <!-- Wirtschaftsart -->
@@ -282,7 +289,12 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Grundstücksfläche -->
           <div>
             <label for="plotArea" class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
-            <input id="plotArea" v-model.number="plotArea" type="number" class="form-input w-full" />
+            <input
+              id="plotArea"
+              v-model.number="plotArea"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
 
           <!-- Validierungsfehler -->
