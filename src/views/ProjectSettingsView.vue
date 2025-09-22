@@ -6,7 +6,7 @@ import { ref, onMounted, watch } from 'vue';
 import { projectService } from '@/services/ProjectService';
 
 const props = defineProps<{
-  projectId: string;
+  projectId: string; // required, not optional
 }>();
 
 const projectName = ref('');
