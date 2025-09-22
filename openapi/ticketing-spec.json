@@ -1084,8 +1084,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}" : {
@@ -1133,8 +1139,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "get" : {
         "summary" : "Get chat session details",
@@ -1180,8 +1192,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "delete" : {
         "summary" : "Delete chat session",
@@ -1227,8 +1245,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages" : {
@@ -1290,7 +1314,10 @@
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "get" : {
         "summary" : "Get chat logs in a chat session",
@@ -1336,8 +1363,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages/upload" : {
@@ -1399,7 +1432,10 @@
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages/{messageId}" : {
@@ -1470,7 +1506,10 @@
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "get" : {
         "summary" : "Get a chat message in a chat session",
@@ -1525,8 +1564,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "delete" : {
         "summary" : "Delete a chat message in a chat session",
@@ -1585,7 +1630,10 @@
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants" : {
@@ -1633,8 +1681,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants/{participantId}" : {
@@ -1691,8 +1745,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "get" : {
         "summary" : "Get participant details in chat session",
@@ -1747,9 +1807,17 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
-      },
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants/{participantId}/role" : {
       "put" : {
         "summary" : "Change participant role in chat session",
         "parameters" : [ {
@@ -1813,8 +1881,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     }
   },
