@@ -62,18 +62,28 @@ export async function typedRequest<P extends Path, M extends Method, Res = Respo
 ): Promise<Res> {
   let url = path as string;
 
-  const pathParamMatches = Array.from(url.matchAll(/{([^}]+)}/g));
-  for (const match of pathParamMatches) {
-    const paramName = match[1];
+  // collect and replace path params safely (no regex backtracking)
+  const pathParamNames: string[] = [];
+  let start = 0;
+  while (true) {
+    const open = url.indexOf('{', start);
+    if (open === -1) break;
+    const close = url.indexOf('}', open + 1);
+    if (close === -1) break; // unmatched brace -> stop or throw
+    const paramName = url.slice(open + 1, close);
+    pathParamNames.push(paramName);
+
     const value = options.pathParams?.[paramName];
     if (value === undefined) throw new Error(`Missing path parameter: ${paramName}`);
-    url = url.replace(`{${paramName}}`, encodeURIComponent(String(value)));
+    url = url.slice(0, open) + encodeURIComponent(String(value)) + url.slice(close + 1);
+    start = open + 1;
   }
 
+  // filter query params (exclude path params)
   const queryParams = flattenParams(
     Object.entries(options.params ?? {}).reduce(
       (acc, [k, v]) => {
-        if (!pathParamMatches.some((m) => m[1] === k)) acc[k] = v;
+        if (!pathParamNames.includes(k)) acc[k] = v;
         return acc;
       },
       {} as Record<string, any>,
