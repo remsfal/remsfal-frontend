@@ -176,5 +176,8 @@
   "commercialUnit.saveSuccessTitle": "Success",
   "commercialUnit.saveSuccessDetail": "Commercial unit saved successfully.",
   "commercialUnit.saveError": "Could not save commercial unit.",
-  "property.address": "Address"
+  "property.address": "Address",
+  "storage.validation.titleTooShort": "The title must be at least 3 characters long.",
+  "storage.validation.usableSpaceNegative": "Usable space cannot be negative.",
+  "storage.validation.descriptionTooLong": "Description must not exceed 500 characters."
 }

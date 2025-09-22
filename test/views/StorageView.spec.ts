@@ -4,6 +4,13 @@ import { setupServer } from 'msw/node';
 import { handlers } from '../mocks/handlers'; // adjust path if needed
 import Component from '../../src/views/StorageView.vue';
 
+// Centralized validation messages
+const VALIDATION_MESSAGES = {
+  title: 'Der Titel muss mindestens 3 Zeichen lang sein.',
+  usableSpace: 'Nutzfläche darf nicht negativ sein.',
+  description: 'Beschreibung darf maximal 500 Zeichen lang sein.',
+};
+
 // Mock vue-router
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
@@ -47,9 +54,9 @@ describe('StorageView.vue', () => {
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.vm.validationErrors).toContain('Der Titel muss mindestens 3 Zeichen lang sein.');
-    expect(wrapper.vm.validationErrors).toContain('Nutzfläche darf nicht negativ sein.');
-    expect(wrapper.vm.validationErrors).toContain('Beschreibung darf maximal 500 Zeichen lang sein.');
+    expect(wrapper.vm.validationErrors).toContain(VALIDATION_MESSAGES.title);
+    expect(wrapper.vm.validationErrors).toContain(VALIDATION_MESSAGES.usableSpace);
+    expect(wrapper.vm.validationErrors).toContain(VALIDATION_MESSAGES.description);
     expect(wrapper.vm.isValid).toBe(false);
   });
 
