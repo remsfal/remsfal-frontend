@@ -36,8 +36,13 @@ const updateMemberRole = async (member: Member) => {
   console.log('Member object passed to updateMemberRole:', member);
   try {
     // TEMP FIX: pass memberId and a body with role
+    if (!member.id) {
+      console.error('Member ID is undefined, cannot update role');
+      return;
+    }
+
     await projectMemberService.updateMemberRole(props.projectId, member.id, {
-      role: member.role, // assuming member.role is the updated role
+      role: member.role,
     });
     toast.add({
       severity: 'success',
