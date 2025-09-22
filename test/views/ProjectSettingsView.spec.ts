@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
+import flushPromises from 'flush-promises';
 import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
 import { projectMemberService, type GetMembersResponse } from '../../src/services/ProjectMemberService';
 
@@ -35,13 +36,11 @@ describe('ProjectSettingsView.vue', () => {
       props: { projectId: 'test-project-id' },
     });
 
-    // wait for fetchMembers
-    await wrapper.vm.$nextTick();
+    // wait for API + DOM updates
+    await flushPromises();
   });
 
   test('loads project member settings successfully', async () => {
-    await wrapper.vm.$nextTick();
-
     const rows = wrapper.findAll('td');
     expect(rows.length).toBe(6); // 2 members x 3 columns
     expect(rows[0].text()).toBe('test1@example.com');
@@ -56,12 +55,8 @@ describe('ProjectSettingsView.vue', () => {
     // grab first select (role for first member)
     const select = wrapper.findAllComponents({ name: 'Select' })[0];
 
-    // simulate role change
-    await select.vm.$emit('change', {
-      id: '1',
-      email: 'test1@example.com',
-      role: 'MANAGER',
-    });
+    // simulate user selecting a new role
+    await select.setValue('MANAGER');
 
     expect(projectMemberService.updateMemberRole).toHaveBeenCalledWith(
       'test-project-id',
