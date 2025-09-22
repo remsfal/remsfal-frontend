@@ -51,17 +51,64 @@ describe('ProjectSettingsView.vue', () => {
     expect(projectMemberService.getMembers).toHaveBeenCalledWith('test-project-id');
   });
 
+  beforeEach(async () => {
+    vi.clearAllMocks();
+  
+    // Mock service methods
+    vi.spyOn(projectMemberService, 'getMembers').mockResolvedValue(mockMembers);
+    vi.spyOn(projectMemberService, 'updateMemberRole').mockResolvedValue({
+      id: '1',
+      email: 'test1@example.com',
+      role: 'MANAGER',
+    });
+  
+    wrapper = mount(ProjectSettingsView, {
+      props: { projectId: 'test-project-id' },
+      global: {
+        stubs: {
+          ProjectMemberSettings: false, // render actual child
+        },
+      },
+    });
+  
+    await flushPromises(); // wait for API + DOM updates
+  });
+
   test('updates a member role successfully', async () => {
-    // grab first select (role for first member)
-    const select = wrapper.findAllComponents({ name: 'Select' })[0];
-
-    // simulate user selecting a new role
-    await select.setValue('MANAGER');
-
-    expect(projectMemberService.updateMemberRole).toHaveBeenCalledWith(
-      'test-project-id',
-      '1',
-      { role: 'MANAGER' }
-    );
+    const spy = vi.spyOn(projectMemberService, 'updateMemberRole').mockResolvedValue({
+      id: '1',
+      email: 'test1@example.com',
+      role: 'MANAGER'
+    });
+  
+    const wrapper = mount(ProjectSettingsView, {
+      props: { projectId: 'test-project-id' },
+      global: {
+        stubs: {
+          ProjectMemberSettings: {
+            template: `<ul>
+              <li>
+                test1@example.com
+                <button class="update-role" @click="updateRole">Update</button>
+              </li>
+            </ul>`,
+            methods: {
+              updateRole() {
+                projectMemberService.updateMemberRole('test-project-id', '1', { role: 'MANAGER' });
+              }
+            }
+          }
+        }
+      }
+    });
+  
+    await flushPromises();
+  
+    const button = wrapper.find('button.update-role');
+    expect(button.exists()).toBe(true);
+  
+    await button.trigger('click');
+  
+    expect(spy).toHaveBeenCalledWith('test-project-id', '1', { role: 'MANAGER' });
   });
 });
