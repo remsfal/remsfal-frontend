@@ -48,11 +48,11 @@ describe('PropertyView.vue', () => {
       title: 'Initial Property Title',
       description: 'Initial Property Description',
       cadastralDistrict: 'Initial District',
-      cadastralSection: 'Initial Corridor',   
-      plot: 'Initial Parcel',                 
+      cadastralSection: 'Initial Corridor',
+      plot: 'Initial Parcel',
       landRegistry: 'Initial LandRegistry',
-      economyType: 'GF Wohnen',               
-      plotArea: 100,                          
+      economyType: 'GF Wohnen',
+      plotArea: 100,
     });
 
     wrapper = mount(Component, {
@@ -75,24 +75,26 @@ describe('PropertyView.vue', () => {
 
   it('enables save button only if data is modified', async () => {
     const saveButton = wrapper.find('button[type="submit"]');
-    expect(saveButton.element.disabled).toBe(true); 
+    expect(saveButton.element.disabled).toBe(true);
 
     await wrapper.find('input#title').setValue('New Title');
 
     expect(wrapper.vm.hasChanges).toBe(true);
-    expect(saveButton.attributes('disabled')).toBeUndefined(); 
+    expect(saveButton.attributes('disabled')).toBeUndefined();
   });
 
   it('calls updateProperty service with correct data when saved', async () => {
-    (propertyService.updateProperty as any).mockImplementation(async (projectId, unitId, payload) => {
-      // Let fetch go through MSW
-      const res = await fetch(`/api/v1/projects/${projectId}/units/${unitId}/property`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      return res.json();
-    });
+    (propertyService.updateProperty as any).mockImplementation(
+      async (projectId, unitId, payload) => {
+        // Let fetch go through MSW
+        const res = await fetch(`/api/v1/projects/${projectId}/units/${unitId}/property`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        return res.json();
+      },
+    );
 
     wrapper.vm.title = 'New Title';
     await wrapper.vm.save();
@@ -102,11 +104,11 @@ describe('PropertyView.vue', () => {
         title: 'New Title',
         description: 'Initial Property Description',
         cadastralDistrict: 'Initial District',
-        cadastralSection: 'Initial Corridor', 
-        plot: 'Initial Parcel',              
+        cadastralSection: 'Initial Corridor', // Cadastral section of the property
+        plot: 'Initial Parcel',              // Plot or parcel of the property
         landRegistry: 'Initial LandRegistry',
-        economyType: 'GF Wohnen',             
-        plotArea: 100,                        
+        economyType: 'GF Wohnen',
+        plotArea: 100,
       }),
     );
   });
