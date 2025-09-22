@@ -5,12 +5,15 @@ import ProjectMemberSettings from '@/components/ProjectMemberSettings.vue';
 import { ref, onMounted, watch } from 'vue';
 import { projectService } from '@/services/ProjectService';
 
+// Props: projectId is required
 const props = defineProps<{
-  projectId: string; // required, not optional
+  projectId: string;
 }>();
 
+// State
 const projectName = ref('');
 
+// Fetch project data
 const fetchProject = async (id: string) => {
   try {
     const project = await projectService.getProject(id);
@@ -20,11 +23,12 @@ const fetchProject = async (id: string) => {
   }
 };
 
+// Initial load
 onMounted(() => {
   fetchProject(props.projectId);
 });
 
-// Watch for changes in projectId and update the project data
+// Watch for changes in projectId
 watch(
   () => props.projectId,
   (newProjectId) => {
@@ -46,6 +50,7 @@ watch(
     </template>
   </Card>
 
+  <!-- Pass guaranteed string prop -->
   <ProjectMemberSettings :projectId="props.projectId" />
 </template>
 
