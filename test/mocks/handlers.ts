@@ -2,7 +2,8 @@ import { http, HttpResponse } from 'msw';
 
 const API_BASE = '/api/v1';
 
-// Use a single exported object to hold all last-request values
+// Used in tests to capture the last request data for each entity.
+// This object allows test assertions to verify the payloads sent to mock handlers.
 export const lastRequests: Record<string, Record<string, unknown> | null> = {
   property: null,
   tenancy: null,

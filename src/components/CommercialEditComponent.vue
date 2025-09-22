@@ -26,7 +26,7 @@ const fields: {
   { name: 'title', label: 'Titel', type: 'text', required: true },
   { name: 'location', label: 'Standort', type: 'textarea' },
   {
-    name: 'netFloorArea',
+    name: 'commercialSpace',
     label: 'Gewerbefläche (qm)',
     type: 'text',
     validations: [
@@ -35,7 +35,7 @@ const fields: {
     ],
   },
   {
-    name: 'usableFloorArea',
+    name: 'usableSpace',
     label: 'Nutzfläche (qm)',
     type: 'text',
     validations: [
@@ -44,7 +44,7 @@ const fields: {
     ],
   },
   {
-    name: 'technicalServicesArea',
+    name: 'heatingSpace',
     label: 'Heizfläche (qm)',
     type: 'text',
     validations: [

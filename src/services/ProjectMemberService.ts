@@ -1,11 +1,8 @@
 import { typedRequest } from '@/services/api/typedRequest';
 import type { paths } from '@/services/api/typedRequest';
 
-// TEMPORARY fallback for GET members response
 export type GetMembersResponse =
-  paths['/api/v1/projects/{projectId}/members']['get']['responses'] extends { 200: any }
-    ? paths['/api/v1/projects/{projectId}/members']['get']['responses']['200']['content']['application/json']
-    : { members: any[] }; // fallback until backend fixes spec
+  paths['/api/v1/projects/{projectId}/members']['get']['responses']['200']['content']['application/json'];
 
 export type Member = GetMembersResponse['members'][number];
 export type AddMemberRequest =
@@ -74,5 +71,5 @@ export const memberRoles = [
   { label: 'Kollaborateur', value: 'COLLABORATOR' },
 ] as const;
 
-export type MemberRole = (typeof memberRoles)[number]['value']; 
+export type MemberRole = (typeof memberRoles)[number]['value'];
 // "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR"

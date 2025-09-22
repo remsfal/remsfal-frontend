@@ -29,8 +29,8 @@ const validateTask = (): boolean => {
   return Object.keys(errors.value).length === 0;
 };
 
-const startEditing = (row: TaskDetail, field: keyof TaskDetail) => {
-  (row as any).editing = field;
+const startEditing = (row: TaskDetail & { editing?: keyof TaskDetail }, field: keyof TaskDetail) => {
+  row.editing = field;
   nextTick(() => {
     const inputElement = document.querySelector('.editable-input') as HTMLElement | null;
     inputElement?.focus();

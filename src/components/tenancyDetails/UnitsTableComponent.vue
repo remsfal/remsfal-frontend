@@ -85,16 +85,18 @@ onMounted(() => {
   if (props.isDeleteButtonEnabled) addNewRow();
 });
 
+let newRowId = 1; // incremental counter for new rows
+
 const emptyRowTemplate: TenancyUnitItem = {
-  id: new Date().toISOString(),
+  id: '', // will be set when adding a row
   rentalType: 'PROPERTY', // default valid value
   rentalTitle: '',
   active: true,
 };
 
-
 const addNewRow = () => {
-  localListOfUnits.value.push({ ...emptyRowTemplate });
+  const newRow = { ...emptyRowTemplate, id: `new-${newRowId++}` };
+  localListOfUnits.value.push(newRow);
 };
 
 const columns = ref([

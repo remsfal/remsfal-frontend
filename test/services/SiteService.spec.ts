@@ -35,7 +35,7 @@ describe('SiteService (MSW)', () => {
   });
 
   it('should update a site', async () => {
-    const updates = { title: 'Updated Site', usableSpace: 2000 };
+    const updates = { title: 'Updated Site', space: 2000 };
     const updated = await siteService.updateSite(projectId, siteId, updates);
     expect(updated).toMatchObject({ id: siteId, ...updates });
   });

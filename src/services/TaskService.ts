@@ -5,20 +5,22 @@ import type { components, paths } from '../../src/services/api/platform-schema';
 export type Status = components['schemas']['TaskJson']['status'];
 
 export const StatusValues = {
-  PENDING: "PENDING",
-  OPEN: "OPEN",
-  IN_PROGRESS: "IN_PROGRESS",
-  CLOSED: "CLOSED",
-  REJECTED: "REJECTED",
+  PENDING: 'PENDING',
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  CLOSED: 'CLOSED',
+  REJECTED: 'REJECTED',
 } as const;
 
 // Full task type directly from backend
 export type TaskItem = components['schemas']['TaskJson'];
 export type TaskDetail = components['schemas']['TaskJson'];
-export type TaskItemJson = components["schemas"]["TaskItemJson"];
+export type TaskItemJson = components['schemas']['TaskItemJson'];
 // Request bodies directly from OpenAPI paths
-export type CreateTaskBody = paths['/api/v1/projects/{projectId}/tasks']['post']['requestBody']['content']['application/json'];
-export type ModifyTaskBody = paths['/api/v1/projects/{projectId}/tasks/{taskId}']['patch']['requestBody']['content']['application/json'];
+export type CreateTaskBody =
+  paths['/api/v1/projects/{projectId}/tasks']['post']['requestBody']['content']['application/json'];
+export type ModifyTaskBody =
+  paths['/api/v1/projects/{projectId}/tasks/{taskId}']['patch']['requestBody']['content']['application/json'];
 
 export class TaskService {
   async getTasks(
@@ -37,7 +39,7 @@ export class TaskService {
             ...(ownerId ? { owner: ownerId } : {}),
           },
         },
-        pathParams: { projectId }, // needed for runtime URL replacement
+        pathParams: { projectId },
       }
     ) as Promise<{ tasks: TaskItem[] }>;
   }
@@ -49,7 +51,7 @@ export class TaskService {
       {
         params: { path: { projectId, taskId } },
         pathParams: { projectId, taskId },
-      }
+      },
     ) as Promise<TaskDetail>;
   }
 
@@ -61,7 +63,7 @@ export class TaskService {
         params: { path: { projectId } },
         pathParams: { projectId },
         body,
-      }
+      },
     );
   }
 
@@ -73,7 +75,7 @@ export class TaskService {
         params: { path: { projectId, taskId } },
         pathParams: { projectId, taskId },
         body,
-      }
+      },
     );
   }
 }

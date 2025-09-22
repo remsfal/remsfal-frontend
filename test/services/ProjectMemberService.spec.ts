@@ -52,6 +52,8 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should update a member role in a project', async () => {
+    // Using member.id! assumes the ID is always defined. In tests, this is safe because `member` is initialized with an ID.
+// In production code, consider adding a guard to avoid potential runtime errors if member.id is undefined.
     const updatedMember = await projectMemberService.updateMemberRole(projectId, member.id!, {
       role: member.role,
     });
