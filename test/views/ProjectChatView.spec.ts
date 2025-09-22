@@ -4,14 +4,14 @@ import ProjectChatView from '../../src/views/ProjectChatView.vue';
 import Button from 'primevue/button';
 
 describe('ProjectChatView.vue', () => {
-  it('renders the username input field', () => {
+  it('zeigt Eingabe für Benutzernamen', () => {
     const wrapper = mount(ProjectChatView);
-    expect(wrapper.find('input[data-testid="username-input"]').exists()).toBe(true);
+    expect(wrapper.find('input[placeholder="Dein Name..."]').exists()).toBe(true);
   });
 
-  it('switches to the chat area after entering a username', async () => {
+  it('wechselt in den Chatbereich nach Namenseingabe', async () => {
     const wrapper = mount(ProjectChatView);
-    const input = wrapper.find('input[data-testid="username-input"]');
+    const input = wrapper.find('input');
     await input.setValue('Bilal');
     const button = wrapper.get('button');
     await button.trigger('click');
@@ -19,58 +19,61 @@ describe('ProjectChatView.vue', () => {
     expect(wrapper.text()).toContain('Projekt-Chat');
   });
 
-  it('adds a message and clears the input field', async () => {
+  it('fügt eine Nachricht hinzu und leert das Eingabefeld', async () => {
     const wrapper = mount(ProjectChatView);
 
-    // Enter username and start chat
-    const nameInput = wrapper.find('input[data-testid="username-input"]');
+    // Name eingeben und Start klicken
+    const nameInput = wrapper.find('input[placeholder="Dein Name..."]');
+    expect(nameInput.exists()).toBe(true);
     await nameInput.setValue('Bilal');
-    const buttonsBefore = wrapper.findAllComponents(Button);
-    await buttonsBefore[0].trigger('click');
 
-    await flushPromises(); // Wait for DOM updates
+    const startButton = wrapper.find('button');
+    await startButton.trigger('click');
 
-    // Write a message
+    // Warte auf DOM-Update nach Start
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+
+    // Nachricht schreiben
     const messageInput = wrapper.find<HTMLInputElement>('input[data-testid="message-input"]');
+    expect(messageInput.exists()).toBe(true); // sanity check
     await messageInput.setValue('Testnachricht');
 
-    // Find and click the send button
+    // Senden-Button finden und klicken
     const buttons = wrapper.findAllComponents(Button);
     const sendenButton = buttons.find((b) => b.text() === 'Senden');
     expect(sendenButton).toBeTruthy();
     await sendenButton!.trigger('click');
 
-    // Verify the message is displayed
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+
+    // Nachricht sollte angezeigt werden
     expect(wrapper.text()).toContain('Testnachricht');
 
-    // Verify the input field is cleared
+    // Eingabefeld sollte leer sein
     expect(messageInput.element.value).toBe('');
   });
 
-  it('adds an emoji to the message', async () => {
+  it('fügt Emoji zur Nachricht hinzu', async () => {
     const wrapper = mount(ProjectChatView);
 
-    // Enter username and start chat
-    await wrapper.find('input[data-testid="username-input"]').setValue('Bilal');
+    await wrapper.find('input').setValue('Bilal');
     await wrapper.get('button').trigger('click');
 
-    // Find emoji buttons
     const emojiButtons = wrapper.findAll('[data-testid="emoji-button"]');
     expect(emojiButtons.length).toBeGreaterThan(0);
 
-    // Select and click an emoji
     const targetEmoji = '🙂';
     const matchingButton = emojiButtons.find((button) => button.text() === targetEmoji);
     expect(matchingButton).toBeTruthy();
 
     await matchingButton!.trigger('click');
-
-    // Verify the emoji is added to the chat
     expect(wrapper.text()).toContain(targetEmoji);
   });
 
-  it('displays the filename after a file upload', async () => {
-    // Mock DataTransfer for file upload
+  it('zeigt Dateiname nach Dateiupload', async () => {
+    // ⬇️ DataTransfer Polyfill
     class MockDataTransfer {
       files: File[] = [];
       items = { add: (file: File) => this.files.push(file) };
@@ -79,11 +82,9 @@ describe('ProjectChatView.vue', () => {
 
     const wrapper = mount(ProjectChatView);
 
-    // Enter username and start chat
-    await wrapper.find('input[data-testid="username-input"]').setValue('Bilal');
+    await wrapper.find('input').setValue('Bilal');
     await wrapper.find('button').trigger('click');
 
-    // Mock file upload
     const file = new File(['dummy content'], 'bild.png', { type: 'image/png' });
     const inputEl = wrapper.find('input[type="file"]').element as HTMLInputElement;
 
@@ -94,7 +95,6 @@ describe('ProjectChatView.vue', () => {
 
     await wrapper.find('input[type="file"]').trigger('change');
 
-    // Verify the filename is displayed
     expect(wrapper.html()).toContain('bild.png');
   });
 });

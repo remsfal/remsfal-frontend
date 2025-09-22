@@ -6,10 +6,14 @@ import { useProjectStore } from '../../src/stores/ProjectStore';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 
-// Mock projectService singleton
+// Mock projectService singleton (complete mock)
 vi.mock('@/services/ProjectService', () => ({
   projectService: {
     getProjects: vi.fn(),
+    createProject: vi.fn(),
+    updateProject: vi.fn(),
+    deleteProject: vi.fn(),
+    getProjectById: vi.fn(),
   },
 }));
 
