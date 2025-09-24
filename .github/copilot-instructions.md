@@ -15,6 +15,7 @@ This is the frontend for Remsfal, an open-source facility management software bu
 - **Routing**: Vue Router 4
 - **Internationalization**: Vue I18n
 - **Testing**: Vitest (unit), Cypress (e2e/component)
+- **API Mocking**: MSW (Mock Service Worker) for backend mocking
 - **Linting**: ESLint with Vue, TypeScript, and Prettier plugins
 - **Style Linting**: Stylelint
 
@@ -32,14 +33,14 @@ src/
 ├── types/              # TypeScript type definitions
 ├── helper/             # Utility functions
 ├── assets/             # Static assets
-└── mocks/              # MSW mocks for testing
+└── mocks/              # MSW mocks for backend mocking
 
 test/
 ├── components/         # Component tests
 ├── views/              # View tests
 ├── services/           # Service tests
 ├── setup/              # Test configuration
-└── mocks/              # Test mocks and fixtures
+└── mocks/              # MSW mocks and fixtures
 ```
 
 ## Coding Standards & Conventions
@@ -86,6 +87,7 @@ test/
 - **File naming**: `[ComponentName].spec.ts`
 - Use `@vue/test-utils` for Vue component testing
 - Mock external dependencies using Vitest's `vi.mock()`
+- Use MSW mocks for API testing and mocking API calls
 - Setup files are in `test/setup/vitest.setup.ts`
 
 ### Styling
@@ -115,6 +117,9 @@ npm run test:unit
 
 # Run tests in watch mode
 npm run test:unit:dev
+
+# Run end-to-end tests
+npm run test:e2e
 
 # Type checking
 npm run type-check
