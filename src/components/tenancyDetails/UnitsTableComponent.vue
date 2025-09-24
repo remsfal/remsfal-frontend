@@ -106,7 +106,10 @@ const columns = ref([
 const onCellEditComplete = async (event: any) => {
   const { newData, index } = event;
   localListOfUnits.value[index] = newData;
-  await tenancyService.updateTenancyUnitItem(localListOfUnits.value[index]);
+  const unit = localListOfUnits.value[index];
+  if (unit) {
+    await tenancyService.updateTenancyUnitItem(unit);
+  }
   emit('onChange', localListOfUnits.value);
 };
 

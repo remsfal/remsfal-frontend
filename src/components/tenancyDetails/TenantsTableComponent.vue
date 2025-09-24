@@ -51,7 +51,10 @@ const columns = ref([
 const onCellEditComplete = (event: any) => {
     let { newData, index } = event;
     localTenants.value[index] = newData;
-    tenancyService.updateTenancyTenantItem(localTenants.value[index]);
+    const tenant = localTenants.value[index];
+    if (tenant) {
+        tenancyService.updateTenancyTenantItem(tenant);
+    }
     emit('onChange', localTenants.value);
 };
 

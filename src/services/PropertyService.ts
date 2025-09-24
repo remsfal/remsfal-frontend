@@ -19,8 +19,11 @@ export enum EntityType {
   Property = 'PROPERTY',
 }
 
-export function toRentableUnitView(entity: components['schemas']['UnitType']): string {
-  return entity[0].toUpperCase() + entity.substring(1).toLowerCase() + 'View';
+export function toRentableUnitView(entity: components['schemas']['UnitType'] | undefined): string {
+  if (!entity) {
+    return 'View';
+  }
+  return entity[0]!.toUpperCase() + entity.substring(1).toLowerCase() + 'View';
 }
 
 /** -------------------- SERVICE -------------------- **/
