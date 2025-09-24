@@ -37,26 +37,30 @@ async function createProject() {
 
   // Check if the app is offline
   if (!navigator.onLine) {
-    // Offline: Save the project in IndexedDB
     await saveProject(projectTitleValue);
-    return; // End the function here
+    return;
   }
 
-  // Online: Send the project directly to the backend
   try {
     const newProject = await projectService.createProject(projectTitleValue);
+
+    // Ensure the created project has an ID
+    if (!newProject.id) {
+      console.error('Created project has no ID, cannot proceed.');
+      await saveProject(projectTitleValue); // Optional: save offline
+      return;
+    }
 
     // Update the project store
     projectStore.searchSelectedProject(newProject.id);
 
+    // Navigate to the project dashboard
     await router.push({
       name: 'ProjectDashboard',
       params: { projectId: newProject.id },
     });
   } catch (error) {
     console.error('Failed to create project online. Saving offline:', error);
-
-    // Optional: Save the title locally in case of an error
     await saveProject(projectTitleValue);
   }
 }
@@ -83,21 +87,15 @@ function abort() {
       {{ errorMessage || '&nbsp;' }}
     </small>
     <div class="flex justify-end gap-2">
-    <Button
-    type="reset"
-    :label="t('button.cancel')"
-    icon="pi pi-times"
-    iconPos="left"
-    severity="secondary"
-    @click="abort"
-    />
-    <Button
-    type="submit"
-    :label="t('button.create')"
-    icon="pi pi-plus"
-    iconPos="left"
-    />
+      <Button
+        type="reset"
+        :label="t('button.cancel')"
+        icon="pi pi-times"
+        iconPos="left"
+        severity="secondary"
+        @click="abort"
+      />
+      <Button type="submit" :label="t('button.create')" icon="pi pi-plus" iconPos="left" />
     </div>
-
   </form>
 </template>
