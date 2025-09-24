@@ -1,0 +1,22 @@
+{
+  "reporter": ["lcov", "text", "json", "html"],
+  "report-dir": "coverage-cypress",
+  "temp-dir": ".nyc_output",
+  "include": [
+    "src/**/*.{ts,js,vue}"
+  ],
+  "exclude": [
+    "src/services/api/*-schema.ts",
+    "node_modules/**",
+    "test/**",
+    "cypress/**",
+    "dist/**",
+    "*.config.*"
+  ],
+  "extension": [
+    ".ts",
+    ".vue"
+  ],
+  "all": true,
+  "check-coverage": false
+}
