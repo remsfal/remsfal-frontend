@@ -79,8 +79,10 @@ const filteredMessages = computed(() => {
   const hasDateRange = filterDateRange.value?.length === 2;
   if (hasDateRange) {
     const [from, to] = filterDateRange.value!;
-    start = new Date(from); start.setHours(0, 0, 0, 0);
-    end   = new Date(to);   end.setHours(23, 59, 59, 999);
+    if (from && to) {
+      start = new Date(from); start.setHours(0, 0, 0, 0);
+      end   = new Date(to);   end.setHours(23, 59, 59, 999);
+    }
   }
 
   return messages.value.filter(msg => {
