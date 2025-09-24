@@ -131,6 +131,14 @@ npm run stylelint:fix
 npm run format
 ```
 
+## Environment Configuration
+
+- Environment variables are configured in `.env` files
+- Key variables:
+  - `VITE_BASE_URL`: Base URL for the application (default: http://localhost:5173)
+  - `VITE_SERVICE_WORKER_ENABLED`: Enable/disable service worker (default: false)
+- Backend proxy is configured in `vite.config.ts` (proxies `/api` to `http://localhost:8080`)
+
 ## Code Quality Rules
 
 ### ESLint Configuration Highlights
