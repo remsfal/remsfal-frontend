@@ -24,7 +24,8 @@ const fetchMembers = async () => {
     .getMembers(props.projectId)
     .then((list) => {
       console.log('Fetched members:', list);
-      members.value = list.members;
+      // TEMP FIX: cast to expected type until backend spec is fixed
+      members.value = (list as { members: Member[] }).members;
     })
     .catch((error) => {
       console.error('Failed to fetch members', error);
@@ -34,7 +35,21 @@ const fetchMembers = async () => {
 const updateMemberRole = async (member: Member) => {
   console.log('Member object passed to updateMemberRole:', member);
   try {
-    await projectMemberService.updateMemberRole(props.projectId, member);
+    // TEMP FIX: pass memberId and a body with role
+    if (!member.id) {
+      console.error('Member ID is undefined, cannot update role');
+      return;
+    }
+
+    await projectMemberService.updateMemberRole(props.projectId, member.id, {
+      role: member.role,
+    });
+    toast.add({
+      severity: 'success',
+      summary: 'Rolle aktualisiert',
+      detail: `Die Rolle von ${member.name} wurde erfolgreich geändert.`,
+      life: 3000,
+    });
   } catch (error) {
     const err = error as { response?: { data: any }; message: string };
     console.error('Failed to update member role:', err.response?.data || err.message);
@@ -88,7 +103,7 @@ function onNewMember(email: string) {
             <template #body="slotProps">
               <Select
                 v-model="slotProps.data.role"
-                :options="memberRoles"
+                :options="[...memberRoles]"
                 optionLabel="label"
                 optionValue="value"
                 @change="updateMemberRole(slotProps.data)"

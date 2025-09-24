@@ -2,16 +2,15 @@
 import { ref, onMounted } from 'vue';
 import {
   propertyService,
-  EntityType,
   type RentableUnitTreeNode,
   toRentableUnitView,
 } from '@/services/PropertyService';
+import type { components } from '@/services/api/platform-schema';
 import { useRouter } from 'vue-router';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import { useI18n } from 'vue-i18n';
-
 import TreeTable, {
   type TreeTableExpandedKeys,
   type TreeTableSelectionKeys,
@@ -20,13 +19,13 @@ import NewRentableUnitButton from '@/components/NewRentableUnitButton.vue';
 import { useToast } from 'primevue/usetoast';
 import NewPropertyButton from '@/components/NewPropertyButton.vue';
 
-const props = defineProps<{
-  projectId: string;
-}>();
+const props = defineProps<{ projectId: string }>();
 const { t } = useI18n();
 const toast = useToast();
+const router = useRouter();
 
-const rentableUnitTree = ref<RentableUnitTreeNode[]>();
+// --- Refs ---
+const rentableUnitTree = ref<RentableUnitTreeNode[]>([]);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 const expandedKeys = ref<TreeTableExpandedKeys>({});
@@ -34,28 +33,40 @@ const selectedKey = ref<TreeTableSelectionKeys>({});
 const showDeleteDialog = ref(false);
 const nodeToDelete = ref<RentableUnitTreeNode | null>(null);
 
-
-const router = useRouter();
-
-async function fetchPropertyTree(projectId: string): Promise<RentableUnitTreeNode[]> {
-  return propertyService
-    .getPropertyTree(projectId)
-    .then((data) => {
-      rentableUnitTree.value = data.properties;
-      return data.properties;
-    })
-    .catch((err) => {
-      error.value = `Failed to fetch object data: ${err.message || 'Unknown error'}`;
-      return [];
-    });
+// --- Functions ---
+async function fetchPropertyTree(projectId: string) {
+  try {
+    const data = await propertyService.getPropertyTree(projectId);
+    rentableUnitTree.value = data.properties as RentableUnitTreeNode[];
+    return data.properties as RentableUnitTreeNode[];
+  } catch (err: any) {
+    error.value = `Failed to fetch object data: ${err.message || 'Unknown error'}`;
+    return [];
+  }
 }
 
-onMounted(() => {
-  fetchPropertyTree(props.projectId).finally(() => {
-    isLoading.value = false;
-    expandAll();
-  });
-});
+function expandAll() {
+  const expandRecursive = (nodes: RentableUnitTreeNode[], expanded: Record<string, boolean>) => {
+    nodes.forEach((node) => {
+      expanded[node.key] = true;
+      if (node.children?.length) expandRecursive(node.children, expanded);
+    });
+  };
+  const newExpandedRows: Record<string, boolean> = {};
+  if (rentableUnitTree.value) expandRecursive(rentableUnitTree.value, newExpandedRows);
+  expandedKeys.value = newExpandedRows;
+}
+
+function collapseAll() {
+  expandedKeys.value = {};
+}
+
+function onNodeSelect(node: RentableUnitTreeNode) {
+  const nodeData = node.data;
+  if (!nodeData?.type) return;
+  const view = toRentableUnitView(nodeData.type as components['schemas']['UnitType']);
+  router.push({ name: view, params: { projectId: props.projectId, unitId: node.key } });
+}
 
 function onNewRentableUnit(title: string) {
   fetchPropertyTree(props.projectId).finally(() => {
@@ -70,79 +81,56 @@ function onNewRentableUnit(title: string) {
   });
 }
 
-const expandAll = () => {
-  const expandRecursive = (nodes: RentableUnitTreeNode[], expanded: Record<string, boolean>) => {
-    nodes.forEach((node) => {
-      expanded[node.key] = true;
-      if (node.children && node.children.length > 0) {
-        expandRecursive(node.children, expanded);
-      }
-    });
-  };
-
-  const newExpandedRows: Record<string, boolean> = {};
-  if (rentableUnitTree.value) {
-    expandRecursive(rentableUnitTree.value, newExpandedRows);
-  }
-  expandedKeys.value = newExpandedRows;
-};
-
-const collapseAll = () => {
-  expandedKeys.value = {};
-};
-
-const onNodeSelect = (node: RentableUnitTreeNode) => {
-  const view = toRentableUnitView(node.data.type);
-  router.push({
-    name: view,
-    params: { projectId: props.projectId, unitId: node.key },
-  });
-};
-
-const confirmDeleteNode = (node: RentableUnitTreeNode) => {
+function confirmDeleteNode(node: RentableUnitTreeNode) {
   nodeToDelete.value = node;
   showDeleteDialog.value = true;
-};
+}
 
 const deleteConfirmed = () => {
   if (nodeToDelete.value) {
     onDeleteNode(nodeToDelete.value);
   }
   showDeleteDialog.value = false;
+  nodeToDelete.value = null; // reset
 };
 
-const onDeleteNode = (node: RentableUnitTreeNode) => {
+
+function onDeleteNode(node: RentableUnitTreeNode) {
+  if (!node.data) return;
+
   isLoading.value = true;
   const entity = node.data.type;
+  switch (entity) {
+    case 'PROPERTY':
+      propertyService
+        .deleteProperty(props.projectId, node.key)
+        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .catch((err) => console.error('Error deleting property:', err));
+      break;
+    // TODO: implement other entity deletes
+    case 'SITE':
+      break;
+    case 'BUILDING':
+      break;
+    case 'APARTMENT':
+      break;
+    case 'COMMERCIAL':
+      break;
+    case 'STORAGE':
+      break;
+  }
+}
 
-  if (entity === EntityType.Property) {
-    propertyService
-      .deleteProperty(props.projectId, node.key)
-      .then(() => {
-        fetchPropertyTree(props.projectId).finally(() => {
-          isLoading.value = false;
-        });
-      })
-      .catch((err) => {
-        console.error('Error deleting property:', err);
-      });
-  }
-  if (entity === EntityType.Site) {
-    // TODO: implement delete site endpoint
-  }
-  if (entity === EntityType.Building) {
-    // TODO: implement delete building endpoint
-  }
-  if (entity === EntityType.Apartment) {
-    // TODO: implement delete apartment endpoint
-  }
-  if (entity === EntityType.Commercial) {
-    // TODO: implement delete commercial endpoint
-  }
-  if (entity === EntityType.Storage) {
-    // TODO: implement delete garage endpoint
-  }
-};
+// --- Lifecycle ---
+onMounted(() =>
+  fetchPropertyTree(props.projectId).finally(() => {
+    isLoading.value = false;
+    expandAll();
+  }),
+);
+
+// --- Expose refs & methods for tests ---
+defineExpose({ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirmed, onDeleteNode,expandedKeys });
 </script>
 
 <template>
@@ -179,7 +167,6 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
                     class="mr-2 mb-2"
                     @click="collapseAll()"
                   />
-
                 </div>
               </div>
             </template>
@@ -213,7 +200,6 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
               </template>
             </Column>
 
-
             <Column frozen alignFrozen="right" bodyClass="flex flex-wrap justify-end">
               <template #body="{ node }">
                 <div class="flex flex-wrap justify-end gap-2">
@@ -240,11 +226,27 @@ const onDeleteNode = (node: RentableUnitTreeNode) => {
         </div>
       </div>
     </div>
-    <Dialog v-model:visible="showDeleteDialog" header="Löschen bestätigen" modal data-testid="deleteDialog">
+    <Dialog
+      v-model:visible="showDeleteDialog"
+      header="Löschen bestätigen"
+      modal
+      data-testid="deleteDialog"
+    >
       <p>Bist du sicher, dass du dieses Objekt löschen möchtest?</p>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="showDeleteDialog = false" data-testid="cancelDelete"/>
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="deleteConfirmed" data-testid="confirmDeleteButton"/>
+        <Button
+          label="Abbrechen"
+          icon="pi pi-times"
+          @click="showDeleteDialog = false"
+          data-testid="cancelDelete"
+        />
+        <Button
+          label="Löschen"
+          icon="pi pi-check"
+          severity="danger"
+          @click="deleteConfirmed"
+          data-testid="confirmDeleteButton"
+        />
       </template>
     </Dialog>
   </main>

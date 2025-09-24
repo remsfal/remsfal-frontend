@@ -13,50 +13,44 @@ type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'option
 type Method = HttpMethod & keyof paths[Path];
 
 // Extract request params if defined in OpenAPI
-export type RequestParams<
-  P extends Path,
-  M extends Method
-> = paths[P][M] extends { parameters?: infer Params } ? Params : unknown;
+export type RequestParams<P extends Path, M extends Method> = paths[P][M] extends {
+  parameters?: infer Params;
+}
+  ? Params
+  : undefined;
 
 // Extract request body if defined in OpenAPI
-export type RequestBody<
-  P extends Path,
-  M extends Method
-> = paths[P][M] extends {
+export type RequestBody<P extends Path, M extends Method> = paths[P][M] extends {
   requestBody?: { content: { 'application/json': infer Body } };
 }
   ? Body
   : undefined;
 
 // Extract 200 OK response type if defined in OpenAPI
-export type ResponseType<
-  P extends Path,
-  M extends Method
-> = paths[P][M] extends {
+export type ResponseType<P extends Path, M extends Method> = paths[P][M] extends {
   responses: { 200: { content: { 'application/json': infer Res } } };
 }
   ? Res
   : unknown;
 
-// Utility to flatten nested query parameters into query string keys
+// Flatten nested query parameters
 function flattenParams(obj: Record<string, any>, prefix = ''): Record<string, any> {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    const fullKey = prefix ? `${prefix}[${key}]` : key;
-    if (typeof value === 'object' && value !== null) {
-      Object.assign(acc, flattenParams(value, fullKey));
-    } else {
-      acc[fullKey] = value;
-    }
-    return acc;
-  }, {} as Record<string, any>);
+  return Object.entries(obj).reduce(
+    (acc, [key, value]) => {
+      const fullKey = prefix ? `${prefix}[${key}]` : key;
+      if (typeof value === 'object' && value !== null) {
+        Object.assign(acc, flattenParams(value, fullKey));
+      } else {
+        acc[fullKey] = value;
+      }
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
 }
 
-// Main typedRequest with optional response type override (ResOverride)
-export async function typedRequest<
-  P extends Path,
-  M extends Method,
-  ResOverride = unknown
->(
+// Typed request
+export async function typedRequest<P extends Path, M extends Method, Res = ResponseType<P, M>>(
   method: M,
   path: P,
   options: {
@@ -64,39 +58,45 @@ export async function typedRequest<
     body?: RequestBody<P, M>;
     config?: AxiosRequestConfig;
     pathParams?: Record<string, string | number>;
-  } = {}
-): Promise<[ResOverride] extends [unknown] ? ResponseType<P, M> : ResOverride> {
+  } = {},
+): Promise<Res> {
   let url = path as string;
-  const rawParams = options.params ?? {};
 
-  // Replace path parameters like {id} with actual values from options.pathParams
-  const pathParamMatches = Array.from(url.matchAll(/{([a-zA-Z0-9_]{1,30})}/g));
-  for (const match of pathParamMatches) {
-    const paramName = match[1];
+  // collect and replace path params safely (no regex backtracking)
+  const pathParamNames: string[] = [];
+  let start = 0;
+  while (true) {
+    const open = url.indexOf('{', start);
+    if (open === -1) break;
+    const close = url.indexOf('}', open + 1);
+    if (close === -1) break; // unmatched brace -> stop or throw
+    const paramName = url.slice(open + 1, close);
+    pathParamNames.push(paramName);
+
     const value = options.pathParams?.[paramName];
-    if (value === undefined) {
-      throw new Error(`Missing path parameter: ${paramName}`);
-    }
-    url = url.replace(`{${paramName}}`, encodeURIComponent(String(value)));
+    if (value === undefined) throw new Error(`Missing path parameter: ${paramName}`);
+    url = url.slice(0, open) + encodeURIComponent(String(value)) + url.slice(close + 1);
+    start = open + 1;
   }
 
-  // Flatten query params, excluding path params
-  const queryParams: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(rawParams)) {
-    if (!pathParamMatches.some((match) => match[1] === key)) {
-      queryParams[key] = value;
-    }
-  }
-  const flattenedQueryParams = flattenParams(queryParams);
+  // filter query params (exclude path params)
+  const queryParams = flattenParams(
+    Object.entries(options.params ?? {}).reduce(
+      (acc, [k, v]) => {
+        if (!pathParamNames.includes(k)) acc[k] = v;
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
+  );
 
   const response = await axios.request({
     method,
     url,
-    params: flattenedQueryParams,
+    params: queryParams,
     data: options.body,
     ...options.config,
   });
 
-  console.debug('typedRequest response:', response);
-  return response.data;
+  return response.data as Res;
 }
