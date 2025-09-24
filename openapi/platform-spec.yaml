@@ -3401,23 +3401,6 @@ paths:
           description: Not Allowed
       security:
       - SecurityScheme: []
-  /zeebe/start:
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: {}
-        required: true
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-      summary: Start Workflow
-      tags:
-      - Zeebe Controller
 info:
   title: remsfal-platform API
   version: 1.0.0-SNAPSHOT
