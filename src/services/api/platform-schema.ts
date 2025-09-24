@@ -40,6 +40,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         put?: never;
@@ -78,6 +85,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -242,7 +256,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information for all projects. */
+        /** Retrieve information for all projects */
         get: {
             parameters: {
                 query: {
@@ -273,10 +287,17 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         put?: never;
-        /** Create a new project. */
+        /** Create a new project */
         post: {
             parameters: {
                 query?: never;
@@ -297,7 +318,9 @@ export interface paths {
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ProjectJson"];
+                    };
                 };
                 /** @description Invalid request message */
                 400: {
@@ -308,6 +331,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -328,7 +358,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of a project. */
+        /** Retrieve information of a project */
         get: {
             parameters: {
                 query?: never;
@@ -357,6 +387,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The project does not exist */
                 404: {
                     headers: {
@@ -368,7 +405,7 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Delete an existing project. */
+        /** Delete an existing project */
         delete: {
             parameters: {
                 query?: never;
@@ -395,11 +432,18 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         options?: never;
         head?: never;
-        /** Update information of a project. */
+        /** Update information of a project */
         patch: {
             parameters: {
                 query?: never;
@@ -432,6 +476,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The project does not exist */
                 404: {
                     headers: {
@@ -452,7 +503,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new apartment. */
+        /** Create a new apartment */
         post: {
             parameters: {
                 query?: never;
@@ -469,14 +520,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Apartment created successfully */
+                /** @description A new apartment was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new apartment */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
                 };
             };
         };
@@ -493,7 +546,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of an apartment. */
+        /** Retrieve information of an apartment */
         get: {
             parameters: {
                 query?: never;
@@ -508,6 +561,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing apartment was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -578,6 +640,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing apartment was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -605,7 +676,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new building. */
+        /** Create a new building */
         post: {
             parameters: {
                 query?: never;
@@ -622,14 +693,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Building created successfully */
+                /** @description A new building was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new building */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
                 };
             };
         };
@@ -661,6 +734,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing building was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The building does not exist */
                 404: {
                     headers: {
@@ -701,6 +790,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description The building does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         options?: never;
@@ -724,6 +820,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing building was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -751,7 +856,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new apartment. */
+        /** Create a new apartment */
         post: {
             parameters: {
                 query?: never;
@@ -770,14 +875,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Apartment created successfully */
+                /** @description A new apartment was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new apartment */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
                 };
             };
         };
@@ -794,7 +901,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of an apartment. */
+        /** Retrieve information of an apartment */
         get: {
             parameters: {
                 query?: never;
@@ -809,6 +916,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing apartment was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -879,6 +995,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing apartment was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -906,7 +1031,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new commercial unit. */
+        /** Create a new commercial */
         post: {
             parameters: {
                 query?: never;
@@ -925,14 +1050,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Commercial unit created successfully */
+                /** @description A new commercial was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new commercial */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
                 };
             };
         };
@@ -949,7 +1076,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information about a commercial unit. */
+        /** Retrieve information about a commercial */
         get: {
             parameters: {
                 query?: never;
@@ -964,6 +1091,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing commercial was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -971,7 +1107,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description The commercial unit does not exist */
+                /** @description The commercial does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -997,7 +1133,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The commercial unit was deleted successfully */
+                /** @description The commercial was deleted successfully */
                 204: {
                     headers: {
                         [name: string]: unknown;
@@ -1034,6 +1170,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing commercial was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1041,7 +1186,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description The commercial unit does not exist */
+                /** @description The commercial does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -1061,7 +1206,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new storage. */
+        /** Create a new storage */
         post: {
             parameters: {
                 query?: never;
@@ -1080,14 +1225,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Storage created successfully */
+                /** @description A new storage was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new storage */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
                 };
             };
         };
@@ -1119,6 +1266,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing storage was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The storage does not exist */
                 404: {
                     headers: {
@@ -1182,6 +1345,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing storage was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1209,7 +1381,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new commercial unit. */
+        /** Create a new commercial */
         post: {
             parameters: {
                 query?: never;
@@ -1226,14 +1398,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Commercial unit created successfully */
+                /** @description A new commercial was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new commercial */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
                 };
             };
         };
@@ -1250,7 +1424,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information about a commercial unit. */
+        /** Retrieve information about a commercial */
         get: {
             parameters: {
                 query?: never;
@@ -1265,6 +1439,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing commercial was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1272,7 +1455,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description The commercial unit does not exist */
+                /** @description The commercial does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -1298,7 +1481,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The commercial unit was deleted successfully */
+                /** @description The commercial was deleted successfully */
                 204: {
                     headers: {
                         [name: string]: unknown;
@@ -1335,6 +1518,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing commercial was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1342,7 +1534,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description The commercial unit does not exist */
+                /** @description The commercial does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -1764,7 +1956,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information for all properties. */
+        /** Retrieve information for all properties */
         get: {
             parameters: {
                 query?: never;
@@ -1777,6 +1969,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description A list of all existing properties with itsrentable units as tree was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PropertyListJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1787,7 +1988,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Create a new property. */
+        /** Create a new property */
         post: {
             parameters: {
                 query?: never;
@@ -1804,14 +2005,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Property created successfully */
+                /** @description A new property was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new property */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["PropertyJson"];
+                    };
                 };
             };
         };
@@ -1828,7 +2031,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of a property. */
+        /** Retrieve information of a property */
         get: {
             parameters: {
                 query?: never;
@@ -1843,6 +2046,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing property was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PropertyJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The property does not exist */
                 404: {
                     headers: {
@@ -1854,7 +2073,7 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Delete an existing property. */
+        /** Delete an existing property */
         delete: {
             parameters: {
                 query?: never;
@@ -1869,7 +2088,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The property was deleted successfully */
+                /** @description An existing property was successfully deleted */
                 204: {
                     headers: {
                         [name: string]: unknown;
@@ -1883,11 +2102,18 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description The property does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         options?: never;
         head?: never;
-        /** Update information of a property. */
+        /** Update information of a property */
         patch: {
             parameters: {
                 query?: never;
@@ -1906,6 +2132,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing property was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PropertyJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1933,7 +2168,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new building. */
+        /** Create a new building */
         post: {
             parameters: {
                 query?: never;
@@ -1952,14 +2187,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Building created successfully */
+                /** @description A new building was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new building */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
                 };
             };
         };
@@ -1991,6 +2228,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing building was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The building does not exist */
                 404: {
                     headers: {
@@ -2031,6 +2284,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description The building does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         options?: never;
@@ -2054,6 +2314,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing building was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BuildingJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -2081,7 +2350,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new apartment. */
+        /** Create a new apartment */
         post: {
             parameters: {
                 query?: never;
@@ -2100,14 +2369,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Apartment created successfully */
+                /** @description A new apartment was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new apartment */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
                 };
             };
         };
@@ -2124,7 +2395,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of an apartment. */
+        /** Retrieve information of an apartment */
         get: {
             parameters: {
                 query?: never;
@@ -2139,6 +2410,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing apartment was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -2209,6 +2489,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing apartment was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApartmentJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -2236,7 +2525,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new commercial unit. */
+        /** Create a new commercial */
         post: {
             parameters: {
                 query?: never;
@@ -2255,14 +2544,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Commercial unit created successfully */
+                /** @description A new commercial was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new commercial */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
                 };
             };
         };
@@ -2279,7 +2570,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information about a commercial unit. */
+        /** Retrieve information about a commercial */
         get: {
             parameters: {
                 query?: never;
@@ -2294,6 +2585,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing commercial was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -2301,7 +2601,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description The commercial unit does not exist */
+                /** @description The commercial does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -2327,7 +2627,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The commercial unit was deleted successfully */
+                /** @description The commercial was deleted successfully */
                 204: {
                     headers: {
                         [name: string]: unknown;
@@ -2364,6 +2664,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing commercial was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CommercialJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -2371,7 +2680,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description The commercial unit does not exist */
+                /** @description The commercial does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -2391,7 +2700,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new storage. */
+        /** Create a new storage */
         post: {
             parameters: {
                 query?: never;
@@ -2410,14 +2719,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Storage created successfully */
+                /** @description A new storage was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new storage */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
                 };
             };
         };
@@ -2449,6 +2760,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing storage was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The storage does not exist */
                 404: {
                     headers: {
@@ -2512,6 +2839,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing storage was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -2539,7 +2875,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new site. */
+        /** Create a new site */
         post: {
             parameters: {
                 query?: never;
@@ -2558,14 +2894,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Site created successfully */
+                /** @description A new site was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new site */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
                 };
             };
         };
@@ -2582,7 +2920,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of a site. */
+        /** Retrieve information of a site */
         get: {
             parameters: {
                 query?: never;
@@ -2597,6 +2935,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing site was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The site does not exist */
                 404: {
                     headers: {
@@ -2660,6 +3014,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing site was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -2687,7 +3050,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new site. */
+        /** Create a new site */
         post: {
             parameters: {
                 query?: never;
@@ -2704,14 +3067,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Site created successfully */
+                /** @description A new site was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new site */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
                 };
             };
         };
@@ -2728,7 +3093,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Retrieve information of a site. */
+        /** Retrieve information of a site */
         get: {
             parameters: {
                 query?: never;
@@ -2743,6 +3108,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing site was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The site does not exist */
                 404: {
                     headers: {
@@ -2806,6 +3187,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing site was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SiteJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -2833,7 +3223,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a new storage. */
+        /** Create a new storage */
         post: {
             parameters: {
                 query?: never;
@@ -2850,14 +3240,16 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Storage created successfully */
+                /** @description A new storage was successfully createded */
                 201: {
                     headers: {
                         /** @description URL of the new storage */
                         Location?: unknown;
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
                 };
             };
         };
@@ -2889,6 +3281,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing storage was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description The storage does not exist */
                 404: {
                     headers: {
@@ -2952,6 +3360,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing storage was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["StorageJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3671,6 +4088,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
             };
         };
         put?: never;
@@ -3694,6 +4118,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3728,6 +4159,13 @@ export interface paths {
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -3904,13 +4342,25 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
-        /** Format: date */
+        /**
+         * Format: date
+         * @example 2022-03-10
+         */
         Date: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @example 2022-03-10T16:15:50Z
+         */
         Instant: string;
-        /** Format: date */
+        /**
+         * Format: date
+         * @example 2022-03-10
+         */
         LocalDate: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50
+         */
         LocalDateTime: string;
         Locale: {
             language?: string;
@@ -3947,6 +4397,7 @@ export interface components {
             /**
              * Format: int32
              * @description Index of the first element in projects list of total available entries, starting at 1
+             * @example 1
              */
             first: number;
             /**
@@ -4014,25 +4465,44 @@ export interface components {
         /** @description Encapsulated data of a project tree node */
         RentalUnitNodeDataJson: {
             id?: string;
-            /** @description Type of the node (e.g., 'PROPERTY', 'BUILDING') */
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
             type: components["schemas"]["UnitType"];
-            /** @description Title of the node */
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
             title?: string;
-            /** @description Location of the rental unit */
+            /**
+             * @description Location of the rental unit
+             * @example first floor left
+             */
             location?: string;
-            /** @description Description of the rental unit */
+            /**
+             * @description Description of the rental unit
+             * @example A multi-story office building
+             */
             description?: string;
-            /** @description Name of the tenant associated with this node */
+            /**
+             * @description Name of the tenant associated with this node
+             * @example Doe, John
+             */
             tenant?: string;
             /**
              * Format: float
              * @description Usable space in square meters
+             * @example 350.5
              */
             space?: number;
         };
         /** @description A tree node representing a project entity */
         RentalUnitTreeNodeJson: {
-            /** @description Key of the node */
+            /**
+             * @description Key of the node
+             * @example Property 1
+             */
             key: string;
             /** @description Data encapsulating node attributes */
             data?: components["schemas"]["RentalUnitNodeDataJson"];
@@ -4121,9 +4591,15 @@ export interface components {
         TenancyItemJson: {
             id?: string;
             name?: string;
-            /** @description Type of the node (e.g., 'PROPERTY', 'BUILDING') */
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
             rentalType: components["schemas"]["UnitType"];
-            /** @description Title of the node */
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
             rentalTitle?: string;
             active?: boolean;
         };
@@ -4138,9 +4614,15 @@ export interface components {
         /** @description A read-only tenancy of a rentable unit from a tenant's perspective */
         TenancyJson1: {
             id?: string;
-            /** @description Type of the node (e.g., 'PROPERTY', 'BUILDING') */
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
             rentalType: components["schemas"]["UnitType"];
-            /** @description Title of the node */
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
             rentalTitle?: string;
             startOfRental?: components["schemas"]["LocalDate"];
             endOfRental?: components["schemas"]["LocalDate"];

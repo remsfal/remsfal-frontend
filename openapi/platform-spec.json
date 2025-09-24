@@ -1105,8 +1105,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/address/countries" : {
@@ -1125,8 +1131,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/authentication/jwks" : {
@@ -1199,7 +1211,7 @@
     },
     "/api/v1/projects" : {
       "get" : {
-        "summary" : "Retrieve information for all projects.",
+        "summary" : "Retrieve information for all projects",
         "parameters" : [ {
           "description" : "Maximum number of projects to return",
           "name" : "limit",
@@ -1237,11 +1249,17 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "post" : {
-        "summary" : "Create a new project.",
+        "summary" : "Create a new project",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1259,6 +1277,13 @@
               "Location" : {
                 "description" : "URL of the new project"
               }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectJson"
+                }
+              }
             }
           },
           "400" : {
@@ -1266,13 +1291,19 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}" : {
       "patch" : {
-        "summary" : "Update information of a project.",
+        "summary" : "Update information of a project",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -1309,11 +1340,17 @@
           },
           "404" : {
             "description" : "The project does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "get" : {
-        "summary" : "Retrieve information of a project.",
+        "summary" : "Retrieve information of a project",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -1340,11 +1377,17 @@
           },
           "404" : {
             "description" : "The project does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "delete" : {
-        "summary" : "Delete an existing project.",
+        "summary" : "Delete an existing project",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -1361,13 +1404,19 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects/{projectId}/apartments" : {
       "post" : {
-        "summary" : "Create a new apartment.",
+        "summary" : "Create a new apartment",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -1390,10 +1439,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Apartment created successfully",
+            "description" : "A new apartment was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new apartment"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
               }
             }
           }
@@ -1433,6 +1489,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing apartment was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -1442,7 +1508,7 @@
         }
       },
       "get" : {
-        "summary" : "Retrieve information of an apartment.",
+        "summary" : "Retrieve information of an apartment",
         "parameters" : [ {
           "description" : "ID of the apartment",
           "required" : true,
@@ -1463,11 +1529,21 @@
           }
         } ],
         "responses" : {
-          "404" : {
-            "description" : "The apartment does not exist"
+          "200" : {
+            "description" : "An existing apartment was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The apartment does not exist"
           }
         }
       },
@@ -1504,7 +1580,7 @@
     },
     "/api/v1/projects/{projectId}/buildings" : {
       "post" : {
-        "summary" : "Create a new building.",
+        "summary" : "Create a new building",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -1527,10 +1603,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Building created successfully",
+            "description" : "A new building was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new building"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BuildingJson"
+                }
               }
             }
           }
@@ -1570,6 +1653,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing building was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BuildingJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -1600,6 +1693,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing building was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BuildingJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
           "404" : {
             "description" : "The building does not exist"
           }
@@ -1632,13 +1738,16 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The building does not exist"
           }
         }
       }
     },
     "/api/v1/projects/{projectId}/buildings/{buildingId}/apartments" : {
       "post" : {
-        "summary" : "Create a new apartment.",
+        "summary" : "Create a new apartment",
         "parameters" : [ {
           "description" : "ID of the building",
           "required" : true,
@@ -1670,10 +1779,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Apartment created successfully",
+            "description" : "A new apartment was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new apartment"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
               }
             }
           }
@@ -1713,6 +1829,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing apartment was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -1722,7 +1848,7 @@
         }
       },
       "get" : {
-        "summary" : "Retrieve information of an apartment.",
+        "summary" : "Retrieve information of an apartment",
         "parameters" : [ {
           "description" : "ID of the apartment",
           "required" : true,
@@ -1743,11 +1869,21 @@
           }
         } ],
         "responses" : {
-          "404" : {
-            "description" : "The apartment does not exist"
+          "200" : {
+            "description" : "An existing apartment was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The apartment does not exist"
           }
         }
       },
@@ -1784,7 +1920,7 @@
     },
     "/api/v1/projects/{projectId}/buildings/{buildingId}/commercials" : {
       "post" : {
-        "summary" : "Create a new commercial unit.",
+        "summary" : "Create a new commercial",
         "parameters" : [ {
           "description" : "ID of the building",
           "required" : true,
@@ -1816,10 +1952,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Commercial unit created successfully",
+            "description" : "A new commercial was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new commercial"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
               }
             }
           }
@@ -1859,16 +2002,26 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing commercial was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
           "404" : {
-            "description" : "The commercial unit does not exist"
+            "description" : "The commercial does not exist"
           }
         }
       },
       "get" : {
-        "summary" : "Retrieve information about a commercial unit.",
+        "summary" : "Retrieve information about a commercial",
         "parameters" : [ {
           "description" : "ID of the commercial unit",
           "required" : true,
@@ -1889,11 +2042,21 @@
           }
         } ],
         "responses" : {
-          "404" : {
-            "description" : "The commercial unit does not exist"
+          "200" : {
+            "description" : "An existing commercial was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The commercial does not exist"
           }
         }
       },
@@ -1920,7 +2083,7 @@
         } ],
         "responses" : {
           "204" : {
-            "description" : "The commercial unit was deleted successfully"
+            "description" : "The commercial was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1930,7 +2093,7 @@
     },
     "/api/v1/projects/{projectId}/buildings/{buildingId}/storages" : {
       "post" : {
-        "summary" : "Create a new storage.",
+        "summary" : "Create a new storage",
         "parameters" : [ {
           "description" : "ID of the building",
           "required" : true,
@@ -1960,10 +2123,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Storage created successfully",
+            "description" : "A new storage was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new storage"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
               }
             }
           }
@@ -2003,6 +2173,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing storage was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2031,6 +2211,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing storage was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
           "404" : {
             "description" : "The storage does not exist"
           }
@@ -2069,7 +2262,7 @@
     },
     "/api/v1/projects/{projectId}/commercials" : {
       "post" : {
-        "summary" : "Create a new commercial unit.",
+        "summary" : "Create a new commercial",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -2092,10 +2285,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Commercial unit created successfully",
+            "description" : "A new commercial was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new commercial"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
               }
             }
           }
@@ -2135,16 +2335,26 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing commercial was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
           "404" : {
-            "description" : "The commercial unit does not exist"
+            "description" : "The commercial does not exist"
           }
         }
       },
       "get" : {
-        "summary" : "Retrieve information about a commercial unit.",
+        "summary" : "Retrieve information about a commercial",
         "parameters" : [ {
           "description" : "ID of the commercial unit",
           "required" : true,
@@ -2165,11 +2375,21 @@
           }
         } ],
         "responses" : {
-          "404" : {
-            "description" : "The commercial unit does not exist"
+          "200" : {
+            "description" : "An existing commercial was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The commercial does not exist"
           }
         }
       },
@@ -2196,7 +2416,7 @@
         } ],
         "responses" : {
           "204" : {
-            "description" : "The commercial unit was deleted successfully"
+            "description" : "The commercial was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -2558,7 +2778,7 @@
     },
     "/api/v1/projects/{projectId}/properties" : {
       "get" : {
-        "summary" : "Retrieve information for all properties.",
+        "summary" : "Retrieve information for all properties",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -2570,13 +2790,23 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "A list of all existing properties with itsrentable units as tree was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PropertyListJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
         }
       },
       "post" : {
-        "summary" : "Create a new property.",
+        "summary" : "Create a new property",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -2599,10 +2829,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Property created successfully",
+            "description" : "A new property was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new property"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PropertyJson"
+                }
               }
             }
           }
@@ -2611,7 +2848,7 @@
     },
     "/api/v1/projects/{projectId}/properties/{propertyId}" : {
       "patch" : {
-        "summary" : "Update information of a property.",
+        "summary" : "Update information of a property",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -2642,6 +2879,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing property was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PropertyJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2651,7 +2898,7 @@
         }
       },
       "get" : {
-        "summary" : "Retrieve information of a property.",
+        "summary" : "Retrieve information of a property",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -2672,13 +2919,26 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing property was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PropertyJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
           "404" : {
             "description" : "The property does not exist"
           }
         }
       },
       "delete" : {
-        "summary" : "Delete an existing property.",
+        "summary" : "Delete an existing property",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -2700,17 +2960,20 @@
         } ],
         "responses" : {
           "204" : {
-            "description" : "The property was deleted successfully"
+            "description" : "An existing property was successfully deleted"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The property does not exist"
           }
         }
       }
     },
     "/api/v1/projects/{projectId}/properties/{propertyId}/buildings" : {
       "post" : {
-        "summary" : "Create a new building.",
+        "summary" : "Create a new building",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -2742,10 +3005,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Building created successfully",
+            "description" : "A new building was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new building"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BuildingJson"
+                }
               }
             }
           }
@@ -2785,6 +3055,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing building was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BuildingJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2815,6 +3095,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing building was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BuildingJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
           "404" : {
             "description" : "The building does not exist"
           }
@@ -2847,13 +3140,16 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The building does not exist"
           }
         }
       }
     },
     "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/apartments" : {
       "post" : {
-        "summary" : "Create a new apartment.",
+        "summary" : "Create a new apartment",
         "parameters" : [ {
           "description" : "ID of the building",
           "required" : true,
@@ -2885,10 +3181,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Apartment created successfully",
+            "description" : "A new apartment was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new apartment"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
               }
             }
           }
@@ -2928,6 +3231,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing apartment was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2937,7 +3250,7 @@
         }
       },
       "get" : {
-        "summary" : "Retrieve information of an apartment.",
+        "summary" : "Retrieve information of an apartment",
         "parameters" : [ {
           "description" : "ID of the apartment",
           "required" : true,
@@ -2958,11 +3271,21 @@
           }
         } ],
         "responses" : {
-          "404" : {
-            "description" : "The apartment does not exist"
+          "200" : {
+            "description" : "An existing apartment was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApartmentJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The apartment does not exist"
           }
         }
       },
@@ -2999,7 +3322,7 @@
     },
     "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/commercials" : {
       "post" : {
-        "summary" : "Create a new commercial unit.",
+        "summary" : "Create a new commercial",
         "parameters" : [ {
           "description" : "ID of the building",
           "required" : true,
@@ -3031,10 +3354,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Commercial unit created successfully",
+            "description" : "A new commercial was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new commercial"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
               }
             }
           }
@@ -3074,16 +3404,26 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing commercial was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
           "404" : {
-            "description" : "The commercial unit does not exist"
+            "description" : "The commercial does not exist"
           }
         }
       },
       "get" : {
-        "summary" : "Retrieve information about a commercial unit.",
+        "summary" : "Retrieve information about a commercial",
         "parameters" : [ {
           "description" : "ID of the commercial unit",
           "required" : true,
@@ -3104,11 +3444,21 @@
           }
         } ],
         "responses" : {
-          "404" : {
-            "description" : "The commercial unit does not exist"
+          "200" : {
+            "description" : "An existing commercial was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CommercialJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The commercial does not exist"
           }
         }
       },
@@ -3135,7 +3485,7 @@
         } ],
         "responses" : {
           "204" : {
-            "description" : "The commercial unit was deleted successfully"
+            "description" : "The commercial was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -3145,7 +3495,7 @@
     },
     "/api/v1/projects/{projectId}/properties/{propertyId}/buildings/{buildingId}/storages" : {
       "post" : {
-        "summary" : "Create a new storage.",
+        "summary" : "Create a new storage",
         "parameters" : [ {
           "description" : "ID of the building",
           "required" : true,
@@ -3175,10 +3525,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Storage created successfully",
+            "description" : "A new storage was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new storage"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
               }
             }
           }
@@ -3218,6 +3575,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing storage was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -3246,6 +3613,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing storage was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
           "404" : {
             "description" : "The storage does not exist"
           }
@@ -3284,7 +3664,7 @@
     },
     "/api/v1/projects/{projectId}/properties/{propertyId}/sites" : {
       "post" : {
-        "summary" : "Create a new site.",
+        "summary" : "Create a new site",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -3316,10 +3696,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Site created successfully",
+            "description" : "A new site was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new site"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SiteJson"
+                }
               }
             }
           }
@@ -3359,6 +3746,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing site was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SiteJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -3368,7 +3765,7 @@
         }
       },
       "get" : {
-        "summary" : "Retrieve information of a site.",
+        "summary" : "Retrieve information of a site",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -3389,6 +3786,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing site was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SiteJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
           "404" : {
             "description" : "The site does not exist"
           }
@@ -3427,7 +3837,7 @@
     },
     "/api/v1/projects/{projectId}/sites" : {
       "post" : {
-        "summary" : "Create a new site.",
+        "summary" : "Create a new site",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -3450,10 +3860,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Site created successfully",
+            "description" : "A new site was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new site"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SiteJson"
+                }
               }
             }
           }
@@ -3493,6 +3910,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing site was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SiteJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -3502,7 +3929,7 @@
         }
       },
       "get" : {
-        "summary" : "Retrieve information of a site.",
+        "summary" : "Retrieve information of a site",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -3523,6 +3950,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing site was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SiteJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
           "404" : {
             "description" : "The site does not exist"
           }
@@ -3561,7 +4001,7 @@
     },
     "/api/v1/projects/{projectId}/storages" : {
       "post" : {
-        "summary" : "Create a new storage.",
+        "summary" : "Create a new storage",
         "parameters" : [ {
           "description" : "ID of the project",
           "required" : true,
@@ -3583,10 +4023,17 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Storage created successfully",
+            "description" : "A new storage was successfully createded",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new storage"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
               }
             }
           }
@@ -3626,6 +4073,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing storage was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -3654,6 +4111,19 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing storage was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StorageJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
           "404" : {
             "description" : "The storage does not exist"
           }
@@ -4301,8 +4771,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "get" : {
         "summary" : "Retrieve information of this user identified by the cookie.",
@@ -4319,8 +4795,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       },
       "delete" : {
         "summary" : "Delete this user identified by the cookie.",
@@ -4330,8 +4812,14 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
-        }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/zeebe/start" : {

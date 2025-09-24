@@ -836,6 +836,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
   /api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}:
     post:
       summary: Add a participant to chat session
@@ -871,6 +875,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
     get:
       summary: Get chat session details
       parameters:
@@ -905,6 +913,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
     delete:
       summary: Delete chat session
       parameters:
@@ -939,6 +951,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
   /api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages:
     post:
       summary: Send a chat message in a chat session
@@ -982,6 +998,8 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+      security:
+      - SecurityScheme: []
     get:
       summary: Get chat logs in a chat session
       parameters:
@@ -1016,6 +1034,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
   /api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages/upload:
     post:
       summary: Send a file in a chat session
@@ -1059,6 +1081,8 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+      security:
+      - SecurityScheme: []
   /api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages/{messageId}:
     put:
       summary: Update a chat message in a chat session
@@ -1109,6 +1133,8 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+      security:
+      - SecurityScheme: []
     get:
       summary: Get a chat message in a chat session
       parameters:
@@ -1150,6 +1176,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
     delete:
       summary: Delete a chat message in a chat session
       parameters:
@@ -1193,6 +1223,8 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+      security:
+      - SecurityScheme: []
   /api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants:
     get:
       summary: Get participants in chat session
@@ -1228,6 +1260,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
   /api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants/{participantId}:
     delete:
       summary: Remove participant from chat session
@@ -1270,6 +1306,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
     get:
       summary: Get participant details in chat session
       parameters:
@@ -1311,6 +1351,11 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants/{participantId}/role:
     put:
       summary: Change participant role in chat session
       parameters:
@@ -1358,6 +1403,10 @@ paths:
           description: Internal server error
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
 info:
   title: remsfal-ticketing API
   version: 1.0.0-SNAPSHOT
