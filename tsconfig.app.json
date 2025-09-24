@@ -9,7 +9,6 @@
     "lib": ["dom", "es2023"],
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "noUncheckedIndexedAccess": true
+    }
   }
 }
