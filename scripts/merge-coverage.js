@@ -5,9 +5,9 @@
 import { execSync } from 'child_process';
 import { existsSync, rmSync, mkdirSync, readFileSync, appendFileSync } from 'fs';
 
-const coverageVitest = 'coverage';
+const coverageVitest = 'coverage-vitest';
 const coverageCypress = 'coverage-cypress';
-const coverageFinal = 'coverage-final';
+const coverageFinal = 'coverage';
 const nycTemp = '.nyc_output';
 
 console.log('🧪 Starting combined coverage collection...\n');
@@ -79,8 +79,8 @@ try {
   }
 
   console.log('\n✅ Combined coverage collection completed!');
-  console.log('📁 Final coverage reports available in: coverage-final/');
-  console.log('📄 LCOV report: coverage-final/lcov.info');
+  console.log('📁 Final coverage reports available in: coverage/');
+  console.log('📄 LCOV report: coverage/lcov.info');
   
 } catch (error) {
   console.error('❌ Error during coverage collection:', error.message);
