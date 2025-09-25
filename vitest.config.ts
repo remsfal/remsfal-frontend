@@ -10,6 +10,7 @@ export default mergeConfig(
       coverage: {
         reporter: ['lcov', 'text', 'json', 'html'],
         reportsDirectory: 'coverage-vitest',
+        exclude: [...(configDefaults.coverage?.exclude || []), 'scripts/**'],
       },
       environment: 'jsdom',
       globals: true,
