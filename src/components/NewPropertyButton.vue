@@ -28,24 +28,27 @@ const createProperty = async () => {
     return;
   }
 
-  visible.value = false;
-
-  // Provide a default number or undefined for plotArea, but never null
-  const plotAreaValue = 0; // or undefined if backend accepts missing field
-
-  propertyService
-    .createProperty(props.projectId, {
-      title: title.value!,
+  try {
+    // Call the service
+    const newProperty = await propertyService.createProperty(props.projectId, {
+      title: title.value,
       description: description.value,
-      plotArea: plotAreaValue,
-    })
-    .then((newProperty) => {
-      console.log('Property created:', newProperty);
-      emit('newUnit', title.value!);
-    })
-    .catch((err) => {
-      console.error('Failed to create property:', err);
+      plotArea: 0, // default value
     });
+
+    console.log('Property created:', newProperty);
+    emit('newUnit', title.value);
+
+    // Reset the form fields
+    title.value = '';
+    description.value = '';
+
+    // Close the dialog
+    visible.value = false;
+  } catch (err) {
+    console.error('Failed to create property:', err);
+    alert('Fehler beim Erstellen der Einheit.');
+  }
 };
 </script>
 
