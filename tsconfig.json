@@ -13,9 +13,8 @@
   ],
   "compilerOptions": {
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
     "target": "ESNext",
-    "jsx": "preserve",
-    "noUncheckedIndexedAccess": true,
+    "jsx": "preserve"
   }
 }

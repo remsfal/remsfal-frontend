@@ -182,5 +182,8 @@
   "commercialUnit.saveSuccessTitle": "Erfolg",
   "commercialUnit.saveSuccessDetail": "Wirtschaftseinheit erfolgreich gespeichert.",
   "commercialUnit.saveError": "Wirtschaftseinheit konnte nicht gespeichert werden.",
-  "property.address": "Adresse"
+  "property.address": "Adresse",
+  "storage.validation.titleTooShort": "Der Titel muss mindestens 3 Zeichen lang sein.",
+  "storage.validation.usableSpaceNegative": "Nutzfläche darf nicht negativ sein.",
+  "storage.validation.descriptionTooLong": "Beschreibung darf maximal 500 Zeichen lang sein."
 }

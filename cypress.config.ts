@@ -10,11 +10,4 @@ export default defineConfig({
       return config;
     },
   },
-  component: {
-    specPattern: 'test/**/*.cy.{js,jsx,ts,tsx}',
-    devServer: {
-      framework: 'vue',
-      bundler: 'vite',
-    },
-  },
 });

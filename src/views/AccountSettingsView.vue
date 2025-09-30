@@ -284,13 +284,16 @@ async function getCity() {
 
     const address = await userService.getCityFromZip(zip);
 
-    if (address) {
-      editedAddress.value.city = address[0].city;
-      editedAddress.value.province = address[0].province;
-      editedAddress.value.countryCode = address[0].countryCode;
-      errorMessage.value.zip = '';
-      errorMessage.value.city = '';
-      errorMessage.value.province = '';
+    if (address && address.length > 0) {
+      const firstAddress = address[0];
+      if (firstAddress) {
+        editedAddress.value.city = firstAddress.city;
+        editedAddress.value.province = firstAddress.province;
+        editedAddress.value.countryCode = firstAddress.countryCode;
+        errorMessage.value.zip = '';
+        errorMessage.value.city = '';
+        errorMessage.value.province = '';
+      }
     }
   } catch (error) {
     console.log(error);

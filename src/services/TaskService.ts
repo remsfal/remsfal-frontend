@@ -1,121 +1,83 @@
-import axios from 'axios';
+import { typedRequest } from '@/services/api/typedRequest';
+import type { components, paths } from '../../src/services/api/platform-schema';
 
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: Status;
-  ownerId: string;
-  createdAt: Date;
-  modifiedAt: Date;
-  blockedBy: string;
-  duplicateOf: string;
-  relatedTo: string;
-}
+// Reuse backend enums directly
+export type Status = components['schemas']['TaskJson']['status'];
 
-export enum Status {
-  PENDING,
-  OPEN,
-  IN_PROGRESS,
-  CLOSED,
-  REJECTED,
-}
+export const StatusValues = {
+  PENDING: 'PENDING',
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  CLOSED: 'CLOSED',
+  REJECTED: 'REJECTED',
+} as const;
 
-export interface TaskList {
-  tasks: TaskItem[];
-}
+// Full task type directly from backend
+export type TaskItem = components['schemas']['TaskJson'];
+export type TaskDetail = components['schemas']['TaskJson'];
+export type TaskItemJson = components['schemas']['TaskItemJson'];
+// Request bodies directly from OpenAPI paths
+export type CreateTaskBody =
+  paths['/api/v1/projects/{projectId}/tasks']['post']['requestBody']['content']['application/json'];
+export type ModifyTaskBody =
+  paths['/api/v1/projects/{projectId}/tasks/{taskId}']['patch']['requestBody']['content']['application/json'];
 
-export interface TaskItem {
-  id: string;
-  name: string;
-  title: string;
-  status: Status;
-  owner: string;
-}
-
-export default class TaskService {
-  readonly baseUrl: string = '/api/v1/projects';
-
-  //Get a list of tasks
-  getTasks(projectId: string, status?: 'OPEN' | null , ownerId?:string ): Promise<TaskList> {
-    if (status) {
-      return axios.get(`${this.baseUrl}/${projectId}/tasks?status=${status}`).then((response) => {
-        const taskList: TaskList = response.data;
-        console.log('GET tasks:', taskList);
-        return taskList;
-      });
-    }
-    if (ownerId) {
-      return axios.get(`${this.baseUrl}/${projectId}/tasks?owner=${ownerId}`).then((response) => {
-        const taskList: TaskList = response.data;
-        console.log('GET tasks:', taskList);
-        return taskList;
-      });
-    }
-
-    return axios.get(`${this.baseUrl}/${projectId}/tasks`).then((response) => {
-      const taskList: TaskList = response.data;
-      console.log('GET tasks:', taskList);
-      return taskList;
-    });
-  }
-  //Get a single task
-  getTask(projectId: string, taskId: string) {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/tasks/${taskId}`)
-      .then((response) => {
-        console.log('task returned', response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.log('task retrieval error', error.request.status);
-
-        console.error(error.request.status);
-        throw error.request.status; // This will allow error to be caught where getTask is called
-      });
-  }
-
-  //Create a task
-  createTask(
+export class TaskService {
+  async getTasks(
     projectId: string,
-    title: string,
-    description: string,
-    ownerId?: string,
-  ): Promise<Task> {
-    const newTask: Partial<Task> = {
-      title: title,
-      description: description,
-      status: Status.OPEN,
-      ownerId: ownerId,
-    };
-
-    return axios.post<Task>(`${this.baseUrl}/${projectId}/tasks/`, newTask).then((response) => {
-      const createdTask: Task = response.data;
-      console.log('POST create task:', createdTask);
-      return createdTask;
-    });
+    status?: Status,
+    ownerId?: string
+  ): Promise<{ tasks: TaskItem[] }> {
+    return typedRequest<'/api/v1/projects/{projectId}/tasks', 'get'>(
+      'get',
+      '/api/v1/projects/{projectId}/tasks',
+      {
+        params: {
+          path: { projectId },
+          query: {
+            ...(status ? { status } : {}),
+            ...(ownerId ? { owner: ownerId } : {}),
+          },
+        },
+        pathParams: { projectId },
+      }
+    ) as Promise<{ tasks: TaskItem[] }>;
   }
 
-  //modify a task
-  modifyTask(
-    projectId: string,
-    taskId: string,
-    title: string,
-    description: string,
-    status: string,
-    ownerId: string,
-  ) {
-    return axios
-        .patch(`${this.baseUrl}/${projectId}/tasks/${taskId}`, {
-          title: title,
-          description: description,
-          status: status,
-          ownerId: ownerId,
-        })
-        .then((response) => {
-          console.log('task updated', response.data);
-          return response.data;
-        })
-        .catch((error) => console.error(error));
+  async getTask(projectId: string, taskId: string): Promise<TaskDetail> {
+    return typedRequest<'/api/v1/projects/{projectId}/tasks/{taskId}', 'get'>(
+      'get',
+      '/api/v1/projects/{projectId}/tasks/{taskId}',
+      {
+        params: { path: { projectId, taskId } },
+        pathParams: { projectId, taskId },
+      },
+    ) as Promise<TaskDetail>;
+  }
+
+  async createTask(projectId: string, body: CreateTaskBody) {
+    return typedRequest<'/api/v1/projects/{projectId}/tasks', 'post'>(
+      'post',
+      '/api/v1/projects/{projectId}/tasks',
+      {
+        params: { path: { projectId } },
+        pathParams: { projectId },
+        body,
+      },
+    );
+  }
+
+  async modifyTask(projectId: string, taskId: string, body: ModifyTaskBody) {
+    return typedRequest<'/api/v1/projects/{projectId}/tasks/{taskId}', 'patch'>(
+      'patch',
+      '/api/v1/projects/{projectId}/tasks/{taskId}',
+      {
+        params: { path: { projectId, taskId } },
+        pathParams: { projectId, taskId },
+        body,
+      },
+    );
   }
 }
+
+export const taskService = new TaskService();

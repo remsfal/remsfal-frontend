@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { EntityType, propertyService, type RentableUnitTreeNode } from '@/services/PropertyService';
-import { tenancyService, type TenancyUnitItem } from '@/services/TenancyService';
+import { tenancyService } from '@/services/TenancyService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -9,6 +9,10 @@ import type { DataTablePassThroughMethodOptions } from 'primevue/datatable';
 import DataTable from 'primevue/datatable';
 import Select from 'primevue/select';
 import { computed, onMounted, ref, watch } from 'vue';
+import type { components } from '@/services/api/platform-schema';
+
+// OpenAPI type
+type TenancyUnitItem = components['schemas']['TenancyItemJson'];
 
 const props = defineProps<{
   listOfUnits: TenancyUnitItem[];
@@ -24,90 +28,88 @@ const localListOfUnits = ref<TenancyUnitItem[]>([]);
 watch(
   () => props.listOfUnits,
   (newVal) => {
-    localListOfUnits.value = newVal?.map(t => ({ ...t }));
+    localListOfUnits.value = newVal?.map((t) => ({ ...t }));
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 const projectStore = useProjectStore();
-
 const rentalObjects = ref<Array<{ label: string; value: string }>>([]);
 const unitTypes = ref<Array<{ label: string; value: string }>>([]);
 
 const loadDropdownOptions = async () => {
   try {
     const response = await propertyService.getPropertyTree(projectStore.projectId || '');
-    const properties = response.properties;
+    const properties: RentableUnitTreeNode[] = (response.properties || []).filter(
+      (p): p is RentableUnitTreeNode => p !== undefined,
+    );
 
-    console.log('Loaded properties:', properties);
-
-    const entityTypes = Object.values(EntityType);
-    rentalObjects.value = entityTypes.map((entity) => ({
+    // Rental objects dropdown
+    rentalObjects.value = Object.values(EntityType).map((entity) => ({
       label: entity,
       value: entity,
     }));
 
+    // Recursive function to get all units
     const getAllUnits = (
       nodes: RentableUnitTreeNode[],
     ): Array<{ label: string; value: string }> => {
-      return nodes.reduce((acc: Array<{ label: string; value: string }>, node) => {
-        acc.push({
-          label: node.data.title || '',
-          value: node.data.title ?? '',
-        });
-
-        if (node.children && node.children.length > 0) {
-          acc.push(...getAllUnits(node.children));
-        }
-
-        return acc;
-      }, []);
+      return nodes.reduce(
+        (acc, node) => {
+          if (node?.data?.title) {
+            acc.push({ label: node.data.title, value: node.data.title });
+          }
+          if (node?.children?.length) {
+            acc.push(
+              ...getAllUnits(
+                node.children.filter((n): n is RentableUnitTreeNode => n !== undefined),
+              ),
+            );
+          }
+          return acc;
+        },
+        [] as Array<{ label: string; value: string }>,
+      );
     };
 
-    unitTypes.value = [
-      ...new Map(getAllUnits(properties).map((item) => [item.value, item])).values(),
-    ];
+    // Remove duplicates
+    const allUnits = getAllUnits(properties);
+    unitTypes.value = [...new Map(allUnits.map((item) => [item.value, item])).values()];
   } catch (error) {
     console.error('Failed to load dropdown options:', error);
   }
-}
+};
 
 onMounted(() => {
   loadDropdownOptions();
-  if (props.isDeleteButtonEnabled) {
-    addNewRow();
-  }
+  if (props.isDeleteButtonEnabled) addNewRow();
 });
 
-const emptyRowTemplate = {
-  id: new Date().toISOString(),
-  rentalObject: '',
-  unitTitle: '',
+let newRowId = 1; // incremental counter for new rows
+
+const emptyRowTemplate: TenancyUnitItem = {
+  id: '', // will be set when adding a row
+  rentalType: 'PROPERTY', // default valid value
+  rentalTitle: '',
+  active: true,
 };
 
 const addNewRow = () => {
-  const newRow: TenancyUnitItem = { ...emptyRowTemplate };
+  const newRow = { ...emptyRowTemplate, id: `new-${newRowId++}` };
   localListOfUnits.value.push(newRow);
 };
 
 const columns = ref([
-  {
-    field: 'rentalObject',
-    header: 'Mietgegenstand',
-    editor: 'Dropdown',
-  },
-  {
-    field: 'unitTitle',
-    header: 'Wohneinheit',
-    editor: 'Dropdown',
-  },
+  { field: 'rentalType', header: 'Mietgegenstand', editor: 'Dropdown' },
+  { field: 'unitTitle', header: 'Wohneinheit', editor: 'Dropdown' },
 ]);
-
 const onCellEditComplete = async (event: any) => {
-  let { newData, index } = event;
+  const { newData, index } = event;
   localListOfUnits.value[index] = newData;
-  await tenancyService.updateTenancyUnitItem(localListOfUnits.value[index]);
-
+  const unit = localListOfUnits.value[index];
+  if (unit) {
+    await tenancyService.updateTenancyUnitItem(unit);
+  }
   emit('onChange', localListOfUnits.value);
 };
 
@@ -116,38 +118,65 @@ const deleteRow = (index: number) => {
   emit('onChange', localListOfUnits.value);
 };
 
-const displayedColumns = computed(() => {
-  return props.isDeleteButtonEnabled
+const displayedColumns = computed(() =>
+  props.isDeleteButtonEnabled
     ? [...columns.value, { field: 'actions', header: 'Aktionen' }]
-    : columns.value;
-});
+    : columns.value,
+);
 </script>
 
 <template>
   <div class="text-lg font-semibold text-[2rem]">Mietobjekte</div>
   <Card>
     <template #header>
-      <Button label="Neues Mietobjekt hinzufügen" icon="pi pi-plus" class="ml-6 mt-4" @click="addNewRow" />
+      <Button
+        label="Neues Mietobjekt hinzufügen"
+        icon="pi pi-plus"
+        class="ml-6 mt-4"
+        @click="addNewRow"
+      />
     </template>
     <template #content>
-      <DataTable :value="localListOfUnits" :rows="10" :rowHover="true" dataKey="id" tableStyle="min-width: 60rem"
-        scrollable scrollDirection="both" scrollHeight="var(--custom-scroll-height)" editMode="cell"
-        class="custom-scroll-height" :pt="{
+      <DataTable
+        :value="localListOfUnits"
+        :rows="10"
+        :rowHover="true"
+        dataKey="id"
+        tableStyle="min-width: 60rem"
+        scrollable
+        scrollDirection="both"
+        scrollHeight="var(--custom-scroll-height)"
+        editMode="cell"
+        class="custom-scroll-height"
+        :pt="{
           table: { style: 'min-width: 50rem' },
           column: {
             bodycell: ({ state }: DataTablePassThroughMethodOptions) => ({
               class: [{ '!py-0': state['d_editing'] }],
             }),
           },
-        }" @cellEditComplete="onCellEditComplete">
-        <Column v-for="(col) in displayedColumns" :key="col.field" :field="col.field" :header="col.header" sortable
-          style="width: 25%">
-          <template #editor="{ data, field }">
-            <Select v-model="data[field]" :options="field === 'rentalObject' ? rentalObjects : unitTypes"
-              v-if="col.field !== 'actions'" optionLabel="label" optionValue="value" placeholder="Auswählen..."
-              filter />
+        }"
+        @cellEditComplete="onCellEditComplete"
+      >
+        <Column
+          v-for="col in displayedColumns"
+          :key="col.field"
+          :field="col.field"
+          :header="col.header"
+          sortable
+          style="width: 25%"
+        >
+          <template #editor="{ data, field }" v-if="col.field !== 'actions'">
+            <Select
+              v-model="data[field]"
+              :options="field === 'rentalObject' ? rentalObjects : unitTypes"
+              v-if="col.field !== 'actions'"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Auswählen..."
+              filter
+            />
           </template>
-
           <template v-if="col.field === 'actions'" #body="{ index }">
             <Button icon="pi pi-trash" severity="danger" text @click="deleteRow(index)" />
           </template>

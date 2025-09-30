@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import TenancyDataComponent from '../../../src/components/tenancyDetails/TenancyDataComponent.vue';
 
@@ -10,8 +11,8 @@ describe('TenancyDataComponent', () => {
     const wrapper = mount(TenancyDataComponent, {
       props: {
         tenancy: {
-          rentalStart: past,
-          rentalEnd: future,
+          startOfRental: past.toISOString(),
+          endOfRental: future.toISOString(),
         },
       },
     });
@@ -20,12 +21,12 @@ describe('TenancyDataComponent', () => {
     expect(inputs.length).toBeGreaterThan(0); // DatePicker renders text inputs
   });
 
-  it('computes rentalActive correctly', async () => {
+  it('computes rentalActive correctly', () => {
     const wrapper = mount(TenancyDataComponent, {
       props: {
         tenancy: {
-          rentalStart: past,
-          rentalEnd: future,
+          startOfRental: past.toISOString(),
+          endOfRental: future.toISOString(),
         },
       },
     });
@@ -38,20 +39,20 @@ describe('TenancyDataComponent', () => {
     const wrapper = mount(TenancyDataComponent, {
       props: {
         tenancy: {
-          rentalStart: past,
-          rentalEnd: future,
+          startOfRental: past.toISOString(),
+          endOfRental: future.toISOString(),
         },
       },
     });
-
-    const newTenancy = {
-      rentalStart: today,
-      rentalEnd: future,
-    };
-    wrapper.vm.localTenancy = newTenancy;
+  
+    // Simulate PrimeVue DatePicker emitting a new date
+    const datePicker = wrapper.findComponent({ name: 'DatePicker' });
+    datePicker.vm.$emit('update:modelValue', today);
+  
     await wrapper.vm.$nextTick();
-
-    expect(wrapper.emitted('onChange')).toBeTruthy();
-    expect(wrapper.emitted('onChange')![0][0].rentalStart).toEqual(today);
-  });
+  
+    const emitted = wrapper.emitted('onChange') as unknown[][];
+    expect(emitted).toBeTruthy();
+    expect((emitted[0][0] as any).startOfRental).toEqual(today.toISOString());
+  });   
 });

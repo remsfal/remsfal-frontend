@@ -1,59 +1,74 @@
-import axios from 'axios';
+// src/services/StorageService.ts
+import { typedRequest } from '@/services/api/typedRequest';
+import type { components } from '@/services/api/platform-schema';
 
-export interface StorageUnit {
-  id?: string;
-  title: string;
-  description?: string;
-  location?: string;
-  usableSpace?: number;
-  heatingSpace?: number;
-}
+export type Storage = components['schemas']['StorageJson'];
 
-class StorageService {
-  private readonly baseUrl: string = '/api/v1/projects';
+export default class StorageService {
+  static readonly BASE_PATH = '/api/v1/projects' as const;
 
-  async createStorage(
-    projectId: string,
-    buildingId: string,
-    storage: StorageUnit,
-  ): Promise<StorageUnit> {
-    return axios
-      .post(`${this.baseUrl}/${projectId}/buildings/${buildingId}/storages`, storage)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+  // Create a new storage
+  async createStorage(projectId: string, buildingId: string, data: Storage): Promise<Storage> {
+    const storage = await typedRequest<
+      '/api/v1/projects/{projectId}/buildings/{buildingId}/storages',
+      'post',
+      Storage
+    >(
+      'post',
+      `${StorageService.BASE_PATH}/{projectId}/buildings/{buildingId}/storages`,
+      { pathParams: { projectId, buildingId }, body: data },
+    );
+    console.log('POST create storage:', storage);
+    return storage;
   }
 
-  async getStorage(projectId: string, storageId: string): Promise<StorageUnit> {
-    return axios
-      .get(`${this.baseUrl}/${projectId}/storages/${storageId}`)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+  // Get a single storage
+  async getStorage(projectId: string, storageId: string): Promise<Storage> {
+    try {
+      const storage = await typedRequest<
+        '/api/v1/projects/{projectId}/storages/{storageId}',
+        'get',
+        Storage
+      >(
+        'get',
+        `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
+        { pathParams: { projectId, storageId } },
+      );
+      console.log('GET storage:', storage);
+      return storage;
+    } catch (error: any) {
+      console.error('Storage retrieval error', error?.response?.status || error);
+      throw error?.response?.status || error;
+    }
   }
 
-  async updateStorage(
-    projectId: string,
-    storageId: string,
-    storage: StorageUnit,
-  ): Promise<StorageUnit> {
-    return axios
-      .patch(`${this.baseUrl}/${projectId}/storages/${storageId}`, storage)
-      .then((response) => {
-        console.debug(response);
-        return response.data;
-      });
+  // Update a storage
+  async updateStorage(projectId: string, storageId: string, data: Storage): Promise<Storage> {
+    const updated = await typedRequest<
+      '/api/v1/projects/{projectId}/storages/{storageId}',
+      'patch',
+      Storage
+    >(
+      'patch',
+      `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
+      { pathParams: { projectId, storageId }, body: data },
+    );
+    console.log('PATCH update storage:', updated);
+    return updated;
   }
 
+  // Delete a storage
   async deleteStorage(projectId: string, storageId: string): Promise<void> {
-    return axios
-      .delete(`${this.baseUrl}/${projectId}/storages/${storageId}`)
-      .then((response) => {
-        console.debug(response);
-      });
+    await typedRequest<
+      '/api/v1/projects/{projectId}/storages/{storageId}',
+      'delete'
+    >(
+      'delete',
+      `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
+      { pathParams: { projectId, storageId } },
+    );
+    console.log('DELETE storage:', storageId);
   }
 }
 
-export const storageService: StorageService = new StorageService();
+export const storageService = new StorageService();

@@ -1,126 +1,99 @@
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import Dialog from 'primevue/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '../../src/i18n/i18n';
 import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
+import { tenancyService } from '../../src/services/TenancyService';
 
-// Fix for "window is not defined" error in test environment
-if (typeof window === 'undefined') {
-  (global as any).window = {};
-}
+// Fix for "window is not defined" error
+if (typeof window === 'undefined') (global as any).window = {};
 
+// ---- Router Mock ----
 const routerPushMock = vi.fn();
-
 vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    push: routerPushMock,
-  }),
+  useRouter: () => ({ push: routerPushMock }),
 }));
 
-// Mock PrimeVue configuration and Dialog component to avoid errors during testing
-vi.mock('primevue/config', () => ({
-  default: {
-    install: () => {},
-    locale: 'en',
-  },
-}));
-
+// ---- PrimeVue/Dialog Mock ----
 vi.mock('primevue/dialog', () => ({
   default: {
-    inheritAttrs: false, // Prevents the passing of extraneous attributes to the root element
-    render: () => '<div class="mock-dialog"></div>', // Mock rendering
+    inheritAttrs: false,
+    render: () => '<div class="mock-dialog"></div>',
   },
+}));
+
+// ---- Pinia store mock ----
+vi.mock('@/stores/ProjectStore', () => ({
+  useProjectStore: () => ({ projectId: 'proj-1' }),
 }));
 
 describe('ProjectTenancies.vue', () => {
-  let wrapper: VueWrapper;
+  let wrapper: VueWrapper<any>;
 
-  beforeEach(() => {
-    // Mount the component with PrimeVue plugin and Dialog component mocked
+  const mockTenants = [
+    { id: '1', firstName: 'John', lastName: 'Doe' },
+  ];
+  const mockTenancies = [
+    { id: 't1', rentalStart: '2023-01-01', rentalEnd: '2024-01-01', listOfTenants: mockTenants, listOfUnits: [] },
+  ];
+
+  beforeEach(async () => {
+    vi.spyOn(tenancyService, 'fetchTenantData').mockResolvedValue(mockTenants);
+    vi.spyOn(tenancyService, 'fetchTenancyData').mockResolvedValue(mockTenancies);
+
     wrapper = mount(ProjectTenancies, {
       global: {
         plugins: [PrimeVue, i18n],
-        components: {
-          Dialog,
-        },
+        components: { Dialog },
       },
     });
+
+    // Wait for onMounted fetch
+    await flushPromises();
   });
 
   it('renders correctly', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('shows loading indicator when isLoading is true', async () => {
-    wrapper = mount(ProjectTenancies, {
-      global: {
-        plugins: [PrimeVue, i18n],
-        stubs: ['DataTable', 'Column', 'Button'], // stub heavy components
-      },
-      data() {
-        return {
-          isLoading: true,
-        };
-      },
-    });
-
-    expect(wrapper.text()).toContain('Loading...');
+  it('shows loading indicator while fetching', async () => {
+    wrapper.vm.isLoading = true;
+    await wrapper.vm.$nextTick(); // ensure DOM updates
+    expect(wrapper.html()).toContain('Loading...');
   });
 
   it('opens and closes the confirmation dialog', async () => {
     wrapper.vm.confirmationDialogVisible = true;
-    wrapper.vm.tenantToDelete = { id: '1', firstName: 'Test', lastName: 'User' };
+    wrapper.vm.tenantToDelete = mockTenants[0];
 
     expect(wrapper.vm.confirmationDialogVisible).toBe(true);
-    expect(wrapper.vm.tenantToDelete?.firstName).toBe('Test');
 
-    // Call confirmDeletion (should delete and close dialog)
     wrapper.vm.confirmDeletion();
     expect(wrapper.vm.confirmationDialogVisible).toBe(false);
-  });
-
-  it('removes the tenant from tenantData', () => {
-    const tenant = { id: '1', firstName: 'Test', lastName: 'User' };
-    wrapper.vm.tenantData = [tenant];
-    wrapper.vm.deleteTenant('1');
-    expect(wrapper.vm.tenantData).toEqual([]);
+    expect(wrapper.vm.tenantData.length).toBe(0); // tenant deleted
   });
 
   it('does nothing if tenantToDelete is null', () => {
-    wrapper.vm.tenantData = [{ id: '1', firstName: 'Test', lastName: 'User' }];
     wrapper.vm.tenantToDelete = null;
+    const initialLength = wrapper.vm.tenantData.length;
     wrapper.vm.confirmDeletion();
-
-    // Should not change tenantData
-    expect(wrapper.vm.tenantData.length).toBe(1);
+    expect(wrapper.vm.tenantData.length).toBe(initialLength);
   });
 
   it('navigates to tenancy details on row click', () => {
-    wrapper.vm.navigateToTenancyDetails('abc');
-    expect(routerPushMock).toHaveBeenCalledWith(
-      '/project/' + wrapper.vm.projectStore.projectId + '/tenancies/abc',
-    );
-  });
-
-  it('renders loading indicator when isLoading is true', () => {
-    wrapper.vm.isLoading = true;
-    wrapper.vm.$forceUpdate(); // Trigger re-render
-    expect(wrapper.html()).toContain('Loading...');
+    wrapper.vm.navigateToTenancyDetails('t1');
+    expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/t1');
   });
 
   it('renders DataTable when loading is false', async () => {
     wrapper.vm.isLoading = false;
-    wrapper.vm.tenancyData = [
-      {
-        id: '1',
-        rentalStart: '2023-01-01',
-        rentalEnd: '2024-01-01',
-        listOfTenants: [],
-        listOfUnits: [],
-      },
-    ];
     await wrapper.vm.$nextTick();
     expect(wrapper.findComponent({ name: 'DataTable' }).exists()).toBe(true);
+  });
+
+  it('renders tenant names correctly in DataTable', () => {
+    const tenantText = wrapper.html();
+    expect(tenantText).toContain('John Doe');
   });
 });

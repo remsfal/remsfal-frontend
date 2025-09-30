@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { storageService, type StorageUnit } from '@/services/StorageService.ts';
+import { storageService, type Storage } from '@/services/StorageService';
 import { useToast } from 'primevue/usetoast';
 import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
@@ -13,13 +13,13 @@ const props = defineProps<{
 const toast = useToast();
 const router = useRouter();
 
-// Formfelder
+// Form fields
 const title = ref('');
 const description = ref('');
 const location = ref('');
 const usableSpace = ref<number | null>(null);
 
-// Originalwerte zur Vergleichserkennung
+// Original values for change detection
 const originalValues = ref({
   title: '',
   description: '',
@@ -58,20 +58,14 @@ const validationErrors = computed(() => {
 const isValid = computed(() => validationErrors.value.length === 0);
 
 const fetchStorageDetails = async () => {
-  if (!props.projectId) {
-    console.error('Keine projectId');
-    return;
-  }
-  if (!props.unitId) {
-    console.error('Keine unitId');
-    return;
-  }
+  if (!props.projectId || !props.unitId) return;
+
   try {
-    const data = await storageService.getStorage(props.projectId, props.unitId);
-    console.log('Storage-Daten vom Backend:', data); // Hier siehst du die Antwort
-    title.value = data.title || '';
-    description.value = data.description || '';
-    location.value = data.location || '';
+    const data: Storage = await storageService.getStorage(props.projectId, props.unitId);
+
+    title.value = data.title ?? '';
+    description.value = data.description ?? '';
+    location.value = data.location ?? '';
     usableSpace.value = data.usableSpace ?? null;
 
     originalValues.value = {
@@ -81,24 +75,24 @@ const fetchStorageDetails = async () => {
       usableSpace: usableSpace.value,
     };
   } catch (error) {
-    console.error('Fehler beim Laden der Storage:', error);
+    console.error('Error loading storage:', error);
     toast.add({
       severity: 'error',
-      summary: 'Ladefehler',
-      detail: 'Storage konnte nicht geladen werden.',
+      summary: 'Load Error',
+      detail: 'Could not load storage.',
       life: 6000,
     });
   }
 };
+
 onMounted(() => {
   if (props.unitId) {
     fetchStorageDetails();
   } else {
-    console.warn('unitId fehlt – keine Daten können geladen werden.');
     toast.add({
       severity: 'warn',
-      summary: 'Ungültige ID',
-      detail: 'Storage konnte nicht geladen werden, da keine ID übergeben wurde.',
+      summary: 'Invalid ID',
+      detail: 'No storage ID provided.',
       life: 6000,
     });
   }
@@ -110,25 +104,26 @@ const save = async () => {
     return;
   }
 
-  const payload: StorageUnit = {
+  // Prepare typed payload
+  const payload: Storage = {
     title: title.value,
     description: description.value,
     location: location.value,
-    usableSpace: usableSpace.value!,
+    usableSpace: usableSpace.value ?? undefined,
   };
 
   try {
     await storageService.updateStorage(props.projectId, props.unitId, payload);
     toast.add({
       severity: 'success',
-      summary: 'Erfolg',
-      detail: 'Storage erfolgreich gespeichert.',
+      summary: 'Success',
+      detail: 'Storage successfully saved.',
       life: 6000,
     });
     router.push(`/project/${props.projectId}/storage/${props.unitId}`);
   } catch (err) {
-    console.error('Fehler beim Speichern:', err);
-    showSavingErrorToast(toast, 'Storage konnte nicht gespeichert werden.');
+    console.error('Error saving storage:', err);
+    showSavingErrorToast(toast, 'Storage could not be saved.');
   }
 };
 
@@ -150,7 +145,12 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
+            <textarea
+              id="description"
+              v-model="description"
+              rows="3"
+              class="form-textarea w-full"
+            ></textarea>
           </div>
 
           <!-- Standort -->
@@ -162,7 +162,12 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Nutzfläche -->
           <div>
             <label for="usableSpace" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
-            <input id="usableSpace" v-model.number="usableSpace" type="number" class="form-input w-full" />
+            <input
+              id="usableSpace"
+              v-model.number="usableSpace"
+              type="number"
+              class="form-input w-full"
+            />
           </div>
         </div>
         <!-- Validierungsfehler -->
