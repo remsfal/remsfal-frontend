@@ -48,8 +48,8 @@ const createProperty = async () => {
     emit('newUnit', title.value!); // non-null because validated above
 
     // Reset form
-    title.value = '';
-    description.value = '';
+    title.value = undefined;
+    description.value = undefined;
     visible.value = false;
 
     toast.add({
