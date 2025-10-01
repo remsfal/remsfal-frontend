@@ -58,7 +58,7 @@
     "@pinia/testing": "^1.0.2",
     "@primevue/auto-import-resolver": "^4.3.9",
     "@redocly/cli": "^2.2.0",
-    "@stylistic/eslint-plugin": "^2.13.0",
+    "@stylistic/eslint-plugin": "^5.4.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@tsconfig/node-lts": "^22.0.2",
     "@types/jsdom": "^21.1.7",
@@ -69,8 +69,8 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "autoprefixer": "^10.4.21",
-    "chai": "^6.0.1",
-    "cypress": "^14.5.4",
+    "chai": "^6.2.0",
+    "cypress": "^15.3.0",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^5.1.1",
@@ -100,7 +100,7 @@
     "vite-plugin-vue-devtools": "^8.0.2",
     "vitest": "^3.2.4",
     "vue-i18n-extract": "^2.0.7",
-    "vue-tsc": "^3.0.8"
+    "vue-tsc": "^3.1.0"
   },
   "overrides": {
     "glob": "^9.3.2",
@@ -109,6 +109,6 @@
     }
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.52.2"
+    "@rollup/rollup-linux-x64-gnu": "^4.52.3"
   }
 }
