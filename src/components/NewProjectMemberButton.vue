@@ -28,7 +28,7 @@ const roleErrorMessage = ref('');
 
 // Reset form state
 function resetForm() {
-  newMemberEmail.value = null;
+  newMemberEmail.value = '';
   newMemberRole.value = null;
   isEmailInvalid.value = false;
   emailErrorMessage.value = '';
