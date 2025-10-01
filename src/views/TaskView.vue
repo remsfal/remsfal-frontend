@@ -1,3 +1,4 @@
+ <!-- @copilot: please review this code and suggest improvements, possible bugs, or TypeScript type issues -->
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
@@ -28,11 +29,21 @@ const createTask = () => {
       title: title.value,
       description: description.value,
       ownerId: props.owner,
+      type: 'TASK', // required
+      status: 'OPEN', // use string, not numeric enum
     })
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;
-      loadTasks();
+
+      // reload the right tasks depending on props
+      if (props.owner) {
+        loadMyTasks();
+      } else if (props.status === 'OPEN') {
+        loadTaskswithOpenStatus();
+      } else {
+        loadTasks();
+      }
     })
     .catch((error) => {
       console.error('Error creating task:', error);
@@ -74,7 +85,6 @@ const loadMyTasks = () => {
       console.error('Error loading tasks:', error);
     });
 };
-
 
 onMounted(() => {
   loadTasks();
