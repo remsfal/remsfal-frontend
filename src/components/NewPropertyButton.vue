@@ -11,6 +11,7 @@ import { useToast } from 'primevue/usetoast';
 const props = defineProps<{
   projectId: string;
 }>();
+
 const emit = defineEmits<{
   (e: 'newUnit', title: string): void;
 }>();
@@ -24,6 +25,7 @@ const description = ref<string | undefined>(undefined);
 
 const createProperty = async () => {
   console.log('createProperty called');
+
   if (!title.value) {
     console.log('Title is empty, no creation occurs');
     toast.add({
@@ -43,12 +45,11 @@ const createProperty = async () => {
     });
 
     console.log('Property created:', newProperty);
-    emit('newUnit', title.value);
+    emit('newUnit', title.value!); // non-null because validated above
 
     // Reset form
     title.value = '';
     description.value = '';
-
     visible.value = false;
 
     toast.add({
@@ -67,7 +68,6 @@ const createProperty = async () => {
     });
   }
 };
-
 </script>
 
 <template>
@@ -86,20 +86,27 @@ const createProperty = async () => {
     :style="{ width: '35rem' }"
   >
     <div class="flex items-center gap-6 mb-6">
-      <label for="title" class="font-semibold w-24">Titel</label>
+      <label for="title" class="font-semibold w-24">{{ t('rentableUnits.form.title') }}</label>
       <InputText
         id="title"
         v-model="title"
         type="text"
-        placeholder="Titel der neuen Einheit"
+        :placeholder="t('rentableUnits.form.titlePlaceholder')"
         class="flex-auto"
         autocomplete="on"
       />
     </div>
+
     <div class="flex items-center gap-6 mb-20">
-      <label for="description" class="font-semibold w-24">Beschreibung</label>
-      <Textarea id="description" v-model="description" rows="4" class="flex-auto" />
+      <label for="description" class="font-semibold w-24">{{ t('rentableUnits.form.description') }}</label>
+      <Textarea
+        id="description"
+        v-model="description"
+        rows="4"
+        class="flex-auto"
+      />
     </div>
+
     <div class="flex justify-end gap-2">
       <Button
         type="button"
@@ -107,7 +114,11 @@ const createProperty = async () => {
         severity="secondary"
         @click="visible = false"
       />
-      <Button type="button" :label="t('button.add')" @click="createProperty" />
+      <Button
+        type="button"
+        :label="t('button.add')"
+        @click="createProperty"
+      />
     </div>
   </Dialog>
 </template>

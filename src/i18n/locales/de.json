@@ -187,8 +187,14 @@
   "storage.validation.usableSpaceNegative": "Nutzfläche darf nicht negativ sein.",
   "storage.validation.descriptionTooLong": "Beschreibung darf maximal 500 Zeichen lang sein.",
   "error.general": "Fehler",
-  "error.createProperty": "Fehler beim Erstellen der Einheit.",
+  "error.createProperty": "Fehler beim Erstellen der Immobilie.",
   "success.created": "Erfolg",
-  "success.propertyCreated": "Die Einheit wurde erfolgreich erstellt.",
-  "rentableUnits.form.titleRequired": "Titel ist ein Pflichtfeld!"
+  "success.propertyCreated": "Die Immobilie wurde erfolgreich erstellt.",
+  "rentableUnits.form.titleRequired": "Titel ist ein Pflichtfeld!",
+  "rentableUnits.form.title": "Titel",
+  "rentableUnits.form.description": "Beschreibung",
+  "rentableUnits.form.titlePlaceholder": "Titel der neuen Immobilie",
+  "rentableUnits.button.addProperty": "Immobilie hinzufügen",
+  "button.cancel": "Abbrechen",
+  "button.add": "Hinzufügen"
 }
