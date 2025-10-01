@@ -6,6 +6,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import { propertyService } from '@/services/PropertyService';
+import { useToast } from 'primevue/usetoast'; 
 
 const props = defineProps<{
   projectId: string;
@@ -15,6 +16,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const toast = useToast(); 
 
 const visible = ref<boolean>(false);
 const title = ref<string | undefined>(undefined);
@@ -24,32 +26,48 @@ const createProperty = async () => {
   console.log('createProperty called');
   if (!title.value) {
     console.log('Title is empty, no creation occurs');
-    alert('Titel ist ein Pflichtfeld!');
+    toast.add({
+      severity: 'warn',
+      summary: t('error.general'),
+      detail: t('rentableUnits.form.titleRequired'), 
+      life: 4000,
+    });
     return;
   }
 
   try {
-    // Call the service
     const newProperty = await propertyService.createProperty(props.projectId, {
       title: title.value,
       description: description.value,
-      plotArea: 0, // default value
+      plotArea: 0,
     });
 
     console.log('Property created:', newProperty);
     emit('newUnit', title.value);
 
-    // Reset the form fields
+    // Reset form
     title.value = '';
     description.value = '';
 
-    // Close the dialog
     visible.value = false;
+
+    toast.add({
+      severity: 'success',
+      summary: t('success.created'),
+      detail: t('success.propertyCreated'), 
+      life: 4000,
+    });
   } catch (err) {
     console.error('Failed to create property:', err);
-    alert('Fehler beim Erstellen der Einheit.');
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('error.createProperty'), 
+      life: 5000,
+    });
   }
 };
+
 </script>
 
 <template>
@@ -73,7 +91,7 @@ const createProperty = async () => {
         id="title"
         v-model="title"
         type="text"
-        placeholder="Titel der neun Einheit"
+        placeholder="Titel der neuen Einheit"
         class="flex-auto"
         autocomplete="on"
       />
@@ -88,10 +106,8 @@ const createProperty = async () => {
         :label="t('button.cancel')"
         severity="secondary"
         @click="visible = false"
-      ></Button>
-      <Button type="button" :label="t('button.add')" @click="createProperty"></Button>
+      />
+      <Button type="button" :label="t('button.add')" @click="createProperty" />
     </div>
   </Dialog>
 </template>
-
-<style scoped></style>

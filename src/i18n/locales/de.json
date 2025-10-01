@@ -185,5 +185,10 @@
   "property.address": "Adresse",
   "storage.validation.titleTooShort": "Der Titel muss mindestens 3 Zeichen lang sein.",
   "storage.validation.usableSpaceNegative": "Nutzfläche darf nicht negativ sein.",
-  "storage.validation.descriptionTooLong": "Beschreibung darf maximal 500 Zeichen lang sein."
+  "storage.validation.descriptionTooLong": "Beschreibung darf maximal 500 Zeichen lang sein.",
+  "error.general": "Fehler",
+  "error.createProperty": "Fehler beim Erstellen der Einheit.",
+  "success.created": "Erfolg",
+  "success.propertyCreated": "Die Einheit wurde erfolgreich erstellt.",
+  "rentableUnits.form.titleRequired": "Titel ist ein Pflichtfeld!"
 }

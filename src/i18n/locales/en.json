@@ -179,5 +179,10 @@
   "property.address": "Address",
   "storage.validation.titleTooShort": "The title must be at least 3 characters long.",
   "storage.validation.usableSpaceNegative": "Usable space cannot be negative.",
-  "storage.validation.descriptionTooLong": "Description must not exceed 500 characters."
+  "storage.validation.descriptionTooLong": "Description must not exceed 500 characters.",
+  "error.general": "Error",
+  "error.createProperty": "Failed to create unit.",
+  "success.created": "Success",
+  "success.propertyCreated": "Unit created successfully.",
+  "rentableUnits.form.titleRequired": "Title is a required field!"
 }
