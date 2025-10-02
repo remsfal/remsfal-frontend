@@ -3,7 +3,7 @@ import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import { TaskService } from '@/services/TaskService';
+import { TaskService, TASK_TYPE_TASK, TASK_STATUS_OPEN } from '@/services/TaskService';
 import type { Status, TaskItem } from '@/services/TaskService';
 import TaskTable from '@/components/TaskTable.vue';
 
@@ -28,15 +28,31 @@ const createTask = () => {
       title: title.value,
       description: description.value,
       ownerId: props.owner,
+      type: TASK_TYPE_TASK,
+      status: TASK_STATUS_OPEN,
     })
     .then((newTask) => {
       console.log('New task created:', newTask);
       visible.value = false;
-      loadTasks();
+
+      // reload the right tasks depending on props
+      if (props.owner) {
+        loadMyTasks();
+      } else if (props.status === TASK_STATUS_OPEN) {
+        loadTaskswithOpenStatus();
+      } else {
+        loadTasks();
+      }
     })
     .catch((error) => {
       console.error('Error creating task:', error);
     });
+};
+
+const openCreateTaskDialog = () => {
+  title.value = ''; // Reset title
+  description.value = ''; // Reset description
+  visible.value = true; // Open dialog
 };
 
 const loadTasks = () => {
@@ -74,7 +90,6 @@ const loadMyTasks = () => {
       console.error('Error loading tasks:', error);
     });
 };
-
 
 onMounted(() => {
   loadTasks();
@@ -130,7 +145,7 @@ watch(
       <div class="task-list-wrapper">
         <div v-if="owner">
           <TaskTable :tasks="myTasks">
-            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+            <Button label="Aufgabe erstellen" class="my-btn" @click="openCreateTaskDialog" />
           </TaskTable>
         </div>
         <div v-else-if="status">
@@ -138,7 +153,7 @@ watch(
         </div>
         <div v-else>
           <TaskTable :tasks="tasks">
-            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+            <Button label="Aufgabe erstellen" class="my-btn" @click="openCreateTaskDialog" />
           </TaskTable>
         </div>
       </div>
