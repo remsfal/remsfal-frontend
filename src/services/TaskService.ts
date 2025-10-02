@@ -12,6 +12,11 @@ export const StatusValues = {
   REJECTED: 'REJECTED',
 } as const;
 
+export const TASK_TYPE_TASK = 'TASK';
+export const TASK_STATUS_OPEN = 'OPEN';
+export const TASK_STATUS_CLOSED = 'CLOSED';
+
+
 // Full task type directly from backend
 export type TaskItem = components['schemas']['TaskJson'];
 export type TaskDetail = components['schemas']['TaskJson'];

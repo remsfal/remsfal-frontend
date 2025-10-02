@@ -4,6 +4,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import { TaskService } from '@/services/TaskService';
+import { TASK_TYPE_TASK, TASK_STATUS_OPEN } from '@/services/TaskService';
 import type { Status, TaskItem } from '@/services/TaskService';
 import TaskTable from '@/components/TaskTable.vue';
 
@@ -28,8 +29,8 @@ const createTask = () => {
       title: title.value,
       description: description.value,
       ownerId: props.owner,
-      type: 'TASK', // required
-      status: 'OPEN', // use string, not numeric enum
+      type: TASK_TYPE_TASK,
+      status: TASK_STATUS_OPEN,
     })
     .then((newTask) => {
       console.log('New task created:', newTask);
@@ -38,7 +39,7 @@ const createTask = () => {
       // reload the right tasks depending on props
       if (props.owner) {
         loadMyTasks();
-      } else if (props.status === 'OPEN') {
+      } else if (props.status === TASK_STATUS_OPEN) {
         loadTaskswithOpenStatus();
       } else {
         loadTasks();
