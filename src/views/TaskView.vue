@@ -1,4 +1,3 @@
- <!-- @copilot: please review this code and suggest improvements, possible bugs, or TypeScript type issues -->
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
@@ -48,6 +47,12 @@ const createTask = () => {
     .catch((error) => {
       console.error('Error creating task:', error);
     });
+};
+
+const openCreateTaskDialog = () => {
+  title.value = ''; // Reset title
+  description.value = ''; // Reset description
+  visible.value = true; // Open dialog
 };
 
 const loadTasks = () => {
@@ -140,7 +145,7 @@ watch(
       <div class="task-list-wrapper">
         <div v-if="owner">
           <TaskTable :tasks="myTasks">
-            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+            <Button label="Aufgabe erstellen" class="my-btn" @click="openCreateTaskDialog" />
           </TaskTable>
         </div>
         <div v-else-if="status">
@@ -148,7 +153,7 @@ watch(
         </div>
         <div v-else>
           <TaskTable :tasks="tasks">
-            <Button label="Aufgabe erstellen" class="my-btn" @click="visible = true" />
+            <Button label="Aufgabe erstellen" class="my-btn" @click="openCreateTaskDialog" />
           </TaskTable>
         </div>
       </div>
