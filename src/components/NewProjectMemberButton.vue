@@ -26,6 +26,16 @@ const emailErrorMessage = ref('');
 const isRoleInvalid = ref(false);
 const roleErrorMessage = ref('');
 
+// Reset form state
+function resetForm() {
+  newMemberEmail.value = '';
+  newMemberRole.value = null;
+  isEmailInvalid.value = false;
+  emailErrorMessage.value = '';
+  isRoleInvalid.value = false;
+  roleErrorMessage.value = '';
+}
+
 const addMember = async () => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -58,8 +68,7 @@ const addMember = async () => {
     console.log('Adding member with email:', newMemberEmail.value, 'role:', newMemberRole.value);
     await projectMemberService.addMember(props.projectId, member);
     emit('newMember', newMemberEmail.value);
-    newMemberEmail.value = '';
-    newMemberRole.value = null;
+    resetForm(); // clear after successful add
   } catch (error) {
     const err = error as { response?: { data: any }; message: string };
     console.error('Failed to add member:', err.response?.data || err.message);
@@ -80,6 +89,7 @@ const addMember = async () => {
     modal
     :header="t('projectSettings.newProjectMemberButton.label')"
     :style="{ width: '35rem' }"
+    @hide="resetForm"
   >
     <div class="flex flex-col gap-1 mb-6">
       <div class="flex items-center gap-6">
@@ -116,8 +126,8 @@ const addMember = async () => {
         :label="t('button.cancel')"
         severity="secondary"
         @click="visible = false"
-      ></Button>
-      <Button type="button" :label="t('button.add')" @click="addMember"></Button>
+      />
+      <Button type="button" :label="t('button.add')" @click="addMember" />
     </div>
   </Dialog>
 </template>

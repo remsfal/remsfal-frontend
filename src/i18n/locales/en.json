@@ -179,5 +179,16 @@
   "property.address": "Address",
   "storage.validation.titleTooShort": "The title must be at least 3 characters long.",
   "storage.validation.usableSpaceNegative": "Usable space cannot be negative.",
-  "storage.validation.descriptionTooLong": "Description must not exceed 500 characters."
+  "storage.validation.descriptionTooLong": "Description must not exceed 500 characters.",
+  "error.general": "Error",
+  "error.createProperty": "Failed to create property.",
+  "success.created": "Success",
+  "success.propertyCreated": "Property created successfully.",
+  "rentableUnits.form.titleRequired": "Title is a required field!",
+  "rentableUnits.form.title": "Title",
+  "rentableUnits.form.description": "Description",
+  "rentableUnits.form.titlePlaceholder": "Title of the new property",
+  "rentableUnits.button.addProperty": "Add Property",
+  "button.cancel": "Cancel",
+  "button.add": "Add"
 }
