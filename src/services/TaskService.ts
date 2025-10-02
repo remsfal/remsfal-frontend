@@ -16,7 +16,6 @@ export const TASK_TYPE_TASK = 'TASK';
 export const TASK_STATUS_OPEN = 'OPEN';
 export const TASK_STATUS_CLOSED = 'CLOSED';
 
-
 // Full task type directly from backend
 export type TaskItem = components['schemas']['TaskJson'];
 export type TaskDetail = components['schemas']['TaskJson'];
@@ -31,7 +30,7 @@ export class TaskService {
   async getTasks(
     projectId: string,
     status?: Status,
-    ownerId?: string
+    ownerId?: string,
   ): Promise<{ tasks: TaskItem[] }> {
     return typedRequest<'/api/v1/projects/{projectId}/tasks', 'get'>(
       'get',
@@ -45,7 +44,7 @@ export class TaskService {
           },
         },
         pathParams: { projectId },
-      }
+      },
     ) as Promise<{ tasks: TaskItem[] }>;
   }
 
