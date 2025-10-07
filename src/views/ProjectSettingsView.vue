@@ -7,12 +7,14 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { projectService } from '@/services/ProjectService';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
 
+
+// Props must come first after imports
 const props = defineProps<{
   projectId: string;
 }>();
 
+const { t } = useI18n();
 // State
 const projectName = ref('');
 const originalProjectName = ref('');
