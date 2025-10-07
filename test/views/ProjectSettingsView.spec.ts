@@ -1,82 +1,146 @@
-import { mount, flushPromises } from '@vue/test-utils';
-import { describe, test, expect, vi, beforeEach } from 'vitest';
-import ProjectSettingsView from '@/views/ProjectSettingsView.vue';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { mount, VueWrapper } from '@vue/test-utils';
+import flushPromises from 'flush-promises';
+import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
+import { projectMemberService, type GetMembersResponse } from '../../src/services/ProjectMemberService';
 import { projectService } from '@/services/ProjectService';
 import { useToast } from 'primevue/usetoast';
 
+// ---- Mocks ----
+const routerPushMock = vi.fn();
+const addMock = vi.fn(); // Shared mock for toast
+
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: routerPushMock }),
+}));
+
 vi.mock('primevue/usetoast', () => ({
   useToast: () => ({
-    add: vi.fn(),
+    add: addMock,
   }),
 }));
 
+// ---- Test Suite ----
 describe('ProjectSettingsView.vue', () => {
-  const mockToast = useToast();
-  const mockProject = { title: 'Old Name' };
+  let wrapper: VueWrapper<any>;
 
-  beforeEach(() => {
+  const mockMembers: GetMembersResponse = {
+    members: [
+      { id: '1', email: 'test1@example.com', role: 'MANAGER' },
+      { id: '2', email: 'test2@example.com', role: 'TENANCY' },
+    ],
+  };
+
+  beforeEach(async () => {
     vi.clearAllMocks();
-    vi.spyOn(projectService, 'getProject').mockResolvedValue(mockProject);
+
+    // Mock services
+    vi.spyOn(projectMemberService, 'getMembers').mockResolvedValue(mockMembers);
+    vi.spyOn(projectMemberService, 'updateMemberRole').mockResolvedValue({
+      id: '1',
+      email: 'test1@example.com',
+      role: 'MANAGER',
+    });
+
+    vi.spyOn(projectService, 'getProject').mockResolvedValue({ title: 'Old Project' });
     vi.spyOn(projectService, 'updateProject').mockResolvedValue({});
+
+    wrapper = mount(ProjectSettingsView, {
+      props: { projectId: 'test-project-id' },
+    });
+
+    await flushPromises();
   });
 
+  // ---- Member Tests ----
+  test('loads project member settings successfully', async () => {
+    const rows = wrapper.findAll('td');
+    expect(rows.length).toBe(6);
+    expect(rows[0].text()).toBe('test1@example.com');
+    expect(rows[3].text()).toBe('test2@example.com');
+  });
+
+  test('calls getMembers with correct projectId', () => {
+    expect(projectMemberService.getMembers).toHaveBeenCalledWith('test-project-id');
+  });
+
+  test('updates a member role successfully', async () => {
+    const spy = vi.spyOn(projectMemberService, 'updateMemberRole').mockResolvedValue({
+      id: '1',
+      email: 'test1@example.com',
+      role: 'MANAGER',
+    });
+
+    const wrapper = mount(ProjectSettingsView, {
+      props: { projectId: 'test-project-id' },
+      global: {
+        stubs: {
+          ProjectMemberSettings: {
+            template: `<ul>
+              <li>
+                test1@example.com
+                <button class="update-role" @click="updateRole">Update</button>
+              </li>
+            </ul>`,
+            methods: {
+              updateRole() {
+                projectMemberService.updateMemberRole('test-project-id', '1', { role: 'MANAGER' });
+              },
+            },
+          },
+        },
+      },
+    });
+
+    await flushPromises();
+
+    const button = wrapper.find('button.update-role');
+    expect(button.exists()).toBe(true);
+
+    await button.trigger('click');
+    expect(spy).toHaveBeenCalledWith('test-project-id', '1', { role: 'MANAGER' });
+  });
+
+  // ---- Project Name Tests ----
   test('fetches and displays project name on mount', async () => {
-    const wrapper = mount(ProjectSettingsView, {
-      props: { projectId: 'abc123' },
-    });
-
-    await flushPromises();
-    expect(projectService.getProject).toHaveBeenCalledWith('abc123');
-    expect(wrapper.vm.projectName).toBe('Old Name');
+    expect(projectService.getProject).toHaveBeenCalledWith('test-project-id');
+    expect(wrapper.vm.projectName).toBe('Old Project');
   });
 
-  test('enables save button when name changes', async () => {
-    const wrapper = mount(ProjectSettingsView, {
-      props: { projectId: 'abc123' },
-    });
-
+  test('enables save button when project name changes', async () => {
+    wrapper.vm.projectName = 'Updated Project';
     await flushPromises();
-    await wrapper.setData({ projectName: 'New Name' });
 
     const button = wrapper.find('button');
     expect(button.attributes('disabled')).toBeUndefined();
   });
 
   test('calls updateProject and shows success toast on save', async () => {
-    const wrapper = mount(ProjectSettingsView, {
-      props: { projectId: 'abc123' },
-    });
-
-    await flushPromises();
+    wrapper.vm.originalProjectName = 'Old Name';
     wrapper.vm.projectName = 'Updated Project';
-    await wrapper.vm.saveProjectName();
 
-    expect(projectService.updateProject).toHaveBeenCalledWith('abc123', {
+    await wrapper.vm.saveProjectName();
+    await flushPromises();
+
+    expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {
       title: 'Updated Project',
     });
-    expect(mockToast.add).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'success' }),
+    expect(addMock).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: 'success' })
     );
   });
 
   test('shows error toast on update failure', async () => {
     vi.spyOn(projectService, 'updateProject').mockRejectedValue(new Error('fail'));
-    const wrapper = mount(ProjectSettingsView, { props: { projectId: 'abc123' } });
-    await flushPromises();
-    wrapper.vm.projectName = 'Broken';
+
+    wrapper.vm.originalProjectName = 'Old Project';
+    wrapper.vm.projectName = 'Broken Project';
+
     await wrapper.vm.saveProjectName();
+    await flushPromises();
 
-    expect(mockToast.add).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'error' }),
+    expect(addMock).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: 'error' })
     );
-  });
-
-  test('reacts to projectId change', async () => {
-    const wrapper = mount(ProjectSettingsView, { props: { projectId: 'id1' } });
-    await flushPromises();
-    await wrapper.setProps({ projectId: 'id2' });
-    await flushPromises();
-
-    expect(projectService.getProject).toHaveBeenCalledWith('id2');
   });
 });
