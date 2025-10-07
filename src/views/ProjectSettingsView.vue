@@ -6,6 +6,8 @@ import ProjectMemberSettings from '@/components/ProjectMemberSettings.vue';
 import { ref, onMounted, watch, computed } from 'vue';
 import { projectService } from '@/services/ProjectService';
 import { useToast } from 'primevue/usetoast';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const props = defineProps<{
   projectId: string;
@@ -30,8 +32,10 @@ const fetchProject = async (id: string) => {
 };
 
 // Computed: button is enabled only if name changed
-const canSave = computed(() =>
-  projectName.value.trim() !== originalProjectName.value.trim() && projectName.value.trim() !== ''
+const canSave = computed(
+  () =>
+    projectName.value.trim() !== originalProjectName.value.trim() &&
+    projectName.value.trim() !== '',
 );
 
 // Save project name
@@ -44,16 +48,16 @@ const saveProjectName = async () => {
     originalProjectName.value = projectName.value.trim();
     toast.add({
       severity: 'success',
-      summary: 'Gespeichert',
-      detail: 'Projektname erfolgreich aktualisiert',
+      summary: t('success.saved'),
+      detail: t('projectSettings.saveSuccess'),
       life: 3000,
     });
   } catch (error) {
     console.error('Error saving project name:', error);
     toast.add({
       severity: 'error',
-      summary: 'Fehler',
-      detail: 'Projektname konnte nicht gespeichert werden',
+      summary: t('error.general'),
+      detail: t('projectSettings.saveError'),
       life: 3000,
     });
   } finally {
@@ -89,10 +93,10 @@ watch(
             type="text"
             v-model="projectName"
             class="flex-1"
-            placeholder="Name der Liegenschaft"
+            :placeholder="t('projectSettings.propertyNamePlaceholder')"
           />
           <Button
-            label="Speichern"
+            :label="t('button.save')"
             icon="pi pi-save"
             :disabled="!canSave || loading"
             :loading="loading"
