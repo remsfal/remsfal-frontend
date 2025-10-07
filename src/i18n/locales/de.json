@@ -69,6 +69,7 @@
   "google.signIn": "Mit Google anmelden",
   "newProjectForm.title.error": "Der Name der Liegenschaft darf nicht mehr als {maxLength} Zeichen lang sein",
   "newProjectForm.input.name": "Name der Liegenschaft",
+  "newProjectForm.input.exampleAddress": "z. B. Musterstraße 12, Berlin",
   "projectTable.title": "Titel",
   "projectTable.role": "Rolle",
   "privacy.title": "Datenschutzerklärung",

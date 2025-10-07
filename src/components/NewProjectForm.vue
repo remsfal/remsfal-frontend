@@ -77,7 +77,7 @@ function abort() {
         :class="{ 'p-invalid': errorMessage }"
         aria-describedby="text-error"
         class="w-full"
-        placeholder="z. B. Musterstraße 12, Berlin"
+       :placeholder="t('newProjectForm.input.exampleAddress')"
       />
       <small id="text-error" class="p-error text-xs h-4">
         {{ errorMessage || ' ' }}

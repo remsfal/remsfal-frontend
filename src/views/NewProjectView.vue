@@ -3,9 +3,7 @@ import NewProjectForm from '@/components/NewProjectForm.vue';
 </script>
 
 <template>
-  <div class="grid align-items-center justify-content-center">
-    <div class="card flex mt-5">
-      <NewProjectForm></NewProjectForm>
-    </div>
+  <div class="flex items-center justify-center min-h-[80vh] bg-gray-50 px-4">
+    <NewProjectForm />
   </div>
 </template>
