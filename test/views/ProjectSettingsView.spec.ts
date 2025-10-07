@@ -4,7 +4,7 @@ import flushPromises from 'flush-promises';
 import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
 import { projectMemberService, type GetMembersResponse } from '../../src/services/ProjectMemberService';
 import { projectService } from '@/services/ProjectService';
-import { useToast } from 'primevue/usetoast';
+
 
 // ---- Mocks ----
 const routerPushMock = vi.fn();
@@ -14,11 +14,6 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push: routerPushMock }),
 }));
 
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({
-    add: addMock,
-  }),
-}));
 
 // ---- Test Suite ----
 describe('ProjectSettingsView.vue', () => {
