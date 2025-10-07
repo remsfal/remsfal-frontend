@@ -14,6 +14,11 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push: routerPushMock }),
 }));
 
+vi.mock('primevue/usetoast', () => ({
+  useToast: () => ({
+    add: addMock,
+  }),
+}));
 
 // ---- Test Suite ----
 describe('ProjectSettingsView.vue', () => {
