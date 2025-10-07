@@ -8,10 +8,7 @@ import { useRouter } from 'vue-router';
 import { saveProject } from '@/helper/indexeddb';
 import { useI18n } from 'vue-i18n';
 
-const emit = defineEmits<{
-  abort: [];
-}>();
-
+const emit = defineEmits<{ abort: [] }>();
 const { t } = useI18n();
 
 const maxLength = 100;
@@ -21,11 +18,10 @@ const errorMessage = ref('');
 const router = useRouter();
 
 watch(projectTitle, (newProjectTitle) => {
-  if (newProjectTitle.length > maxLength) {
-    errorMessage.value = t('newProjectForm.title.error', { maxLength: maxLength });
-  } else {
-    errorMessage.value = '';
-  }
+  errorMessage.value =
+    newProjectTitle.length > maxLength
+      ? t('newProjectForm.title.error', { maxLength })
+      : '';
 });
 
 async function createProject() {
@@ -33,9 +29,12 @@ async function createProject() {
 
   if (projectTitle.value.length > maxLength) return;
 
-  const projectTitleValue = projectTitle.value;
+  const projectTitleValue = projectTitle.value.trim();
+  if (!projectTitleValue) {
+    errorMessage.value = t('newProjectForm.title.required');
+    return;
+  }
 
-  // Check if the app is offline
   if (!navigator.onLine) {
     await saveProject(projectTitleValue);
     return;
@@ -43,22 +42,13 @@ async function createProject() {
 
   try {
     const newProject = await projectService.createProject(projectTitleValue);
-
-    // Ensure the created project has an ID
     if (!newProject.id) {
-      console.error('Created project has no ID, cannot proceed.');
-      await saveProject(projectTitleValue); // Optional: save offline
+      console.error('Created project has no ID.');
+      await saveProject(projectTitleValue);
       return;
     }
-
-    // Update the project store
     projectStore.searchSelectedProject(newProject.id);
-
-    // Navigate to the project dashboard
-    await router.push({
-      name: 'ProjectDashboard',
-      params: { projectId: newProject.id },
-    });
+    await router.push({ name: 'ProjectDashboard', params: { projectId: newProject.id } });
   } catch (error) {
     console.error('Failed to create project online. Saving offline:', error);
     await saveProject(projectTitleValue);
@@ -72,30 +62,47 @@ function abort() {
 </script>
 
 <template>
-  <form class="flex flex-col gap-2 w-[34rem]" @submit.prevent="createProject">
-    <span class="p-float-label">
+  <form
+    class="flex flex-col gap-5 w-full max-w-md p-8 bg-white rounded-2xl shadow-md border border-gray-100"
+    @submit.prevent="createProject"
+  >
+    <div class="flex flex-col gap-1">
+      <label for="value" class="text-gray-700 font-medium text-sm">
+        {{ t('newProjectForm.input.name') }}
+      </label>
       <InputText
         id="value"
         v-model="projectTitle"
         type="text"
         :class="{ 'p-invalid': errorMessage }"
         aria-describedby="text-error"
+        class="w-full"
+        placeholder="z. B. Musterstraße 12, Berlin"
       />
-      <label for="value">{{ t('newProjectForm.input.name') }}</label>
-    </span>
-    <small id="text-error" class="p-error">
-      {{ errorMessage || '&nbsp;' }}
-    </small>
-    <div class="flex justify-end gap-2">
+      <small id="text-error" class="p-error text-xs h-4">
+        {{ errorMessage || ' ' }}
+      </small>
+    </div>
+
+    <div class="flex justify-end gap-3 mt-4">
       <Button
         type="reset"
         :label="t('button.cancel')"
         icon="pi pi-times"
-        iconPos="left"
         severity="secondary"
         @click="abort"
       />
-      <Button type="submit" :label="t('button.create')" icon="pi pi-plus" iconPos="left" />
+      <Button
+        type="submit"
+        :label="t('button.create')"
+        icon="pi pi-plus"
+      />
     </div>
   </form>
 </template>
+
+<style scoped>
+:deep(.p-inputtext) {
+  border-radius: 0.5rem;
+}
+</style>
