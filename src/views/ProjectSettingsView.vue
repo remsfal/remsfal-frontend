@@ -48,8 +48,6 @@ const saveProjectName = async () => {
   loading.value = true;
   try {
     await projectService.updateProject(props.projectId, { title: projectName.value.trim() });
-
-    
     originalProjectName.value = projectName.value.trim();
     projectStore.updateProjectName(props.projectId, projectName.value.trim());
 

@@ -82,8 +82,6 @@ export const useProjectStore = defineStore('project-store', {
       if (this.selectedProject?.id === projectId) {
         this.selectedProject = { ...this.selectedProject, name: newName };
       }
-
-      console.log(`Updated project name for ${projectId} → ${newName}`);
     },
   },
 });
