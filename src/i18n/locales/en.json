@@ -197,6 +197,10 @@
   "roles.consultant": "Consultant",
   "roles.admin": "Administrator",
   "roles.owner": "Owner",
-
-  "roles.select": "Select a role"
+  "roles.select": "Select a role",
+  "projectSettings.newProjectMemberButton.emailLabel": "Email Address",
+  "projectSettings.newProjectMemberButton.emailPlaceholder": "Email address of the new member",
+  "projectSettings.newProjectMemberButton.roleLabel": "Member Role",
+  "projectSettings.newProjectMemberButton.invalidEmail": "Please enter a valid email address",
+  "projectSettings.newProjectMemberButton.invalidRole": "Please select a valid role"
 }

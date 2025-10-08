@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
@@ -8,16 +8,12 @@ import { useI18n } from 'vue-i18n';
 import type { Member, MemberRole } from '@/services/ProjectMemberService';
 import { memberRoles, projectMemberService } from '@/services/ProjectMemberService';
 
-const props = defineProps<{
-  projectId: string;
-}>();
-const emit = defineEmits<{
-  (e: 'newMember', email: string): void;
-}>();
+const props = defineProps<{ projectId: string }>();
+const emit = defineEmits<{ (e: 'newMember', email: string): void }>();
 
 const { t } = useI18n();
 
-const visible = ref<boolean>(false);
+const visible = ref(false);
 const newMemberEmail = ref<string | null>(null);
 const newMemberRole = ref<MemberRole | null>(null);
 
@@ -25,6 +21,14 @@ const isEmailInvalid = ref(false);
 const emailErrorMessage = ref('');
 const isRoleInvalid = ref(false);
 const roleErrorMessage = ref('');
+
+// Compute translated role labels
+const translatedRoles = computed(() =>
+  memberRoles.map(role => ({
+    value: role.value,
+    label: t(`roles.${role.value.toLowerCase()}`) // dynamic i18n key
+  }))
+);
 
 // Reset form state
 function resetForm() {
@@ -41,7 +45,7 @@ const addMember = async () => {
 
   if (!newMemberEmail.value || !emailRegex.test(newMemberEmail.value)) {
     isEmailInvalid.value = true;
-    emailErrorMessage.value = 'Bitte eine gültige E-Mail-Adresse eingeben';
+    emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
     return;
   } else {
     isEmailInvalid.value = false;
@@ -50,7 +54,7 @@ const addMember = async () => {
 
   if (!newMemberRole.value) {
     isRoleInvalid.value = true;
-    roleErrorMessage.value = 'Bitte eine gültige Rolle auswählen';
+    roleErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidRole');
     return;
   } else {
     isRoleInvalid.value = false;
@@ -65,10 +69,9 @@ const addMember = async () => {
   };
 
   try {
-    console.log('Adding member with email:', newMemberEmail.value, 'role:', newMemberRole.value);
     await projectMemberService.addMember(props.projectId, member);
     emit('newMember', newMemberEmail.value);
-    resetForm(); // clear after successful add
+    resetForm();
   } catch (error) {
     const err = error as { response?: { data: any }; message: string };
     console.error('Failed to add member:', err.response?.data || err.message);
@@ -93,12 +96,12 @@ const addMember = async () => {
   >
     <div class="flex flex-col gap-1 mb-6">
       <div class="flex items-center gap-6">
-        <label for="email" class="font-semibold w-24">E-Mail Adresse</label>
+        <label for="email" class="font-semibold w-24">{{ t('projectSettings.newProjectMemberButton.emailLabel') }}</label>
         <InputText
           id="email"
           v-model="newMemberEmail"
           type="email"
-          placeholder="E-Mail Adresse des neuen Mitglieds"
+          :placeholder="t('projectSettings.newProjectMemberButton.emailPlaceholder')"
           class="flex-auto"
           autocomplete="off"
           :invalid="isEmailInvalid"
@@ -108,12 +111,12 @@ const addMember = async () => {
     </div>
 
     <div class="flex items-center gap-6 mb-2">
-      <label for="role" class="font-semibold w-24">Mitgliedsrolle</label>
+      <label for="role" class="font-semibold w-24">{{ t('projectSettings.newProjectMemberButton.roleLabel') }}</label>
       <Select
         v-model="newMemberRole"
         inputId="role"
         :placeholder="t('roles.select')"
-        :options="[...memberRoles]"
+        :options="translatedRoles"
         optionLabel="label"
         optionValue="value"
         class="w-full"
@@ -133,5 +136,3 @@ const addMember = async () => {
     </div>
   </Dialog>
 </template>
-
-<style scoped></style>
