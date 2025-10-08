@@ -7,20 +7,21 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { projectService } from '@/services/ProjectService';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
+import { useProjectStore } from '@/stores/ProjectStore';
 
 
-// Props must come first after imports
 const props = defineProps<{
   projectId: string;
 }>();
 
 const { t } = useI18n();
+const toast = useToast();
+const projectStore = useProjectStore();
+
 // State
 const projectName = ref('');
 const originalProjectName = ref('');
 const loading = ref(false);
-
-const toast = useToast();
 
 // Fetch project data
 const fetchProject = async (id: string) => {
@@ -47,7 +48,11 @@ const saveProjectName = async () => {
   loading.value = true;
   try {
     await projectService.updateProject(props.projectId, { title: projectName.value.trim() });
+
+    
     originalProjectName.value = projectName.value.trim();
+    projectStore.updateProjectName(props.projectId, projectName.value.trim());
+
     toast.add({
       severity: 'success',
       summary: t('success.saved'),
@@ -70,12 +75,23 @@ const saveProjectName = async () => {
 // Initial load
 onMounted(() => fetchProject(props.projectId));
 
-// Watch for projectId changes
+// Watch for projectId changes (when user switches project)
 watch(
   () => props.projectId,
   (newProjectId) => {
     fetchProject(newProjectId);
   },
+);
+
+watch(
+  () => projectStore.selectedProject,
+  (newProject) => {
+    if (newProject && newProject.id === props.projectId) {
+      projectName.value = newProject.name;
+      originalProjectName.value = newProject.name;
+    }
+  },
+  { immediate: true },
 );
 </script>
 
@@ -87,7 +103,9 @@ watch(
 
     <template #content>
       <div class="flex flex-col gap-3">
-        <label for="name" class="font-medium text-gray-700">Name der Liegenschaft</label>
+        <label for="name" class="font-medium text-gray-700">
+          Name der Liegenschaft
+        </label>
 
         <div class="flex gap-2 items-center">
           <InputText
