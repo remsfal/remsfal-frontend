@@ -21,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20.x'
       - name: Cache node modules
@@ -80,7 +80,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Set up Node.js 21
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '21.x'
       - name: Cache node modules
