@@ -3,14 +3,12 @@ import { projectService } from '@/services/ProjectService';
 import type { ProjectList, ProjectItem } from '@/services/ProjectService';
 
 export const useProjectStore = defineStore('project-store', {
-  state: () => {
-    return {
-      projects: [] as ProjectItem[],
-      selectedProject: undefined as ProjectItem | undefined,
-      totalProjects: 0,
-      firstOffset: 0,
-    };
-  },
+  state: () => ({
+    projects: [] as ProjectItem[],
+    selectedProject: undefined as ProjectItem | undefined,
+    totalProjects: 0,
+    firstOffset: 0,
+  }),
   getters: {
     projectList: (state) => state.projects,
     projectSelection: (state) => state.selectedProject,
@@ -74,6 +72,16 @@ export const useProjectStore = defineStore('project-store', {
       // Otherwise fetch from API
       await this.searchProjects(projectId);
       this.setSelectedProject(this.projects.findLast((p) => p.id === projectId));
+    },
+    updateProjectName(projectId: string, newName: string) {
+      const project = this.projects.find((p) => p.id === projectId);
+      if (project) {
+        project.name = newName;
+      }
+
+      if (this.selectedProject?.id === projectId) {
+        this.selectedProject = { ...this.selectedProject, name: newName };
+      }
     },
   },
 });
