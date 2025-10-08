@@ -1,5 +1,8 @@
 import { typedRequest } from '@/services/api/typedRequest';
 import type { paths } from '@/services/api/typedRequest';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 export type GetMembersResponse =
   paths['/api/v1/projects/{projectId}/members']['get']['responses']['200']['content']['application/json'];
@@ -64,11 +67,11 @@ export const projectMemberService = new ProjectMemberService();
 
 // ProjectMemberService.ts
 export const memberRoles = [
-  { label: 'Eigentümer', value: 'PROPRIETOR' },
-  { label: 'Verwalter', value: 'MANAGER' },
-  { label: 'Vermieter', value: 'LESSOR' },
-  { label: 'Mitarbeiter', value: 'STAFF' },
-  { label: 'Kollaborateur', value: 'COLLABORATOR' },
+  { label: t('roles.proprietor'), value: 'PROPRIETOR' },
+  { label: t('roles.manager'), value: 'MANAGER' },
+  { label: t('roles.lessor'), value: 'LESSOR' },
+  { label: t('roles.staff'), value: 'STAFF' },
+  { label: t('roles.collaborator'), value: 'COLLABORATOR' },
 ] as const;
 
 export type MemberRole = (typeof memberRoles)[number]['value'];

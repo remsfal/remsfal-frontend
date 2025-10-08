@@ -190,5 +190,13 @@
   "rentableUnits.form.titlePlaceholder": "Title of the new property",
   "rentableUnits.button.addProperty": "Add Property",
   "button.cancel": "Cancel",
-  "button.add": "Add"
+  "button.add": "Add",
+  "roles.manager": "Manager",
+  "roles.contractor": "Contractor",
+  "roles.tenant": "Tenant",
+  "roles.consultant": "Consultant",
+  "roles.admin": "Administrator",
+  "roles.owner": "Owner",
+
+  "roles.select": "Select a role"
 }

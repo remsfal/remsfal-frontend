@@ -112,9 +112,10 @@ const addMember = async () => {
       <Select
         v-model="newMemberRole"
         inputId="role"
-         :options="[...memberRoles]"
-          optionLabel="label"
-          optionValue="value"
+        :placeholder="t('roles.select')"
+        :options="[...memberRoles]"
+        optionLabel="label"
+        optionValue="value"
         class="w-full"
         :class="{ 'p-invalid': isRoleInvalid }"
       />

@@ -196,5 +196,12 @@
   "rentableUnits.form.titlePlaceholder": "Titel der neuen Immobilie",
   "rentableUnits.button.addProperty": "Immobilie hinzufügen",
   "button.cancel": "Abbrechen",
-  "button.add": "Hinzufügen"
+  "button.add": "Hinzufügen",
+  "roles.manager": "Manager",
+  "roles.contractor": "Auftragnehmer",
+  "roles.tenant": "Mieter",
+  "roles.consultant": "Berater",
+  "roles.admin": "Administrator",
+  "roles.owner": "Eigentümer",
+  "roles.select": "Rolle auswählen"
 }
