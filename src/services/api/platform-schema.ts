@@ -365,7 +365,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -412,7 +412,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -450,7 +450,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -510,7 +510,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -553,9 +553,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -595,9 +595,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -628,9 +628,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -683,7 +683,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -726,9 +726,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -768,9 +768,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -808,9 +808,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -863,9 +863,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -908,9 +908,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -950,9 +950,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -983,9 +983,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1038,9 +1038,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1083,9 +1083,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1125,9 +1125,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1158,9 +1158,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1213,9 +1213,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1258,9 +1258,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1300,9 +1300,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1333,9 +1333,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1388,7 +1388,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1431,9 +1431,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1473,9 +1473,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1506,9 +1506,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1564,7 +1564,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1594,7 +1594,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1656,9 +1656,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the contractor */
-                    contractorId: string;
+                    contractorId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1689,9 +1689,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the contractor */
-                    contractorId: string;
+                    contractorId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1729,9 +1729,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the contractor */
-                    contractorId: string;
+                    contractorId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1773,7 +1773,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1812,7 +1812,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1870,9 +1870,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the member */
-                    memberId: string;
+                    memberId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1910,9 +1910,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the member */
-                    memberId: string;
+                    memberId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1963,7 +1963,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -1995,7 +1995,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2038,9 +2038,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the property */
-                    propertyId: string;
+                    propertyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2080,9 +2080,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the property */
-                    propertyId: string;
+                    propertyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2120,9 +2120,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the property */
-                    propertyId: string;
+                    propertyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2175,9 +2175,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the property */
-                    propertyId: string;
+                    propertyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2220,9 +2220,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2262,9 +2262,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2302,9 +2302,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2357,9 +2357,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2402,9 +2402,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2444,9 +2444,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2477,9 +2477,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the apartment */
-                    apartmentId: string;
+                    apartmentId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2532,9 +2532,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2577,9 +2577,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2619,9 +2619,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2652,9 +2652,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the commercial unit */
-                    commercialId: string;
+                    commercialId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2707,9 +2707,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the building */
-                    buildingId: string;
+                    buildingId: components["schemas"]["UUID"];
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2752,9 +2752,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2794,9 +2794,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2827,9 +2827,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2882,9 +2882,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the property */
-                    propertyId: string;
+                    propertyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2927,9 +2927,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the site */
-                    siteId: string;
+                    siteId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -2969,9 +2969,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the site */
-                    siteId: string;
+                    siteId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3002,9 +3002,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the site */
-                    siteId: string;
+                    siteId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3057,7 +3057,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3100,9 +3100,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the site */
-                    siteId: string;
+                    siteId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3142,9 +3142,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the site */
-                    siteId: string;
+                    siteId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3175,9 +3175,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the site */
-                    siteId: string;
+                    siteId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3230,7 +3230,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3273,9 +3273,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3315,9 +3315,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3348,9 +3348,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the storage */
-                    storageId: string;
+                    storageId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3399,14 +3399,14 @@ export interface paths {
             parameters: {
                 query?: {
                     /** @description Filter to return only tasks of a specific user */
-                    owner?: string;
+                    owner?: components["schemas"]["UUID"];
                     /** @description Filter to return only tasks with a specific status */
                     status?: components["schemas"]["Status"];
                 };
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3429,7 +3429,7 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3477,9 +3477,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the task */
-                    taskId: string;
+                    taskId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3510,9 +3510,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the task */
-                    taskId: string;
+                    taskId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3543,9 +3543,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the project */
-                    projectId: string;
+                    projectId: components["schemas"]["UUID"];
                     /** @description ID of the task */
-                    taskId: string;
+                    taskId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3623,9 +3623,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3669,9 +3669,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3715,9 +3715,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3761,9 +3761,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3807,9 +3807,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3853,9 +3853,9 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3902,11 +3902,11 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description Type of the rental */
                     rentalType: string;
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3929,11 +3929,11 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description Type of the rental */
                     rentalType: string;
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -3981,13 +3981,13 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description Type of the rental */
                     rentalType: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    taskId: components["schemas"]["UUID"];
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -4021,13 +4021,13 @@ export interface paths {
                 header?: never;
                 path: {
                     /** @description ID of the rental */
-                    rentalId: string;
+                    rentalId: components["schemas"]["UUID"];
                     /** @description Type of the rental */
                     rentalType: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    taskId: components["schemas"]["UUID"];
                     /** @description ID of the tenancy */
-                    tenancyId: string;
+                    tenancyId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -4207,7 +4207,7 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
         /** @enum {string} */
@@ -4231,7 +4231,7 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
             address?: components["schemas"]["AddressModel"];
         };
@@ -4275,12 +4275,13 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
+        /** @description A contractor */
         ContractorJson: {
-            id?: string;
-            projectId?: string;
+            id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
             companyName?: string;
             phone?: string;
             email?: string;
@@ -4335,13 +4336,13 @@ export interface components {
         MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
-            id: string;
+            id: components["schemas"]["UUID"];
             name: string;
             memberRole: components["schemas"]["MemberRole"];
         };
         /** @description A project */
         ProjectJson: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title: string;
             members?: components["schemas"]["ProjectMemberJson"][];
         };
@@ -4369,7 +4370,7 @@ export interface components {
         /** @description Project member information in context of a project */
         ProjectMemberJson: {
             privileged?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             name?: string;
             email?: string;
             active?: boolean;
@@ -4396,7 +4397,7 @@ export interface components {
             /** Format: float */
             space?: number;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
         /** @description A list of properties */
@@ -4417,7 +4418,7 @@ export interface components {
         };
         /** @description Encapsulated data of a project tree node */
         RentalUnitNodeDataJson: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             /**
              * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
              * @example PROPERTY
@@ -4456,7 +4457,7 @@ export interface components {
              * @description Key of the node
              * @example Property 1
              */
-            key: string;
+            key: components["schemas"]["UUID"];
             /** @description Data encapsulating node attributes */
             data?: components["schemas"]["RentalUnitNodeDataJson"];
             /** @description Children nodes */
@@ -4471,7 +4472,7 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
             address?: components["schemas"]["AddressJson"];
         };
@@ -4488,21 +4489,21 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
         /** @description A task item with basic information */
         TaskItemJson: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             name?: string;
             title?: string;
             type?: components["schemas"]["Type"];
             status?: components["schemas"]["Status"];
-            owner?: string;
+            owner?: components["schemas"]["UUID"];
         };
         /** @description A task item with basic information from a tenant's perspective */
         TaskItemJson1: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             name?: string;
             title?: string;
             type?: components["schemas"]["Type"];
@@ -4510,22 +4511,22 @@ export interface components {
         };
         /** @description A task */
         TaskJson: {
-            reporterId?: string;
-            id?: string;
-            projectId?: string;
+            reporterId?: components["schemas"]["UUID"];
+            id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
             title?: string;
             type?: components["schemas"]["Type"];
             status?: components["schemas"]["Status"];
-            ownerId?: string;
+            ownerId?: components["schemas"]["UUID"];
             description?: string;
-            blockedBy?: string;
-            relatedTo?: string;
-            duplicateOf?: string;
+            blockedBy?: components["schemas"]["UUID"];
+            relatedTo?: components["schemas"]["UUID"];
+            duplicateOf?: components["schemas"]["UUID"];
         };
         /** @description A task from a tenant's perspective */
         TaskJson1: {
-            reporterId?: string;
-            id?: string;
+            reporterId?: components["schemas"]["UUID"];
+            id?: components["schemas"]["UUID"];
             title?: string;
             type?: components["schemas"]["Type"];
             status?: components["schemas"]["Status"];
@@ -4559,7 +4560,7 @@ export interface components {
         /** @description A tenancy of a rentable unit */
         TenancyJson: {
             active?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             tenants?: components["schemas"]["UserJson"][];
             startOfRental?: components["schemas"]["LocalDate"];
             endOfRental?: components["schemas"]["LocalDate"];
@@ -4600,7 +4601,7 @@ export interface components {
         /** @description User information globally */
         UserJson: {
             active?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             userRoles?: components["schemas"]["UserRole"][];
             email?: string;
             firstName?: string;

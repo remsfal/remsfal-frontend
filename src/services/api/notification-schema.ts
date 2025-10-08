@@ -72,7 +72,7 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
         /** @enum {string} */
@@ -96,7 +96,7 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
             address?: components["schemas"]["AddressModel"];
         };
@@ -140,8 +140,17 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
+        };
+        /** @description A contractor */
+        ContractorJson: {
+            id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            companyName?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
         };
         /** @description A country item of a list */
         CountryItemJson: {
@@ -192,13 +201,13 @@ export interface components {
         MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
-            id: string;
+            id: components["schemas"]["UUID"];
             name: string;
             memberRole: components["schemas"]["MemberRole"];
         };
         /** @description A project */
         ProjectJson: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title: string;
             members?: components["schemas"]["ProjectMemberJson"][];
         };
@@ -226,7 +235,7 @@ export interface components {
         /** @description Project member information in context of a project */
         ProjectMemberJson: {
             privileged?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             name?: string;
             email?: string;
             active?: boolean;
@@ -253,7 +262,7 @@ export interface components {
             /** Format: float */
             space?: number;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
         /** @description A list of properties */
@@ -274,7 +283,7 @@ export interface components {
         };
         /** @description Encapsulated data of a project tree node */
         RentalUnitNodeDataJson: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             /**
              * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
              * @example PROPERTY
@@ -313,7 +322,7 @@ export interface components {
              * @description Key of the node
              * @example Property 1
              */
-            key: string;
+            key: components["schemas"]["UUID"];
             /** @description Data encapsulating node attributes */
             data?: components["schemas"]["RentalUnitNodeDataJson"];
             /** @description Children nodes */
@@ -328,7 +337,7 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
             address?: components["schemas"]["AddressJson"];
         };
@@ -345,21 +354,21 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
         /** @description A task item with basic information */
         TaskItemJson: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             name?: string;
             title?: string;
             type?: components["schemas"]["Type"];
             status?: components["schemas"]["Status"];
-            owner?: string;
+            owner?: components["schemas"]["UUID"];
         };
         /** @description A task item with basic information from a tenant's perspective */
         TaskItemJson1: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             name?: string;
             title?: string;
             type?: components["schemas"]["Type"];
@@ -367,22 +376,22 @@ export interface components {
         };
         /** @description A task */
         TaskJson: {
-            reporterId?: string;
-            id?: string;
-            projectId?: string;
+            reporterId?: components["schemas"]["UUID"];
+            id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
             title?: string;
             type?: components["schemas"]["Type"];
             status?: components["schemas"]["Status"];
-            ownerId?: string;
+            ownerId?: components["schemas"]["UUID"];
             description?: string;
-            blockedBy?: string;
-            relatedTo?: string;
-            duplicateOf?: string;
+            blockedBy?: components["schemas"]["UUID"];
+            relatedTo?: components["schemas"]["UUID"];
+            duplicateOf?: components["schemas"]["UUID"];
         };
         /** @description A task from a tenant's perspective */
         TaskJson1: {
-            reporterId?: string;
-            id?: string;
+            reporterId?: components["schemas"]["UUID"];
+            id?: components["schemas"]["UUID"];
             title?: string;
             type?: components["schemas"]["Type"];
             status?: components["schemas"]["Status"];
@@ -416,7 +425,7 @@ export interface components {
         /** @description A tenancy of a rentable unit */
         TenancyJson: {
             active?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             tenants?: components["schemas"]["UserJson"][];
             startOfRental?: components["schemas"]["LocalDate"];
             endOfRental?: components["schemas"]["LocalDate"];
@@ -457,7 +466,7 @@ export interface components {
         /** @description User information globally */
         UserJson: {
             active?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             userRoles?: components["schemas"]["UserRole"][];
             email?: string;
             firstName?: string;

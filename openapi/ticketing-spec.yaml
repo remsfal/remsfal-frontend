@@ -56,7 +56,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -103,7 +103,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -185,8 +185,29 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
+          type: string
+          maxLength: 255
+    ContractorJson:
+      description: A contractor
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        projectId:
+          $ref: "#/components/schemas/UUID"
+        companyName:
+          type: string
+          maxLength: 255
+        phone:
+          type: string
+          pattern: "^\\+?[0-9]{10,14}$"
+          maxLength: 15
+        email:
+          type: string
+          maxLength: 255
+        trade:
           type: string
           maxLength: 255
     CountryItemJson:
@@ -288,7 +309,7 @@ components:
       - memberRole
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         memberRole:
@@ -298,7 +319,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           pattern: \S
@@ -348,7 +369,7 @@ components:
         privileged:
           type: boolean
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         email:
@@ -403,7 +424,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -445,7 +466,7 @@ components:
       description: Encapsulated data of a project tree node
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         type:
           description: "Type of the node (e.g., 'PROPERTY', 'BUILDING')"
           type: string
@@ -487,10 +508,11 @@ components:
       - key
       properties:
         key:
-          type: string
           description: Key of the node
+          type: string
           examples:
           - Property 1
+          $ref: "#/components/schemas/UUID"
         data:
           description: Data encapsulating node attributes
           type: object
@@ -518,7 +540,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -555,7 +577,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -564,7 +586,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         title:
@@ -574,13 +596,13 @@ components:
         status:
           $ref: "#/components/schemas/Status"
         owner:
-          type: string
+          $ref: "#/components/schemas/UUID"
     TaskItemJson1:
       description: A task item with basic information from a tenant's perspective
       type: object
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         title:
@@ -594,11 +616,11 @@ components:
       type: object
       properties:
         reporterId:
-          type: string
+          $ref: "#/components/schemas/UUID"
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         projectId:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -607,27 +629,23 @@ components:
         status:
           $ref: "#/components/schemas/Status"
         ownerId:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
         description:
           type: string
         blockedBy:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
         relatedTo:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
         duplicateOf:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
     TaskJson1:
       description: A task from a tenant's perspective
       type: object
       properties:
         reporterId:
-          type: string
+          $ref: "#/components/schemas/UUID"
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -685,7 +703,7 @@ components:
         active:
           type: boolean
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         tenants:
           type: array
           items:
@@ -762,7 +780,7 @@ components:
         active:
           type: boolean
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         userRoles:
           type: array
           uniqueItems: true

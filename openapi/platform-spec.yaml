@@ -56,7 +56,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -103,7 +103,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -185,18 +185,18 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
     ContractorJson:
+      description: A contractor
       type: object
       properties:
         id:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
         projectId:
-          type: string
+          $ref: "#/components/schemas/UUID"
         companyName:
           type: string
           maxLength: 255
@@ -309,7 +309,7 @@ components:
       - memberRole
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         memberRole:
@@ -319,7 +319,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           pattern: \S
@@ -369,7 +369,7 @@ components:
         privileged:
           type: boolean
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         email:
@@ -424,7 +424,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -466,7 +466,7 @@ components:
       description: Encapsulated data of a project tree node
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         type:
           description: "Type of the node (e.g., 'PROPERTY', 'BUILDING')"
           type: string
@@ -508,10 +508,11 @@ components:
       - key
       properties:
         key:
-          type: string
           description: Key of the node
+          type: string
           examples:
           - Property 1
+          $ref: "#/components/schemas/UUID"
         data:
           description: Data encapsulating node attributes
           type: object
@@ -539,7 +540,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -576,7 +577,7 @@ components:
         description:
           type: string
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -585,7 +586,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         title:
@@ -595,13 +596,13 @@ components:
         status:
           $ref: "#/components/schemas/Status"
         owner:
-          type: string
+          $ref: "#/components/schemas/UUID"
     TaskItemJson1:
       description: A task item with basic information from a tenant's perspective
       type: object
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         title:
@@ -615,11 +616,11 @@ components:
       type: object
       properties:
         reporterId:
-          type: string
+          $ref: "#/components/schemas/UUID"
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         projectId:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -628,27 +629,23 @@ components:
         status:
           $ref: "#/components/schemas/Status"
         ownerId:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
         description:
           type: string
         blockedBy:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
         relatedTo:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
         duplicateOf:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
     TaskJson1:
       description: A task from a tenant's perspective
       type: object
       properties:
         reporterId:
-          type: string
+          $ref: "#/components/schemas/UUID"
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
@@ -706,7 +703,7 @@ components:
         active:
           type: boolean
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         tenants:
           type: array
           items:
@@ -783,7 +780,7 @@ components:
         active:
           type: boolean
         id:
-          type: string
+          $ref: "#/components/schemas/UUID"
         userRoles:
           type: array
           uniqueItems: true
@@ -985,8 +982,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1016,8 +1012,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: The requested project was successfully returned
@@ -1041,8 +1036,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The project was deleted successfully
@@ -1061,8 +1055,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1088,15 +1081,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1122,15 +1113,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing apartment was successfully returned
@@ -1150,15 +1139,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The building was deleted successfully
@@ -1173,8 +1160,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1200,15 +1186,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1234,15 +1218,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing building was successfully returned
@@ -1262,15 +1244,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The building was deleted successfully
@@ -1287,15 +1267,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1321,15 +1299,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1355,15 +1331,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing apartment was successfully returned
@@ -1383,15 +1357,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The building was deleted successfully
@@ -1406,15 +1378,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1440,15 +1410,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1474,15 +1442,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing commercial was successfully returned
@@ -1502,15 +1468,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The commercial was deleted successfully
@@ -1525,13 +1489,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1557,15 +1521,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1591,13 +1553,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing storage was successfully returned
@@ -1617,15 +1579,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The storage was deleted successfully
@@ -1640,8 +1600,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1667,15 +1626,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1701,15 +1658,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing commercial was successfully returned
@@ -1729,15 +1684,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The commercial was deleted successfully
@@ -1752,8 +1705,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: Maximum number of contractors to return
         name: limit
         in: query
@@ -1786,8 +1738,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1815,15 +1766,13 @@ paths:
         name: contractorId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1843,15 +1792,13 @@ paths:
         name: contractorId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
@@ -1865,15 +1812,13 @@ paths:
         name: contractorId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The contractor was deleted successfully
@@ -1890,8 +1835,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: A list of all existing members was successfully returned
@@ -1911,8 +1855,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1939,15 +1882,13 @@ paths:
         name: memberId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1973,15 +1914,13 @@ paths:
         name: memberId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The project member was deleted successfully
@@ -1998,8 +1937,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: A list of all existing properties with itsrentable units as
@@ -2018,8 +1956,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2045,15 +1982,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the property
         required: true
         name: propertyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2079,15 +2014,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the property
         required: true
         name: propertyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing property was successfully returned
@@ -2107,15 +2040,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the property
         required: true
         name: propertyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: An existing property was successfully deleted
@@ -2132,15 +2063,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the property
         required: true
         name: propertyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2166,15 +2095,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2200,15 +2127,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing building was successfully returned
@@ -2228,15 +2153,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The building was deleted successfully
@@ -2253,15 +2176,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2287,15 +2208,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2321,15 +2240,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing apartment was successfully returned
@@ -2349,15 +2266,13 @@ paths:
         name: apartmentId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The building was deleted successfully
@@ -2372,15 +2287,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2406,15 +2319,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2440,15 +2351,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing commercial was successfully returned
@@ -2468,15 +2377,13 @@ paths:
         name: commercialId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The commercial was deleted successfully
@@ -2491,13 +2398,13 @@ paths:
         name: buildingId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       - description: ID of the project
         required: true
         name: projectId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2523,15 +2430,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2557,13 +2462,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing storage was successfully returned
@@ -2583,15 +2488,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The storage was deleted successfully
@@ -2606,15 +2509,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the property
         required: true
         name: propertyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2640,15 +2541,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the site
         required: true
         name: siteId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2674,15 +2573,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the site
         required: true
         name: siteId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing site was successfully returned
@@ -2702,15 +2599,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the site
         required: true
         name: siteId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The site was deleted successfully
@@ -2725,8 +2620,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2752,15 +2646,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the site
         required: true
         name: siteId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2786,15 +2678,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the site
         required: true
         name: siteId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing site was successfully returned
@@ -2814,15 +2704,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the site
         required: true
         name: siteId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The site was deleted successfully
@@ -2837,7 +2725,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2863,15 +2751,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2897,13 +2783,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
+          $ref: "#/components/schemas/UUID"
       responses:
         "200":
           description: An existing storage was successfully returned
@@ -2923,15 +2809,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the storage
         required: true
         name: storageId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The storage was deleted successfully
@@ -2946,14 +2830,12 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: Filter to return only tasks of a specific user
         name: owner
         in: query
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: Filter to return only tasks with a specific status
         name: status
         in: query
@@ -2970,8 +2852,7 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -2995,15 +2876,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the task
         required: true
         name: taskId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -3023,15 +2902,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the task
         required: true
         name: taskId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
@@ -3045,15 +2922,13 @@ paths:
         name: projectId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the task
         required: true
         name: taskId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "204":
           description: The task was deleted successfully
@@ -3078,15 +2953,13 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the tenancy
         required: true
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
@@ -3101,15 +2974,13 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the tenancy
         required: true
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
@@ -3124,15 +2995,13 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the tenancy
         required: true
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
@@ -3147,15 +3016,13 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the tenancy
         required: true
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
@@ -3170,15 +3037,13 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the tenancy
         required: true
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
@@ -3193,15 +3058,13 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the tenancy
         required: true
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
@@ -3216,8 +3079,7 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: Type of the rental
         required: true
         name: rentalType
@@ -3229,8 +3091,7 @@ paths:
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: Filter to return only tasks with a specific status
         name: status
         in: query
@@ -3247,8 +3108,7 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: Type of the rental
         required: true
         name: rentalType
@@ -3260,8 +3120,7 @@ paths:
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -3285,8 +3144,7 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: Type of the rental
         required: true
         name: rentalType
@@ -3298,15 +3156,13 @@ paths:
         name: taskId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the tenancy
         required: true
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -3326,8 +3182,7 @@ paths:
         name: rentalId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: Type of the rental
         required: true
         name: rentalType
@@ -3339,15 +3194,13 @@ paths:
         name: taskId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       - description: ID of the tenancy
         required: true
         name: tenancyId
         in: path
         schema:
-          type: string
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          $ref: "#/components/schemas/UUID"
       responses:
         "401":
           description: No user authentication provided via session cookie
