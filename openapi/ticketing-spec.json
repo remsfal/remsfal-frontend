@@ -77,7 +77,7 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
@@ -137,7 +137,7 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
@@ -254,9 +254,38 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
+            "type" : "string",
+            "maxLength" : 255
+          }
+        }
+      },
+      "ContractorJson" : {
+        "description" : "A contractor",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "companyName" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "phone" : {
+            "type" : "string",
+            "pattern" : "^\\+?[0-9]{10,14}$",
+            "maxLength" : 15
+          },
+          "email" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "trade" : {
             "type" : "string",
             "maxLength" : 255
           }
@@ -379,7 +408,7 @@
         "required" : [ "id", "name", "memberRole" ],
         "properties" : {
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
             "type" : "string"
@@ -394,7 +423,7 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
@@ -452,7 +481,7 @@
             "type" : "boolean"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
             "type" : "string"
@@ -528,7 +557,7 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
@@ -584,7 +613,7 @@
         "description" : "Encapsulated data of a project tree node",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "type" : {
             "description" : "Type of the node (e.g., 'PROPERTY', 'BUILDING')",
@@ -627,9 +656,10 @@
         "required" : [ "key" ],
         "properties" : {
           "key" : {
-            "type" : "string",
             "description" : "Key of the node",
-            "examples" : [ "Property 1" ]
+            "type" : "string",
+            "examples" : [ "Property 1" ],
+            "$ref" : "#/components/schemas/UUID"
           },
           "data" : {
             "description" : "Data encapsulating node attributes",
@@ -668,7 +698,7 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
@@ -711,7 +741,7 @@
             "type" : "string"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
@@ -724,7 +754,7 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
             "type" : "string"
@@ -739,7 +769,7 @@
             "$ref" : "#/components/schemas/Status"
           },
           "owner" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           }
         }
       },
@@ -748,7 +778,7 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
             "type" : "string"
@@ -769,13 +799,13 @@
         "type" : "object",
         "properties" : {
           "reporterId" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "projectId" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
@@ -788,23 +818,19 @@
             "$ref" : "#/components/schemas/Status"
           },
           "ownerId" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           },
           "description" : {
             "type" : "string"
           },
           "blockedBy" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           },
           "relatedTo" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           },
           "duplicateOf" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         }
       },
@@ -813,10 +839,10 @@
         "type" : "object",
         "properties" : {
           "reporterId" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
@@ -895,7 +921,7 @@
             "type" : "boolean"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "tenants" : {
             "type" : "array",
@@ -986,7 +1012,7 @@
             "type" : "boolean"
           },
           "id" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           },
           "userRoles" : {
             "type" : "array",
