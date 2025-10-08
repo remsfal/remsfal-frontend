@@ -9,7 +9,6 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import { useProjectStore } from '@/stores/ProjectStore';
 
-
 const props = defineProps<{
   projectId: string;
 }>();
@@ -101,15 +100,12 @@ watch(
 
     <template #content>
       <div class="flex flex-col gap-3">
-        <label for="name" class="font-medium text-gray-700">
-          Name der Liegenschaft
-        </label>
-
+        <label for="name" class="font-medium text-gray-700">Name der Liegenschaft</label>
         <div class="flex gap-2 items-center">
           <InputText
             id="name"
-            type="text"
             v-model="projectName"
+            type="text"
             class="flex-1"
             :placeholder="t('projectSettings.propertyNamePlaceholder')"
           />

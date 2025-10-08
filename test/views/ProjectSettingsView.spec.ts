@@ -3,8 +3,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import flushPromises from 'flush-promises';
 import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
 import { projectMemberService, type GetMembersResponse } from '../../src/services/ProjectMemberService';
-import { projectService } from '@/services/ProjectService';
-
+import { projectService } from '../../src/services/ProjectService';
 
 // ---- Mocks ----
 const routerPushMock = vi.fn();
