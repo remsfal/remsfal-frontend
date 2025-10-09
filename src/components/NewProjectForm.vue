@@ -1,21 +1,26 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 import { saveProject } from '@/helper/indexeddb';
-import { useI18n } from 'vue-i18n';
 
 const emit = defineEmits<{ abort: [] }>();
 const { t } = useI18n();
+const toast = useToast();
 
+const visible = ref(true);
 const maxLength = 100;
 const projectTitle = ref('');
 const errorMessage = ref('');
 
 const router = useRouter();
+const projectStore = useProjectStore();
 
 watch(projectTitle, (newProjectTitle) => {
   errorMessage.value =
@@ -25,8 +30,6 @@ watch(projectTitle, (newProjectTitle) => {
 });
 
 async function createProject() {
-  const projectStore = useProjectStore();
-
   if (projectTitle.value.length > maxLength) return;
 
   const projectTitleValue = projectTitle.value.trim();
@@ -35,70 +38,87 @@ async function createProject() {
     return;
   }
 
-  if (!navigator.onLine) {
-    await saveProject(projectTitleValue);
-    return;
-  }
-
   try {
-    const newProject = await projectService.createProject(projectTitleValue);
-    if (!newProject.id) {
-      console.error('Created project has no ID.');
+    if (!navigator.onLine) {
       await saveProject(projectTitleValue);
+      toast.add({
+        severity: 'warn',
+        summary: t('success.savedOffline'),
+        detail: t('newProjectForm.offlineSaved'),
+        life: 4000,
+      });
+      visible.value = false;
       return;
     }
+
+    const newProject = await projectService.createProject(projectTitleValue);
+    if (!newProject.id) {
+      await saveProject(projectTitleValue);
+      toast.add({
+        severity: 'warn',
+        summary: t('success.savedOffline'),
+        detail: t('newProjectForm.offlineSaved'),
+        life: 4000,
+      });
+      visible.value = false;
+      return;
+    }
+
     projectStore.searchSelectedProject(newProject.id);
     await router.push({ name: 'ProjectDashboard', params: { projectId: newProject.id } });
+    toast.add({
+      severity: 'success',
+      summary: t('success.created'),
+      detail: t('newProjectForm.successCreated'),
+      life: 4000,
+    });
+    visible.value = false;
   } catch (error) {
-    console.error('Failed to create project online. Saving offline:', error);
+    console.error('Failed to create project online:', error);
     await saveProject(projectTitleValue);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('newProjectForm.offlineSaved'),
+      life: 4000,
+    });
+    visible.value = false;
   }
 }
 
 function abort() {
   router.push({ name: 'ProjectSelection' });
   emit('abort');
+  visible.value = false;
 }
 </script>
 
 <template>
-  <form
-    class="flex flex-col gap-5 w-full max-w-md p-8 bg-white rounded-2xl shadow-md border border-gray-100"
-    @submit.prevent="createProject"
+  <Dialog
+    v-model:visible="visible"
+    modal
+    :header="t('newProjectForm.input.name')"
+    :style="{ width: '35rem' }"
+    :closable="true"
+    @hide="abort"
   >
-    <div class="flex flex-col gap-1">
-      <label for="value" class="text-gray-700 font-medium text-sm">
-        {{ t('newProjectForm.input.name') }}
-      </label>
+    <div class="flex flex-col gap-4">
+      <label for="projectTitle" class="font-semibold">{{ t('newProjectForm.input.name') }}</label>
       <InputText
-        id="value"
+        id="projectTitle"
         v-model="projectTitle"
         type="text"
+        :placeholder="t('newProjectForm.input.exampleAddress')"
         :class="{ 'p-invalid': errorMessage }"
-        aria-describedby="text-error"
-        class="w-full"
-       :placeholder="t('newProjectForm.input.exampleAddress')"
       />
-      <small id="text-error" class="p-error text-xs h-4">
-        {{ errorMessage || ' ' }}
-      </small>
+      <small class="p-error text-xs h-4">{{ errorMessage || ' ' }}</small>
     </div>
 
-    <div class="flex justify-end gap-3 mt-4">
-      <Button
-        type="reset"
-        :label="t('button.cancel')"
-        icon="pi pi-times"
-        severity="secondary"
-        @click="abort"
-      />
-      <Button
-        type="submit"
-        :label="t('button.create')"
-        icon="pi pi-plus"
-      />
+    <div class="flex justify-end gap-3 mt-6">
+      <Button type="button" :label="t('button.cancel')" severity="secondary" @click="abort" />
+      <Button type="button" :label="t('button.create')" icon="pi pi-plus" @click="createProject" />
     </div>
-  </form>
+  </Dialog>
 </template>
 
 <style scoped>
