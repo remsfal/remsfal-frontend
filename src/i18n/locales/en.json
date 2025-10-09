@@ -58,6 +58,9 @@
   "projectSettings.title": "This is the project settings page for project {0}.",
   "projectSettings.projectMemberTable.title": "Authorized Members",
   "projectSettings.newProjectMemberButton.label": "Add Member",
+  "projectSettings.saveSuccess": "Project name successfully updated.",
+  "projectSettings.saveError": "Could not save project name.",
+  "projectSettings.propertyNamePlaceholder": "Property name",
   "projectTenancies.title": "This is the project tenancy page for project {0}.",
   "landingPage.sub-title": "All in one application.",
   "landingPage.description": "With remsfal, you can keep track of your properties and record matters. Remsfal stands for Remote Management Services for connected Facilities and offers an application for monitoring, controlling, and managing your properties. It includes effective defect management, the possibility for documentation management, and monitoring using remote access technology.",
@@ -191,5 +194,6 @@
   "rentableUnits.form.titlePlaceholder": "Title of the new property",
   "rentableUnits.button.addProperty": "Add Property",
   "button.cancel": "Cancel",
-  "button.add": "Add"
+  "button.add": "Add",
+  "success.saved": "Saved"
 }
