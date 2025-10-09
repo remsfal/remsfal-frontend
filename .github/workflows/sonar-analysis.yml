@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Download PR number artifact
         if: github.event.workflow_run.event == 'pull_request'
-        uses: dawidd6/action-download-artifact@v6
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: CI Build
           run_id: ${{ github.event.workflow_run.id }}
@@ -37,14 +37,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout push branch
         if: github.event.workflow_run.event != 'pull_request'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
       - name: Checkout PR branch
         if: github.event.workflow_run.event == 'pull_request'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ fromJson(steps.get_pr_data.outputs.data).head.ref }}
@@ -56,7 +56,7 @@ jobs:
           git fetch upstream
           git branch -u upstream/${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}
       - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '20.x'
       - name: Cache SonarCloud packages
