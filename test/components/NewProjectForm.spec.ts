@@ -21,25 +21,24 @@ describe('NewProjectForm.vue', () => {
   const maxLengthError = 'Der Name der Liegenschaft darf nicht mehr als 100 Zeichen lang sein';
 
   beforeEach(() => {
-    // Mock project service
-    vi.spyOn(projectService, 'createProject').mockResolvedValue({ id: '1', title: 'Valid Project' });
+    vi.spyOn(projectService, 'createProject').mockResolvedValue({
+      id: '1',
+      title: 'Valid Project',
+    });
 
-    // Mock project store
     storeMock = { searchSelectedProject: vi.fn() };
     (useProjectStore as unknown as () => typeof storeMock) = () => storeMock;
 
-    // Mock router
     pushMock = vi.fn();
     (useRouter as unknown as () => { push: typeof pushMock }) = () => ({ push: pushMock });
 
-    // Mount component
     wrapper = mount(NewProjectForm, {
       global: {
         stubs: {
-          Button: { template: '<button><slot /></slot></button>' },
+          Dialog: { template: '<div><slot /></div>' },
+          Button: { template: '<button @click="$emit(\'click\')"><slot /></slot></button>' },
           InputText: {
-            template:
-              '<input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+            template: `<input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />`,
             props: ['modelValue'],
           },
         },
@@ -47,17 +46,21 @@ describe('NewProjectForm.vue', () => {
     });
   });
 
-  it('should show error message if projectTitle exceeds maxLength', async () => {
-    const input = wrapper.find('input');
+  it('shows error message if projectTitle exceeds maxLength', async () => {
+    const input = wrapper.find('#projectTitle');
+    expect(input.exists()).toBe(true);
     await input.setValue('a'.repeat(101));
-    await input.trigger('input'); // ensure v-model updates
     expect(wrapper.find('.p-error').text()).toContain(maxLengthError);
   });
 
-  it('should call createProject and navigate to ProjectDashboard on valid submit', async () => {
-    const input = wrapper.find('input');
+  it('calls createProject and navigates on valid submit', async () => {
+    const input = wrapper.find('#projectTitle');
     await input.setValue('Valid Project');
-    await wrapper.find('form').trigger('submit.prevent');
+
+    // Find the "create" button by its index (second button) or label
+    const buttons = wrapper.findAll('button');
+    const createButton = buttons[1]; // assuming the second button is "Create"
+    await createButton.trigger('click');
 
     expect(projectService.createProject).toHaveBeenCalledWith('Valid Project');
     expect(storeMock.searchSelectedProject).toHaveBeenCalledWith('1');
@@ -67,10 +70,10 @@ describe('NewProjectForm.vue', () => {
     });
   });
 
-  it('should navigate to ProjectSelection on abort', async () => {
-    const abortButton = wrapper.find('button[type="reset"]');
-    expect(abortButton.exists()).toBe(true);
-    await abortButton.trigger('click');
+  it('navigates to ProjectSelection on abort', async () => {
+    const cancelButton = wrapper.findAll('button').find((b) => b.text() === '');
+    await cancelButton?.trigger('click');
+
     expect(pushMock).toHaveBeenCalledWith({ name: 'ProjectSelection' });
   });
 });
