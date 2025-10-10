@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
 import { useI18n } from 'vue-i18n';
-import type { Member, MemberRole } from '@/services/ProjectMemberService';
-import { memberRoles, projectMemberService } from '@/services/ProjectMemberService';
+import { type ProjectMember, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
+import ProjectMemberRoleSelect from '@/components/ProjectMemberRoleSelect.vue';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<{ (e: 'newMember', email: string): void }>();
@@ -21,14 +20,6 @@ const isEmailInvalid = ref(false);
 const emailErrorMessage = ref('');
 const isRoleInvalid = ref(false);
 const roleErrorMessage = ref('');
-
-// Compute translated role labels
-const translatedRoles = computed(() =>
-  memberRoles.map(role => ({
-    value: role.value,
-    label: t(`roles.${role.value.toLowerCase()}`) // dynamic i18n key
-  }))
-);
 
 // Reset form state
 function resetForm() {
@@ -63,7 +54,7 @@ const addMember = async () => {
 
   visible.value = false;
 
-  const member: Member = {
+  const member: ProjectMember = {
     email: newMemberEmail.value,
     role: newMemberRole.value,
   };
@@ -96,7 +87,9 @@ const addMember = async () => {
   >
     <div class="flex flex-col gap-1 mb-6">
       <div class="flex items-center gap-6">
-        <label for="email" class="font-semibold w-24">{{ t('projectSettings.newProjectMemberButton.emailLabel') }}</label>
+        <label for="email" class="font-semibold w-24">{{
+          t('projectSettings.newProjectMemberButton.emailLabel')
+        }}</label>
         <InputText
           id="email"
           v-model="newMemberEmail"
@@ -112,26 +105,12 @@ const addMember = async () => {
 
     <div class="flex items-center gap-6 mb-2">
       <label for="role" class="font-semibold w-24">{{ t('projectSettings.newProjectMemberButton.roleLabel') }}</label>
-      <Select
-        v-model="newMemberRole"
-        inputId="role"
-        :placeholder="t('roles.select')"
-        :options="translatedRoles"
-        optionLabel="label"
-        optionValue="value"
-        class="w-full"
-        :class="{ 'p-invalid': isRoleInvalid }"
-      />
+      <ProjectMemberRoleSelect v-model="newMemberRole" :invalid="isRoleInvalid" class="w-full" />
     </div>
     <small v-if="isRoleInvalid" class="text-red-500 ml-28">{{ roleErrorMessage }}</small>
 
     <div class="flex justify-end gap-2 mt-6">
-      <Button
-        type="button"
-        :label="t('button.cancel')"
-        severity="secondary"
-        @click="visible = false"
-      />
+      <Button type="button" :label="t('button.cancel')" severity="secondary" @click="visible = false" />
       <Button type="button" :label="t('button.add')" @click="addMember" />
     </div>
   </Dialog>
