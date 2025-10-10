@@ -22,9 +22,9 @@ const errorMessage = ref('');
 const router = useRouter();
 const projectStore = useProjectStore();
 
-watch(projectTitle, (newProjectTitle) => {
+watch(projectTitle, (newTitle) => {
   errorMessage.value =
-    newProjectTitle.length > maxLength
+    newTitle.length > maxLength
       ? t('newProjectForm.title.error', { maxLength })
       : '';
 });
@@ -32,15 +32,15 @@ watch(projectTitle, (newProjectTitle) => {
 async function createProject() {
   if (projectTitle.value.length > maxLength) return;
 
-  const projectTitleValue = projectTitle.value.trim();
-  if (!projectTitleValue) {
+  const title = projectTitle.value.trim();
+  if (!title) {
     errorMessage.value = t('newProjectForm.title.required');
     return;
   }
 
   try {
     if (!navigator.onLine) {
-      await saveProject(projectTitleValue);
+      await saveProject(title);
       toast.add({
         severity: 'warn',
         summary: t('success.savedOffline'),
@@ -51,9 +51,9 @@ async function createProject() {
       return;
     }
 
-    const newProject = await projectService.createProject(projectTitleValue);
+    const newProject = await projectService.createProject(title);
     if (!newProject.id) {
-      await saveProject(projectTitleValue);
+      await saveProject(title);
       toast.add({
         severity: 'warn',
         summary: t('success.savedOffline'),
@@ -66,6 +66,7 @@ async function createProject() {
 
     projectStore.searchSelectedProject(newProject.id);
     await router.push({ name: 'ProjectDashboard', params: { projectId: newProject.id } });
+
     toast.add({
       severity: 'success',
       summary: t('success.created'),
@@ -75,7 +76,7 @@ async function createProject() {
     visible.value = false;
   } catch (error) {
     console.error('Failed to create project online:', error);
-    await saveProject(projectTitleValue);
+    await saveProject(title);
     toast.add({
       severity: 'error',
       summary: t('error.general'),
@@ -103,7 +104,10 @@ function abort() {
     @hide="abort"
   >
     <div class="flex flex-col gap-4">
-      <label for="projectTitle" class="font-semibold">{{ t('newProjectForm.input.name') }}</label>
+      <label for="projectTitle" class="font-semibold">
+        {{ t('newProjectForm.input.name') }}
+      </label>
+
       <InputText
         id="projectTitle"
         v-model="projectTitle"

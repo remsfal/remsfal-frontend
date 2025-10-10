@@ -4,30 +4,30 @@ import NewProjectForm from '../../src/components/NewProjectForm.vue';
 import router from '../../src/router';
 import { saveProject } from '../../src/helper/indexeddb';
 import { projectService } from '../../src/services/ProjectService';
-import { useProjectStore } from '../../src/stores/ProjectStore';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 
-// Mock services
 vi.mock('@/helper/indexeddb', () => ({
   saveProject: vi.fn(),
 }));
 
-vi.mock('@/services/ProjectService');
+vi.mock('@/services/ProjectService', () => ({
+  projectService: { createProject: vi.fn() },
+}));
+
+const mockSearchSelectedProject = vi.fn();
 vi.mock('@/stores/ProjectStore', () => ({
   useProjectStore: vi.fn(() => ({
-    searchSelectedProject: vi.fn(),
+    searchSelectedProject: mockSearchSelectedProject,
   })),
 }));
 
-describe('NewProjectForm', () => {
+describe('NewProjectForm.vue', () => {
   let wrapper: VueWrapper<any>;
-  let projectStoreMock: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
     setActivePinia(createPinia());
-    projectStoreMock = useProjectStore();
 
     Object.defineProperty(window.navigator, 'onLine', {
       configurable: true,
@@ -37,9 +37,30 @@ describe('NewProjectForm', () => {
     wrapper = mount(NewProjectForm, {
       global: {
         stubs: {
-          Dialog: false,
-          InputText: false,
-          Button: false,
+          Dialog: { template: '<div><slot /></div>' },
+          InputText: {
+            template: `
+              <input 
+                id="projectTitle" 
+                :value="modelValue" 
+                @input="$emit('update:modelValue', $event.target.value)" 
+              />
+            `,
+            props: ['modelValue'],
+          },
+          Button: {
+            template: `<button :label="label" :icon="icon" :severity="severity" @click="$emit('click')">{{ label }}</button>`,
+            props: ['label', 'icon', 'severity'],
+          },
+        },
+        mocks: {
+          $t: (msg: string, params?: any) => {
+            if (msg === 'newProjectForm.title.error')
+              return `Der Name der Liegenschaft darf nicht mehr als ${params.maxLength} Zeichen lang sein`;
+            if (msg === 'button.cancel') return 'Abbrechen';
+            if (msg === 'button.create') return 'Erstellen';
+            return msg;
+          },
         },
       },
     });
@@ -51,56 +72,49 @@ describe('NewProjectForm', () => {
 
   it('renders properly', () => {
     expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('input#projectTitle').exists()).toBe(true);
+    expect(wrapper.find('#projectTitle').exists()).toBe(true);
   });
 
   it('updates v-model correctly', async () => {
-    const input = wrapper.find('input#projectTitle');
+    const input = wrapper.find('#projectTitle');
     await input.setValue('Test Project');
-    expect((input.element as HTMLInputElement).value).toBe('Test Project');
+    expect(wrapper.vm.projectTitle).toBe('Test Project');
   });
 
-  it('shows error for project title exceeding max length', async () => {
-    const input = wrapper.find('input#projectTitle');
+  it('shows error for title exceeding max length', async () => {
+    const input = wrapper.find('#projectTitle');
     const longTitle = 'A'.repeat(101);
     await input.setValue(longTitle);
     await nextTick();
-
-    const errorMessage = wrapper.find('small.p-error');
-    expect(errorMessage.text()).toContain('darf nicht mehr als 100 Zeichen lang sein');
+    const error = wrapper.find('small.p-error');
+    expect(error.text()).toContain('nicht mehr als 100 Zeichen');
   });
 
-  it('handles abort correctly', async () => {
+  it('handles cancel (abort) correctly', async () => {
     const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
-    const cancelButton = wrapper.find('button[severity="secondary"]');
-    await cancelButton.trigger('click');
+    const cancelBtn = wrapper.findAll('button').find(b => b.text() === 'Abbrechen');
+    await cancelBtn!.trigger('click');
     expect(mockRouterPush).toHaveBeenCalledWith({ name: 'ProjectSelection' });
   });
 
   it('saves project offline when navigator is offline', async () => {
     Object.defineProperty(window.navigator, 'onLine', { configurable: true, value: false });
-
-    const input = wrapper.find('input#projectTitle');
+    const input = wrapper.find('#projectTitle');
     await input.setValue('Offline Project');
-
-    const createButton = wrapper.find('button[icon="pi pi-plus"]');
-    await createButton.trigger('click');
-
+    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    await createBtn!.trigger('click');
     expect(saveProject).toHaveBeenCalledWith('Offline Project');
   });
 
   it('creates project online and updates store', async () => {
     vi.mocked(projectService.createProject).mockResolvedValue({ id: '1', title: 'Online Project' });
     const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
-
-    const input = wrapper.find('input#projectTitle');
+    const input = wrapper.find('#projectTitle');
     await input.setValue('Online Project');
-
-    const createButton = wrapper.find('button[icon="pi pi-plus"]');
-    await createButton.trigger('click');
-
+    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    await createBtn!.trigger('click');
     expect(projectService.createProject).toHaveBeenCalledWith('Online Project');
-    expect(projectStoreMock.searchSelectedProject).toHaveBeenCalledWith('1');
+    expect(mockSearchSelectedProject).toHaveBeenCalledWith('1');
     expect(mockRouterPush).toHaveBeenCalledWith({
       name: 'ProjectDashboard',
       params: { projectId: '1' },
@@ -109,13 +123,10 @@ describe('NewProjectForm', () => {
 
   it('handles API error by saving project offline', async () => {
     vi.mocked(projectService.createProject).mockRejectedValue(new Error('Network error'));
-
-    const input = wrapper.find('input#projectTitle');
+    const input = wrapper.find('#projectTitle');
     await input.setValue('Error Project');
-
-    const createButton = wrapper.find('button[icon="pi pi-plus"]');
-    await createButton.trigger('click');
-
+    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    await createBtn!.trigger('click');
     expect(saveProject).toHaveBeenCalledWith('Error Project');
   });
 });
