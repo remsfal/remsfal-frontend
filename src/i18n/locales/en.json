@@ -72,6 +72,7 @@
   "google.signIn": "Sign in with Google",
   "newProjectForm.title.error": "The property name must not exceed {maxLength} characters",
   "newProjectForm.input.name": "Property Name",
+  "newProjectForm.input.exampleAddress": "e.g. 12 Example Street, Berlin",
   "projectTable.title": "Title",
   "projectTable": "Role",
   "privacy.title": "Privacy Policy",

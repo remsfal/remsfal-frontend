@@ -1,145 +1,132 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewProjectView from '../../src/views/NewProjectView.vue';
+import NewProjectForm from '../../src/components/NewProjectForm.vue';
 import router from '../../src/router';
 import { saveProject } from '../../src/helper/indexeddb';
 import { projectService } from '../../src/services/ProjectService';
+import { createPinia, setActivePinia } from 'pinia';
+import { nextTick } from 'vue';
 
-// Mocked services
 vi.mock('@/helper/indexeddb', () => ({
   saveProject: vi.fn(),
 }));
 
-vi.mock('@/services/ProjectService');
+vi.mock('@/services/ProjectService', () => ({
+  projectService: { createProject: vi.fn() },
+}));
 
-describe('NewProjectView', () => {
-  let wrapper: VueWrapper;
+const mockSearchSelectedProject = vi.fn();
+vi.mock('@/stores/ProjectStore', () => ({
+  useProjectStore: vi.fn(() => ({
+    searchSelectedProject: mockSearchSelectedProject,
+  })),
+}));
+
+describe('NewProjectForm.vue', () => {
+  let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    setActivePinia(createPinia());
 
-    // Mock navigator.onLine to simulate online status
     Object.defineProperty(window.navigator, 'onLine', {
       configurable: true,
       value: true,
     });
 
-    wrapper = mount(NewProjectView, {
+    wrapper = mount(NewProjectForm, {
       global: {
         stubs: {
-          NewProjectForm: false, // Disable the child component mock
+          Dialog: { template: '<div><slot /></div>' },
+          InputText: {
+            template: `
+              <input 
+                id="projectTitle" 
+                :value="modelValue" 
+                @input="$emit('update:modelValue', $event.target.value)" 
+              />
+            `,
+            props: ['modelValue'],
+          },
+          Button: {
+            template: `<button :label="label" :icon="icon" :severity="severity" @click="$emit('click')">{{ label }}</button>`,
+            props: ['label', 'icon', 'severity'],
+          },
+        },
+        mocks: {
+          $t: (msg: string, params?: any) => {
+            if (msg === 'newProjectForm.title.error')
+              return `Der Name der Liegenschaft darf nicht mehr als ${params.maxLength} Zeichen lang sein`;
+            if (msg === 'button.cancel') return 'Abbrechen';
+            if (msg === 'button.create') return 'Erstellen';
+            return msg;
+          },
         },
       },
     });
   });
 
   afterEach(() => {
-    // Restore the original navigator.onLine value after tests
     delete (window.navigator as any).onLine;
   });
 
-  it('renders NewProjectView properly', () => {
+  it('renders properly', () => {
     expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find('#projectTitle').exists()).toBe(true);
   });
 
-  it('renders the input field for project title', () => {
-    const input = wrapper.find('input#value');
-    expect(input.exists()).toBe(true);
+  it('updates v-model correctly', async () => {
+    const input = wrapper.find('#projectTitle');
+    await input.setValue('Test Project');
+    expect(wrapper.vm.projectTitle).toBe('Test Project');
   });
 
-  it('handles input value changes correctly', async () => {
-    const input = wrapper.find('input#value');
-    expect(input.exists()).toBe(true);
-
-    // Set input value and check binding with v-model
-    await input.setValue('New Project Title');
-    expect(input.element.getAttribute('value')).toBe('New Project Title');
-  });
-
-  it('displays an error message when project title exceeds max length', async () => {
-    const input = wrapper.find('input#value');
-    expect(input.exists()).toBe(true);
-
+  it('shows error for title exceeding max length', async () => {
+    const input = wrapper.find('#projectTitle');
     const longTitle = 'A'.repeat(101);
     await input.setValue(longTitle);
-
-    const errorMessage = wrapper.find('small.p-error');
-    expect(errorMessage.exists()).toBe(true);
-    expect(errorMessage.text()).toContain('darf nicht mehr als 100 Zeichen lang sein');
+    await nextTick();
+    const error = wrapper.find('small.p-error');
+    expect(error.text()).toContain('nicht mehr als 100 Zeichen');
   });
 
-  it('handles the abort function and navigates to ProjectSelection', async () => {
+  it('handles cancel (abort) correctly', async () => {
     const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
-
-    const abortButton = wrapper.find('button[type="reset"]');
-    expect(abortButton.exists()).toBe(true);
-
-    await abortButton.trigger('click');
-
-    // Ensure navigation to ProjectSelection
+    const cancelBtn = wrapper.findAll('button').find(b => b.text() === 'Abbrechen');
+    await cancelBtn!.trigger('click');
     expect(mockRouterPush).toHaveBeenCalledWith({ name: 'ProjectSelection' });
   });
 
-  it('saves the project to IndexedDB when offline', async () => {
-    // Mock `navigator.onLine` to simulate offline status
-    Object.defineProperty(window.navigator, 'onLine', {
-      configurable: true,
-      value: false, // Set to offline
-    });
-
-    const input = wrapper.find('input#value');
+  it('saves project offline when navigator is offline', async () => {
+    Object.defineProperty(window.navigator, 'onLine', { configurable: true, value: false });
+    const input = wrapper.find('#projectTitle');
     await input.setValue('Offline Project');
-
-    const form = wrapper.find('form');
-    await form.trigger('submit');
-
-    // Verify that saveProject was called with the project title
+    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    await createBtn!.trigger('click');
     expect(saveProject).toHaveBeenCalledWith('Offline Project');
   });
 
-  it('sends the project to the backend and updates the store when online', async () => {
-    // Ensure navigator is online
-    Object.defineProperty(window.navigator, 'onLine', {
-      configurable: true,
-      value: true,
-    });
+  it('creates project online and updates store', async () => {
+    vi.mocked(projectService.createProject).mockResolvedValue({ id: '1', title: 'Online Project' });
     const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
-    vi.mocked(projectService.createProject).mockResolvedValue({ id: '1', title: 'Test Project' });
-
-    const input = wrapper.find('input#value');
+    const input = wrapper.find('#projectTitle');
     await input.setValue('Online Project');
-
-    const form = wrapper.find('form');
-    await form.trigger('submit');
-
-    // Ensure that the API call was made and the router push was triggered
-    expect(projectService.createProject).toHaveBeenCalled();
+    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    await createBtn!.trigger('click');
+    expect(projectService.createProject).toHaveBeenCalledWith('Online Project');
+    expect(mockSearchSelectedProject).toHaveBeenCalledWith('1');
     expect(mockRouterPush).toHaveBeenCalledWith({
       name: 'ProjectDashboard',
       params: { projectId: '1' },
     });
   });
 
-  it('handles error and saves project title offline if the API call fails', async () => {
-    // Simulate an error in project creation
-    const errorMessage = 'Network error';
-    vi.mocked(projectService.createProject).mockReturnValue(
-      Promise.reject(new Error(errorMessage)),
-    );
-
-    // Ensure navigator is online
-    Object.defineProperty(window.navigator, 'onLine', {
-      configurable: true,
-      value: true,
-    });
-
-    const input = wrapper.find('input#value');
+  it('handles API error by saving project offline', async () => {
+    vi.mocked(projectService.createProject).mockRejectedValue(new Error('Network error'));
+    const input = wrapper.find('#projectTitle');
     await input.setValue('Error Project');
-
-    const form = wrapper.find('form');
-    await form.trigger('submit');
-
-    // Verify that the project title is saved offline due to the error
+    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    await createBtn!.trigger('click');
     expect(saveProject).toHaveBeenCalledWith('Error Project');
   });
 });
