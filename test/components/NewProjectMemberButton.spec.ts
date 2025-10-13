@@ -1,25 +1,20 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewProjectMemberButton from '@/components/NewProjectMemberButton.vue';
-import { projectMemberService } from '@/services/ProjectMemberService';
+import NewProjectMemberButton from '../../src/components/NewProjectMemberButton.vue';
+import { projectMemberService } from '../../src/services/ProjectMemberService';
 
 // Mock translation function
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
-    t: (key: string) => key, // return key as label for simplicity
+    t: (key: string) => key, // just return key for simplicity
   }),
 }));
 
-// Mock service
-vi.mock('@/services/ProjectMemberService', () => ({
+// Mock ProjectMemberService
+vi.mock('../../src/services/ProjectMemberService', () => ({
   projectMemberService: {
     addMember: vi.fn(),
   },
-  memberRoles: [
-    { value: 'MANAGER' },
-    { value: 'CONTRACTOR' },
-    { value: 'TENANT' },
-  ],
 }));
 
 describe('NewProjectMemberButton.vue', () => {
@@ -55,34 +50,33 @@ describe('NewProjectMemberButton.vue', () => {
   });
 
   test('shows email validation error for invalid email', async () => {
-    // Simulate invalid email directly
     wrapper.vm.newMemberEmail = 'invalid';
     wrapper.vm.newMemberRole = 'MANAGER';
+
     await wrapper.vm.addMember();
-  
+
     expect(wrapper.vm.isEmailInvalid).toBe(true);
     expect(wrapper.vm.emailErrorMessage).toContain('projectSettings.newProjectMemberButton.invalidEmail');
   });
-  
+
   test('calls service and emits event when valid', async () => {
     const mockAdd = projectMemberService.addMember as ReturnType<typeof vi.fn>;
-    mockAdd.mockResolvedValueOnce({});
-  
+    mockAdd.mockResolvedValueOnce({ email: 'user@example.com', role: 'MANAGER' });
+
     wrapper.vm.newMemberEmail = 'user@example.com';
     wrapper.vm.newMemberRole = 'MANAGER';
-  
+
     await wrapper.vm.addMember();
-  
+
     expect(mockAdd).toHaveBeenCalledWith('test-project-id', {
       email: 'user@example.com',
       role: 'MANAGER',
     });
-  
+
     const emitted = wrapper.emitted();
     expect(emitted).toHaveProperty('newMember');
     expect(emitted.newMember[0]).toEqual(['user@example.com']);
   });
-  
 
   test('resets form when dialog is hidden', async () => {
     wrapper.vm.newMemberEmail = 'temp@example.com';
@@ -95,11 +89,13 @@ describe('NewProjectMemberButton.vue', () => {
     expect(wrapper.vm.newMemberRole).toBeNull();
     expect(wrapper.vm.isEmailInvalid).toBe(false);
     expect(wrapper.vm.emailErrorMessage).toBe('');
+    expect(wrapper.vm.isRoleInvalid).toBe(false);
+    expect(wrapper.vm.roleErrorMessage).toBe('');
   });
 
   test('handles addMember error gracefully', async () => {
     const mockAdd = projectMemberService.addMember as ReturnType<typeof vi.fn>;
-    mockAdd.mockRejectedValueOnce(new Error('Backend error'));
+    mockAdd.mockRejectedValueOnce({ message: 'Backend error' });
 
     wrapper.vm.newMemberEmail = 'fail@example.com';
     wrapper.vm.newMemberRole = 'CONTRACTOR';
@@ -107,11 +103,8 @@ describe('NewProjectMemberButton.vue', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     await wrapper.vm.addMember();
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Failed to add member:',
-      'Backend error'
-    );
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to add member:', 'Backend error');
 
     consoleSpy.mockRestore();
-  });
+  });x
 });
