@@ -106,5 +106,5 @@ describe('NewProjectMemberButton.vue', () => {
     expect(consoleSpy).toHaveBeenCalledWith('Failed to add member:', 'Backend error');
 
     consoleSpy.mockRestore();
-  });x
+  });
 });
