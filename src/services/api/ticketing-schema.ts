@@ -4,7 +4,228 @@
  */
 
 export interface paths {
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats": {
+    "/ticketing/v1/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all issues. */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Maximum number of projects to return */
+                    limit: number;
+                    /** @description Offset of the first project to return */
+                    offset: number;
+                    /** @description Filter to return only issues of a specific user */
+                    owner?: components["schemas"]["UUID"];
+                    /** @description Filter to return only issues of a specific project */
+                    projectId?: components["schemas"]["UUID"];
+                    /** @description Filter to return only issuesfor a specific rental */
+                    rentalId?: components["schemas"]["UUID"];
+                    /** @description Filter to return only issuesfor a specific rental type */
+                    rentalType?: components["schemas"]["UnitType"];
+                    /** @description Filter to return only issues with a specific status */
+                    status?: components["schemas"]["Status"];
+                    /** @description Filter to return only issuesfor a specific tenancy */
+                    tenancyId?: components["schemas"]["UUID"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new issue. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["IssueJson"];
+                };
+            };
+            responses: {
+                /** @description Issue created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new issue */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ticketing/v1/issues/{issueId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of an issue. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The property does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing issue. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The issue was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of an issue. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["IssueJson"];
+                };
+            };
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The issue does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/ticketing/v1/issues/{issueId}/chats": {
         parameters: {
             query?: never;
             header?: never;
@@ -19,10 +240,8 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the project */
-                    projectId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -49,15 +268,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Project or task not found */
-                404: {
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+                /** @description Project or task not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -71,7 +290,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}": {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -84,11 +303,9 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -115,15 +332,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Project, task, or chat session not found */
-                404: {
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+                /** @description Project, task, or chat session not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -138,11 +355,9 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -169,15 +384,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Project, task, or chat session not found */
-                404: {
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+                /** @description Project, task, or chat session not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -191,11 +406,9 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -222,15 +435,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Project, task, or chat session not found */
-                404: {
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+                /** @description Project, task, or chat session not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -243,7 +456,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages": {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages": {
         parameters: {
             query?: never;
             header?: never;
@@ -256,11 +469,9 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -287,15 +498,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Project, task, or chat session not found */
-                404: {
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+                /** @description Project, task, or chat session not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -310,11 +521,9 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -359,13 +568,6 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
             };
         };
         delete?: never;
@@ -374,7 +576,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages/upload": {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/upload": {
         parameters: {
             query?: never;
             header?: never;
@@ -389,11 +591,9 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -438,13 +638,6 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
             };
         };
         delete?: never;
@@ -453,7 +646,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages/{messageId}": {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/{messageId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -466,13 +659,11 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description The chat message ID */
-                    messageId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The chat message ID */
+                    messageId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -499,15 +690,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Project, task, chat session, or chat message not found */
-                404: {
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+                /** @description Project, task, chat session, or chat message not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -521,13 +712,11 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description The chat message ID */
-                    messageId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The chat message ID */
+                    messageId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -572,13 +761,6 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
             };
         };
         post?: never;
@@ -588,13 +770,11 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description The chat message ID to delete */
-                    messageId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The chat message ID to delete */
+                    messageId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -635,13 +815,6 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
             };
         };
         options?: never;
@@ -649,7 +822,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants": {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants": {
         parameters: {
             query?: never;
             header?: never;
@@ -662,11 +835,9 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -693,15 +864,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Project, task, or chat session not found */
-                404: {
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+                /** @description Project, task, or chat session not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -717,7 +888,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants/{participantId}": {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -730,13 +901,11 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description The participant ID */
-                    participantId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The participant ID */
+                    participantId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -763,6 +932,13 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description Project, task, chat session, or participant not found */
                 404: {
                     headers: {
@@ -770,8 +946,56 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Remove participant from chat session */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The participant ID to remove */
+                    participantId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Participant removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, chat session, or participant not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -779,19 +1003,30 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
         /** Change participant role in chat session */
         put: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description The participant ID */
-                    participantId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
                     /** @description ID of the task */
-                    taskId: string;
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The participant ID */
+                    participantId: components["schemas"]["UUID"];
+                    sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
             };
@@ -822,15 +1057,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Project, task, chat session, or participant not found */
-                404: {
+                /** @description Not Allowed */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal server error */
-                500: {
+                /** @description Project, task, chat session, or participant not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -839,61 +1074,7 @@ export interface paths {
             };
         };
         post?: never;
-        /** Remove participant from chat session */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The participant ID to remove */
-                    participantId: string;
-                    /** @description ID of the project */
-                    projectId: string;
-                    sessionId: string;
-                    /** @description ID of the task */
-                    taskId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Participant removed */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Invalid input */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Project, task, chat session, or participant not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -931,7 +1112,7 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
         /** @enum {string} */
@@ -955,19 +1136,20 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
             address?: components["schemas"]["AddressModel"];
         };
         /** @description A single chat message */
         ChatMessageJson: {
             messageId?: components["schemas"]["UUID"];
-            chatSessionId?: components["schemas"]["UUID"];
+            sessionId?: components["schemas"]["UUID"];
             senderId?: components["schemas"]["UUID"];
             contentType?: string;
             content?: string;
             url?: string;
             createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
         };
         /** @description A list of chat messages */
         ChatMessageListJson: {
@@ -977,7 +1159,7 @@ export interface components {
         ChatSessionJson: {
             sessionId?: components["schemas"]["UUID"];
             projectId?: components["schemas"]["UUID"];
-            taskId?: components["schemas"]["UUID"];
+            issueId?: components["schemas"]["UUID"];
             createdAt?: components["schemas"]["Instant"];
             modifiedAt?: components["schemas"]["Instant"];
         };
@@ -998,8 +1180,17 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
+        };
+        /** @description A contractor */
+        ContractorJson: {
+            id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            companyName?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
         };
         /** @description A country item of a list */
         CountryItemJson: {
@@ -1011,15 +1202,55 @@ export interface components {
             countries?: components["schemas"]["CountryItemJson"][];
         };
         /**
-         * Format: date
-         * @example 2022-03-10
-         */
-        Date: string;
-        /**
          * Format: date-time
          * @example 2022-03-10T16:15:50Z
          */
         Instant: string;
+        /** @description An issue item with basic information */
+        IssueItemJson: {
+            id?: components["schemas"]["UUID"];
+            name?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+            owner?: components["schemas"]["UUID"];
+        };
+        /** @description An issue */
+        IssueJson: {
+            reporterId?: components["schemas"]["UUID"];
+            tenancyId?: components["schemas"]["UUID"];
+            id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+            ownerId?: components["schemas"]["UUID"];
+            description?: string;
+            blockedBy?: components["schemas"]["UUID"];
+            relatedTo?: components["schemas"]["UUID"];
+            duplicateOf?: components["schemas"]["UUID"];
+        };
+        /** @description A list of issues */
+        IssueListJson: {
+            /**
+             * Format: int32
+             * @description Index of the first element in list of total available entries, starting at 1
+             * @example 1
+             */
+            first: number;
+            /**
+             * Format: int32
+             * @description Number of elements in list
+             * @default 10
+             */
+            size: number;
+            /**
+             * Format: int32
+             * @description Total number of available elements
+             */
+            total: number;
+            issues?: components["schemas"]["IssueItemJson"][];
+        };
         /**
          * Format: date
          * @example 2022-03-10
@@ -1050,13 +1281,13 @@ export interface components {
         MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
-            id: string;
+            id: components["schemas"]["UUID"];
             name: string;
             memberRole: components["schemas"]["MemberRole"];
         };
         /** @description A project */
         ProjectJson: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title: string;
             members?: components["schemas"]["ProjectMemberJson"][];
         };
@@ -1084,7 +1315,7 @@ export interface components {
         /** @description Project member information in context of a project */
         ProjectMemberJson: {
             privileged?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             name?: string;
             email?: string;
             active?: boolean;
@@ -1111,7 +1342,7 @@ export interface components {
             /** Format: float */
             space?: number;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
         };
         /** @description A list of properties */
@@ -1132,7 +1363,7 @@ export interface components {
         };
         /** @description Encapsulated data of a project tree node */
         RentalUnitNodeDataJson: {
-            id?: string;
+            id?: components["schemas"]["UUID"];
             /**
              * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
              * @example PROPERTY
@@ -1171,7 +1402,7 @@ export interface components {
              * @description Key of the node
              * @example Property 1
              */
-            key: string;
+            key: components["schemas"]["UUID"];
             /** @description Data encapsulating node attributes */
             data?: components["schemas"]["RentalUnitNodeDataJson"];
             /** @description Children nodes */
@@ -1186,7 +1417,7 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
             address?: components["schemas"]["AddressJson"];
         };
@@ -1203,57 +1434,8 @@ export interface components {
             space?: number;
             location?: string;
             description?: string;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             title?: string;
-        };
-        /** @description A task item with basic information */
-        TaskItemJson: {
-            id?: string;
-            name?: string;
-            title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            owner?: string;
-        };
-        /** @description A task item with basic information from a tenant's perspective */
-        TaskItemJson1: {
-            id?: string;
-            name?: string;
-            title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-        };
-        /** @description A task */
-        TaskJson: {
-            reporterId?: string;
-            id?: string;
-            projectId?: string;
-            title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            ownerId?: string;
-            description?: string;
-            blockedBy?: string;
-            relatedTo?: string;
-            duplicateOf?: string;
-        };
-        /** @description A task from a tenant's perspective */
-        TaskJson1: {
-            reporterId?: string;
-            id?: string;
-            title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            description?: string;
-            createdAt?: components["schemas"]["Date"];
-        };
-        /** @description A list of tasks */
-        TaskListJson: {
-            tasks?: components["schemas"]["TaskItemJson"][];
-        };
-        /** @description A list of tasks from a tenant's perspective */
-        TaskListJson1: {
-            tasks?: components["schemas"]["TaskItemJson1"][];
         };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {
@@ -1274,7 +1456,7 @@ export interface components {
         /** @description A tenancy of a rentable unit */
         TenancyJson: {
             active?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             tenants?: components["schemas"]["UserJson"][];
             startOfRental?: components["schemas"]["LocalDate"];
             endOfRental?: components["schemas"]["LocalDate"];
@@ -1307,7 +1489,7 @@ export interface components {
             tenancies?: components["schemas"]["TenancyItemJson"][];
         };
         /** @enum {string} */
-        Type: "TASK" | "DEFECT" | "MAINTENANCE";
+        Type: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
         /** Format: uuid */
         UUID: string;
         /** @enum {string} */
@@ -1315,7 +1497,7 @@ export interface components {
         /** @description User information globally */
         UserJson: {
             active?: boolean;
-            id?: string;
+            id?: components["schemas"]["UUID"];
             userRoles?: components["schemas"]["UserRole"][];
             email?: string;
             firstName?: string;

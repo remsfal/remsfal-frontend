@@ -1,11 +1,11 @@
 import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../../test/mocks/handlers';
-import { taskService, type CreateTaskBody, type ModifyTaskBody, StatusValues } from '../../src/services/TaskService';
+import { taskService, type CreateTaskBody, type ModifyTaskBody, StatusValues } from '../../src/services/IssueService';
 
 const server = setupServer(...handlers);
 
-describe('TaskService with MSW', () => {
+describe('IssueService with MSW', () => {
   const projectId = 'test-project';
   const taskId = 'test-task';
 

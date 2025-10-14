@@ -3,8 +3,8 @@ import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import { TaskService, TASK_TYPE_TASK, TASK_STATUS_OPEN } from '@/services/TaskService';
-import type { Status, TaskItem } from '@/services/TaskService';
+import { IssueService, TASK_TYPE_TASK, TASK_STATUS_OPEN } from '@/services/IssueService.ts';
+import type { Status, TaskItem } from '@/services/IssueService.ts';
 import TaskTable from '@/components/TaskTable.vue';
 
 const props = defineProps<{
@@ -12,7 +12,7 @@ const props = defineProps<{
   owner?: string;
   status?: Status;
 }>();
-const taskService = new TaskService();
+const taskService = new IssueService();
 const title = ref<string>('');
 const description = ref<string>('');
 const visible = ref<boolean>(false);

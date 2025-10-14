@@ -2,7 +2,7 @@
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import { type TaskItem } from '../services/TaskService';
+import { type TaskItem } from '../services/IssueService.ts';
 import { RouterLink } from 'vue-router';
 
 const props = defineProps<{

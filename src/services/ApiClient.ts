@@ -5,15 +5,15 @@ import axios, {
   type InternalAxiosRequestConfig,
   type AxiosResponse,
 } from 'axios';
-import type { paths as chatPaths, components as chatComponents } from './api/chat-schema';
+import type { paths as ticketingPaths, components as ticketingComponents } from './api/ticketing-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
 import { useEventBus } from '@/stores/EventStore.ts';
 
 // Combine all OpenAPI paths
-export type ApiPaths = chatPaths & platformPaths & notificationPaths;
+export type ApiPaths = ticketingPaths & platformPaths & notificationPaths;
 // Combine all OpenAPI components
-export type ApiComponents = chatComponents & platformComponents & notificationComponents;
+export type ApiComponents = ticketingComponents & platformComponents & notificationComponents;
 
 const bus = useEventBus();
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { taskService, type TaskDetail } from '@/services/TaskService';
+import { taskService, type TaskDetail } from '@/services/IssueService.ts';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';

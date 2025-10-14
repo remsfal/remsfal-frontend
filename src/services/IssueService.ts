@@ -1,8 +1,16 @@
-import { typedRequest } from '@/services/api/typedRequest';
-import type { components, paths } from '../../src/services/api/platform-schema';
+import { apiClient, type ApiPaths, type ApiComponents } from '@/services/ApiClient.ts';
 
-// Reuse backend enums directly
-export type Status = components['schemas']['TaskJson']['status'];
+type Paths = Extract<
+    keyof ApiPaths,
+    '/ticketing/v1/issues' | '/ticketing/v1/issues/{issueId}'
+>;
+const issuesPath: Paths = '/ticketing/v1/issues';
+const issuePath: Paths = '/ticketing/v1/issues/{issueId}';
+
+export type Status = ApiComponents['schemas']['Status'];
+export type Issue = ApiComponents['schemas']['IssueJson'];
+export type IssueList = ApiComponents['schemas']['IssueListJson'];
+export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
 
 export const StatusValues = {
   PENDING: 'PENDING',
@@ -16,17 +24,7 @@ export const TASK_TYPE_TASK = 'TASK';
 export const TASK_STATUS_OPEN = 'OPEN';
 export const TASK_STATUS_CLOSED = 'CLOSED';
 
-// Full task type directly from backend
-export type TaskItem = components['schemas']['TaskJson'];
-export type TaskDetail = components['schemas']['TaskJson'];
-export type TaskItemJson = components['schemas']['TaskItemJson'];
-// Request bodies directly from OpenAPI paths
-export type CreateTaskBody =
-  paths['/api/v1/projects/{projectId}/tasks']['post']['requestBody']['content']['application/json'];
-export type ModifyTaskBody =
-  paths['/api/v1/projects/{projectId}/tasks/{taskId}']['patch']['requestBody']['content']['application/json'];
-
-export class TaskService {
+export class IssueService {
   async getTasks(
     projectId: string,
     status?: Status,
@@ -84,4 +82,4 @@ export class TaskService {
   }
 }
 
-export const taskService = new TaskService();
+export const taskService = new IssueService();
