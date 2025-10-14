@@ -200,7 +200,7 @@
           "projectId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "taskId" : {
+          "issueId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "createdAt" : {
@@ -318,15 +318,109 @@
           }
         }
       },
-      "Date" : {
-        "type" : "string",
-        "format" : "date",
-        "examples" : [ "2022-03-10" ]
-      },
       "Instant" : {
         "type" : "string",
         "format" : "date-time",
         "examples" : [ "2022-03-10T16:15:50Z" ]
+      },
+      "IssueItemJson" : {
+        "description" : "An issue item with basic information",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "owner" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }
+      },
+      "IssueJson" : {
+        "description" : "An issue",
+        "type" : "object",
+        "properties" : {
+          "reporterId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "tenancyId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "title" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "ownerId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "blockedBy" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "relatedTo" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "duplicateOf" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }
+      },
+      "IssueListJson" : {
+        "description" : "A list of issues",
+        "type" : "object",
+        "required" : [ "first", "size", "total" ],
+        "properties" : {
+          "first" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Index of the first element in list of total available entries, starting at 1",
+            "examples" : [ 1 ]
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 100,
+            "minimum" : 1,
+            "description" : "Number of elements in list",
+            "default" : 10
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Total number of available elements"
+          },
+          "issues" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueItemJson"
+            }
+          }
+        }
       },
       "LocalDate" : {
         "type" : "string",
@@ -749,143 +843,6 @@
           }
         }
       },
-      "TaskItemJson" : {
-        "description" : "A task item with basic information",
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "title" : {
-            "type" : "string"
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "owner" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }
-      },
-      "TaskItemJson1" : {
-        "description" : "A task item with basic information from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "title" : {
-            "type" : "string"
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          }
-        }
-      },
-      "TaskJson" : {
-        "description" : "A task",
-        "type" : "object",
-        "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "projectId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "title" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "ownerId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "blockedBy" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "relatedTo" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "duplicateOf" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }
-      },
-      "TaskJson1" : {
-        "description" : "A task from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "title" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "createdAt" : {
-            "$ref" : "#/components/schemas/Date"
-          }
-        }
-      },
-      "TaskListJson" : {
-        "description" : "A list of tasks",
-        "type" : "object",
-        "properties" : {
-          "tasks" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TaskItemJson"
-            }
-          }
-        }
-      },
-      "TaskListJson1" : {
-        "description" : "A list of tasks from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "tasks" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TaskItemJson1"
-            }
-          }
-        }
-      },
       "TenancyItemJson" : {
         "description" : "A tenancy item with basic information from a tenant's perspective",
         "type" : "object",
@@ -993,7 +950,7 @@
       },
       "Type" : {
         "type" : "string",
-        "enum" : [ "TASK", "DEFECT", "MAINTENANCE" ]
+        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "UUID" : {
         "type" : "string",
@@ -4044,170 +4001,6 @@
         }
       }
     },
-    "/api/v1/projects/{projectId}/tasks" : {
-      "get" : {
-        "summary" : "Retrieve information for all tasks.",
-        "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filter to return only tasks of a specific user",
-          "name" : "owner",
-          "in" : "query",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filter to return only tasks with a specific status",
-          "name" : "status",
-          "in" : "query",
-          "schema" : {
-            "$ref" : "#/components/schemas/Status"
-          }
-        } ],
-        "responses" : {
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Create a new task.",
-        "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/TaskJson"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Task created successfully",
-            "headers" : {
-              "Location" : {
-                "description" : "URL of the new task"
-              }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          }
-        }
-      }
-    },
-    "/api/v1/projects/{projectId}/tasks/{taskId}" : {
-      "patch" : {
-        "summary" : "Update information of a task.",
-        "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/TaskJson"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The task does not exist"
-          }
-        }
-      },
-      "get" : {
-        "summary" : "Retrieve information of a task.",
-        "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The property does not exist"
-          }
-        }
-      },
-      "delete" : {
-        "summary" : "Delete an existing task.",
-        "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "The task was deleted successfully"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          }
-        }
-      }
-    },
     "/api/v1/tenancies" : {
       "get" : {
         "summary" : "Retrieve information for all tenancies of a lessee.",
@@ -4401,199 +4194,6 @@
           },
           "404" : {
             "description" : "The tenancy does not exist"
-          }
-        }
-      }
-    },
-    "/api/v1/tenancies/{tenancyId}/{rentalType}/{rentalId}tasks" : {
-      "get" : {
-        "summary" : "Retrieve information for all tasks.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Type of the rental",
-          "required" : true,
-          "name" : "rentalType",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Filter to return only tasks with a specific status",
-          "name" : "status",
-          "in" : "query",
-          "schema" : {
-            "$ref" : "#/components/schemas/Status"
-          }
-        } ],
-        "responses" : {
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          }
-        }
-      },
-      "post" : {
-        "summary" : "Create a new task.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Type of the rental",
-          "required" : true,
-          "name" : "rentalType",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/TaskJson1"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Task created successfully",
-            "headers" : {
-              "Location" : {
-                "description" : "URL of the new task"
-              }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          }
-        }
-      }
-    },
-    "/api/v1/tenancies/{tenancyId}/{rentalType}/{rentalId}tasks/{taskId}" : {
-      "patch" : {
-        "summary" : "Update information of a task.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Type of the rental",
-          "required" : true,
-          "name" : "rentalType",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/TaskJson1"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The task does not exist"
-          }
-        }
-      },
-      "get" : {
-        "summary" : "Retrieve information of a task.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "Type of the rental",
-          "required" : true,
-          "name" : "rentalType",
-          "in" : "path",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The property does not exist"
           }
         }
       }

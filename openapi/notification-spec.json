@@ -200,7 +200,7 @@
           "projectId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "taskId" : {
+          "issueId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "createdAt" : {
@@ -318,15 +318,109 @@
           }
         }
       },
-      "Date" : {
-        "type" : "string",
-        "format" : "date",
-        "examples" : [ "2022-03-10" ]
-      },
       "Instant" : {
         "type" : "string",
         "format" : "date-time",
         "examples" : [ "2022-03-10T16:15:50Z" ]
+      },
+      "IssueItemJson" : {
+        "description" : "An issue item with basic information",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "owner" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }
+      },
+      "IssueJson" : {
+        "description" : "An issue",
+        "type" : "object",
+        "properties" : {
+          "reporterId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "tenancyId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "title" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "ownerId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "blockedBy" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "relatedTo" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "duplicateOf" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }
+      },
+      "IssueListJson" : {
+        "description" : "A list of issues",
+        "type" : "object",
+        "required" : [ "first", "size", "total" ],
+        "properties" : {
+          "first" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Index of the first element in list of total available entries, starting at 1",
+            "examples" : [ 1 ]
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 100,
+            "minimum" : 1,
+            "description" : "Number of elements in list",
+            "default" : 10
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Total number of available elements"
+          },
+          "issues" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueItemJson"
+            }
+          }
+        }
       },
       "LocalDate" : {
         "type" : "string",
@@ -749,143 +843,6 @@
           }
         }
       },
-      "TaskItemJson" : {
-        "description" : "A task item with basic information",
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "title" : {
-            "type" : "string"
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "owner" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }
-      },
-      "TaskItemJson1" : {
-        "description" : "A task item with basic information from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "title" : {
-            "type" : "string"
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          }
-        }
-      },
-      "TaskJson" : {
-        "description" : "A task",
-        "type" : "object",
-        "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "projectId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "title" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "ownerId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "blockedBy" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "relatedTo" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "duplicateOf" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }
-      },
-      "TaskJson1" : {
-        "description" : "A task from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "title" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "createdAt" : {
-            "$ref" : "#/components/schemas/Date"
-          }
-        }
-      },
-      "TaskListJson" : {
-        "description" : "A list of tasks",
-        "type" : "object",
-        "properties" : {
-          "tasks" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TaskItemJson"
-            }
-          }
-        }
-      },
-      "TaskListJson1" : {
-        "description" : "A list of tasks from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "tasks" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TaskItemJson1"
-            }
-          }
-        }
-      },
       "TenancyItemJson" : {
         "description" : "A tenancy item with basic information from a tenant's perspective",
         "type" : "object",
@@ -993,7 +950,7 @@
       },
       "Type" : {
         "type" : "string",
-        "enum" : [ "TASK", "DEFECT", "MAINTENANCE" ]
+        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "UUID" : {
         "type" : "string",
