@@ -10,9 +10,7 @@ const props = defineProps<{
   class?: string;
   invalid?: boolean;
 }>();
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: MemberRole | null): void;
-}>();
+const emit = defineEmits<(e: 'update:modelValue', value: MemberRole | null) => void>();
 
 const { t } = useI18n();
 

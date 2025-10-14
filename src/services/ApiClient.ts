@@ -55,16 +55,16 @@ function replacePlaceholders(
 ): string {
   // Precompiled safe regex patterns
   const patterns = {
-    curly: /\{([A-Za-z0-9_]+)\}/g,
-    colon: /:([A-Za-z0-9_]+)/g,
-    both: /\{([A-Za-z0-9_]+)\}|:([A-Za-z0-9_]+)/g,
+    curly: /\{(\w+)\}/g,
+    colon: /:(\w+)/g,
+    both: /\{(\w+)\}|:(\w+)/g,
   } as const;
 
   const rx = patterns[style];
 
   const url = template.replace(rx, (_m, k1, k2) => {
     const key = (k1 ?? k2) as string;
-    const val = (pathParams as any)?.[key];
+    const val = pathParams?.[key as keyof typeof pathParams];
 
     // Allow 0 and false, but not null or undefined
     if (val === null || val === undefined) {
@@ -72,9 +72,8 @@ function replacePlaceholders(
     }
     return encodeURIComponent(String(val));
   });
-
   // Double-check that no placeholders remain
-  if (/\{[A-Za-z0-9_]+\}/.test(url) || /:[A-Za-z0-9_]+/.test(url)) {
+  if (/\{(\w+)\}/.test(url) || /:(\w+)/.test(url)) {
     throw new Error(`Not all path parameters were replaced. Result: "${url}"`);
   }
 

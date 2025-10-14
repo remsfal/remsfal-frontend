@@ -8,7 +8,7 @@ import { type ProjectMember, type MemberRole, projectMemberService } from '@/ser
 import ProjectMemberRoleSelect from '@/components/ProjectMemberRoleSelect.vue';
 
 const props = defineProps<{ projectId: string }>();
-const emit = defineEmits<{ (e: 'newMember', email: string): void }>();
+const emit = defineEmits<(e: 'newMember', email: string) => void>();
 
 const { t } = useI18n();
 
