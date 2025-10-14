@@ -53,10 +53,11 @@ function replacePlaceholders(
   pathParams: AxiosRequestConfig['pathParams'] = {},
   style: AxiosRequestConfig['pathParamsPlaceholderStyle'] = 'curly',
 ): string {
+  // Precompiled safe regex patterns
   const patterns = {
-    curly: /\{([^}]+)\}/g,
+    curly: /\{([A-Za-z0-9_]+)\}/g,
     colon: /:([A-Za-z0-9_]+)/g,
-    both: /\{([^}]+)\}|:([A-Za-z0-9_]+)/g,
+    both: /\{([A-Za-z0-9_]+)\}|:([A-Za-z0-9_]+)/g,
   } as const;
 
   const rx = patterns[style];
@@ -73,7 +74,7 @@ function replacePlaceholders(
   });
 
   // Double-check that no placeholders remain
-  if (/{[^}]+}/.test(url) || /:[A-Za-z0-9_]+/.test(url)) {
+  if (/\{[A-Za-z0-9_]+\}/.test(url) || /:[A-Za-z0-9_]+/.test(url)) {
     throw new Error(`Not all path parameters were replaced. Result: "${url}"`);
   }
 
@@ -99,7 +100,6 @@ function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
   bus.emit('toast:translate', { severity: 'error', summary: 'error.general', detail: 'error.apiRequest' });
   return Promise.reject(error);
 }
-
 // this interceptor is used to handle all success ajax request
 function responseHandler(response: AxiosResponse): AxiosResponse {
   if (response.status == 200 || response.status == 201) {
