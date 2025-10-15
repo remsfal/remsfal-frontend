@@ -211,6 +211,24 @@
           }
         }
       },
+      "ChatSessionListJson" : {
+        "description" : "A list of chat sessions",
+        "type" : "object",
+        "required" : [ "size" ],
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Number of chat sessions in the list"
+          },
+          "chatSessions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ChatSessionJson"
+            }
+          }
+        }
+      },
       "CommercialJson" : {
         "description" : "An commercial inside a building",
         "type" : "object",
@@ -1235,6 +1253,35 @@
       }
     },
     "/ticketing/v1/issues/{issueId}/chats" : {
+      "get" : {
+        "summary" : "Get all chat sessions for an issue",
+        "parameters" : [ {
+          "description" : "ID of the task",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Chat sessions retrieved"
+          },
+          "404" : {
+            "description" : "Project or task not found"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
       "post" : {
         "summary" : "Create a new chat session",
         "parameters" : [ {
@@ -1269,45 +1316,6 @@
       }
     },
     "/ticketing/v1/issues/{issueId}/chats/{sessionId}" : {
-      "post" : {
-        "summary" : "Add a participant to chat session",
-        "parameters" : [ {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "issueId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "name" : "sessionId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Chat session joined"
-          },
-          "400" : {
-            "description" : "Invalid input"
-          },
-          "404" : {
-            "description" : "Project, task, or chat session not found"
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "403" : {
-            "description" : "Not Allowed"
-          }
-        },
-        "security" : [ {
-          "SecurityScheme" : [ ]
-        } ]
-      },
       "get" : {
         "summary" : "Get chat session details",
         "parameters" : [ {

@@ -232,7 +232,49 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get all chat sessions for an issue */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat sessions retrieved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project or task not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         put?: never;
         /** Create a new chat session */
         post: {
@@ -349,57 +391,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Add a participant to chat session */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the task */
-                    issueId: components["schemas"]["UUID"];
-                    sessionId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Chat session joined */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Invalid input */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Allowed */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Project, task, or chat session not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        post?: never;
         /** Delete chat session */
         delete: {
             parameters: {
@@ -1162,6 +1154,15 @@ export interface components {
             issueId?: components["schemas"]["UUID"];
             createdAt?: components["schemas"]["Instant"];
             modifiedAt?: components["schemas"]["Instant"];
+        };
+        /** @description A list of chat sessions */
+        ChatSessionListJson: {
+            /**
+             * Format: int32
+             * @description Number of chat sessions in the list
+             */
+            size: number;
+            chatSessions?: components["schemas"]["ChatSessionJson"][];
         };
         /** @description An commercial inside a building */
         CommercialJson: {

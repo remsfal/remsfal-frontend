@@ -123,6 +123,15 @@ export interface components {
             createdAt?: components["schemas"]["Instant"];
             modifiedAt?: components["schemas"]["Instant"];
         };
+        /** @description A list of chat sessions */
+        ChatSessionListJson: {
+            /**
+             * Format: int32
+             * @description Number of chat sessions in the list
+             */
+            size: number;
+            chatSessions?: components["schemas"]["ChatSessionJson"][];
+        };
         /** @description An commercial inside a building */
         CommercialJson: {
             type?: components["schemas"]["UnitType"];
