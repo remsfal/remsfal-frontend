@@ -64,7 +64,15 @@ async function createProject() {
       return;
     }
 
-    projectStore.searchSelectedProject(newProject.id);
+    // Convert the new project to ProjectItem format and add it to the store
+    const projectItem = {
+      id: newProject.id,
+      name: newProject.title,
+      memberRole: 'MANAGER' as const // Default role for project creator
+    };
+    await projectStore.addProjectToList(projectItem);
+    projectStore.setSelectedProject(projectItem);
+    
     await router.push({ name: 'ProjectDashboard', params: { projectId: newProject.id } });
 
     toast.add({
