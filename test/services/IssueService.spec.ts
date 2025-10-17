@@ -1,53 +1,53 @@
 import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../../test/mocks/handlers';
-import { taskService, type CreateTaskBody, type ModifyTaskBody, StatusValues } from '../../src/services/IssueService';
+import { issueService, type Issue, StatusValues } from '../../src/services/IssueService';
 
 const server = setupServer(...handlers);
 
 describe('IssueService with MSW', () => {
   const projectId = 'test-project';
-  const taskId = 'test-task';
+  const issueId = 'test-issue';
 
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 
-  test('getTasks returns a list of tasks', async () => {
-    const taskList = await taskService.getTasks(projectId);
-    expect(taskList.tasks.length).toBeGreaterThan(0);
-    expect(taskList.tasks[0]).toHaveProperty('id');
-    expect(taskList.tasks[0]).toHaveProperty('title');
+  test('getIssues returns a list of issues', async () => {
+    const issueList = await issueService.getIssues(projectId);
+    expect(issueList.issues?.length).toBeGreaterThan(0);
+    expect(issueList.issues?.[0]).toHaveProperty('id');
+    expect(issueList.issues?.[0]).toHaveProperty('title');
   });
 
-  test('getTask returns a single task', async () => {
-    const task = await taskService.getTask(projectId, taskId);
-    expect(task.id).toBe(taskId);
-    expect(task.title).toBeDefined();
-    expect(task.status).toBeDefined();
+  test('getIssue returns a single issue', async () => {
+    const issue = await issueService.getIssue(projectId, issueId);
+    expect(issue.id).toBe(issueId);
+    expect(issue.title).toBeDefined();
+    expect(issue.status).toBeDefined();
   });
 
-  test('createTask returns the newly created task', async () => {
-    const newTask: CreateTaskBody = {
-      title: 'New Task',
+  test('createIssue returns the newly created issue', async () => {
+    const newIssue: Partial<Issue> = {
+      title: 'New Issue',
       description: 'New Description',
       status: StatusValues.OPEN,
       ownerId: 'owner1',
     };
-    const createdTask = await taskService.createTask(projectId, newTask);
-    expect(createdTask.id).toBeDefined();
-    expect(createdTask.title).toBe('New Task');
-    expect(createdTask.status).toBe(StatusValues.OPEN);
+    const createdIssue = await issueService.createIssue(projectId, newIssue);
+    expect(createdIssue.id).toBeDefined();
+    expect(createdIssue.title).toBe('New Issue');
+    expect(createdIssue.status).toBe(StatusValues.OPEN);
   });
 
-  test('modifyTask returns the updated task', async () => {
-    const updates: ModifyTaskBody = {
-      title: 'Updated Task',
+  test('modifyIssue returns the updated issue', async () => {
+    const updates: Partial<Issue> = {
+      title: 'Updated Issue',
       description: 'Updated Description',
     };
-    const modifiedTask = await taskService.modifyTask(projectId, taskId, updates);
-    expect(modifiedTask.id).toBe(taskId);
-    expect(modifiedTask.title).toBe('Updated Task');
-    expect(modifiedTask.description).toBe('Updated Description');
+    const modifiedIssue = await issueService.modifyIssue(projectId, issueId, updates);
+    expect(modifiedIssue.id).toBe(issueId);
+    expect(modifiedIssue.title).toBe('Updated Issue');
+    expect(modifiedIssue.description).toBe('Updated Description');
   });
 });

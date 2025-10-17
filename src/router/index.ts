@@ -212,13 +212,13 @@ const managerRoutes: RouteRecordRaw[] = [
           owner: route.query.owner,
           status: route.query.status,
         }),
-        component: () => import('@/views/TaskView.vue'),
+        component: () => import('@/views/IssueView.vue'),
       },
       {
         path: 'taskedit/:taskid',
         name: 'TaskEdit',
         props: true,
-        component: () => import('@/views/TaskEdit.vue'),
+        component: () => import('@/views/IssueEdit.vue'),
       },
       {
         path: 'chat',
