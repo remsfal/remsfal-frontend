@@ -218,7 +218,7 @@ const managerRoutes: RouteRecordRaw[] = [
         path: 'taskedit/:taskid',
         name: 'TaskEdit',
         props: true,
-        component: () => import('@/views/TaskEdit.vue'),
+        component: () => import('@/views/IssueEdit.vue'),
       },
       {
         path: 'chat',
