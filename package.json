@@ -25,9 +25,8 @@
     "format": "prettier --write src/",
     "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'",
     "stylelint:fix": "stylelint --fix '{src,public}/**/*.{vue,css,scss}'",
-    "openapi": "run-p openapi:chat openapi:platform openapi:notification",
-    "openapi:lint": "openapi-cli lint openapi/chat-spec.json",
-    "openapi:chat": "openapi-typescript openapi/chat-spec.json -o src/services/api/chat-schema.ts",
+    "openapi": "run-p openapi:ticketing openapi:platform openapi:notification",
+    "openapi:ticketing": "openapi-typescript openapi/ticketing-spec.json -o src/services/api/ticketing-schema.ts",
     "openapi:platform": "openapi-typescript openapi/platform-spec.json -o src/services/api/platform-schema.ts",
     "openapi:notification": "openapi-typescript openapi/notification-spec.json -o src/services/api/notification-schema.ts"
   },

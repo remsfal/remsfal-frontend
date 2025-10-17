@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
-import { TaskService, StatusValues, TaskItemJson } from '../../src/services/TaskService';
+import { IssueService, StatusValues, TaskItemJson } from '../../src/services/IssueService';
 
 type TaskViewVm = InstanceType<typeof TaskView> & { visible: boolean };
 
@@ -10,7 +10,7 @@ describe('TaskView', () => {
 
   const projectId = '1';
   const owner = 'user1';
-  const service = new TaskService();
+  const service = new IssueService();
 
   beforeEach(() => {
     wrapper = mount(TaskView, {
