@@ -3,8 +3,8 @@ import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
+import IssueTable from '@/components/IssueTable.vue';
 import { IssueService, ISSUE_TYPE_TASK, ISSUE_STATUS_OPEN, type Status, type IssueItem } from '@/services/IssueService.ts';
-import TaskTable from '@/components/TaskTable.vue';
 
 const props = defineProps<{
   projectId: string;
@@ -12,27 +12,36 @@ const props = defineProps<{
   status?: Status;
 }>();
 const issueService = new IssueService();
-const title = ref<string>('');
-const description = ref<string>('');
-const visible = ref<boolean>(false);
+
+// Reactive state
+const title = ref('');
+const description = ref('');
+const visible = ref(false);
 const issues = ref<IssueItem[]>([]);
 const issuesByStatusOpen = ref<IssueItem[]>([]);
 const myIssues = ref<IssueItem[]>([]);
 
-const createIssue = () => {
-  const projectId = props.projectId;
+// Open dialog
+const openCreateIssueDialog = () => {
+  title.value = '';
+  description.value = '';
+  visible.value = true;
+};
 
-  issueService.createIssue(projectId, {
-    title: title.value,
-    description: description.value,
-    ownerId: props.owner,
-    type: ISSUE_TYPE_TASK,
-    status: ISSUE_STATUS_OPEN,
-  })
-  .then((newIssue) => {
+// Create a new issue
+const createIssue = async () => {
+  try {
+    const newIssue = await issueService.createIssue(props.projectId, {
+      title: title.value,
+      description: description.value,
+      ownerId: props.owner,
+      type: ISSUE_TYPE_TASK,
+      status: ISSUE_STATUS_OPEN,
+    });
     console.log('New issue created:', newIssue);
     visible.value = false;
 
+    // Reload issues based on context
     if (props.owner) {
       loadMyIssues();
     } else if (props.status === ISSUE_STATUS_OPEN) {
@@ -40,51 +49,49 @@ const createIssue = () => {
     } else {
       loadIssues();
     }
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('Error creating issue:', error);
-  });
+  }
 };
 
-const openCreateIssueDialog = () => {
-  title.value = '';
-  description.value = '';
-  visible.value = true;
+// Load all issues
+const loadIssues = async () => {
+  try {
+    const issueList = await issueService.getIssues(props.projectId);
+    issues.value = issueList.issues || [];
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-const loadIssues = () => {
-  const projectId = props.projectId;
-  issueService.getIssues(projectId)
-    .then((issueList) => {
-      issues.value = issueList.issues || [];
-    })
-    .catch(console.error);
+// Load only open issues
+const loadIssuesWithOpenStatus = async () => {
+  try {
+    const issueList = await issueService.getIssues(props.projectId, ISSUE_STATUS_OPEN);
+    issuesByStatusOpen.value = issueList.issues || [];
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-const loadIssuesWithOpenStatus = () => {
-  const projectId = props.projectId;
-  issueService.getIssues(projectId, ISSUE_STATUS_OPEN)
-    .then((issueList) => {
-      issuesByStatusOpen.value = issueList.issues || [];
-    })
-    .catch(console.error);
+// Load issues assigned to current owner
+const loadMyIssues = async () => {
+  try {
+    const issueList = await issueService.getIssues(props.projectId, undefined, props.owner);
+    myIssues.value = issueList.issues || [];
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-const loadMyIssues = () => {
-  const projectId = props.projectId;
-  issueService.getIssues(projectId, undefined, props.owner)
-    .then((issueList) => {
-      myIssues.value = issueList.issues || [];
-    })
-    .catch(console.error);
-};
-
+// Load data on mount
 onMounted(() => {
   loadIssues();
   loadIssuesWithOpenStatus();
   loadMyIssues();
 });
 
+// Reload when props change
 watch(
   () => props,
   () => {
@@ -92,16 +99,17 @@ watch(
     loadIssuesWithOpenStatus();
     loadMyIssues();
   },
+  { deep: true }
 );
 </script>
 
 <template>
   <main>
     <div class="header">
-      <div v-if="owner">
+      <div v-if="props.owner">
         <h2>Meine Issues</h2>
       </div>
-      <div v-else-if="status">
+      <div v-else-if="props.status">
         <h2>Offene Issues</h2>
       </div>
       <div v-else>
@@ -110,6 +118,7 @@ watch(
     </div>
 
     <div class="grid grid-cols-12 gap-4">
+      <!-- Create Issue Dialog -->
       <Dialog
         v-model:visible="visible"
         modal
@@ -130,19 +139,20 @@ watch(
         </div>
       </Dialog>
 
+      <!-- Issues Table -->
       <div class="issue-list-wrapper">
-        <div v-if="owner">
-          <TaskTable :tasks="myIssues">
+        <div v-if="props.owner">
+          <IssueTable :issues="myIssues">
             <Button label="Issue erstellen" class="my-btn" @click="openCreateIssueDialog" />
-          </TaskTable>
+          </IssueTable>
         </div>
-        <div v-else-if="status">
-          <TaskTable :tasks="issuesByStatusOpen"> </TaskTable>
+        <div v-else-if="props.status">
+          <IssueTable :issues="issuesByStatusOpen" />
         </div>
         <div v-else>
-          <TaskTable :tasks="issues">
+          <IssueTable :issues="issues">
             <Button label="Issue erstellen" class="my-btn" @click="openCreateIssueDialog" />
-          </TaskTable>
+          </IssueTable>
         </div>
       </div>
     </div>
