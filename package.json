@@ -59,7 +59,7 @@
     "@primevue/auto-import-resolver": "^4.4.1",
     "@redocly/cli": "^2.2.0",
     "@stylistic/eslint-plugin": "^5.4.0",
-    "@tailwindcss/postcss": "^4.1.13",
+    "@tailwindcss/postcss": "^4.1.14",
     "@tsconfig/node-lts": "^22.0.2",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^24.5.2",
