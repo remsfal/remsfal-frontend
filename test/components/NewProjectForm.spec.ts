@@ -16,7 +16,10 @@ vi.mock('vue-router', () => ({
 describe('NewProjectForm.vue', () => {
   let wrapper: VueWrapper<any>;
   let pushMock: ReturnType<typeof vi.fn>;
-  let storeMock: { searchSelectedProject: ReturnType<typeof vi.fn> };
+  let storeMock: { 
+    addProjectToList: ReturnType<typeof vi.fn>;
+    setSelectedProject: ReturnType<typeof vi.fn>;
+  };
 
   const maxLengthError = 'Der Name der Liegenschaft darf nicht mehr als 100 Zeichen lang sein';
 
@@ -26,7 +29,10 @@ describe('NewProjectForm.vue', () => {
       title: 'Valid Project',
     });
 
-    storeMock = { searchSelectedProject: vi.fn() };
+    storeMock = { 
+      addProjectToList: vi.fn(),
+      setSelectedProject: vi.fn()
+    };
     (useProjectStore as unknown as () => typeof storeMock) = () => storeMock;
 
     pushMock = vi.fn();
@@ -63,7 +69,16 @@ describe('NewProjectForm.vue', () => {
     await createButton.trigger('click');
 
     expect(projectService.createProject).toHaveBeenCalledWith('Valid Project');
-    expect(storeMock.searchSelectedProject).toHaveBeenCalledWith('1');
+    expect(storeMock.addProjectToList).toHaveBeenCalledWith({
+      id: '1',
+      name: 'Valid Project',
+      memberRole: 'MANAGER'
+    });
+    expect(storeMock.setSelectedProject).toHaveBeenCalledWith({
+      id: '1',
+      name: 'Valid Project',
+      memberRole: 'MANAGER'
+    });
     expect(pushMock).toHaveBeenCalledWith({
       name: 'ProjectDashboard',
       params: { projectId: '1' },
