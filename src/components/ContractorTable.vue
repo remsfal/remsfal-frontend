@@ -3,8 +3,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { ref, onMounted } from 'vue';
 import type { components } from '../../src/services/api/ticketing-schema'; 
-import { issueService } from '@/services/IssueService'; 
-
+import { contractorService } from '@/services/ContractorService'; 
 
 type IssueListJson = components['schemas']['IssueListJson'];
 type IssueItemJson = components['schemas']['IssueItemJson'];
@@ -16,8 +15,8 @@ const expandedRows = ref<Record<string, boolean>>({});
 const loadIssues = async () => {
   isLoading.value = true;
   try {
-    const projectId = 'your-project-id'; 
-    const issueList: IssueListJson = await issueService.getIssues(projectId);
+    // Using contractorService here
+    const issueList: IssueListJson = await contractorService.getIssues();
     issues.value = issueList.issues ?? [];
   } catch (error) {
     console.error('Failed to load issues', error);
