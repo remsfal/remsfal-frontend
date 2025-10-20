@@ -7,7 +7,7 @@ const { t } = useI18n();
 
 <template>
   <h1 class="header-one">
-    {{ t('landingPage.title') }} <img class="inline-logo" src="@/assets/logo.png" alt="logo" />
+    {{ t('landingPage.title') }} <img class="inline-logo" src="@/assets/logo.svg" alt="logo" />
   </h1>
   <!-- Generated with https://developers.google.com/identity/branding-guidelines?hl=de -->
   <div class="widgets">
