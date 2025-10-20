@@ -89,7 +89,7 @@
     "start-server-and-test": "^2.1.2",
     "stylelint": "^16.24.0",
     "stylelint-config-recommended-vue": "^1.6.1",
-    "stylelint-config-standard": "^39.0.0",
+    "stylelint-config-standard": "^39.0.1",
     "tailwindcss": "^4.1.14",
     "tailwindcss-primeui": "^0.6.1",
     "typescript": "^5.9.3",
