@@ -126,12 +126,7 @@ class InboxService {
   }
 
   async fetchInboxData(): Promise<InboxMessage[]> {
-    // Hier könnte ein API-Call stattfinden
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(this.generateMockInboxData());
-      }, 500);
-    });
+    return this.generateMockInboxData();
   }
 }
 
