@@ -2841,6 +2841,12 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: The tenancy exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyJson1"
         "401":
           description: No user authentication provided via session cookie
         "404":

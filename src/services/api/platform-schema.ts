@@ -3445,6 +3445,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description The tenancy exists */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
