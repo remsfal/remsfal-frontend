@@ -1,14 +1,62 @@
 import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { setupServer } from 'msw/node';
-import { handlers } from '../../test/mocks/handlers';
+import { http, HttpResponse, PathParams } from 'msw';
 import { issueService, type Issue, StatusValues } from '../../src/services/IssueService';
+
+
+const projectId = 'test-project';
+const issueId = 'test-issue';
+const mockIssues: Issue[] = [
+  { id: 'test-issue', title: 'Mock Issue 1', status: StatusValues.OPEN, owner: 'user1' },
+  { id: 'issue-2', title: 'Mock Issue 2', status: StatusValues.CLOSED, owner: 'user2' },
+];
+
+//  MSW handlers (typed + safe)
+const handlers = [
+  // GET all issues
+  http.get('/ticketing/v1/issues', () => {
+    return HttpResponse.json({ issues: mockIssues });
+  }),
+
+  // GET single issue
+  http.get<PathParams<'issueId'>>('/ticketing/v1/issues/:issueId', ({ params }) => {
+    const { issueId } = params;
+    const issue = mockIssues.find(i => i.id === issueId);
+    return issue
+      ? HttpResponse.json(issue)
+      : HttpResponse.json({ message: 'Not found' }, { status: 404 });
+  }),
+
+  // POST create issue
+  http.post('/ticketing/v1/issues', async ({ request }) => {
+    const body = (await request.json()) as Partial<Issue>;
+    const createdIssue: Issue = {
+      id: 'new-issue',
+      title: body.title ?? 'Untitled',
+      status: body.status ?? StatusValues.OPEN,
+      owner: body.owner ?? 'unknown',
+      description: body.description ?? '',
+    };
+    return HttpResponse.json(createdIssue, { status: 201 });
+  }),
+
+  // PATCH modify issue
+  http.patch<PathParams<'issueId'>>('/ticketing/v1/issues/:issueId', async ({ params, request }) => {
+    const { issueId } = params;
+    const body = (await request.json()) as Partial<Issue>;
+    const existing = mockIssues.find(i => i.id === issueId);
+    const updatedIssue: Issue = {
+      ...existing!,
+      ...body,
+      id: issueId,
+    };
+    return HttpResponse.json(updatedIssue);
+  }),
+];
 
 const server = setupServer(...handlers);
 
-describe('IssueService with MSW', () => {
-  const projectId = 'test-project';
-  const issueId = 'test-issue';
-
+describe('IssueService with MSW (http)', () => {
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
@@ -32,7 +80,7 @@ describe('IssueService with MSW', () => {
       title: 'New Issue',
       description: 'New Description',
       status: StatusValues.OPEN,
-      ownerId: 'owner1',
+      owner: 'owner1',
     };
     const createdIssue = await issueService.createIssue(projectId, newIssue);
     expect(createdIssue.id).toBeDefined();

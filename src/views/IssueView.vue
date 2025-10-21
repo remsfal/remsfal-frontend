@@ -107,13 +107,13 @@ watch(
   <main>
     <div class="header">
       <div v-if="props.owner">
-        <h2>Meine Issues</h2>
+        <h2>Meine Aufgaben</h2>
       </div>
       <div v-else-if="props.status">
-        <h2>Offene Issues</h2>
+        <h2>Offene Aufgaben</h2>
       </div>
       <div v-else>
-        <h2>Alle Issues</h2>
+        <h2>Alle Aufgaben</h2>
       </div>
     </div>
 
@@ -122,7 +122,7 @@ watch(
       <Dialog
         v-model:visible="visible"
         modal
-        header="Issue erstellen"
+        header="Aufgabe erstellen"
         :style="{ width: '50rem' }"
       >
         <div class="flex items-center gap-6 mb-6">
@@ -143,7 +143,7 @@ watch(
       <div class="issue-list-wrapper">
         <div v-if="props.owner">
           <IssueTable :issues="myIssues">
-            <Button label="Issue erstellen" class="my-btn" @click="openCreateIssueDialog" />
+            <Button label="Aufgabe erstellen" class="my-btn" @click="openCreateIssueDialog" />
           </IssueTable>
         </div>
         <div v-else-if="props.status">
@@ -151,7 +151,7 @@ watch(
         </div>
         <div v-else>
           <IssueTable :issues="issues">
-            <Button label="Issue erstellen" class="my-btn" @click="openCreateIssueDialog" />
+            <Button label="Aufgabe erstellen" class="my-btn" @click="openCreateIssueDialog" />
           </IssueTable>
         </div>
       </div>
