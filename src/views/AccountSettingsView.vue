@@ -98,7 +98,7 @@ async function fetchUserProfile() {
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
-      if (userProfile.value.address) {
+      if (userProfile?.value?.address) {
         addressProfile.value = userProfile.value.address;
         editedAddress.value = { ...userProfile.value.address };
       }
