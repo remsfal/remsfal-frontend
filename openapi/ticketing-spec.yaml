@@ -1012,9 +1012,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1039,9 +1040,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1067,9 +1069,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       requestBody:
@@ -1100,9 +1103,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1128,9 +1132,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       requestBody:
@@ -1168,9 +1173,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       requestBody:
@@ -1207,9 +1213,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1240,9 +1247,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1268,9 +1276,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1302,9 +1311,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1335,9 +1345,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1369,9 +1380,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       requestBody:

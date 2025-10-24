@@ -1327,9 +1327,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1366,9 +1367,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1407,9 +1409,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1456,9 +1459,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1497,9 +1501,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1556,9 +1561,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1613,9 +1619,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1660,9 +1667,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1701,9 +1709,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1750,9 +1759,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1797,9 +1807,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1846,9 +1857,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }

@@ -347,6 +347,7 @@ export interface paths {
                 path: {
                     /** @description ID of the task */
                     issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -400,6 +401,7 @@ export interface paths {
                 path: {
                     /** @description ID of the task */
                     issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -463,6 +465,7 @@ export interface paths {
                 path: {
                     /** @description ID of the task */
                     issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -515,6 +518,7 @@ export interface paths {
                 path: {
                     /** @description ID of the task */
                     issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -585,6 +589,7 @@ export interface paths {
                 path: {
                     /** @description ID of the task */
                     issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -655,6 +660,7 @@ export interface paths {
                     issueId: components["schemas"]["UUID"];
                     /** @description The chat message ID */
                     messageId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -708,6 +714,7 @@ export interface paths {
                     issueId: components["schemas"]["UUID"];
                     /** @description The chat message ID */
                     messageId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -766,6 +773,7 @@ export interface paths {
                     issueId: components["schemas"]["UUID"];
                     /** @description The chat message ID to delete */
                     messageId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -829,6 +837,7 @@ export interface paths {
                 path: {
                     /** @description ID of the task */
                     issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -897,6 +906,7 @@ export interface paths {
                     issueId: components["schemas"]["UUID"];
                     /** @description The participant ID */
                     participantId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -952,6 +962,7 @@ export interface paths {
                     issueId: components["schemas"]["UUID"];
                     /** @description The participant ID to remove */
                     participantId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -1018,6 +1029,7 @@ export interface paths {
                     issueId: components["schemas"]["UUID"];
                     /** @description The participant ID */
                     participantId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
                     sessionId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
