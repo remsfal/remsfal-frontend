@@ -289,6 +289,27 @@
           }
         }
       },
+      "Cookie" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "domain" : {
+            "type" : "string"
+          }
+        }
+      },
       "CountryItemJson" : {
         "description" : "A country item of a list",
         "type" : "object",
@@ -1067,6 +1088,26 @@
         "responses" : {
           "302" : {
             "description" : "Redirect user to the logout page"
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/refresh" : {
+      "post" : {
+        "summary" : "Refresh the access and refresh tokens using the refresh token cookie.",
+        "parameters" : [ {
+          "name" : "remsfal_refresh_token",
+          "in" : "cookie",
+          "schema" : {
+            "$ref" : "#/components/schemas/Cookie"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Tokens refreshed successfully, new tokens set as cookies"
+          },
+          "401" : {
+            "description" : "Unauthorized - Invalid or missing refresh token"
           }
         }
       }

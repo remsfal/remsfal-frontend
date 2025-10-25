@@ -211,6 +211,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/authentication/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh the access and refresh tokens using the refresh token cookie. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: {
+                    remsfal_refresh_token?: components["schemas"]["Cookie"];
+                };
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tokens refreshed successfully, new tokens set as cookies */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized - Invalid or missing refresh token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/authentication/session": {
         parameters: {
             query?: never;
@@ -3941,6 +3984,14 @@ export interface components {
             phone?: string;
             email?: string;
             trade?: string;
+        };
+        Cookie: {
+            name?: string;
+            value?: string;
+            /** Format: int32 */
+            version?: number;
+            path?: string;
+            domain?: string;
         };
         /** @description A country item of a list */
         CountryItemJson: {
