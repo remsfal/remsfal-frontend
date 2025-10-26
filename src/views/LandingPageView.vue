@@ -146,17 +146,17 @@ const { t } = useI18n();
   width: 100%;
 }
 
-.header-widget {
-  font-weight: bold;
-  color: #343c3f;
-  font-size: 18px;
-}
-
 .inline-logo {
   width: 300px;
   height: auto;
   object-fit: contain;
   max-width: 100%;
+}
+
+.header-widget {
+  font-weight: bold;
+  color: #343c3f;
+  font-size: 18px;
 }
 
 @media (width <= 768px) {
@@ -179,9 +179,6 @@ const { t } = useI18n();
 
   .inline-logo {
     width: 200px;
-    height: auto;
-    object-fit: contain;
-    max-width: 100%;
   }
 }
 </style>
