@@ -50,13 +50,20 @@ function unbindOutsideClickListener() {
 function isOutsideClicked(event: Event) {
   const sidebarEl = document.querySelector('.layout-sidebar');
   const topbarEl = document.querySelector('.layout-menu-button');
+  const target = event.target as Node;
 
-  return !(
-    sidebarEl!.isSameNode(event.target as Node) ||
-    sidebarEl!.contains(event.target as Node) ||
-    topbarEl!.isSameNode(event.target as Node) ||
-    topbarEl!.contains(event.target as Node)
-  );
+  // Check if click is inside sidebar (if it exists)
+  if (sidebarEl && (sidebarEl.isSameNode(target) || sidebarEl.contains(target))) {
+    return false;
+  }
+
+  // Check if click is inside burger button (if it exists)
+  if (topbarEl && (topbarEl.isSameNode(target) || topbarEl.contains(target))) {
+    return false;
+  }
+
+  // If we get here, it's an outside click
+  return true;
 }
 </script>
 
