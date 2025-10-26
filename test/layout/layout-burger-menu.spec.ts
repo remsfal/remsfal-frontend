@@ -22,9 +22,6 @@ describe('Burger Menu Mobile Behavior - Bug Fix', () => {
   });
 
   it('should toggle mobile menu correctly on mobile devices', () => {
-    // Ensure window width is set for mobile
-    window.innerWidth = 375;
-    
     const { layoutState, toggleMenu } = useLayout();
 
     // Initial state should be closed
