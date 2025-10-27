@@ -2,38 +2,39 @@
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { ref, onMounted } from 'vue';
-import type { components } from '../../src/services/api/platform-schema';
-import { contractorService } from '@/services/ContractorService';
+import type { components } from '../../src/services/api/ticketing-schema'; 
+import { contractorService } from '@/services/ContractorService'; 
 
-type TaskListJson = components['schemas']['TaskListJson'];
-type TaskJson = components['schemas']['TaskJson'];
+type IssueListJson = components['schemas']['IssueListJson'];
+type IssueItemJson = components['schemas']['IssueItemJson'];
 
 const isLoading = ref(false);
-const tasks = ref<TaskJson[]>([]);
+const issues = ref<IssueItemJson[]>([]);
 const expandedRows = ref<Record<string, boolean>>({});
 
-const loadTasks = async () => {
+const loadIssues = async () => {
   isLoading.value = true;
   try {
-    const taskList: TaskListJson = await contractorService.getTasks();
-    tasks.value = taskList.tasks ?? [];
+    // Using contractorService here
+    const issueList: IssueListJson = await contractorService.getIssues();
+    issues.value = issueList.issues ?? [];
   } catch (error) {
-    console.error('Failed to load tasks', error);
-    tasks.value = [];
+    console.error('Failed to load issues', error);
+    issues.value = [];
   } finally {
     isLoading.value = false;
   }
 };
 
 onMounted(() => {
-  loadTasks();
+  loadIssues();
 });
 </script>
 
 <template>
   <DataTable
     v-model:expandedRows="expandedRows"
-    :value="tasks"
+    :value="issues"
     scrollable
     :loading="isLoading"
     rowHover
@@ -50,7 +51,8 @@ onMounted(() => {
       <div class="p-4">
         <h4>Details für "{{ slotProps.data.title }}"</h4>
         <p>
-          <strong>Beschreibung:</strong> {{ slotProps.data.description || 'Keine Beschreibung' }}
+          <strong>Beschreibung:</strong>
+          {{ slotProps.data.description || 'Keine Beschreibung' }}
         </p>
         <p><strong>Status:</strong> {{ slotProps.data.status }}</p>
       </div>

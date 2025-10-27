@@ -15,8 +15,6 @@ export type ApiPaths = ticketingPaths & platformPaths & notificationPaths;
 // Combine all OpenAPI components
 export type ApiComponents = ticketingComponents & platformComponents & notificationComponents;
 
-const bus = useEventBus();
-
 /**
  * Extend AxiosRequestConfig to support a `pathParams` object for URL placeholder substitution.
  */
@@ -53,7 +51,7 @@ function replacePlaceholders(
   pathParams: AxiosRequestConfig['pathParams'] = {},
   style: AxiosRequestConfig['pathParamsPlaceholderStyle'] = 'curly',
 ): string {
-  // Precompiled safe regex patterns
+   // Precompiled safe regex patterns
   const patterns = {
     curly: /\{(\w+)\}/g,
     colon: /:(\w+)/g,
@@ -72,7 +70,7 @@ function replacePlaceholders(
     }
     return encodeURIComponent(String(val));
   });
-  // Double-check that no placeholders remain
+    // Double-check that no placeholders remain
   if (/\{(\w+)\}/.test(url) || /:(\w+)/.test(url)) {
     throw new Error(`Not all path parameters were replaced. Result: "${url}"`);
   }
@@ -81,8 +79,15 @@ function replacePlaceholders(
 }
 
 /**
- * Axios request interceptor that replaces URL placeholders
+* Axios request interceptor that replaces URL placeholders
  * using the `config.pathParams` object before sending the request.
+ */
+function emitToast(severity: string, summary: string, detail: string) {
+  const bus = useEventBus();
+  bus.emit('toast:translate', { severity, summary, detail });
+}
+/**
+ * Axios interceptors
  */
 function requestHandler(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
   if (config.url && config.pathParams) {
@@ -96,23 +101,23 @@ function requestHandler(config: InternalAxiosRequestConfig): InternalAxiosReques
 
 function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
   console.error(`[request error] [${JSON.stringify(error)}]`);
-  bus.emit('toast:translate', { severity: 'error', summary: 'error.general', detail: 'error.apiRequest' });
+  emitToast('error', 'error.general', 'error.apiRequest');
   return Promise.reject(error);
 }
 // this interceptor is used to handle all success ajax request
 function responseHandler(response: AxiosResponse): AxiosResponse {
-  if (response.status == 200 || response.status == 201) {
+  if (response.status === 200 || response.status === 201) {
     const data = response?.data;
     if (!data) {
-      bus.emit('toast:translate', { severity: 'error', summary: 'error.general', detail: 'error.apiResponse' });
+      emitToast('error', 'error.general', 'error.apiResponse');
     }
   }
   return response;
 }
 
 function responseErrorHandler(error: AxiosError) {
-  console.error(`[request error] [${JSON.stringify(error)}]`);
-  bus.emit('toast:translate', { severity: 'error', summary: 'error.general', detail: 'error.apiResponse' });
+  console.error(`[response error] [${JSON.stringify(error)}]`);
+  emitToast('error', 'error.general', 'error.apiResponse');
   return Promise.reject(error);
 }
 
