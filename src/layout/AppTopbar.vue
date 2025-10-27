@@ -2,8 +2,40 @@
 import { useLayout } from '@/layout/composables/layout';
 import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
+
+const isMobileMenuOpen = ref(false);
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false;
+};
+
+// Close menu when clicking outside
+const handleOutsideClick = (event: Event) => {
+  const target = event.target as Element;
+  const menuButton = document.querySelector('.layout-topbar-menu-button');
+  const menu = document.querySelector('.layout-topbar-menu');
+  
+  if (isMobileMenuOpen.value && 
+      menuButton && !menuButton.contains(target) &&
+      menu && !menu.contains(target)) {
+    closeMobileMenu();
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleOutsideClick);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick);
+});
 </script>
 
 <template>
@@ -30,20 +62,19 @@ const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
         </div>
 
         <Button
-          v-styleclass="{
-            selector: '@next',
-            enterFromClass: 'hidden',
-            enterActiveClass: 'animate-scalein',
-            leaveToClass: 'hidden',
-            leaveActiveClass: 'animate-fadeout',
-            hideOnOutsideClick: true,
-          }"
           class="layout-topbar-menu-button layout-topbar-action"
+          @click="toggleMobileMenu"
         >
           <i class="pi pi-ellipsis-v"></i>
         </Button>
 
-        <div class="layout-topbar-menu hidden lg:block">
+        <div 
+          class="layout-topbar-menu lg:!block"
+          :class="{
+            'hidden': !isMobileMenuOpen,
+            'block animate-scalein': isMobileMenuOpen
+          }"
+        >
           <div class="layout-topbar-menu-content">
             <slot />
           </div>
