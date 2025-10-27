@@ -24,26 +24,6 @@
           }
         }
       },
-      "AddressModel" : {
-        "type" : "object",
-        "properties" : {
-          "street" : {
-            "type" : "string"
-          },
-          "city" : {
-            "type" : "string"
-          },
-          "province" : {
-            "type" : "string"
-          },
-          "zip" : {
-            "type" : "string"
-          },
-          "country" : {
-            "$ref" : "#/components/schemas/Locale"
-          }
-        }
-      },
       "ApartmentJson" : {
         "description" : "An apartment inside a building according to WoFIV",
         "type" : "object",
@@ -144,7 +124,7 @@
             "maxLength" : 255
           },
           "address" : {
-            "$ref" : "#/components/schemas/AddressModel"
+            "$ref" : "#/components/schemas/AddressJson"
           }
         }
       },
@@ -449,66 +429,6 @@
         "type" : "string",
         "format" : "date-time",
         "examples" : [ "2022-03-10T12:15:50" ]
-      },
-      "Locale" : {
-        "type" : "object",
-        "properties" : {
-          "language" : {
-            "type" : "string"
-          },
-          "script" : {
-            "type" : "string"
-          },
-          "country" : {
-            "type" : "string"
-          },
-          "variant" : {
-            "type" : "string"
-          },
-          "extensionKeys" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string",
-              "format" : "char"
-            }
-          },
-          "unicodeLocaleAttributes" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "unicodeLocaleKeys" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "iSO3Language" : {
-            "type" : "string"
-          },
-          "iSO3Country" : {
-            "type" : "string"
-          },
-          "displayLanguage" : {
-            "type" : "string"
-          },
-          "displayScript" : {
-            "type" : "string"
-          },
-          "displayCountry" : {
-            "type" : "string"
-          },
-          "displayVariant" : {
-            "type" : "string"
-          },
-          "displayName" : {
-            "type" : "string"
-          }
-        }
       },
       "MemberRole" : {
         "type" : "string",
@@ -1327,9 +1247,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1366,9 +1287,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1407,9 +1329,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1456,9 +1379,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1497,9 +1421,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1556,9 +1481,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1613,9 +1539,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1660,9 +1587,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1701,9 +1629,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1750,9 +1679,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1797,9 +1727,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }
@@ -1846,9 +1777,10 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "ID of the chat session",
+          "required" : true,
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
             "$ref" : "#/components/schemas/UUID"
           }

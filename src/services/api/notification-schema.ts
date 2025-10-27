@@ -52,13 +52,6 @@ export interface components {
             zip?: string;
             countryCode?: string;
         };
-        AddressModel: {
-            street?: string;
-            city?: string;
-            province?: string;
-            zip?: string;
-            country?: components["schemas"]["Locale"];
-        };
         /** @description An apartment inside a building according to WoFIV */
         ApartmentJson: {
             type?: components["schemas"]["UnitType"];
@@ -98,7 +91,7 @@ export interface components {
             description?: string;
             id?: components["schemas"]["UUID"];
             title?: string;
-            address?: components["schemas"]["AddressModel"];
+            address?: components["schemas"]["AddressJson"];
         };
         /** @description A single chat message */
         ChatMessageJson: {
@@ -230,22 +223,6 @@ export interface components {
          * @example 2022-03-10T12:15:50
          */
         LocalDateTime: string;
-        Locale: {
-            language?: string;
-            script?: string;
-            country?: string;
-            variant?: string;
-            extensionKeys?: string[];
-            unicodeLocaleAttributes?: string[];
-            unicodeLocaleKeys?: string[];
-            iSO3Language?: string;
-            iSO3Country?: string;
-            displayLanguage?: string;
-            displayScript?: string;
-            displayCountry?: string;
-            displayVariant?: string;
-            displayName?: string;
-        };
         /** @enum {string} */
         MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
         /** @description A project item with the user's member role only */

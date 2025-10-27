@@ -211,6 +211,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/authentication/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh the access and refresh tokens using the refresh token cookie. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: {
+                    remsfal_refresh_token?: components["schemas"]["Cookie"];
+                };
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tokens refreshed successfully, new tokens set as cookies */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized - Invalid or missing refresh token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/authentication/session": {
         parameters: {
             query?: never;
@@ -3445,6 +3488,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description The tenancy exists */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3831,13 +3883,6 @@ export interface components {
             zip?: string;
             countryCode?: string;
         };
-        AddressModel: {
-            street?: string;
-            city?: string;
-            province?: string;
-            zip?: string;
-            country?: components["schemas"]["Locale"];
-        };
         /** @description An apartment inside a building according to WoFIV */
         ApartmentJson: {
             type?: components["schemas"]["UnitType"];
@@ -3877,7 +3922,7 @@ export interface components {
             description?: string;
             id?: components["schemas"]["UUID"];
             title?: string;
-            address?: components["schemas"]["AddressModel"];
+            address?: components["schemas"]["AddressJson"];
         };
         /** @description A single chat message */
         ChatMessageJson: {
@@ -3939,6 +3984,14 @@ export interface components {
             phone?: string;
             email?: string;
             trade?: string;
+        };
+        Cookie: {
+            name?: string;
+            value?: string;
+            /** Format: int32 */
+            version?: number;
+            path?: string;
+            domain?: string;
         };
         /** @description A country item of a list */
         CountryItemJson: {
@@ -4009,22 +4062,6 @@ export interface components {
          * @example 2022-03-10T12:15:50
          */
         LocalDateTime: string;
-        Locale: {
-            language?: string;
-            script?: string;
-            country?: string;
-            variant?: string;
-            extensionKeys?: string[];
-            unicodeLocaleAttributes?: string[];
-            unicodeLocaleKeys?: string[];
-            iSO3Language?: string;
-            iSO3Country?: string;
-            displayLanguage?: string;
-            displayScript?: string;
-            displayCountry?: string;
-            displayVariant?: string;
-            displayName?: string;
-        };
         /** @enum {string} */
         MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
         /** @description A project item with the user's member role only */

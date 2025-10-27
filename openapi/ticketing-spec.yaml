@@ -17,19 +17,6 @@ components:
           pattern: "^\\d{4,5}$"
         countryCode:
           type: string
-    AddressModel:
-      type: object
-      properties:
-        street:
-          type: string
-        city:
-          type: string
-        province:
-          type: string
-        zip:
-          type: string
-        country:
-          $ref: "#/components/schemas/Locale"
     ApartmentJson:
       description: An apartment inside a building according to WoFIV
       type: object
@@ -108,7 +95,7 @@ components:
           type: string
           maxLength: 255
         address:
-          $ref: "#/components/schemas/AddressModel"
+          $ref: "#/components/schemas/AddressJson"
     ChatMessageJson:
       description: A single chat message
       type: object
@@ -335,47 +322,6 @@ components:
       format: date-time
       examples:
       - 2022-03-10T12:15:50
-    Locale:
-      type: object
-      properties:
-        language:
-          type: string
-        script:
-          type: string
-        country:
-          type: string
-        variant:
-          type: string
-        extensionKeys:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-            format: char
-        unicodeLocaleAttributes:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        unicodeLocaleKeys:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        iSO3Language:
-          type: string
-        iSO3Country:
-          type: string
-        displayLanguage:
-          type: string
-        displayScript:
-          type: string
-        displayCountry:
-          type: string
-        displayVariant:
-          type: string
-        displayName:
-          type: string
     MemberRole:
       type: string
       enum:
@@ -1012,9 +958,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1039,9 +986,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1067,9 +1015,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       requestBody:
@@ -1100,9 +1049,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1128,9 +1078,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       requestBody:
@@ -1168,9 +1119,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       requestBody:
@@ -1207,9 +1159,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1240,9 +1193,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1268,9 +1222,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1302,9 +1257,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1335,9 +1291,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
@@ -1369,9 +1326,10 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
-      - name: sessionId
-        in: path
+      - description: ID of the chat session
         required: true
+        name: sessionId
+        in: path
         schema:
           $ref: "#/components/schemas/UUID"
       requestBody:

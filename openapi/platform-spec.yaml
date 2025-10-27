@@ -17,19 +17,6 @@ components:
           pattern: "^\\d{4,5}$"
         countryCode:
           type: string
-    AddressModel:
-      type: object
-      properties:
-        street:
-          type: string
-        city:
-          type: string
-        province:
-          type: string
-        zip:
-          type: string
-        country:
-          $ref: "#/components/schemas/Locale"
     ApartmentJson:
       description: An apartment inside a building according to WoFIV
       type: object
@@ -108,7 +95,7 @@ components:
           type: string
           maxLength: 255
         address:
-          $ref: "#/components/schemas/AddressModel"
+          $ref: "#/components/schemas/AddressJson"
     ChatMessageJson:
       description: A single chat message
       type: object
@@ -224,6 +211,20 @@ components:
         trade:
           type: string
           maxLength: 255
+    Cookie:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+        version:
+          type: integer
+          format: int32
+        path:
+          type: string
+        domain:
+          type: string
     CountryItemJson:
       description: A country item of a list
       type: object
@@ -335,47 +336,6 @@ components:
       format: date-time
       examples:
       - 2022-03-10T12:15:50
-    Locale:
-      type: object
-      properties:
-        language:
-          type: string
-        script:
-          type: string
-        country:
-          type: string
-        variant:
-          type: string
-        extensionKeys:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-            format: char
-        unicodeLocaleAttributes:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        unicodeLocaleKeys:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        iSO3Language:
-          type: string
-        iSO3Country:
-          type: string
-        displayLanguage:
-          type: string
-        displayScript:
-          type: string
-        displayCountry:
-          type: string
-        displayVariant:
-          type: string
-        displayName:
-          type: string
     MemberRole:
       type: string
       enum:
@@ -884,6 +844,19 @@ paths:
       responses:
         "302":
           description: Redirect user to the logout page
+  /api/v1/authentication/refresh:
+    post:
+      summary: Refresh the access and refresh tokens using the refresh token cookie.
+      parameters:
+      - name: remsfal_refresh_token
+        in: cookie
+        schema:
+          $ref: "#/components/schemas/Cookie"
+      responses:
+        "204":
+          description: "Tokens refreshed successfully, new tokens set as cookies"
+        "401":
+          description: Unauthorized - Invalid or missing refresh token
   /api/v1/authentication/session:
     get:
       summary: Start user session via oauth flow.
@@ -2841,6 +2814,12 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: The tenancy exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyJson1"
         "401":
           description: No user authentication provided via session cookie
         "404":
