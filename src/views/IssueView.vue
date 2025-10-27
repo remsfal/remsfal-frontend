@@ -4,7 +4,13 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import IssueTable from '@/components/IssueTable.vue';
-import { IssueService, ISSUE_TYPE_TASK, ISSUE_STATUS_OPEN, type Status, type IssueItem } from '@/services/IssueService.ts';
+import {
+  IssueService,
+  ISSUE_TYPE_TASK,
+  ISSUE_STATUS_OPEN,
+  type Status,
+  type IssueItem,
+} from '@/services/IssueService.ts';
 
 const props = defineProps<{
   projectId: string;
@@ -28,37 +34,41 @@ const openCreateIssueDialog = () => {
   visible.value = true;
 };
 
+console.log("myissues",myIssues)
 // Create a new issue
 const createIssue = async () => {
   try {
     const newIssue = await issueService.createIssue(props.projectId, {
+      projectId: props.projectId,
       title: title.value,
       description: description.value,
-      ownerId: props.owner,
       type: ISSUE_TYPE_TASK,
-      status: ISSUE_STATUS_OPEN,
+      // status: ISSUE_STATUS_OPEN,
+      // ownerId: props.owner, // optional
     });
+
     console.log('New issue created:', newIssue);
     visible.value = false;
 
-    // Reload issues based on context
+    // Reload issues
     if (props.owner) {
-      loadMyIssues();
+      await loadMyIssues();
     } else if (props.status === ISSUE_STATUS_OPEN) {
-      loadIssuesWithOpenStatus();
+      await loadIssuesWithOpenStatus();
     } else {
-      loadIssues();
+      await loadIssues();
     }
   } catch (error) {
     console.error('Error creating issue:', error);
   }
 };
 
+
 // Load all issues
 const loadIssues = async () => {
   try {
     const issueList = await issueService.getIssues(props.projectId);
-    issues.value = issueList.issues || [];
+    issues.value = issueList?.issues ?? [];
   } catch (err) {
     console.error(err);
   }
@@ -99,7 +109,7 @@ watch(
     loadIssuesWithOpenStatus();
     loadMyIssues();
   },
-  { deep: true }
+  { deep: true },
 );
 </script>
 
@@ -119,12 +129,7 @@ watch(
 
     <div class="grid grid-cols-12 gap-4">
       <!-- Create Issue Dialog -->
-      <Dialog
-        v-model:visible="visible"
-        modal
-        header="Aufgabe erstellen"
-        :style="{ width: '50rem' }"
-      >
+      <Dialog v-model:visible="visible" modal header="Aufgabe erstellen" :style="{ width: '50rem' }">
         <div class="flex items-center gap-6 mb-6">
           <label for="title" class="font-semibold w-24">Titel</label>
           <InputText id="title" v-model="title" class="flex-auto" autocomplete="off" />
