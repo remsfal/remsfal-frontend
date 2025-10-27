@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import {
- EntityType, propertyService, type RentableUnitTreeNode 
-} from '@/services/PropertyService';
+import { EntityType, propertyService, type RentableUnitTreeNode } from '@/services/PropertyService';
 import { tenancyService } from '@/services/TenancyService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
@@ -10,9 +8,7 @@ import Column from 'primevue/column';
 import type { DataTablePassThroughMethodOptions } from 'primevue/datatable';
 import DataTable from 'primevue/datatable';
 import Select from 'primevue/select';
-import {
- computed, onMounted, ref, watch 
-} from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import type { components } from '@/services/api/platform-schema';
 
 // OpenAPI type
@@ -134,9 +130,7 @@ const displayedColumns = computed(() =>
 </script>
 
 <template>
-  <div class="text-lg font-semibold text-[2rem]">
-    Mietobjekte
-  </div>
+  <div class="text-lg font-semibold text-[2rem]">Mietobjekte</div>
   <Card>
     <template #header>
       <Button
@@ -176,10 +170,7 @@ const displayedColumns = computed(() =>
           sortable
           style="width: 25%"
         >
-          <template
-            v-if="col.field !== 'actions'"
-            #editor="{ data, field }"
-          >
+          <template v-if="col.field !== 'actions'" #editor="{ data, field }">
             <Select
               v-if="col.field !== 'actions'"
               v-model="data[field]"
@@ -190,16 +181,8 @@ const displayedColumns = computed(() =>
               filter
             />
           </template>
-          <template
-            v-if="col.field === 'actions'"
-            #body="{ index }"
-          >
-            <Button
-              icon="pi pi-trash"
-              severity="danger"
-              text
-              @click="deleteRow(index)"
-            />
+          <template v-if="col.field === 'actions'" #body="{ index }">
+            <Button icon="pi pi-trash" severity="danger" text @click="deleteRow(index)" />
           </template>
         </Column>
       </DataTable>

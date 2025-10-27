@@ -1,6 +1,4 @@
-import {
- beforeEach, describe, expect, it, vi 
-} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import PrivacyView from '../../src/views/PrivacyView.vue';
 import Card from 'primevue/card';

@@ -43,14 +43,26 @@ const taskChartData = {
   labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
     {
- label: 'Aufgaben', data: [20,15,16,12,8,13], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 
-},
+      label: 'Aufgaben',
+      data: [20, 15, 16, 12, 8, 13],
+      backgroundColor: '#3B82F6',
+      borderRadius: 4,
+      barThickness: 12,
+    },
     {
- label: 'Offene Aufgaben', data: [0,2,4,1,0,7], backgroundColor: '#F97316', borderRadius: 4, barThickness: 12 
-},
+      label: 'Offene Aufgaben',
+      data: [0, 2, 4, 1, 0, 7],
+      backgroundColor: '#F97316',
+      borderRadius: 4,
+      barThickness: 12,
+    },
     {
- label: 'Erledigte Aufgaben', data: [20,13,12,11,8,6], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 
-},
+      label: 'Erledigte Aufgaben',
+      data: [20, 13, 12, 11, 8, 6],
+      backgroundColor: '#10B981',
+      borderRadius: 4,
+      barThickness: 12,
+    },
   ],
 };
 
@@ -124,14 +136,26 @@ const issueChartData = {
   labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
     {
- label: 'Offene Issues', data: [5, 7, 4, 6, 8, 3], backgroundColor: '#F59E0B', borderRadius: 4, barThickness: 12 
-},
+      label: 'Offene Issues',
+      data: [5, 7, 4, 6, 8, 3],
+      backgroundColor: '#F59E0B',
+      borderRadius: 4,
+      barThickness: 12,
+    },
     {
- label: 'In Bearbeitung', data: [2, 3, 5, 4, 3, 2], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 
-},
+      label: 'In Bearbeitung',
+      data: [2, 3, 5, 4, 3, 2],
+      backgroundColor: '#3B82F6',
+      borderRadius: 4,
+      barThickness: 12,
+    },
     {
- label: 'Erledigte Issues', data: [10, 8, 9, 11, 7, 10], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 
-},
+      label: 'Erledigte Issues',
+      data: [10, 8, 9, 11, 7, 10],
+      backgroundColor: '#10B981',
+      borderRadius: 4,
+      barThickness: 12,
+    },
   ],
 };
 
@@ -196,24 +220,15 @@ const recentActivities = [
 
     <!-- Aufgabenstatus -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Aufgabenstatus
-      </template>
+      <template #title>Aufgabenstatus</template>
       <template #content>
-        <Chart
-          type="bar"
-          :data="taskChartData"
-          :options="taskChartOptions"
-          style="height: 300px"
-        />
+        <Chart type="bar" :data="taskChartData" :options="taskChartOptions" style="height: 300px" />
       </template>
     </Card>
 
     <!-- Letzte Aktivitäten -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Letzte Aktivitäten
-      </template>
+      <template #title>Letzte Aktivitäten</template>
       <template #content>
         <ul class="space-y-4">
           <li
@@ -228,14 +243,10 @@ const recentActivities = [
                 'bg-yellow-400': activity.type === 'updated',
                 'bg-red-500': activity.type === 'issue',
               }"
-            />
+            ></span>
             <div>
-              <p class="text-sm text-gray-800 font-medium">
-                {{ activity.title }}
-              </p>
-              <p class="text-xs text-gray-500">
-                {{ activity.date }}
-              </p>
+              <p class="text-sm text-gray-800 font-medium">{{ activity.title }}</p>
+              <p class="text-xs text-gray-500">{{ activity.date }}</p>
             </div>
           </li>
         </ul>
@@ -244,65 +255,36 @@ const recentActivities = [
 
     <!-- Kostenübersicht -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Monatliche Kosten
-      </template>
+      <template #title>Monatliche Kosten</template>
       <template #content>
-        <Chart
-          type="line"
-          :data="costChartData"
-          :options="costChartOptions"
-          style="height: 300px"
-        />
+        <Chart type="line" :data="costChartData" :options="costChartOptions" style="height: 300px" />
       </template>
     </Card>
 
     <!-- Issue Übersicht -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Issue Status Übersicht
-      </template>
+      <template #title>Issue Status Übersicht</template>
       <template #content>
-        <Chart
-          type="bar"
-          :data="issueChartData"
-          :options="issueChartOptions"
-          style="height: 300px"
-        />
+        <Chart type="bar" :data="issueChartData" :options="issueChartOptions" style="height: 300px" />
       </template>
     </Card>
 
     <!-- Nächste Fälligkeiten -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Nächste Fälligkeiten
-      </template>
+      <template #title>Nächste Fälligkeiten</template>
       <template #content>
         <table class="min-w-full divide-y divide-gray-200 text-sm">
           <thead class="bg-gray-50 text-gray-700 text-left">
             <tr>
-              <th class="py-2 px-4">
-                Aufgabe
-              </th>
-              <th class="py-2 px-4">
-                Fällig am
-              </th>
-              <th class="py-2 px-4">
-                Status
-              </th>
+              <th class="py-2 px-4">Aufgabe</th>
+              <th class="py-2 px-4">Fällig am</th>
+              <th class="py-2 px-4">Status</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 text-gray-700">
-            <tr
-              v-for="task in upcomingTasks"
-              :key="task.title"
-            >
-              <td class="py-2 px-4">
-                {{ task.title }}
-              </td>
-              <td class="py-2 px-4">
-                {{ task.dueDate }}
-              </td>
+            <tr v-for="task in upcomingTasks" :key="task.title">
+              <td class="py-2 px-4">{{ task.title }}</td>
+              <td class="py-2 px-4">{{ task.dueDate }}</td>
               <td class="py-2 px-4">
                 <span
                   :class="{
@@ -322,9 +304,7 @@ const recentActivities = [
 
     <!-- Mängelübersicht -->
     <Card class="mb-6 p-4">
-      <template #title>
-        Mängelübersicht
-      </template>
+      <template #title>Mängelübersicht</template>
       <template #content>
         <Chart
           type="doughnut"

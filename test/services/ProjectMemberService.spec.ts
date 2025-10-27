@@ -1,6 +1,4 @@
-import {
- describe, it, expect, beforeAll, afterAll, afterEach 
-} from 'vitest';
+import {describe, it, expect, beforeAll, afterAll, afterEach} from 'vitest';
 import { projectMemberService, type ProjectMember } from '../../src/services/ProjectMemberService';
 import { server } from '../mocks/server';
 import { http, HttpResponse } from 'msw';

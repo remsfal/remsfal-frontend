@@ -1,20 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import {
-  propertyService,
+import {propertyService,
   type RentableUnitTreeNode,
-  toRentableUnitView,
-} from '@/services/PropertyService';
+  toRentableUnitView,} from '@/services/PropertyService';
 import type { components } from '@/services/api/platform-schema';
 import { useRouter } from 'vue-router';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import { useI18n } from 'vue-i18n';
-import TreeTable, {
-  type TreeTableExpandedKeys,
-  type TreeTableSelectionKeys,
-} from 'primevue/treetable';
+import TreeTable, {type TreeTableExpandedKeys,
+  type TreeTableSelectionKeys,} from 'primevue/treetable';
 import NewRentableUnitButton from '@/components/NewRentableUnitButton.vue';
 import { useToast } from 'primevue/usetoast';
 import NewPropertyButton from '@/components/NewPropertyButton.vue';
@@ -139,20 +135,10 @@ defineExpose({
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
-        <h1 class="w-full">
-          {{ t('rentableUnits.view.title') }}
-        </h1>
+        <h1 class="w-full">{{ t('rentableUnits.view.title') }}</h1>
       </div>
-      <div
-        v-if="error"
-        class="alert alert-error"
-      >
-        {{ error }}
-      </div>
-      <div
-        v-if="!error"
-        class="col-span-12"
-      >
+      <div v-if="error" class="alert alert-error">{{ error }}</div>
+      <div v-if="!error" class="col-span-12">
         <div class="card">
           <TreeTable
             v-model:expandedKeys="expandedKeys"
@@ -182,57 +168,37 @@ defineExpose({
                 </div>
               </div>
             </template>
-            <Column
-              field="title"
-              :header="t('rentableUnits.table.title')"
-              expander
-            >
+            <Column field="title" :header="t('rentableUnits.table.title')" expander>
               <template #body="{ node }">
                 <div>{{ node.data.title }}</div>
               </template>
             </Column>
 
-            <Column
-              field="type"
-              :header="t('rentableUnits.table.type')"
-            >
+            <Column field="type" :header="t('rentableUnits.table.type')">
               <template #body="{ node }">
                 <div>{{ node.data.type }}</div>
               </template>
             </Column>
 
-            <Column
-              field="description"
-              :header="t('rentableUnits.table.description')"
-            >
+            <Column field="description" :header="t('rentableUnits.table.description')">
               <template #body="{ node }">
                 <div>{{ node.data.description }}</div>
               </template>
             </Column>
 
-            <Column
-              field="tenant"
-              :header="t('rentableUnits.table.tenant')"
-            >
+            <Column field="tenant" :header="t('rentableUnits.table.tenant')">
               <template #body="{ node }">
                 <div>{{ node.data.tenant }}</div>
               </template>
             </Column>
 
-            <Column
-              field="usable_space"
-              :header="t('rentableUnits.table.area')"
-            >
+            <Column field="usable_space" :header="t('rentableUnits.table.area')">
               <template #body="{ node }">
                 <div>{{ node.data.usable_space }}</div>
               </template>
             </Column>
 
-            <Column
-              frozen
-              alignFrozen="right"
-              bodyClass="flex flex-wrap justify-end"
-            >
+            <Column frozen alignFrozen="right" bodyClass="flex flex-wrap justify-end">
               <template #body="{ node }">
                 <div class="flex flex-wrap justify-end gap-2">
                   <NewRentableUnitButton
@@ -253,10 +219,7 @@ defineExpose({
             </Column>
           </TreeTable>
           <div class="flex justify-end basis-auto mt-6">
-            <NewPropertyButton
-              :projectId="props.projectId"
-              @newUnit="onNewRentableUnit"
-            />
+            <NewPropertyButton :projectId="props.projectId" @newUnit="onNewRentableUnit" />
           </div>
         </div>
       </div>

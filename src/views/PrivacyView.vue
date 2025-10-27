@@ -16,39 +16,27 @@ const navigateToHome = () => {
 <template>
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12 mb-4">
-      <Button
-        icon="pi pi-home"
-        label="Zurück zur Startseite"
-        @click="navigateToHome"
-      />
+      <Button icon="pi pi-home" label="Zurück zur Startseite" @click="navigateToHome" />
     </div>
     <div class="col-span-12">
       <Card>
-        <template #title>
-          {{ t('privacy.title') }}
-        </template>
+        <template #title> {{ t('privacy.title') }}</template>
         <template #content>
           <p>{{ t('privacy.explanation') }}</p>
-          <p class="p-card-content-header">
-            {{ t('privacy.responsibility') }}
-          </p>
-          <p v-html="t('legalNotice.contact.address')" />
+          <p class="p-card-content-header">{{ t('privacy.responsibility') }}</p>
+          <p v-html="t('legalNotice.contact.address')"></p>
           <p>{{ t('legalNotice.contact.email') }}</p>
 
-          <p class="p-card-content-header">
-            {{ t('privacy.representative') }}
-          </p>
+          <p class="p-card-content-header">{{ t('privacy.representative') }}</p>
           <p>
-            Prof. Dr.-Ing. Alexander Stanik<br>
+            Prof. Dr.-Ing. Alexander Stanik<br />
             E-Mail: privacy@remsfal.de
           </p>
           <p>
             {{ t('privacy.contact') }}
           </p>
 
-          <p class="p-card-content-header">
-            {{ t('privacy.betroffenenrechte.title') }}
-          </p>
+          <p class="p-card-content-header">{{ t('privacy.betroffenenrechte.title') }}</p>
           <p>
             {{ t('privacy.betroffenenrechte.explanation.1') }}
           </p>
@@ -79,9 +67,7 @@ const navigateToHome = () => {
 
     <div class="col-span-12">
       <Card>
-        <template #title>
-          {{ t('privacy.hosting.title') }}
-        </template>
+        <template #title> {{ t('privacy.hosting.title') }}</template>
         <template #content>
           <p class="p-card-content-header">
             {{ t('privacy.hosting.explanation.1') }}
@@ -98,7 +84,7 @@ const navigateToHome = () => {
           <p class="p-card-content-header">
             {{ t('privacy.hosting.explanation.5') }}
           </p>
-          <p v-html="t('privacy.hosting.adress')" />
+          <p v-html="t('privacy.hosting.adress')"></p>
           <p>
             {{ t('privacy.furtherInformation') }}
             <a

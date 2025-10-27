@@ -1,6 +1,4 @@
-import {
- describe, expect, test 
-} from 'vitest';
+import {describe, expect, test} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import LandingPage from '../../src/views/LandingPageView.vue';
 

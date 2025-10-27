@@ -1,8 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
-import {
- ref, computed, onMounted 
-} from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
@@ -368,10 +366,7 @@ const isDisabled = computed(() => {
           <template #content>
             <div>
               <div class="input-container">
-                <label
-                  class="label"
-                  for="firstName"
-                >{{ t('accountSettings.userProfile.name') }}:</label>
+                <label class="label" for="firstName">{{ t('accountSettings.userProfile.name') }}:</label>
                 <InputText
                   id="firstName"
                   v-model="editedUserProfile.firstName"
@@ -385,16 +380,11 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.firstname }}
-                </Message>
+                >{{ errorMessage.firstname }}</Message>
               </div>
 
               <div class="input-container">
-                <label
-                  class="label"
-                  for="lastName"
-                >Nachname*:</label>
+                <label class="label" for="lastName">Nachname*:</label>
                 <InputText
                   id="lastName"
                   v-model="editedUserProfile.lastName"
@@ -408,34 +398,16 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.lastname }}
-                </Message>
+                >{{ errorMessage.lastname }}</Message>
               </div>
 
               <div class="input-container">
-                <label
-                  class="label"
-                  for="eMail"
-                >E-Mail:</label>
-                <InputText
-                  id="eMail"
-                  v-model="editedUserProfile.email"
-                  disabled
-                  required
-                />
-                <Message
-                  class="error"
-                  size="small"
-                  severity="error"
-                  variant="simple"
-                />
+                <label class="label" for="eMail">E-Mail:</label>
+                <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
+                <Message class="error" size="small" severity="error" variant="simple"></Message>
               </div>
               <div class="input-container">
-                <label
-                  class="label"
-                  for="mobilePhoneNumber"
-                >Mobile Telefonnummer:</label>
+                <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
                 <InputText
                   id="mobilePhoneNumber"
                   v-model="editedUserProfile.mobilePhoneNumber"
@@ -448,15 +420,10 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.mobilePhoneNumber }}
-                </Message>
+                >{{ errorMessage.mobilePhoneNumber }}</Message>
               </div>
               <div class="input-container">
-                <label
-                  class="label"
-                  for="businessPhoneNumber"
-                >Geschäftliche Telefonnummer:</label>
+                <label class="label" for="businessPhoneNumber">Geschäftliche Telefonnummer:</label>
                 <InputText
                   id="businessPhoneNumber"
                   v-model="editedUserProfile.businessPhoneNumber"
@@ -469,16 +436,11 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.businessPhoneNumber }}
-                </Message>
+                >{{ errorMessage.businessPhoneNumber }}</Message>
               </div>
 
               <div class="input-container">
-                <label
-                  class="label"
-                  for="privatePhoneNumber"
-                >Handynummer:</label>
+                <label class="label" for="privatePhoneNumber">Handynummer:</label>
                 <InputText
                   id="privatePhoneNumber"
                   v-model="editedUserProfile.privatePhoneNumber"
@@ -491,19 +453,10 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.privatePhoneNumber }}
-                </Message>
+                >{{ errorMessage.privatePhoneNumber }}</Message>
               </div>
             </div>
-            <Message
-              class="required"
-              size="small"
-              severity="secondary"
-              variant="simple"
-            >
-              *Pflichtfelder
-            </Message>
+            <Message class="required" size="small" severity="secondary" variant="simple">*Pflichtfelder</Message>
           </template>
         </Card>
         <Card>
@@ -513,10 +466,7 @@ const isDisabled = computed(() => {
           <template #content>
             <div>
               <div class="input-container">
-                <label
-                  class="label"
-                  for="street"
-                >Straße und Hausnummer*:</label>
+                <label class="label" for="street">Straße und Hausnummer*:</label>
                 <InputText
                   id="street"
                   v-model="editedAddress.street"
@@ -529,15 +479,10 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.street }}
-                </Message>
+                >{{ errorMessage.street }}</Message>
               </div>
               <div class="input-container">
-                <label
-                  class="label"
-                  for="zip"
-                >Postleitzahl*:</label>
+                <label class="label" for="zip">Postleitzahl*:</label>
                 <InputText
                   id="zip"
                   v-model="editedAddress.zip"
@@ -550,15 +495,10 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.zip }}
-                </Message>
+                >{{ errorMessage.zip }}</Message>
               </div>
               <div class="input-container">
-                <label
-                  class="label"
-                  for="zip"
-                >Stadt*:</label>
+                <label class="label" for="zip">Stadt*:</label>
                 <InputText
                   id="city"
                   v-model="editedAddress.city"
@@ -571,15 +511,10 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.city }}
-                </Message>
+                >{{ errorMessage.city }}</Message>
               </div>
               <div class="input-container">
-                <label
-                  class="label"
-                  for="zip"
-                >Bundesland*:</label>
+                <label class="label" for="zip">Bundesland*:</label>
                 <InputText
                   id="province"
                   v-model="editedAddress.province"
@@ -592,48 +527,26 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.province }}
-                </Message>
+                >{{ errorMessage.province }}</Message>
               </div>
               <div class="input-container">
-                <label
-                  for="country"
-                  class="label"
-                >Land*:</label>
+                <label for="country" class="label">Land*:</label>
                 <select
                   id="country"
                   v-model="editedAddress.countryCode"
                   class="select-country"
                   @change="updateCountryFromCode"
                 >
-                  <option
-                    disabled
-                    value=""
-                  >
-                    Land auswählen*
-                  </option>
-                  <option
-                    v-for="country in countries"
-                    :key="country.code"
-                    :value="country.code"
-                  >
+                  <option disabled value="">Land auswählen*</option>
+                  <option v-for="country in countries" :key="country.code" :value="country.code">
                     {{ country.name }}
                   </option>
                 </select>
-                <Message
-                  class="error"
-                  size="small"
-                  severity="error"
-                  variant="simple"
-                />
+                <Message class="error" size="small" severity="error" variant="simple"></Message>
               </div>
 
               <div class="input-container">
-                <label
-                  for="countryCode"
-                  class="label"
-                >Länderkürzel*:</label>
+                <label for="countryCode" class="label">Länderkürzel*:</label>
                 <InputText
                   id="countryCode"
                   v-model="editedAddress.countryCode"
@@ -648,18 +561,10 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                >
-                  {{ errorMessage.countryCode }}
-                </Message>
+                >{{ errorMessage.countryCode }}</Message>
               </div>
             </div>
-            <Message
-              class="required"
-              size="small"
-              variant="simple"
-            >
-              *Pflichtfelder
-            </Message>
+            <Message class="required" size="small" variant="simple">*Pflichtfelder</Message>
           </template>
         </Card>
       </div>
@@ -668,19 +573,13 @@ const isDisabled = computed(() => {
       <div>
         <div class="buttons-container centered-buttons">
           <Button severity="info">
-            <RouterLink to="/projects">
-              Zur Verwalter Ansicht
-            </RouterLink>
+            <RouterLink to="/projects">Zur Verwalter Ansicht</RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/tenancies">
-              Zur Mieter Ansicht
-            </RouterLink>
+            <RouterLink to="/tenancies">Zur Mieter Ansicht</RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/customers">
-              Zur Auftragnehmer Ansicht
-            </RouterLink>
+            <RouterLink to="/customers">Zur Auftragnehmer Ansicht</RouterLink>
           </Button>
           <Button
             v-if="changes"

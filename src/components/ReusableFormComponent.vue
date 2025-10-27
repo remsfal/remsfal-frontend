@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {
- computed, ref, watch 
-} from 'vue';
+import { computed, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -109,17 +107,11 @@ const handleCancel = () => {
 
 <template>
   <div class="form-container">
-    <h2 v-if="headline">
-      {{ headline }}
-    </h2>
+    <h2 v-if="headline">{{ headline }}</h2>
     <div class="form-fields">
-      <div
-        v-for="field in fields"
-        :key="field.name"
-        class="field"
-      >
+      <div v-for="field in fields" :key="field.name" class="field">
         <label :for="field.name">{{ field.label }}</label>
-        <br>
+        <br />
 
         <!-- Text Field -->
         <InputText
@@ -161,12 +153,9 @@ const handleCancel = () => {
           :name="field.name"
           @change="validateField(field)"
         />
-        <br>
+        <br />
         <!-- Validation Error Messages -->
-        <span
-          v-if="validationErrors[field.name]"
-          class="error-message"
-        >
+        <span v-if="validationErrors[field.name]" class="error-message">
           {{ validationErrors[field.name] }}
         </span>
       </div>

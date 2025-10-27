@@ -1,6 +1,4 @@
-import {
- describe, it, expect, beforeEach 
-} from 'vitest';
+import {describe, it, expect, beforeEach} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskTable from '../../src/components/TaskTable.vue';
 import DataTable from 'primevue/datatable';

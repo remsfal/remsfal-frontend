@@ -8,18 +8,10 @@ const { t } = useI18n();
 <template>
   <footer>
     <div class="layout-footer">
-      <img
-        src="@/assets/logo.svg"
-        alt="Logo"
-        class="mr-2"
-      >
-      <RouterLink to="/legal-notice">
-        {{ t('legalNotice.title') }}
-      </RouterLink>
+      <img src="@/assets/logo.svg" alt="Logo" class="mr-2" />
+      <RouterLink to="/legal-notice">{{ t('legalNotice.title') }}</RouterLink>
       |
-      <RouterLink to="/privacy">
-        {{ t('privacy.title') }}
-      </RouterLink>
+      <RouterLink to="/privacy">{{ t('privacy.title') }}</RouterLink>
     </div>
   </footer>
 </template>

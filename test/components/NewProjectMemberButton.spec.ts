@@ -1,6 +1,4 @@
-import {
- describe, test, expect, beforeEach, vi 
-} from 'vitest';
+import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import NewProjectMemberButton from '../../src/components/NewProjectMemberButton.vue';
 import { projectMemberService } from '../../src/services/ProjectMemberService';

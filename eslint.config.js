@@ -72,6 +72,11 @@ export default [
       'vue/require-typed-ref': 'warn',
       'vue/v-for-delimiter-style': 'error',
       'vue/valid-define-options': 'error',
+      // Disable Vue template formatting rules to keep original formatting
+      'vue/max-attributes-per-line': 'off',
+      'vue/html-self-closing': 'off',
+      'vue/singleline-html-element-content-newline': 'off',
+      'vue/multiline-html-element-content-newline': 'off',
     },
   },
 
@@ -79,7 +84,15 @@ export default [
   {
     rules: {
       'max-len': ['error', { code: 120 }],
-      'object-curly-newline': ['error', { multiline: true, minProperties: 3 }],
+      'object-curly-newline': [
+        'error',
+        {
+          ObjectExpression: { multiline: true, minProperties: 3 },
+          ObjectPattern: { multiline: true },
+          ImportDeclaration: 'never',
+          ExportDeclaration: 'never',
+        },
+      ],
     },
   },
 

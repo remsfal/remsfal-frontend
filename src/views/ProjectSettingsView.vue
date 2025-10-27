@@ -3,9 +3,7 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import ProjectMemberSettings from '@/components/ProjectMemberSettings.vue';
-import {
- ref, onMounted, watch, computed 
-} from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { projectService } from '@/services/ProjectService';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
@@ -97,17 +95,12 @@ watch(
 <template>
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
-      <div class="font-semibold text-xl">
-        Liegenschaftseinstellungen
-      </div>
+      <div class="font-semibold text-xl">Liegenschaftseinstellungen</div>
     </template>
 
     <template #content>
       <div class="flex flex-col gap-3">
-        <label
-          for="name"
-          class="font-medium text-gray-700"
-        >Name der Liegenschaft</label>
+        <label for="name" class="font-medium text-gray-700">Name der Liegenschaft</label>
         <div class="flex gap-2 items-center">
           <InputText
             id="name"

@@ -1,10 +1,8 @@
-import {
-  createRouter,
+import {createRouter,
   createWebHistory,
   type RouteLocationNormalized,
   type RouteLocationNormalizedLoaded,
-  type RouteRecordRaw,
-} from 'vue-router';
+  type RouteRecordRaw,} from 'vue-router';
 import { useProjectStore } from '@/stores/ProjectStore';
 import LandingPageView from '@/views/LandingPageView.vue';
 import AppLayout from '@/layout/AppLayout.vue';

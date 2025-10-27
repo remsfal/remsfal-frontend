@@ -1,10 +1,8 @@
-import axios, {
-  AxiosError,
+import axios, {AxiosError,
   type AxiosInstance,
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
-  type AxiosResponse,
-} from 'axios';
+  type AxiosResponse,} from 'axios';
 import type { paths as chatPaths, components as chatComponents } from './api/chat-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';

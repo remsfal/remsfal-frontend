@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {
- onBeforeMount, ref, watch 
-} from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -38,9 +36,7 @@ interface MenuItemProps {
 }
 
 const route = useRoute();
-const {
- layoutState, setActiveMenuItem, toggleMenu 
-} = useLayout();
+const { layoutState, setActiveMenuItem, toggleMenu } = useLayout();
 
 const isActiveMenu = ref<boolean>(false);
 const itemKey = ref<string | undefined>(undefined);
@@ -104,10 +100,7 @@ const checkActiveRoute = (item: MenuItem) => {
 
 <template>
   <li :class="{ 'layout-root-menuitem': root, 'active-menuitem': isActiveMenu }">
-    <div
-      v-if="root && item.visible !== false"
-      class="layout-menuitem-root-text"
-    >
+    <div v-if="root && item.visible !== false" class="layout-menuitem-root-text">
       {{ t(item.label) }}
     </div>
     <a
@@ -118,11 +111,7 @@ const checkActiveRoute = (item: MenuItem) => {
       @click="itemClick($event, item)"
     >
       <template v-if="item.icon">
-        <i
-          v-if="item.icon.type === 'pi'"
-          :class="item.icon.name"
-          class="layout-menuitem-icon"
-        />
+        <i v-if="item.icon.type === 'pi'" :class="item.icon.name" class="layout-menuitem-icon"></i>
         <FontAwesomeIcon
           v-else-if="item.icon.type === 'fa'"
           :icon="item.icon.name"
@@ -130,10 +119,7 @@ const checkActiveRoute = (item: MenuItem) => {
         />
       </template>
       <span class="layout-menuitem-text">{{ t(item.label) }}</span>
-      <i
-        v-if="item.items"
-        class="pi pi-fw pi-angle-down layout-submenu-toggler"
-      />
+      <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
     </a>
     <RouterLink
       v-if="item.to && !item.items && item.visible !== false"
@@ -143,11 +129,7 @@ const checkActiveRoute = (item: MenuItem) => {
       @click="itemClick($event, item)"
     >
       <template v-if="item.icon">
-        <i
-          v-if="item.icon.type === 'pi'"
-          :class="item.icon.name"
-          class="layout-menuitem-icon"
-        />
+        <i v-if="item.icon.type === 'pi'" :class="item.icon.name" class="layout-menuitem-icon"></i>
         <FontAwesomeIcon
           v-else-if="item.icon.type === 'fa'"
           :icon="item.icon.name"
@@ -155,19 +137,10 @@ const checkActiveRoute = (item: MenuItem) => {
         />
       </template>
       <span class="layout-menuitem-text">{{ t(item.label) }}</span>
-      <i
-        v-if="item.items"
-        class="pi pi-fw pi-angle-down layout-submenu-toggler"
-      />
+      <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
     </RouterLink>
-    <Transition
-      v-if="item.items && item.visible !== false"
-      name="layout-submenu"
-    >
-      <ul
-        v-show="root ? true : isActiveMenu"
-        class="layout-submenu"
-      >
+    <Transition v-if="item.items && item.visible !== false" name="layout-submenu">
+      <ul v-show="root ? true : isActiveMenu" class="layout-submenu">
         <app-menu-item
           v-for="(child, i) in item.items"
           :key="child.label"
@@ -175,7 +148,7 @@ const checkActiveRoute = (item: MenuItem) => {
           :item="child"
           :parentItemKey="itemKey"
           :root="false"
-        />
+        ></app-menu-item>
       </ul>
     </Transition>
   </li>

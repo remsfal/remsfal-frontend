@@ -1,14 +1,10 @@
 <script lang="ts" setup>
-import {
- ref, computed, onMounted 
-} from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 import { useToast } from 'primevue/usetoast';
-import {
- handleCancel, showSavingErrorToast, showValidationErrorToast 
-} from '@/helper/viewHelper';
+import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -162,25 +158,14 @@ defineExpose({ fetchCommercialDetails });
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
-            <label
-              for="title"
-              class="block text-gray-700 mb-1"
-            >{{
+            <label for="title" class="block text-gray-700 mb-1">{{
               t('rentableUnits.form.title')
             }}</label>
-            <input
-              id="title"
-              v-model="title"
-              type="text"
-              class="form-input w-full"
-            >
+            <input id="title" v-model="title" type="text" class="form-input w-full" />
           </div>
 
           <div class="col-span-2">
-            <label
-              for="description"
-              class="block text-gray-700 mb-1"
-            >{{
+            <label for="description" class="block text-gray-700 mb-1">{{
               t('rentableUnits.form.description')
             }}</label>
             <textarea
@@ -188,29 +173,18 @@ defineExpose({ fetchCommercialDetails });
               v-model="description"
               rows="3"
               class="form-textarea w-full"
-            />
+            ></textarea>
           </div>
 
           <div class="col-span-2">
-            <label
-              for="location"
-              class="block text-gray-700 mb-1"
-            >{{
+            <label for="location" class="block text-gray-700 mb-1">{{
               t('property.address')
             }}</label>
-            <input
-              id="location"
-              v-model="location"
-              type="text"
-              class="form-input w-full"
-            >
+            <input id="location" v-model="location" type="text" class="form-input w-full" />
           </div>
 
           <div>
-            <label
-              for="commercialSpace"
-              class="block text-gray-700 mb-1"
-            >
+            <label for="commercialSpace" class="block text-gray-700 mb-1">
               {{ t('commercialUnit.commercialSpace') }} (m²)
             </label>
             <input
@@ -218,14 +192,11 @@ defineExpose({ fetchCommercialDetails });
               v-model.number="commercialSpace"
               type="number"
               class="form-input w-full"
-            >
+            />
           </div>
 
           <div>
-            <label
-              for="heatingSpace"
-              class="block text-gray-700 mb-1"
-            >
+            <label for="heatingSpace" class="block text-gray-700 mb-1">
               {{ t('commercialUnit.heatingSpace') }} (m²)
             </label>
             <input
@@ -233,21 +204,13 @@ defineExpose({ fetchCommercialDetails });
               v-model.number="heatingSpace"
               type="number"
               class="form-input w-full"
-            >
+            />
           </div>
         </div>
 
-        <div
-          v-if="validationErrors.length"
-          class="text-red-600 mt-4"
-        >
+        <div v-if="validationErrors.length" class="text-red-600 mt-4">
           <ul>
-            <li
-              v-for="(error, i) in validationErrors"
-              :key="i"
-            >
-              {{ error }}
-            </li>
+            <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
           </ul>
         </div>
 

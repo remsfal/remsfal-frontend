@@ -1,7 +1,5 @@
 import { mount, VueWrapper } from '@vue/test-utils';
-import {
- describe, it, expect, beforeEach, vi 
-} from 'vitest';
+import {describe, it, expect, beforeEach, vi} from 'vitest';
 import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import { useUserSessionStore } from '../../src/stores/UserSession';
 

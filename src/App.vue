@@ -34,16 +34,12 @@ const containerClass = computed(() => {
 const { t } = useI18n();
 const toast = useToast();
 const bus = useEventBus();
-bus.on('toast:translate', ({
- severity, summary, detail 
-}) => {
+bus.on('toast:translate', ({ severity, summary, detail }) => {
   bus.emit('toast:show', {
  severity: severity, summary: t(summary), detail: t(detail) 
 });
 });
-bus.on('toast:show', ({
- severity, summary, detail 
-}) => {
+bus.on('toast:show', ({ severity, summary, detail }) => {
   toast.add({
     severity: severity,
     summary: summary,
@@ -54,15 +50,12 @@ bus.on('toast:show', ({
 </script>
 
 <template>
-  <div
-    class="layout-wrapper"
-    :class="containerClass"
-  >
+  <div class="layout-wrapper" :class="containerClass">
     <!-- Sakai AppLayout used as Named Router View -->
     <RouterView name="topbar" />
     <RouterView name="sidebar" />
     <RouterView />
-    <div class="layout-mask animate-fadein" />
+    <div class="layout-mask animate-fadein"></div>
   </div>
   <Toast />
 </template>

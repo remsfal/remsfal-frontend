@@ -3,9 +3,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 
-const {
- toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen 
-} = useLayout();
+const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
 </script>
 
 <template>
@@ -17,30 +15,17 @@ const {
           class="layout-menu-button layout-topbar-menu-button layout-topbar-action"
           @click="toggleMenu"
         >
-          <i class="pi pi-bars" />
+          <i class="pi pi-bars"></i>
         </Button>
-        <RouterLink
-          to="/"
-          class="layout-topbar-logo"
-        >
-          <img
-            src="@/assets/logo.svg"
-            alt="logo"
-          >
+        <RouterLink to="/" class="layout-topbar-logo">
+          <img src="@/assets/logo.svg" alt="logo" />
         </RouterLink>
       </div>
 
       <div class="layout-topbar-actions">
         <div class="layout-config-menu">
-          <Button
-            type="button"
-            class="layout-topbar-action"
-            @click="toggleDarkMode"
-          >
-            <i
-              class="pi"
-              :class="[{ 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"
-            />
+          <Button type="button" class="layout-topbar-action" @click="toggleDarkMode">
+            <i class="pi" :class="[{ 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
           </Button>
         </div>
 
@@ -55,7 +40,7 @@ const {
           }"
           class="layout-topbar-menu-button layout-topbar-action"
         >
-          <i class="pi pi-ellipsis-v" />
+          <i class="pi pi-ellipsis-v"></i>
         </Button>
 
         <div class="layout-topbar-menu hidden lg:block">

@@ -1,6 +1,4 @@
-import {
- describe, it, expect, vi 
-} from 'vitest';
+import {describe, it, expect, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import LegalNoticeView from '../../src/views/LegalNoticeView.vue';
 

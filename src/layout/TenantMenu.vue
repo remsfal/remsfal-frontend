@@ -25,14 +25,8 @@ const model = ref([
 <template>
   <div class="layout-sidebar">
     <ul class="layout-menu">
-      <template
-        v-for="(item, i) in model"
-        :key="item.label"
-      >
-        <AppMenuItem
-          :item="item"
-          :index="i"
-        />
+      <template v-for="(item, i) in model" :key="item.label">
+        <AppMenuItem :item="item" :index="i" />
       </template>
     </ul>
   </div>

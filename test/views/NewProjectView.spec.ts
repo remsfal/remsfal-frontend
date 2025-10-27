@@ -1,6 +1,4 @@
-import {
- describe, it, expect, beforeEach, afterEach, vi 
-} from 'vitest';
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import NewProjectForm from '../../src/components/NewProjectForm.vue';
 import router from '../../src/router';

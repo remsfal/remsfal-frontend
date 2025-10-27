@@ -1,9 +1,7 @@
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
 import { propertyService } from '@/services/PropertyService';
 import { mount } from '@vue/test-utils';
-import {
- beforeEach, describe, expect, it, vi 
-} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
 vi.mock('@/services/PropertyService', () => ({
   propertyService: {getPropertyTree: vi.fn(),},

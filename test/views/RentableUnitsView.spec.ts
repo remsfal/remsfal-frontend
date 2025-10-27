@@ -1,9 +1,5 @@
-import {
- flushPromises, mount, VueWrapper 
-} from '@vue/test-utils';
-import {
- describe, it, expect, vi, beforeEach 
-} from 'vitest';
+import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
 import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
 import PrimeVue from 'primevue/config';

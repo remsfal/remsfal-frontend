@@ -84,10 +84,7 @@ const createProperty = async () => {
     :style="{ width: '35rem' }"
   >
     <div class="flex items-center gap-6 mb-6">
-      <label
-        for="title"
-        class="font-semibold w-24"
-      >{{ t('rentableUnits.form.title') }}</label>
+      <label for="title" class="font-semibold w-24">{{ t('rentableUnits.form.title') }}</label>
       <InputText
         id="title"
         v-model="title"
@@ -99,18 +96,10 @@ const createProperty = async () => {
     </div>
 
     <div class="flex items-center gap-6 mb-20">
-      <label
-        for="description"
-        class="font-semibold w-24"
-      >{{
+      <label for="description" class="font-semibold w-24">{{
         t('rentableUnits.form.description')
       }}</label>
-      <Textarea
-        id="description"
-        v-model="description"
-        rows="4"
-        class="flex-auto"
-      />
+      <Textarea id="description" v-model="description" rows="4" class="flex-auto" />
     </div>
 
     <div class="flex justify-end gap-2">
@@ -120,11 +109,7 @@ const createProperty = async () => {
         severity="secondary"
         @click="visible = false"
       />
-      <Button
-        type="button"
-        :label="t('button.add')"
-        @click="createProperty"
-      />
+      <Button type="button" :label="t('button.add')" @click="createProperty" />
     </div>
   </Dialog>
 </template>

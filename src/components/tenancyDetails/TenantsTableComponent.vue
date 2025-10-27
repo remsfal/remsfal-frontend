@@ -6,9 +6,7 @@ import Column from 'primevue/column';
 import type { DataTablePassThroughMethodOptions } from 'primevue/datatable';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
-import {
- computed, onMounted, ref, watch 
-} from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 
 
@@ -79,69 +77,34 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="text-lg font-semibold text-[2rem]">
-    Mieter
-  </div>
+  <div class="text-lg font-semibold text-[2rem]">Mieter</div>
   <Card>
     <template #header>
-      <Button
-        label="Neuen Mieter hinzufügen"
-        icon="pi pi-plus"
-        class="ml-6 mt-4"
-        @click="addNewRow"
-      />
+      <Button label="Neuen Mieter hinzufügen" icon="pi pi-plus" class="ml-6 mt-4" @click="addNewRow" />
     </template>
     <template #content>
       <DataTable
-        :value="localTenants"
-        :rows="10"
-        :rowHover="true"
-        dataKey="localTenants.id"
-        tableStyle="min-width: 60rem"
-        scrollable
-        scrollDirection="both"
-        scrollHeight="var(--custom-scroll-height)"
-        editMode="cell"
-        class="custom-scroll-height"
-        :pt="{
+        :value="localTenants" :rows="10" :rowHover="true" dataKey="localTenants.id"
+        tableStyle="min-width: 60rem" scrollable scrollDirection="both"
+        scrollHeight="var(--custom-scroll-height)" editMode="cell" class="custom-scroll-height" :pt="{
           table: { style: 'min-width: 50rem' },
           column: {
             bodycell: ({ state }: DataTablePassThroughMethodOptions) => ({
               class: [{ '!py-0': state['d_editing'] }],
             }),
           },
-        }"
-        @cellEditComplete="onCellEditComplete"
+        }" @cellEditComplete="onCellEditComplete"
       >
         <Column
-          v-for="(col) in displayedColumns"
-          :key="col.field"
-          :field="col.field"
-          :header="col.header"
-          sortable
-          style="width: 33.333%"
+          v-for="(col) in displayedColumns" :key="col.field" :field="col.field" :header="col.header"
+          sortable style="width: 33.333%"
         >
-          <template
-            v-if="col.field !== 'actions'"
-            #editor="{ data, field }"
-          >
-            <InputText
-              v-model="data[field]"
-              autofocus
-              fluid
-            />
+          <template v-if="col.field !== 'actions'" #editor="{ data, field }">
+            <InputText v-model="data[field]" autofocus fluid />
           </template>
 
-          <template
-            v-if="col.field === 'actions'"
-            #body="{ index }"
-          >
-            <Button
-              icon="pi pi-trash"
-              severity="danger"
-              text
-              @click="deleteRow(index)"
-            />
+          <template v-if="col.field === 'actions'" #body="{ index }">
+            <Button icon="pi pi-trash" severity="danger" text @click="deleteRow(index)" />
           </template>
         </Column>
       </DataTable>

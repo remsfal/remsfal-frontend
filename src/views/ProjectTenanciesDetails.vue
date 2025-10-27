@@ -131,26 +131,13 @@ function handleTenancyDataChange(updatedTenancy: TenancyItem) {
   </div>
 
   <!-- Delete confirmation dialog -->
-  <Dialog
-    v-model:visible="confirmationDialogVisible"
-    header="Bestätigung"
-    modal
-  >
+  <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
     <div class="p-fluid">
       <p>Sind Sie sicher, dass Sie den Mietvertrag mit der ID {{ tenancy?.id }} löschen möchten?</p>
     </div>
     <template #footer>
-      <Button
-        label="Abbrechen"
-        icon="pi pi-times"
-        @click="confirmationDialogVisible = false"
-      />
-      <Button
-        label="Löschen"
-        icon="pi pi-check"
-        severity="danger"
-        @click="confirmDeletion"
-      />
+      <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
+      <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
     </template>
   </Dialog>
 </template>
