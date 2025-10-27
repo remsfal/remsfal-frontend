@@ -19,7 +19,7 @@ const props = defineProps<{
       <Column frozen alignFrozen="right">
         <template #body="slotProps">
           <div class="flex justify-end">
-            <RouterLink :to="{ name: 'IssueEdit', params: { issueid: slotProps.data.id } }">
+            <RouterLink :to="{ name: 'IssueEdit', params: { issueId: slotProps.data.id } }">
               <Button
                 icon="pi pi-pencil"
                 severity="success"

@@ -32,15 +32,21 @@ export class IssueService {
     status?: Status,
     ownerId?: string,
   ): Promise<IssueList> {
-    return apiClient
-      .get(issuesPath, {
-        params: {
-          projectId,
-          ...(status ? { status } : {}),
-          ...(ownerId ? { owner: ownerId } : {}),
-        },
-      })
-      .then(res => res.data);
+    const res = await apiClient.get(issuesPath, {
+      params: {
+        projectId,
+        ...(status ? { status } : {}),
+        ...(ownerId ? { owner: ownerId } : {}),
+      },
+    });
+  
+    const data = res.data ?? {};
+    return {
+      first: data.first ?? 0,
+      size: data.size ?? 0,
+      total: data.total ?? 0,
+      issues: data.issues ?? [], // ✅ Always return an array
+    };
   }
 
   /**

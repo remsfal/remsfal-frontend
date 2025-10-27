@@ -27,15 +27,14 @@ const issues = ref<IssueItem[]>([]);
 const issuesByStatusOpen = ref<IssueItem[]>([]);
 const myIssues = ref<IssueItem[]>([]);
 
-// Open dialog
+// --- Dialog ---
 const openCreateIssueDialog = () => {
   title.value = '';
   description.value = '';
   visible.value = true;
 };
 
-console.log("myissues",myIssues)
-// Create a new issue
+// --- Create a new issue ---
 const createIssue = async () => {
   try {
     const newIssue = await issueService.createIssue(props.projectId, {
@@ -43,28 +42,41 @@ const createIssue = async () => {
       title: title.value,
       description: description.value,
       type: ISSUE_TYPE_TASK,
-      // status: ISSUE_STATUS_OPEN,
-      // ownerId: props.owner, // optional
+      // do NOT include ownerId, backend requires it to be null
     });
 
     console.log('New issue created:', newIssue);
-    visible.value = false;
 
-    // Reload issues
+    // Close dialog and reset fields
+    visible.value = false;
+    title.value = '';
+    description.value = '';
+
+    // --- Update tables reactively ---
+    // All issues
+    issues.value = [...issues.value, newIssue];
+
+    // Open issues table
+    if (newIssue.status === ISSUE_STATUS_OPEN) {
+      issuesByStatusOpen.value = [...issuesByStatusOpen.value, newIssue];
+    }
+
+    // My issues table (assign owner locally)
     if (props.owner) {
-      await loadMyIssues();
-    } else if (props.status === ISSUE_STATUS_OPEN) {
-      await loadIssuesWithOpenStatus();
-    } else {
-      await loadIssues();
+      myIssues.value = [
+        ...myIssues.value,
+        {
+          ...newIssue,
+          owner: props.owner, // frontend only
+        },
+      ];
     }
   } catch (error) {
     console.error('Error creating issue:', error);
   }
 };
 
-
-// Load all issues
+// --- Load all issues ---
 const loadIssues = async () => {
   try {
     const issueList = await issueService.getIssues(props.projectId);
@@ -74,7 +86,7 @@ const loadIssues = async () => {
   }
 };
 
-// Load only open issues
+// --- Load only open issues ---
 const loadIssuesWithOpenStatus = async () => {
   try {
     const issueList = await issueService.getIssues(props.projectId, ISSUE_STATUS_OPEN);
@@ -84,30 +96,34 @@ const loadIssuesWithOpenStatus = async () => {
   }
 };
 
-// Load issues assigned to current owner
+// --- Load issues for current owner ---
 const loadMyIssues = async () => {
   try {
-    const issueList = await issueService.getIssues(props.projectId, undefined, props.owner);
-    myIssues.value = issueList.issues || [];
+    const issueList = await issueService.getIssues(props.projectId);
+    // Filter locally and assign owner for the table
+    myIssues.value = issueList.issues?.map(issue => ({
+      ...issue,
+      owner: props.owner,
+    })) || [];
   } catch (err) {
     console.error(err);
   }
 };
 
-// Load data on mount
+// --- Initialize on mount ---
 onMounted(() => {
   loadIssues();
   loadIssuesWithOpenStatus();
-  loadMyIssues();
+  if (props.owner) loadMyIssues();
 });
 
-// Reload when props change
+// --- Watch for prop changes ---
 watch(
   () => props,
   () => {
     loadIssues();
     loadIssuesWithOpenStatus();
-    loadMyIssues();
+    if (props.owner) loadMyIssues();
   },
   { deep: true },
 );
