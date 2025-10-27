@@ -61,9 +61,7 @@ onMounted(async () => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <h1 class="col-span-12">
-        {{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht
-      </h1>
+      <h1 class="col-span-12">{{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht</h1>
       <div v-if="isLoading">Loading...</div>
       <div v-if="!isLoading" class="col-span-12 card">
         <DataTable
@@ -124,10 +122,7 @@ onMounted(async () => {
 
     <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
       <div class="p-fluid">
-        <p>
-          Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }}
-          {{ tenantToDelete?.lastName }} löschen möchten?
-        </p>
+        <p>Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }} {{ tenantToDelete?.lastName }} löschen möchten?</p>
       </div>
       <template #footer>
         <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />

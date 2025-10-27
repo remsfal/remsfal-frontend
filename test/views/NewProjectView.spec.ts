@@ -94,7 +94,7 @@ describe('NewProjectForm.vue', () => {
 
   it('handles cancel (abort) correctly', async () => {
     const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
-    const cancelBtn = wrapper.findAll('button').find(b => b.text() === 'Abbrechen');
+    const cancelBtn = wrapper.findAll('button').find((b) => b.text() === 'Abbrechen');
     await cancelBtn!.trigger('click');
     expect(mockRouterPush).toHaveBeenCalledWith({ name: 'ProjectSelection' });
   });
@@ -103,7 +103,7 @@ describe('NewProjectForm.vue', () => {
     Object.defineProperty(window.navigator, 'onLine', { configurable: true, value: false });
     const input = wrapper.find('#projectTitle');
     await input.setValue('Offline Project');
-    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    const createBtn = wrapper.findAll('button').find((b) => b.text() === 'Erstellen');
     await createBtn!.trigger('click');
     expect(saveProject).toHaveBeenCalledWith('Offline Project');
   });
@@ -113,18 +113,18 @@ describe('NewProjectForm.vue', () => {
     const mockRouterPush = vi.spyOn(router, 'push').mockResolvedValue();
     const input = wrapper.find('#projectTitle');
     await input.setValue('Online Project');
-    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    const createBtn = wrapper.findAll('button').find((b) => b.text() === 'Erstellen');
     await createBtn!.trigger('click');
     expect(projectService.createProject).toHaveBeenCalledWith('Online Project');
     expect(mockAddProjectToList).toHaveBeenCalledWith({
       id: '1',
       name: 'Online Project',
-      memberRole: 'MANAGER'
+      memberRole: 'MANAGER',
     });
     expect(mockSetSelectedProject).toHaveBeenCalledWith({
       id: '1',
       name: 'Online Project',
-      memberRole: 'MANAGER'
+      memberRole: 'MANAGER',
     });
     expect(mockRouterPush).toHaveBeenCalledWith({
       name: 'ProjectDashboard',
@@ -136,7 +136,7 @@ describe('NewProjectForm.vue', () => {
     vi.mocked(projectService.createProject).mockRejectedValue(new Error('Network error'));
     const input = wrapper.find('#projectTitle');
     await input.setValue('Error Project');
-    const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
+    const createBtn = wrapper.findAll('button').find((b) => b.text() === 'Erstellen');
     await createBtn!.trigger('click');
     expect(saveProject).toHaveBeenCalledWith('Error Project');
   });

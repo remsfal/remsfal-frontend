@@ -124,9 +124,7 @@ describe('ProjectSettingsView.vue', () => {
     expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {
       title: 'Updated Project',
     });
-    expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'success' })
-    );
+    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
   test('shows error toast on update failure', async () => {
@@ -138,8 +136,6 @@ describe('ProjectSettingsView.vue', () => {
     await wrapper.vm.saveProjectName();
     await flushPromises();
 
-    expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({ severity: 'error' })
-    );
+    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
   });
 });

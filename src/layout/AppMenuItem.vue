@@ -42,21 +42,17 @@ const isActiveMenu = ref<boolean>(false);
 const itemKey = ref<string | undefined>(undefined);
 
 onBeforeMount(() => {
-  itemKey.value = props.parentItemKey
-    ? props.parentItemKey + '-' + props.index
-    : String(props.index);
+  itemKey.value = props.parentItemKey ? props.parentItemKey + '-' + props.index : String(props.index);
 
   const activeItem = layoutState.activeMenuItem;
 
-  isActiveMenu.value =
-    activeItem === itemKey.value || activeItem ? activeItem.startsWith(itemKey.value + '-') : false;
+  isActiveMenu.value = activeItem === itemKey.value || activeItem ? activeItem.startsWith(itemKey.value + '-') : false;
 });
 
 watch(
   () => layoutState.activeMenuItem,
   (newVal) => {
-    isActiveMenu.value =
-      newVal !== undefined && (newVal === itemKey.value || newVal.startsWith(itemKey.value + '-'));
+    isActiveMenu.value = newVal !== undefined && (newVal === itemKey.value || newVal.startsWith(itemKey.value + '-'));
   },
 );
 
@@ -66,10 +62,7 @@ const itemClick = (event: Event, item: MenuItem) => {
     return;
   }
 
-  if (
-    (item.to || item.url) &&
-    (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)
-  ) {
+  if ((item.to || item.url) && (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)) {
     toggleMenu();
   }
 
@@ -81,17 +74,13 @@ const itemClick = (event: Event, item: MenuItem) => {
     item.navigate();
   }
 
-  const foundItemKey = item.items
-    ? isActiveMenu.value
-      ? props.parentItemKey
-      : itemKey
-    : itemKey.value;
+  const foundItemKey = item.items ? (isActiveMenu.value ? props.parentItemKey : itemKey) : itemKey.value;
 
   setActiveMenuItem(foundItemKey);
 };
 
 const checkActiveRoute = (item: MenuItem) => {
-  if(item.to === undefined) {
+  if (item.to === undefined) {
     return false;
   }
   return route.path.includes(item.to);
@@ -112,11 +101,7 @@ const checkActiveRoute = (item: MenuItem) => {
     >
       <template v-if="item.icon">
         <i v-if="item.icon.type === 'pi'" :class="item.icon.name" class="layout-menuitem-icon"></i>
-        <FontAwesomeIcon
-          v-else-if="item.icon.type === 'fa'"
-          :icon="item.icon.name"
-          class="layout-menuitem-icon"
-        />
+        <FontAwesomeIcon v-else-if="item.icon.type === 'fa'" :icon="item.icon.name" class="layout-menuitem-icon" />
       </template>
       <span class="layout-menuitem-text">{{ t(item.label) }}</span>
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>
@@ -130,11 +115,7 @@ const checkActiveRoute = (item: MenuItem) => {
     >
       <template v-if="item.icon">
         <i v-if="item.icon.type === 'pi'" :class="item.icon.name" class="layout-menuitem-icon"></i>
-        <FontAwesomeIcon
-          v-else-if="item.icon.type === 'fa'"
-          :icon="item.icon.name"
-          class="layout-menuitem-icon"
-        />
+        <FontAwesomeIcon v-else-if="item.icon.type === 'fa'" :icon="item.icon.name" class="layout-menuitem-icon" />
       </template>
       <span class="layout-menuitem-text">{{ t(item.label) }}</span>
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler"></i>

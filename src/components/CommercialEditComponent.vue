@@ -56,10 +56,7 @@ const fields: {
     name: 'description',
     label: 'Beschreibung',
     type: 'textarea',
-    validations: [
-      (value: any) =>
-        value.length <= 500 ? null : 'Beschreibung muss 500 Zeichen oder weniger sein',
-    ],
+    validations: [(value: any) => (value.length <= 500 ? null : 'Beschreibung muss 500 Zeichen oder weniger sein')],
   },
 ];
 
@@ -75,10 +72,7 @@ const initialCommercialData = ref<CommercialUnit>({
 onMounted(async () => {
   if (props.commercialId) {
     try {
-      initialCommercialData.value = await commercialService.getCommercial(
-        props.projectId,
-        props.commercialId,
-      );
+      initialCommercialData.value = await commercialService.getCommercial(props.projectId, props.commercialId);
     } catch (error) {
       console.error('Error fetching commercial data:', error);
     }

@@ -55,9 +55,7 @@ describe('RentableUnitsView', () => {
 
   it('opens delete confirmation dialog when delete button is clicked', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        { key: '1', data: { title: 'Test', type: EntityType.Property }, children: [] },
-      ],
+      properties: [{ key: '1', data: { title: 'Test', type: EntityType.Property }, children: [] }],
       first: 0,
       size: 1,
       total: 1,

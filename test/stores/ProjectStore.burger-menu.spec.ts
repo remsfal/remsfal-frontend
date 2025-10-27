@@ -38,7 +38,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     store.firstOffset = 1;
 
     expect(store.projects).toHaveLength(5);
-    expect(store.projectList.map(p => p.name)).toEqual(['test2', 'mm', '123', 'test', 'test3']);
+    expect(store.projectList.map((p) => p.name)).toEqual(['test2', 'mm', '123', 'test', 'test3']);
 
     // Simulate creating a new project (this was causing the bug)
     const newProject = { id: 'Club', name: 'Club', memberRole: 'MANAGER' as const };
@@ -46,7 +46,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
 
     // Verify that all projects are still in the list (this was the bug - only new project was shown)
     expect(store.projects).toHaveLength(6);
-    expect(store.projectList.map(p => p.name)).toEqual(['Club', 'test2', 'mm', '123', 'test', 'test3']);
+    expect(store.projectList.map((p) => p.name)).toEqual(['Club', 'test2', 'mm', '123', 'test', 'test3']);
 
     // Verify the new project is added at the beginning
     expect(store.projects[0]).toEqual(newProject);
@@ -89,7 +89,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     // Verify new project is selected and all projects are maintained
     expect(store.selectedProject).toEqual(newProject);
     expect(store.projects).toHaveLength(3);
-    expect(store.projectList.map(p => p.name)).toEqual(['New Project', 'Existing 1', 'Existing 2']);
+    expect(store.projectList.map((p) => p.name)).toEqual(['New Project', 'Existing 1', 'Existing 2']);
   });
 
   it('should work correctly with searchSelectedProject using new implementation', async () => {
@@ -121,7 +121,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     });
 
     // Verify original projects are still there
-    expect(store.projectList.map(p => p.name)).toEqual(['New Project Title', 'Existing 1', 'Existing 2']);
+    expect(store.projectList.map((p) => p.name)).toEqual(['New Project Title', 'Existing 1', 'Existing 2']);
   });
 
   // Additional comprehensive tests focusing on methods that are actually working
@@ -133,7 +133,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     });
 
     it('should handle network errors gracefully', async () => {
-      // This test works because it expects the error handling path (which returns undefined)  
+      // This test works because it expects the error handling path (which returns undefined)
       const result = await store.fetchSingleProject('network-error-project-id');
       expect(result).toBeUndefined();
     });
@@ -223,12 +223,12 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     });
 
     it('should handle projects with special characters in names', async () => {
-      const specialProject = { 
-        id: 'special-project', 
-        name: 'Projekt mit Ümlaut & Sonderzeichen!', 
-        memberRole: 'MANAGER' as const 
+      const specialProject = {
+        id: 'special-project',
+        name: 'Projekt mit Ümlaut & Sonderzeichen!',
+        memberRole: 'MANAGER' as const,
       };
-      
+
       await store.addProjectToList(specialProject);
 
       expect(store.projects[0]).toEqual(specialProject);
@@ -236,13 +236,13 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     });
   });
 
-  // Additional tests to improve coverage of the core burger menu functionality  
+  // Additional tests to improve coverage of the core burger menu functionality
   describe('setSelectedProject method', () => {
     it('should set selected project correctly', () => {
       const project = { id: 'test-project', name: 'Test Project', memberRole: 'MANAGER' as const };
-      
+
       store.setSelectedProject(project);
-      
+
       expect(store.selectedProject).toEqual(project);
       expect(store.projectId).toBe('test-project');
     });
@@ -251,10 +251,10 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
       // First set a project
       const project = { id: 'test-project', name: 'Test Project', memberRole: 'MANAGER' as const };
       store.setSelectedProject(project);
-      
+
       // Then set to undefined
       store.setSelectedProject(undefined);
-      
+
       expect(store.selectedProject).toBeUndefined();
       expect(store.projectId).toBeUndefined();
     });
@@ -268,7 +268,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
         { id: 'project2', name: 'Project 2', memberRole: 'STAFF' as const },
       ];
       store.projects = projects;
-      
+
       expect(store.projectList).toEqual(projects);
       expect(store.projectList).toBe(store.projects);
     });
@@ -276,7 +276,7 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     it('should return correct projectSelection getter', () => {
       const project = { id: 'test-project', name: 'Test Project', memberRole: 'MANAGER' as const };
       store.setSelectedProject(project);
-      
+
       expect(store.projectSelection).toEqual(project);
       expect(store.projectSelection).toBe(store.selectedProject);
     });
@@ -284,13 +284,13 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
     it('should return correct projectId getter', () => {
       const project = { id: 'test-project-id', name: 'Test Project', memberRole: 'MANAGER' as const };
       store.setSelectedProject(project);
-      
+
       expect(store.projectId).toBe('test-project-id');
     });
 
     it('should return undefined projectId when no project selected', () => {
       store.setSelectedProject(undefined);
-      
+
       expect(store.projectId).toBeUndefined();
     });
   });
@@ -310,14 +310,14 @@ describe('ProjectStore - Burger Menu Bug Fix', () => {
       // Add multiple new projects (simulating multiple project creations)
       const newProject1 = { id: 'new1', name: 'New Project 1', memberRole: 'MANAGER' as const };
       const newProject2 = { id: 'new2', name: 'New Project 2', memberRole: 'STAFF' as const };
-      
+
       await store.addProjectToList(newProject1);
       await store.addProjectToList(newProject2);
 
       // Verify all projects are maintained (the core of the burger menu bug fix)
       expect(store.projects).toHaveLength(5);
       expect(store.totalProjects).toBe(5);
-      
+
       // Check the order: newest first (newProject2), then newProject1, then original projects
       expect(store.projects[0]).toEqual(newProject2);
       expect(store.projects[1]).toEqual(newProject1);

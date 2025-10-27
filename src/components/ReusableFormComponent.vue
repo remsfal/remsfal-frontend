@@ -162,11 +162,7 @@ const handleCancel = () => {
     </div>
 
     <div class="form-actions">
-      <Button
-        :label="cancelButtonText || 'Cancel'"
-        class="p-button-secondary"
-        @click="handleCancel"
-      />
+      <Button :label="cancelButtonText || 'Cancel'" class="p-button-secondary" @click="handleCancel" />
       <Button
         :label="saveButtonText || 'Save'"
         :disabled="!isChanged || !isFormValid"

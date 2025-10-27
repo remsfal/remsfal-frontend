@@ -43,7 +43,7 @@ describe('CommercialView.vue', () => {
     expect(wrapper.vm.title).toBe('Initial Commercial Title');
     expect(wrapper.vm.description).toBe('Initial Commercial Description');
     expect(wrapper.vm.commercialSpace).toBe(100); // mapped from netFloorArea
-    expect(wrapper.vm.heatingSpace).toBe(1);      // mapped from technicalServicesArea
+    expect(wrapper.vm.heatingSpace).toBe(1); // mapped from technicalServicesArea
     expect(wrapper.vm.location).toBe('');
   });
 
@@ -54,9 +54,7 @@ describe('CommercialView.vue', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.validationErrors).toContain('Gewerbefläche darf nicht negativ sein.');
     expect(wrapper.vm.validationErrors).toContain('Heizfläche darf nicht negativ sein.');
-    expect(wrapper.vm.validationErrors).toContain(
-      'Beschreibung darf maximal 500 Zeichen lang sein.',
-    );
+    expect(wrapper.vm.validationErrors).toContain('Beschreibung darf maximal 500 Zeichen lang sein.');
     expect(wrapper.vm.isValid).toBe(false);
   });
 
@@ -91,7 +89,7 @@ describe('CommercialView.vue', () => {
       expect.objectContaining({
         title: 'Neuer Titel',
         description: 'Neue Beschreibung',
-        netFloorArea: 150,  // updated key
+        netFloorArea: 150, // updated key
         heatingSpace: 50,
         location: '',
       }),

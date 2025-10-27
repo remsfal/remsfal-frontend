@@ -79,7 +79,7 @@ describe('Burger Menu Mobile Behavior - Bug Fix', () => {
     window.innerWidth = 375; // Mobile
     layoutState.staticMenuMobileActive = false;
     layoutState.staticMenuDesktopInactive = false;
-    
+
     toggleMenu();
     expect(layoutState.staticMenuMobileActive).toBe(true);
     expect(layoutState.staticMenuDesktopInactive).toBe(false);
@@ -88,7 +88,7 @@ describe('Burger Menu Mobile Behavior - Bug Fix', () => {
     toggleMenu();
     expect(layoutState.staticMenuMobileActive).toBe(false);
 
-    // Test desktop behavior  
+    // Test desktop behavior
     window.innerWidth = 1200; // Desktop
     toggleMenu();
     expect(layoutState.staticMenuDesktopInactive).toBe(true);

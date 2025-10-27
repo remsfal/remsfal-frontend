@@ -10,11 +10,9 @@ export default class ProjectService {
 
   // Get projects with pagination
   async getProjects(offset = 0, limit = 10): Promise<ProjectList> {
-    const projectList = await typedRequest<'/api/v1/projects', 'get', ProjectList>(
-      'get',
-      ProjectService.BASE_PATH,
-      { params: { query: { offset, limit } } },
-    );
+    const projectList = await typedRequest<'/api/v1/projects', 'get', ProjectList>('get', ProjectService.BASE_PATH, {
+      params: { query: { offset, limit } },
+    });
     console.log('GET projects:', projectList);
     return projectList;
   }
@@ -35,11 +33,9 @@ export default class ProjectService {
 
   // Create a new project
   async createProject(title: string): Promise<Project> {
-    const project = await typedRequest<'/api/v1/projects', 'post', Project>(
-      'post',
-      ProjectService.BASE_PATH,
-      { body: { title } },
-    );
+    const project = await typedRequest<'/api/v1/projects', 'post', Project>('post', ProjectService.BASE_PATH, {
+      body: { title },
+    });
     console.log('POST create project:', project);
     return project;
   }
@@ -73,11 +69,9 @@ export default class ProjectService {
 
   // Delete a project
   async deleteProject(projectId: string): Promise<void> {
-    await typedRequest<'/api/v1/projects/{projectId}', 'delete'>(
-      'delete',
-      `${ProjectService.BASE_PATH}/{projectId}`,
-      { pathParams: { projectId } },
-    );
+    await typedRequest<'/api/v1/projects/{projectId}', 'delete'>('delete', `${ProjectService.BASE_PATH}/{projectId}`, {
+      pathParams: { projectId },
+    });
     console.log('DELETE project', projectId);
   }
 }

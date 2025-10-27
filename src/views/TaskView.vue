@@ -122,12 +122,7 @@ watch(
     </div>
 
     <div class="grid grid-cols-12 gap-4">
-      <Dialog
-        v-model:visible="visible"
-        modal
-        header="Aufgabe erstellen"
-        :style="{ width: '50rem' }"
-      >
+      <Dialog v-model:visible="visible" modal header="Aufgabe erstellen" :style="{ width: '50rem' }">
         <div class="flex items-center gap-6 mb-6">
           <label for="title" class="font-semibold w-24">Titel</label>
           <InputText id="title" v-model="title" class="flex-auto" autocomplete="off" />

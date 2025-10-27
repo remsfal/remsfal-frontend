@@ -23,9 +23,7 @@ export function useLayout() {
     layoutState.staticMenuDesktopInactive = fullscreen;
   };
 
-  const setActiveMenuItem = (
-    item: string | Ref<string | undefined, string | undefined> | undefined,
-  ) => {
+  const setActiveMenuItem = (item: string | Ref<string | undefined, string | undefined> | undefined) => {
     if (item !== undefined && typeof item !== 'string') {
       layoutState.activeMenuItem = item.value;
     } else {
@@ -60,9 +58,7 @@ export function useLayout() {
     }
   };
 
-  const isSidebarActive = computed(
-    () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive,
-  );
+  const isSidebarActive = computed(() => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive);
 
   const isDarkTheme = computed(() => layoutConfig.darkTheme);
 

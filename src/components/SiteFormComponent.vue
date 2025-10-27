@@ -45,9 +45,7 @@ const fields: Field[] = [
     required: true,
     validations: [
       (value: unknown) =>
-        typeof value === 'string' && value.length > 255
-          ? 'Ein Titel darf nicht mehr als 255 Zeichen lang sein.'
-          : null,
+        typeof value === 'string' && value.length > 255 ? 'Ein Titel darf nicht mehr als 255 Zeichen lang sein.' : null,
     ],
   },
   { name: 'description', label: 'Beschreibung', type: FieldType.Textarea },
@@ -55,9 +53,7 @@ const fields: Field[] = [
     name: 'usableSpace',
     label: 'Nutzfläche (qm)',
     type: FieldType.Text,
-    validations: [
-      (value: unknown) => (!isNaN(Number(value)) ? null : 'Muss eine Zahl sein'),
-    ],
+    validations: [(value: unknown) => (!isNaN(Number(value)) ? null : 'Muss eine Zahl sein')],
   },
   { name: 'street', label: 'Straße und Hausnummer', type: FieldType.Text },
   { name: 'city', label: 'Stadt', type: FieldType.Text },
@@ -66,16 +62,18 @@ const fields: Field[] = [
   { name: 'country', label: 'Land', type: FieldType.Text },
 ];
 
-const initialValues = ref<Record<string, unknown>>(props.initialValues ?? {
-  title: '',
-  description: '',
-  usableSpace: '',
-  street: '',
-  city: '',
-  zip: '',
-  province: '',
-  country: '',
-});
+const initialValues = ref<Record<string, unknown>>(
+  props.initialValues ?? {
+    title: '',
+    description: '',
+    usableSpace: '',
+    street: '',
+    city: '',
+    zip: '',
+    province: '',
+    country: '',
+  },
+);
 
 const showFormer = ref(false);
 // Backend-Aufruf auskommentiert, da das backend mit den Daten noch nicht fertig ist.
@@ -93,7 +91,6 @@ onMounted(async () => {
   }
 });
 */
-
 </script>
 
 <template>
@@ -121,9 +118,9 @@ onMounted(async () => {
     <Button
       icon="pi pi-chevron-down"
       class="mb-2"
-      @click="showFormer = !showFormer"
       :aria-expanded="showFormer"
       :label="showFormer ? 'Ehemalige Mieter ausblenden' : 'Ehemalige Mieter anzeigen'"
+      @click="showFormer = !showFormer"
     ></Button>
     <div v-if="showFormer" class="mt-4">
       <h2 class="text-xl font-bold mb-4">Ehemalige Mieter</h2>
@@ -140,7 +137,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-
-
-

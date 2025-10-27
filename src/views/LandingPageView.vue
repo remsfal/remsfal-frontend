@@ -23,13 +23,7 @@ const { t } = useI18n();
     </div>
     <div class="widget-column">
       <div class="widget">
-        <svg
-          fill="#000000"
-          width="40px"
-          height="40px"
-          viewBox="0 0 64 64"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg fill="#000000" width="40px" height="40px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
           <g id="Layer_24" data-name="Layer 24">
             <path
               d="M60,13H53V9a2,2,0,0,0-2-2H48.72A2,2,0,0,0,47,6H41a3,3,0,0,0-3-3H6A3,3,0,0,0,3,6V59a2,2,0,0,0,2,2H33a2,2,0,0,0,2-2V50a3,3,0,0,0-3-3H21V36.9a12.88,12.88,0,0,0,1.5.1A12.51,12.51,0,0,0,35,25h3a3,3,0,0,0,3-3h6a2,2,0,0,0,1.72-1H51a2,2,0,0,0,2-2V15h7a1,1,0,0,0,0-2ZM9,13a1,1,0,0,1-1-1V8A1,1,0,0,1,9,7H25a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1ZM29.91,31.91a10.35,10.35,0,0,1-8.91,3V34.5A9.51,9.51,0,0,1,30.5,25H33A10.41,10.41,0,0,1,29.91,31.91ZM37,12a1,1,0,0,1-1,1H28a1,1,0,0,1-1-1V8a1,1,0,0,1,1-1h8a1,1,0,0,1,1,1Z"
@@ -39,13 +33,7 @@ const { t } = useI18n();
         <h2 class="header-widget">{{ t('landingPage.header.defect-management') }}</h2>
       </div>
       <div class="widget">
-        <svg
-          fill="#000000"
-          width="40px"
-          height="40px"
-          viewBox="0 0 1920 1920"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg fill="#000000" width="40px" height="40px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
           <g fill-rule="evenodd">
             <path
               d="M1185.471 0v564.706h564.705V1920H169V0h1016.471Zm-225.77 1355.294H507.823v113.054h451.878v-113.054Zm338.711-225.881H507.823v112.94h790.589v-112.94Zm-112.941-225.884H507.823v112.941h677.648V903.529Zm225.882-225.882h-903.53v112.941h903.53V677.647ZM959.701 451.878H507.823v112.941h451.878V451.878Z"

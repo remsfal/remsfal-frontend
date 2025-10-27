@@ -103,9 +103,7 @@ describe('Service Worker Tests', () => {
   });
 
   it('should handle sync events with tag "sync-projects"', async () => {
-    const getAllProjectsMock = sinon
-      .stub()
-      .resolves([{ title: 'Offline Project', createdAt: 123456 }]);
+    const getAllProjectsMock = sinon.stub().resolves([{ title: 'Offline Project', createdAt: 123456 }]);
     global.getAllProjects = getAllProjectsMock;
 
     const deleteProjectMock = sinon.stub().resolves();

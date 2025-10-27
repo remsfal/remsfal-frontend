@@ -1,4 +1,5 @@
-\<script setup lang="ts">
+\
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { apartmentService } from '@/services/ApartmentService';
@@ -32,13 +33,14 @@ const originalValues = ref({
 });
 
 // Detect changes
-const hasChanges = computed(() => 
-  title.value !== originalValues.value.title ||
-  location.value !== originalValues.value.location ||
-  heatingSpace.value !== originalValues.value.heatingSpace ||
-  livingSpace.value !== originalValues.value.livingSpace ||
-  usableSpace.value !== originalValues.value.usableSpace ||
-  description.value !== originalValues.value.description
+const hasChanges = computed(
+  () =>
+    title.value !== originalValues.value.title ||
+    location.value !== originalValues.value.location ||
+    heatingSpace.value !== originalValues.value.heatingSpace ||
+    livingSpace.value !== originalValues.value.livingSpace ||
+    usableSpace.value !== originalValues.value.usableSpace ||
+    description.value !== originalValues.value.description,
 );
 
 // Validation
@@ -46,7 +48,7 @@ const validationErrors = computed(() => {
   const errors: string[] = [];
   if (heatingSpace.value === null) errors.push('Heizfläche ist erforderlich.');
   else if (heatingSpace.value < 0) errors.push('Heizfläche darf nicht negativ sein.');
-  
+
   if (livingSpace.value === null) errors.push('Wohnfläche ist erforderlich.');
   else if (livingSpace.value < 0) errors.push('Wohnfläche darf nicht negativ sein.');
 
@@ -66,10 +68,7 @@ const fetchApartment = async () => {
   if (!props.projectId || !props.unitId) return;
 
   try {
-    const data = await apartmentService.getApartment(
-      props.projectId, 
-      props.unitId
-    ) as {
+    const data = (await apartmentService.getApartment(props.projectId, props.unitId)) as {
       title?: string;
       location?: string;
       heatingSpace?: number | null;
@@ -211,11 +210,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             Speichern
           </button>
 
-          <button
-            type="button"
-            class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-            @click="cancel"
-          >
+          <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500" @click="cancel">
             Abbrechen
           </button>
         </div>

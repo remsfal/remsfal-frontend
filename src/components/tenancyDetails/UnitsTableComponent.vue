@@ -51,20 +51,14 @@ const loadDropdownOptions = async () => {
     }));
 
     // Recursive function to get all units
-    const getAllUnits = (
-      nodes: RentableUnitTreeNode[],
-    ): Array<{ label: string; value: string }> => {
+    const getAllUnits = (nodes: RentableUnitTreeNode[]): Array<{ label: string; value: string }> => {
       return nodes.reduce(
         (acc, node) => {
           if (node?.data?.title) {
             acc.push({ label: node.data.title, value: node.data.title });
           }
           if (node?.children?.length) {
-            acc.push(
-              ...getAllUnits(
-                node.children.filter((n): n is RentableUnitTreeNode => n !== undefined),
-              ),
-            );
+            acc.push(...getAllUnits(node.children.filter((n): n is RentableUnitTreeNode => n !== undefined)));
           }
           return acc;
         },
@@ -119,9 +113,7 @@ const deleteRow = (index: number) => {
 };
 
 const displayedColumns = computed(() =>
-  props.isDeleteButtonEnabled
-    ? [...columns.value, { field: 'actions', header: 'Aktionen' }]
-    : columns.value,
+  props.isDeleteButtonEnabled ? [...columns.value, { field: 'actions', header: 'Aktionen' }] : columns.value,
 );
 </script>
 
@@ -129,12 +121,7 @@ const displayedColumns = computed(() =>
   <div class="text-lg font-semibold text-[2rem]">Mietobjekte</div>
   <Card>
     <template #header>
-      <Button
-        label="Neues Mietobjekt hinzufügen"
-        icon="pi pi-plus"
-        class="ml-6 mt-4"
-        @click="addNewRow"
-      />
+      <Button label="Neues Mietobjekt hinzufügen" icon="pi pi-plus" class="ml-6 mt-4" @click="addNewRow" />
     </template>
     <template #content>
       <DataTable
@@ -166,11 +153,11 @@ const displayedColumns = computed(() =>
           sortable
           style="width: 25%"
         >
-          <template #editor="{ data, field }" v-if="col.field !== 'actions'">
+          <template v-if="col.field !== 'actions'" #editor="{ data, field }">
             <Select
+              v-if="col.field !== 'actions'"
               v-model="data[field]"
               :options="field === 'rentalObject' ? rentalObjects : unitTypes"
-              v-if="col.field !== 'actions'"
               optionLabel="label"
               optionValue="value"
               placeholder="Auswählen..."

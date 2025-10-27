@@ -23,10 +23,7 @@ const router = useRouter();
 const projectStore = useProjectStore();
 
 watch(projectTitle, (newTitle) => {
-  errorMessage.value =
-    newTitle.length > maxLength
-      ? t('newProjectForm.title.error', { maxLength })
-      : '';
+  errorMessage.value = newTitle.length > maxLength ? t('newProjectForm.title.error', { maxLength }) : '';
 });
 
 async function createProject() {
@@ -68,11 +65,11 @@ async function createProject() {
     const projectItem = {
       id: newProject.id,
       name: newProject.title,
-      memberRole: 'MANAGER' as const // Default role for project creator
+      memberRole: 'MANAGER' as const, // Default role for project creator
     };
     await projectStore.addProjectToList(projectItem);
     projectStore.setSelectedProject(projectItem);
-    
+
     await router.push({ name: 'ProjectDashboard', params: { projectId: newProject.id } });
 
     toast.add({

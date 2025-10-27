@@ -44,15 +44,15 @@ describe('TenancyDataComponent', () => {
         },
       },
     });
-  
+
     // Simulate PrimeVue DatePicker emitting a new date
     const datePicker = wrapper.findComponent({ name: 'DatePicker' });
     datePicker.vm.$emit('update:modelValue', today);
-  
+
     await wrapper.vm.$nextTick();
-  
+
     const emitted = wrapper.emitted('onChange') as unknown[][];
     expect(emitted).toBeTruthy();
     expect((emitted[0][0] as any).startOfRental).toEqual(today.toISOString());
-  });   
+  });
 });

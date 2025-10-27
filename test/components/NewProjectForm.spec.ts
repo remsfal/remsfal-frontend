@@ -16,7 +16,7 @@ vi.mock('vue-router', () => ({
 describe('NewProjectForm.vue', () => {
   let wrapper: VueWrapper<any>;
   let pushMock: ReturnType<typeof vi.fn>;
-  let storeMock: { 
+  let storeMock: {
     addProjectToList: ReturnType<typeof vi.fn>;
     setSelectedProject: ReturnType<typeof vi.fn>;
   };
@@ -29,9 +29,9 @@ describe('NewProjectForm.vue', () => {
       title: 'Valid Project',
     });
 
-    storeMock = { 
+    storeMock = {
       addProjectToList: vi.fn(),
-      setSelectedProject: vi.fn()
+      setSelectedProject: vi.fn(),
     };
     (useProjectStore as unknown as () => typeof storeMock) = () => storeMock;
 
@@ -72,12 +72,12 @@ describe('NewProjectForm.vue', () => {
     expect(storeMock.addProjectToList).toHaveBeenCalledWith({
       id: '1',
       name: 'Valid Project',
-      memberRole: 'MANAGER'
+      memberRole: 'MANAGER',
     });
     expect(storeMock.setSelectedProject).toHaveBeenCalledWith({
       id: '1',
       name: 'Valid Project',
-      memberRole: 'MANAGER'
+      memberRole: 'MANAGER',
     });
     expect(pushMock).toHaveBeenCalledWith({
       name: 'ProjectDashboard',

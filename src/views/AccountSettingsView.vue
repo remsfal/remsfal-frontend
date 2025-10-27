@@ -489,12 +489,7 @@ const isDisabled = computed(() => {
               </div>
               <div class="input-container">
                 <label class="label" for="zip">Postleitzahl*:</label>
-                <InputText
-                  id="zip"
-                  v-model="editedAddress.zip"
-                  :invalid="errorMessage.zip !== ''"
-                  @blur="getCity()"
-                />
+                <InputText id="zip" v-model="editedAddress.zip" :invalid="errorMessage.zip !== ''" @blur="getCity()" />
                 <Message
                   class="error"
                   :class="{ active: errorMessage.zip }"
@@ -666,7 +661,7 @@ const isDisabled = computed(() => {
           >
             <p>Daten konnten nicht gespeichert werden!</p>
           </Dialog>
-       </div>
+        </div>
       </div>
     </div>
   </div>

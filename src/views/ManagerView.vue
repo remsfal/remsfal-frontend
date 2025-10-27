@@ -28,12 +28,7 @@ const close = () => {
       </div>
     </div>
     <div class="col-span-2">
-      <Button
-        :label="t('projectSelection.add')"
-        icon="pi pi-plus"
-        style="width: auto"
-        @click="open"
-      />
+      <Button :label="t('projectSelection.add')" icon="pi pi-plus" style="width: auto" @click="open" />
       <Dialog
         v-model:visible="display"
         :header="t('projectSelection.add')"

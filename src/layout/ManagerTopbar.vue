@@ -88,11 +88,7 @@ loadUnreadCount();
       <i class="pi pi-plus"></i>
       <span>{{ t('toolbar.newProject') }}</span>
     </Button>
-    <Button
-      v-if="sessionStore.user != null"
-      class="layout-topbar-action"
-      @click="onAccountSettingsClick()"
-    >
+    <Button v-if="sessionStore.user != null" class="layout-topbar-action" @click="onAccountSettingsClick()">
       <i class="pi pi-user"></i>
       <span>{{ sessionStore.user.email }}</span>
     </Button>
@@ -111,11 +107,7 @@ loadUnreadCount();
       <i class="pi pi-sign-out"></i>
       <span>{{ t('toolbar.logout') }}</span>
     </Button>
-    <Button
-      v-if="sessionStore.user == null"
-      class="layout-topbar-action"
-      @click="login('/projects')"
-    >
+    <Button v-if="sessionStore.user == null" class="layout-topbar-action" @click="login('/projects')">
       <i class="pi pi-sign-in"></i>
       <span>{{ t('toolbar.login') }}</span>
     </Button>

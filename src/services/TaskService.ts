@@ -27,25 +27,17 @@ export type ModifyTaskBody =
   paths['/api/v1/projects/{projectId}/tasks/{taskId}']['patch']['requestBody']['content']['application/json'];
 
 export class TaskService {
-  async getTasks(
-    projectId: string,
-    status?: Status,
-    ownerId?: string,
-  ): Promise<{ tasks: TaskItem[] }> {
-    return typedRequest<'/api/v1/projects/{projectId}/tasks', 'get'>(
-      'get',
-      '/api/v1/projects/{projectId}/tasks',
-      {
-        params: {
-          path: { projectId },
-          query: {
-            ...(status ? { status } : {}),
-            ...(ownerId ? { owner: ownerId } : {}),
-          },
+  async getTasks(projectId: string, status?: Status, ownerId?: string): Promise<{ tasks: TaskItem[] }> {
+    return typedRequest<'/api/v1/projects/{projectId}/tasks', 'get'>('get', '/api/v1/projects/{projectId}/tasks', {
+      params: {
+        path: { projectId },
+        query: {
+          ...(status ? { status } : {}),
+          ...(ownerId ? { owner: ownerId } : {}),
         },
-        pathParams: { projectId },
       },
-    ) as Promise<{ tasks: TaskItem[] }>;
+      pathParams: { projectId },
+    }) as Promise<{ tasks: TaskItem[] }>;
   }
 
   async getTask(projectId: string, taskId: string): Promise<TaskDetail> {
@@ -60,15 +52,11 @@ export class TaskService {
   }
 
   async createTask(projectId: string, body: CreateTaskBody) {
-    return typedRequest<'/api/v1/projects/{projectId}/tasks', 'post'>(
-      'post',
-      '/api/v1/projects/{projectId}/tasks',
-      {
-        params: { path: { projectId } },
-        pathParams: { projectId },
-        body,
-      },
-    );
+    return typedRequest<'/api/v1/projects/{projectId}/tasks', 'post'>('post', '/api/v1/projects/{projectId}/tasks', {
+      params: { path: { projectId } },
+      pathParams: { projectId },
+      body,
+    });
   }
 
   async modifyTask(projectId: string, taskId: string, body: ModifyTaskBody) {

@@ -35,9 +35,7 @@ const fetchProject = async (id: string) => {
 
 // Computed: button is enabled only if name changed
 const canSave = computed(
-  () =>
-    projectName.value.trim() !== originalProjectName.value.trim() &&
-    projectName.value.trim() !== '',
+  () => projectName.value.trim() !== originalProjectName.value.trim() && projectName.value.trim() !== '',
 );
 
 // Save project name

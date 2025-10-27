@@ -16,7 +16,7 @@ const mockSite: SiteUnit = {
   },
   title: 'New Site',
   description: 'A description of the new site.',
-  space: 1000, 
+  space: 1000,
 };
 
 beforeAll(() => server.listen());
@@ -43,7 +43,4 @@ describe('SiteService (MSW)', () => {
   it('should delete a site', async () => {
     await expect(siteService.deleteSite(projectId, siteId)).resolves.toBe(true);
   });
-  
-  
-  
 });

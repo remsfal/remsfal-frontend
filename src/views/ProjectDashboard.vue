@@ -21,30 +21,42 @@ const statCards = [
     title: 'Projekte',
     value: 6,
     subtext: '+2 seit letzter Woche',
-    color: 'blue'
+    color: 'blue',
   },
   {
     icon: 'pi-exclamation-circle',
     title: 'Offene Issues',
     value: 12,
     subtext: '-1 seit gestern',
-    color: 'yellow'
+    color: 'yellow',
   },
   {
     icon: 'pi pi-check-circle',
     title: 'Abgeschlossene Aufgaben',
     value: 34,
     subtext: '+5 abgeschlossen',
-    color: 'green'
-  }
+    color: 'green',
+  },
 ];
 
 const taskChartData = {
-  labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+  labels: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
-    { label: 'Aufgaben', data: [20,15,16,12,8,13], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 },
-    { label: 'Offene Aufgaben', data: [0,2,4,1,0,7], backgroundColor: '#F97316', borderRadius: 4, barThickness: 12 },
-    { label: 'Erledigte Aufgaben', data: [20,13,12,11,8,6], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 },
+    { label: 'Aufgaben', data: [20, 15, 16, 12, 8, 13], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 },
+    {
+      label: 'Offene Aufgaben',
+      data: [0, 2, 4, 1, 0, 7],
+      backgroundColor: '#F97316',
+      borderRadius: 4,
+      barThickness: 12,
+    },
+    {
+      label: 'Erledigte Aufgaben',
+      data: [20, 13, 12, 11, 8, 6],
+      backgroundColor: '#10B981',
+      borderRadius: 4,
+      barThickness: 12,
+    },
   ],
 };
 
@@ -56,7 +68,7 @@ const taskChartOptions = {
       labels: {
         color: '#374151',
         padding: 20,
-        font: { size: 14, weight: 'bold' }
+        font: { size: 14, weight: 'bold' },
       },
     },
     tooltip: {
@@ -91,19 +103,19 @@ const costChartData = {
       data: [800, 950, 700, 1100, 900, 750, 1000, 950, 900, 1100, 1200, 1300],
       fill: false,
       borderColor: '#10b981',
-      tension: 0.4
-    }
-  ]
+      tension: 0.4,
+    },
+  ],
 };
 
 const costChartOptions = {
   responsive: true,
   plugins: {
-    legend: { position: 'top' }
+    legend: { position: 'top' },
   },
   scales: {
-    y: { beginAtZero: true }
-  }
+    y: { beginAtZero: true },
+  },
 };
 
 const upcomingTasks = [
@@ -113,11 +125,23 @@ const upcomingTasks = [
 ];
 
 const issueChartData = {
-  labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+  labels: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
     { label: 'Offene Issues', data: [5, 7, 4, 6, 8, 3], backgroundColor: '#F59E0B', borderRadius: 4, barThickness: 12 },
-    { label: 'In Bearbeitung', data: [2, 3, 5, 4, 3, 2], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 },
-    { label: 'Erledigte Issues', data: [10, 8, 9, 11, 7, 10], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 },
+    {
+      label: 'In Bearbeitung',
+      data: [2, 3, 5, 4, 3, 2],
+      backgroundColor: '#3B82F6',
+      borderRadius: 4,
+      barThickness: 12,
+    },
+    {
+      label: 'Erledigte Issues',
+      data: [10, 8, 9, 11, 7, 10],
+      backgroundColor: '#10B981',
+      borderRadius: 4,
+      barThickness: 12,
+    },
   ],
 };
 
@@ -131,8 +155,8 @@ const defectChartData = {
       backgroundColor: ['#F87171', '#FBBF24', '#34D399'],
       hoverBackgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
       borderWidth: 1,
-    }
-  ]
+    },
+  ],
 };
 
 const defectChartOptions = {
@@ -143,9 +167,9 @@ const defectChartOptions = {
       display: true,
       color: '#111827',
       font: { weight: 'bold' as const, size: 14 },
-      formatter: (value: number) => value
-    }
-  }
+      formatter: (value: number) => value,
+    },
+  },
 };
 
 const recentActivities = [
@@ -187,11 +211,7 @@ const recentActivities = [
       <template #title>Letzte Aktivitäten</template>
       <template #content>
         <ul class="space-y-4">
-          <li
-            v-for="(activity, index) in recentActivities"
-            :key="index"
-            class="flex items-start gap-4"
-          >
+          <li v-for="(activity, index) in recentActivities" :key="index" class="flex items-start gap-4">
             <span
               class="h-3 w-3 mt-1 rounded-full"
               :class="{
@@ -267,7 +287,7 @@ const recentActivities = [
           :data="defectChartData"
           :options="defectChartOptions"
           :plugins="[ChartDataLabels]"
-          style="max-height: 300px; max-width: 400px; margin: auto;"
+          style="max-height: 300px; max-width: 400px; margin: auto"
         />
       </template>
     </Card>

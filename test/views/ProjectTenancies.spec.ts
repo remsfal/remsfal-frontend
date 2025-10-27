@@ -31,9 +31,7 @@ vi.mock('@/stores/ProjectStore', () => ({
 describe('ProjectTenancies.vue', () => {
   let wrapper: VueWrapper<any>;
 
-  const mockTenants = [
-    { id: '1', firstName: 'John', lastName: 'Doe' },
-  ];
+  const mockTenants = [{ id: '1', firstName: 'John', lastName: 'Doe' }];
   const mockTenancies = [
     { id: 't1', rentalStart: '2023-01-01', rentalEnd: '2024-01-01', listOfTenants: mockTenants, listOfUnits: [] },
   ];

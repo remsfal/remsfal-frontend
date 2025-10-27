@@ -24,11 +24,7 @@ const login = (route: string) => {
 
 <template>
   <AppTopbar>
-    <Button
-      v-if="sessionStore.user != null"
-      class="layout-topbar-action"
-      @click="onAccountSettingsClick()"
-    >
+    <Button v-if="sessionStore.user != null" class="layout-topbar-action" @click="onAccountSettingsClick()">
       <i class="pi pi-user"></i>
       <span>{{ sessionStore.user.email }}</span>
     </Button>
@@ -36,11 +32,7 @@ const login = (route: string) => {
       <i class="pi pi-sign-out"></i>
       <span>{{ t('toolbar.logout') }}</span>
     </Button>
-    <Button
-      v-if="sessionStore.user == null"
-      class="layout-topbar-action"
-      @click="login('/projects')"
-    >
+    <Button v-if="sessionStore.user == null" class="layout-topbar-action" @click="login('/projects')">
       <i class="pi pi-sign-in"></i>
       <span>{{ t('toolbar.login') }}</span>
     </Button>

@@ -86,24 +86,14 @@ function handleTenancyDataChange(updatedTenancy: TenancyItem) {
 <template>
   <div class="p-4">
     <!-- Tenancy data form -->
-    <TenancyDataComponent
-      v-if="tenancy"
-      :tenancy="tenancy"
-      @onChange="handleTenancyDataChange"
-    />
+    <TenancyDataComponent v-if="tenancy" :tenancy="tenancy" @onChange="handleTenancyDataChange" />
 
     <div class="grid grid-cols-1 gap-6">
       <!-- Tenants Table -->
-      <TenantsTableComponent
-        :tenants="tenancy?.tenants || []"
-        :isDeleteButtonEnabled="false"
-      />
+      <TenantsTableComponent :tenants="tenancy?.tenants || []" :isDeleteButtonEnabled="false" />
 
       <!-- Units Table (stubbed, can fetch units separately) -->
-      <UnitsTableComponent
-        :listOfUnits="listOfUnits"
-        :isDeleteButtonEnabled="false"
-      />
+      <UnitsTableComponent :listOfUnits="listOfUnits" :isDeleteButtonEnabled="false" />
 
       <!-- Action buttons -->
       <div class="flex justify-end">

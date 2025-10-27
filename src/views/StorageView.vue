@@ -145,12 +145,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea
-              id="description"
-              v-model="description"
-              rows="3"
-              class="form-textarea w-full"
-            ></textarea>
+            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
           </div>
 
           <!-- Standort -->
@@ -162,12 +157,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Nutzfläche -->
           <div>
             <label for="usableSpace" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
-            <input
-              id="usableSpace"
-              v-model.number="usableSpace"
-              type="number"
-              class="form-input w-full"
-            />
+            <input id="usableSpace" v-model.number="usableSpace" type="number" class="form-input w-full" />
           </div>
         </div>
         <!-- Validierungsfehler -->
@@ -187,11 +177,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             Speichern
           </button>
 
-          <button
-            type="button"
-            class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-            @click="cancel"
-          >
+          <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500" @click="cancel">
             Abbrechen
           </button>
         </div>

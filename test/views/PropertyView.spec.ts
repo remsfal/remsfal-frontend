@@ -84,17 +84,15 @@ describe('PropertyView.vue', () => {
   });
 
   it('calls updateProperty service with correct data when saved', async () => {
-    (propertyService.updateProperty as any).mockImplementation(
-      async (projectId, unitId, payload) => {
-        // Let fetch go through MSW
-        const res = await fetch(`/api/v1/projects/${projectId}/units/${unitId}/property`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        return res.json();
-      },
-    );
+    (propertyService.updateProperty as any).mockImplementation(async (projectId, unitId, payload) => {
+      // Let fetch go through MSW
+      const res = await fetch(`/api/v1/projects/${projectId}/units/${unitId}/property`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      return res.json();
+    });
 
     wrapper.vm.title = 'New Title';
     await wrapper.vm.save();
@@ -105,7 +103,7 @@ describe('PropertyView.vue', () => {
         description: 'Initial Property Description',
         cadastralDistrict: 'Initial District',
         cadastralSection: 'Initial Corridor', // Cadastral section of the property
-        plot: 'Initial Parcel',              // Plot or parcel of the property
+        plot: 'Initial Parcel', // Plot or parcel of the property
         landRegistry: 'Initial LandRegistry',
         economyType: 'GF Wohnen',
         plotArea: 100,

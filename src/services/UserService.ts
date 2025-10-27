@@ -7,45 +7,29 @@ export default class UserService {
 
   // Get current user data, typed from OpenAPI
   async getUser() {
-    return typedRequest<typeof UserService.USER_ENDPOINT, 'get'>(
-      'get',
-      UserService.USER_ENDPOINT
-    );
+    return typedRequest<typeof UserService.USER_ENDPOINT, 'get'>('get', UserService.USER_ENDPOINT);
   }
 
   // Get city info from zip code, typed from OpenAPI
   getCityFromZip(zip: string) {
-    return typedRequest<typeof UserService.ADDRESS_ENDPOINT, 'get'>(
-      'get',
-      UserService.ADDRESS_ENDPOINT,
-      {
-        params: {
-          query: { zip },
-        },
-      }
-    );
+    return typedRequest<typeof UserService.ADDRESS_ENDPOINT, 'get'>('get', UserService.ADDRESS_ENDPOINT, {
+      params: {
+        query: { zip },
+      },
+    });
   }
 
   // Update user with schema-driven request body
-  async updateUser(
-    updatedUser: paths['/api/v1/user']['patch']['requestBody']['content']['application/json']
-  ) {
-    return typedRequest<typeof UserService.USER_ENDPOINT, 'patch'>(
-      'patch',
-      UserService.USER_ENDPOINT,
-      {
-        body: updatedUser,
-      }
-    );
+  async updateUser(updatedUser: paths['/api/v1/user']['patch']['requestBody']['content']['application/json']) {
+    return typedRequest<typeof UserService.USER_ENDPOINT, 'patch'>('patch', UserService.USER_ENDPOINT, {
+      body: updatedUser,
+    });
   }
 
   // Delete user, returns boolean success
   async deleteUser() {
     try {
-      await typedRequest<typeof UserService.USER_ENDPOINT, 'delete'>(
-        'delete',
-        UserService.USER_ENDPOINT
-      );
+      await typedRequest<typeof UserService.USER_ENDPOINT, 'delete'>('delete', UserService.USER_ENDPOINT);
       console.log('DELETE user');
       return true;
     } catch (error) {

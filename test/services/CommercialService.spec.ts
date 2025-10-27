@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { setupServer } from 'msw/node';
-import { handlers } from '../../test/mocks/handlers'; 
+import { handlers } from '../../test/mocks/handlers';
 import { commercialService } from '../../src/services/CommercialService';
 
 const server = setupServer(...handlers);
@@ -56,5 +56,5 @@ describe('CommercialService with MSW', () => {
 
   test('deleteCommercial succeeds', async () => {
     await expect(commercialService.deleteCommercial(projectId, commercialId)).resolves.toBe(true);
-  });  
+  });
 });

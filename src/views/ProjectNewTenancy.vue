@@ -21,11 +21,7 @@ const tenancy = ref<TenancyJson>({
   id: '',
   tenants: [] as UserJson[],
   startOfRental: new Date().toISOString(),
-  endOfRental: new Date(
-    new Date().getFullYear() + 1,
-    new Date().getMonth(),
-    new Date().getDate(),
-  ).toISOString(),
+  endOfRental: new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate()).toISOString(),
   active: false,
 });
 
@@ -79,11 +75,7 @@ function updateUnits(event: TenancyUnitItem[]) {
 onMounted(() => {
   const now = new Date();
   tenancy.value.startOfRental = now.toISOString();
-  tenancy.value.endOfRental = new Date(
-    now.getFullYear() + 1,
-    now.getMonth(),
-    now.getDate(),
-  ).toISOString();
+  tenancy.value.endOfRental = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()).toISOString();
 });
 </script>
 
@@ -118,11 +110,7 @@ onMounted(() => {
         </div>
 
         <div class="space-y-4">
-          <UnitsTableComponent
-            :listOfUnits="units ?? []"
-            :isDeleteButtonEnabled="true"
-            @onChange="updateUnits"
-          />
+          <UnitsTableComponent :listOfUnits="units ?? []" :isDeleteButtonEnabled="true" @onChange="updateUnits" />
         </div>
       </div>
     </div>

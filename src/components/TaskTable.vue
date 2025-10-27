@@ -20,14 +20,7 @@ const props = defineProps<{
         <template #body="slotProps">
           <div class="flex justify-end">
             <RouterLink :to="{ name: 'TaskEdit', params: { taskid: slotProps.data.id } }">
-              <Button
-                icon="pi pi-pencil"
-                severity="success"
-                text
-                raised
-                rounded
-                class="mb-2 mr-2"
-              />
+              <Button icon="pi pi-pencil" severity="success" text raised rounded class="mb-2 mr-2" />
             </RouterLink>
           </div>
         </template>

@@ -24,7 +24,6 @@ describe('ContractorMenu.vue', () => {
     expect(submenus.length).toBe(2);
   });
 
-
   it('should render the correct menu labels', async () => {
     await wrapper.vm.$nextTick();
     const submenuLabels = wrapper.findAll('.layout-submenu .layout-menuitem-text');
@@ -59,5 +58,4 @@ describe('ContractorMenu.vue', () => {
     await wrapper.find('.pi-home').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/contractor');
   });
-
 });

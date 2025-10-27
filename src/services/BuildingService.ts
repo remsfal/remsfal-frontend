@@ -9,11 +9,14 @@ export default class BuildingService {
 
   // Create a new building
   async createBuilding(projectId: string, propertyId: string, building: Building): Promise<Building> {
-    const created = await typedRequest<'/api/v1/projects/{projectId}/properties/{propertyId}/buildings', 'post', Building>(
+    const created = await typedRequest<
+      '/api/v1/projects/{projectId}/properties/{propertyId}/buildings',
       'post',
-      `${BuildingService.BASE_PATH}/{projectId}/properties/{propertyId}/buildings`,
-      { pathParams: { projectId, propertyId }, body: building },
-    );
+      Building
+    >('post', `${BuildingService.BASE_PATH}/{projectId}/properties/{propertyId}/buildings`, {
+      pathParams: { projectId, propertyId },
+      body: building,
+    });
     console.log('POST create building:', created);
     return created;
   }

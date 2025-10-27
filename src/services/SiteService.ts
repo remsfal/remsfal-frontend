@@ -8,14 +8,14 @@ export default class SiteService {
 
   // Create a new site
   async createSite(projectId: string, propertyId: string, data: SiteUnit): Promise<SiteUnit> {
-    const site = await typedRequest<
-      '/api/v1/projects/{projectId}/properties/{propertyId}/sites',
+    const site = await typedRequest<'/api/v1/projects/{projectId}/properties/{propertyId}/sites', 'post', SiteUnit>(
       'post',
-      SiteUnit
-    >('post', `${SiteService.BASE_PATH}/{projectId}/properties/{propertyId}/sites`, {
-      pathParams: { projectId, propertyId },
-      body: data,
-    });
+      `${SiteService.BASE_PATH}/{projectId}/properties/{propertyId}/sites`,
+      {
+        pathParams: { projectId, propertyId },
+        body: data,
+      },
+    );
     console.log('POST create site:', site);
     return site;
   }
@@ -23,13 +23,13 @@ export default class SiteService {
   // Get a single site
   async getSite(projectId: string, siteId: string): Promise<SiteUnit> {
     try {
-      const site = await typedRequest<
-        '/api/v1/projects/{projectId}/sites/{siteId}',
+      const site = await typedRequest<'/api/v1/projects/{projectId}/sites/{siteId}', 'get', SiteUnit>(
         'get',
-        SiteUnit
-      >('get', `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`, {
-        pathParams: { projectId, siteId },
-      });
+        `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`,
+        {
+          pathParams: { projectId, siteId },
+        },
+      );
       console.log('GET site:', site);
       return site;
     } catch (error: any) {
@@ -40,14 +40,14 @@ export default class SiteService {
 
   // Update a site
   async updateSite(projectId: string, siteId: string, data: SiteUnit): Promise<SiteUnit> {
-    const updated = await typedRequest<
-      '/api/v1/projects/{projectId}/sites/{siteId}',
+    const updated = await typedRequest<'/api/v1/projects/{projectId}/sites/{siteId}', 'patch', SiteUnit>(
       'patch',
-      SiteUnit
-    >('patch', `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`, {
-      pathParams: { projectId, siteId },
-      body: data,
-    });
+      `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`,
+      {
+        pathParams: { projectId, siteId },
+        body: data,
+      },
+    );
     console.log('PATCH update site:', updated);
     return updated;
   }

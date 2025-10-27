@@ -12,11 +12,10 @@ export default class ApartmentService {
       '/api/v1/projects/{projectId}/buildings/{buildingId}/apartments',
       'post',
       Apartment
-    >(
-      'post',
-      `${ApartmentService.BASE_PATH}/{projectId}/buildings/{buildingId}/apartments`,
-      { pathParams: { projectId, buildingId }, body: data },
-    );
+    >('post', `${ApartmentService.BASE_PATH}/{projectId}/buildings/{buildingId}/apartments`, {
+      pathParams: { projectId, buildingId },
+      body: data,
+    });
     console.log('POST create apartment:', apartment);
     return apartment;
   }
@@ -24,11 +23,7 @@ export default class ApartmentService {
   // Get a single apartment
   async getApartment(projectId: string, apartmentId: string): Promise<Apartment> {
     try {
-      const apartment = await typedRequest<
-        '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-        'get',
-        Apartment
-      >(
+      const apartment = await typedRequest<'/api/v1/projects/{projectId}/apartments/{apartmentId}', 'get', Apartment>(
         'get',
         `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
         { pathParams: { projectId, apartmentId } },
@@ -43,11 +38,7 @@ export default class ApartmentService {
 
   // Update an apartment
   async updateApartment(projectId: string, apartmentId: string, data: Apartment): Promise<Apartment> {
-    const updated = await typedRequest<
-      '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-      'patch',
-      Apartment
-    >(
+    const updated = await typedRequest<'/api/v1/projects/{projectId}/apartments/{apartmentId}', 'patch', Apartment>(
       'patch',
       `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
       { pathParams: { projectId, apartmentId }, body: data },
@@ -59,10 +50,7 @@ export default class ApartmentService {
   // Delete an apartment (returns boolean for success/failure)
   async deleteApartment(projectId: string, apartmentId: string): Promise<boolean> {
     try {
-      await typedRequest<
-        '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-        'delete'
-      >(
+      await typedRequest<'/api/v1/projects/{projectId}/apartments/{apartmentId}', 'delete'>(
         'delete',
         `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
         { pathParams: { projectId, apartmentId } },

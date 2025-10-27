@@ -232,12 +232,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea
-              id="description"
-              v-model="description"
-              rows="3"
-              class="form-textarea w-full"
-            ></textarea>
+            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
           </div>
 
           <!-- Gemarkung -->
@@ -260,15 +255,8 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
           <!-- Liegenschaftsbuch -->
           <div>
-            <label for="landRegisterEntry" class="block text-gray-700 mb-1"
-              >Liegenschaftsbuch</label
-            >
-            <input
-              id="landRegisterEntry"
-              v-model="landRegisterEntry"
-              type="text"
-              class="form-input w-full"
-            />
+            <label for="landRegisterEntry" class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
+            <input id="landRegisterEntry" v-model="landRegisterEntry" type="text" class="form-input w-full" />
           </div>
 
           <!-- Wirtschaftsart -->
@@ -276,11 +264,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             <label for="usageType" class="block text-gray-700 mb-1">Wirtschaftsart</label>
             <select id="usageType" v-model="usageType" class="form-input w-full">
               <option value="" disabled>Bitte wählen</option>
-              <option
-                v-for="option in usageOptions"
-                :key="option.value ?? option.label"
-                :value="option.value"
-              >
+              <option v-for="option in usageOptions" :key="option.value ?? option.label" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
@@ -289,12 +273,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Grundstücksfläche -->
           <div>
             <label for="plotArea" class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
-            <input
-              id="plotArea"
-              v-model.number="plotArea"
-              type="number"
-              class="form-input w-full"
-            />
+            <input id="plotArea" v-model.number="plotArea" type="number" class="form-input w-full" />
           </div>
 
           <!-- Validierungsfehler -->
@@ -314,11 +293,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               Speichern
             </button>
 
-            <button
-              type="button"
-              class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-              @click="cancel"
-            >
+            <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500" @click="cancel">
               Abbrechen
             </button>
           </div>

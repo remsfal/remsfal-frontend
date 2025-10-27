@@ -32,55 +32,55 @@ class PropertyService {
   private readonly baseUrl = '/api/v1/projects';
 
   async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/properties',
+    return typedRequest<'/api/v1/projects/{projectId}/properties', 'post', PropertyUnit>(
       'post',
-      PropertyUnit
-    >('post', `${this.baseUrl}/{projectId}/properties`, {
-      pathParams: { projectId },
-      body: property,
-    });
+      `${this.baseUrl}/{projectId}/properties`,
+      {
+        pathParams: { projectId },
+        body: property,
+      },
+    );
   }
 
   async getPropertyTree(projectId: string): Promise<PropertyList> {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/properties',
+    return typedRequest<'/api/v1/projects/{projectId}/properties', 'get', PropertyList>(
       'get',
-      PropertyList
-    >('get', `${this.baseUrl}/{projectId}/properties`, {
-      pathParams: { projectId },
-    });
+      `${this.baseUrl}/{projectId}/properties`,
+      {
+        pathParams: { projectId },
+      },
+    );
   }
 
   async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/properties/{propertyId}',
+    return typedRequest<'/api/v1/projects/{projectId}/properties/{propertyId}', 'get', PropertyUnit>(
       'get',
-      PropertyUnit
-    >('get', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
-      pathParams: { projectId, propertyId },
-    });
+      `${this.baseUrl}/{projectId}/properties/{propertyId}`,
+      {
+        pathParams: { projectId, propertyId },
+      },
+    );
   }
 
   async updateProperty(projectId: string, propertyId: string, property: PropertyUnit): Promise<PropertyUnit> {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/properties/{propertyId}',
+    return typedRequest<'/api/v1/projects/{projectId}/properties/{propertyId}', 'patch', PropertyUnit>(
       'patch',
-      PropertyUnit
-    >('patch', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
-      pathParams: { projectId, propertyId },
-      body: property,
-    });
+      `${this.baseUrl}/{projectId}/properties/{propertyId}`,
+      {
+        pathParams: { projectId, propertyId },
+        body: property,
+      },
+    );
   }
 
   async deleteProperty(projectId: string, propertyId: string): Promise<void> {
-    return typedRequest<
-      '/api/v1/projects/{projectId}/properties/{propertyId}',
+    return typedRequest<'/api/v1/projects/{projectId}/properties/{propertyId}', 'delete', void>(
       'delete',
-      void
-    >('delete', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
-      pathParams: { projectId, propertyId },
-    });
+      `${this.baseUrl}/{projectId}/properties/{propertyId}`,
+      {
+        pathParams: { projectId, propertyId },
+      },
+    );
   }
 }
 

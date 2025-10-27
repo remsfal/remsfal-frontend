@@ -14,11 +14,10 @@ export default class CommercialService {
       '/api/v1/projects/{projectId}/buildings/{buildingId}/commercials',
       'post',
       Commercial
-    >(
-      'post',
-      `${CommercialService.BASE_PATH}/{projectId}/buildings/{buildingId}/commercials`,
-      { pathParams: { projectId, buildingId }, body: data },
-    );
+    >('post', `${CommercialService.BASE_PATH}/{projectId}/buildings/{buildingId}/commercials`, {
+      pathParams: { projectId, buildingId },
+      body: data,
+    });
     console.log('POST create commercial:', commercial);
     return commercial;
   }
@@ -30,11 +29,9 @@ export default class CommercialService {
         '/api/v1/projects/{projectId}/commercials/{commercialId}',
         'get',
         Commercial
-      >(
-        'get',
-        `${CommercialService.BASE_PATH}/{projectId}/commercials/{commercialId}`,
-        { pathParams: { projectId, commercialId } },
-      );
+      >('get', `${CommercialService.BASE_PATH}/{projectId}/commercials/{commercialId}`, {
+        pathParams: { projectId, commercialId },
+      });
       console.log('GET commercial:', commercial);
       return commercial;
     } catch (error: any) {
@@ -45,11 +42,7 @@ export default class CommercialService {
 
   // Update a commercial unit
   async updateCommercial(projectId: string, commercialId: string, data: Commercial): Promise<Commercial> {
-    const updated = await typedRequest<
-      '/api/v1/projects/{projectId}/commercials/{commercialId}',
-      'patch',
-      Commercial
-    >(
+    const updated = await typedRequest<'/api/v1/projects/{projectId}/commercials/{commercialId}', 'patch', Commercial>(
       'patch',
       `${CommercialService.BASE_PATH}/{projectId}/commercials/{commercialId}`,
       { pathParams: { projectId, commercialId }, body: data },
@@ -61,10 +54,7 @@ export default class CommercialService {
   // Delete a commercial unit (returns boolean for success/failure)
   async deleteCommercial(projectId: string, commercialId: string): Promise<boolean> {
     try {
-      await typedRequest<
-        '/api/v1/projects/{projectId}/commercials/{commercialId}',
-        'delete'
-      >(
+      await typedRequest<'/api/v1/projects/{projectId}/commercials/{commercialId}', 'delete'>(
         'delete',
         `${CommercialService.BASE_PATH}/{projectId}/commercials/{commercialId}`,
         { pathParams: { projectId, commercialId } },

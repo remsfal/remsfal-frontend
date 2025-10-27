@@ -246,12 +246,7 @@ async function createStorage(): Promise<void> {
       <Textarea id="description" v-model="description" rows="4" class="flex-auto" />
     </div>
     <div class="flex justify-end gap-2">
-      <Button
-        type="button"
-        :label="t('button.cancel')"
-        severity="secondary"
-        @click="visible = false"
-      ></Button>
+      <Button type="button" :label="t('button.cancel')" severity="secondary" @click="visible = false"></Button>
       <Button type="button" :label="t('button.add')" @click="createRentableUnit"></Button>
     </div>
   </Dialog>

@@ -77,7 +77,7 @@ export const useProjectStore = defineStore('project-store', {
         const projectItem: ProjectItem = {
           id: project.id || '',
           name: project.title,
-          memberRole: 'MANAGER' // Default role - this should ideally come from the API
+          memberRole: 'MANAGER', // Default role - this should ideally come from the API
         };
         return projectItem;
       } catch (error) {

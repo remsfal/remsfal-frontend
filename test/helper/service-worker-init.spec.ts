@@ -1,9 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  registerServiceWorker,
-  enableBackgroundSync,
-  addOnlineEventListener,
-} from '@/helper/service-worker-init';
+import { registerServiceWorker, enableBackgroundSync, addOnlineEventListener } from '@/helper/service-worker-init';
 
 describe('Service Worker Initialization', () => {
   beforeEach(() => {

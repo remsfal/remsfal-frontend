@@ -23,8 +23,7 @@ const toggleExpansion = () => {
 const validateTask = (): boolean => {
   errors.value = {};
   if (!task.value?.title?.trim()) errors.value.title = '\n\n- Name muss gegeben sein.';
-  if (!task.value?.description?.trim())
-    errors.value.description = '\n\n- Beschreibung muss gegeben sein.';
+  if (!task.value?.description?.trim()) errors.value.description = '\n\n- Beschreibung muss gegeben sein.';
   if (!task.value?.status?.trim()) errors.value.status = '\n\n- Status muss gegeben sein.';
   return Object.keys(errors.value).length === 0;
 };
@@ -158,12 +157,7 @@ const saveTask = async () => {
             >
               {{ slotProps.data.status || 'Click to edit' }}
             </div>
-            <select
-              v-else
-              v-model="slotProps.data.status"
-              class="editable-input"
-              @blur="stopEditing(slotProps.data)"
-            >
+            <select v-else v-model="slotProps.data.status" class="editable-input" @blur="stopEditing(slotProps.data)">
               <option v-for="status in statusOptions" :key="status" :value="status">
                 {{ status }}
               </option>

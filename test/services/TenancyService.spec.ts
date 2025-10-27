@@ -18,14 +18,11 @@ describe('TenancyService with MSW', () => {
     expect(tenancies[0]).toHaveProperty('id');
     expect(tenancies[0]).toHaveProperty('tenants'); //
   });
-  
 
   test('fetchTenantData returns flattened list of tenants', async () => {
     const tenants = await tenancyService.fetchTenantData();
     expect(tenants).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ name: 'Max Mustermann', email: 'max@example.com' }),
-      ])
+      expect.arrayContaining([expect.objectContaining({ name: 'Max Mustermann', email: 'max@example.com' })]),
     );
   });
 

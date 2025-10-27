@@ -55,11 +55,7 @@ const navigateToHome = () => {
           </p>
         </template>
         <template #footer>
-          <a
-            href="https://opr.vc/docs/allgemein/dse_einleitung/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="https://opr.vc/docs/allgemein/dse_einleitung/" target="_blank" rel="noopener noreferrer">
             open privacy by opr.vc
           </a>
         </template>
@@ -88,11 +84,7 @@ const navigateToHome = () => {
           <p v-html="t('privacy.hosting.adress')"></p>
           <p>
             {{ t('privacy.furtherInformation') }}
-            <a
-              href="https://www.htw-berlin.de/datenschutz/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://www.htw-berlin.de/datenschutz/" target="_blank" rel="noopener noreferrer">
               https://www.htw-berlin.de/datenschutz/
             </a>
           </p>

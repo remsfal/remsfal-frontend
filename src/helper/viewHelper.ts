@@ -26,9 +26,7 @@ export function navigateToObjects(router: Router, projectId: string) {
 
 export function handleCancel(hasChanges: Ref<boolean>, router: Router, projectId: string) {
   if (hasChanges.value) {
-    const confirmLeave = confirm(
-      'Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?',
-    );
+    const confirmLeave = confirm('Es gibt ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?');
     if (!confirmLeave) return;
   }
   if (window.opener) {

@@ -9,11 +9,7 @@ export default class StorageService {
 
   // Create a new storage
   async createStorage(projectId: string, buildingId: string, data: Storage): Promise<Storage> {
-    const storage = await typedRequest<
-      '/api/v1/projects/{projectId}/buildings/{buildingId}/storages',
-      'post',
-      Storage
-    >(
+    const storage = await typedRequest<'/api/v1/projects/{projectId}/buildings/{buildingId}/storages', 'post', Storage>(
       'post',
       `${StorageService.BASE_PATH}/{projectId}/buildings/{buildingId}/storages`,
       { pathParams: { projectId, buildingId }, body: data },
@@ -25,11 +21,7 @@ export default class StorageService {
   // Get a single storage
   async getStorage(projectId: string, storageId: string): Promise<Storage> {
     try {
-      const storage = await typedRequest<
-        '/api/v1/projects/{projectId}/storages/{storageId}',
-        'get',
-        Storage
-      >(
+      const storage = await typedRequest<'/api/v1/projects/{projectId}/storages/{storageId}', 'get', Storage>(
         'get',
         `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
         { pathParams: { projectId, storageId } },
@@ -44,11 +36,7 @@ export default class StorageService {
 
   // Update a storage
   async updateStorage(projectId: string, storageId: string, data: Storage): Promise<Storage> {
-    const updated = await typedRequest<
-      '/api/v1/projects/{projectId}/storages/{storageId}',
-      'patch',
-      Storage
-    >(
+    const updated = await typedRequest<'/api/v1/projects/{projectId}/storages/{storageId}', 'patch', Storage>(
       'patch',
       `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
       { pathParams: { projectId, storageId }, body: data },
@@ -59,10 +47,7 @@ export default class StorageService {
 
   // Delete a storage
   async deleteStorage(projectId: string, storageId: string): Promise<void> {
-    await typedRequest<
-      '/api/v1/projects/{projectId}/storages/{storageId}',
-      'delete'
-    >(
+    await typedRequest<'/api/v1/projects/{projectId}/storages/{storageId}', 'delete'>(
       'delete',
       `${StorageService.BASE_PATH}/{projectId}/storages/{storageId}`,
       { pathParams: { projectId, storageId } },

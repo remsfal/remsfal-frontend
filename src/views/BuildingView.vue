@@ -343,21 +343,20 @@ const save = () => {
 
   // adapt payload to match expected schema change when backend updates (country must be object!)
   const payload = {
-  title: title.value,
-  description: description.value,
-  address: {
-    street: street.value,
-    city: city.value,
-    province: province.value,
-    zip: zip.value,
-    country: { country: country.value },
-  },
-  livingSpace: livingSpace.value ?? undefined,
-  commercialSpace: commercialSpace.value ?? undefined,
-  usableSpace: usableSpace.value ?? undefined,
-  heatingSpace: heatingSpace.value ?? undefined,
-} as unknown as UpdateBuildingRequest;
-
+    title: title.value,
+    description: description.value,
+    address: {
+      street: street.value,
+      city: city.value,
+      province: province.value,
+      zip: zip.value,
+      country: { country: country.value },
+    },
+    livingSpace: livingSpace.value ?? undefined,
+    commercialSpace: commercialSpace.value ?? undefined,
+    usableSpace: usableSpace.value ?? undefined,
+    heatingSpace: heatingSpace.value ?? undefined,
+  } as unknown as UpdateBuildingRequest;
 
   buildingService
     .updateBuilding(props.projectId, props.unitId, payload)
@@ -395,12 +394,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
-            <textarea
-              id="description"
-              v-model="description"
-              rows="3"
-              class="form-textarea w-full"
-            ></textarea>
+            <textarea id="description" v-model="description" rows="3" class="form-textarea w-full"></textarea>
           </div>
 
           <!-- Adresse - Straße -->
@@ -441,45 +435,25 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <!-- Wohnfläche -->
           <div>
             <label for="livingSpace" class="block text-gray-700 mb-1">Wohnfläche (m²)</label>
-            <input
-              id="livingSpace"
-              v-model.number="livingSpace"
-              type="number"
-              class="form-input w-full"
-            />
+            <input id="livingSpace" v-model.number="livingSpace" type="number" class="form-input w-full" />
           </div>
 
           <!-- Gewerbefläche -->
           <div>
             <label for="commercialSpace" class="block text-gray-700 mb-1">Gewerbefläche (m²)</label>
-            <input
-              id="commercialSpace"
-              v-model.number="commercialSpace"
-              type="number"
-              class="form-input w-full"
-            />
+            <input id="commercialSpace" v-model.number="commercialSpace" type="number" class="form-input w-full" />
           </div>
 
           <!-- Nutzfläche -->
           <div>
             <label for="usableSpace" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
-            <input
-              id="usableSpace"
-              v-model.number="usableSpace"
-              type="number"
-              class="form-input w-full"
-            />
+            <input id="usableSpace" v-model.number="usableSpace" type="number" class="form-input w-full" />
           </div>
 
           <!-- Heizfläche -->
           <div>
             <label for="heatingSpace" class="block text-gray-700 mb-1">Heizfläche (m²)</label>
-            <input
-              id="heatingSpace"
-              v-model.number="heatingSpace"
-              type="number"
-              class="form-input w-full"
-            />
+            <input id="heatingSpace" v-model.number="heatingSpace" type="number" class="form-input w-full" />
           </div>
         </div>
 
@@ -500,11 +474,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             Speichern
           </button>
 
-          <button
-            type="button"
-            class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
-            @click="cancel"
-          >
+          <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500" @click="cancel">
             Abbrechen
           </button>
         </div>
