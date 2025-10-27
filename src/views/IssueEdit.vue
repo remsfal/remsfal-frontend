@@ -94,7 +94,9 @@ const saveIssue = async () => {
 </script>
 
 <template>
-  <div v-if="loading">Loading...</div>
+  <div v-if="loading">
+    Loading...
+  </div>
   <div v-else-if="issue">
     <div class="header-buttons">
       <Button label="Zurück" icon="pi pi-arrow-left" @click="router.go(-1)" />
@@ -127,7 +129,7 @@ const saveIssue = async () => {
               class="editable-input"
               required
               @blur="stopEditing(slotProps.data)"
-            />
+            >
           </template>
         </Column>
 
@@ -146,7 +148,7 @@ const saveIssue = async () => {
               class="editable-input"
               required
               @blur="stopEditing(slotProps.data)"
-            ></textarea>
+            />
           </template>
         </Column>
 

@@ -78,7 +78,7 @@ watch(
           :checked="rentalActive" disabled
           class="h-4 w-4 rounded border-gray-300 bg-white checked:bg-blue-500
            checked:border-blue-500 focus-visible:ring-blue-500"
-        />
+        >
         <label for="rentalActive" class="text-sm font-medium">Miete aktiv</label>
       </div>
     </div>

@@ -77,7 +77,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="text-lg font-semibold text-[2rem]">Mieter</div>
+  <div class="text-lg font-semibold text-[2rem]">
+    Mieter
+  </div>
   <Card>
     <template #header>
       <Button label="Neuen Mieter hinzufügen" icon="pi pi-plus" class="ml-6 mt-4" @click="addNewRow" />
