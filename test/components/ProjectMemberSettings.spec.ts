@@ -24,11 +24,7 @@ describe('ProjectMemberSettings.vue', () => {
     };
     vi.mocked(projectMemberService.getMembers).mockResolvedValue(mockMembers);
 
-    wrapper = mount(ProjectMemberSettings, {
-      props: {
-        projectId: 'test-project-id',
-      },
-    });
+    wrapper = mount(ProjectMemberSettings, {props: {projectId: 'test-project-id',},});
 
     // Wait for fetchMembers to resolve
     await wrapper.vm.$nextTick();
@@ -50,9 +46,7 @@ describe('ProjectMemberSettings.vue', () => {
 
     await (wrapper.vm as any).updateMemberRole(member);
 
-    expect(projectMemberService.updateMemberRole).toHaveBeenCalledWith('test-project-id', '1', {
-      role: 'MANAGER',
-    });
+    expect(projectMemberService.updateMemberRole).toHaveBeenCalledWith('test-project-id', '1', {role: 'MANAGER',});
   });
   // Test for removeMember
   test('removeMember - removes a member successfully', async () => {

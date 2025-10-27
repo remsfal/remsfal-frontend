@@ -4,11 +4,7 @@ import Component from '../../src/views/CommercialView.vue';
 import { commercialService } from '../../src/services/CommercialService';
 
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({push: mockPush,}),}));
 
 vi.mock('../../src/services/CommercialService', () => ({
   commercialService: {
@@ -100,9 +96,7 @@ describe('CommercialView.vue', () => {
 
   it('returns early if there is no projectId', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const wrapper = mount(Component, {
-      props: { projectId: '', unitId: 'commercial1' },
-    });
+    const wrapper = mount(Component, {props: { projectId: '', unitId: 'commercial1' },});
     await wrapper.vm.fetchCommercialDetails();
     expect(errorSpy).toHaveBeenCalledWith('Keine projectId');
     errorSpy.mockRestore();
@@ -110,9 +104,7 @@ describe('CommercialView.vue', () => {
 
   it('returns early if there is no unitId', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const wrapper = mount(Component, {
-      props: { projectId: 'project1', unitId: '' },
-    });
+    const wrapper = mount(Component, {props: { projectId: 'project1', unitId: '' },});
     await wrapper.vm.fetchCommercialDetails();
     expect(errorSpy).toHaveBeenCalledWith('Keine unitId');
     errorSpy.mockRestore();

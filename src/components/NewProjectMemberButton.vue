@@ -87,7 +87,10 @@ const addMember = async () => {
   >
     <div class="flex flex-col gap-1 mb-6">
       <div class="flex items-center gap-6">
-        <label for="email" class="font-semibold w-24">{{
+        <label
+          for="email"
+          class="font-semibold w-24"
+        >{{
           t('projectSettings.newProjectMemberButton.emailLabel')
         }}</label>
         <InputText
@@ -100,18 +103,40 @@ const addMember = async () => {
           :invalid="isEmailInvalid"
         />
       </div>
-      <small v-if="isEmailInvalid" class="text-red-500 ml-28">{{ emailErrorMessage }}</small>
+      <small
+        v-if="isEmailInvalid"
+        class="text-red-500 ml-28"
+      >{{ emailErrorMessage }}</small>
     </div>
 
     <div class="flex items-center gap-6 mb-2">
-      <label for="role" class="font-semibold w-24">{{ t('projectSettings.newProjectMemberButton.roleLabel') }}</label>
-      <ProjectMemberRoleSelect v-model="newMemberRole" :invalid="isRoleInvalid" class="w-full" />
+      <label
+        for="role"
+        class="font-semibold w-24"
+      >{{ t('projectSettings.newProjectMemberButton.roleLabel') }}</label>
+      <ProjectMemberRoleSelect
+        v-model="newMemberRole"
+        :invalid="isRoleInvalid"
+        class="w-full"
+      />
     </div>
-    <small v-if="isRoleInvalid" class="text-red-500 ml-28">{{ roleErrorMessage }}</small>
+    <small
+      v-if="isRoleInvalid"
+      class="text-red-500 ml-28"
+    >{{ roleErrorMessage }}</small>
 
     <div class="flex justify-end gap-2 mt-6">
-      <Button type="button" :label="t('button.cancel')" severity="secondary" @click="visible = false" />
-      <Button type="button" :label="t('button.add')" @click="addMember" />
+      <Button
+        type="button"
+        :label="t('button.cancel')"
+        severity="secondary"
+        @click="visible = false"
+      />
+      <Button
+        type="button"
+        :label="t('button.add')"
+        @click="addMember"
+      />
     </div>
   </Dialog>
 </template>

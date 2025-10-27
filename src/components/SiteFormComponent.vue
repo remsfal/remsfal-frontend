@@ -107,35 +107,96 @@ onMounted(async () => {
     :onCancel="onCancel"
   />
   <div class="p-6 max-w-4xl mx-auto mt-10 shadow-lg bg-white rounded">
-    <h2 class="text-xl font-bold mb-4">Aktuelle Mieter</h2>
-    <DataTable :value="items" class="w-full mb-4">
-      <Column field="id" header="ID" />
-      <Column field="firstName" header="Vorname" />
-      <Column field="lastName" header="Nachname" />
-      <Column field="email" header="E-Mail" />
-      <Column field="period" header="Zeitraum" />
-      <Column field="price" header="Preis" />
-      <Column field="deposit" header="Anzahlung" />
-      <Column field="extraCosts" header="Extra Kosten" />
+    <h2 class="text-xl font-bold mb-4">
+      Aktuelle Mieter
+    </h2>
+    <DataTable
+      :value="items"
+      class="w-full mb-4"
+    >
+      <Column
+        field="id"
+        header="ID"
+      />
+      <Column
+        field="firstName"
+        header="Vorname"
+      />
+      <Column
+        field="lastName"
+        header="Nachname"
+      />
+      <Column
+        field="email"
+        header="E-Mail"
+      />
+      <Column
+        field="period"
+        header="Zeitraum"
+      />
+      <Column
+        field="price"
+        header="Preis"
+      />
+      <Column
+        field="deposit"
+        header="Anzahlung"
+      />
+      <Column
+        field="extraCosts"
+        header="Extra Kosten"
+      />
     </DataTable>
     <Button
       icon="pi pi-chevron-down"
       class="mb-2"
-      @click="showFormer = !showFormer"
       :aria-expanded="showFormer"
       :label="showFormer ? 'Ehemalige Mieter ausblenden' : 'Ehemalige Mieter anzeigen'"
-    ></Button>
-    <div v-if="showFormer" class="mt-4">
-      <h2 class="text-xl font-bold mb-4">Ehemalige Mieter</h2>
-      <DataTable :value="formerItems" class="w-full">
-        <Column field="id" header="ID" />
-        <Column field="firstName" header="Vorname" />
-        <Column field="lastName" header="Nachname" />
-        <Column field="email" header="E-Mail" />
-        <Column field="period" header="Zeitraum" />
-        <Column field="price" header="Preis" />
-        <Column field="deposit" header="Anzahlung" />
-        <Column field="extraCosts" header="Extra Kosten" />
+      @click="showFormer = !showFormer"
+    />
+    <div
+      v-if="showFormer"
+      class="mt-4"
+    >
+      <h2 class="text-xl font-bold mb-4">
+        Ehemalige Mieter
+      </h2>
+      <DataTable
+        :value="formerItems"
+        class="w-full"
+      >
+        <Column
+          field="id"
+          header="ID"
+        />
+        <Column
+          field="firstName"
+          header="Vorname"
+        />
+        <Column
+          field="lastName"
+          header="Nachname"
+        />
+        <Column
+          field="email"
+          header="E-Mail"
+        />
+        <Column
+          field="period"
+          header="Zeitraum"
+        />
+        <Column
+          field="price"
+          header="Preis"
+        />
+        <Column
+          field="deposit"
+          header="Anzahlung"
+        />
+        <Column
+          field="extraCosts"
+          header="Extra Kosten"
+        />
       </DataTable>
     </div>
   </div>

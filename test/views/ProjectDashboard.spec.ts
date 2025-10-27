@@ -7,26 +7,14 @@ import Card from 'primevue/card';
 import Chart from 'primevue/chart';
 import { createI18n } from 'vue-i18n';
 
-vi.mock('vue-router', () => ({
-  useRoute: () => ({
-    params: {
-      projectId: '1',
-    },
-  }),
-}));
+vi.mock('vue-router', () => ({useRoute: () => ({params: {projectId: '1',},}),}));
 
 describe('ProjectDashboard.vue', () => {
   it('renders the dashboard page with correct translation', () => {
     const i18n = createI18n({
       legacy: false,
       locale: 'en',
-      messages: {
-        en: {
-          projectDashboard: {
-            title: 'This is the project dashboard page for project {0}',
-          },
-        },
-      },
+      messages: {en: {projectDashboard: {title: 'This is the project dashboard page for project {0}',},},},
     });
 
     const wrapper = mount(ProjectDashboard, {

@@ -65,10 +65,10 @@ function isOutsideClicked(event: Event) {
     <main>
       <div class="layout-main">
         <div class="flex flex-col gap-8">
-          <RouterView></RouterView>
+          <RouterView />
         </div>
       </div>
     </main>
-    <AppFooter></AppFooter>
+    <AppFooter />
   </div>
 </template>

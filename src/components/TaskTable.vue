@@ -12,11 +12,31 @@ const props = defineProps<{
 
 <template>
   <div class="tasks-table-container">
-    <DataTable :value="props.tasks" tableStyle="min-width: 60rem" :paginator="true" :rows="5">
-      <Column field="title" header="Title" sortable />
-      <Column field="owner" header="Owner" sortable />
-      <Column field="status" header="Status" sortable />
-      <Column frozen alignFrozen="right">
+    <DataTable
+      :value="props.tasks"
+      tableStyle="min-width: 60rem"
+      :paginator="true"
+      :rows="5"
+    >
+      <Column
+        field="title"
+        header="Title"
+        sortable
+      />
+      <Column
+        field="owner"
+        header="Owner"
+        sortable
+      />
+      <Column
+        field="status"
+        header="Status"
+        sortable
+      />
+      <Column
+        frozen
+        alignFrozen="right"
+      >
         <template #body="slotProps">
           <div class="flex justify-end">
             <RouterLink :to="{ name: 'TaskEdit', params: { taskid: slotProps.data.id } }">
@@ -34,7 +54,7 @@ const props = defineProps<{
       </Column>
     </DataTable>
     <div class="btn-slot">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>

@@ -6,13 +6,9 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: mockPush }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({ push: mockPush }),}));
 
-vi.mock('../../src/services/PropertyService', () => ({
-  propertyService: { getProperty: vi.fn(), updateProperty: vi.fn() },
-}));
+vi.mock('../../src/services/PropertyService', () => ({propertyService: { getProperty: vi.fn(), updateProperty: vi.fn() },}));
 
 // MSW handler
 let lastUpdatedProperty: Record<string, unknown> | null = null;
@@ -55,9 +51,7 @@ describe('PropertyView.vue', () => {
       plotArea: 100,
     });
 
-    wrapper = mount(Component, {
-      props: { projectId: 'project1', unitId: 'unit1' },
-    });
+    wrapper = mount(Component, {props: { projectId: 'project1', unitId: 'unit1' },});
 
     await flushPromises();
   });

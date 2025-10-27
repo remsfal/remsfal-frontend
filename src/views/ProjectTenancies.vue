@@ -64,8 +64,13 @@ onMounted(async () => {
       <h1 class="col-span-12">
         {{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht
       </h1>
-      <div v-if="isLoading">Loading...</div>
-      <div v-if="!isLoading" class="col-span-12 card">
+      <div v-if="isLoading">
+        Loading...
+      </div>
+      <div
+        v-if="!isLoading"
+        class="col-span-12 card"
+      >
         <DataTable
           :value="tenancyData"
           :rows="10"
@@ -78,10 +83,21 @@ onMounted(async () => {
           class="custom-scroll-height cursor-pointer"
           @rowClick="navigateToTenancyDetails($event.data.id)"
         >
-          <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
-          <Column field="rentalEnd" header="Mietende" :sortable="true" />
+          <Column
+            field="rentalStart"
+            header="Mietbeginn"
+            :sortable="true"
+          />
+          <Column
+            field="rentalEnd"
+            header="Mietende"
+            :sortable="true"
+          />
 
-          <Column field="listOfTenants" header="Mieter">
+          <Column
+            field="listOfTenants"
+            header="Mieter"
+          >
             <template #body="slotProps">
               <div class="space-y-2">
                 <div
@@ -95,7 +111,10 @@ onMounted(async () => {
             </template>
           </Column>
 
-          <Column field="listOfUnits" header="Wohneinheiten">
+          <Column
+            field="listOfUnits"
+            header="Wohneinheiten"
+          >
             <template #body="slotProps">
               <div class="space-y-2">
                 <div
@@ -122,7 +141,11 @@ onMounted(async () => {
       </div>
     </div>
 
-    <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
+    <Dialog
+      v-model:visible="confirmationDialogVisible"
+      header="Bestätigung"
+      modal
+    >
       <div class="p-fluid">
         <p>
           Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }}
@@ -130,8 +153,17 @@ onMounted(async () => {
         </p>
       </div>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
+        <Button
+          label="Abbrechen"
+          icon="pi pi-times"
+          @click="confirmationDialogVisible = false"
+        />
+        <Button
+          label="Löschen"
+          icon="pi pi-check"
+          severity="danger"
+          @click="confirmDeletion"
+        />
       </template>
     </Dialog>
   </main>

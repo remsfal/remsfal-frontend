@@ -13,11 +13,7 @@ const VALIDATION_MESSAGES = {
 
 // Mock vue-router
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({push: mockPush,}),}));
 
 // Setup MSW server with your handlers
 const server = setupServer(...handlers);

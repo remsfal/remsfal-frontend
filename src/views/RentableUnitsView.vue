@@ -137,10 +137,20 @@ defineExpose({ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirme
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
-        <h1 class="w-full">{{ t('rentableUnits.view.title') }}</h1>
+        <h1 class="w-full">
+          {{ t('rentableUnits.view.title') }}
+        </h1>
       </div>
-      <div v-if="error" class="alert alert-error">{{ error }}</div>
-      <div v-if="!error" class="col-span-12">
+      <div
+        v-if="error"
+        class="alert alert-error"
+      >
+        {{ error }}
+      </div>
+      <div
+        v-if="!error"
+        class="col-span-12"
+      >
         <div class="card">
           <TreeTable
             v-model:expandedKeys="expandedKeys"
@@ -170,37 +180,57 @@ defineExpose({ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirme
                 </div>
               </div>
             </template>
-            <Column field="title" :header="t('rentableUnits.table.title')" expander>
+            <Column
+              field="title"
+              :header="t('rentableUnits.table.title')"
+              expander
+            >
               <template #body="{ node }">
                 <div>{{ node.data.title }}</div>
               </template>
             </Column>
 
-            <Column field="type" :header="t('rentableUnits.table.type')">
+            <Column
+              field="type"
+              :header="t('rentableUnits.table.type')"
+            >
               <template #body="{ node }">
                 <div>{{ node.data.type }}</div>
               </template>
             </Column>
 
-            <Column field="description" :header="t('rentableUnits.table.description')">
+            <Column
+              field="description"
+              :header="t('rentableUnits.table.description')"
+            >
               <template #body="{ node }">
                 <div>{{ node.data.description }}</div>
               </template>
             </Column>
 
-            <Column field="tenant" :header="t('rentableUnits.table.tenant')">
+            <Column
+              field="tenant"
+              :header="t('rentableUnits.table.tenant')"
+            >
               <template #body="{ node }">
                 <div>{{ node.data.tenant }}</div>
               </template>
             </Column>
 
-            <Column field="usable_space" :header="t('rentableUnits.table.area')">
+            <Column
+              field="usable_space"
+              :header="t('rentableUnits.table.area')"
+            >
               <template #body="{ node }">
                 <div>{{ node.data.usable_space }}</div>
               </template>
             </Column>
 
-            <Column frozen alignFrozen="right" bodyClass="flex flex-wrap justify-end">
+            <Column
+              frozen
+              alignFrozen="right"
+              bodyClass="flex flex-wrap justify-end"
+            >
               <template #body="{ node }">
                 <div class="flex flex-wrap justify-end gap-2">
                   <NewRentableUnitButton
@@ -221,7 +251,10 @@ defineExpose({ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirme
             </Column>
           </TreeTable>
           <div class="flex justify-end basis-auto mt-6">
-            <NewPropertyButton :projectId="props.projectId" @newUnit="onNewRentableUnit" />
+            <NewPropertyButton
+              :projectId="props.projectId"
+              @newUnit="onNewRentableUnit"
+            />
           </div>
         </div>
       </div>
@@ -237,15 +270,15 @@ defineExpose({ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirme
         <Button
           label="Abbrechen"
           icon="pi pi-times"
-          @click="showDeleteDialog = false"
           data-testid="cancelDelete"
+          @click="showDeleteDialog = false"
         />
         <Button
           label="Löschen"
           icon="pi pi-check"
           severity="danger"
-          @click="deleteConfirmed"
           data-testid="confirmDeleteButton"
+          @click="deleteConfirmed"
         />
       </template>
     </Dialog>

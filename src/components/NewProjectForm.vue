@@ -112,7 +112,10 @@ function abort() {
     @hide="abort"
   >
     <div class="flex flex-col gap-4">
-      <label for="projectTitle" class="font-semibold">
+      <label
+        for="projectTitle"
+        class="font-semibold"
+      >
         {{ t('newProjectForm.input.name') }}
       </label>
 
@@ -127,8 +130,18 @@ function abort() {
     </div>
 
     <div class="flex justify-end gap-3 mt-6">
-      <Button type="button" :label="t('button.cancel')" severity="secondary" @click="abort" />
-      <Button type="button" :label="t('button.create')" icon="pi pi-plus" @click="createProject" />
+      <Button
+        type="button"
+        :label="t('button.cancel')"
+        severity="secondary"
+        @click="abort"
+      />
+      <Button
+        type="button"
+        :label="t('button.create')"
+        icon="pi pi-plus"
+        @click="createProject"
+      />
     </div>
   </Dialog>
 </template>

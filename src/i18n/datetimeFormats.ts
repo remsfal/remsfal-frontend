@@ -3,9 +3,7 @@ import type { DateTimeFormats } from '@intlify/core-base';
 const datetimeFormats: DateTimeFormats = {
   en: {
     // Example: "12/19/2024"
-    shortFormat: {
-      dateStyle: 'short',
-    },
+    shortFormat: {dateStyle: 'short',},
     // Example: "Dec 19 2024 Thu 12:20"
     long: {
       year: 'numeric',
@@ -29,9 +27,7 @@ const datetimeFormats: DateTimeFormats = {
     },
   },
   de: {
-    shortFormat: {
-      dateStyle: 'short',
-    },
+    shortFormat: {dateStyle: 'short',},
     long: {
       year: 'numeric',
       month: 'short',

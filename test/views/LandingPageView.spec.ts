@@ -6,9 +6,7 @@ describe('LandingPageView', () => {
   let wrapper: VueWrapper;
 
   test('renders properly', () => {
-    wrapper = mount(LandingPage, {
-      props: { msg: 'Herzlich Willkommen' },
-    });
+    wrapper = mount(LandingPage, {props: { msg: 'Herzlich Willkommen' },});
     expect(wrapper.text()).toContain('Herzlich Willkommen');
   });
 });

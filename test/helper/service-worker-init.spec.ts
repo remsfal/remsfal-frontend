@@ -13,11 +13,7 @@ describe('Service Worker Initialization', () => {
 
   describe('registerServiceWorker', () => {
     beforeEach(() => {
-      vi.stubGlobal('navigator', {
-        serviceWorker: {
-          register: vi.fn().mockResolvedValue({ scope: '/service-worker.js' }),
-        },
-      });
+      vi.stubGlobal('navigator', {serviceWorker: {register: vi.fn().mockResolvedValue({ scope: '/service-worker.js' }),},});
       vi.spyOn(console, 'log').mockImplementation(() => {});
       vi.spyOn(console, 'error').mockImplementation(() => {});
     });
@@ -39,15 +35,7 @@ describe('Service Worker Initialization', () => {
 
   describe('enableBackgroundSync', () => {
     beforeEach(() => {
-      vi.stubGlobal('navigator', {
-        serviceWorker: {
-          ready: Promise.resolve({
-            sync: {
-              register: vi.fn().mockResolvedValue(undefined),
-            },
-          }),
-        },
-      });
+      vi.stubGlobal('navigator', {serviceWorker: {ready: Promise.resolve({sync: {register: vi.fn().mockResolvedValue(undefined),},}),},});
       vi.stubGlobal('window', { SyncManager: vi.fn() });
       vi.spyOn(console, 'log').mockImplementation(() => {});
       vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -80,9 +68,7 @@ describe('Service Worker Initialization', () => {
 
   describe('addOnlineEventListener', () => {
     beforeEach(() => {
-      vi.stubGlobal('window', {
-        addEventListener: vi.fn(),
-      });
+      vi.stubGlobal('window', {addEventListener: vi.fn(),});
       vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 

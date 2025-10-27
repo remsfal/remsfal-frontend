@@ -3,11 +3,7 @@ import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import Component from '../../src/views/BuildingView.vue';
 import { buildingService } from '../../src/services/BuildingService';
 
-vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-  }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({push: vi.fn(),}),}));
 
 vi.mock('../../src/services/BuildingService', () => ({
   buildingService: {

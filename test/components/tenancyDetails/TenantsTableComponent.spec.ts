@@ -2,19 +2,13 @@ import { mount } from '@vue/test-utils';
 import TenantsTableComponent from '../../../src/components/tenancyDetails/TenantsTableComponent.vue';
 import { tenancyService } from '../../../src/services/TenancyService';
 
-vi.mock('@/services/TenancyService', () => ({
-  tenancyService: {
-    updateTenancyTenantItem: vi.fn(),
-  },
-}));
+vi.mock('@/services/TenancyService', () => ({tenancyService: {updateTenancyTenantItem: vi.fn(),},}));
 
 describe('TenantsTableComponent', () => {
   const tenantsMock = [{ id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@test.de' }];
 
   it('renders tenant data in table', () => {
-    const wrapper = mount(TenantsTableComponent, {
-      props: { tenants: tenantsMock, isDeleteButtonEnabled: false },
-    });
+    const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: false },});
 
     expect(wrapper.text()).toContain('Max');
     expect(wrapper.text()).toContain('Mustermann');
@@ -22,9 +16,7 @@ describe('TenantsTableComponent', () => {
   });
 
   it('emits updated data when a cell is edited', async () => {
-    const wrapper = mount(TenantsTableComponent, {
-      props: { tenants: tenantsMock, isDeleteButtonEnabled: false },
-    });
+    const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: false },});
 
     const newData = { ...tenantsMock[0], firstName: 'Moritz' };
     await wrapper.vm.onCellEditComplete({ newData, index: 0 });
@@ -35,9 +27,7 @@ describe('TenantsTableComponent', () => {
   });
 
   it('adds a new row when button is clicked', async () => {
-    const wrapper = mount(TenantsTableComponent, {
-      props: { tenants: tenantsMock, isDeleteButtonEnabled: true },
-    });
+    const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: true },});
 
     await wrapper.find('button').trigger('click');
 
@@ -47,25 +37,19 @@ describe('TenantsTableComponent', () => {
   });
 
   it('shows delete button when isDeleteButtonEnabled is true', () => {
-    const wrapper = mount(TenantsTableComponent, {
-      props: { tenants: tenantsMock, isDeleteButtonEnabled: true },
-    });
+    const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: true },});
 
     expect(wrapper.find('[class*="pi-trash"]').exists()).toBe(true);
   });
 
   it('doesnt show delete button when isDeleteButtonEnabled is false', () => {
-    const wrapper = mount(TenantsTableComponent, {
-      props: { tenants: tenantsMock, isDeleteButtonEnabled: false },
-    });
+    const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: false },});
 
     expect(wrapper.find('[class*="pi-trash"]').exists()).toBe(false);
   });
 
   it('deletes a row and emits change', async () => {
-    const wrapper = mount(TenantsTableComponent, {
-      props: { tenants: tenantsMock, isDeleteButtonEnabled: true },
-    });
+    const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: true },});
 
     await wrapper.vm.deleteRow(0);
 

@@ -17,9 +17,7 @@ describe('TaskTable', () => {
 
   beforeEach(() => {
     wrapper = mount(TaskTable, {
-      props: {
-        tasks: mockTasks,
-      },
+      props: { tasks: mockTasks },
       global: {
         stubs: {
           RouterLink: RouterLinkStub, // Stub the RouterLink for testing

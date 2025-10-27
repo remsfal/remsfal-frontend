@@ -11,9 +11,7 @@ if (typeof window === 'undefined') (global as any).window = {};
 
 // ---- Router Mock ----
 const routerPushMock = vi.fn();
-vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: routerPushMock }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({ push: routerPushMock }),}));
 
 // ---- PrimeVue/Dialog Mock ----
 vi.mock('primevue/dialog', () => ({
@@ -24,9 +22,7 @@ vi.mock('primevue/dialog', () => ({
 }));
 
 // ---- Pinia store mock ----
-vi.mock('@/stores/ProjectStore', () => ({
-  useProjectStore: () => ({ projectId: 'proj-1' }),
-}));
+vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
 
 describe('ProjectTenancies.vue', () => {
   let wrapper: VueWrapper<any>;

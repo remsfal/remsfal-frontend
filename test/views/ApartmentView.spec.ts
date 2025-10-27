@@ -3,13 +3,9 @@ import { mount, flushPromises } from '@vue/test-utils'
 import ApartmentView from '../../src/views/ApartmentView.vue'
 import { apartmentService } from '../../src/services/ApartmentService'
 
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({ add: vi.fn() }),
-}))
+vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: vi.fn() }),}))
 
-vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: vi.fn() }),
-}))
+vi.mock('vue-router', () => ({useRouter: () => ({ push: vi.fn() }),}))
 
 describe('ApartmentView.vue', () => {
   let wrapper: any
@@ -28,9 +24,7 @@ describe('ApartmentView.vue', () => {
     vi.spyOn(apartmentService, 'getApartment').mockResolvedValue(mockApartment)
     vi.spyOn(apartmentService, 'updateApartment').mockResolvedValue(mockApartment)
 
-    wrapper = mount(ApartmentView, {
-      props: { projectId: 'project1', unitId: 'unit1' },
-    })
+    wrapper = mount(ApartmentView, {props: { projectId: 'project1', unitId: 'unit1' },})
 
     await flushPromises() // wait for fetchApartment
   })

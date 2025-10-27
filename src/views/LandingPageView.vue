@@ -7,15 +7,21 @@ const { t } = useI18n();
 
 <template>
   <h1 class="header-one">
-    {{ t('landingPage.title') }} <img class="inline-logo" src="@/assets/logo.svg" alt="logo" />
+    {{ t('landingPage.title') }} <img
+      class="inline-logo"
+      src="@/assets/logo.svg"
+      alt="logo"
+    >
   </h1>
   <!-- Generated with https://developers.google.com/identity/branding-guidelines?hl=de -->
   <div class="widgets">
     <div class="info">
-      <h2 class="header-two">{{ t('landingPage.sub-title') }}</h2>
+      <h2 class="header-two">
+        {{ t('landingPage.sub-title') }}
+      </h2>
       <p>
-        {{ t('landingPage.description') }} <br />
-        {{ t('landingPage.login-description') }} <br />
+        {{ t('landingPage.description') }} <br>
+        {{ t('landingPage.login-description') }} <br>
         {{ t('landingPage.more-description') }}
         <a href="https://remsfal.de/">remsfal.de</a>
       </p>
@@ -30,13 +36,18 @@ const { t } = useI18n();
           viewBox="0 0 64 64"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g id="Layer_24" data-name="Layer 24">
+          <g
+            id="Layer_24"
+            data-name="Layer 24"
+          >
             <path
               d="M60,13H53V9a2,2,0,0,0-2-2H48.72A2,2,0,0,0,47,6H41a3,3,0,0,0-3-3H6A3,3,0,0,0,3,6V59a2,2,0,0,0,2,2H33a2,2,0,0,0,2-2V50a3,3,0,0,0-3-3H21V36.9a12.88,12.88,0,0,0,1.5.1A12.51,12.51,0,0,0,35,25h3a3,3,0,0,0,3-3h6a2,2,0,0,0,1.72-1H51a2,2,0,0,0,2-2V15h7a1,1,0,0,0,0-2ZM9,13a1,1,0,0,1-1-1V8A1,1,0,0,1,9,7H25a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1ZM29.91,31.91a10.35,10.35,0,0,1-8.91,3V34.5A9.51,9.51,0,0,1,30.5,25H33A10.41,10.41,0,0,1,29.91,31.91ZM37,12a1,1,0,0,1-1,1H28a1,1,0,0,1-1-1V8a1,1,0,0,1,1-1h8a1,1,0,0,1,1,1Z"
             />
           </g>
         </svg>
-        <h2 class="header-widget">{{ t('landingPage.header.defect-management') }}</h2>
+        <h2 class="header-widget">
+          {{ t('landingPage.header.defect-management') }}
+        </h2>
       </div>
       <div class="widget">
         <svg
@@ -55,7 +66,9 @@ const { t } = useI18n();
             />
           </g>
         </svg>
-        <h2 class="header-widget">{{ t('landingPage.header.documentation') }}</h2>
+        <h2 class="header-widget">
+          {{ t('landingPage.header.documentation') }}
+        </h2>
       </div>
       <div class="widget">
         <svg
@@ -95,7 +108,9 @@ const { t } = useI18n();
             </g>
           </g>
         </svg>
-        <h2 class="header-widget">{{ t('landingPage.header.monitoring') }}</h2>
+        <h2 class="header-widget">
+          {{ t('landingPage.header.monitoring') }}
+        </h2>
       </div>
     </div>
   </div>

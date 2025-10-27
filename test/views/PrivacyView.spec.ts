@@ -24,9 +24,7 @@ describe('PrivacyView', () => {
               </div>
             `,
           },
-          Button: {
-            template: '<button class="p-button"><slot /></button>',
-          },
+          Button: {template: '<button class="p-button"><slot /></button>',},
         },
       },
     });

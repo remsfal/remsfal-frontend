@@ -142,12 +142,15 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
 
 <template>
   <main class="w-full px-6 py-8">
-    <h1 class="text-2xl font-semibold mb-4">{{ t('inbox.title') }}</h1>
+    <h1 class="text-2xl font-semibold mb-4">
+      {{ t('inbox.title') }}
+    </h1>
     <div class="card p-4 flex gap-6 -mx-6">
-
       <!-- Sidebar -->
       <aside class="w-72 flex-shrink-0 space-y-4 pr-4">
-        <h2 class="text-lg font-semibold">{{ t('inbox.filter.title') }}</h2>
+        <h2 class="text-lg font-semibold">
+          {{ t('inbox.filter.title') }}
+        </h2>
 
         <!-- Filter Type -->
         <div class="relative inline-block w-full">
@@ -315,21 +318,21 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           <Button
             icon="pi pi-inbox"
             :label="t('inbox.actions.markReadSelected')"
-            @click="markReadSelected"
             :disabled="!selectedMessages.length"
+            @click="markReadSelected"
           />
           <Button
             icon="pi pi-envelope"
             :label="t('inbox.actions.markUnreadSelected')"
-            @click="markUnreadSelected"
             :disabled="!selectedMessages.length"
+            @click="markUnreadSelected"
           />
           <Button
             icon="pi pi-trash"
             severity="danger"
             :label="t('inbox.actions.deleteSelected')"
-            @click="deleteSelected"
             :disabled="!selectedMessages.length"
+            @click="deleteSelected"
           />
         </div>
 
@@ -345,50 +348,104 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
             rowHover
             @rowClick="onRowClick"
           >
-            <Column selectionMode="multiple" headerStyle="width:3rem" />
             <Column
-              frozen alignFrozen="left"
-              headerStyle="width:4rem" :header="t('inbox.column.status')"
+              selectionMode="multiple"
+              headerStyle="width:3rem"
+            />
+            <Column
+              frozen
+              alignFrozen="left"
+              headerStyle="width:4rem"
+              :header="t('inbox.column.status')"
             >
               <template #body="slot">
                 <div class="flex justify-center">
                   <Button
                     v-if="!slot.data.isRead"
                     icon="pi pi-envelope"
-                    text rounded title="Als gelesen markieren"
-                    @click.stop="markAsRead(slot.data)"
+                    text
+                    rounded
+                    title="Als gelesen markieren"
                     class="h-8 w-8"
+                    @click.stop="markAsRead(slot.data)"
                   />
                   <Button
-                    v-else text rounded title="Als ungelesen markieren"
-                    @click.stop="markAsUnread(slot.data)"
+                    v-else
+                    text
+                    rounded
+                    title="Als ungelesen markieren"
                     class="h-8 w-8 text-gray-400"
+                    @click.stop="markAsUnread(slot.data)"
                   />
                 </div>
               </template>
             </Column>
 
-            <Column field="contractor"    :header="t('inbox.column.contractor')" sortable />
-            <Column field="type"          :header="t('inbox.column.type')"       sortable />
-            <Column field="subject"       :header="t('inbox.column.subject')"    sortable />
-            <Column field="project"       :header="t('inbox.column.project')"    sortable />
-            <Column field="unit"          :header="t('inbox.column.unit')"       sortable />
-            <Column field="tenant"        :header="t('inbox.column.tenant')"     sortable />
-            <Column field="owner"         :header="t('inbox.column.owner')"      sortable />
-            <Column field="receivedAt"    :header="t('inbox.column.receivedAt')" sortable />
+            <Column
+              field="contractor"
+              :header="t('inbox.column.contractor')"
+              sortable
+            />
+            <Column
+              field="type"
+              :header="t('inbox.column.type')"
+              sortable
+            />
+            <Column
+              field="subject"
+              :header="t('inbox.column.subject')"
+              sortable
+            />
+            <Column
+              field="project"
+              :header="t('inbox.column.project')"
+              sortable
+            />
+            <Column
+              field="unit"
+              :header="t('inbox.column.unit')"
+              sortable
+            />
+            <Column
+              field="tenant"
+              :header="t('inbox.column.tenant')"
+              sortable
+            />
+            <Column
+              field="owner"
+              :header="t('inbox.column.owner')"
+              sortable
+            />
+            <Column
+              field="receivedAt"
+              :header="t('inbox.column.receivedAt')"
+              sortable
+            />
           </DataTable>
         </div>
 
         <Dialog
           v-model:visible="isDeleteDialogVisible"
           :header="t('inbox.confirmDeleteTitle')"
-          modal :closable="false"
+          modal
+          :closable="false"
           class="w-11/12 md:w-6/12 lg:w-4/12"
         >
-          <p class="p-2">{{ t('inbox.confirmDeleteMessage', [selectedMessages.length]) }}</p>
+          <p class="p-2">
+            {{ t('inbox.confirmDeleteMessage', [selectedMessages.length]) }}
+          </p>
           <template #footer>
-            <Button :label="t('inbox.actions.cancel')" text class="p-button-text" @click="cancelDelete" />
-            <Button :label="t('inbox.actions.confirm')" severity="danger" @click="confirmDeleteSelected" />
+            <Button
+              :label="t('inbox.actions.cancel')"
+              text
+              class="p-button-text"
+              @click="cancelDelete"
+            />
+            <Button
+              :label="t('inbox.actions.confirm')"
+              severity="danger"
+              @click="confirmDeleteSelected"
+            />
           </template>
         </Dialog>
       </section>

@@ -23,11 +23,7 @@ const fullscreenRoutes: RouteRecordRaw[] = [
       default: AppLayout,
       topbar: ManagerTopbar,
     },
-    props: {
-      default: {
-        fullscreen: true,
-      },
-    },
+    props: {default: {fullscreen: true,},},
     children: [
       {
         path: '/',
@@ -82,11 +78,7 @@ const managerRoutes: RouteRecordRaw[] = [
       topbar: ManagerTopbar,
       sidebar: ManagerMenu,
     },
-    props: {
-      default: {
-        fullscreen: false,
-      },
-    },
+    props: {default: {fullscreen: false,},},
     beforeEnter: (to: RouteLocationNormalized) => {
       const projectStore = useProjectStore();
       projectStore.searchSelectedProject(<string>to.params.projectId);
@@ -191,9 +183,7 @@ const managerRoutes: RouteRecordRaw[] = [
       {
         path: 'tenancies/new-tenancy',
         name: 'ProjectNewTenancy',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-        }),
+        props: (route: RouteLocationNormalizedLoaded) => ({projectId: route.params.projectId,}),
         component: () => import('@/views/ProjectNewTenancy.vue'),
       },
       /* --------------------------------------------------------------------
@@ -238,11 +228,7 @@ const tenantRoutes: RouteRecordRaw[] = [
       topbar: TenantTopbar,
       sidebar: TenantMenu,
     },
-    props: {
-      default: {
-        fullscreen: false,
-      },
-    },
+    props: {default: {fullscreen: false,},},
     children: [
       {
         path: '',
@@ -262,11 +248,7 @@ const contractorRoutes: RouteRecordRaw[] = [
       topbar: ContractorTopbar,
       sidebar: ContractorMenu,
     },
-    props: {
-      default: {
-        fullscreen: false,
-      },
-    },
+    props: {default: {fullscreen: false,},},
     children: [
       {
         path: '',

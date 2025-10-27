@@ -41,9 +41,7 @@ const updateMemberRole = async (member: ProjectMember) => {
       return;
     }
 
-    await projectMemberService.updateMemberRole(props.projectId, member.id, {
-      role: member.role,
-    });
+    await projectMemberService.updateMemberRole(props.projectId, member.id, {role: member.role,});
     toast.add({
       severity: 'success',
       summary: 'Rolle aktualisiert',
@@ -93,15 +91,23 @@ function onNewMember(email: string) {
 <template>
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
-      <div class="font-semibold text-xl">{{ t('projectSettings.projectMemberTable.title') }}</div>
+      <div class="font-semibold text-xl">
+        {{ t('projectSettings.projectMemberTable.title') }}
+      </div>
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
         <DataTable :value="members">
-          <Column field="email" header="Email"></Column>
+          <Column
+            field="email"
+            header="Email"
+          />
           <Column header="Rolle">
             <template #body="slotProps">
-              <ProjectMemberRoleSelect v-model="slotProps.data.role" @change="updateMemberRole(slotProps.data)" />
+              <ProjectMemberRoleSelect
+                v-model="slotProps.data.role"
+                @change="updateMemberRole(slotProps.data)"
+              />
             </template>
           </Column>
           <Column header="Optionen">
@@ -117,7 +123,10 @@ function onNewMember(email: string) {
         </DataTable>
       </div>
       <div class="flex justify-end basis-auto mt-6">
-        <NewProjectMemberButton :projectId="projectId" @newMember="onNewMember" />
+        <NewProjectMemberButton
+          :projectId="projectId"
+          @newMember="onNewMember"
+        />
       </div>
     </template>
   </Card>

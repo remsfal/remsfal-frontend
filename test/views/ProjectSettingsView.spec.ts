@@ -9,15 +9,9 @@ import { projectService } from '../../src/services/ProjectService';
 const routerPushMock = vi.fn();
 const addMock = vi.fn(); // Shared mock for toast
 
-vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: routerPushMock }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({ push: routerPushMock }),}));
 
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({
-    add: addMock,
-  }),
-}));
+vi.mock('primevue/usetoast', () => ({useToast: () => ({add: addMock,}),}));
 
 // ---- Test Suite ----
 describe('ProjectSettingsView.vue', () => {
@@ -44,9 +38,7 @@ describe('ProjectSettingsView.vue', () => {
     vi.spyOn(projectService, 'getProject').mockResolvedValue({ title: 'Old Project' });
     vi.spyOn(projectService, 'updateProject').mockResolvedValue({});
 
-    wrapper = mount(ProjectSettingsView, {
-      props: { projectId: 'test-project-id' },
-    });
+    wrapper = mount(ProjectSettingsView, {props: { projectId: 'test-project-id' },});
 
     await flushPromises();
   });
@@ -121,9 +113,7 @@ describe('ProjectSettingsView.vue', () => {
     await wrapper.vm.saveProjectName();
     await flushPromises();
 
-    expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {
-      title: 'Updated Project',
-    });
+    expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {title: 'Updated Project',});
     expect(addMock).toHaveBeenCalledWith(
       expect.objectContaining({ severity: 'success' })
     );

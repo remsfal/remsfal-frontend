@@ -11,11 +11,7 @@ vi.mock('vue-i18n', () => ({
 }));
 
 // Mock ProjectMemberService
-vi.mock('../../src/services/ProjectMemberService', () => ({
-  projectMemberService: {
-    addMember: vi.fn(),
-  },
-}));
+vi.mock('../../src/services/ProjectMemberService', () => ({projectMemberService: {addMember: vi.fn(),},}));
 
 describe('NewProjectMemberButton.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof NewProjectMemberButton>>;

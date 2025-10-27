@@ -93,10 +93,16 @@ const saveTask = async () => {
 </script>
 
 <template>
-  <div v-if="loading">Loading...</div>
+  <div v-if="loading">
+    Loading...
+  </div>
   <div v-else-if="task">
     <div class="header-buttons">
-      <Button label="Zurück" icon="pi pi-arrow-left" @click="router.go(-1)" />
+      <Button
+        label="Zurück"
+        icon="pi pi-arrow-left"
+        @click="router.go(-1)"
+      />
       <Button
         label="Speichern"
         icon="pi pi-check"
@@ -109,8 +115,14 @@ const saveTask = async () => {
     <h1>Aufgabe bearbeiten</h1>
 
     <div class="table-wrapper">
-      <DataTable :value="[task]" responsiveLayout="scroll">
-        <Column field="title" header="Name">
+      <DataTable
+        :value="[task]"
+        responsiveLayout="scroll"
+      >
+        <Column
+          field="title"
+          header="Name"
+        >
           <template #body="slotProps">
             <div
               v-if="slotProps.data.editing !== 'title'"
@@ -126,11 +138,14 @@ const saveTask = async () => {
               class="editable-input"
               required
               @blur="stopEditing(slotProps.data)"
-            />
+            >
           </template>
         </Column>
 
-        <Column field="description" header="Beschreibung">
+        <Column
+          field="description"
+          header="Beschreibung"
+        >
           <template #body="slotProps">
             <div
               v-if="slotProps.data.editing !== 'description'"
@@ -145,11 +160,14 @@ const saveTask = async () => {
               class="editable-input"
               required
               @blur="stopEditing(slotProps.data)"
-            ></textarea>
+            />
           </template>
         </Column>
 
-        <Column field="status" header="Status">
+        <Column
+          field="status"
+          header="Status"
+        >
           <template #body="slotProps">
             <div
               v-if="slotProps.data.editing !== 'status'"
@@ -164,28 +182,53 @@ const saveTask = async () => {
               class="editable-input"
               @blur="stopEditing(slotProps.data)"
             >
-              <option v-for="status in statusOptions" :key="status" :value="status">
+              <option
+                v-for="status in statusOptions"
+                :key="status"
+                :value="status"
+              >
                 {{ status }}
               </option>
             </select>
           </template>
         </Column>
 
-        <Column field="ownerId" header="Owner" />
+        <Column
+          field="ownerId"
+          header="Owner"
+        />
 
         <!-- Erweiterbare Felder -->
         <template v-if="isExpanded">
-          <Column field="createdAt" header="Erstellt am" />
-          <Column field="modifiedAt" header="Geändert am" />
-          <Column field="blockedBy" header="Blockiert von" />
-          <Column field="duplicateOf" header="Duplikat von" />
-          <Column field="relatedTo" header="Verwandt mit" />
+          <Column
+            field="createdAt"
+            header="Erstellt am"
+          />
+          <Column
+            field="modifiedAt"
+            header="Geändert am"
+          />
+          <Column
+            field="blockedBy"
+            header="Blockiert von"
+          />
+          <Column
+            field="duplicateOf"
+            header="Duplikat von"
+          />
+          <Column
+            field="relatedTo"
+            header="Verwandt mit"
+          />
         </template>
       </DataTable>
 
       <!-- Umschalt-Button -->
       <div style="display: flex; justify-content: flex-end; margin-top: 10px">
-        <Button class="toggle-button" @click="toggleExpansion">
+        <Button
+          class="toggle-button"
+          @click="toggleExpansion"
+        >
           {{ isExpanded ? 'Weniger Details' : 'Mehr Details' }}
         </Button>
       </div>

@@ -57,9 +57,7 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should update a member role in a project', async () => {
-    const updatedMember = await projectMemberService.updateMemberRole(projectId, 'member123', {
-      role: member.role,
-    });
+    const updatedMember = await projectMemberService.updateMemberRole(projectId, 'member123', {role: member.role,});
     expect(updatedMember).toMatchObject({ role: member.role });
   });
 

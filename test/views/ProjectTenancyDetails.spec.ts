@@ -13,9 +13,7 @@ vi.mock('vue-router', () => ({
 }));
 
 const toastSpy = vi.fn();
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({ add: toastSpy }),
-}));
+vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: toastSpy }),}));
 
 // ---- Mock window.location.href ----
 Object.defineProperty(window, 'location', {
@@ -40,9 +38,7 @@ describe('ProjectTenanciesDetails', () => {
     vi.spyOn(tenancyService, 'updateTenancy').mockResolvedValue(undefined);
     vi.spyOn(tenancyService, 'deleteTenancy').mockResolvedValue(undefined);
 
-    wrapper = mount(ProjectTenanciesDetails, {
-      global: { plugins: [PrimeVue, i18n] },
-    });
+    wrapper = mount(ProjectTenanciesDetails, {global: { plugins: [PrimeVue, i18n] },});
     await flushPromises();
   });
 

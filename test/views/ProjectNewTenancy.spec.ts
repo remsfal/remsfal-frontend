@@ -17,11 +17,7 @@ describe('ProjectTenancies.vue', () => {
 
   beforeEach(() => {
     // Mount the component with PrimeVue plugin mocked
-    wrapper = mount(ProjectNewTenancy, {
-      global: {
-        plugins: [PrimeVue, i18n],
-      },
-    });
+    wrapper = mount(ProjectNewTenancy, {global: {plugins: [PrimeVue, i18n],},});
   });
 
   it('renders correctly', () => {

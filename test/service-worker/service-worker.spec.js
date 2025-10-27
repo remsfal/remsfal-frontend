@@ -20,9 +20,7 @@ describe('Service Worker Tests', () => {
 
     cachesOpenStub.resolves({ addAll: addAllStub });
 
-    const installEvent = {
-      waitUntil: sinon.stub(),
-    };
+    const installEvent = {waitUntil: sinon.stub(),};
 
     const installListener = self.addEventListener.getCall(0).args[1];
     installListener(installEvent);
@@ -59,9 +57,7 @@ describe('Service Worker Tests', () => {
     const deleteStub = global.caches.delete;
     deleteStub.resolves(true);
 
-    const activateEvent = {
-      waitUntil: sinon.stub(),
-    };
+    const activateEvent = {waitUntil: sinon.stub(),};
 
     const activateListener = self.addEventListener.getCall(1).args[1];
     activateListener(activateEvent);

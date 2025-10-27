@@ -15,27 +15,35 @@ const navigateToHome = () => {
 <template>
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12 mb-4">
-      <Button icon="pi pi-home" label="Zurück zur Startseite" @click="navigateToHome" />
+      <Button
+        icon="pi pi-home"
+        label="Zurück zur Startseite"
+        @click="navigateToHome"
+      />
     </div>
     <div class="col-span-6">
       <Card>
-        <template #title> {{ t('legalNotice.title') }}</template>
+        <template #title>
+          {{ t('legalNotice.title') }}
+        </template>
         <template #content>
           <p>{{ t('legalNotice.definition') }}</p>
-          <p v-html="t('legalNotice.contact.address')"></p>
+          <p v-html="t('legalNotice.contact.address')" />
         </template>
       </Card>
     </div>
     <div class="col-span-6">
       <Card>
-        <template #title> {{ t('legalNotice.contact') }}</template>
+        <template #title>
+          {{ t('legalNotice.contact') }}
+        </template>
         <template #content>
           <p>
-            {{ t('legalNotice.contact.phone') }}<br />
-            {{ t('legalNotice.contact.fax') }}<br />
-            {{ t('legalNotice.contact.email') }}<br />
+            {{ t('legalNotice.contact.phone') }}<br>
+            {{ t('legalNotice.contact.fax') }}<br>
+            {{ t('legalNotice.contact.email') }}<br>
           </p>
-          <p v-html="t('legalNotice.representative')"></p>
+          <p v-html="t('legalNotice.representative')" />
         </template>
       </Card>
     </div>

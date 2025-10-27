@@ -126,7 +126,9 @@ const displayedColumns = computed(() =>
 </script>
 
 <template>
-  <div class="text-lg font-semibold text-[2rem]">Mietobjekte</div>
+  <div class="text-lg font-semibold text-[2rem]">
+    Mietobjekte
+  </div>
   <Card>
     <template #header>
       <Button
@@ -166,19 +168,30 @@ const displayedColumns = computed(() =>
           sortable
           style="width: 25%"
         >
-          <template #editor="{ data, field }" v-if="col.field !== 'actions'">
+          <template
+            v-if="col.field !== 'actions'"
+            #editor="{ data, field }"
+          >
             <Select
+              v-if="col.field !== 'actions'"
               v-model="data[field]"
               :options="field === 'rentalObject' ? rentalObjects : unitTypes"
-              v-if="col.field !== 'actions'"
               optionLabel="label"
               optionValue="value"
               placeholder="Auswählen..."
               filter
             />
           </template>
-          <template v-if="col.field === 'actions'" #body="{ index }">
-            <Button icon="pi pi-trash" severity="danger" text @click="deleteRow(index)" />
+          <template
+            v-if="col.field === 'actions'"
+            #body="{ index }"
+          >
+            <Button
+              icon="pi pi-trash"
+              severity="danger"
+              text
+              @click="deleteRow(index)"
+            />
           </template>
         </Column>
       </DataTable>

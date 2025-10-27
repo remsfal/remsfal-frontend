@@ -7,11 +7,7 @@ describe('AppLayout.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    wrapper = mount(AppLayout, {
-      props: {
-        fullscreen: false,
-      },
-    });
+    wrapper = mount(AppLayout, {props: {fullscreen: false,},});
   });
 
   it('should render the layout components correctly', async () => {

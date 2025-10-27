@@ -9,9 +9,7 @@ const mockProjectService = {
   createProject: vi.fn(),
 };
 
-vi.mock('@/services/ProjectService', () => ({
-  projectService: mockProjectService,
-}));
+vi.mock('@/services/ProjectService', () => ({projectService: mockProjectService,}));
 
 describe('ProjectStore - Burger Menu Bug Fix', () => {
   let store: ReturnType<typeof useProjectStore>;

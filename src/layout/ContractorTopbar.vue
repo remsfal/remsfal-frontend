@@ -29,11 +29,15 @@ const login = (route: string) => {
       class="layout-topbar-action"
       @click="onAccountSettingsClick()"
     >
-      <i class="pi pi-user"></i>
+      <i class="pi pi-user" />
       <span>{{ sessionStore.user.email }}</span>
     </Button>
-    <Button v-if="sessionStore.user != null" class="layout-topbar-action" @click="logout()">
-      <i class="pi pi-sign-out"></i>
+    <Button
+      v-if="sessionStore.user != null"
+      class="layout-topbar-action"
+      @click="logout()"
+    >
+      <i class="pi pi-sign-out" />
       <span>{{ t('toolbar.logout') }}</span>
     </Button>
     <Button
@@ -41,7 +45,7 @@ const login = (route: string) => {
       class="layout-topbar-action"
       @click="login('/projects')"
     >
-      <i class="pi pi-sign-in"></i>
+      <i class="pi pi-sign-in" />
       <span>{{ t('toolbar.login') }}</span>
     </Button>
   </AppTopbar>

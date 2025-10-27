@@ -2,16 +2,11 @@ import globals from 'globals';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import vue from 'eslint-plugin-vue';
-import prettier from 'eslint-plugin-prettier/recommended';
 
 export default [
   {
     files: ['**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts,vue}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-      },
-    },
+    languageOptions: {globals: {...globals.browser,},},
   },
 
   // js
@@ -36,11 +31,7 @@ export default [
   ...vue.configs['flat/recommended'],
   {
     // files: ['*.vue', '**/*.vue'],
-    languageOptions: {
-      parserOptions: {
-        parser: ts.parser,
-      },
-    },
+    languageOptions: {parserOptions: {parser: ts.parser,},},
   },
   {
     rules: {
@@ -84,16 +75,14 @@ export default [
     },
   },
 
-  // prettier
-  prettier,
+  // general rules
   {
     rules: {
-      'prettier/prettier': 'warn',
+      'max-len': ['error', { code: 120 }],
+      'object-curly-newline': ['error', { multiline: true }],
     },
   },
 
   // ignore files at the end of the config
-  {
-    ignores: ['**/dist/**', 'node_modules/*', 'cypress/**', 'html/**', 'coverage/'],
-  },
+  {ignores: ['**/dist/**', 'node_modules/*', 'cypress/**', 'html/**', 'coverage/'],},
 ];

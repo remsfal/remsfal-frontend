@@ -29,9 +29,7 @@ describe('MyFormComponent', () => {
 
   // Create the wrapper before each test
   beforeEach(() => {
-    wrapper = mount(ReusableFormComponent, {
-      props: defaultProps,
-    });
+    wrapper = mount(ReusableFormComponent, {props: defaultProps,});
   });
 
   // Test that the headline is rendered correctly

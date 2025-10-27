@@ -66,7 +66,10 @@ function handleFileUpload(event: Event) {
 
 <template>
   <div class="p-4 max-w-2xl mx-auto">
-    <div v-if="!nameConfirmed" class="flex items-center gap-2 mb-4">
+    <div
+      v-if="!nameConfirmed"
+      class="flex items-center gap-2 mb-4"
+    >
       <InputText
         v-model="userName"
         placeholder="Dein Name..."
@@ -76,26 +79,38 @@ function handleFileUpload(event: Event) {
       <Button
         label="Start"
         :disabled="!userName"
-        @click="nameConfirmed = true"
         data-testid="start-button"
+        @click="nameConfirmed = true"
       />
     </div>
 
     <div v-else>
       <Panel header="Projekt-Chat">
-        <div v-for="(msg, index) in messages" :key="index" class="mb-3">
-          <Message :severity="msg.sender === userName ? 'info' : 'success'" :closable="false">
+        <div
+          v-for="(msg, index) in messages"
+          :key="index"
+          class="mb-3"
+        >
+          <Message
+            :severity="msg.sender === userName ? 'info' : 'success'"
+            :closable="false"
+          >
             <div>
               <strong>{{ msg.sender }}</strong>
               <span class="text-gray-400 text-xs ml-2">({{ msg.time }})</span>
             </div>
-            <div v-if="msg.text" class="mt-1">{{ msg.text }}</div>
+            <div
+              v-if="msg.text"
+              class="mt-1"
+            >
+              {{ msg.text }}
+            </div>
             <img
               v-if="msg.image"
               :src="msg.image"
               class="mt-2 max-w-xs rounded shadow"
               alt="Upload"
-            />
+            >
           </Message>
         </div>
 
@@ -103,8 +118,8 @@ function handleFileUpload(event: Event) {
           <button
             v-for="emoji in emojis"
             :key="emoji"
-            @click="newMessage += ` ${emoji}`"
             data-testid="emoji-button"
+            @click="newMessage += ` ${emoji}`"
           >
             {{ emoji }}
           </button>
@@ -126,14 +141,14 @@ function handleFileUpload(event: Event) {
               <input
                 type="file"
                 accept="image/*"
-                @change="handleFileUpload"
                 class="hidden"
                 data-testid="file-input"
-              />
+                @change="handleFileUpload"
+              >
             </label>
             <span
-              class="text-sm px-2 py-1 border border-gray-300 rounded text-gray-600"
               v-if="selectedFileName"
+              class="text-sm px-2 py-1 border border-gray-300 rounded text-gray-600"
               data-testid="file-name"
             >
               {{ selectedFileName }}
@@ -142,9 +157,9 @@ function handleFileUpload(event: Event) {
           <Button
             icon="pi pi-send"
             label="Senden"
-            @click="sendMessage"
             :disabled="!newMessage"
             data-testid="send-button"
+            @click="sendMessage"
           />
         </div>
       </Panel>
