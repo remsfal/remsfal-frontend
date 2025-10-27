@@ -355,12 +355,14 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
                   <Button
                     v-if="!slot.data.isRead"
                     icon="pi pi-envelope"
-                    text rounded title="Als gelesen markieren"
+                    text rounded
+                    title="Als gelesen markieren"
                     class="h-8 w-8"
                     @click.stop="markAsRead(slot.data)"
                   />
                   <Button
-                    v-else text rounded title="Als ungelesen markieren"
+                    v-else text
+                    rounded title="Als ungelesen markieren"
                     class="h-8 w-8 text-gray-400"
                     @click.stop="markAsUnread(slot.data)"
                   />

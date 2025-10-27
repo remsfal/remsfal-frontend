@@ -11,12 +11,6 @@ export default [
 
   // js
   js.configs.recommended,
-  {
-    rules: {
-      'no-unused-vars': 'off',
-      'no-undef': 'off',
-    },
-  },
 
   // ts
   ...ts.configs.recommended,
@@ -72,18 +66,17 @@ export default [
       'vue/require-typed-ref': 'warn',
       'vue/v-for-delimiter-style': 'error',
       'vue/valid-define-options': 'error',
-      // Disable Vue template formatting rules to keep original formatting
-      'vue/max-attributes-per-line': 'off',
-      'vue/html-self-closing': 'off',
-      'vue/singleline-html-element-content-newline': 'off',
-      'vue/multiline-html-element-content-newline': 'off',
+      'vue/max-attributes-per-line':  ["error", {
+          "singleline": {"max": 4},
+          "multiline": {"max": 2}
+      }],
     },
   },
 
   // general rules
   {
     rules: {
-      'max-len': ['error', { code: 120 }],
+      'max-len': ['error', { code: 128 }],
       'object-curly-newline': [
         'error',
         {

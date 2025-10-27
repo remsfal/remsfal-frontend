@@ -43,7 +43,8 @@ describe('CommercialView.vue', () => {
     expect(wrapper.vm.location).toBe('');
   });
 
-  it('validates commercial space is positive, heating space is positive and description is not over 500 characters', async () => {
+  it('validates commercial space is positive, heating space is positive and description is not over 500 characters',
+    async () => {
     wrapper.vm.commercialSpace = -10;
     wrapper.vm.heatingSpace = -5;
     wrapper.vm.description = 'a'.repeat(501);

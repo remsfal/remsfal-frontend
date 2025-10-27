@@ -1,5 +1,6 @@
+/* global global, setImmediate */
+import {describe, it, expect, afterEach} from 'vitest';
 import './setupMocks.js';
-import { expect } from 'chai';
 import sinon from 'sinon';
 
 import '../../public/service-worker.js';

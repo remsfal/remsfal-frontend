@@ -33,7 +33,9 @@ describe('Service Worker Initialization', () => {
 
   describe('enableBackgroundSync', () => {
     beforeEach(() => {
-      vi.stubGlobal('navigator', {serviceWorker: {ready: Promise.resolve({sync: {register: vi.fn().mockResolvedValue(undefined),},}),},});
+      vi.stubGlobal('navigator',
+        {serviceWorker: {ready: Promise.resolve({sync: {register: vi.fn().mockResolvedValue(undefined),},}),},}
+      );
       vi.stubGlobal('window', { SyncManager: vi.fn() });
       vi.spyOn(console, 'log').mockImplementation(() => {});
       vi.spyOn(console, 'error').mockImplementation(() => {});

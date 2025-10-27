@@ -120,7 +120,8 @@ function handleFileUpload(event: Event) {
           />
           <div class="flex items-center gap-2">
             <label
-              class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded border border-blue-300 hover:bg-blue-200"
+              class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded border
+               border-blue-300 hover:bg-blue-200"
             >
               📎 Datei auswählen
               <input

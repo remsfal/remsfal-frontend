@@ -84,19 +84,24 @@ onMounted(() => {
     </template>
     <template #content>
       <DataTable
-        :value="localTenants" :rows="10" :rowHover="true" dataKey="localTenants.id"
-        tableStyle="min-width: 60rem" scrollable scrollDirection="both"
-        scrollHeight="var(--custom-scroll-height)" editMode="cell" class="custom-scroll-height" :pt="{
+        :value="localTenants" :rows="10"
+        :rowHover="true" dataKey="localTenants.id"
+        tableStyle="min-width: 60rem" scrollable
+        scrollDirection="both"
+        scrollHeight="var(--custom-scroll-height)" editMode="cell"
+        class="custom-scroll-height" :pt="{
           table: { style: 'min-width: 50rem' },
           column: {
             bodycell: ({ state }: DataTablePassThroughMethodOptions) => ({
               class: [{ '!py-0': state['d_editing'] }],
             }),
           },
-        }" @cellEditComplete="onCellEditComplete"
+        }"
+        @cellEditComplete="onCellEditComplete"
       >
         <Column
-          v-for="(col) in displayedColumns" :key="col.field" :field="col.field" :header="col.header"
+          v-for="(col) in displayedColumns" :key="col.field"
+          :field="col.field" :header="col.header"
           sortable style="width: 33.333%"
         >
           <template v-if="col.field !== 'actions'" #editor="{ data, field }">

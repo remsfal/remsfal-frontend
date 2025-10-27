@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-env node */
+/* global process */
 /**
  * Script to merge coverage from both Vitest unit tests and Cypress E2E tests
  */
