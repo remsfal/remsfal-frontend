@@ -7,15 +7,17 @@ const { t } = useI18n();
 
 <template>
   <h1 class="header-one">
-    {{ t('landingPage.title') }} <img class="inline-logo" src="@/assets/logo.svg" alt="logo" />
+    {{ t('landingPage.title') }} <img class="inline-logo" src="@/assets/logo.svg" alt="logo">
   </h1>
   <!-- Generated with https://developers.google.com/identity/branding-guidelines?hl=de -->
   <div class="widgets">
     <div class="info">
-      <h2 class="header-two">{{ t('landingPage.sub-title') }}</h2>
+      <h2 class="header-two">
+        {{ t('landingPage.sub-title') }}
+      </h2>
       <p>
-        {{ t('landingPage.description') }} <br />
-        {{ t('landingPage.login-description') }} <br />
+        {{ t('landingPage.description') }} <br>
+        {{ t('landingPage.login-description') }} <br>
         {{ t('landingPage.more-description') }}
         <a href="https://remsfal.de/">remsfal.de</a>
       </p>
@@ -41,7 +43,9 @@ const { t } = useI18n();
             />
           </g>
         </svg>
-        <h2 class="header-widget">{{ t('landingPage.header.defect-management') }}</h2>
+        <h2 class="header-widget">
+          {{ t('landingPage.header.defect-management') }}
+        </h2>
       </div>
       <div class="widget">
         <svg
@@ -64,7 +68,9 @@ const { t } = useI18n();
             />
           </g>
         </svg>
-        <h2 class="header-widget">{{ t('landingPage.header.documentation') }}</h2>
+        <h2 class="header-widget">
+          {{ t('landingPage.header.documentation') }}
+        </h2>
       </div>
       <div class="widget">
         <svg
@@ -108,7 +114,9 @@ const { t } = useI18n();
             </g>
           </g>
         </svg>
-        <h2 class="header-widget">{{ t('landingPage.header.monitoring') }}</h2>
+        <h2 class="header-widget">
+          {{ t('landingPage.header.monitoring') }}
+        </h2>
       </div>
     </div>
   </div>

@@ -2,12 +2,12 @@
 import { useLayout } from '@/layout/composables/layout';
 import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
 
 const isMobileMenuOpen = ref(false);
-const menuButtonRef = ref<HTMLElement>();
+const menuButtonRef = ref<ComponentPublicInstance>();
 const menuRef = ref<HTMLElement>();
 
 const toggleMobileMenu = () => {
@@ -47,17 +47,17 @@ onUnmounted(() => {
           class="layout-menu-button layout-topbar-menu-button layout-topbar-action"
           @click="toggleMenu"
         >
-          <i class="pi pi-bars"></i>
+          <i class="pi pi-bars" />
         </Button>
         <RouterLink to="/" class="layout-topbar-logo">
-          <img src="@/assets/logo.svg" alt="logo" />
+          <img src="@/assets/logo.svg" alt="logo">
         </RouterLink>
       </div>
 
       <div class="layout-topbar-actions">
         <div class="layout-config-menu">
           <Button type="button" class="layout-topbar-action" @click="toggleDarkMode">
-            <i class="pi" :class="[{ 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
+            <i class="pi" :class="[{ 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]" />
           </Button>
         </div>
 
@@ -66,7 +66,7 @@ onUnmounted(() => {
           class="layout-topbar-menu-button layout-topbar-action"
           @click="toggleMobileMenu"
         >
-          <i class="pi pi-ellipsis-v"></i>
+          <i class="pi pi-ellipsis-v" />
         </Button>
 
         <div 

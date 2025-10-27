@@ -4,9 +4,7 @@ import AppTopbar from '@/layout/AppTopbar.vue';
 import { useLayout } from '@/layout/composables/layout';
 
 // Mock the layout composable
-vi.mock('@/layout/composables/layout', () => ({
-  useLayout: vi.fn(),
-}));
+vi.mock('@/layout/composables/layout', () => ({useLayout: vi.fn(),}));
 
 describe('AppTopbar', () => {
   let mockUseLayout: any;

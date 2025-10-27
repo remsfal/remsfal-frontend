@@ -90,7 +90,9 @@ onMounted(() => {
 <template>
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold">Neuer Mietvertrag erstellen</h2>
+      <h2 class="text-2xl font-bold">
+        Neuer Mietvertrag erstellen
+      </h2>
       <Button
         label="Speichern & zur Übersicht"
         icon="pi pi-save"

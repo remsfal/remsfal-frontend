@@ -55,7 +55,7 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
     <RouterView name="topbar" />
     <RouterView name="sidebar" />
     <RouterView />
-    <div class="layout-mask animate-fadein"></div>
+    <div class="layout-mask animate-fadein" />
   </div>
   <Toast />
 </template>
