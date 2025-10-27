@@ -7,8 +7,12 @@ import { issueService, type Issue, StatusValues } from '../../src/services/Issue
 const projectId = 'test-project';
 const issueId = 'test-issue';
 const mockIssues: Issue[] = [
-  { id: 'test-issue', title: 'Mock Issue 1', status: StatusValues.OPEN, owner: 'user1' },
-  { id: 'issue-2', title: 'Mock Issue 2', status: StatusValues.CLOSED, owner: 'user2' },
+  {
+ id: 'test-issue', title: 'Mock Issue 1', status: StatusValues.OPEN, owner: 'user1' 
+},
+  {
+ id: 'issue-2', title: 'Mock Issue 2', status: StatusValues.CLOSED, owner: 'user2' 
+},
 ];
 
 //  MSW handlers (typed + safe)

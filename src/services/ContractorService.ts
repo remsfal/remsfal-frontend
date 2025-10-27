@@ -29,9 +29,7 @@ export class ContractorService {
    */
   async getIssue(issueId: string): Promise<Issue> {
     return apiClient
-      .get(issuePath, {
-        pathParams: { issueId },
-      })
+      .get(issuePath, {pathParams: { issueId },})
       .then(res => res.data);
   }
 }

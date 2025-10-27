@@ -1,10 +1,9 @@
-import axios, type {
-  AxiosError,
+import axios from 'axios';
+import type {AxiosError,
   AxiosInstance,
   AxiosRequestConfig,
   InternalAxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
+  AxiosResponse} from 'axios';
 import type { paths as ticketingPaths, components as ticketingComponents } from './api/ticketing-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
@@ -84,7 +83,9 @@ function replacePlaceholders(
  */
 function emitToast(severity: string, summary: string, detail: string) {
   const bus = useEventBus();
-  bus.emit('toast:translate', { severity, summary, detail });
+  bus.emit('toast:translate', {
+ severity, summary, detail 
+});
 }
 /**
  * Axios interceptors

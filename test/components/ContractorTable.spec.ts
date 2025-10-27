@@ -10,15 +10,18 @@ describe('ContractorTable.vue', () => {
   vi.mock('@/services/ContractorService');
 
   beforeEach(() => {
-    vi.mocked(contractorService.getTasks).mockResolvedValue({
-      tasks: [
+    vi.mocked(contractorService.getIssues).mockResolvedValue({
+      issues: [
         {
- id: '1', title: 'Task 1', status: 'OPEN', description: 'Beschreibung 1'
+ id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1'
 },
         {
- id: '2', title: 'Task 2', status: 'CLOSED', description: 'Beschreibung 2'
+ id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2'
 },
       ],
+      first: 0,
+      size: 2,
+      total: 2,
     });
 
     wrapper = mount(ContractorTable);

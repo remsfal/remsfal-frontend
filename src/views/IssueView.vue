@@ -4,13 +4,11 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import IssueTable from '@/components/IssueTable.vue';
-import {
-  IssueService,
+import {IssueService,
   ISSUE_TYPE_TASK,
   ISSUE_STATUS_OPEN,
   type Status,
-  type IssueItem,
-} from '@/services/IssueService.ts';
+  type IssueItem,} from '@/services/IssueService.ts';
 
 const props = defineProps<{
   projectId: string;
