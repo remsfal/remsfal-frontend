@@ -34,10 +34,16 @@ const containerClass = computed(() => {
 const { t } = useI18n();
 const toast = useToast();
 const bus = useEventBus();
-bus.on('toast:translate', ({ severity, summary, detail }) => {
-  bus.emit('toast:show', { severity: severity, summary: t(summary), detail: t(detail) });
+bus.on('toast:translate', ({
+ severity, summary, detail 
+}) => {
+  bus.emit('toast:show', {
+ severity: severity, summary: t(summary), detail: t(detail) 
 });
-bus.on('toast:show', ({ severity, summary, detail }) => {
+});
+bus.on('toast:show', ({
+ severity, summary, detail 
+}) => {
   toast.add({
     severity: severity,
     summary: summary,

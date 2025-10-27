@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { EntityType, propertyService, type RentableUnitTreeNode } from '@/services/PropertyService';
+import {
+ EntityType, propertyService, type RentableUnitTreeNode 
+} from '@/services/PropertyService';
 import { tenancyService } from '@/services/TenancyService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
@@ -8,7 +10,9 @@ import Column from 'primevue/column';
 import type { DataTablePassThroughMethodOptions } from 'primevue/datatable';
 import DataTable from 'primevue/datatable';
 import Select from 'primevue/select';
-import { computed, onMounted, ref, watch } from 'vue';
+import {
+ computed, onMounted, ref, watch 
+} from 'vue';
 import type { components } from '@/services/api/platform-schema';
 
 // OpenAPI type
@@ -100,8 +104,12 @@ const addNewRow = () => {
 };
 
 const columns = ref([
-  { field: 'rentalType', header: 'Mietgegenstand', editor: 'Dropdown' },
-  { field: 'unitTitle', header: 'Wohneinheit', editor: 'Dropdown' },
+  {
+ field: 'rentalType', header: 'Mietgegenstand', editor: 'Dropdown' 
+},
+  {
+ field: 'unitTitle', header: 'Wohneinheit', editor: 'Dropdown' 
+},
 ]);
 const onCellEditComplete = async (event: any) => {
   const { newData, index } = event;

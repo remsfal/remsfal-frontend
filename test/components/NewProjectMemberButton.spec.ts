@@ -1,14 +1,12 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import {
+ describe, test, expect, beforeEach, vi 
+} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import NewProjectMemberButton from '../../src/components/NewProjectMemberButton.vue';
 import { projectMemberService } from '../../src/services/ProjectMemberService';
 
 // Mock translation function
-vi.mock('vue-i18n', () => ({
-  useI18n: () => ({
-    t: (key: string) => key, // just return key for simplicity
-  }),
-}));
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) })); // just return key for simplicity
 
 // Mock ProjectMemberService
 vi.mock('../../src/services/ProjectMemberService', () => ({projectMemberService: {addMember: vi.fn(),},}));

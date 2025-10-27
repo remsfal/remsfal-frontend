@@ -5,7 +5,9 @@ import { tenancyService } from '../../../src/services/TenancyService';
 vi.mock('@/services/TenancyService', () => ({tenancyService: {updateTenancyTenantItem: vi.fn(),},}));
 
 describe('TenantsTableComponent', () => {
-  const tenantsMock = [{ id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@test.de' }];
+  const tenantsMock = [{
+ id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@test.de' 
+}];
 
   it('renders tenant data in table', () => {
     const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: false },});

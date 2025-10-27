@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { components } from '@/services/api/platform-schema';
 import DatePicker from 'primevue/datepicker';
-import { computed, ref, watch } from 'vue';
+import {
+ computed, ref, watch 
+} from 'vue';
 
 // OpenAPI type
 type TenancyJson = components['schemas']['TenancyJson'];

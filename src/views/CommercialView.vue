@@ -1,10 +1,14 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue';
+import {
+ ref, computed, onMounted 
+} from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import {
+ handleCancel, showSavingErrorToast, showValidationErrorToast 
+} from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;

@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {
+ describe, it, expect, vi, beforeEach 
+} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ContractorTable from '../../src/components/ContractorTable.vue';
 import { contractorService } from '../../src/services/ContractorService';
@@ -11,8 +13,12 @@ describe('ContractorTable.vue', () => {
   beforeEach(() => {
     vi.mocked(contractorService.getTasks).mockResolvedValue({
       tasks: [
-        { id: '1', title: 'Task 1', status: 'OPEN', description: 'Beschreibung 1' },
-        { id: '2', title: 'Task 2', status: 'CLOSED', description: 'Beschreibung 2' },
+        {
+ id: '1', title: 'Task 1', status: 'OPEN', description: 'Beschreibung 1' 
+},
+        {
+ id: '2', title: 'Task 2', status: 'CLOSED', description: 'Beschreibung 2' 
+},
       ],
     });
 

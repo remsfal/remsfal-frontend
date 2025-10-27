@@ -1,4 +1,6 @@
-import { apiClient, type ApiPaths, type ApiComponents } from '@/services/ApiClient.ts';
+import {
+ apiClient, type ApiPaths, type ApiComponents 
+} from '@/services/ApiClient.ts';
 
 type Paths = Extract<
   keyof ApiPaths,

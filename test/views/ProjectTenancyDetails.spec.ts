@@ -1,6 +1,8 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+ describe, it, expect, vi, beforeEach, afterEach 
+} from 'vitest';
 import PrimeVue from 'primevue/config';
 import i18n from '../../src/i18n/i18n';
 import { tenancyService } from '../../src/services/TenancyService';

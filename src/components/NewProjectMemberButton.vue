@@ -4,7 +4,9 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import { useI18n } from 'vue-i18n';
-import { type ProjectMember, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
+import {
+ type ProjectMember, type MemberRole, projectMemberService 
+} from '@/services/ProjectMemberService';
 import ProjectMemberRoleSelect from '@/components/ProjectMemberRoleSelect.vue';
 
 const props = defineProps<{ projectId: string }>();

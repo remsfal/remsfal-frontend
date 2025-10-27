@@ -1,5 +1,7 @@
 // tests/views/ProjectDashboard.spec.ts
-import { describe, it, expect, vi } from 'vitest';
+import {
+ describe, it, expect, vi 
+} from 'vitest';
 import { mount } from '@vue/test-utils';
 import ProjectDashboard from '../../src/views/ProjectDashboard.vue';
 import PrimeVue from 'primevue/config';

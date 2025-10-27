@@ -130,7 +130,9 @@ onMounted(() =>
 );
 
 // --- Expose refs & methods for tests ---
-defineExpose({ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirmed, onDeleteNode,expandedKeys });
+defineExpose({
+ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirmed, onDeleteNode,expandedKeys 
+});
 </script>
 
 <template>

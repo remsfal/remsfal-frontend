@@ -5,7 +5,9 @@ import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent
 import { tenancyService } from '@/services/TenancyService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
-import { computed, onMounted, ref, toRaw } from 'vue';
+import {
+ computed, onMounted, ref, toRaw 
+} from 'vue';
 import { useRouter } from 'vue-router';
 import type { components } from '@/services/api/platform-schema';
 

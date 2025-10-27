@@ -1,4 +1,6 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import {
+ describe, test, expect, beforeEach, vi 
+} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ProjectMemberSettings from '../../src/components/ProjectMemberSettings.vue';
 import {
@@ -18,8 +20,12 @@ describe('ProjectMemberSettings.vue', () => {
     // Mock GET members response
     const mockMembers = {
       members: [
-        { id: '1', email: 'test1@example.com', role: 'MANAGER' as MemberRole },
-        { id: '2', email: 'test2@example.com', role: 'STAFF' as MemberRole },
+        {
+ id: '1', email: 'test1@example.com', role: 'MANAGER' as MemberRole 
+},
+        {
+ id: '2', email: 'test2@example.com', role: 'STAFF' as MemberRole 
+},
       ],
     };
     vi.mocked(projectMemberService.getMembers).mockResolvedValue(mockMembers);
@@ -40,7 +46,9 @@ describe('ProjectMemberSettings.vue', () => {
 
   // Test for updateMemberRole
   test("updateMemberRole - updates a member's role successfully", async () => {
-    const member: Member = { id: '1', email: 'test1@example.com', role: 'MANAGER' };
+    const member: Member = {
+ id: '1', email: 'test1@example.com', role: 'MANAGER' 
+};
 
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 
@@ -54,9 +62,7 @@ describe('ProjectMemberSettings.vue', () => {
 
     // Mock the removeMember and getMembers methods
     const removeMock = vi.mocked(projectMemberService.removeMember).mockResolvedValueOnce();
-    vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce({
-      members: [], // return empty list after removal
-    });
+    vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce({ members: [] }); // return empty list after removal
 
     // Call removeMember on the component
     await (wrapper.vm as any).removeMember(memberId);

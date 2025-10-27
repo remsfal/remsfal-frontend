@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { watch, ref, onBeforeUpdate, onMounted } from 'vue';
+import {
+ watch, ref, onBeforeUpdate, onMounted 
+} from 'vue';
 import AppFooter from './AppFooter.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { RouterView } from 'vue-router';
@@ -8,7 +10,9 @@ const props = defineProps<{
   fullscreen: boolean;
 }>();
 
-const { layoutState, isSidebarActive, setFullscreen } = useLayout();
+const {
+ layoutState, isSidebarActive, setFullscreen 
+} = useLayout();
 const outsideClickListener = ref<EventListenerOrEventListenerObject | null>(null);
 
 onMounted(() => {

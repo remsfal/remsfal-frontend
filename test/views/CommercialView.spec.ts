@@ -1,5 +1,7 @@
 import { mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import {
+ describe, it, expect, vi, beforeEach, Mock 
+} from 'vitest';
 import Component from '../../src/views/CommercialView.vue';
 import { commercialService } from '../../src/services/CommercialService';
 

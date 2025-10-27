@@ -42,9 +42,15 @@ const statCards = [
 const taskChartData = {
   labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
-    { label: 'Aufgaben', data: [20,15,16,12,8,13], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 },
-    { label: 'Offene Aufgaben', data: [0,2,4,1,0,7], backgroundColor: '#F97316', borderRadius: 4, barThickness: 12 },
-    { label: 'Erledigte Aufgaben', data: [20,13,12,11,8,6], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 },
+    {
+ label: 'Aufgaben', data: [20,15,16,12,8,13], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 
+},
+    {
+ label: 'Offene Aufgaben', data: [0,2,4,1,0,7], backgroundColor: '#F97316', borderRadius: 4, barThickness: 12 
+},
+    {
+ label: 'Erledigte Aufgaben', data: [20,13,12,11,8,6], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 
+},
   ],
 };
 
@@ -103,17 +109,29 @@ const costChartOptions = {
 };
 
 const upcomingTasks = [
-  { title: 'Dokumentation', dueDate: '2025-06-10', status: 'Offen' },
-  { title: 'Review Meeting', dueDate: '2025-06-12', status: 'In Bearbeitung' },
-  { title: 'Rechnungsfreigabe', dueDate: '2025-06-14', status: 'Erledigt' },
+  {
+ title: 'Dokumentation', dueDate: '2025-06-10', status: 'Offen' 
+},
+  {
+ title: 'Review Meeting', dueDate: '2025-06-12', status: 'In Bearbeitung' 
+},
+  {
+ title: 'Rechnungsfreigabe', dueDate: '2025-06-14', status: 'Erledigt' 
+},
 ];
 
 const issueChartData = {
   labels: ['Jan', 'Feb', 'Mär','Apr', 'Mai', 'Jun', 'Jul','Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   datasets: [
-    { label: 'Offene Issues', data: [5, 7, 4, 6, 8, 3], backgroundColor: '#F59E0B', borderRadius: 4, barThickness: 12 },
-    { label: 'In Bearbeitung', data: [2, 3, 5, 4, 3, 2], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 },
-    { label: 'Erledigte Issues', data: [10, 8, 9, 11, 7, 10], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 },
+    {
+ label: 'Offene Issues', data: [5, 7, 4, 6, 8, 3], backgroundColor: '#F59E0B', borderRadius: 4, barThickness: 12 
+},
+    {
+ label: 'In Bearbeitung', data: [2, 3, 5, 4, 3, 2], backgroundColor: '#3B82F6', borderRadius: 4, barThickness: 12 
+},
+    {
+ label: 'Erledigte Issues', data: [10, 8, 9, 11, 7, 10], backgroundColor: '#10B981', borderRadius: 4, barThickness: 12 
+},
   ],
 };
 
@@ -145,9 +163,15 @@ const defectChartOptions = {
 };
 
 const recentActivities = [
-  { title: 'Dokumentation abgeschlossen', date: '2025-06-04', type: 'completed' },
-  { title: 'Status geändert: "Review Meeting"', date: '2025-06-03', type: 'updated' },
-  { title: 'Neuer Mangel gemeldet', date: '2025-06-01', type: 'issue' },
+  {
+ title: 'Dokumentation abgeschlossen', date: '2025-06-04', type: 'completed' 
+},
+  {
+ title: 'Status geändert: "Review Meeting"', date: '2025-06-03', type: 'updated' 
+},
+  {
+ title: 'Neuer Mangel gemeldet', date: '2025-06-01', type: 'issue' 
+},
 ];
 </script>
 

@@ -1,5 +1,7 @@
 import { mount, flushPromises } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll } from 'vitest';
+import {
+ describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll 
+} from 'vitest';
 import Component from '../../src/views/PropertyView.vue';
 import { propertyService } from '../../src/services/PropertyService';
 import { http, HttpResponse } from 'msw';

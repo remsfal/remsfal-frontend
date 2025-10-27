@@ -1,4 +1,6 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import {
+ describe, test, expect, beforeEach, vi 
+} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import flushPromises from 'flush-promises';
 import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
@@ -19,8 +21,12 @@ describe('ProjectSettingsView.vue', () => {
 
   const mockMembers: GetMembersResponse = {
     members: [
-      { id: '1', email: 'test1@example.com', role: 'MANAGER' },
-      { id: '2', email: 'test2@example.com', role: 'TENANCY' },
+      {
+ id: '1', email: 'test1@example.com', role: 'MANAGER' 
+},
+      {
+ id: '2', email: 'test2@example.com', role: 'TENANCY' 
+},
     ],
   };
 

@@ -3,7 +3,9 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import ProjectMemberSettings from '@/components/ProjectMemberSettings.vue';
-import { ref, onMounted, watch, computed } from 'vue';
+import {
+ ref, onMounted, watch, computed 
+} from 'vue';
 import { projectService } from '@/services/ProjectService';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';

@@ -1,5 +1,7 @@
 import { mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, beforeEach } from 'vitest';
+import {
+ describe, it, expect, beforeEach 
+} from 'vitest';
 import AppLayout from '../../src/layout/AppLayout.vue';
 import AppFooter from '../../src/layout/AppFooter.vue';
 

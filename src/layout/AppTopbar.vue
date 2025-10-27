@@ -3,7 +3,9 @@ import { useLayout } from '@/layout/composables/layout';
 import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 
-const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
+const {
+ toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen 
+} = useLayout();
 </script>
 
 <template>

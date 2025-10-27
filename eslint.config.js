@@ -79,7 +79,7 @@ export default [
   {
     rules: {
       'max-len': ['error', { code: 120 }],
-      'object-curly-newline': ['error', { multiline: true }],
+      'object-curly-newline': ['error', { multiline: true, minProperties: 3 }],
     },
   },
 

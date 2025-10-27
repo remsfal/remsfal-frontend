@@ -1,4 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import {
+ describe, it, expect, vi 
+} from 'vitest';
 import { inboxService } from '../../src/services/InboxService';
 
 describe('InboxService', () => {

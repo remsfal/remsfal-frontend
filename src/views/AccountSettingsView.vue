@@ -1,6 +1,8 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import {
+ ref, computed, onMounted 
+} from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';

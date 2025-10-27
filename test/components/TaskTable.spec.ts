@@ -1,4 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import {
+ describe, it, expect, beforeEach 
+} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskTable from '../../src/components/TaskTable.vue';
 import DataTable from 'primevue/datatable';
@@ -7,9 +9,15 @@ import { RouterLinkStub } from '@vue/test-utils';
 
 // Mock task data
 const mockTasks = [
-  { id: 1, title: 'Task 1', owner: 'user1', status: 'OPEN' },
-  { id: 2, title: 'Task 2', owner: 'user2', status: 'CLOSED' },
-  { id: 3, title: 'Task 3', owner: 'user3', status: 'IN_PROGRESS' },
+  {
+ id: 1, title: 'Task 1', owner: 'user1', status: 'OPEN' 
+},
+  {
+ id: 2, title: 'Task 2', owner: 'user2', status: 'CLOSED' 
+},
+  {
+ id: 3, title: 'Task 3', owner: 'user3', status: 'IN_PROGRESS' 
+},
 ];
 
 describe('TaskTable', () => {
@@ -18,11 +26,7 @@ describe('TaskTable', () => {
   beforeEach(() => {
     wrapper = mount(TaskTable, {
       props: { tasks: mockTasks },
-      global: {
-        stubs: {
-          RouterLink: RouterLinkStub, // Stub the RouterLink for testing
-        },
-      },
+      global: { stubs: { RouterLink: RouterLinkStub } }, // Stub the RouterLink for testing
     });
   });
 

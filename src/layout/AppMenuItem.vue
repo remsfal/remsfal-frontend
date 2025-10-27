@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watch } from 'vue';
+import {
+ onBeforeMount, ref, watch 
+} from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -36,7 +38,9 @@ interface MenuItemProps {
 }
 
 const route = useRoute();
-const { layoutState, setActiveMenuItem, toggleMenu } = useLayout();
+const {
+ layoutState, setActiveMenuItem, toggleMenu 
+} = useLayout();
 
 const isActiveMenu = ref<boolean>(false);
 const itemKey = ref<string | undefined>(undefined);

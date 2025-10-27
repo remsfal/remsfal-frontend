@@ -1,5 +1,7 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {
+ describe, it, expect, beforeEach, vi 
+} from 'vitest';
 import ContractorView from '../../src/views/ContractorView.vue';
 
 vi.mock('../../src/components/ContractorTable.vue', () => ({
