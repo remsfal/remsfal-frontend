@@ -40,9 +40,9 @@ describe('IssueTable', () => {
     const rows = wrapper.findAll('.p-datatable-tbody > tr');
     rows.forEach((row, index) => {
       const cells = row.findAll('td');
-      expect(cells[0].text()).toBe(mockIssues[index].title);       // Title column
-      expect(cells[1].text()).toBe(mockIssues[index].owner);     // Owner column
-      expect(cells[2].text()).toBe(mockIssues[index].status);      // Status column
+      expect(cells[0].text()).toBe(mockIssues[index].title);   // Title column
+      expect(cells[1].text()).toBe(mockIssues[index].owner);   // Owner column
+      expect(cells[2].text()).toBe(mockIssues[index].status);  // Status column
     });
   });
 
@@ -54,7 +54,7 @@ describe('IssueTable', () => {
       const routerLink = wrapper.findAllComponents(RouterLinkStub)[index];
       expect(routerLink.props().to).toEqual({
         name: 'IssueEdit',
-        params: { issueid: issue.id },
+        params: { issueId: issue.id }, // <-- fixed param name
       });
     });
   });
