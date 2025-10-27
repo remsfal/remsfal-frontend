@@ -166,10 +166,7 @@ onMounted(async () => {
       :label="showFormer ? 'Ehemalige Mieter ausblenden' : 'Ehemalige Mieter anzeigen'"
       @click="showFormer = !showFormer"
     />
-    <div
-      v-if="showFormer"
-      class="mt-4"
-    >
+    <div v-if="showFormer" class="mt-4">
       <h2 class="text-xl font-bold mb-4">
         Ehemalige Mieter
       </h2>
