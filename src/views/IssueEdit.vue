@@ -46,7 +46,7 @@ onMounted(async () => {
   loading.value = true;
   try {
     const projectId = route.params.projectId as string;
-    const issueId = route.params.issueid as string;
+    const issueId = route.params.issueId as string;
     issue.value = await issueService.getIssue(projectId, issueId);
     if (issue.value) originalIssue.value = JSON.parse(JSON.stringify(issue.value));
   } catch (error) {
@@ -72,7 +72,7 @@ const saveIssue = async () => {
 
   try {
     const projectId = route.params.projectId as string;
-    const issueId = route.params.issueid as string;
+    const issueId = route.params.issueId as string;
     const body: Partial<Issue> = {
       title: issue.value.title,
       description: issue.value.description,
