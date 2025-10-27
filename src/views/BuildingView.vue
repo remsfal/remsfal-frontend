@@ -382,14 +382,16 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Bearbeite Gebäude mit ID: {{ unitId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">
+        Bearbeite Gebäude mit ID: {{ unitId }}
+      </h2>
 
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->
           <div class="col-span-2">
             <label for="title" class="block text-gray-700 mb-1">Titel</label>
-            <input id="title" v-model="title" type="text" class="form-input w-full" />
+            <input id="title" v-model="title" type="text" class="form-input w-full">
           </div>
 
           <!-- Beschreibung -->
@@ -400,38 +402,40 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               v-model="description"
               rows="3"
               class="form-textarea w-full"
-            ></textarea>
+            />
           </div>
 
           <!-- Adresse - Straße -->
           <div>
             <label for="street" class="block text-gray-700 mb-1">Straße</label>
-            <input id="street" v-model="street" type="text" class="form-input w-full" />
+            <input id="street" v-model="street" type="text" class="form-input w-full">
           </div>
 
           <!-- Stadt -->
           <div>
             <label for="city" class="block text-gray-700 mb-1">Stadt</label>
-            <input id="city" v-model="city" type="text" class="form-input w-full" />
+            <input id="city" v-model="city" type="text" class="form-input w-full">
           </div>
 
           <!-- Provinz / Bundesland -->
           <div>
             <label for="province" class="block text-gray-700 mb-1">Provinz / Bundesland</label>
-            <input id="province" v-model="province" type="text" class="form-input w-full" />
+            <input id="province" v-model="province" type="text" class="form-input w-full">
           </div>
 
           <!-- PLZ -->
           <div>
             <label for="zip" class="block text-gray-700 mb-1">PLZ</label>
-            <input id="zip" v-model="zip" type="text" class="form-input w-full" />
+            <input id="zip" v-model="zip" type="text" class="form-input w-full">
           </div>
 
           <!-- Land -->
           <div>
             <label for="country" class="block text-gray-700 mb-1">Land</label>
             <select id="country" v-model="country" class="form-input w-full">
-              <option value="" disabled>Bitte Land wählen</option>
+              <option value="" disabled>
+                Bitte Land wählen
+              </option>
               <option v-for="c in countries" :key="c.code" :value="c.code">
                 {{ c.name }}
               </option>
@@ -446,7 +450,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               v-model.number="livingSpace"
               type="number"
               class="form-input w-full"
-            />
+            >
           </div>
 
           <!-- Gewerbefläche -->
@@ -457,7 +461,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               v-model.number="commercialSpace"
               type="number"
               class="form-input w-full"
-            />
+            >
           </div>
 
           <!-- Nutzfläche -->
@@ -468,7 +472,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               v-model.number="usableSpace"
               type="number"
               class="form-input w-full"
-            />
+            >
           </div>
 
           <!-- Heizfläche -->
@@ -479,14 +483,16 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               v-model.number="heatingSpace"
               type="number"
               class="form-input w-full"
-            />
+            >
           </div>
         </div>
 
         <!-- Validierungsfehler -->
         <div v-if="validationErrors.length" class="text-red-600 mt-4">
           <ul>
-            <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+            <li v-for="(error, i) in validationErrors" :key="i">
+              {{ error }}
+            </li>
           </ul>
         </div>
 

@@ -34,7 +34,7 @@ const props = defineProps<{
       </Column>
     </DataTable>
     <div class="btn-slot">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>

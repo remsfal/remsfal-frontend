@@ -89,13 +89,15 @@ function handleFileUpload(event: Event) {
               <strong>{{ msg.sender }}</strong>
               <span class="text-gray-400 text-xs ml-2">({{ msg.time }})</span>
             </div>
-            <div v-if="msg.text" class="mt-1">{{ msg.text }}</div>
+            <div v-if="msg.text" class="mt-1">
+              {{ msg.text }}
+            </div>
             <img
               v-if="msg.image"
               :src="msg.image"
               class="mt-2 max-w-xs rounded shadow"
               alt="Upload"
-            />
+            >
           </Message>
         </div>
 
@@ -130,7 +132,7 @@ function handleFileUpload(event: Event) {
                 class="hidden"
                 data-testid="file-input"
                 @change="handleFileUpload"
-              />
+              >
             </label>
             <span
               v-if="selectedFileName"

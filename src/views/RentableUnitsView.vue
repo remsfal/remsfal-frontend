@@ -135,9 +135,13 @@ defineExpose({
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
-        <h1 class="w-full">{{ t('rentableUnits.view.title') }}</h1>
+        <h1 class="w-full">
+          {{ t('rentableUnits.view.title') }}
+        </h1>
       </div>
-      <div v-if="error" class="alert alert-error">{{ error }}</div>
+      <div v-if="error" class="alert alert-error">
+        {{ error }}
+      </div>
       <div v-if="!error" class="col-span-12">
         <div class="card">
           <TreeTable

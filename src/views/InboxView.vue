@@ -142,12 +142,15 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
 
 <template>
   <main class="w-full px-6 py-8">
-    <h1 class="text-2xl font-semibold mb-4">{{ t('inbox.title') }}</h1>
+    <h1 class="text-2xl font-semibold mb-4">
+      {{ t('inbox.title') }}
+    </h1>
     <div class="card p-4 flex gap-6 -mx-6">
-
       <!-- Sidebar -->
       <aside class="w-72 flex-shrink-0 space-y-4 pr-4">
-        <h2 class="text-lg font-semibold">{{ t('inbox.filter.title') }}</h2>
+        <h2 class="text-lg font-semibold">
+          {{ t('inbox.filter.title') }}
+        </h2>
 
         <!-- Filter Type -->
         <div class="relative inline-block w-full">
@@ -387,7 +390,9 @@ const rowClass = (data:InboxMessage) => (!data.isRead ? 'font-semibold':'');
           modal :closable="false"
           class="w-11/12 md:w-6/12 lg:w-4/12"
         >
-          <p class="p-2">{{ t('inbox.confirmDeleteMessage', [selectedMessages.length]) }}</p>
+          <p class="p-2">
+            {{ t('inbox.confirmDeleteMessage', [selectedMessages.length]) }}
+          </p>
           <template #footer>
             <Button :label="t('inbox.actions.cancel')" text class="p-button-text" @click="cancelDelete" />
             <Button :label="t('inbox.actions.confirm')" severity="danger" @click="confirmDeleteSelected" />

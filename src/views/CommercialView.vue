@@ -161,7 +161,7 @@ defineExpose({ fetchCommercialDetails });
             <label for="title" class="block text-gray-700 mb-1">{{
               t('rentableUnits.form.title')
             }}</label>
-            <input id="title" v-model="title" type="text" class="form-input w-full" />
+            <input id="title" v-model="title" type="text" class="form-input w-full">
           </div>
 
           <div class="col-span-2">
@@ -173,14 +173,14 @@ defineExpose({ fetchCommercialDetails });
               v-model="description"
               rows="3"
               class="form-textarea w-full"
-            ></textarea>
+            />
           </div>
 
           <div class="col-span-2">
             <label for="location" class="block text-gray-700 mb-1">{{
               t('property.address')
             }}</label>
-            <input id="location" v-model="location" type="text" class="form-input w-full" />
+            <input id="location" v-model="location" type="text" class="form-input w-full">
           </div>
 
           <div>
@@ -192,7 +192,7 @@ defineExpose({ fetchCommercialDetails });
               v-model.number="commercialSpace"
               type="number"
               class="form-input w-full"
-            />
+            >
           </div>
 
           <div>
@@ -204,13 +204,15 @@ defineExpose({ fetchCommercialDetails });
               v-model.number="heatingSpace"
               type="number"
               class="form-input w-full"
-            />
+            >
           </div>
         </div>
 
         <div v-if="validationErrors.length" class="text-red-600 mt-4">
           <ul>
-            <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+            <li v-for="(error, i) in validationErrors" :key="i">
+              {{ error }}
+            </li>
           </ul>
         </div>
 

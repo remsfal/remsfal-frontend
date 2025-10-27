@@ -131,7 +131,9 @@ onMounted(async () => {
     :onCancel="onCancel"
   />
   <div class="p-6 max-w-4xl mx-auto mt-10 shadow-lg bg-white rounded">
-    <h2 class="text-xl font-bold mb-4">Aktuelle Mieter</h2>
+    <h2 class="text-xl font-bold mb-4">
+      Aktuelle Mieter
+    </h2>
     <DataTable :value="items" class="w-full mb-4">
       <Column field="id" header="ID" />
       <Column field="firstName" header="Vorname" />
@@ -148,9 +150,11 @@ onMounted(async () => {
       :aria-expanded="showFormer"
       :label="showFormer ? 'Ehemalige Mieter ausblenden' : 'Ehemalige Mieter anzeigen'"
       @click="showFormer = !showFormer"
-    ></Button>
+    />
     <div v-if="showFormer" class="mt-4">
-      <h2 class="text-xl font-bold mb-4">Ehemalige Mieter</h2>
+      <h2 class="text-xl font-bold mb-4">
+        Ehemalige Mieter
+      </h2>
       <DataTable :value="formerItems" class="w-full">
         <Column field="id" header="ID" />
         <Column field="firstName" header="Vorname" />

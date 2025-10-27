@@ -2,8 +2,40 @@
 import { useLayout } from '@/layout/composables/layout';
 import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
+import { ref, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
+
+const isMobileMenuOpen = ref(false);
+const menuButtonRef = ref<ComponentPublicInstance>();
+const menuRef = ref<HTMLElement>();
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false;
+};
+
+// Close menu when clicking outside
+const handleOutsideClick = (event: Event) => {
+  const target = event.target as Element;
+  
+  if (isMobileMenuOpen.value && 
+      menuButtonRef.value?.$el && !menuButtonRef.value.$el.contains(target) &&
+      menuRef.value && !menuRef.value.contains(target)) {
+    closeMobileMenu();
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleOutsideClick);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick);
+});
 </script>
 
 <template>
@@ -15,35 +47,36 @@ const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
           class="layout-menu-button layout-topbar-menu-button layout-topbar-action"
           @click="toggleMenu"
         >
-          <i class="pi pi-bars"></i>
+          <i class="pi pi-bars" />
         </Button>
         <RouterLink to="/" class="layout-topbar-logo">
-          <img src="@/assets/logo.svg" alt="logo" />
+          <img src="@/assets/logo.svg" alt="logo">
         </RouterLink>
       </div>
 
       <div class="layout-topbar-actions">
         <div class="layout-config-menu">
           <Button type="button" class="layout-topbar-action" @click="toggleDarkMode">
-            <i class="pi" :class="[{ 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
+            <i class="pi" :class="[{ 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]" />
           </Button>
         </div>
 
         <Button
-          v-styleclass="{
-            selector: '@next',
-            enterFromClass: 'hidden',
-            enterActiveClass: 'animate-scalein',
-            leaveToClass: 'hidden',
-            leaveActiveClass: 'animate-fadeout',
-            hideOnOutsideClick: true,
-          }"
+          ref="menuButtonRef"
           class="layout-topbar-menu-button layout-topbar-action"
+          @click="toggleMobileMenu"
         >
-          <i class="pi pi-ellipsis-v"></i>
+          <i class="pi pi-ellipsis-v" />
         </Button>
 
-        <div class="layout-topbar-menu hidden lg:block">
+        <div 
+          ref="menuRef"
+          class="layout-topbar-menu lg:!block"
+          :class="{
+            'hidden': !isMobileMenuOpen,
+            'block animate-scalein': isMobileMenuOpen
+          }"
+        >
           <div class="layout-topbar-menu-content">
             <slot />
           </div>

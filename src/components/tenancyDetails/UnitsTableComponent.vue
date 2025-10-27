@@ -130,7 +130,9 @@ const displayedColumns = computed(() =>
 </script>
 
 <template>
-  <div class="text-lg font-semibold text-[2rem]">Mietobjekte</div>
+  <div class="text-lg font-semibold text-[2rem]">
+    Mietobjekte
+  </div>
   <Card>
     <template #header>
       <Button
