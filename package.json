@@ -87,7 +87,7 @@
     "sass": "^1.93.2",
     "sinon": "^21.0.0",
     "start-server-and-test": "^2.1.2",
-    "stylelint": "^16.24.0",
+    "stylelint": "^16.25.0",
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard": "^39.0.1",
     "tailwindcss": "^4.1.14",
