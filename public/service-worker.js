@@ -1,3 +1,5 @@
+/* eslint-env serviceworker */
+/* global importScripts, getAllProjects, deleteProject */
 importScripts('/idbHelper.js');
 
 const CACHE_NAME = 'remsfal-v1';

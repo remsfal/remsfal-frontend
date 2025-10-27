@@ -30,15 +30,11 @@ function createProxyConfig(target: string, backendName: string) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  optimizeDeps: {
-    noDiscovery: true,
-  },
+  optimizeDeps: {noDiscovery: true,},
   plugins: [
     vue(),
     vueDevTools(),
-    Components({
-      resolvers: [PrimeVueResolver()],
-    }),
+    Components({resolvers: [PrimeVueResolver()],}),
     istanbul({
       include: 'src/*',
       exclude: ['node_modules', 'cypress/', 'test/'],
@@ -47,11 +43,7 @@ export default defineConfig({
       requireEnv: false,
     }),
   ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
+  resolve: {alias: {'@': fileURLToPath(new URL('./src', import.meta.url)),},},
   server: {
     // https://vitejs.dev/config/server-options.html
     strictPort: true,

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import NewProjectForm from '../../src/components/NewProjectForm.vue';
 import router from '../../src/router';
@@ -7,18 +7,16 @@ import { projectService } from '../../src/services/ProjectService';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 
-vi.mock('@/helper/indexeddb', () => ({
-  saveProject: vi.fn(),
-}));
+vi.mock('@/helper/indexeddb', () => ({saveProject: vi.fn(),}));
 
-vi.mock('@/services/ProjectService', () => ({
-  projectService: { createProject: vi.fn() },
-}));
+vi.mock('@/services/ProjectService', () => ({projectService: { createProject: vi.fn() },}));
 
-const mockSearchSelectedProject = vi.fn();
+const mockAddProjectToList = vi.fn();
+const mockSetSelectedProject = vi.fn();
 vi.mock('@/stores/ProjectStore', () => ({
   useProjectStore: vi.fn(() => ({
-    searchSelectedProject: mockSearchSelectedProject,
+    addProjectToList: mockAddProjectToList,
+    setSelectedProject: mockSetSelectedProject,
   })),
 }));
 
@@ -114,7 +112,16 @@ describe('NewProjectForm.vue', () => {
     const createBtn = wrapper.findAll('button').find(b => b.text() === 'Erstellen');
     await createBtn!.trigger('click');
     expect(projectService.createProject).toHaveBeenCalledWith('Online Project');
-    expect(mockSearchSelectedProject).toHaveBeenCalledWith('1');
+    expect(mockAddProjectToList).toHaveBeenCalledWith({
+      id: '1',
+      name: 'Online Project',
+      memberRole: 'MANAGER'
+    });
+    expect(mockSetSelectedProject).toHaveBeenCalledWith({
+      id: '1',
+      name: 'Online Project',
+      memberRole: 'MANAGER'
+    });
     expect(mockRouterPush).toHaveBeenCalledWith({
       name: 'ProjectDashboard',
       params: { projectId: '1' },

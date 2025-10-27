@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ReusableFormComponent from '../../src/components/ReusableFormComponent.vue';
 
@@ -9,9 +9,15 @@ describe('MyFormComponent', () => {
     saveButtonText: 'Save',
     cancelButtonText: 'Cancel',
     fields: [
-      { name: 'name', label: 'Name', type: 'text', required: true },
-      { name: 'description', label: 'Description', type: 'textarea' },
-      { name: 'isChecked', label: 'Checked', type: 'checkbox' },
+      {
+ name: 'name', label: 'Name', type: 'text', required: true 
+},
+      {
+ name: 'description', label: 'Description', type: 'textarea' 
+},
+      {
+ name: 'isChecked', label: 'Checked', type: 'checkbox' 
+},
       {
         name: 'dropdownOption',
         label: 'Option',
@@ -19,7 +25,9 @@ describe('MyFormComponent', () => {
         options: [{ label: 'Option 1', value: 'option1' }],
       },
     ],
-    initialValues: { name: 'name', description: '', isChecked: false, dropdownOption: null },
+    initialValues: {
+ name: 'name', description: '', isChecked: false, dropdownOption: null 
+},
     onSubmit: vi.fn(),
     onCancel: vi.fn(),
   };
@@ -29,9 +37,7 @@ describe('MyFormComponent', () => {
 
   // Create the wrapper before each test
   beforeEach(() => {
-    wrapper = mount(ReusableFormComponent, {
-      props: defaultProps,
-    });
+    wrapper = mount(ReusableFormComponent, {props: defaultProps,});
   });
 
   // Test that the headline is rendered correctly

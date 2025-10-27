@@ -41,9 +41,7 @@ const updateMemberRole = async (member: ProjectMember) => {
       return;
     }
 
-    await projectMemberService.updateMemberRole(props.projectId, member.id, {
-      role: member.role,
-    });
+    await projectMemberService.updateMemberRole(props.projectId, member.id, {role: member.role,});
     toast.add({
       severity: 'success',
       summary: 'Rolle aktualisiert',

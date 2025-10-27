@@ -9,13 +9,9 @@ const numberFormats: NumberFormats = {
       currencyDisplay: 'symbol',
     },
     // Example: 1.5 $
-    percent: {
-      style: 'percent',
-    },
+    percent: {style: 'percent',},
     // Example: 1.5
-    decimal: {
-      style: 'decimal',
-    },
+    decimal: {style: 'decimal',},
   },
   de: {
     // Example: 1,5 €
@@ -25,13 +21,9 @@ const numberFormats: NumberFormats = {
       currencyDisplay: 'symbol',
     },
     // Example: 1,5 %
-    percent: {
-      style: 'percent',
-    },
+    percent: {style: 'percent',},
     // Example: 1,5
-    decimal: {
-      style: 'decimal',
-    },
+    decimal: {style: 'decimal',},
   },
 };
 

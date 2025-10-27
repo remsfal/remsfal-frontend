@@ -260,9 +260,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
           <!-- Liegenschaftsbuch -->
           <div>
-            <label for="landRegisterEntry" class="block text-gray-700 mb-1"
-              >Liegenschaftsbuch</label
-            >
+            <label for="landRegisterEntry" class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
             <input
               id="landRegisterEntry"
               v-model="landRegisterEntry"
@@ -309,7 +307,8 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             <button
               type="submit"
               :disabled="!hasChanges"
-              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700
+               disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Speichern
             </button>

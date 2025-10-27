@@ -3,17 +3,17 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import IssueView from '../../src/views/IssueView.vue';
 import { issueService, StatusValues, IssueItem } from '../../src/services/IssueService';
 
-type IssueViewVm = InstanceType<typeof IssueView> & { visible: boolean };
+type TaskViewVm = InstanceType<typeof TaskView> & { visible: boolean };
 
-describe('IssueView', () => {
+describe('TaskView', () => {
   let wrapper: VueWrapper;
 
   const projectId = '1';
   const owner = 'user1';
-  const service = issueService;
+  const service = new TaskService();
 
   beforeEach(() => {
-    wrapper = mount(IssueView, {
+    wrapper = mount(TaskView, {
       props: { projectId, owner },
       data() {
         return {
@@ -33,7 +33,7 @@ describe('IssueView', () => {
     it('sets "visible" to true when the button is clicked', async () => {
       const button = wrapper.find('.my-btn');
       await button.trigger('click');
-      expect((wrapper.vm as IssueViewVm).visible).toBe(true);
+      expect((wrapper.vm as TaskViewVm).visible).toBe(true);
     });
   });
 
@@ -56,36 +56,37 @@ describe('IssueView', () => {
     });
   });
 
-  describe('Issue fetching', () => {
-    it('should return a list of issues', async () => {
+  describe('Task fetching', () => {
+    it('should return a list of tasks', async () => {
       // Arrange
-      const mockIssues: IssueItem[] = [
+      const projectId = 'test-project';
+      const mockTasks: TaskItemJson[] = [
         {
           id: '1',
-          title: 'Issue 1',
-          name: 'issue1',
-          status: StatusValues.OPEN,
-          ownerId: 'owner1',
+          title: 'Task 1',
+          name: 'task1',
+          status: StatusValues['OPEN'],
+          owner: 'owner1',
         },
         {
           id: '2',
-          title: 'Issue 2',
-          name: 'issue2',
-          status: StatusValues.OPEN,
-          ownerId: 'owner1',
+          title: 'Task 2',
+          name: 'task2',
+          status: StatusValues['OPEN'],
+          owner: 'owner1',
         },
       ];
-      const mockIssueList = { issues: mockIssues };
+      const mockTaskList = { tasks: mockTasks };
 
       // Act
-      vi.spyOn(service, 'getIssues').mockImplementation(() => Promise.resolve(mockIssueList));
-      const result = await service.getIssues(projectId);
+      vi.spyOn(service, 'getTasks').mockImplementation(() => Promise.resolve(mockTaskList));
+      const result = await service.getTasks(projectId);
 
       // Assert
-      expect(result).toEqual(mockIssueList);
-      expect(result.issues).toHaveLength(2);
-      expect(result.issues[0].id).toBe('1');
-      expect(result.issues[1].id).toBe('2');
+      expect(result).toEqual(mockTaskList);
+      expect(result.tasks).toHaveLength(2);
+      expect(result.tasks[0].id).toBe('1');
+      expect(result.tasks[1].id).toBe('2');
     });
   });
 });
