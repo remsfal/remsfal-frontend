@@ -44,7 +44,6 @@ export default class TenancyService {
     // TODO: Implement API call
   }
 
- // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateTenancyUnitItem(unit: TenancyItem): Promise<void> {
     // TODO: Implement API call
     console.log('Updating unit', unit);

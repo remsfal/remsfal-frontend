@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import DataTable, {
-  type DataTablePageEvent,
-  type DataTableRowClickEvent,
-} from 'primevue/datatable';
+import DataTable, {type DataTablePageEvent,
+  type DataTableRowClickEvent,} from 'primevue/datatable';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';

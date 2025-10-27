@@ -9,7 +9,7 @@ const props = defineProps<{
 }>();
 
 const { layoutState, isSidebarActive, setFullscreen } = useLayout();
-const outsideClickListener = ref<EventListenerOrEventListenerObject | null>(null);
+const outsideClickListener = ref<((event: Event) => void) | null>(null);
 
 onMounted(() => {
   setFullscreen(props.fullscreen);

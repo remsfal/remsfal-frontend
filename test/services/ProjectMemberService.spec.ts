@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import {describe, it, expect, beforeAll, afterAll, afterEach} from 'vitest';
 import { projectMemberService, type ProjectMember } from '../../src/services/ProjectMemberService';
 import { server } from '../mocks/server';
 import { http, HttpResponse } from 'msw';
@@ -57,9 +57,7 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should update a member role in a project', async () => {
-    const updatedMember = await projectMemberService.updateMemberRole(projectId, 'member123', {
-      role: member.role,
-    });
+    const updatedMember = await projectMemberService.updateMemberRole(projectId, 'member123', {role: member.role,});
     expect(updatedMember).toMatchObject({ role: member.role });
   });
 

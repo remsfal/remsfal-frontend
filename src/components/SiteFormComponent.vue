@@ -50,7 +50,11 @@ const fields: Field[] = [
           : null,
     ],
   },
-  { name: 'description', label: 'Beschreibung', type: FieldType.Textarea },
+  {
+    name: 'description',
+    label: 'Beschreibung',
+    type: FieldType.Textarea,
+  },
   {
     name: 'usableSpace',
     label: 'Nutzfläche (qm)',
@@ -59,11 +63,31 @@ const fields: Field[] = [
       (value: unknown) => (!isNaN(Number(value)) ? null : 'Muss eine Zahl sein'),
     ],
   },
-  { name: 'street', label: 'Straße und Hausnummer', type: FieldType.Text },
-  { name: 'city', label: 'Stadt', type: FieldType.Text },
-  { name: 'zip', label: 'PLZ', type: FieldType.Text },
-  { name: 'province', label: 'Bundesland', type: FieldType.Text },
-  { name: 'country', label: 'Land', type: FieldType.Text },
+  {
+    name: 'street',
+    label: 'Straße und Hausnummer',
+    type: FieldType.Text,
+  },
+  {
+    name: 'city',
+    label: 'Stadt',
+    type: FieldType.Text,
+  },
+  {
+    name: 'zip',
+    label: 'PLZ',
+    type: FieldType.Text,
+  },
+  {
+    name: 'province',
+    label: 'Bundesland',
+    type: FieldType.Text,
+  },
+  {
+    name: 'country',
+    label: 'Land',
+    type: FieldType.Text,
+  },
 ];
 
 const initialValues = ref<Record<string, unknown>>(props.initialValues ?? {
@@ -121,9 +145,9 @@ onMounted(async () => {
     <Button
       icon="pi pi-chevron-down"
       class="mb-2"
-      @click="showFormer = !showFormer"
       :aria-expanded="showFormer"
       :label="showFormer ? 'Ehemalige Mieter ausblenden' : 'Ehemalige Mieter anzeigen'"
+      @click="showFormer = !showFormer"
     ></Button>
     <div v-if="showFormer" class="mt-4">
       <h2 class="text-xl font-bold mb-4">Ehemalige Mieter</h2>

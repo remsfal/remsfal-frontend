@@ -1,5 +1,5 @@
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll } from 'vitest';
+import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
+import {describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll} from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../mocks/handlers'; // adjust path if needed
 import Component from '../../src/views/StorageView.vue';
@@ -13,11 +13,7 @@ const VALIDATION_MESSAGES = {
 
 // Mock vue-router
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({push: mockPush,}),}));
 
 // Setup MSW server with your handlers
 const server = setupServer(...handlers);

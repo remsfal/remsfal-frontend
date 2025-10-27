@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {describe, it, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TaskView from '../../src/views/TaskView.vue';
-import { TaskService, StatusValues, TaskItemJson } from '../../src/services/TaskService';
+import {TaskService, StatusValues, TaskItemJson} from '../../src/services/TaskService';
 
 type TaskViewVm = InstanceType<typeof TaskView> & { visible: boolean };
 
@@ -16,9 +16,7 @@ describe('TaskView', () => {
     wrapper = mount(TaskView, {
       props: { projectId, owner },
       data() {
-        return {
-          visible: false, // Initial visibility state
-        };
+        return { visible: false }; // Initial visibility state
       },
     });
   });
