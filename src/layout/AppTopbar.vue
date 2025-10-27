@@ -7,6 +7,8 @@ import { ref, onMounted, onUnmounted } from 'vue';
 const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
 
 const isMobileMenuOpen = ref(false);
+const menuButtonRef = ref<HTMLElement>();
+const menuRef = ref<HTMLElement>();
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
@@ -19,12 +21,10 @@ const closeMobileMenu = () => {
 // Close menu when clicking outside
 const handleOutsideClick = (event: Event) => {
   const target = event.target as Element;
-  const menuButton = document.querySelector('.layout-topbar-menu-button');
-  const menu = document.querySelector('.layout-topbar-menu');
   
   if (isMobileMenuOpen.value && 
-      menuButton && !menuButton.contains(target) &&
-      menu && !menu.contains(target)) {
+      menuButtonRef.value?.$el && !menuButtonRef.value.$el.contains(target) &&
+      menuRef.value && !menuRef.value.contains(target)) {
     closeMobileMenu();
   }
 };
@@ -62,6 +62,7 @@ onUnmounted(() => {
         </div>
 
         <Button
+          ref="menuButtonRef"
           class="layout-topbar-menu-button layout-topbar-action"
           @click="toggleMobileMenu"
         >
@@ -69,6 +70,7 @@ onUnmounted(() => {
         </Button>
 
         <div 
+          ref="menuRef"
           class="layout-topbar-menu lg:!block"
           :class="{
             'hidden': !isMobileMenuOpen,
