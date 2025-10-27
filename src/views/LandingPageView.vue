@@ -126,6 +126,8 @@ const { t } = useI18n();
 .widgets {
   display: flex;
   gap: 1em;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .widget {
@@ -144,14 +146,17 @@ const { t } = useI18n();
   width: 100%;
 }
 
+.inline-logo {
+  width: 300px;
+  height: auto;
+  object-fit: contain;
+  max-width: 100%;
+}
+
 .header-widget {
   font-weight: bold;
   color: #343c3f;
   font-size: 18px;
-}
-
-.inline-logo {
-  width: 300px;
 }
 
 @media (width <= 768px) {
