@@ -44,7 +44,6 @@ export default class TenancyService {
     // TODO: Implement API call
   }
 
-  
   async updateTenancyUnitItem(unit: TenancyItem): Promise<void> {
     // TODO: Implement API call
     console.log('Updating unit', unit);
