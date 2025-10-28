@@ -1,10 +1,8 @@
-import axios, {
-  AxiosError,
+import axios, {AxiosError,
   type AxiosInstance,
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
-  type AxiosResponse,
-} from 'axios';
+  type AxiosResponse,} from 'axios';
 import type { paths as chatPaths, components as chatComponents } from './api/chat-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
@@ -96,7 +94,9 @@ function requestHandler(config: InternalAxiosRequestConfig): InternalAxiosReques
 
 function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
   console.error(`[request error] [${JSON.stringify(error)}]`);
-  bus.emit('toast:translate', { severity: 'error', summary: 'error.general', detail: 'error.apiRequest' });
+  bus.emit('toast:translate', {
+ severity: 'error', summary: 'error.general', detail: 'error.apiRequest' 
+});
   return Promise.reject(error);
 }
 // this interceptor is used to handle all success ajax request
@@ -104,7 +104,9 @@ function responseHandler(response: AxiosResponse): AxiosResponse {
   if (response.status == 200 || response.status == 201) {
     const data = response?.data;
     if (!data) {
-      bus.emit('toast:translate', { severity: 'error', summary: 'error.general', detail: 'error.apiResponse' });
+      bus.emit('toast:translate', {
+ severity: 'error', summary: 'error.general', detail: 'error.apiResponse' 
+});
     }
   }
   return response;
@@ -112,7 +114,9 @@ function responseHandler(response: AxiosResponse): AxiosResponse {
 
 function responseErrorHandler(error: AxiosError) {
   console.error(`[request error] [${JSON.stringify(error)}]`);
-  bus.emit('toast:translate', { severity: 'error', summary: 'error.general', detail: 'error.apiResponse' });
+  bus.emit('toast:translate', {
+ severity: 'error', summary: 'error.general', detail: 'error.apiResponse' 
+});
   return Promise.reject(error);
 }
 

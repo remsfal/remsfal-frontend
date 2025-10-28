@@ -47,9 +47,7 @@ class PropertyService {
       '/api/v1/projects/{projectId}/properties',
       'get',
       PropertyList
-    >('get', `${this.baseUrl}/{projectId}/properties`, {
-      pathParams: { projectId },
-    });
+    >('get', `${this.baseUrl}/{projectId}/properties`, {pathParams: { projectId },});
   }
 
   async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
@@ -57,9 +55,7 @@ class PropertyService {
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       'get',
       PropertyUnit
-    >('get', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
-      pathParams: { projectId, propertyId },
-    });
+    >('get', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {pathParams: { projectId, propertyId },});
   }
 
   async updateProperty(projectId: string, propertyId: string, property: PropertyUnit): Promise<PropertyUnit> {
@@ -78,9 +74,7 @@ class PropertyService {
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       'delete',
       void
-    >('delete', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {
-      pathParams: { projectId, propertyId },
-    });
+    >('delete', `${this.baseUrl}/{projectId}/properties/{propertyId}`, {pathParams: { projectId, propertyId },});
   }
 }
 

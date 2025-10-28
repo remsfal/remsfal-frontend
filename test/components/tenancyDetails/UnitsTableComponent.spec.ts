@@ -1,23 +1,17 @@
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
 import { propertyService } from '@/services/PropertyService';
 import { mount } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
 vi.mock('@/services/PropertyService', () => ({
-  propertyService: {
-    getPropertyTree: vi.fn(),
-  },
+  propertyService: {getPropertyTree: vi.fn(),},
   EntityType: {
     Property: 'Property',
     Building: 'Building',
   },
 }));
 
-vi.mock('@/stores/ProjectStore', () => ({
-  useProjectStore: () => ({
-    projectId: 'mock-project-id',
-  }),
-}));
+vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({projectId: 'mock-project-id',}),}));
 
 describe('UnitsTableComponent - loadDropdownOptions', () => {
   beforeEach(() => {
@@ -43,11 +37,7 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
 
     (propertyService.getPropertyTree as any).mockResolvedValueOnce(mockTree);
 
-    const wrapper = mount(UnitsTableComponent, {
-      props: {
-        listOfUnits: [],
-      },
-    });
+    const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [],},});
 
     // Wait for onMounted and loadDropdownOptions to finish
     await new Promise(setImmediate);
@@ -68,11 +58,7 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
   it('handles fetch error gracefully', async () => {
     (propertyService.getPropertyTree as any).mockRejectedValueOnce(new Error('fetch failed'));
 
-    const wrapper = mount(UnitsTableComponent, {
-      props: {
-        listOfUnits: [],
-      },
-    });
+    const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [],},});
 
     await new Promise(setImmediate); // wait for onMounted + promise
 

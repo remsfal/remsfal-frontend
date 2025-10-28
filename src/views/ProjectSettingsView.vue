@@ -95,7 +95,9 @@ watch(
 <template>
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
-      <div class="font-semibold text-xl">Liegenschaftseinstellungen</div>
+      <div class="font-semibold text-xl">
+        Liegenschaftseinstellungen
+      </div>
     </template>
 
     <template #content>

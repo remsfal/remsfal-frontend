@@ -1,10 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
 import * as idbHelper from '@/helper/indexeddb';
 import { openDB } from 'idb';
 
-vi.mock('idb', () => ({
-  openDB: vi.fn(),
-}));
+vi.mock('idb', () => ({openDB: vi.fn(),}));
 
 describe('IndexedDB Helper Functions', () => {
   let mockDb: any;

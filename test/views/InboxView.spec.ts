@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import PrimeVue from 'primevue/config';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import { nextTick } from 'vue';
 import i18n from '../../src/i18n/i18n';
 import InboxView from '../../src/views/InboxView.vue';

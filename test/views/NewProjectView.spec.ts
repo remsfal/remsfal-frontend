@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import NewProjectForm from '../../src/components/NewProjectForm.vue';
 import router from '../../src/router';
@@ -7,13 +7,9 @@ import { projectService } from '../../src/services/ProjectService';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 
-vi.mock('@/helper/indexeddb', () => ({
-  saveProject: vi.fn(),
-}));
+vi.mock('@/helper/indexeddb', () => ({saveProject: vi.fn(),}));
 
-vi.mock('@/services/ProjectService', () => ({
-  projectService: { createProject: vi.fn() },
-}));
+vi.mock('@/services/ProjectService', () => ({projectService: { createProject: vi.fn() },}));
 
 const mockAddProjectToList = vi.fn();
 const mockSetSelectedProject = vi.fn();

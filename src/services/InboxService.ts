@@ -28,7 +28,8 @@ class InboxService {
         senderName: 'Max Mustermann',
         senderEmail: 'max.mustermann@example.com',
         subject: 'Kücheninstallation abgeschlossen',
-        body: 'Die Installation der Küche in Wohnung 101 wurde erfolgreich abgeschlossen. Bitte prüfen Sie die Qualität und melden sich bei Fragen.',
+        body: 'Die Installation der Küche in Wohnung 101 wurde erfolgreich abgeschlossen.' +
+          ' Bitte prüfen Sie die Qualität und melden sich bei Fragen.',
         receivedAt: new Date('2025-06-01T10:15:00'),
         isRead: false,
       },
@@ -43,7 +44,8 @@ class InboxService {
         senderName: 'Erika Musterfrau',
         senderEmail: 'erika.musterfrau@example.com',
         subject: 'Rechnung für Badezimmerarbeiten Mai 2025',
-        body: 'Anbei findest du die aktuelle Rechnung für Mai 2025. Bitte begleiche den offenen Betrag bis zum 15.06.2025.',
+        body: 'Anbei findest du die aktuelle Rechnung für Mai 2025.' +
+          ' Bitte begleiche den offenen Betrag bis zum 15.06.2025.',
         receivedAt: new Date('2025-05-28T14:30:00'),
         isRead: false,
       },
@@ -58,7 +60,8 @@ class InboxService {
         senderName: 'System-Benachrichtigung',
         senderEmail: 'noreply@remsfal.de',
         subject: 'Wartungsarbeiten geplant',
-        body: 'Am 2025-06-10 findet eine Systemwartung von 01:00 bis 03:00 Uhr statt. In dieser Zeit ist das System möglicherweise nicht erreichbar.',
+        body: 'Am 2025-06-10 findet eine Systemwartung von 01:00 bis 03:00 Uhr statt.' +
+          ' In dieser Zeit ist das System möglicherweise nicht erreichbar.',
         receivedAt: new Date('2025-05-25T08:00:00'),
         isRead: true,
       },
@@ -88,7 +91,8 @@ class InboxService {
         senderName: 'Maria Beispiel',
         senderEmail: 'maria.beispiel@example.com',
         subject: 'Rechnung für Elektroarbeiten April 2025',
-        body: 'Die Rechnung für die Elektroarbeiten im April 2025 findest du im Anhang. Bitte begleiche sie bis zum 15.06.2025.',
+        body: 'Die Rechnung für die Elektroarbeiten im April 2025 findest du im Anhang.' +
+          ' Bitte begleiche sie bis zum 15.06.2025.',
         receivedAt: new Date('2025-05-18T11:20:00'),
         isRead: false,
       },

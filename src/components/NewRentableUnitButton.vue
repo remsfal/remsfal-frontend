@@ -251,8 +251,8 @@ async function createStorage(): Promise<void> {
         :label="t('button.cancel')"
         severity="secondary"
         @click="visible = false"
-      ></Button>
-      <Button type="button" :label="t('button.add')" @click="createRentableUnit"></Button>
+      />
+      <Button type="button" :label="t('button.add')" @click="createRentableUnit" />
     </div>
   </Dialog>
 </template>
