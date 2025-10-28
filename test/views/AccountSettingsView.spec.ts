@@ -152,5 +152,20 @@ describe('AccountSettingsView', () => {
       await nextTick();
       expect(wrapper.vm.isDisabled).toBe(false);
     });
+
+    test('logout redirects to logout endpoint', () => {
+      delete window.location;
+      // @ts-ignore
+      window.location = { pathname: '' };
+      wrapper.vm.logout();
+      expect(window.location.pathname).toBe('/api/v1/authentication/logout');
+    });
+    
+    test('updateCountryFromCode sets error for invalid country code', async () => {
+      wrapper.vm.editedAddress.countryCode = 'XX';
+      await wrapper.vm.updateCountryFromCode();
+      expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
+    });
+    
   });
 });

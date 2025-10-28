@@ -102,4 +102,30 @@ describe('IssueService with MSW (http)', () => {
     expect(modifiedIssue.title).toBe('Updated Issue');
     expect(modifiedIssue.description).toBe('Updated Description');
   });
+
+  test('getIssues handles optional parameters correctly', async () => {
+    const issueList = await issueService.getIssues(projectId);
+    expect(issueList.issues).toBeDefined();
+    expect(issueList.issues.length).toBeGreaterThan(0);
+    expect(issueList.first).toBeDefined();
+    expect(issueList.size).toBeDefined();
+    expect(issueList.total).toBeDefined();
+  });
+  
+  test('getIssue handles non-existing issue (404)', async () => {
+    await expect(issueService.getIssue(projectId, 'non-existing-id')).rejects.toThrow();
+  });
+  
+  test('getIssues fallback values are applied when data is missing', async () => {
+    // Mock empty response
+    server.use(
+      http.get('/ticketing/v1/issues', () => HttpResponse.json({}))
+    );
+  
+    const result = await issueService.getIssues(projectId);
+    expect(result.first).toBe(0);
+    expect(result.size).toBe(0);
+    expect(result.total).toBe(0);
+    expect(result.issues).toEqual([]);
+  });
 });
