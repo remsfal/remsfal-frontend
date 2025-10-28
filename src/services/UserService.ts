@@ -1,6 +1,9 @@
 import { typedRequest } from '../../src/services/api/typedRequest';
 import type { paths } from '../../src/services/api/platform-schema'; // generated OpenAPI types
 
+type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
+type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
+
 export default class UserService {
   private static readonly USER_ENDPOINT = '/api/v1/user' as const;
   private static readonly ADDRESS_ENDPOINT = '/api/v1/address' as const;
@@ -23,14 +26,15 @@ export default class UserService {
   }
 
   // Update user with schema-driven request body
-  async updateUser(
-    updatedUser: paths['/api/v1/user']['patch']['requestBody']['content']['application/json']
-  ) {
-    return typedRequest<typeof UserService.USER_ENDPOINT, 'patch'>(
+   async updateUser(updatedUser: Partial<UserPatchRequestBody>) {
+    await typedRequest<typeof UserService.USER_ENDPOINT, 'patch'>(
       'patch',
       UserService.USER_ENDPOINT,
-      {body: updatedUser,}
+      { body: updatedUser }
     );
+
+    // Immer den frischen Stand laden (falls Backend 204/boolean/alten Stand liefert)
+    return this.getUser();
   }
 
   // Delete user, returns boolean success
@@ -40,7 +44,7 @@ export default class UserService {
         'delete',
         UserService.USER_ENDPOINT
       );
-      console.log('DELETE user');
+     
       return true;
     } catch (error) {
       console.error('DELETE user failed:', error);
