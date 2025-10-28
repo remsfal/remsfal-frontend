@@ -38,5 +38,7 @@ export const useEventBus = defineStore('event-bus', () => {
     (listeners.get(type) as Set<Handler<K>>)?.forEach((h) => h(payload));
   }
 
-  return { on, once, off, emit };
+  return {
+ on, once, off, emit 
+};
 });

@@ -66,9 +66,7 @@ export class IssueService {
    */
   async createIssue(projectId: string, body: Partial<Issue>): Promise<Issue> {
     return apiClient
-      .post(issuesPath, body, {
-        params: { projectId },
-      })
+      .post(issuesPath, body, {params: { projectId },})
       .then(res => res.data);
   }
 

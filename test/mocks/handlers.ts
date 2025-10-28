@@ -294,7 +294,9 @@ export const handlers = [
           id: 't1',
           rentalStart: new Date().toISOString(),
           rentalEnd: new Date().toISOString(),
-          tenants: [{ id: 'u1', name: 'Max Mustermann', email: 'max@example.com' }],
+          tenants: [{
+ id: 'u1', name: 'Max Mustermann', email: 'max@example.com' 
+}],
           listOfUnits: [{ id: 'unit1', title: 'Unit 1' }],
           active: true,
         },

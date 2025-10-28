@@ -89,8 +89,12 @@ const handleCancel = () => {
       :onCancel="handleCancel"
       :initialValues="initialValues"
     />
-    <div v-if="loading">Senden...</div>
-    <div v-if="error" class="error-message">{{ error }}</div>
+    <div v-if="loading">
+      Senden...
+    </div>
+    <div v-if="error" class="error-message">
+      {{ error }}
+    </div>
   </div>
 </template>
 

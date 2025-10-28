@@ -19,23 +19,27 @@ const navigateToHome = () => {
     </div>
     <div class="col-span-6">
       <Card>
-        <template #title> {{ t('legalNotice.title') }}</template>
+        <template #title>
+          {{ t('legalNotice.title') }}
+        </template>
         <template #content>
           <p>{{ t('legalNotice.definition') }}</p>
-          <p v-html="t('legalNotice.contact.address')"></p>
+          <p v-html="t('legalNotice.contact.address')" />
         </template>
       </Card>
     </div>
     <div class="col-span-6">
       <Card>
-        <template #title> {{ t('legalNotice.contact') }}</template>
+        <template #title>
+          {{ t('legalNotice.contact') }}
+        </template>
         <template #content>
           <p>
-            {{ t('legalNotice.contact.phone') }}<br />
-            {{ t('legalNotice.contact.fax') }}<br />
-            {{ t('legalNotice.contact.email') }}<br />
+            {{ t('legalNotice.contact.phone') }}<br>
+            {{ t('legalNotice.contact.fax') }}<br>
+            {{ t('legalNotice.contact.email') }}<br>
           </p>
-          <p v-html="t('legalNotice.representative')"></p>
+          <p v-html="t('legalNotice.representative')" />
         </template>
       </Card>
     </div>

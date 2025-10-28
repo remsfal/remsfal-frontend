@@ -219,14 +219,16 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 <template>
   <div class="p-6 w-full">
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">Bearbeite Eigentum mit ID: {{ props.unitId }}</h2>
+      <h2 class="text-2xl font-semibold mb-6">
+        Bearbeite Eigentum mit ID: {{ props.unitId }}
+      </h2>
 
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <!-- Titel -->
           <div class="col-span-2">
             <label for="title" class="block text-gray-700 mb-1">Titel</label>
-            <input id="title" v-model="title" type="text" class="form-input w-full" />
+            <input id="title" v-model="title" type="text" class="form-input w-full">
           </div>
 
           <!-- Beschreibung -->
@@ -237,45 +239,45 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               v-model="description"
               rows="3"
               class="form-textarea w-full"
-            ></textarea>
+            />
           </div>
 
           <!-- Gemarkung -->
           <div>
             <label for="district" class="block text-gray-700 mb-1">Gemarkung</label>
-            <input id="district" v-model="district" type="text" class="form-input w-full" />
+            <input id="district" v-model="district" type="text" class="form-input w-full">
           </div>
 
           <!-- Flur -->
           <div>
             <label for="corridor" class="block text-gray-700 mb-1">Flur</label>
-            <input id="corridor" v-model="corridor" type="text" class="form-input w-full" />
+            <input id="corridor" v-model="corridor" type="text" class="form-input w-full">
           </div>
 
           <!-- Flurstück -->
           <div>
             <label for="parcel" class="block text-gray-700 mb-1">Flurstück</label>
-            <input id="parcel" v-model="parcel" type="text" class="form-input w-full" />
+            <input id="parcel" v-model="parcel" type="text" class="form-input w-full">
           </div>
 
           <!-- Liegenschaftsbuch -->
           <div>
-            <label for="landRegisterEntry" class="block text-gray-700 mb-1"
-              >Liegenschaftsbuch</label
-            >
+            <label for="landRegisterEntry" class="block text-gray-700 mb-1">Liegenschaftsbuch</label>
             <input
               id="landRegisterEntry"
               v-model="landRegisterEntry"
               type="text"
               class="form-input w-full"
-            />
+            >
           </div>
 
           <!-- Wirtschaftsart -->
           <div class="col-span-2">
             <label for="usageType" class="block text-gray-700 mb-1">Wirtschaftsart</label>
             <select id="usageType" v-model="usageType" class="form-input w-full">
-              <option value="" disabled>Bitte wählen</option>
+              <option value="" disabled>
+                Bitte wählen
+              </option>
               <option
                 v-for="option in usageOptions"
                 :key="option.value ?? option.label"
@@ -294,13 +296,15 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               v-model.number="plotArea"
               type="number"
               class="form-input w-full"
-            />
+            >
           </div>
 
           <!-- Validierungsfehler -->
           <div v-if="validationErrors.length" class="text-red-600 mt-4">
             <ul>
-              <li v-for="(error, i) in validationErrors" :key="i">{{ error }}</li>
+              <li v-for="(error, i) in validationErrors" :key="i">
+                {{ error }}
+              </li>
             </ul>
           </div>
 
@@ -309,7 +313,8 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             <button
               type="submit"
               :disabled="!hasChanges"
-              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700
+               disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Speichern
             </button>

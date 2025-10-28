@@ -1,22 +1,36 @@
-import { typedRequest } from '../../src/services/api/typedRequest';
-import type { components } from '../../src/services/api/platform-schema';
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-type TaskItemJson = components['schemas']['TaskItemJson'];
-type TaskListJson = components['schemas']['TaskListJson'];
+export type Status = ApiComponents['schemas']['Status'];
+export type Issue = ApiComponents['schemas']['IssueJson'];
+export type IssueList = ApiComponents['schemas']['IssueListJson'];
+export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
 
-export default class ContractorService {
-  private readonly baseUrl: string = '/api/v1/contractors';
+// API paths
+const issuesPath = '/api/v1/contractors/issues';
+const issuePath = '/api/v1/contractors/issues/{issueId}';
 
-async getTasks(): Promise<TaskListJson> {
-  const response = await typedRequest<any, 'get'>('get', `${this.baseUrl}/tasks`);
-  console.log('GET tasks:', response);
-  return response as TaskListJson; // temporary until OpenAPI spec is updated
-}
+export class ContractorService {
+  /**
+   * Get all issues for contractors, optionally filtered by status or owner.
+   */
+  async getIssues(status?: Status, ownerId?: string): Promise<IssueList> {
+    return apiClient
+      .get(issuesPath, {
+        params: {
+          ...(status ? { status } : {}),
+          ...(ownerId ? { owner: ownerId } : {}),
+        },
+      })
+      .then(res => res.data);
+  }
 
-async getTask(taskId: string): Promise<TaskItemJson> {
-  const response = await typedRequest<any, 'get'>('get', `${this.baseUrl}/tasks/${taskId}`);
-  console.log('GET task by ID:', response);
-  return response as TaskItemJson; // temporary until OpenAPI spec is updated
-}
+  /**
+   * Get a single issue by its ID.
+   */
+  async getIssue(issueId: string): Promise<Issue> {
+    return apiClient
+      .get(issuePath, {pathParams: { issueId },})
+      .then(res => res.data);
+  }
 }
 export const contractorService = new ContractorService();

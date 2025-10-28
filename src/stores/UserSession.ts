@@ -5,9 +5,7 @@ import type { ResponseType } from '@/services/api/typedRequest';
 export type User = ResponseType<'/api/v1/user', 'get'>;
 
 export const useUserSessionStore = defineStore('user-session', {
-  state: () => ({
-    user: null as User | null,
-  }),
+  state: () => ({user: null as User | null,}),
 
   actions: {
     async refreshSessionState() {

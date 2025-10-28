@@ -6,14 +6,22 @@ import { contractorService } from '../../src/services/ContractorService';
 describe('ContractorTable.vue', () => {
   let wrapper: VueWrapper;
 
+  // Mock the service
   vi.mock('@/services/ContractorService');
 
   beforeEach(() => {
-    vi.mocked(contractorService.getTasks).mockResolvedValue({
-      tasks: [
-        { id: '1', title: 'Task 1', status: 'OPEN', description: 'Beschreibung 1' },
-        { id: '2', title: 'Task 2', status: 'CLOSED', description: 'Beschreibung 2' },
+    vi.mocked(contractorService.getIssues).mockResolvedValue({
+      issues: [
+        {
+ id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1'
+},
+        {
+ id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2'
+},
       ],
+      first: 0,
+      size: 2,
+      total: 2,
     });
 
     wrapper = mount(ContractorTable);

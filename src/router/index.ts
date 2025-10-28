@@ -1,10 +1,8 @@
-import {
-  createRouter,
+import {createRouter,
   createWebHistory,
   type RouteLocationNormalized,
   type RouteLocationNormalizedLoaded,
-  type RouteRecordRaw,
-} from 'vue-router';
+  type RouteRecordRaw,} from 'vue-router';
 import { useProjectStore } from '@/stores/ProjectStore';
 import LandingPageView from '@/views/LandingPageView.vue';
 import AppLayout from '@/layout/AppLayout.vue';
@@ -23,11 +21,7 @@ const fullscreenRoutes: RouteRecordRaw[] = [
       default: AppLayout,
       topbar: ManagerTopbar,
     },
-    props: {
-      default: {
-        fullscreen: true,
-      },
-    },
+    props: {default: {fullscreen: true,},},
     children: [
       {
         path: '/',
@@ -82,11 +76,7 @@ const managerRoutes: RouteRecordRaw[] = [
       topbar: ManagerTopbar,
       sidebar: ManagerMenu,
     },
-    props: {
-      default: {
-        fullscreen: false,
-      },
-    },
+    props: {default: {fullscreen: false,},},
     beforeEnter: (to: RouteLocationNormalized) => {
       const projectStore = useProjectStore();
       projectStore.searchSelectedProject(<string>to.params.projectId);
@@ -191,9 +181,7 @@ const managerRoutes: RouteRecordRaw[] = [
       {
         path: 'tenancies/new-tenancy',
         name: 'ProjectNewTenancy',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-        }),
+        props: (route: RouteLocationNormalizedLoaded) => ({projectId: route.params.projectId,}),
         component: () => import('@/views/ProjectNewTenancy.vue'),
       },
       /* --------------------------------------------------------------------
@@ -201,24 +189,24 @@ const managerRoutes: RouteRecordRaw[] = [
        * --------------------------------------------------------------------
        */
       /* --------------------------------------------------------------------
-       * Task Views
+       * Issue Views
        * --------------------------------------------------------------------
        */
       {
-        path: 'tasks',
-        name: 'TaskOverview',
+        path: 'issues',
+        name: 'IssueOverview',
         props: (route: RouteLocationNormalizedLoaded) => ({
           projectId: route.params.projectId,
           owner: route.query.owner,
           status: route.query.status,
         }),
-        component: () => import('@/views/TaskView.vue'),
+        component: () => import('@/views/IssueView.vue'),
       },
       {
-        path: 'taskedit/:taskid',
-        name: 'TaskEdit',
+        path: 'issueedit/:issueId',
+        name: 'IssueEdit',
         props: true,
-        component: () => import('@/views/TaskEdit.vue'),
+        component: () => import('@/views/IssueEdit.vue'),
       },
       {
         path: 'chat',
@@ -238,11 +226,7 @@ const tenantRoutes: RouteRecordRaw[] = [
       topbar: TenantTopbar,
       sidebar: TenantMenu,
     },
-    props: {
-      default: {
-        fullscreen: false,
-      },
-    },
+    props: {default: {fullscreen: false,},},
     children: [
       {
         path: '',
@@ -262,11 +246,7 @@ const contractorRoutes: RouteRecordRaw[] = [
       topbar: ContractorTopbar,
       sidebar: ContractorMenu,
     },
-    props: {
-      default: {
-        fullscreen: false,
-      },
-    },
+    props: {default: {fullscreen: false,},},
     children: [
       {
         path: '',

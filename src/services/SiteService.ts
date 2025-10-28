@@ -27,9 +27,7 @@ export default class SiteService {
         '/api/v1/projects/{projectId}/sites/{siteId}',
         'get',
         SiteUnit
-      >('get', `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`, {
-        pathParams: { projectId, siteId },
-      });
+      >('get', `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`, {pathParams: { projectId, siteId },});
       console.log('GET site:', site);
       return site;
     } catch (error: any) {

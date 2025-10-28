@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import {describe, it, expect, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import LegalNoticeView from '../../src/views/LegalNoticeView.vue';
 
@@ -39,9 +39,7 @@ describe('LegalNoticeView.vue', () => {
               </div>
             `,
           },
-          Button: {
-            template: '<button class="p-button"><slot /></button>',
-          },
+          Button: {template: '<button class="p-button"><slot /></button>',},
         },
       },
     });

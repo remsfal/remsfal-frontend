@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
 
-import type { paths as chatPaths } from './chat-schema';
+import type { paths as chatPaths } from './ticketing-schema';
 import type { paths as platformPaths } from './platform-schema';
 import type { paths as notificationPaths } from './notification-schema';
 
