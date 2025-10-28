@@ -25,7 +25,9 @@ describe('IssueEdit.vue', () => {
     wrapper = mount(IssueEdit, {
       global: {
         mocks: {
-          $route: { params: { projectId: '1', issueId: '1' } },
+          $route: {
+            params: { projectId: '1', issueId: '1' },
+          },
           $router: { go: vi.fn() },
         },
       },
@@ -40,14 +42,18 @@ describe('IssueEdit.vue', () => {
 
   it('loads issue on mount', () => {
     expect(IssueService.prototype.getIssue).toHaveBeenCalled();
-    // Use plain object access, not .value
     expect(wrapper.vm.issue).toEqual(mockIssue);
   });
 
   it('validates fields and shows error if missing', () => {
     // Set invalid issue (plain object)
-    wrapper.vm.issue = { title: '', description: '', status: '' };
-    wrapper.vm.errors = {}; // plain reactive object
+    wrapper.vm.issue = {
+      title: '',
+      description: '',
+      status: '',
+    };
+
+    wrapper.vm.errors = {};
 
     const valid = wrapper.vm.validateIssue();
     expect(valid).toBe(false);
