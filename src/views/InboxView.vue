@@ -236,20 +236,20 @@ const onRowClick = (e: { originalEvent: MouseEvent; data: InboxMessage }) => {
             icon="pi pi-inbox"
             :label="t('inbox.actions.markReadSelected')"
             :disabled="!selectedMessages.length"
-            @click="markReadSelected"
+            @click="inbox.markReadSelected"
           />
           <Button
             icon="pi pi-envelope"
             :label="t('inbox.actions.markUnreadSelected')"
             :disabled="!selectedMessages.length"
-            @click="markUnreadSelected"
+            @click="inbox.markUnreadSelected"
           />
           <Button
             icon="pi pi-trash"
             severity="danger"
             :label="t('inbox.actions.deleteSelected')"
             :disabled="!selectedMessages.length"
-            @click="deleteSelected"
+            @click="inbox.requestDeleteSelected"
           />
         </div>
 
@@ -278,13 +278,13 @@ const onRowClick = (e: { originalEvent: MouseEvent; data: InboxMessage }) => {
                     text rounded
                     title="Als gelesen markieren"
                     class="h-8 w-8"
-                    @click.stop="markAsRead(slot.data)"
+                    @click.stop="inbox.markAsRead(slot.data)"
                   />
                   <Button
                     v-else text
                     rounded title="Als ungelesen markieren"
                     class="h-8 w-8 text-gray-400"
-                    @click.stop="markAsUnread(slot.data)"
+                    @click.stop="inbox.markAsUnread(slot.data)"
                   />
                 </div>
               </template>
