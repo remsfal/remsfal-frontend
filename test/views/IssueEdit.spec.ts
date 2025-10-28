@@ -1,21 +1,21 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
-import IssueEdit from '../../src/views/IssueEdit.vue';
-import { IssueService } from '../../src/services/IssueService';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { mount } from "@vue/test-utils";
+import { nextTick } from "vue";
+import IssueEdit from "../../src/views/IssueEdit.vue";
+import { IssueService } from "../../src/services/IssueService";
 
 // Mock the service
-vi.mock('../../src/services/IssueService');
+vi.mock("../../src/services/IssueService");
 
-describe('IssueEdit.vue', () => {
+describe("IssueEdit.vue", () => {
   let wrapper: any;
 
   const mockIssue = {
-    id: '1',
-    title: 'Test Issue',
-    description: 'Description',
-    status: 'OPEN',
-    ownerId: 'owner1',
+    id: "1",
+    title: "Test Issue",
+    description: "Description",
+    status: "OPEN",
+    ownerId: "owner1",
   };
 
   beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('IssueEdit.vue', () => {
       global: {
         mocks: {
           $route: {
-            params: { projectId: '1', issueId: '1' },
+            params: { projectId: "1", issueId: "1" },
           },
           $router: { go: vi.fn() },
         },
@@ -40,17 +40,17 @@ describe('IssueEdit.vue', () => {
     await nextTick();
   });
 
-  it('loads issue on mount', () => {
+  it("loads issue on mount", () => {
     expect(IssueService.prototype.getIssue).toHaveBeenCalled();
     expect(wrapper.vm.issue).toEqual(mockIssue);
   });
 
-  it('validates fields and shows error if missing', () => {
+  it("validates fields and shows error if missing", () => {
     // Set invalid issue (plain object)
     wrapper.vm.issue = {
-      title: '',
-      description: '',
-      status: '',
+      title: "",
+      description: "",
+      status: "",
     };
 
     wrapper.vm.errors = {};
@@ -59,8 +59,8 @@ describe('IssueEdit.vue', () => {
     expect(valid).toBe(false);
 
     const errors = wrapper.vm.errors;
-    expect(Object.keys(errors)).toContain('title');
-    expect(Object.keys(errors)).toContain('description');
-    expect(Object.keys(errors)).toContain('status');
+    expect(Object.keys(errors)).toContain("title");
+    expect(Object.keys(errors)).toContain("description");
+    expect(Object.keys(errors)).toContain("status");
   });
 });
