@@ -129,4 +129,188 @@ function createAxiosInstance() {
   return instance;
 }
 
-export const apiClient: AxiosInstance = createAxiosInstance();
+// ============================================================================
+// Type-Safe API Client with OpenAPI Validation
+// ============================================================================
+
+type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
+
+type PathsForMethod<M extends HttpMethod> = {
+  [P in keyof ApiPaths]: M extends keyof ApiPaths[P] ? P : never;
+}[keyof ApiPaths];
+
+// Extract request body type
+type RequestBody<P extends keyof ApiPaths, M extends HttpMethod> =
+  P extends keyof ApiPaths
+    ? M extends keyof ApiPaths[P]
+      ? ApiPaths[P][M] extends { requestBody?: { content: { 'application/json': infer Body } } }
+        ? Body
+        : never
+      : never
+    : never;
+
+// Extract path parameters
+type PathParams<P extends keyof ApiPaths, M extends HttpMethod> =
+  P extends keyof ApiPaths
+    ? M extends keyof ApiPaths[P]
+      ? ApiPaths[P][M] extends { parameters: { path?: infer Params } }
+        ? Params
+        : Record<string, never>
+      : Record<string, never>
+    : Record<string, never>;
+
+// Extract query parameters
+type QueryParams<P extends keyof ApiPaths, M extends HttpMethod> =
+  P extends keyof ApiPaths
+    ? M extends keyof ApiPaths[P]
+      ? ApiPaths[P][M] extends { parameters: { query?: infer Params } }
+        ? Params
+        : Record<string, never>
+      : Record<string, never>
+    : Record<string, never>;
+
+// Extract response type
+type ResponseType<P extends keyof ApiPaths, M extends HttpMethod> =
+  P extends keyof ApiPaths
+    ? M extends keyof ApiPaths[P]
+      ? ApiPaths[P][M] extends { responses: { 200: { content: { 'application/json': infer Res } } } }
+        ? Res
+        : ApiPaths[P][M] extends { responses: { 204: any } }
+          ? void
+          : ApiPaths[P][M] extends { responses: { 200: any } }
+            ? void
+            : unknown
+      : unknown
+    : unknown;
+
+// Convert path parameters to Record<string, string | number>
+type PathParamsConfig<P> = {
+  [K in keyof P]: string | number;
+};
+
+// Request options
+type RequestOptions<P extends keyof ApiPaths, M extends HttpMethod> = {
+  pathParams?: PathParamsConfig<PathParams<P, M>>;
+  params?: QueryParams<P, M>;
+  config?: AxiosRequestConfig;
+};
+
+/**
+ * Type-safe API client wrapper with full OpenAPI validation.
+ * Wraps the Axios instance with interceptors while providing compile-time type safety.
+ */
+class ApiClient {
+  private instance: AxiosInstance;
+
+  constructor() {
+    this.instance = createAxiosInstance();
+  }
+
+  /**
+   * Type-safe GET request
+   *
+   * @example
+   * const members = await apiClient.get('/api/v1/projects/{projectId}/members', {
+   *   pathParams: { projectId: '123' }
+   * });
+   */
+  async get<P extends PathsForMethod<'get'>>(
+    path: P,
+    options?: RequestOptions<P, 'get'>
+  ): Promise<ResponseType<P, 'get'>> {
+    const response = await this.instance.get(path as string, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+
+  /**
+   * Type-safe POST request
+   *
+   * @example
+   * const member = await apiClient.post('/api/v1/projects/{projectId}/members',
+   *   { email: 'user@example.com', role: 'MANAGER' },
+   *   { pathParams: { projectId: '123' } }
+   * );
+   */
+  async post<P extends PathsForMethod<'post'>>(
+    path: P,
+    body: RequestBody<P, 'post'>,
+    options?: RequestOptions<P, 'post'>
+  ): Promise<ResponseType<P, 'post'>> {
+    const response = await this.instance.post(path as string, body, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+
+  /**
+   * Type-safe PUT request
+   *
+   * @example
+   * const updated = await apiClient.put('/api/v1/projects/{projectId}',
+   *   { title: 'New Title' },
+   *   { pathParams: { projectId: '123' } }
+   * );
+   */
+  async put<P extends PathsForMethod<'put'>>(
+    path: P,
+    body: RequestBody<P, 'put'>,
+    options?: RequestOptions<P, 'put'>
+  ): Promise<ResponseType<P, 'put'>> {
+    const response = await this.instance.put(path as string, body, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+
+  /**
+   * Type-safe PATCH request
+   *
+   * @example
+   * const updated = await apiClient.patch('/api/v1/projects/{projectId}/members/{memberId}',
+   *   { role: 'CONTRACTOR' },
+   *   { pathParams: { projectId: '123', memberId: '456' } }
+   * );
+   */
+  async patch<P extends PathsForMethod<'patch'>>(
+    path: P,
+    body: RequestBody<P, 'patch'>,
+    options?: RequestOptions<P, 'patch'>
+  ): Promise<ResponseType<P, 'patch'>> {
+    const response = await this.instance.patch(path as string, body, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+
+  /**
+   * Type-safe DELETE request
+   *
+   * @example
+   * await apiClient.delete('/api/v1/projects/{projectId}/members/{memberId}', {
+   *   pathParams: { projectId: '123', memberId: '456' }
+   * });
+   */
+  async delete<P extends PathsForMethod<'delete'>>(
+    path: P,
+    options?: RequestOptions<P, 'delete'>
+  ): Promise<ResponseType<P, 'delete'>> {
+    const response = await this.instance.delete(path as string, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+}
+
+export const apiClient = new ApiClient();
