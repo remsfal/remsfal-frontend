@@ -4,25 +4,13 @@ import flushPromises from 'flush-promises';
 import ContractorTable from '../../src/components/ContractorTable.vue';
 import { contractorService } from '@/services/ContractorService';
 
-vi.mock('@/services/ContractorService', () => ({
-  contractorService:{ getIssues: vi.fn(),},
-}));
+vi.mock('@/services/ContractorService', () => ({ contractorService: { getIssues: vi.fn() } }));
 
 describe('ContractorTable.vue', () => {
-  const mockIssues = [
-    {
-      id: '1',
-      title: 'Issue 1',
-      status: 'OPEN',
-      description: 'Beschreibung 1',
-    },
-    {
-      id: '2',
-      title: 'Issue 2',
-      status: 'CLOSED',
-      description: 'Beschreibung 2',
-    },
-  ];
+const mockIssues = [
+  { id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1' },
+  { id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2' },
+];
 
   beforeEach(() => {
     vi.resetAllMocks();
