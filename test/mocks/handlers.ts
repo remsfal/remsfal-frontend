@@ -130,6 +130,9 @@ export const handlers = [
 
   // GET commercial unit
   http.get(`${API_BASE}/projects/:projectId/commercials/:commercialId`, ({ params }) => {
+    if (params.commercialId === 'not-found') {
+      return HttpResponse.json({ message: 'Commercial not found' }, { status: 404 });
+    }
     return HttpResponse.json({
       id: params.commercialId,
       title: 'Commercial Space 1',
@@ -172,7 +175,10 @@ export const handlers = [
   ),
 
   // DELETE commercial
-  http.delete(`${API_BASE}/projects/:projectId/commercials/:commercialId`, () => {
+  http.delete(`${API_BASE}/projects/:projectId/commercials/:commercialId`, ({ params }) => {
+    if (params.commercialId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
 
@@ -378,6 +384,9 @@ export const handlers = [
 
   // GET single site
   http.get(`${API_BASE}/projects/:projectId/sites/:siteId`, ({ params }) => {
+    if (params.siteId === 'not-found') {
+      return HttpResponse.json({ message: 'Site not found' }, { status: 404 });
+    }
     return HttpResponse.json({
       id: params.siteId,
       title: 'New Site',
@@ -417,7 +426,10 @@ export const handlers = [
   }),
 
   // DELETE site
-  http.delete(`${API_BASE}/projects/:projectId/sites/:siteId`, () => {
+  http.delete(`${API_BASE}/projects/:projectId/sites/:siteId`, ({ params }) => {
+    if (params.siteId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
     return new HttpResponse(null, { status: 204 });
   }),
 
