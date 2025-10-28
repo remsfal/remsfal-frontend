@@ -12,8 +12,18 @@ vi.mock('@/services/ContractorService', () => ({
 
 describe('ContractorTable.vue', () => {
   const mockIssues = [
-    { id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1' },
-    { id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2' },
+    {
+      id: '1',
+      title: 'Issue 1',
+      status: 'OPEN',
+      description: 'Beschreibung 1',
+    },
+    {
+      id: '2',
+      title: 'Issue 2',
+      status: 'CLOSED',
+      description: 'Beschreibung 2',
+    },
   ];
 
   beforeEach(() => {
@@ -21,8 +31,9 @@ describe('ContractorTable.vue', () => {
   });
 
   it('shows loading while fetching issues', async () => {
-    // Make getIssues a promise that never resolves immediately
-    contractorService.getIssues.mockImplementation(() => new Promise(() => {}));
+    contractorService.getIssues.mockImplementation(
+      () => new Promise(() => {})
+    );
 
     const wrapper = mount(ContractorTable);
 
@@ -44,7 +55,6 @@ describe('ContractorTable.vue', () => {
     expect(wrapper.vm.issues).toEqual(mockIssues);
 
     const rows = wrapper.findAll('tr');
-    // Includes header row + data rows
     expect(rows.length).toBe(mockIssues.length + 1);
   });
 
@@ -59,10 +69,8 @@ describe('ContractorTable.vue', () => {
     const wrapper = mount(ContractorTable);
     await flushPromises();
 
-    // Initially, no rows are expanded
     expect(wrapper.vm.expandedRows).toEqual({});
 
-    // Expand first row
     wrapper.vm.expandedRows[mockIssues[0].id] = true;
     await flushPromises();
 
@@ -76,22 +84,18 @@ describe('ContractorTable.vue', () => {
       size: 0,
       total: 0,
     });
-  
+
     const wrapper = mount(ContractorTable);
     await flushPromises();
-  
-    // Ensure reactive state is correct
+
     expect(wrapper.vm.issues).toEqual([]);
     expect(wrapper.vm.isLoading).toBe(false);
-  
-    // Verify that expandedRows is empty
     expect(wrapper.vm.expandedRows).toEqual({});
-  
-    // Optional: check that table renders only the header row
+
     const rows = wrapper.findAll('tr');
-    expect(rows.length).toBeGreaterThanOrEqual(1); // at least header row
+    expect(rows.length).toBeGreaterThanOrEqual(1);
   });
-  
+
   it('handles fetch errors gracefully', async () => {
     contractorService.getIssues.mockRejectedValue(new Error('Fetch failed'));
 
