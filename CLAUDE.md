@@ -69,11 +69,11 @@ Development proxy is configured in `vite.config.ts:50-53` to route requests to a
 ```
 User Code
     ↓
-Service Classes (ProjectService, IssueService, etc.)
+Service Classes (ProjectMemberService, IssueService, etc.)
     ↓
-typedRequest() [OpenAPI-typed wrapper at src/services/api/ApiClient.ts]
+apiClient (Type-safe HTTP methods: get, post, put, patch, delete)
     ↓
-apiClient (Axios instance)
+Axios Instance (with interceptors)
     ↓
 OpenAPI-generated schemas (platform-schema.ts, ticketing-schema.ts, notification-schema.ts)
 ```
@@ -81,15 +81,35 @@ OpenAPI-generated schemas (platform-schema.ts, ticketing-schema.ts, notification
 **Type-Safe API Calls**:
 - OpenAPI specs in `/openapi` directory are the source of truth
 - `openapi-typescript` generates TypeScript schemas from specs
-- Custom `typedRequest()` wrapper in `src/services/api/ApiClient.ts` provides compile-time type safety
-- Path parameters use placeholder syntax: `pathParams: { '{projectId}': id }`
+- `ApiClient` class in `src/services/ApiClient.ts` provides type-safe HTTP methods
+- Path parameters use simplified syntax: `pathParams: { projectId, memberId }`
 - Axios interceptors handle URL placeholder replacement and global error handling
+
+**API Client Usage**:
+```typescript
+// Import the singleton instance and type definitions
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
+
+// Extract types from OpenAPI schemas
+export type MemberRole = ApiComponents['schemas']['MemberRole'];
+export type ProjectMember = ApiComponents['schemas']['ProjectMemberJson'];
+
+// Use type-safe HTTP methods
+const members = await apiClient.get('/api/v1/projects/{projectId}/members', {
+  pathParams: { projectId: '123' }
+});
+
+const newMember = await apiClient.post('/api/v1/projects/{projectId}/members',
+  { email: 'user@example.com', role: 'MANAGER' },
+  { pathParams: { projectId: '123' } }
+);
+```
 
 **When modifying API integration**:
 1. Update the OpenAPI spec file in `/openapi` directory
 2. Run `npm run openapi` to regenerate TypeScript schemas
 3. Update service classes if endpoints changed
-4. The `typedRequest()` function will enforce correct types at compile time
+4. The `apiClient` methods will enforce correct types at compile time
 
 ### State Management Architecture
 
@@ -135,22 +155,47 @@ Users have roles (MANAGER, CONTRACTOR, TENANT) that determine accessible views:
 
 ### Service Layer Pattern
 
-Services are classes with static methods and singleton exports:
+Services are classes with instance methods and singleton exports that wrap the type-safe `apiClient`:
 
 ```typescript
-class ProjectService {
-  static readonly BASE_PATH = '/api/v1/projects';
-  async getProjects() {
-    return typedRequest<paths['/api/v1/projects']['get']>({
-      method: 'GET',
-      url: ProjectService.BASE_PATH
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
+
+// Extract types from OpenAPI components
+export type ProjectMember = ApiComponents['schemas']['ProjectMemberJson'];
+export type ProjectMemberList = ApiComponents['schemas']['ProjectMemberListJson'];
+
+class ProjectMemberService {
+  async getMembers(projectId: string): Promise<ProjectMemberList> {
+    return apiClient.get('/api/v1/projects/{projectId}/members', {
+      pathParams: { projectId },
+    });
+  }
+
+  async addMember(projectId: string, member: ProjectMember): Promise<ProjectMember> {
+    return apiClient.post('/api/v1/projects/{projectId}/members', member, {
+      pathParams: { projectId },
+    });
+  }
+
+  async removeMember(projectId: string, memberId: string): Promise<void> {
+    return apiClient.delete('/api/v1/projects/{projectId}/members/{memberId}', {
+      pathParams: { projectId, memberId },
     });
   }
 }
-export const projectService = new ProjectService();
+
+export const projectMemberService = new ProjectMemberService();
 ```
 
-**Service naming**: `[Domain]Service.ts` (e.g., `ProjectService.ts`, `IssueService.ts`)
+**Service naming**: `[Domain]Service.ts` (e.g., `ProjectMemberService.ts`, `IssueService.ts`)
+
+**Key patterns**:
+- Import `apiClient` and `ApiComponents` from `@/services/ApiClient.ts`
+- Export types extracted from `ApiComponents['schemas']` for reuse
+- Use `apiClient.get()`, `.post()`, `.put()`, `.patch()`, `.delete()` methods
+- Path parameters: `{ pathParams: { projectId, memberId } }` (no curly braces in keys)
+- Query parameters: `{ params: { filter: 'active' } }`
+- Full type safety is enforced at compile time
 
 **Error Handling**:
 - API errors flow through EventStore → toast display
@@ -247,7 +292,8 @@ Key environment variables in `.env`:
 2. TypeScript schemas are generated via `npm run openapi`
 3. Generated files: `src/services/api/{platform,ticketing,notification}-schema.ts`
 4. Never manually edit generated schema files
-5. Use `typedRequest()` for all API calls to ensure type safety
+5. Use `apiClient` singleton for all API calls to ensure type safety
+6. Extract types from `ApiComponents['schemas']` for TypeScript definitions
 
 ### Path Aliases
 - `@` → `./src` (configured in `vite.config.ts` and `tsconfig.json`)
@@ -255,10 +301,27 @@ Key environment variables in `.env`:
 
 ### Data Flow for API Calls
 1. Component → Store action (if shared state) or direct service call
-2. Service → `typedRequest()` with OpenAPI types
-3. `typedRequest()` → Axios interceptors → API
+2. Service → `apiClient` type-safe HTTP methods (get, post, put, patch, delete)
+3. `apiClient` → Axios interceptors (path placeholder replacement) → API
 4. Response → Promise chain back to component
 5. Errors → EventStore event → Toast notification
+
+**Example flow**:
+```typescript
+// 1. Component calls service
+const members = await projectMemberService.getMembers(projectId);
+
+// 2. Service uses apiClient
+async getMembers(projectId: string) {
+  return apiClient.get('/api/v1/projects/{projectId}/members', {
+    pathParams: { projectId }
+  });
+}
+
+// 3. ApiClient enforces types and makes HTTP request
+// 4. Interceptor replaces {projectId} with actual value
+// 5. Response data is returned with full type safety
+```
 
 ## Context for AI Assistance
 

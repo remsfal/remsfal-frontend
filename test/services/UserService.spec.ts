@@ -23,15 +23,13 @@ describe('UserService with MSW', () => {
 
   test('getCityFromZip returns addresses for valid zip', async () => {
     const city = await userService.getCityFromZip('12345');
-    expect(city).toEqual([
-      {
-        city: 'Sample City',
-        countryCode: '',
-        province: '',
-        street: '',
-        zip: '12345',
-      },
-    ]);
+    expect(city).toEqual({
+      city: 'Sample City',
+      countryCode: '',
+      province: '',
+      street: '',
+      zip: '12345',
+    });
   });
   
   test('updateUser returns updated user', async () => {

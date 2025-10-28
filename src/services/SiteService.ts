@@ -1,21 +1,15 @@
-import { typedRequest } from '@/services/api/typedRequest';
-import type { components } from '@/services/api/platform-schema';
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type SiteUnit = components['schemas']['SiteJson'];
+export type SiteUnit = ApiComponents['schemas']['SiteJson'];
 
 export default class SiteService {
-  static readonly BASE_PATH = '/api/v1/projects' as const;
-
   // Create a new site
   async createSite(projectId: string, propertyId: string, data: SiteUnit): Promise<SiteUnit> {
-    const site = await typedRequest<
+    const site = await apiClient.post(
       '/api/v1/projects/{projectId}/properties/{propertyId}/sites',
-      'post',
-      SiteUnit
-    >('post', `${SiteService.BASE_PATH}/{projectId}/properties/{propertyId}/sites`, {
-      pathParams: { projectId, propertyId },
-      body: data,
-    });
+      data,
+      { pathParams: { projectId, propertyId } },
+    ) as SiteUnit;
     console.log('POST create site:', site);
     return site;
   }
@@ -23,11 +17,9 @@ export default class SiteService {
   // Get a single site
   async getSite(projectId: string, siteId: string): Promise<SiteUnit> {
     try {
-      const site = await typedRequest<
-        '/api/v1/projects/{projectId}/sites/{siteId}',
-        'get',
-        SiteUnit
-      >('get', `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`, {pathParams: { projectId, siteId },});
+      const site = await apiClient.get('/api/v1/projects/{projectId}/sites/{siteId}', {
+        pathParams: { projectId, siteId },
+      });
       console.log('GET site:', site);
       return site;
     } catch (error: any) {
@@ -38,13 +30,8 @@ export default class SiteService {
 
   // Update a site
   async updateSite(projectId: string, siteId: string, data: SiteUnit): Promise<SiteUnit> {
-    const updated = await typedRequest<
-      '/api/v1/projects/{projectId}/sites/{siteId}',
-      'patch',
-      SiteUnit
-    >('patch', `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`, {
+    const updated = await apiClient.patch('/api/v1/projects/{projectId}/sites/{siteId}', data, {
       pathParams: { projectId, siteId },
-      body: data,
     });
     console.log('PATCH update site:', updated);
     return updated;
@@ -53,11 +40,9 @@ export default class SiteService {
   // Delete a site (returns boolean for success/failure)
   async deleteSite(projectId: string, siteId: string): Promise<boolean> {
     try {
-      await typedRequest<'/api/v1/projects/{projectId}/sites/{siteId}', 'delete'>(
-        'delete',
-        `${SiteService.BASE_PATH}/{projectId}/sites/{siteId}`,
-        { pathParams: { projectId, siteId } },
-      );
+      await apiClient.delete('/api/v1/projects/{projectId}/sites/{siteId}', {
+        pathParams: { projectId, siteId },
+      });
       console.log('DELETE site successful', siteId);
       return true;
     } catch (error) {

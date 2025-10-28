@@ -12,9 +12,9 @@ describe('ContractorService (MSW with http)', () => {
   const issueId = 'test-issue';
 
   it('should get a list of issues', async () => {
-    // Mock GET /api/v1/contractors/issues
+    // Mock GET /ticketing/v1/issues
     server.use(
-      http.get('/api/v1/contractors/issues', () => {
+      http.get('/ticketing/v1/issues', () => {
         return HttpResponse.json({
           issues: [
             {
@@ -40,9 +40,9 @@ describe('ContractorService (MSW with http)', () => {
   });
 
   it('should get a single issue', async () => {
-    // Mock GET /api/v1/contractors/issues/:issueId
+    // Mock GET /ticketing/v1/issues/:issueId
     server.use(
-      http.get('/api/v1/contractors/issues/:issueId', (req) => {
+      http.get('/ticketing/v1/issues/:issueId', (req) => {
         const { issueId } = req.params;
         if (issueId === 'test-issue') {
           return HttpResponse.json({
@@ -65,7 +65,7 @@ describe('ContractorService (MSW with http)', () => {
   it('should handle issue retrieval error', async () => {
     // Mock 404 for any issue ID
     server.use(
-      http.get('/api/v1/contractors/issues/:issueId', () => {
+      http.get('/ticketing/v1/issues/:issueId', () => {
         return HttpResponse.json({ message: 'Not Found' }, { status: 404 });
       }),
     );

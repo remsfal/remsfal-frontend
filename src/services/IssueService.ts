@@ -31,16 +31,19 @@ export class IssueService {
     projectId: string,
     status?: Status,
     ownerId?: string,
+    limit = 100,
+    offset = 0,
   ): Promise<IssueList> {
-    const res = await apiClient.get(issuesPath, {
+    const data = (await apiClient.get(issuesPath, {
       params: {
         projectId,
+        limit,
+        offset,
         ...(status ? { status } : {}),
         ...(ownerId ? { owner: ownerId } : {}),
       },
-    });
-  
-    const data = res.data ?? {};
+    })) as IssueList;
+
     return {
       first: data.first ?? 0,
       size: data.size ?? 0,
@@ -53,21 +56,19 @@ export class IssueService {
    * Get a single issue by its ID.
    */
   async getIssue(projectId: string, issueId: string): Promise<Issue> {
-    return apiClient
-      .get(issuePath, {
-        pathParams: { issueId },
-        params: { projectId },
-      })
-      .then(res => res.data);
+    return apiClient.get(issuePath, {
+      pathParams: { issueId },
+      params: { projectId } as any,
+    }) as Promise<Issue>;
   }
 
   /**
    * Create a new issue in a project.
    */
   async createIssue(projectId: string, body: Partial<Issue>): Promise<Issue> {
-    return apiClient
-      .post(issuesPath, body, {params: { projectId },})
-      .then(res => res.data);
+    return apiClient.post(issuesPath, body as any, {
+      params: { projectId } as any,
+    }) as Promise<Issue>;
   }
 
   /**
@@ -78,12 +79,10 @@ export class IssueService {
     issueId: string,
     body: Partial<Issue>,
   ): Promise<Issue> {
-    return apiClient
-      .patch(issuePath, body, {
-        pathParams: { issueId },
-        params: { projectId },
-      })
-      .then(res => res.data);
+    return apiClient.patch(issuePath, body as any, {
+      pathParams: { issueId },
+      params: { projectId } as any,
+    }) as Promise<Issue>;
   }
 }
 
