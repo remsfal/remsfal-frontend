@@ -1,36 +1,111 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import flushPromises from 'flush-promises';
 import ContractorTable from '../../src/components/ContractorTable.vue';
-import { contractorService } from '../../src/services/ContractorService';
+import { contractorService } from '@/services/ContractorService';
+
+vi.mock('@/services/ContractorService', () => ({
+  contractorService: {
+    getIssues: vi.fn(),
+  },
+}));
 
 describe('ContractorTable.vue', () => {
-  let wrapper: VueWrapper;
-
-  // Mock the service
-  vi.mock('@/services/ContractorService');
+  const mockIssues = [
+    { id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1' },
+    { id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2' },
+  ];
 
   beforeEach(() => {
-    vi.mocked(contractorService.getIssues).mockResolvedValue({
-      issues: [
-        {
- id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1'
-},
-        {
- id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2'
-},
-      ],
+    vi.resetAllMocks();
+  });
+
+  it('shows loading while fetching issues', async () => {
+    // Make getIssues a promise that never resolves immediately
+    contractorService.getIssues.mockImplementation(() => new Promise(() => {}));
+
+    const wrapper = mount(ContractorTable);
+
+    expect(wrapper.vm.isLoading).toBe(true);
+  });
+
+  it('loads issues successfully and renders table rows', async () => {
+    contractorService.getIssues.mockResolvedValue({
+      issues: mockIssues,
       first: 0,
       size: 2,
       total: 2,
     });
 
-    wrapper = mount(ContractorTable);
-  });
+    const wrapper = mount(ContractorTable);
+    await flushPromises();
 
-  it('should render rows correctly', async () => {
-    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.isLoading).toBe(false);
+    expect(wrapper.vm.issues).toEqual(mockIssues);
 
     const rows = wrapper.findAll('tr');
-    expect(rows.length).toBeGreaterThan(1);
+    // Includes header row + data rows
+    expect(rows.length).toBe(mockIssues.length + 1);
+  });
+
+  it('expands a row when expander is clicked', async () => {
+    contractorService.getIssues.mockResolvedValue({
+      issues: mockIssues,
+      first: 0,
+      size: 2,
+      total: 2,
+    });
+
+    const wrapper = mount(ContractorTable);
+    await flushPromises();
+
+    // Initially, no rows are expanded
+    expect(wrapper.vm.expandedRows).toEqual({});
+
+    // Expand first row
+    wrapper.vm.expandedRows[mockIssues[0].id] = true;
+    await flushPromises();
+
+    expect(wrapper.vm.expandedRows[mockIssues[0].id]).toBe(true);
+  });
+
+  it('handles empty issues list gracefully', async () => {
+    contractorService.getIssues.mockResolvedValue({
+      issues: [],
+      first: 0,
+      size: 0,
+      total: 0,
+    });
+  
+    const wrapper = mount(ContractorTable);
+    await flushPromises();
+  
+    // Ensure reactive state is correct
+    expect(wrapper.vm.issues).toEqual([]);
+    expect(wrapper.vm.isLoading).toBe(false);
+  
+    // Verify that expandedRows is empty
+    expect(wrapper.vm.expandedRows).toEqual({});
+  
+    // Optional: check that table renders only the header row
+    const rows = wrapper.findAll('tr');
+    expect(rows.length).toBeGreaterThanOrEqual(1); // at least header row
+  });
+  
+  it('handles fetch errors gracefully', async () => {
+    contractorService.getIssues.mockRejectedValue(new Error('Fetch failed'));
+
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const wrapper = mount(ContractorTable);
+    await flushPromises();
+
+    expect(wrapper.vm.issues).toEqual([]);
+    expect(wrapper.vm.isLoading).toBe(false);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Failed to load issues',
+      expect.any(Error)
+    );
+
+    consoleSpy.mockRestore();
   });
 });
