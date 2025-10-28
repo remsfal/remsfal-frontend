@@ -1,11 +1,13 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
-import { setupServer } from 'msw/node';
+import { describe, it, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import {propertyService,
+import {
+  propertyService,
   type PropertyUnit,
   type PropertyList,
   toRentableUnitView,
-  EntityType,} from '@/services/PropertyService';
+  EntityType,
+} from '@/services/PropertyService';
+import { setupTestServer, testErrorHandling } from '../utils/testHelpers';
 
 const mockProperty: PropertyUnit = {
   id: 'property-1',
@@ -62,12 +64,9 @@ const handlers = [
   }),
 ];
 
-const server = setupServer(...handlers);
+const server = setupTestServer(...handlers);
 
 describe('PropertyService', () => {
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
 
   describe('createProperty', () => {
     it('should create a new property', async () => {
@@ -91,13 +90,9 @@ describe('PropertyService', () => {
     });
 
     it('should handle creation errors', async () => {
-      server.use(
-        http.post('/api/v1/projects/:projectId/properties', () => {
-          return HttpResponse.json({ message: 'Bad Request' }, { status: 400 });
-        }),
+      await testErrorHandling(server, '/api/v1/projects/:projectId/properties', 'post', 400, () =>
+        propertyService.createProperty('project-1', mockProperty),
       );
-
-      await expect(propertyService.createProperty('project-1', mockProperty)).rejects.toThrow();
     });
   });
 
@@ -120,13 +115,9 @@ describe('PropertyService', () => {
     });
 
     it('should handle errors when fetching tree', async () => {
-      server.use(
-        http.get('/api/v1/projects/:projectId/properties', () => {
-          return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
-        }),
+      await testErrorHandling(server, '/api/v1/projects/:projectId/properties', 'get', 500, () =>
+        propertyService.getPropertyTree('project-1'),
       );
-
-      await expect(propertyService.getPropertyTree('project-1')).rejects.toThrow();
     });
   });
 
@@ -142,13 +133,9 @@ describe('PropertyService', () => {
     });
 
     it('should handle network errors', async () => {
-      server.use(
-        http.get('/api/v1/projects/:projectId/properties/:propertyId', () => {
-          return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
-        }),
+      await testErrorHandling(server, '/api/v1/projects/:projectId/properties/:propertyId', 'get', 500, () =>
+        propertyService.getProperty('project-1', 'property-1'),
       );
-
-      await expect(propertyService.getProperty('project-1', 'property-1')).rejects.toThrow();
     });
   });
 
@@ -173,15 +160,9 @@ describe('PropertyService', () => {
     });
 
     it('should handle update errors', async () => {
-      server.use(
-        http.patch('/api/v1/projects/:projectId/properties/:propertyId', () => {
-          return HttpResponse.json({ message: 'Forbidden' }, { status: 403 });
-        }),
-      );
-
-      await expect(
+      await testErrorHandling(server, '/api/v1/projects/:projectId/properties/:propertyId', 'patch', 403, () =>
         propertyService.updateProperty('project-1', 'property-1', mockProperty),
-      ).rejects.toThrow();
+      );
     });
   });
 
@@ -195,13 +176,9 @@ describe('PropertyService', () => {
     });
 
     it('should handle not found errors during deletion', async () => {
-      server.use(
-        http.delete('/api/v1/projects/:projectId/properties/:propertyId', () => {
-          return HttpResponse.json({ message: 'Not Found' }, { status: 404 });
-        }),
+      await testErrorHandling(server, '/api/v1/projects/:projectId/properties/:propertyId', 'delete', 404, () =>
+        propertyService.deleteProperty('project-1', 'non-existing'),
       );
-
-      await expect(propertyService.deleteProperty('project-1', 'non-existing')).rejects.toThrow();
     });
   });
 });

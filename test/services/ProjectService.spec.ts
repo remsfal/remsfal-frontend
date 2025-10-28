@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
-import { setupServer } from 'msw/node';
+import { describe, it, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { projectService, type Project, type ProjectList } from '@/services/ProjectService';
+import { setupTestServer, testErrorHandling } from '../utils/testHelpers';
 
 const mockProjects: ProjectList = {
   projects: [
@@ -68,12 +68,9 @@ const handlers = [
   }),
 ];
 
-const server = setupServer(...handlers);
+const server = setupTestServer(...handlers);
 
 describe('ProjectService', () => {
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
 
   describe('getProjects', () => {
     it('should fetch projects with default pagination', async () => {
@@ -126,13 +123,9 @@ describe('ProjectService', () => {
     });
 
     it('should handle creation errors', async () => {
-      server.use(
-        http.post('/api/v1/projects', () => {
-          return HttpResponse.json({ message: 'Bad Request' }, { status: 400 });
-        }),
+      await testErrorHandling(server, '/api/v1/projects', 'post', 400, () =>
+        projectService.createProject('Invalid'),
       );
-
-      await expect(projectService.createProject('Invalid')).rejects.toThrow();
     });
   });
 
@@ -148,13 +141,9 @@ describe('ProjectService', () => {
     });
 
     it('should handle network errors', async () => {
-      server.use(
-        http.get('/api/v1/projects/:projectId', () => {
-          return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
-        }),
+      await testErrorHandling(server, '/api/v1/projects/:projectId', 'get', 500, () =>
+        projectService.getProject('project-1'),
       );
-
-      await expect(projectService.getProject('project-1')).rejects.toThrow();
     });
   });
 
@@ -171,13 +160,9 @@ describe('ProjectService', () => {
     });
 
     it('should handle update errors', async () => {
-      server.use(
-        http.patch('/api/v1/projects/:projectId', () => {
-          return HttpResponse.json({ message: 'Forbidden' }, { status: 403 });
-        }),
+      await testErrorHandling(server, '/api/v1/projects/:projectId', 'patch', 403, () =>
+        projectService.updateProject('project-1', mockProject),
       );
-
-      await expect(projectService.updateProject('project-1', mockProject)).rejects.toThrow();
     });
   });
 
@@ -187,13 +172,9 @@ describe('ProjectService', () => {
     });
 
     it('should handle deletion errors', async () => {
-      server.use(
-        http.delete('/api/v1/projects/:projectId', () => {
-          return HttpResponse.json({ message: 'Not Found' }, { status: 404 });
-        }),
+      await testErrorHandling(server, '/api/v1/projects/:projectId', 'delete', 404, () =>
+        projectService.deleteProject('non-existing'),
       );
-
-      await expect(projectService.deleteProject('non-existing')).rejects.toThrow();
     });
   });
 });
