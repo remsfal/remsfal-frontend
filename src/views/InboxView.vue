@@ -60,9 +60,10 @@ const onRowClick = (e: { originalEvent: MouseEvent; data: InboxMessage }) => {
 
 <template>
   <main class="w-full px-6 py-8">
-    <h1 class="text-2xl font-semibold mb-4">{{ t('inbox.title') }}</h1>
+    <h1 class="text-2xl font-semibold mb-4">
+      {{ t('inbox.title') }}
+    </h1>
     <div class="card p-4 flex gap-6 -mx-6" :aria-busy="isLoading">
-
       <!-- Sidebar -->
       <aside class="w-72 flex-shrink-0 space-y-4 pr-4">
         <h2 class="text-lg font-semibold">
@@ -225,7 +226,7 @@ const onRowClick = (e: { originalEvent: MouseEvent; data: InboxMessage }) => {
           icon="pi pi-filter-slash"
           :label="t('inbox.actions.clearFilters')"
           class="w-full"
-          @click="inbox.clearFilters()"
+          @click="inbox.clearFilters"
         />
       </aside>
 

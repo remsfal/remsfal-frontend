@@ -54,7 +54,8 @@ export const useInboxStore = defineStore('inbox', () => {
       const inTenant      = !filterTenant.value.length     || filterTenant.value.includes(msg.tenant);
       const inOwner       = !filterOwner.value.length      || filterOwner.value.includes(msg.owner);
       const inStatus      = !filterStatus.value.length     || filterStatus.value.includes(status);
-      const inDate        = !hasRange || (!!msg.receivedAt && msg.receivedAt >= (start as Date) && msg.receivedAt <= (end as Date));
+      const inDate = !hasRange ||
+        (!!msg.receivedAt && msg.receivedAt >= (start as Date) && msg.receivedAt <= (end as Date));
 
       return inType && inContractor && inProject && inUnit && inTenant && inOwner && inStatus && inDate;
     });

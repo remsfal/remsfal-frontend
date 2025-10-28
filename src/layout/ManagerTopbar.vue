@@ -7,8 +7,7 @@ import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
-import { type InboxMessage } from '@/services/InboxService';
-import { ref, onMounted, computed } from 'vue';
+import { computed } from 'vue';
 import { useInboxStore } from '@/stores/InboxStore'
 const { t } = useI18n();
 

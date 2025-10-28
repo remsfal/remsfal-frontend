@@ -51,16 +51,10 @@ describe('InboxView.vue', () => {
   ];
 
   beforeEach(() => {
-    const pinia = createTestingPinia({
-      stubActions: false,
-    });
+    const pinia = createTestingPinia({stubActions: false,});
     store = useInboxStore(pinia);
     store.fetchInbox = vi.fn().mockResolvedValue(undefined);
-    mount(InboxView, {
-      global: {
-        plugins: [pinia, PrimeVue, i18n],
-      },
-    });
+    mount(InboxView, {global: {plugins: [pinia, PrimeVue, i18n],},});
   });
 
   it('calls fetchInbox on mount', () => {
@@ -102,11 +96,7 @@ describe('InboxView.vue', () => {
   });
 
   it('navigates on row click', () => {
-    const wrapper = mount(InboxView, {
-      global: {
-        plugins: [createTestingPinia({ stubActions: false }), PrimeVue, i18n],
-      },
-    });
+    const wrapper = mount(InboxView, {global: {plugins: [createTestingPinia({ stubActions: false }), PrimeVue, i18n],},});
     wrapper.vm.onRowClick({ originalEvent: new MouseEvent('click'), data: { id: 'xyz' } });
     expect(mockPush).toHaveBeenCalledWith({ name: 'InboxDetail', params: { id: 'xyz' } });
   });

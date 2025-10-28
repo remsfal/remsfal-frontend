@@ -2,8 +2,7 @@ import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import PrimeVue from 'primevue/config'
 import i18n from '../../src/i18n/i18n'
-import { describe, it, expect, vi } from 'vitest'
-import InboxView from '../../src/views/InboxView.vue'
+import { it, expect, vi } from 'vitest'
 import ManagerTopbar from '../../src/layout/ManagerTopbar.vue'
 import { useInboxStore } from '../../src/stores/InboxStore'
 import { useUserSessionStore } from '../../src/stores/UserSession'
@@ -25,14 +24,13 @@ it('updates unread count in topbar when messages change in inbox', async () => {
   ] as any
 
   const topbar = mount(ManagerTopbar, { global: { plugins: [pinia, PrimeVue, i18n] } })
-  const inbox = mount(InboxView, { global: { plugins: [pinia, PrimeVue, i18n] } })
 
-    // Should now see badge with '2'
-    expect(topbar.text()).toContain('2')
+  // Should now see badge with '2'
+  expect(topbar.text()).toContain('2')
 
-    inboxStore.markAsRead(inboxStore.messages[0])
-    inboxStore.messages = [...inboxStore.messages]
-    await topbar.vm.$nextTick()
+  inboxStore.markAsRead(inboxStore.messages[0])
+  inboxStore.messages = [...inboxStore.messages]
+  await topbar.vm.$nextTick()
 
-    expect(topbar.text()).toContain('1')
+  expect(topbar.text()).toContain('1')
 })
