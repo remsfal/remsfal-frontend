@@ -155,7 +155,7 @@ describe('AccountSettingsView', () => {
 
     test('logout redirects to logout endpoint', () => {
       delete window.location;
-      // @ts-ignore
+      // @ts-expect-error
       window.location = { pathname: '' };
       wrapper.vm.logout();
       expect(window.location.pathname).toBe('/api/v1/authentication/logout');
