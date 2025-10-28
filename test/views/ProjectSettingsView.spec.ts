@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import flushPromises from 'flush-promises';
 import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
@@ -9,15 +9,9 @@ import { projectService } from '../../src/services/ProjectService';
 const routerPushMock = vi.fn();
 const addMock = vi.fn(); // Shared mock for toast
 
-vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: routerPushMock }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({ push: routerPushMock }),}));
 
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({
-    add: addMock,
-  }),
-}));
+vi.mock('primevue/usetoast', () => ({useToast: () => ({add: addMock,}),}));
 
 // ---- Test Suite ----
 describe('ProjectSettingsView.vue', () => {
@@ -25,8 +19,12 @@ describe('ProjectSettingsView.vue', () => {
 
   const mockMembers: GetMembersResponse = {
     members: [
-      { id: '1', email: 'test1@example.com', role: 'MANAGER' },
-      { id: '2', email: 'test2@example.com', role: 'TENANCY' },
+      {
+ id: '1', email: 'test1@example.com', role: 'MANAGER' 
+},
+      {
+ id: '2', email: 'test2@example.com', role: 'TENANCY' 
+},
     ],
   };
 
@@ -44,9 +42,7 @@ describe('ProjectSettingsView.vue', () => {
     vi.spyOn(projectService, 'getProject').mockResolvedValue({ title: 'Old Project' });
     vi.spyOn(projectService, 'updateProject').mockResolvedValue({});
 
-    wrapper = mount(ProjectSettingsView, {
-      props: { projectId: 'test-project-id' },
-    });
+    wrapper = mount(ProjectSettingsView, {props: { projectId: 'test-project-id' },});
 
     await flushPromises();
   });
@@ -121,9 +117,7 @@ describe('ProjectSettingsView.vue', () => {
     await wrapper.vm.saveProjectName();
     await flushPromises();
 
-    expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {
-      title: 'Updated Project',
-    });
+    expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {title: 'Updated Project',});
     expect(addMock).toHaveBeenCalledWith(
       expect.objectContaining({ severity: 'success' })
     );

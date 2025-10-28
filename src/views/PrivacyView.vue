@@ -20,23 +20,31 @@ const navigateToHome = () => {
     </div>
     <div class="col-span-12">
       <Card>
-        <template #title> {{ t('privacy.title') }}</template>
+        <template #title>
+          {{ t('privacy.title') }}
+        </template>
         <template #content>
           <p>{{ t('privacy.explanation') }}</p>
-          <p class="p-card-content-header">{{ t('privacy.responsibility') }}</p>
-          <p v-html="t('legalNotice.contact.address')"></p>
+          <p class="p-card-content-header">
+            {{ t('privacy.responsibility') }}
+          </p>
+          <p v-html="t('legalNotice.contact.address')" />
           <p>{{ t('legalNotice.contact.email') }}</p>
 
-          <p class="p-card-content-header">{{ t('privacy.representative') }}</p>
+          <p class="p-card-content-header">
+            {{ t('privacy.representative') }}
+          </p>
           <p>
-            Prof. Dr.-Ing. Alexander Stanik<br />
+            Prof. Dr.-Ing. Alexander Stanik<br>
             E-Mail: privacy@remsfal.de
           </p>
           <p>
             {{ t('privacy.contact') }}
           </p>
 
-          <p class="p-card-content-header">{{ t('privacy.betroffenenrechte.title') }}</p>
+          <p class="p-card-content-header">
+            {{ t('privacy.betroffenenrechte.title') }}
+          </p>
           <p>
             {{ t('privacy.betroffenenrechte.explanation.1') }}
           </p>
@@ -50,8 +58,7 @@ const navigateToHome = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html </a
-            >.
+              https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html </a>.
           </p>
         </template>
         <template #footer>
@@ -68,7 +75,9 @@ const navigateToHome = () => {
 
     <div class="col-span-12">
       <Card>
-        <template #title> {{ t('privacy.hosting.title') }}</template>
+        <template #title>
+          {{ t('privacy.hosting.title') }}
+        </template>
         <template #content>
           <p class="p-card-content-header">
             {{ t('privacy.hosting.explanation.1') }}
@@ -85,7 +94,7 @@ const navigateToHome = () => {
           <p class="p-card-content-header">
             {{ t('privacy.hosting.explanation.5') }}
           </p>
-          <p v-html="t('privacy.hosting.adress')"></p>
+          <p v-html="t('privacy.hosting.adress')" />
           <p>
             {{ t('privacy.furtherInformation') }}
             <a

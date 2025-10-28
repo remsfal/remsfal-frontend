@@ -1,5 +1,5 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
+import {beforeEach, describe, expect, it, vi, Mock} from 'vitest';
 import ProjectSelectionView from '../../src/views/ManagerView.vue';
 import { projectService } from '../../src/services/ProjectService';
 import { useProjectStore } from '../../src/stores/ProjectStore';
@@ -18,23 +18,13 @@ vi.mock('@/services/ProjectService', () => ({
 }));
 
 // Mock Pinia store
-vi.mock('@/stores/ProjectStore', () => ({
-  useProjectStore: vi.fn(),
-}));
+vi.mock('@/stores/ProjectStore', () => ({useProjectStore: vi.fn(),}));
 
 // PrimeVue stubs
-vi.mock('primevue/datatable', () => ({
-  default: { name: 'DataTable', template: '<div><slot /></div>' },
-}));
-vi.mock('primevue/column', () => ({
-  default: { name: 'Column', template: '<div><slot /></div>' },
-}));
-vi.mock('primevue/button', () => ({
-  default: { name: 'Button', template: '<button><slot /></button>' },
-}));
-vi.mock('primevue/dialog', () => ({
-  default: { name: 'Dialog', template: '<div><slot /></div>' },
-}));
+vi.mock('primevue/datatable', () => ({default: { name: 'DataTable', template: '<div><slot /></div>' },}));
+vi.mock('primevue/column', () => ({default: { name: 'Column', template: '<div><slot /></div>' },}));
+vi.mock('primevue/button', () => ({default: { name: 'Button', template: '<button><slot /></button>' },}));
+vi.mock('primevue/dialog', () => ({default: { name: 'Dialog', template: '<div><slot /></div>' },}));
 
 describe('ManagerView.vue', () => {
   let wrapper: VueWrapper;

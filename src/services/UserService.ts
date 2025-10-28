@@ -18,11 +18,7 @@ export default class UserService {
     return typedRequest<typeof UserService.ADDRESS_ENDPOINT, 'get'>(
       'get',
       UserService.ADDRESS_ENDPOINT,
-      {
-        params: {
-          query: { zip },
-        },
-      }
+      {params: {query: { zip },},}
     );
   }
 
@@ -33,9 +29,7 @@ export default class UserService {
     return typedRequest<typeof UserService.USER_ENDPOINT, 'patch'>(
       'patch',
       UserService.USER_ENDPOINT,
-      {
-        body: updatedUser,
-      }
+      {body: updatedUser,}
     );
   }
 

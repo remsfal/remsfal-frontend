@@ -64,7 +64,9 @@ onMounted(async () => {
       <h1 class="col-span-12">
         {{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht
       </h1>
-      <div v-if="isLoading">Loading...</div>
+      <div v-if="isLoading">
+        Loading...
+      </div>
       <div v-if="!isLoading" class="col-span-12 card">
         <DataTable
           :value="tenancyData"

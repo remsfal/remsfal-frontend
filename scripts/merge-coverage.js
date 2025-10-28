@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+/* eslint-env node */
+/* global process */
 /**
  * Script to merge coverage from both Vitest unit tests and Cypress E2E tests
  */
 import { execSync } from 'child_process';
-import { existsSync, rmSync, mkdirSync, readFileSync, appendFileSync, cpSync } from 'fs';
+import {existsSync, rmSync, mkdirSync, readFileSync, appendFileSync, cpSync} from 'fs';
 
 const coverageVitest = 'coverage-vitest';
 const coverageCypress = 'coverage-cypress';

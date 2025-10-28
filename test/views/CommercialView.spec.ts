@@ -1,14 +1,10 @@
 import { mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import {describe, it, expect, vi, beforeEach, Mock} from 'vitest';
 import Component from '../../src/views/CommercialView.vue';
 import { commercialService } from '../../src/services/CommercialService';
 
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({push: mockPush,}),}));
 
 vi.mock('../../src/services/CommercialService', () => ({
   commercialService: {
@@ -47,7 +43,8 @@ describe('CommercialView.vue', () => {
     expect(wrapper.vm.location).toBe('');
   });
 
-  it('validates commercial space is positive, heating space is positive and description is not over 500 characters', async () => {
+  it('validates commercial space is positive, heating space is positive and description is not over 500 characters',
+    async () => {
     wrapper.vm.commercialSpace = -10;
     wrapper.vm.heatingSpace = -5;
     wrapper.vm.description = 'a'.repeat(501);
@@ -100,9 +97,7 @@ describe('CommercialView.vue', () => {
 
   it('returns early if there is no projectId', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const wrapper = mount(Component, {
-      props: { projectId: '', unitId: 'commercial1' },
-    });
+    const wrapper = mount(Component, {props: { projectId: '', unitId: 'commercial1' },});
     await wrapper.vm.fetchCommercialDetails();
     expect(errorSpy).toHaveBeenCalledWith('Keine projectId');
     errorSpy.mockRestore();
@@ -110,9 +105,7 @@ describe('CommercialView.vue', () => {
 
   it('returns early if there is no unitId', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const wrapper = mount(Component, {
-      props: { projectId: 'project1', unitId: '' },
-    });
+    const wrapper = mount(Component, {props: { projectId: 'project1', unitId: '' },});
     await wrapper.vm.fetchCommercialDetails();
     expect(errorSpy).toHaveBeenCalledWith('Keine unitId');
     errorSpy.mockRestore();

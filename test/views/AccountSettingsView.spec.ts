@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import AccountSettingsView from '../../src/views/AccountSettingsView.vue';
 import router from '../../src/router';
@@ -141,18 +141,14 @@ describe('AccountSettingsView', () => {
   describe('Validation of isDisabled function', async () => {
     test('Errors cause isDisabled to be true', async () => {
       wrapper.vm.changes = true;
-      wrapper.vm.errorMessage = {
-        firstname: 'Bitte eingeben!',
-      };
+      wrapper.vm.errorMessage = {firstname: 'Bitte eingeben!',};
       await nextTick();
       expect(wrapper.vm.isDisabled).toBe(true);
     });
 
     test('No errors cause isDisabled to be false', async () => {
       wrapper.vm.changes = true;
-      wrapper.vm.errorMessage = {
-        firstname: '',
-      };
+      wrapper.vm.errorMessage = {firstname: '',};
       await nextTick();
       expect(wrapper.vm.isDisabled).toBe(false);
     });

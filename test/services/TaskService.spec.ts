@@ -1,7 +1,7 @@
-import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import {describe, test, expect, beforeAll, afterAll, afterEach} from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../../test/mocks/handlers';
-import { taskService, type CreateTaskBody, type ModifyTaskBody, StatusValues } from '../../src/services/TaskService';
+import {taskService, type CreateTaskBody, type ModifyTaskBody, StatusValues} from '../../src/services/TaskService';
 
 const server = setupServer(...handlers);
 

@@ -149,7 +149,7 @@ watch(
           </TaskTable>
         </div>
         <div v-else-if="status">
-          <TaskTable :tasks="taskbyStatusOpen"> </TaskTable>
+          <TaskTable :tasks="taskbyStatusOpen" />
         </div>
         <div v-else>
           <TaskTable :tasks="tasks">

@@ -23,8 +23,12 @@ const fields: {
   required?: boolean;
   validations?: ((value: any) => string | null)[];
 }[] = [
-  { name: 'title', label: 'Titel', type: 'text', required: true },
-  { name: 'location', label: 'Standort', type: 'textarea' },
+  {
+ name: 'title', label: 'Titel', type: 'text', required: true 
+},
+  {
+ name: 'location', label: 'Standort', type: 'textarea' 
+},
   {
     name: 'commercialSpace',
     label: 'Gewerbefläche (qm)',
