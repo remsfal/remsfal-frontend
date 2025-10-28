@@ -155,7 +155,7 @@ describe('AccountSettingsView', () => {
 
     test('logout redirects to logout endpoint', () => {
       delete window.location;
-      // @ts-expect-error
+     // @ts-expect-error required because fetchUserProfile is mocked
       window.location = { pathname: '' };
       wrapper.vm.logout();
       expect(window.location.pathname).toBe('/api/v1/authentication/logout');
