@@ -30,33 +30,31 @@ export function toRentableUnitView(entity: UnitType | undefined): string {
 
 class PropertyService {
   async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
-    return apiClient.post('/api/v1/projects/{projectId}/properties', property, {
-      pathParams: { projectId },
-    }) as Promise<PropertyUnit>;
+    return apiClient.post(
+      '/api/v1/projects/{projectId}/properties',
+      property,
+      {pathParams: { projectId },},
+    ) as Promise<PropertyUnit>;
   }
 
   async getPropertyTree(projectId: string): Promise<PropertyList> {
-    return apiClient.get('/api/v1/projects/{projectId}/properties', {
-      pathParams: { projectId },
-    });
+    return apiClient.get('/api/v1/projects/{projectId}/properties', {pathParams: { projectId },});
   }
 
   async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
-    return apiClient.get('/api/v1/projects/{projectId}/properties/{propertyId}', {
-      pathParams: { projectId, propertyId },
-    });
+    return apiClient.get('/api/v1/projects/{projectId}/properties/{propertyId}', {pathParams: { projectId, propertyId },});
   }
 
   async updateProperty(projectId: string, propertyId: string, property: PropertyUnit): Promise<PropertyUnit> {
-    return apiClient.patch('/api/v1/projects/{projectId}/properties/{propertyId}', property, {
-      pathParams: { projectId, propertyId },
-    });
+    return apiClient.patch(
+      '/api/v1/projects/{projectId}/properties/{propertyId}',
+      property,
+      {pathParams: { projectId, propertyId },},
+    );
   }
 
   async deleteProperty(projectId: string, propertyId: string): Promise<void> {
-    return apiClient.delete('/api/v1/projects/{projectId}/properties/{propertyId}', {
-      pathParams: { projectId, propertyId },
-    });
+    return apiClient.delete('/api/v1/projects/{projectId}/properties/{propertyId}', {pathParams: { projectId, propertyId },});
   }
 }
 

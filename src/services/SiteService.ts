@@ -17,9 +17,7 @@ export default class SiteService {
   // Get a single site
   async getSite(projectId: string, siteId: string): Promise<SiteUnit> {
     try {
-      const site = await apiClient.get('/api/v1/projects/{projectId}/sites/{siteId}', {
-        pathParams: { projectId, siteId },
-      });
+      const site = await apiClient.get('/api/v1/projects/{projectId}/sites/{siteId}', {pathParams: { projectId, siteId },});
       console.log('GET site:', site);
       return site;
     } catch (error: any) {
@@ -30,9 +28,11 @@ export default class SiteService {
 
   // Update a site
   async updateSite(projectId: string, siteId: string, data: SiteUnit): Promise<SiteUnit> {
-    const updated = await apiClient.patch('/api/v1/projects/{projectId}/sites/{siteId}', data, {
-      pathParams: { projectId, siteId },
-    });
+    const updated = await apiClient.patch(
+      '/api/v1/projects/{projectId}/sites/{siteId}',
+      data,
+      {pathParams: { projectId, siteId },},
+    );
     console.log('PATCH update site:', updated);
     return updated;
   }
@@ -40,9 +40,7 @@ export default class SiteService {
   // Delete a site (returns boolean for success/failure)
   async deleteSite(projectId: string, siteId: string): Promise<boolean> {
     try {
-      await apiClient.delete('/api/v1/projects/{projectId}/sites/{siteId}', {
-        pathParams: { projectId, siteId },
-      });
+      await apiClient.delete('/api/v1/projects/{projectId}/sites/{siteId}', {pathParams: { projectId, siteId },});
       console.log('DELETE site successful', siteId);
       return true;
     } catch (error) {

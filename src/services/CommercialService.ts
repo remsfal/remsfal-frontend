@@ -44,9 +44,10 @@ export default class CommercialService {
   // Delete a commercial unit (returns boolean for success/failure)
   async deleteCommercial(projectId: string, commercialId: string): Promise<boolean> {
     try {
-      await apiClient.delete('/api/v1/projects/{projectId}/commercials/{commercialId}', {
-        pathParams: { projectId, commercialId },
-      });
+      await apiClient.delete(
+        '/api/v1/projects/{projectId}/commercials/{commercialId}',
+        {pathParams: { projectId, commercialId },},
+      );
       console.log('DELETE commercial successful', commercialId);
       return true;
     } catch (error) {

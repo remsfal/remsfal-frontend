@@ -8,8 +8,12 @@ vi.mock('@/services/ContractorService', () => ({ contractorService: { getIssues:
 
 describe('ContractorTable.vue', () => {
 const mockIssues = [
-  { id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1' },
-  { id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2' },
+  {
+ id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1' 
+},
+  {
+ id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2' 
+},
 ];
 
   beforeEach(() => {

@@ -12,7 +12,7 @@ const mockStorage: Storage = {
 };
 
 const handlers = [
-  http.post('/api/v1/projects/:projectId/buildings/:buildingId/storages', async ({ request, params }) => {
+  http.post('/api/v1/projects/:projectId/buildings/:buildingId/storages', async ({ request }) => {
     const body = (await request.json()) as Storage;
     return HttpResponse.json(
       {
@@ -146,9 +146,7 @@ describe('StorageService', () => {
     });
 
     it('should handle partial updates', async () => {
-      const partialUpdate: Storage = {
-        title: 'Only Title Updated',
-      };
+      const partialUpdate: Storage = {title: 'Only Title Updated',};
 
       const result = await storageService.updateStorage('project-1', 'storage-1', partialUpdate);
       expect(result.title).toBe('Only Title Updated');

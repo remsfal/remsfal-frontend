@@ -5,8 +5,12 @@ import { projectService, type Project, type ProjectList } from '@/services/Proje
 
 const mockProjects: ProjectList = {
   projects: [
-    { id: 'project-1', title: 'Project 1', memberRole: 'MANAGER' },
-    { id: 'project-2', title: 'Project 2', memberRole: 'CONTRACTOR' },
+    {
+ id: 'project-1', title: 'Project 1', memberRole: 'MANAGER' 
+},
+    {
+ id: 'project-2', title: 'Project 2', memberRole: 'CONTRACTOR' 
+},
   ],
   offset: 0,
   limit: 10,
@@ -102,7 +106,9 @@ describe('ProjectService', () => {
     it('should handle empty projects array', async () => {
       server.use(
         http.get('/api/v1/projects', () => {
-          return HttpResponse.json({ projects: [], offset: 0, limit: 100, total: 0 });
+          return HttpResponse.json({
+ projects: [], offset: 0, limit: 100, total: 0 
+});
         }),
       );
 

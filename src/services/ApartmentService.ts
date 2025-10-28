@@ -43,9 +43,10 @@ export default class ApartmentService {
   // Delete an apartment (returns boolean for success/failure)
   async deleteApartment(projectId: string, apartmentId: string): Promise<boolean> {
     try {
-      await apiClient.delete('/api/v1/projects/{projectId}/apartments/{apartmentId}', {
-        pathParams: { projectId, apartmentId },
-      });
+      await apiClient.delete(
+        '/api/v1/projects/{projectId}/apartments/{apartmentId}',
+        {pathParams: { projectId, apartmentId },},
+      );
       console.log('DELETE apartment successful', apartmentId);
       return true;
     } catch (error) {

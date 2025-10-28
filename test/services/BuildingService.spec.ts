@@ -15,7 +15,7 @@ const mockBuilding: Building = {
 };
 
 const handlers = [
-  http.post('/api/v1/projects/:projectId/properties/:propertyId/buildings', async ({ request, params }) => {
+  http.post('/api/v1/projects/:projectId/properties/:propertyId/buildings', async ({ request }) => {
     const body = (await request.json()) as Building;
     return HttpResponse.json(
       {
@@ -137,9 +137,7 @@ describe('BuildingService', () => {
     });
 
     it('should handle partial updates', async () => {
-      const partialUpdate: Building = {
-        title: 'Only Title Changed',
-      };
+      const partialUpdate: Building = {title: 'Only Title Changed',};
 
       const result = await buildingService.updateBuilding('project-1', 'building-1', partialUpdate);
       expect(result.title).toBe('Only Title Changed');

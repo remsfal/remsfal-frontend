@@ -28,9 +28,7 @@ export class ContractorService {
    * Get a single issue by its ID.
    */
   async getIssue(issueId: string): Promise<Issue> {
-    return apiClient.get(issuePath, {
-      pathParams: { issueId },
-    }) as Promise<Issue>;
+    return apiClient.get(issuePath, {pathParams: { issueId },}) as Promise<Issue>;
   }
 }
 export const contractorService = new ContractorService();

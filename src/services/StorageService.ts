@@ -17,9 +17,10 @@ export default class StorageService {
   // Get a single storage
   async getStorage(projectId: string, storageId: string): Promise<Storage> {
     try {
-      const storage = await apiClient.get('/api/v1/projects/{projectId}/storages/{storageId}', {
-        pathParams: { projectId, storageId },
-      });
+      const storage = await apiClient.get(
+        '/api/v1/projects/{projectId}/storages/{storageId}',
+        {pathParams: { projectId, storageId },},
+      );
       console.log('GET storage:', storage);
       return storage;
     } catch (error: any) {
@@ -41,9 +42,7 @@ export default class StorageService {
 
   // Delete a storage
   async deleteStorage(projectId: string, storageId: string): Promise<void> {
-    await apiClient.delete('/api/v1/projects/{projectId}/storages/{storageId}', {
-      pathParams: { projectId, storageId },
-    });
+    await apiClient.delete('/api/v1/projects/{projectId}/storages/{storageId}', {pathParams: { projectId, storageId },});
     console.log('DELETE storage:', storageId);
   }
 }

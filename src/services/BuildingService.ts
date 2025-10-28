@@ -16,9 +16,10 @@ export default class BuildingService {
 
   // Get a single building
   async getBuilding(projectId: string, buildingId: string): Promise<Building> {
-    const building = await apiClient.get('/api/v1/projects/{projectId}/buildings/{buildingId}', {
-      pathParams: { projectId, buildingId },
-    });
+    const building = await apiClient.get(
+      '/api/v1/projects/{projectId}/buildings/{buildingId}',
+      {pathParams: { projectId, buildingId },},
+    );
     console.log('GET building:', building);
     return building;
   }
@@ -36,9 +37,7 @@ export default class BuildingService {
 
   // Delete a building
   async deleteBuilding(projectId: string, buildingId: string): Promise<void> {
-    await apiClient.delete('/api/v1/projects/{projectId}/buildings/{buildingId}', {
-      pathParams: { projectId, buildingId },
-    });
+    await apiClient.delete('/api/v1/projects/{projectId}/buildings/{buildingId}', {pathParams: { projectId, buildingId },});
     console.log('DELETE building', buildingId);
   }
 }

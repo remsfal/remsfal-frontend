@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { apiClient } from '@/services/ApiClient';
@@ -17,11 +17,15 @@ const handlers = [
   }),
   http.put('/api/v1/test/:id', async ({ request, params }) => {
     const body = await request.json();
-    return HttpResponse.json({ ...body, id: params.id, updated: true });
+    return HttpResponse.json({
+ ...body, id: params.id, updated: true 
+});
   }),
   http.patch('/api/v1/test/:id', async ({ request, params }) => {
     const body = await request.json();
-    return HttpResponse.json({ ...body, id: params.id, patched: true });
+    return HttpResponse.json({
+ ...body, id: params.id, patched: true 
+});
   }),
   http.delete('/api/v1/test/:id', ({ params }) => {
     return HttpResponse.json({ id: params.id, deleted: true });
@@ -45,9 +49,7 @@ describe('ApiClient', () => {
     });
 
     it('should perform a GET request with path parameters', async () => {
-      const result = await apiClient.get('/api/v1/test/{id}', {
-        pathParams: { id: '123' },
-      });
+      const result = await apiClient.get('/api/v1/test/{id}', {pathParams: { id: '123' },});
       expect(result).toEqual({ id: '123', message: 'GET with path param' });
     });
 
@@ -60,9 +62,7 @@ describe('ApiClient', () => {
         }),
       );
 
-      const result = await apiClient.get('/api/v1/test', {
-        params: { filter: 'active' },
-      });
+      const result = await apiClient.get('/api/v1/test', {params: { filter: 'active' },});
       expect(result).toEqual({ filter: 'active' });
     });
   });
@@ -101,7 +101,9 @@ describe('ApiClient', () => {
         { name: 'Updated Item' },
         { pathParams: { id: '456' } },
       );
-      expect(result).toEqual({ name: 'Updated Item', id: '456', updated: true });
+      expect(result).toEqual({
+ name: 'Updated Item', id: '456', updated: true 
+});
     });
   });
 
@@ -112,15 +114,15 @@ describe('ApiClient', () => {
         { name: 'Patched Item' },
         { pathParams: { id: '789' } },
       );
-      expect(result).toEqual({ name: 'Patched Item', id: '789', patched: true });
+      expect(result).toEqual({
+ name: 'Patched Item', id: '789', patched: true 
+});
     });
   });
 
   describe('DELETE requests', () => {
     it('should perform a DELETE request with path parameters', async () => {
-      const result = await apiClient.delete('/api/v1/test/{id}', {
-        pathParams: { id: '999' },
-      });
+      const result = await apiClient.delete('/api/v1/test/{id}', {pathParams: { id: '999' },});
       expect(result).toEqual({ id: '999', deleted: true });
     });
   });
@@ -132,9 +134,7 @@ describe('ApiClient', () => {
 
     it('should throw error for missing path parameters', async () => {
       await expect(
-        apiClient.get('/api/v1/test/{id}', {
-          pathParams: {},
-        }),
+        apiClient.get('/api/v1/test/{id}', {pathParams: {},}),
       ).rejects.toThrow();
     });
   });
@@ -147,9 +147,7 @@ describe('ApiClient', () => {
         }),
       );
 
-      const result = await apiClient.get('/api/v1/test/{id}', {
-        pathParams: { id: 123 },
-      });
+      const result = await apiClient.get('/api/v1/test/{id}', {pathParams: { id: 123 },});
       expect(result.id).toBe('123'); // URL params are always strings
     });
 
@@ -163,9 +161,10 @@ describe('ApiClient', () => {
         }),
       );
 
-      const result = await apiClient.get('/api/v1/projects/{projectId}/items/{itemId}', {
-        pathParams: { projectId: 'proj-1', itemId: 'item-1' },
-      });
+      const result = await apiClient.get(
+        '/api/v1/projects/{projectId}/items/{itemId}',
+        {pathParams: { projectId: 'proj-1', itemId: 'item-1' },},
+      );
       expect(result).toEqual({ projectId: 'proj-1', itemId: 'item-1' });
     });
 
@@ -177,9 +176,7 @@ describe('ApiClient', () => {
         }),
       );
 
-      const result = await apiClient.get('/api/v1/test/{id}', {
-        pathParams: { id: 'test with spaces' },
-      });
+      const result = await apiClient.get('/api/v1/test/{id}', {pathParams: { id: 'test with spaces' },});
       // MSW decodes the param, so we get the original string back
       expect(result.id).toBe('test with spaces');
     });

@@ -57,12 +57,16 @@ describe('TenancyService with MSW', () => {
   });
 
   test('createTenancy is callable', async () => {
-    const tenancy = { id: 'new', active: true, tenants: [] };
+    const tenancy = {
+ id: 'new', active: true, tenants: [] 
+};
     await expect(tenancyService.createTenancy(tenancy)).resolves.not.toThrow();
   });
 
   test('updateTenancy is callable', async () => {
-    const tenancy = { id: 't1', active: true, tenants: [] };
+    const tenancy = {
+ id: 't1', active: true, tenants: [] 
+};
     await expect(tenancyService.updateTenancy(tenancy)).resolves.not.toThrow();
   });
 

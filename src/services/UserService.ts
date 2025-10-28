@@ -12,9 +12,7 @@ export default class UserService {
 
   // Get city info from zip code - API returns array, take first element
   async getCityFromZip(zip: string): Promise<AddressInfo> {
-    const result = await apiClient.get('/api/v1/address', {
-      params: { zip },
-    });
+    const result = await apiClient.get('/api/v1/address', {params: { zip },});
     // API returns an array of addresses, we take the first one
     const addresses = Array.isArray(result) ? result : [];
     return (addresses.length > 0 ? addresses[0] : {}) as AddressInfo;

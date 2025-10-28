@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import { propertyService, type PropertyUnit, type PropertyList, toRentableUnitView, EntityType } from '@/services/PropertyService';
+import {propertyService,
+  type PropertyUnit,
+  type PropertyList,
+  toRentableUnitView,
+  EntityType,} from '@/services/PropertyService';
 
 const mockProperty: PropertyUnit = {
   id: 'property-1',
@@ -17,12 +21,10 @@ const mockProperty: PropertyUnit = {
   },
 };
 
-const mockPropertyList: PropertyList = {
-  properties: [mockProperty],
-};
+const mockPropertyList: PropertyList = {properties: [mockProperty],};
 
 const handlers = [
-  http.post('/api/v1/projects/:projectId/properties', async ({ request, params }) => {
+  http.post('/api/v1/projects/:projectId/properties', async ({ request }) => {
     const body = (await request.json()) as PropertyUnit;
     return HttpResponse.json(
       {
@@ -164,9 +166,7 @@ describe('PropertyService', () => {
     });
 
     it('should handle partial updates', async () => {
-      const partialUpdate: PropertyUnit = {
-        title: 'Only Title Updated',
-      };
+      const partialUpdate: PropertyUnit = {title: 'Only Title Updated',};
 
       const result = await propertyService.updateProperty('project-1', 'property-1', partialUpdate);
       expect(result.title).toBe('Only Title Updated');

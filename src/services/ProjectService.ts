@@ -7,9 +7,7 @@ export type Project = ApiComponents['schemas']['ProjectJson'];
 export default class ProjectService {
   // Get projects with pagination
   async getProjects(offset = 0, limit = 10): Promise<ProjectList> {
-    const projectList = await apiClient.get('/api/v1/projects', {
-      params: { offset, limit },
-    });
+    const projectList = await apiClient.get('/api/v1/projects', {params: { offset, limit },});
     console.log('GET projects:', projectList);
     return projectList;
   }
@@ -38,9 +36,7 @@ export default class ProjectService {
   // Get a single project
   async getProject(projectId: string): Promise<Project> {
     try {
-      const project = await apiClient.get('/api/v1/projects/{projectId}', {
-        pathParams: { projectId },
-      });
+      const project = await apiClient.get('/api/v1/projects/{projectId}', {pathParams: { projectId },});
       console.log('project returned', project);
       return project;
     } catch (error: any) {
@@ -51,18 +47,14 @@ export default class ProjectService {
 
   // Update a project
   async updateProject(projectId: string, data: Project): Promise<Project> {
-    const updated = await apiClient.patch('/api/v1/projects/{projectId}', data, {
-      pathParams: { projectId },
-    });
+    const updated = await apiClient.patch('/api/v1/projects/{projectId}', data, {pathParams: { projectId },});
     console.log('PATCH update project:', updated);
     return updated;
   }
 
   // Delete a project
   async deleteProject(projectId: string): Promise<void> {
-    await apiClient.delete('/api/v1/projects/{projectId}', {
-      pathParams: { projectId },
-    });
+    await apiClient.delete('/api/v1/projects/{projectId}', {pathParams: { projectId },});
     console.log('DELETE project', projectId);
   }
 }
