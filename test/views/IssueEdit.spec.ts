@@ -25,13 +25,12 @@ describe("IssueEdit.vue", () => {
     wrapper = mount(IssueEdit, {
       global: {
         mocks: {
-          $route: {
-            params: { projectId: "1", issueId: "1" },
-          },
+          $route: { params: { projectId: "1", issueId: "1" } },
           $router: { go: vi.fn() },
         },
       },
     });
+    
 
     // Wait for onMounted or setup logic to finish
     if (wrapper.vm.loadIssue) {
