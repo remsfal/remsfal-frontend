@@ -1,12 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import {
-  propertyService,
+import {propertyService,
   type PropertyUnit,
   type PropertyList,
   toRentableUnitView,
-  EntityType,
-} from '@/services/PropertyService';
+  EntityType,} from '@/services/PropertyService';
 import { setupTestServer, testErrorHandling } from '../utils/testHelpers';
 
 const mockProperty: PropertyUnit = {
