@@ -1,19 +1,18 @@
-import {describe, it, expect, beforeEach, vi} from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import TaskView from '../../src/views/TaskView.vue';
-import {TaskService, StatusValues, TaskItemJson} from '../../src/services/TaskService';
+import IssueView from '../../src/views/IssueView.vue';
+import { issueService, StatusValues, type IssueItem } from '../../src/services/IssueService';
 
-type TaskViewVm = InstanceType<typeof TaskView> & { visible: boolean };
+type IssueViewVm = InstanceType<typeof IssueView> & { visible: boolean };
 
-describe('TaskView', () => {
+describe('IssueView', () => {
   let wrapper: VueWrapper;
 
   const projectId = '1';
   const owner = 'user1';
-  const service = new TaskService();
 
   beforeEach(() => {
-    wrapper = mount(TaskView, {
+    wrapper = mount(IssueView, {
       props: { projectId, owner },
       data() {
         return { visible: false }; // Initial visibility state
@@ -31,7 +30,7 @@ describe('TaskView', () => {
     it('sets "visible" to true when the button is clicked', async () => {
       const button = wrapper.find('.my-btn');
       await button.trigger('click');
-      expect((wrapper.vm as TaskViewVm).visible).toBe(true);
+      expect((wrapper.vm as IssueViewVm).visible).toBe(true);
     });
   });
 
@@ -54,37 +53,37 @@ describe('TaskView', () => {
     });
   });
 
-  describe('Task fetching', () => {
-    it('should return a list of tasks', async () => {
+  describe('Issue fetching', () => {
+    it('should return a list of issues', async () => {
       // Arrange
       const projectId = 'test-project';
-      const mockTasks: TaskItemJson[] = [
+      const mockIssues: IssueItem[] = [
         {
           id: '1',
-          title: 'Task 1',
-          name: 'task1',
+          title: 'Issue 1',
           status: StatusValues['OPEN'],
           owner: 'owner1',
         },
         {
           id: '2',
-          title: 'Task 2',
-          name: 'task2',
+          title: 'Issue 2',
           status: StatusValues['OPEN'],
           owner: 'owner1',
         },
       ];
-      const mockTaskList = { tasks: mockTasks };
+      const mockIssueList = {
+ issues: mockIssues, first: 0, size: 2, total: 2 
+};
 
       // Act
-      vi.spyOn(service, 'getTasks').mockImplementation(() => Promise.resolve(mockTaskList));
-      const result = await service.getTasks(projectId);
+      vi.spyOn(issueService, 'getIssues').mockImplementation(() => Promise.resolve(mockIssueList));
+      const result = await issueService.getIssues(projectId);
 
       // Assert
-      expect(result).toEqual(mockTaskList);
-      expect(result.tasks).toHaveLength(2);
-      expect(result.tasks[0].id).toBe('1');
-      expect(result.tasks[1].id).toBe('2');
+      expect(result).toEqual(mockIssueList);
+      expect(result.issues).toHaveLength(2);
+      expect(result.issues[0].id).toBe('1');
+      expect(result.issues[1].id).toBe('2');
     });
   });
 });

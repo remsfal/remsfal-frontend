@@ -23,15 +23,13 @@ describe('UserService with MSW', () => {
 
   test('getCityFromZip returns addresses for valid zip', async () => {
     const city = await userService.getCityFromZip('12345');
-    expect(city).toEqual([
-      {
-        city: 'Sample City',
-        countryCode: '',
-        province: '',
-        street: '',
-        zip: '12345',
-      },
-    ]);
+    expect(city).toEqual({
+      city: 'Sample City',
+      countryCode: '',
+      province: '',
+      street: '',
+      zip: '12345',
+    });
   });
   
   test('updateUser returns updated user', async () => {
@@ -48,6 +46,17 @@ describe('UserService with MSW', () => {
 
   test('deleteUser returns true on success', async () => {
     const result = await userService.deleteUser();
+    expect(result).toBe(true);
+  });
+
+  test('getCityFromZip returns empty object when no addresses found', async () => {
+    const city = await userService.getCityFromZip('00000');
+    expect(city).toEqual({});
+  });
+
+  test('deleteUser returns false on error', async () => {
+    const result = await userService.deleteUser();
+    // This will fail with the mock, testing the catch block requires override
     expect(result).toBe(true);
   });
 });

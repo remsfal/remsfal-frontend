@@ -189,24 +189,24 @@ const managerRoutes: RouteRecordRaw[] = [
        * --------------------------------------------------------------------
        */
       /* --------------------------------------------------------------------
-       * Task Views
+       * Issue Views
        * --------------------------------------------------------------------
        */
       {
-        path: 'tasks',
-        name: 'TaskOverview',
+        path: 'issues',
+        name: 'IssueOverview',
         props: (route: RouteLocationNormalizedLoaded) => ({
           projectId: route.params.projectId,
           owner: route.query.owner,
           status: route.query.status,
         }),
-        component: () => import('@/views/TaskView.vue'),
+        component: () => import('@/views/IssueView.vue'),
       },
       {
-        path: 'taskedit/:taskid',
-        name: 'TaskEdit',
+        path: 'issueedit/:issueId',
+        name: 'IssueEdit',
         props: true,
-        component: () => import('@/views/TaskEdit.vue'),
+        component: () => import('@/views/IssueEdit.vue'),
       },
       {
         path: 'chat',
