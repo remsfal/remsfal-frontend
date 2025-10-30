@@ -7,13 +7,13 @@ import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
-import { inboxService, type InboxMessage } from '@/services/InboxService';
-import { ref } from 'vue';
-
+import { computed } from 'vue';
+import { useInboxStore } from '@/stores/InboxStore'
 const { t } = useI18n();
 
 const sessionStore = useUserSessionStore();
 const projectStore = useProjectStore();
+const inboxStore = useInboxStore();
 
 const router = useRouter();
 
@@ -48,17 +48,11 @@ const onInboxClick = () => {
   router.push('/inbox');
 };
 
-const unreadCount = ref<number>(0);
-const loadUnreadCount = async () => {
-  try {
-    const data: InboxMessage[] = await inboxService.fetchInboxData();
-    unreadCount.value = data.filter((msg) => !msg.isRead).length;
-  } catch (err) {
-    console.error('Fehler beim Laden der Inbox-Daten:', err);
-    unreadCount.value = 0;
-  }
-};
-loadUnreadCount();
+const unreadCount = computed(() =>
+  inboxStore.messages
+    ? inboxStore.messages.filter(m => !m?.isRead).length
+    : 0
+)
 </script>
 
 <template>
