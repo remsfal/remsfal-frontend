@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="shadow rounded-xl p-4 flex items-center gap-4 bg-white">
+  <div class="shadow rounded-xl p-4 flex items-center gap-4 ">
     <div
       class="rounded-full p-3"
       :class="`bg-${color ?? 'blue'}-100 text-${color ?? 'blue'}-600`"
