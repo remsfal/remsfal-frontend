@@ -206,21 +206,17 @@ const recentActivities = [
     </h1>
 
     <!-- Dynamische Summary Cards -->
-    <Card class="mb-6 p-4">
-      <template #title>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-          <StatCard
-            v-for="(card, index) in statCards"
-            :key="index"
-            :icon="card.icon"
-            :title="card.title"
-            :value="card.value"
-            :subtext="card.subtext"
-            :color="card.color"
-          />
-        </div>
-      </template>
-    </Card>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <StatCard
+        v-for="(card, index) in statCards"
+        :key="index"
+        :icon="card.icon"
+        :title="card.title"
+        :value="card.value"
+        :subtext="card.subtext"
+        :color="card.color"
+      />
+    </div>
 
     <!-- Aufgabenstatus -->
     <Card class="mb-6 p-4">
