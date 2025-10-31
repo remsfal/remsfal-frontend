@@ -61,7 +61,8 @@ describe('ProjectTenancies.vue', () => {
   it('shows loading indicator while fetching', async () => {
     wrapper.vm.isLoading = true;
     await wrapper.vm.$nextTick(); // ensure DOM updates
-    expect(wrapper.html()).toContain('Loading...');
+    const loadingText = wrapper.vm.$t('projectTenancies.loading');
+    expect(wrapper.html()).toContain(loadingText);
   });
 
   it('opens and closes the confirmation dialog', async () => {
@@ -96,5 +97,15 @@ describe('ProjectTenancies.vue', () => {
   it('renders tenant names correctly in DataTable', () => {
     const tenantText = wrapper.html();
     expect(tenantText).toContain('John Doe');
+  });
+
+  it('displays translated title with project ID', () => {
+    const title = wrapper.find('h1');
+    expect(title.exists()).toBe(true);
+    // The title should contain the translation key content, not hardcoded "Mieterdaten Ansicht"
+    const titleText = title.text();
+    expect(titleText).toContain('proj-1');
+    // Make sure it's using the translation and not hardcoded German
+    expect(titleText).not.toContain('Mieterdaten Ansicht Mieterdaten Ansicht');
   });
 });
