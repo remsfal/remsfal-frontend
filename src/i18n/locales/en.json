@@ -140,7 +140,7 @@
   "rentableUnits.table.description": "Description",
   "rentableUnits.table.tenant": "Tenant",
   "rentableUnits.table.area": "Area",
-  "rentableUnits.view.title": "Object Data View",
+  "rentableUnits.view.title": "Rentable Units",
   "toolbar.inbox": "Inbox",
   "inbox.title": "Inbox",
   "inbox.loading": "Loading messages…",
