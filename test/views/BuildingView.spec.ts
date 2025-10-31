@@ -135,6 +135,6 @@ describe('BuildingView.vue', () => {
     wrapper.vm.title = 'Updated Title';
     await wrapper.vm.save();
 
-    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units/building/unit1');
+    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units');
   });
 });

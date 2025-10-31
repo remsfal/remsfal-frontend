@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { storageService, type Storage } from '@/services/StorageService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import { handleCancel, navigateToObjects, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -120,7 +120,7 @@ const save = async () => {
       detail: 'Storage successfully saved.',
       life: 6000,
     });
-    router.push(`/projects/${props.projectId}/units/storage/${props.unitId}`);
+    navigateToObjects(router, props.projectId);
   } catch (err) {
     console.error('Error saving storage:', err);
     showSavingErrorToast(toast, 'Storage could not be saved.');

@@ -118,6 +118,6 @@ describe('CommercialView.vue', () => {
     wrapper.vm.title = 'Updated Title';
     await wrapper.vm.save();
 
-    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units/commercial/commercial1');
+    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units');
   });
 });

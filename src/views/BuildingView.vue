@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { buildingService } from '@/services/BuildingService';
 import type { components } from '../../src/services/api/platform-schema';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import { handleCancel, navigateToObjects, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{ projectId: string; unitId: string }>();
 const router = useRouter();
@@ -368,7 +368,7 @@ const save = () => {
         detail: 'Gebäude erfolgreich gespeichert.',
         life: 3000,
       });
-      router.push(`/projects/${props.projectId}/units/building/${props.unitId}`);
+      navigateToObjects(router, props.projectId);
     })
     .catch((err) => {
       console.error('Fehler beim Speichern:', err);

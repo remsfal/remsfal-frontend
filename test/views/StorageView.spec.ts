@@ -97,7 +97,7 @@ describe('StorageView.vue', () => {
     await cancelBtn.trigger('click');
 
     expect(confirmSpy).toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith('/project/project1/objects');
+    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units');
 
     confirmSpy.mockRestore();
   });
@@ -109,6 +109,6 @@ describe('StorageView.vue', () => {
     await wrapper.vm.save();
     await flushPromises();
 
-    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units/storage/storage1');
+    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units');
   });
 });

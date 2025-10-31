@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { propertyService, type PropertyUnit } from '@/services/PropertyService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import { handleCancel, navigateToObjects, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -206,7 +206,7 @@ const save = async () => {
       detail: 'Eigentum erfolgreich gespeichert.',
       life: 6000,
     });
-    router.push(`/projects/${props.projectId}/units/property/${props.unitId}`);
+    navigateToObjects(router, props.projectId);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
     showSavingErrorToast(toast, 'Eigentum konnte nicht gespeichert werden.');
