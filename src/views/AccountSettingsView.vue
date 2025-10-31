@@ -1,6 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
@@ -11,6 +11,7 @@ import Message from 'primevue/message';
 import type {paths} from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
 import { RouterLink } from 'vue-router'
+
 
 const { t } = useI18n();
 
@@ -80,15 +81,29 @@ const errorMessage = ref({
   countryCode: '',
 });
 
-onMounted(() => {
+onMounted(async () => {
   const sessionStore = useUserSessionStore();
+  const userService = new UserService();
 
-  if (!userProfile.value) {
-    userProfile.value = {};  // initialize as empty object so you can safely set email
+  try {
+    const profile = await userService.getUser();
+    if (profile) {
+      userProfile.value = profile;
+      editedUserProfile.value = { ...profile };
+
+      // Wenn die E-Mail aus der Session kommt, setze sie hier einmalig:
+      if (!editedUserProfile.value.email && sessionStore.user?.email) {
+        editedUserProfile.value.email = sessionStore.user.email;
+      }
+
+      if (userProfile.value.address) {
+        addressProfile.value = userProfile.value.address;
+        editedAddress.value = { ...userProfile.value.address };
+      }
+    }
+  } catch (error) {
+    console.error('Das Benutzerprofil konnte nicht geladen werden:', error);
   }
-  userProfile.value.email = sessionStore.user?.email || '';
-
-  fetchUserProfile();
 });
 
 async function fetchUserProfile() {
@@ -121,40 +136,165 @@ function getUpdatedAddressValue(field: keyof Address): string {
     (addressProfile.value as Record<keyof Address, unknown>)?.[field];
   return typeof value === 'string' ? value : '';
 }
+// Email validation and change tracking (Neu)
+const emailError = ref('');
+
+function onEmailInput() {
+  const v = editedUserProfile.value.email ?? '';
+  emailError.value =
+    v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+      ? ''
+      : 'Bitte gültige E-Mail eingeben!';
+  changes.value = true; // sorgt dafür, dass der Speichern-Button erscheint
+}
+function validateEmail() {
+   const v = editedUserProfile.value.email?.trim() ?? '';
+  if (!v) {
+    emailError.value = 'Bitte geben Sie eine E-Mail ein!';
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+    emailError.value = 'Bitte geben Sie eine gültige E-Mail ein!';
+  } else {
+    emailError.value = '';
+  }
+  // Speichern/Abbrechen sichtbar wird:
+  changes.value = true;
+}
+
 
 
 async function saveProfile(): Promise<void> {
+  // 1) Validierung (E-Mail + sonstige Errors)
+  validateEmail();
+  const hasOtherErrors = Object.values(errorMessage.value).some((m) => m !== '');
+  if (emailError.value || hasOtherErrors) return;
+
   try {
     const userService = new UserService();
 
-    const user: Partial<User> = {
-      id: userProfile.value?.id || '',
-      firstName: getUpdatedValue('firstName'),
-      businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
-      lastName: getUpdatedValue('lastName'),
-      mobilePhoneNumber: getUpdatedValue('mobilePhoneNumber'),
-      privatePhoneNumber: getUpdatedValue('privatePhoneNumber'),
-    };
+    // 2) Patch aus Unterschieden bauen (ohne id!)
+    const baseUser = (userProfile.value ?? {}) as UserGetResponse;
+    const editedUser = (editedUserProfile.value ?? {}) as Partial<UserPatchRequestBody>;
 
-    if (editedAddress.value && validateAddress(editedAddress.value)) {
-      const address: Address = {
-        street: getUpdatedAddressValue('street'),
-        city: getUpdatedAddressValue('city'),
-        zip: getUpdatedAddressValue('zip'),
-        province: getUpdatedAddressValue('province'),
-        countryCode: getUpdatedAddressValue('countryCode'),
+    // User-Felder, die in PATCH erlaubt sind:
+    const userFields: Array<keyof UserPatchRequestBody> = [
+      'firstName',
+      'lastName',
+      'email',
+      'mobilePhoneNumber',
+      'businessPhoneNumber',
+      'privatePhoneNumber',
+      // ggf. weitere erlaubte Felder deiner API hier ergänzen
+    ];
+
+    const editedFiltered: Partial<UserPatchRequestBody> = {};
+    userFields.forEach((f) => {
+      // @ts-ignore – baseUser stammt aus GET, editedUser aus PATCH-Body
+      const newVal = editedUser[f];
+      // @ts-ignore
+      const oldVal = (baseUser as any)[f];
+      if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+        // leere Strings nicht senden
+        if (!(typeof newVal === 'string' && newVal.trim() === '')) {
+          (editedFiltered as any)[f] = newVal;
+        }
+      }
+    });
+
+    // 3) Adresse nur mitsenden, wenn sie sich geändert hat UND vollständig/valide ist
+    let addressPatch: Partial<Address> | undefined;
+    if (addressProfile.value || Object.keys(editedAddress.value ?? {}).length) {
+      const addrDiff = diff<Address>(
+        (addressProfile.value ?? {}) as Address,
+        (editedAddress.value ?? {}) as Address,
+      );
+
+      // optional: nur wenn alle relevanten Felder gesetzt sind
+      const candidate: Partial<Address> = {
+        street: addrDiff.street ?? editedAddress.value?.street,
+        zip: addrDiff.zip ?? editedAddress.value?.zip,
+        city: addrDiff.city ?? editedAddress.value?.city,
+        province: addrDiff.province ?? editedAddress.value?.province,
+        countryCode: addrDiff.countryCode ?? editedAddress.value?.countryCode,
       };
-      user.address = address;
+
+      // Wenn irgendetwas an der Adresse wirklich geändert wurde → mitsenden
+      const hasAddrChanges =
+        Object.keys(candidate).length > 0 &&
+        !compareObjects(addressProfile.value ?? ({} as Address), editedAddress.value ?? ({} as Address));
+
+      if (hasAddrChanges && validateAddress(candidate)) {
+        addressPatch = clean(candidate);
+      }
     }
 
-    const updatedUser = await userService.updateUser(user);
-    console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
-    saveSuccess.value = true;
-  } catch (e) {
-    console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
-    alert('Fehler beim Aktualisieren des Benutzerprofils!');
-    saveError.value = true;
+    // 4) Finalen PATCH-Body zusammenstellen
+    const patchBody: Partial<UserPatchRequestBody> = clean({
+      ...editedFiltered,
+      ...(addressPatch ? { address: addressPatch as any } : {}),
+    });
+
+    if (Object.keys(patchBody).length === 0) {
+      // Nichts geändert – Save-Dialog trotzdem positiv?
+      saveSuccess.value = true;
+      changes.value = false;
+      return;
+    }
+
+    // 5) PATCH call
+    const updatedUser = await userService.updateUser(patchBody); // <-- siehe UserService unten
+
+    // --- NEU: Spezialbehandlung für E-Mail-Änderung ---
+    const requestedEmail = patchBody.email;
+    const emailChangeRequested = typeof requestedEmail === 'string' && requestedEmail.trim() !== '';
+
+    if (updatedUser) {
+  userProfile.value = updatedUser;
+}
+
+ if (emailChangeRequested) {
+    const serverEmail = updatedUser.email ?? '';
+    if (serverEmail.trim() !== requestedEmail.trim()) {
+      // Backend hält die alte E-Mail bis zur Verifizierung zurück.
+      // 1) Eingabefeld soll die gewünschte neue E-Mail behalten,
+      // 2) Erfolgstext anpassen.
+      editedUserProfile.value = { ...updatedUser, email: requestedEmail };
+
+// Header sofort aktualisieren (ohne refresh)
+      const sessionStore = useUserSessionStore();
+      sessionStore.updateUser({ email: requestedEmail as string });
+
+     alert(
+          'Wir haben Ihnen einen Bestätigungslink an die neue E-Mail geschickt. ' +
+            'Bis zur Bestätigung bleibt die alte E-Mail im System aktiv.'
+        );
+
+      saveSuccess.value = true;
+      saveError.value = false;
+      changes.value = false;
+      return; // Wichtig: kein refreshSessionState() hier
+    }
   }
+
+// Normalfall (keine E-Mail-Verifizierung nötig)
+    editedUserProfile.value = { ...updatedUser };
+
+{
+  const sessionStore = useUserSessionStore();
+  await sessionStore.refreshSessionState();
+}
+  saveSuccess.value = true;
+  saveError.value = false;
+  changes.value = false;
+}
+catch (e: any) {
+  console.error('Fehler beim Aktualisieren des Benutzerprofils:', e);
+  const serverMsg =
+    e?.response?.data?.message ||
+    e?.message ||
+    'Es ist ein unerwarteter Fehler beim Speichern aufgetreten.';
+  alert(serverMsg);
+  saveError.value = true;
+}
 }
 
 function validateAddress(address: Partial<Address>): boolean {
@@ -344,10 +484,55 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
   return true;
 }
 
-// Check if any error message is not empty to disable save button
+// Entfernt undefined, null, '' rekursiv
+function clean<T extends Record<string, any>>(obj: T): T {
+  const out: any = Array.isArray(obj) ? [] : {};
+  Object.entries(obj).forEach(([k, v]) => {
+    if (v === undefined || v === null) return;
+    if (typeof v === 'string' && v.trim() === '') return;
+    if (typeof v === 'object' && v !== null) {
+      const nested = clean(v as any);
+      if (Object.keys(nested).length === 0) return;
+      out[k] = nested;
+    } else {
+      out[k] = v;
+    }
+  });
+  return out;
+}
+
+// Liefert nur Felder, die sich geändert haben (shallow)
+function diff<T extends Record<string, any>>(orig: T, edited: T): Partial<T> {
+  const patch: Partial<T> = {};
+  Object.keys(edited || {}).forEach((key) => {
+    const k = key as keyof T;
+    if (JSON.stringify(edited?.[k]) !== JSON.stringify(orig?.[k])) {
+      (patch as any)[k] = edited?.[k];
+    }
+  });
+  return patch;
+}
+
+// Check if any error message or email error is not empty to disable save button
 const isDisabled = computed(() => {
-  return Object.values(errorMessage.value).some((message) => message !== '');
+  const hasOtherErrors = Object.values(errorMessage.value).some((message) => message !== '');
+  const emailInvalid = emailError.value !== '';
+  return hasOtherErrors || emailInvalid || !changes.value;
 });
+
+watch(
+  [editedUserProfile, editedAddress],
+  ([newUser, newAddr], [oldUser, oldAddr]) => {
+    // vergleiche, ob sich irgendwas geändert hat
+    if (
+      !compareObjects(userProfile.value || {}, newUser as User) ||
+      !compareObjects(addressProfile.value || {}, newAddr as Address)
+    ) {
+      changes.value = true;
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <template>
@@ -403,9 +588,30 @@ const isDisabled = computed(() => {
               </div>
 
               <div class="input-container">
-                <label class="label" for="eMail">E-Mail:</label>
-                <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
-                <Message class="error" size="small" severity="error" variant="simple" />
+              
+<label class="label" for="eMail">E-Mail:</label>
+<InputText
+  id="eMail"
+  name="email"
+  type="email"
+  inputmode="email"
+  autocomplete="email"
+  v-model="editedUserProfile.email"
+  required
+  :invalid="emailError !== ''"
+  @input="validateEmail"
+  @blur="validateEmail"
+/>
+<Message
+  class="error"
+  :class="{ active: emailError }"
+  size="small"
+  severity="error"
+  variant="simple"
+>
+  {{ emailError }}
+</Message>
+
               </div>
               <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
@@ -611,7 +817,7 @@ const isDisabled = computed(() => {
             </RouterLink>
           </Button>
           <Button
-            v-if="changes"
+            v-show="changes"
             type="button"
             icon="pi pi-user-edit"
             class="save-button btn"
@@ -620,7 +826,7 @@ const isDisabled = computed(() => {
             @click="saveProfile"
           />
           <Button
-            v-if="changes"
+            v-show="changes"
             type="button"
             icon="pi pi-times"
             class="cancel-button btn"
