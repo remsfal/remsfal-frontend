@@ -97,7 +97,10 @@ describe('StorageView.vue', () => {
     await cancelBtn.trigger('click');
 
     expect(confirmSpy).toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith('/project/project1/objects');
+    expect(mockPush).toHaveBeenCalledWith({ 
+      name: 'RentableUnits', 
+      params: { projectId: 'project1' } 
+    });
 
     confirmSpy.mockRestore();
   });
