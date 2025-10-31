@@ -97,8 +97,18 @@ describe('StorageView.vue', () => {
     await cancelBtn.trigger('click');
 
     expect(confirmSpy).toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith('/project/project1/objects');
+    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units');
 
     confirmSpy.mockRestore();
+  });
+
+  it('redirects to correct storage view path after successful save', async () => {
+    mockPush.mockClear();
+    wrapper.vm.title = 'Updated Title';
+    
+    await wrapper.vm.save();
+    await flushPromises();
+
+    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units');
   });
 });
