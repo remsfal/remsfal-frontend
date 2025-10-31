@@ -9,7 +9,7 @@ export default class UserService {
   private static readonly ADDRESS_ENDPOINT = '/api/v1/address' as const;
 
   // Get current user data, typed from OpenAPI
-  async getUser() {
+  async getUser(): Promise<UserGetResponse> {
     return typedRequest<typeof UserService.USER_ENDPOINT, 'get'>(
       'get',
       UserService.USER_ENDPOINT
@@ -25,8 +25,7 @@ export default class UserService {
     );
   }
 
-  // Update user with schema-driven request body
-   async updateUser(updatedUser: Partial<UserPatchRequestBody>) {
+  async updateUser(updatedUser: Partial<UserPatchRequestBody>) {
     await typedRequest<typeof UserService.USER_ENDPOINT, 'patch'>(
       'patch',
       UserService.USER_ENDPOINT,
@@ -36,6 +35,7 @@ export default class UserService {
     // Immer den frischen Stand laden (falls Backend 204/boolean/alten Stand liefert)
     return this.getUser();
   }
+
 
   // Delete user, returns boolean success
   async deleteUser() {

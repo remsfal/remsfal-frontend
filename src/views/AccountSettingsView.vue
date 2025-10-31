@@ -81,32 +81,6 @@ const errorMessage = ref({
   countryCode: '',
 });
 
-// ---- Helpers: Deep-Copy, Normalisierung, Diff-Check ----
-function deepCopy<T>(o: T): T {
-  return JSON.parse(JSON.stringify(o));
-}
-
-// Felder, die wirklich persistiert werden
-const USER_KEYS = ['firstName','lastName','email','mobilePhoneNumber','businessPhoneNumber','privatePhoneNumber'] as const;
-const ADDR_KEYS = ['street','zip','city','province','countryCode'] as const;
-
-// Normalisierung für robuste Vergleiche
-function norm(v: any) {
-  if (v == null) return '';
-  if (typeof v === 'string') return v.trim();
-  return v;
-}
-
-function hasDiff(base: Record<string, any> | null | undefined, edited: Record<string, any> | null | undefined, keys: readonly string[]) {
-  const b = base ?? {};
-  const e = edited ?? {};
-  for (const k of keys) {
-    if (norm(e[k]) !== norm(b[k])) return true;
-  }
-  return false;
-}
-
-
 onMounted(async () => {
   const sessionStore = useUserSessionStore();
   const userService = new UserService();
@@ -115,23 +89,22 @@ onMounted(async () => {
     const profile = await userService.getUser();
     if (profile) {
       userProfile.value = profile;
-      editedUserProfile.value = deepCopy(profile); // <-- statt { ...profile }
+      editedUserProfile.value = { ...profile };
 
-      // E-Mail einmalig aus Session übernehmen, falls leer
+      // Wenn die E-Mail aus der Session kommt, setze sie hier einmalig:
       if (!editedUserProfile.value.email && sessionStore.user?.email) {
         editedUserProfile.value.email = sessionStore.user.email;
       }
 
       if (userProfile.value.address) {
         addressProfile.value = userProfile.value.address;
-        editedAddress.value = deepCopy(userProfile.value.address); // <-- statt { ... }
+        editedAddress.value = { ...userProfile.value.address };
       }
     }
   } catch (error) {
     console.error('Das Benutzerprofil konnte nicht geladen werden:', error);
   }
 });
-
 
 async function fetchUserProfile() {
   try {
@@ -183,6 +156,8 @@ function validateEmail() {
   } else {
     emailError.value = '';
   }
+  // Speichern/Abbrechen sichtbar wird:
+  changes.value = true;
 }
 
 
@@ -200,6 +175,7 @@ async function saveProfile(): Promise<void> {
     const baseUser = (userProfile.value ?? {}) as UserGetResponse;
     const editedUser = (editedUserProfile.value ?? {}) as Partial<UserPatchRequestBody>;
 
+    // User-Felder, die in PATCH erlaubt sind:
     const userFields: Array<keyof UserPatchRequestBody> = [
       'firstName',
       'lastName',
@@ -207,20 +183,24 @@ async function saveProfile(): Promise<void> {
       'mobilePhoneNumber',
       'businessPhoneNumber',
       'privatePhoneNumber',
+      // ggf. weitere erlaubte Felder deiner API hier ergänzen
     ];
 
     const editedFiltered: Partial<UserPatchRequestBody> = {};
     userFields.forEach((f) => {
-      const newVal = editedUser[f] as any;
+      // @ts-ignore – baseUser stammt aus GET, editedUser aus PATCH-Body
+      const newVal = editedUser[f];
+      // @ts-ignore
       const oldVal = (baseUser as any)[f];
       if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+        // leere Strings nicht senden
         if (!(typeof newVal === 'string' && newVal.trim() === '')) {
           (editedFiltered as any)[f] = newVal;
         }
       }
     });
 
-    // 3) Adresse (optional) – sende nur echte Änderungen
+    // 3) Adresse nur mitsenden, wenn sie sich geändert hat UND vollständig/valide ist
     let addressPatch: Partial<Address> | undefined;
     if (addressProfile.value || Object.keys(editedAddress.value ?? {}).length) {
       const addrDiff = diff<Address>(
@@ -228,6 +208,7 @@ async function saveProfile(): Promise<void> {
         (editedAddress.value ?? {}) as Address,
       );
 
+      // optional: nur wenn alle relevanten Felder gesetzt sind
       const candidate: Partial<Address> = {
         street: addrDiff.street ?? editedAddress.value?.street,
         zip: addrDiff.zip ?? editedAddress.value?.zip,
@@ -236,6 +217,7 @@ async function saveProfile(): Promise<void> {
         countryCode: addrDiff.countryCode ?? editedAddress.value?.countryCode,
       };
 
+      // Wenn irgendetwas an der Adresse wirklich geändert wurde → mitsenden
       const hasAddrChanges =
         Object.keys(candidate).length > 0 &&
         !compareObjects(addressProfile.value ?? ({} as Address), editedAddress.value ?? ({} as Address));
@@ -245,58 +227,75 @@ async function saveProfile(): Promise<void> {
       }
     }
 
-    // 4) Finalen PATCH-Body
+    // 4) Finalen PATCH-Body zusammenstellen
     const patchBody: Partial<UserPatchRequestBody> = clean({
       ...editedFiltered,
       ...(addressPatch ? { address: addressPatch as any } : {}),
     });
 
     if (Object.keys(patchBody).length === 0) {
-      // Nichts geändert
+      // Nichts geändert – Save-Dialog trotzdem positiv?
       saveSuccess.value = true;
       changes.value = false;
       return;
     }
 
-    // 5) PATCH call (mit Logs zum Debuggen)
-    console.log('[SAVE] patchBody =', patchBody);
-    const updatedUser = await userService.updateUser(patchBody);
-    console.log('[SAVE] response.updatedUser =', updatedUser);
+    // 5) PATCH call
+    const updatedUser = await userService.updateUser(patchBody); // <-- siehe UserService unten
 
-    // 6) (Failsafe) Frisch vom Server nachladen — falls Backend verzögert schreibt
-    const fresh = await userService.getUser();
-    console.log('[SAVE] after GET /user =', fresh?.email);
+    // --- NEU: Spezialbehandlung für E-Mail-Änderung ---
+    const requestedEmail = patchBody.email;
+    const emailChangeRequested = typeof requestedEmail === 'string' && requestedEmail.trim() !== '';
 
-    // 7) Baseline aktualisieren (bevorzugt fresh, sonst updatedUser)
-    const finalUser = fresh ?? updatedUser;
-    if (finalUser) {
-      userProfile.value = { ...(userProfile.value ?? {}), ...finalUser };
-      if ((finalUser as any).address) {
-        addressProfile.value = { ...(addressProfile.value ?? {}), ...(finalUser as any).address };
-      }
+    if (updatedUser) {
+  userProfile.value = updatedUser;
+}
 
-      // 8) Formular aus neuer Baseline neu befüllen (Deep-Copy)
-      editedUserProfile.value = deepCopy(userProfile.value);
-      editedAddress.value = deepCopy(addressProfile.value ?? {});
+ if (emailChangeRequested) {
+    const serverEmail = updatedUser.email ?? '';
+    if (serverEmail.trim() !== requestedEmail.trim()) {
+      // Backend hält die alte E-Mail bis zur Verifizierung zurück.
+      // 1) Eingabefeld soll die gewünschte neue E-Mail behalten,
+      // 2) Erfolgstext anpassen.
+      editedUserProfile.value = { ...updatedUser, email: requestedEmail };
 
-      // 9) Pinia-Store synchronisieren (kein refreshSessionState hier!)
+// Header sofort aktualisieren (ohne refresh)
       const sessionStore = useUserSessionStore();
-      sessionStore.updateUser(userProfile.value as Partial<import('@/stores/UserSession').User>);
+      sessionStore.updateUser({ email: requestedEmail as string });
 
-      // 10) UI-Flags
+     alert(
+          'Wir haben Ihnen einen Bestätigungslink an die neue E-Mail geschickt. ' +
+            'Bis zur Bestätigung bleibt die alte E-Mail im System aktiv.'
+        );
+
       saveSuccess.value = true;
       saveError.value = false;
       changes.value = false;
+      return; // Wichtig: kein refreshSessionState() hier
     }
-  } catch (e: any) {
-    console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
-    const serverMsg = e?.response?.data?.message || e?.message || 'Fehler beim Aktualisieren des Benutzerprofils!';
-    alert(serverMsg);
-    saveError.value = true;
   }
+
+// Normalfall (keine E-Mail-Verifizierung nötig)
+    editedUserProfile.value = { ...updatedUser };
+
+{
+  const sessionStore = useUserSessionStore();
+  await sessionStore.refreshSessionState();
 }
-
-
+  saveSuccess.value = true;
+  saveError.value = false;
+  changes.value = false;
+}
+catch (e: any) {
+  console.error('Fehler beim Aktualisieren des Benutzerprofils:', e);
+  const serverMsg =
+    e?.response?.data?.message ||
+    e?.message ||
+    'Es ist ein unerwarteter Fehler beim Speichern aufgetreten.';
+  alert(serverMsg);
+  saveError.value = true;
+}
+}
 
 function validateAddress(address: Partial<Address>): boolean {
   return Object.values(address)
@@ -318,15 +317,13 @@ function deleteAccount() {
 
 // Reverts all changes made to the user and address profiles
 function cancel() {
-  editedUserProfile.value = deepCopy(userProfile.value ?? {});
-  editedAddress.value = deepCopy(addressProfile.value ?? {});
+  editedUserProfile.value = { ...userProfile.value };
+  editedAddress.value = { ...addressProfile.value };
   changes.value = false;
-  emailError.value = '';
   Object.keys(errorMessage.value).forEach((key) => {
     errorMessage.value[key as keyof typeof errorMessage.value] = '';
   });
 }
-
 
 // Validates a specific field in the user or address profile based on its type and content.
 // Uses regex patterns to enforce rules:
@@ -527,15 +524,18 @@ const isDisabled = computed(() => {
 });
 
 watch(
-  [editedUserProfile, editedAddress, userProfile, addressProfile],
-  () => {
-    const userDirty = hasDiff(userProfile.value, editedUserProfile.value, USER_KEYS);
-    const addrDirty = hasDiff(addressProfile.value, editedAddress.value, ADDR_KEYS);
-    changes.value = userDirty || addrDirty;
+  [editedUserProfile, editedAddress],
+  ([newUser, newAddr], [oldUser, oldAddr]) => {
+    // vergleiche, ob sich irgendwas geändert hat
+    if (
+      !compareObjects(userProfile.value || {}, newUser as User) ||
+      !compareObjects(addressProfile.value || {}, newAddr as Address)
+    ) {
+      changes.value = true;
+    }
   },
-  { deep: true, immediate: true }
+  { deep: true }
 );
-
 </script>
 
 <template>
