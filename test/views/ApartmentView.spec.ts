@@ -3,9 +3,11 @@ import { mount, flushPromises } from '@vue/test-utils'
 import ApartmentView from '../../src/views/ApartmentView.vue'
 import { apartmentService } from '../../src/services/ApartmentService'
 
+const mockPush = vi.fn();
+
 vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: vi.fn() }),}))
 
-vi.mock('vue-router', () => ({useRouter: () => ({ push: vi.fn() }),}))
+vi.mock('vue-router', () => ({useRouter: () => ({ push: mockPush }),}))
 
 describe('ApartmentView.vue', () => {
   let wrapper: any
@@ -65,5 +67,15 @@ describe('ApartmentView.vue', () => {
         description: 'Updated Description'
       })
     )
+  })
+
+  it('redirects to correct apartment view path after successful save', async () => {
+    mockPush.mockClear()
+    wrapper.vm.title = 'Updated Title'
+    
+    await wrapper.vm.save()
+    await flushPromises()
+
+    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units/apartment/unit1')
   })
 })

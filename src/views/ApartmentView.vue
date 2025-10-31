@@ -142,7 +142,7 @@ const save = async () => {
       detail: 'Apartment erfolgreich gespeichert.',
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/apartment/${props.unitId}`);
+    router.push(`/projects/${props.projectId}/units/apartment/${props.unitId}`);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
     showSavingErrorToast(toast, 'Apartment konnte nicht gespeichert werden.');

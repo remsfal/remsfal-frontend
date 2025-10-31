@@ -135,7 +135,7 @@ const save = async () => {
       detail: t('commercialUnit.saveSuccessDetail'),
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/commercial/${props.unitId}`);
+    router.push(`/projects/${props.projectId}/units/commercial/${props.unitId}`);
   } catch (err) {
     console.error('Error saving commercial unit:', err);
     showSavingErrorToast(toast, t('commercialUnit.saveError'));

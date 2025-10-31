@@ -206,7 +206,7 @@ const save = async () => {
       detail: 'Eigentum erfolgreich gespeichert.',
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/property/${props.unitId}`);
+    router.push(`/projects/${props.projectId}/units/property/${props.unitId}`);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
     showSavingErrorToast(toast, 'Eigentum konnte nicht gespeichert werden.');

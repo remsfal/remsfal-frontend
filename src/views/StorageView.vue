@@ -120,7 +120,7 @@ const save = async () => {
       detail: 'Storage successfully saved.',
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/storage/${props.unitId}`);
+    router.push(`/projects/${props.projectId}/units/storage/${props.unitId}`);
   } catch (err) {
     console.error('Error saving storage:', err);
     showSavingErrorToast(toast, 'Storage could not be saved.');

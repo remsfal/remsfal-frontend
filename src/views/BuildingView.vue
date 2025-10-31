@@ -368,7 +368,7 @@ const save = () => {
         detail: 'Gebäude erfolgreich gespeichert.',
         life: 3000,
       });
-      router.push(`/project/${props.projectId}/building/${props.unitId}`);
+      router.push(`/projects/${props.projectId}/units/building/${props.unitId}`);
     })
     .catch((err) => {
       console.error('Fehler beim Speichern:', err);
