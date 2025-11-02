@@ -44,8 +44,10 @@ async function fetchPropertyTree(projectId: string) {
 function expandAll() {
   const expandRecursive = (nodes: RentableUnitTreeNode[], expanded: Record<string, boolean>) => {
     nodes.forEach((node) => {
-      expanded[node.key] = true;
-      if (node.children?.length) expandRecursive(node.children, expanded);
+      if (node.children?.length) {
+        expanded[node.key] = true;
+        expandRecursive(node.children, expanded);
+      }
     });
   };
   const newExpandedRows: Record<string, boolean> = {};

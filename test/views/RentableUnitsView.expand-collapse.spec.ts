@@ -17,18 +17,24 @@ describe('RentableUnitsView Expand/Collapse', () => {
       properties: [
         {
           key: '1',
-          data: { type: 'PROPERTY', title: 'Property 1', usable_space: 100 },
+          data: {
+ type: 'PROPERTY', title: 'Property 1', usable_space: 100 
+},
           children: [
             {
               key: '1-1',
-              data: { type: 'BUILDING', title: 'Building 1', usable_space: 50 },
+              data: {
+ type: 'BUILDING', title: 'Building 1', usable_space: 50 
+},
               children: [],
             },
           ],
         },
         {
           key: '2',
-          data: { type: 'PROPERTY', title: 'Property 2', usable_space: 200 },
+          data: {
+ type: 'PROPERTY', title: 'Property 2', usable_space: 200 
+},
           children: [],
         },
       ],
@@ -44,12 +50,14 @@ describe('RentableUnitsView Expand/Collapse', () => {
 
     await flushPromises();
 
-    // Initially, all nodes should be expanded (due to expandAll() in onMounted)
+    // Initially, all nodes with children should be expanded (due to expandAll() in onMounted)
     const vm = wrapper.vm as any;
     expect(Object.keys(vm.expandedKeys).length).toBeGreaterThan(0);
+    // Only node '1' has children, so only it should be marked as expanded
     expect(vm.expandedKeys['1']).toBe(true);
-    expect(vm.expandedKeys['1-1']).toBe(true);
-    expect(vm.expandedKeys['2']).toBe(true);
+    // Nodes '1-1' and '2' have no children, so they should not be in expandedKeys
+    expect(vm.expandedKeys['1-1']).toBeUndefined();
+    expect(vm.expandedKeys['2']).toBeUndefined();
   });
 
   it('collapseAll should collapse all nodes', async () => {
@@ -57,11 +65,15 @@ describe('RentableUnitsView Expand/Collapse', () => {
       properties: [
         {
           key: '1',
-          data: { type: 'PROPERTY', title: 'Property 1', usable_space: 100 },
+          data: {
+ type: 'PROPERTY', title: 'Property 1', usable_space: 100 
+},
           children: [
             {
               key: '1-1',
-              data: { type: 'BUILDING', title: 'Building 1', usable_space: 50 },
+              data: {
+ type: 'BUILDING', title: 'Building 1', usable_space: 50 
+},
               children: [],
             },
           ],
@@ -99,11 +111,15 @@ describe('RentableUnitsView Expand/Collapse', () => {
       properties: [
         {
           key: '1',
-          data: { type: 'PROPERTY', title: 'Property 1', usable_space: 100 },
+          data: {
+ type: 'PROPERTY', title: 'Property 1', usable_space: 100 
+},
           children: [
             {
               key: '1-1',
-              data: { type: 'BUILDING', title: 'Building 1', usable_space: 50 },
+              data: {
+ type: 'BUILDING', title: 'Building 1', usable_space: 50 
+},
               children: [],
             },
           ],
@@ -138,9 +154,10 @@ describe('RentableUnitsView Expand/Collapse', () => {
     await expandBtn?.trigger('click');
     await flushPromises();
 
-    // Should be expanded again
+    // Should be expanded again - only nodes with children
     expect(Object.keys(vm.expandedKeys).length).toBeGreaterThan(0);
     expect(vm.expandedKeys['1']).toBe(true);
-    expect(vm.expandedKeys['1-1']).toBe(true);
+    // Node '1-1' has no children, so it should not be in expandedKeys
+    expect(vm.expandedKeys['1-1']).toBeUndefined();
   });
 });
