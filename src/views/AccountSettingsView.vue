@@ -383,7 +383,7 @@ const isDisabled = computed(() => {
               </div>
 
               <div class="input-container">
-                <label class="label" for="lastName">Nachname*:</label>
+                <label class="label" for="lastName">{{ t('accountSettings.userProfile.lastName') }}:</label>
                 <InputText
                   id="lastName"
                   v-model="editedUserProfile.lastName"
@@ -403,12 +403,12 @@ const isDisabled = computed(() => {
               </div>
 
               <div class="input-container">
-                <label class="label" for="eMail">E-Mail:</label>
+                <label class="label" for="eMail">{{ t('accountSettings.userProfile.email') }}:</label>
                 <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
                 <Message class="error" size="small" severity="error" variant="simple" />
               </div>
               <div class="input-container">
-                <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
+                <label class="label" for="mobilePhoneNumber">{{ t('accountSettings.userProfile.mobilePhone') }}:</label>
                 <InputText
                   id="mobilePhoneNumber"
                   v-model="editedUserProfile.mobilePhoneNumber"
@@ -426,7 +426,7 @@ const isDisabled = computed(() => {
                 </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="businessPhoneNumber">Geschäftliche Telefonnummer:</label>
+                <label class="label" for="businessPhoneNumber">{{ t('accountSettings.userProfile.businessPhone') }}:</label>
                 <InputText
                   id="businessPhoneNumber"
                   v-model="editedUserProfile.businessPhoneNumber"
@@ -445,7 +445,7 @@ const isDisabled = computed(() => {
               </div>
 
               <div class="input-container">
-                <label class="label" for="privatePhoneNumber">Handynummer:</label>
+                <label class="label" for="privatePhoneNumber">{{ t('accountSettings.userProfile.privatePhone') }}:</label>
                 <InputText
                   id="privatePhoneNumber"
                   v-model="editedUserProfile.privatePhoneNumber"
