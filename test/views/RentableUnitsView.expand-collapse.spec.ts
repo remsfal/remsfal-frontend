@@ -160,4 +160,52 @@ describe('RentableUnitsView Expand/Collapse', () => {
     // Node '1-1' has no children, so it should not be in expandedKeys
     expect(vm.expandedKeys['1-1']).toBeUndefined();
   });
+
+  it('expandAll should work correctly with deeply nested structures', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
+      properties: [
+        {
+          key: '1',
+          data: {
+ type: 'PROPERTY', title: 'Property 1', usable_space: 100 
+},
+          children: [
+            {
+              key: '1-1',
+              data: {
+ type: 'BUILDING', title: 'Building 1', usable_space: 50 
+},
+              children: [
+                {
+                  key: '1-1-1',
+                  data: {
+ type: 'APARTMENT', title: 'Apartment 1', usable_space: 25 
+},
+                  children: [],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      first: 0,
+      size: 1,
+      total: 1,
+    } as any);
+
+    const wrapper = mount(RentableUnitsView, {
+      props: {projectId: '123'},
+      global: {plugins: [PrimeVue, i18n], stubs: {teleport: true}},
+    });
+
+    await flushPromises();
+
+    const vm = wrapper.vm as any;
+    
+    // Both '1' and '1-1' have children, so both should be marked
+    expect(vm.expandedKeys['1']).toBe(true);
+    expect(vm.expandedKeys['1-1']).toBe(true);
+    // '1-1-1' has no children, so it should not be marked
+    expect(vm.expandedKeys['1-1-1']).toBeUndefined();
+  });
 });
