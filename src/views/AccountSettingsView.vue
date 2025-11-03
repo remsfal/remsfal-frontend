@@ -270,18 +270,24 @@ function updateCountryFromCode() {
 
 // Fetches city, province, and country code based on the entered zip code.
 // Displays an error message if the zip code is invalid or the service call fails.
+const isDEPostalCode = (v: string) => /^\d{5}$/.test((v ?? '').trim());
+
 async function getCity() {
   const userService = new UserService();
+  const zip = (editedAddress.value.zip ?? '').toString().trim();
 
-  const zip = editedAddress.value.zip;
+  // 1. lokale Eingabeprüfung
   if (!zip) {
     errorMessage.value.zip = 'Bitte geben Sie eine Postleitzahl ein!';
     return;
   }
+  if (!isDEPostalCode(zip)) {
+    errorMessage.value.zip = 'Postleitzahl bitte überprüfen!';
+    return;
+  }
 
+  // 2. API-Aufruf – aber kein Fehlertext bei Backendproblemen
   try {
-    errorMessage.value.zip = 'Bitte eingeben!';
-
     const address = await userService.getCityFromZip(zip);
 
     if (address && address.length > 0) {
@@ -294,12 +300,17 @@ async function getCity() {
         errorMessage.value.city = '';
         errorMessage.value.province = '';
       }
+    } else {
+      // keine Ergebnisse, aber PLZ gilt trotzdem als gültig
+      errorMessage.value.zip = '';
     }
   } catch (error) {
-    console.log(error);
-    errorMessage.value.zip = 'Postleitzahl bitte überprüfen!';
+    console.error('Adress-Service nicht erreichbar:', error);
+    // kein falsches "PLZ ungültig"
+    errorMessage.value.zip = '';
   }
 }
+
 
 
 // Determines if there are any changes between the original user and address profiles and their edited
