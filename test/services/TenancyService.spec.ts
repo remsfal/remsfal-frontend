@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import {describe, test, expect, beforeAll, afterAll, afterEach} from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../../test/mocks/handlers';
 import TenancyService from '../../src/services/TenancyService';
@@ -40,5 +40,42 @@ describe('TenancyService with MSW', () => {
     // const result = await tenancyService.deleteTenancy('t1');
     // expect(result).toBe(true);
     expect(true).toBe(true);
+  });
+
+  test('loadTenancyData returns null when tenancy not found', async () => {
+    const tenancy = await tenancyService.loadTenancyData('non-existing-id');
+    expect(tenancy).toBeNull();
+  });
+
+  test('deleteTenancy is callable', async () => {
+    await expect(tenancyService.deleteTenancy('t1')).resolves.not.toThrow();
+  });
+
+  test('updateTenancyTenantItem is callable', async () => {
+    const tenant = { name: 'Test', email: 'test@example.com' };
+    await expect(tenancyService.updateTenancyTenantItem(tenant)).resolves.not.toThrow();
+  });
+
+  test('createTenancy is callable', async () => {
+    const tenancy = {
+ id: 'new', active: true, tenants: [] 
+};
+    await expect(tenancyService.createTenancy(tenancy)).resolves.not.toThrow();
+  });
+
+  test('updateTenancy is callable', async () => {
+    const tenancy = {
+ id: 't1', active: true, tenants: [] 
+};
+    await expect(tenancyService.updateTenancy(tenancy)).resolves.not.toThrow();
+  });
+
+  test('updateTenancy is callable with null', async () => {
+    await expect(tenancyService.updateTenancy(null)).resolves.not.toThrow();
+  });
+
+  test('updateTenancyUnitItem is callable', async () => {
+    const unit = { id: 'unit1' };
+    await expect(tenancyService.updateTenancyUnitItem(unit)).resolves.not.toThrow();
   });
 });

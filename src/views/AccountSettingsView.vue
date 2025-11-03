@@ -98,7 +98,7 @@ async function fetchUserProfile() {
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
-      if (userProfile.value.address) {
+      if (userProfile?.value?.address) {
         addressProfile.value = userProfile.value.address;
         editedAddress.value = { ...userProfile.value.address };
       }
@@ -389,8 +389,9 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.firstname }}</Message
                 >
+                  {{ errorMessage.firstname }}
+                </Message>
               </div>
 
               <div class="input-container">
@@ -408,14 +409,15 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.lastname }}</Message
                 >
+                  {{ errorMessage.lastname }}
+                </Message>
               </div>
 
               <div class="input-container">
                 <label class="label" for="eMail">E-Mail:</label>
                 <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
-                <Message class="error" size="small" severity="error" variant="simple"></Message>
+                <Message class="error" size="small" severity="error" variant="simple" />
               </div>
               <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
@@ -431,8 +433,9 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.mobilePhoneNumber }}</Message
                 >
+                  {{ errorMessage.mobilePhoneNumber }}
+                </Message>
               </div>
               <div class="input-container">
                 <label class="label" for="businessPhoneNumber">Geschäftliche Telefonnummer:</label>
@@ -448,8 +451,9 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.businessPhoneNumber }}</Message
                 >
+                  {{ errorMessage.businessPhoneNumber }}
+                </Message>
               </div>
 
               <div class="input-container">
@@ -466,11 +470,14 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.privatePhoneNumber }}</Message
                 >
+                  {{ errorMessage.privatePhoneNumber }}
+                </Message>
               </div>
             </div>
-            <Message class="required" size="small" severity="secondary" variant="simple">*Pflichtfelder</Message>
+            <Message class="required" size="small" severity="secondary" variant="simple">
+              *Pflichtfelder
+            </Message>
           </template>
         </Card>
         <Card>
@@ -493,8 +500,9 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.street }}</Message
                 >
+                  {{ errorMessage.street }}
+                </Message>
               </div>
               <div class="input-container">
                 <label class="label" for="zip">Postleitzahl*:</label>
@@ -510,8 +518,9 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.zip }}</Message
                 >
+                  {{ errorMessage.zip }}
+                </Message>
               </div>
               <div class="input-container">
                 <label class="label" for="zip">Stadt*:</label>
@@ -527,8 +536,9 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.city }}</Message
                 >
+                  {{ errorMessage.city }}
+                </Message>
               </div>
               <div class="input-container">
                 <label class="label" for="zip">Bundesland*:</label>
@@ -544,8 +554,9 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.province }}</Message
                 >
+                  {{ errorMessage.province }}
+                </Message>
               </div>
               <div class="input-container">
                 <label for="country" class="label">Land*:</label>
@@ -555,12 +566,14 @@ const isDisabled = computed(() => {
                   class="select-country"
                   @change="updateCountryFromCode"
                 >
-                  <option disabled value="">Land auswählen*</option>
+                  <option disabled value="">
+                    Land auswählen*
+                  </option>
                   <option v-for="country in countries" :key="country.code" :value="country.code">
                     {{ country.name }}
                   </option>
                 </select>
-                <Message class="error" size="small" severity="error" variant="simple"></Message>
+                <Message class="error" size="small" severity="error" variant="simple" />
               </div>
 
               <div class="input-container">
@@ -579,11 +592,14 @@ const isDisabled = computed(() => {
                   size="small"
                   severity="error"
                   variant="simple"
-                  >{{ errorMessage.countryCode }}</Message
                 >
+                  {{ errorMessage.countryCode }}
+                </Message>
               </div>
             </div>
-            <Message class="required" size="small" variant="simple">*Pflichtfelder</Message>
+            <Message class="required" size="small" variant="simple">
+              *Pflichtfelder
+            </Message>
           </template>
         </Card>
       </div>
@@ -592,13 +608,19 @@ const isDisabled = computed(() => {
       <div>
         <div class="buttons-container centered-buttons">
           <Button severity="info">
-            <RouterLink to="/projects">Zur Verwalter Ansicht</RouterLink>
+            <RouterLink to="/projects">
+              Zur Verwalter Ansicht
+            </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/tenancies">Zur Mieter Ansicht</RouterLink>
+            <RouterLink to="/tenancies">
+              Zur Mieter Ansicht
+            </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/customers">Zur Auftragnehmer Ansicht</RouterLink>
+            <RouterLink to="/customers">
+              Zur Auftragnehmer Ansicht
+            </RouterLink>
           </Button>
           <Button
             v-if="changes"
@@ -675,7 +697,7 @@ const isDisabled = computed(() => {
           >
             <p>Daten konnten nicht gespeichert werden!</p>
           </Dialog>
-       </div>
+        </div>
       </div>
     </div>
   </div>
@@ -744,8 +766,8 @@ input:focus {
 .select-country {
   box-sizing: border-box;
   appearance: none;
-  background: url('data:image/svg+xml;utf8,<svg fill="%23999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')
-    no-repeat right 10px center;
+  background: url('data:image/svg+xml;utf8, <svg fill="%23999" height="24" viewBox="0 0 24 24" \
+    width="24" xmlns="http://www.w3.org/2000/svg"> <path d="M7 10l5 5 5-5z"/> </svg>') no-repeat right 10px center;
   background-size: 12px 12px;
 }
 

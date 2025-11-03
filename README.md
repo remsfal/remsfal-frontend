@@ -1,4 +1,4 @@
-<img src="https://remsfal.de/logo_upscaled.png" width="60%">
+<img src="https://remsfal.de/remsfal-logo.svg" width="60%">
 
 [![License](https://img.shields.io/github/license/remsfal/remsfal-frontend)](https://github.com/remsfal/remsfal-frontend/blob/main/LICENSE)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/remsfal/remsfal-frontend)

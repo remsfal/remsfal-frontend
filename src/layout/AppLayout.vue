@@ -9,7 +9,7 @@ const props = defineProps<{
 }>();
 
 const { layoutState, isSidebarActive, setFullscreen } = useLayout();
-const outsideClickListener = ref<EventListenerOrEventListenerObject | null>(null);
+const outsideClickListener = ref<((event: Event) => void) | null>(null);
 
 onMounted(() => {
   setFullscreen(props.fullscreen);
@@ -65,10 +65,10 @@ function isOutsideClicked(event: Event) {
     <main>
       <div class="layout-main">
         <div class="flex flex-col gap-8">
-          <RouterView></RouterView>
+          <RouterView />
         </div>
       </div>
     </main>
-    <AppFooter></AppFooter>
+    <AppFooter />
   </div>
 </template>

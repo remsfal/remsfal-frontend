@@ -1,5 +1,5 @@
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
 import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
 import PrimeVue from 'primevue/config';
@@ -19,7 +19,9 @@ describe('RentableUnitsView', () => {
       properties: [
         {
           key: '1',
-          data: { type: 'PROPERTY', title: 'Root', usable_space: 100 },
+          data: {
+ type: 'PROPERTY', title: 'Root', usable_space: 100 
+},
           children: [],
         },
       ],
@@ -56,7 +58,9 @@ describe('RentableUnitsView', () => {
   it('opens delete confirmation dialog when delete button is clicked', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
       properties: [
-        { key: '1', data: { title: 'Test', type: EntityType.Property }, children: [] },
+        {
+ key: '1', data: { title: 'Test', type: EntityType.Property }, children: [] 
+},
       ],
       first: 0,
       size: 1,
@@ -91,7 +95,9 @@ describe('RentableUnitsView', () => {
 
     const sampleNode = {
       key: '1',
-      data: { type: EntityType.Project, title: 'ABCDF', description: '', tenant: '', usable_space: 0 },
+      data: {
+ type: EntityType.Project, title: 'ABCDF', description: '', tenant: '', usable_space: 0 
+},
       children: [],
     };
     (wrapper.vm as any).confirmDeleteNode(sampleNode);
@@ -113,7 +119,9 @@ describe('RentableUnitsView', () => {
 
     const sampleNode = {
       key: '1',
-      data: { type: EntityType.Property, title: '', description: '', tenant: '', usable_space: 0 },
+      data: {
+ type: EntityType.Property, title: '', description: '', tenant: '', usable_space: 0 
+},
       children: [],
     };
     (wrapper.vm as any).nodeToDelete = sampleNode;

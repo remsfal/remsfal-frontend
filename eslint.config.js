@@ -2,26 +2,15 @@ import globals from 'globals';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import vue from 'eslint-plugin-vue';
-import prettier from 'eslint-plugin-prettier/recommended';
 
 export default [
   {
     files: ['**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts,vue}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-      },
-    },
+    languageOptions: {globals: {...globals.browser,},},
   },
 
   // js
   js.configs.recommended,
-  {
-    rules: {
-      'no-unused-vars': 'off',
-      'no-undef': 'off',
-    },
-  },
 
   // ts
   ...ts.configs.recommended,
@@ -36,11 +25,7 @@ export default [
   ...vue.configs['flat/recommended'],
   {
     // files: ['*.vue', '**/*.vue'],
-    languageOptions: {
-      parserOptions: {
-        parser: ts.parser,
-      },
-    },
+    languageOptions: {parserOptions: {parser: ts.parser,},},
   },
   {
     rules: {
@@ -81,19 +66,29 @@ export default [
       'vue/require-typed-ref': 'warn',
       'vue/v-for-delimiter-style': 'error',
       'vue/valid-define-options': 'error',
+      'vue/max-attributes-per-line':  ["error", {
+          "singleline": {"max": 4},
+          "multiline": {"max": 2}
+      }],
     },
   },
 
-  // prettier
-  prettier,
+  // general rules
   {
     rules: {
-      'prettier/prettier': 'warn',
+      'max-len': ['error', { code: 128 }],
+      'object-curly-newline': [
+        'error',
+        {
+          ObjectExpression: { multiline: true, minProperties: 3 },
+          ObjectPattern: { multiline: true },
+          ImportDeclaration: 'never',
+          ExportDeclaration: 'never',
+        },
+      ],
     },
   },
 
   // ignore files at the end of the config
-  {
-    ignores: ['**/dist/**', 'node_modules/*', 'cypress/**', 'html/**', 'coverage/'],
-  },
+  {ignores: ['**/dist/**', 'node_modules/*', 'cypress/**', 'html/**', 'coverage/'],},
 ];

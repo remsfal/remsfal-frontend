@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import {describe, it, expect, beforeAll, afterAll, afterEach} from 'vitest';
 import { server } from '../mocks/server';
 import { siteService, type SiteUnit } from '../../src/services/SiteService';
 
@@ -43,7 +43,13 @@ describe('SiteService (MSW)', () => {
   it('should delete a site', async () => {
     await expect(siteService.deleteSite(projectId, siteId)).resolves.toBe(true);
   });
-  
-  
-  
+
+  it('should handle get site errors', async () => {
+    await expect(siteService.getSite(projectId, 'not-found')).rejects.toThrow();
+  });
+
+  it('should handle delete site errors', async () => {
+    const result = await siteService.deleteSite(projectId, 'cannot-delete');
+    expect(result).toBe(false);
+  });
 });

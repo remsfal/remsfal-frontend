@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import {describe, it, expect} from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import ProjectChatView from '../../src/views/ProjectChatView.vue';
 import Button from 'primevue/button';

@@ -131,9 +131,7 @@ app.use(PrimeVue, {
   theme: {
     preset: Aura,
     // https://primevue.org/theming/styled/
-    options: {
-      darkModeSelector: '.app-dark',
-    },
+    options: {darkModeSelector: '.app-dark',},
   },
 });
 app.use(ToastService);

@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import {describe, test, expect, beforeAll, afterAll, afterEach} from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../../test/mocks/handlers'; 
 import { commercialService } from '../../src/services/CommercialService';
@@ -56,5 +56,14 @@ describe('CommercialService with MSW', () => {
 
   test('deleteCommercial succeeds', async () => {
     await expect(commercialService.deleteCommercial(projectId, commercialId)).resolves.toBe(true);
-  });  
+  });
+
+  test('getCommercial handles errors', async () => {
+    await expect(commercialService.getCommercial(projectId, 'not-found')).rejects.toThrow();
+  });
+
+  test('deleteCommercial returns false on error', async () => {
+    const result = await commercialService.deleteCommercial(projectId, 'cannot-delete');
+    expect(result).toBe(false);
+  });
 });

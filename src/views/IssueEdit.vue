@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { taskService, type TaskDetail } from '@/services/TaskService';
+import { IssueService, type Issue } from '@/services/IssueService.ts';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 
 const route = useRoute();
 const router = useRouter();
-const task = ref<TaskDetail | null>(null);
-const originalTask = ref<TaskDetail | null>(null);
+const issue = ref<Issue | null>(null);
+const originalIssue = ref<Issue | null>(null);
 const errors = ref<{ [key: string]: string }>({});
 const loading = ref(false);
 const isExpanded = ref(false);
@@ -20,16 +20,16 @@ const toggleExpansion = () => {
   isExpanded.value = !isExpanded.value;
 };
 
-const validateTask = (): boolean => {
+const validateIssue = (): boolean => {
   errors.value = {};
-  if (!task.value?.title?.trim()) errors.value.title = '\n\n- Name muss gegeben sein.';
-  if (!task.value?.description?.trim())
+  if (!issue.value?.title?.trim()) errors.value.title = '\n\n- Name muss gegeben sein.';
+  if (!issue.value?.description?.trim())
     errors.value.description = '\n\n- Beschreibung muss gegeben sein.';
-  if (!task.value?.status?.trim()) errors.value.status = '\n\n- Status muss gegeben sein.';
+  if (!issue.value?.status?.trim()) errors.value.status = '\n\n- Status muss gegeben sein.';
   return Object.keys(errors.value).length === 0;
 };
 
-const startEditing = (row: TaskDetail & { editing?: keyof TaskDetail }, field: keyof TaskDetail) => {
+const startEditing = (row: Issue & { editing?: keyof Issue }, field: keyof Issue) => {
   row.editing = field;
   nextTick(() => {
     const inputElement = document.querySelector('.editable-input') as HTMLElement | null;
@@ -37,33 +37,34 @@ const startEditing = (row: TaskDetail & { editing?: keyof TaskDetail }, field: k
   });
 };
 
-const stopEditing = (row: TaskDetail) => {
+const stopEditing = (row: Issue) => {
   (row as any).editing = null;
 };
+const issueService = new IssueService();
 
 onMounted(async () => {
   loading.value = true;
   try {
     const projectId = route.params.projectId as string;
-    const taskId = route.params.taskid as string;
-    task.value = await taskService.getTask(projectId, taskId);
-    if (task.value) originalTask.value = JSON.parse(JSON.stringify(task.value));
+    const issueId = route.params.issueId as string;
+    issue.value = await issueService.getIssue(projectId, issueId);
+    if (issue.value) originalIssue.value = JSON.parse(JSON.stringify(issue.value));
   } catch (error) {
-    alert(`Aufgabe konnte nicht geladen werden: ${error}`);
+    alert(`Issue konnte nicht geladen werden: ${error}`);
   } finally {
     loading.value = false;
   }
 });
 
-const saveTask = async () => {
-  if (!task.value) return;
+const saveIssue = async () => {
+  if (!issue.value) return;
 
-  if (originalTask.value && JSON.stringify(task.value) === JSON.stringify(originalTask.value)) {
+  if (originalIssue.value && JSON.stringify(issue.value) === JSON.stringify(originalIssue.value)) {
     alert('Keine Änderungen zum Speichern vorhanden.');
     return;
   }
 
-  if (!validateTask()) {
+  if (!validateIssue()) {
     const errorMessages = Object.values(errors.value).join('');
     alert(`Fehler beim Speichern, weil folgende Daten fehlen:${errorMessages}`);
     return;
@@ -71,30 +72,32 @@ const saveTask = async () => {
 
   try {
     const projectId = route.params.projectId as string;
-    const taskId = route.params.taskid as string;
-    const body: Partial<TaskDetail> = {
-      title: task.value.title,
-      description: task.value.description,
-      status: task.value.status,
-      ownerId: task.value.ownerId,
+    const issueId = route.params.issueId as string;
+    const body: Partial<Issue> = {
+      title: issue.value.title,
+      description: issue.value.description,
+      status: issue.value.status,
+      ownerId: issue.value.ownerId,
     };
 
-    await taskService.modifyTask(projectId, taskId, body);
-    originalTask.value = JSON.parse(JSON.stringify(task.value));
+    await issueService.modifyIssue(projectId, issueId, body);
+    originalIssue.value = JSON.parse(JSON.stringify(issue.value));
     loading.value = true;
     setTimeout(() => {
       loading.value = false;
-      alert('Die Aufgabe wurde erfolgreich gespeichert!');
+      alert('Das Issue wurde erfolgreich gespeichert!');
     }, 3000);
   } catch (error) {
-    alert(`Aufgabe konnte nicht gespeichert werden: ${error}`);
+    alert(`Issue konnte nicht gespeichert werden: ${error}`);
   }
 };
 </script>
 
 <template>
-  <div v-if="loading">Loading...</div>
-  <div v-else-if="task">
+  <div v-if="loading">
+    Loading...
+  </div>
+  <div v-else-if="issue">
     <div class="header-buttons">
       <Button label="Zurück" icon="pi pi-arrow-left" @click="router.go(-1)" />
       <Button
@@ -102,14 +105,14 @@ const saveTask = async () => {
         icon="pi pi-check"
         class="save-button"
         style="float: right; margin-bottom: 10px"
-        @click="saveTask"
+        @click="saveIssue"
       />
     </div>
 
-    <h1>Aufgabe bearbeiten</h1>
+    <h1>Issue bearbeiten</h1>
 
     <div class="table-wrapper">
-      <DataTable :value="[task]" responsiveLayout="scroll">
+      <DataTable :value="[issue]" responsiveLayout="scroll">
         <Column field="title" header="Name">
           <template #body="slotProps">
             <div
@@ -126,7 +129,7 @@ const saveTask = async () => {
               class="editable-input"
               required
               @blur="stopEditing(slotProps.data)"
-            />
+            >
           </template>
         </Column>
 
@@ -145,7 +148,7 @@ const saveTask = async () => {
               class="editable-input"
               required
               @blur="stopEditing(slotProps.data)"
-            ></textarea>
+            />
           </template>
         </Column>
 
@@ -173,7 +176,6 @@ const saveTask = async () => {
 
         <Column field="ownerId" header="Owner" />
 
-        <!-- Erweiterbare Felder -->
         <template v-if="isExpanded">
           <Column field="createdAt" header="Erstellt am" />
           <Column field="modifiedAt" header="Geändert am" />
@@ -183,7 +185,6 @@ const saveTask = async () => {
         </template>
       </DataTable>
 
-      <!-- Umschalt-Button -->
       <div style="display: flex; justify-content: flex-end; margin-top: 10px">
         <Button class="toggle-button" @click="toggleExpansion">
           {{ isExpanded ? 'Weniger Details' : 'Mehr Details' }}
@@ -192,7 +193,7 @@ const saveTask = async () => {
     </div>
   </div>
   <div v-else>
-    <p>Keine Aufgabe gefunden.</p>
+    <p>Kein Issue gefunden.</p>
   </div>
 </template>
 

@@ -3,51 +3,31 @@ name: "CI Build"
 on:
   push:
     branches: ["main"]
-    paths-ignore:
-      - '**.md'
-      - '.gitignore'
   pull_request:
-    paths-ignore:
-      - '**.md'
-      - '.gitignore'
-  pull_request_target:
-    branches: ["main"]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
 
 jobs:
-  lts-build:
-    name: "Node.js 20 LTS Build"
+  run-tests:
+    name: Node.js ${{ matrix.node-version }} Build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [current, lts/*]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v5
         with:
-          node-version: '20.x'
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
+          fetch-depth: 0
+      - name: Build REMSFAL
+        uses: remsfal/.github/.github/actions/build-frontend@main
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: List the state of node modules
-        if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        continue-on-error: true
-        run: npm list
-      - name: Install dependencies
-        run: npm ci
-        # The `npm ci` command can only install with an existing package-lock.json
+          node-version: ${{ matrix.node-version }}
       - name: Run Unit Test with Vitest (test)
         run: npm run test:unit
-      - name: Build with Vite (build)
-        run: npm run build
       - name: Run E2E Test with Cypress (test)
         uses: cypress-io/github-action@v6
         with:
@@ -62,75 +42,44 @@ jobs:
         run: npm run lint
       - name: Check css with Stylelint (stylelint)
         run: npm run stylelint
-      - name: Save PR number to file for subsequently Sonar Analysis
-        if: github.event_name == 'pull_request'
-        env:
-          PR_NUMBER: ${{ github.event.number }}
-        run: echo $PR_NUMBER > PR_NUMBER.txt
-      - name: Archive PR number for subsequently Sonar Analysis
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+
+      # Generate reports for Sonar Analysis
+      - name: Build Coverage Report (only on LTS version)
+        if: ${{ matrix.node-version == 'lts/*' }}
+        run: npm run coverage
+      - name: Upload Coverage Reports (only on LTS version)
+        if: ${{ matrix.node-version == 'lts/*' }}
+        uses: actions/upload-artifact@v5
         with:
-          name: PR_NUMBER
-          path: PR_NUMBER.txt
-  latest-build:
-    name: "Node.js 21 Latest Build"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-      - name: Set up Node.js 21
-        uses: actions/setup-node@v5
+          name: coverage-${{ github.run_id }}
+          path: coverage/
+          retention-days: 1
+          if-no-files-found: error
+      - name: Build ESLint Report (only on LTS version)
+        if: ${{ matrix.node-version == 'lts/*' }}
+        run: npm run lint:report
+      - name: Upload ESLint Reports (only on LTS version)
+        if: ${{ matrix.node-version == 'lts/*' }}
+        uses: actions/upload-artifact@v5
         with:
-          node-version: '21.x'
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: List the state of node modules
-        if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        continue-on-error: true
-        run: npm list
-      - name: Install dependencies
-        run: npm ci
-        # The `npm ci` command can only install with an existing package-lock.json
-      - name: Run Unit Test with Vitest (test)
-        run: npm run test:unit
-      - name: Build with Vite (build)
-        run: npm run build
-      - name: Run E2E Test with Cypress (test)
-        uses: cypress-io/github-action@v6
-        with:
-          # we have already installed all dependencies above
-          install: false
-          # start the server and wait for it
-          start: npm run preview
-          wait-on: 'http://localhost:4173'
-          # wait for 3 minutes for the server to respond
-          wait-on-timeout: 180
-      - name: Check style with ESLint (lint)
-        run: npm run lint
-      - name: Check css with Stylelint (stylelint)
-        run: npm run stylelint
+          name: eslint-${{ github.run_id }}
+          path: reports/eslint-report.json
+          retention-days: 1
+          if-no-files-found: error
+
   check-branches:
     name: "Check Pull Request Conditions"
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Check PR branches
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          if [ "${{ github.head_ref }}" == "main" ] && [ "${{ github.base_ref }}" == "main" ]; then
+          if [ "$HEAD_REF" == "main" ] && [ "$BASE_REF" == "main" ]; then
             echo "Pull Requests to main branch are only allowed from developer branches that are not named <main>."
             exit 1
           fi

@@ -1,18 +1,15 @@
 import { defineStore } from 'pinia';
-import { typedRequest } from '@/services/api/typedRequest';
-import type { ResponseType } from '@/services/api/typedRequest';
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
-export type User = ResponseType<'/api/v1/user', 'get'>;
+export type User = ApiComponents['schemas']['UserJson'];
 
 export const useUserSessionStore = defineStore('user-session', {
-  state: () => ({
-    user: null as User | null,
-  }),
+  state: () => ({user: null as User | null,}),
 
   actions: {
     async refreshSessionState() {
       try {
-        const user = await typedRequest('get', '/api/v1/user');
+        const user = await apiClient.get('/api/v1/user');
         this.user = user;
         console.log('Active user session:', user);
       } catch (error: any) {

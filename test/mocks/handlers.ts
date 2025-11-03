@@ -36,7 +36,7 @@ export const handlers = [
   // GET address with query param
   http.get(`${API_BASE}/address`, ({ request }) => {
     const url = new URL(request.url, 'http://localhost');
-    const zip = url.searchParams.get('query[zip]');
+    const zip = url.searchParams.get('zip') || url.searchParams.get('query[zip]');
     if (zip === '12345') {
       return HttpResponse.json(
         [
@@ -130,6 +130,9 @@ export const handlers = [
 
   // GET commercial unit
   http.get(`${API_BASE}/projects/:projectId/commercials/:commercialId`, ({ params }) => {
+    if (params.commercialId === 'not-found') {
+      return HttpResponse.json({ message: 'Commercial not found' }, { status: 404 });
+    }
     return HttpResponse.json({
       id: params.commercialId,
       title: 'Commercial Space 1',
@@ -172,7 +175,10 @@ export const handlers = [
   ),
 
   // DELETE commercial
-  http.delete(`${API_BASE}/projects/:projectId/commercials/:commercialId`, () => {
+  http.delete(`${API_BASE}/projects/:projectId/commercials/:commercialId`, ({ params }) => {
+    if (params.commercialId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
 
@@ -289,24 +295,28 @@ export const handlers = [
   // GET all tenancies
   http.get(`${API_BASE}/tenancies`, () => {
     return HttpResponse.json(
-      [
-        {
-          id: 't1',
-          rentalStart: new Date().toISOString(),
-          rentalEnd: new Date().toISOString(),
-          tenants: [{ id: 'u1', name: 'Max Mustermann', email: 'max@example.com' }],
-          listOfUnits: [{ id: 'unit1', title: 'Unit 1' }],
-          active: true,
-        },
-        {
-          id: 't2',
-          rentalStart: new Date().toISOString(),
-          rentalEnd: new Date().toISOString(),
-          tenants: [],
-          listOfUnits: [],
-          active: true,
-        },
-      ],
+      {
+        tenancies: [
+          {
+            id: 't1',
+            rentalStart: new Date().toISOString(),
+            rentalEnd: new Date().toISOString(),
+            tenants: [{
+ id: 'u1', name: 'Max Mustermann', email: 'max@example.com'
+}],
+            listOfUnits: [{ id: 'unit1', title: 'Unit 1' }],
+            active: true,
+          },
+          {
+            id: 't2',
+            rentalStart: new Date().toISOString(),
+            rentalEnd: new Date().toISOString(),
+            tenants: [],
+            listOfUnits: [],
+            active: true,
+          },
+        ],
+      },
       { status: 200 },
     );
   }),
@@ -374,6 +384,9 @@ export const handlers = [
 
   // GET single site
   http.get(`${API_BASE}/projects/:projectId/sites/:siteId`, ({ params }) => {
+    if (params.siteId === 'not-found') {
+      return HttpResponse.json({ message: 'Site not found' }, { status: 404 });
+    }
     return HttpResponse.json({
       id: params.siteId,
       title: 'New Site',
@@ -413,7 +426,10 @@ export const handlers = [
   }),
 
   // DELETE site
-  http.delete(`${API_BASE}/projects/:projectId/sites/:siteId`, () => {
+  http.delete(`${API_BASE}/projects/:projectId/sites/:siteId`, ({ params }) => {
+    if (params.siteId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
     return new HttpResponse(null, { status: 204 });
   }),
 
@@ -469,5 +485,120 @@ export const handlers = [
     const body = (await request.json()) as Record<string, unknown> | undefined;
     lastRequests.updatedTask = { id: params.taskId, ...(body ?? {}) };
     return HttpResponse.json(lastRequests.updatedTask);
+  }),
+
+  // -------- INBOX SERVICE HANDLERS --------
+
+  // GET inbox messages
+  http.get(`${API_BASE}/inbox`, () => {
+    return HttpResponse.json({
+      messages: [
+        {
+          id: '1',
+          type: 'Nachricht',
+          contractor: 'Bau GmbH',
+          project: 'Neubau Musterstraße',
+          unit: 'Wohnung 101',
+          tenant: 'Max Müller',
+          owner: 'Immobilien AG',
+          senderName: 'Max Mustermann',
+          senderEmail: 'max.mustermann@example.com',
+          subject: 'Kücheninstallation abgeschlossen',
+          body: 'Die Installation der Küche in Wohnung 101 wurde erfolgreich abgeschlossen.',
+          receivedAt: new Date('2025-06-01T10:15:00').toISOString(),
+          isRead: false,
+        },
+        {
+          id: '2',
+          type: 'Rechnung',
+          contractor: 'Sanitär AG',
+          project: 'Neubau Musterstraße',
+          unit: 'Wohnung 102',
+          tenant: 'Irene Schmidt',
+          owner: 'Immobilien AG',
+          senderName: 'Erika Musterfrau',
+          senderEmail: 'erika.musterfrau@example.com',
+          subject: 'Rechnung für Badezimmerarbeiten Mai 2025',
+          body: 'Anbei findest du die aktuelle Rechnung für Mai 2025.',
+          receivedAt: new Date('2025-05-28T14:30:00').toISOString(),
+          isRead: false,
+        },
+        {
+          id: '3',
+          type: 'Nachricht',
+          contractor: 'Facility Service GmbH',
+          project: 'Campus Treskowallee',
+          unit: 'Büro A029',
+          tenant: 'HTW Berlin',
+          owner: 'Campus Management GmbH',
+          senderName: 'System-Benachrichtigung',
+          senderEmail: 'noreply@remsfal.de',
+          subject: 'Wartungsarbeiten geplant',
+          body: 'Am 2025-06-10 findet eine Systemwartung von 01:00 bis 03:00 Uhr statt.',
+          receivedAt: new Date('2025-05-25T08:00:00').toISOString(),
+          isRead: true,
+        },
+        {
+          id: '4',
+          type: 'Nachricht',
+          contractor: 'Bau GmbH',
+          project: 'Neubau Musterstraße',
+          unit: 'Wohnung 202',
+          tenant: 'Bernd Beispiel',
+          owner: 'Immobilien AG',
+          senderName: 'Johannes Beispiel',
+          senderEmail: 'johannes.beispiel@example.com',
+          subject: 'Frage zum Objekt „Wohnung 202"',
+          body: 'Hallo, ich habe eine Frage zu den notwendigen Wartungsarbeiten.',
+          receivedAt: new Date('2025-05-20T09:45:00').toISOString(),
+          isRead: false,
+        },
+        {
+          id: '5',
+          type: 'Rechnung',
+          contractor: 'Elektro AG',
+          project: 'Campus Treskowallee',
+          unit: 'Raum A002',
+          tenant: 'HTW Berlin',
+          owner: 'Campus Management GmbH',
+          senderName: 'Maria Beispiel',
+          senderEmail: 'maria.beispiel@example.com',
+          subject: 'Rechnung für Elektroarbeiten April 2025',
+          body: 'Die Rechnung für die Elektroarbeiten im April 2025 findest du im Anhang.',
+          receivedAt: new Date('2025-05-18T11:20:00').toISOString(),
+          isRead: false,
+        },
+        {
+          id: '6',
+          type: 'Nachricht',
+          contractor: 'Sicherheit GmbH',
+          project: 'Campus Treskowallee',
+          unit: 'Raum A008',
+          tenant: 'HTW Berlin',
+          owner: 'Campus Management GmbH',
+          senderName: 'Sicherheitsdienst',
+          senderEmail: 'security@facility.de',
+          subject: 'Alarm: Rauchmelder ausgelöst',
+          body: 'Im Raum A008 wurde um 22:30 Uhr der Rauchmelder ausgelöst.',
+          receivedAt: new Date('2025-05-15T22:31:00').toISOString(),
+          isRead: true,
+        },
+        {
+          id: '7',
+          type: 'Nachricht',
+          contractor: 'Facility Service GmbH',
+          project: 'Neubau Musterstraße',
+          unit: 'Wohnung 101',
+          tenant: 'Max Müller',
+          owner: 'Immobilien AG',
+          senderName: 'Lisa Beispiel',
+          senderEmail: 'lisa.beispiel@example.com',
+          subject: 'Meeting Protokoll',
+          body: 'Das Protokoll des Meetings vom 10.05.2025 findest du im Anhang.',
+          receivedAt: new Date('2025-05-12T16:00:00').toISOString(),
+          isRead: false,
+        },
+      ],
+    });
   }),
 ];

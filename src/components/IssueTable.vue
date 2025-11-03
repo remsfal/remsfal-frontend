@@ -2,24 +2,24 @@
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import { type TaskItem } from '../services/TaskService';
+import { type IssueItem } from '../services/IssueService.ts';
 import { RouterLink } from 'vue-router';
 
 const props = defineProps<{
-  tasks: TaskItem[];
+  issues: IssueItem[];
 }>();
 </script>
 
 <template>
-  <div class="tasks-table-container">
-    <DataTable :value="props.tasks" tableStyle="min-width: 60rem" :paginator="true" :rows="5">
+  <div class="issues-table-container">
+    <DataTable :value="props.issues" tableStyle="min-width: 60rem" :paginator="true" :rows="5">
       <Column field="title" header="Title" sortable />
       <Column field="owner" header="Owner" sortable />
       <Column field="status" header="Status" sortable />
       <Column frozen alignFrozen="right">
         <template #body="slotProps">
           <div class="flex justify-end">
-            <RouterLink :to="{ name: 'TaskEdit', params: { taskid: slotProps.data.id } }">
+            <RouterLink :to="{ name: 'IssueEdit', params: { issueId: slotProps.data.id } }">
               <Button
                 icon="pi pi-pencil"
                 severity="success"
@@ -34,13 +34,13 @@ const props = defineProps<{
       </Column>
     </DataTable>
     <div class="btn-slot">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>
 
 <style scoped>
-.tasks-table-container {
+.issues-table-container {
   box-sizing: border-box;
   background: white;
   padding: 10px;

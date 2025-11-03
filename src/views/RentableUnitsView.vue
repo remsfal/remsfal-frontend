@@ -1,20 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import {
-  propertyService,
+import {propertyService,
   type RentableUnitTreeNode,
-  toRentableUnitView,
-} from '@/services/PropertyService';
+  toRentableUnitView,} from '@/services/PropertyService';
 import type { components } from '@/services/api/platform-schema';
 import { useRouter } from 'vue-router';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import { useI18n } from 'vue-i18n';
-import TreeTable, {
-  type TreeTableExpandedKeys,
-  type TreeTableSelectionKeys,
-} from 'primevue/treetable';
+import TreeTable, {type TreeTableExpandedKeys,
+  type TreeTableSelectionKeys,} from 'primevue/treetable';
 import NewRentableUnitButton from '@/components/NewRentableUnitButton.vue';
 import { useToast } from 'primevue/usetoast';
 import NewPropertyButton from '@/components/NewPropertyButton.vue';
@@ -130,16 +126,22 @@ onMounted(() =>
 );
 
 // --- Expose refs & methods for tests ---
-defineExpose({ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirmed, onDeleteNode,expandedKeys });
+defineExpose({
+ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirmed, onDeleteNode,expandedKeys 
+});
 </script>
 
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
-        <h1 class="w-full">{{ t('rentableUnits.view.title') }}</h1>
+        <h1 class="w-full">
+          {{ t('rentableUnits.view.title') }}
+        </h1>
       </div>
-      <div v-if="error" class="alert alert-error">{{ error }}</div>
+      <div v-if="error" class="alert alert-error">
+        {{ error }}
+      </div>
       <div v-if="!error" class="col-span-12">
         <div class="card">
           <TreeTable
@@ -237,15 +239,15 @@ defineExpose({ showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirme
         <Button
           label="Abbrechen"
           icon="pi pi-times"
-          @click="showDeleteDialog = false"
           data-testid="cancelDelete"
+          @click="showDeleteDialog = false"
         />
         <Button
           label="Löschen"
           icon="pi pi-check"
           severity="danger"
-          @click="deleteConfirmed"
           data-testid="confirmDeleteButton"
+          @click="deleteConfirmed"
         />
       </template>
     </Dialog>

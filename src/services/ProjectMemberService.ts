@@ -1,75 +1,25 @@
-import { typedRequest } from '@/services/api/typedRequest';
-import type { paths } from '@/services/api/typedRequest';
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type GetMembersResponse =
-  paths['/api/v1/projects/{projectId}/members']['get']['responses']['200']['content']['application/json'];
-
-export type Member = GetMembersResponse['members'][number];
-export type AddMemberRequest =
-  paths['/api/v1/projects/{projectId}/members']['post']['requestBody']['content']['application/json'];
-export type UpdateMemberRoleRequest =
-  paths['/api/v1/projects/{projectId}/members/{memberId}']['patch']['requestBody']['content']['application/json'];
+export type MemberRole = ApiComponents['schemas']['MemberRole'];
+export type ProjectMemberList = ApiComponents['schemas']['ProjectMemberListJson'];
+export type ProjectMember = ApiComponents['schemas']['ProjectMemberJson'];
 
 class ProjectMemberService {
-  private readonly baseUrl = '/api/v1/projects';
-
-  async getMembers(projectId: string): Promise<GetMembersResponse> {
-    const response = await typedRequest<'/api/v1/projects/{projectId}/members', 'get'>(
-      'get',
-      `${this.baseUrl}/{projectId}/members`,
-      { pathParams: { projectId } },
-    );
-
-    // TEMPORARY cast to fallback type
-    return response as GetMembersResponse;
+  async getMembers(projectId: string): Promise<ProjectMemberList> {
+    return apiClient.get('/api/v1/projects/{projectId}/members', {pathParams: { projectId },});
   }
 
-  async addMember(projectId: string, member: AddMemberRequest): Promise<Member> {
-    const response = await typedRequest<'/api/v1/projects/{projectId}/members', 'post'>(
-      'post',
-      `${this.baseUrl}/{projectId}/members`,
-      {
-        pathParams: { projectId },
-        body: member,
-      },
-    );
-
-    return response as Member;
+  async addMember(projectId: string, member: ProjectMember): Promise<ProjectMember> {
+    return apiClient.post('/api/v1/projects/{projectId}/members', member, {pathParams: { projectId },});
   }
 
-  async updateMemberRole(
-    projectId: string,
-    memberId: string,
-    body: UpdateMemberRoleRequest,
-  ): Promise<Member> {
-    const response = await typedRequest<'/api/v1/projects/{projectId}/members/{memberId}', 'patch'>(
-      'patch',
-      `${this.baseUrl}/{projectId}/members/{memberId}`,
-      { pathParams: { projectId, memberId }, body },
-    );
-
-    return response as Member;
+  async updateMemberRole(projectId: string, memberId: string, member: ProjectMember): Promise<ProjectMember> {
+    return apiClient.patch('/api/v1/projects/{projectId}/members/{memberId}', member, {pathParams: { projectId, memberId },});
   }
 
   async removeMember(projectId: string, memberId: string): Promise<void> {
-    await typedRequest<'/api/v1/projects/{projectId}/members/{memberId}', 'delete'>(
-      'delete',
-      `${this.baseUrl}/{projectId}/members/{memberId}`,
-      { pathParams: { projectId, memberId } },
-    );
+    return apiClient.delete('/api/v1/projects/{projectId}/members/{memberId}', {pathParams: { projectId, memberId },});
   }
 }
 
 export const projectMemberService = new ProjectMemberService();
-
-// ProjectMemberService.ts
-export const memberRoles = [
-  { label: 'Eigentümer', value: 'PROPRIETOR' },
-  { label: 'Verwalter', value: 'MANAGER' },
-  { label: 'Vermieter', value: 'LESSOR' },
-  { label: 'Mitarbeiter', value: 'STAFF' },
-  { label: 'Kollaborateur', value: 'COLLABORATOR' },
-] as const;
-
-export type MemberRole = (typeof memberRoles)[number]['value'];
-// "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR"

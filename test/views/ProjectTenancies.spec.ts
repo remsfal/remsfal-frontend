@@ -1,7 +1,7 @@
-import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
+import {mount, VueWrapper, flushPromises} from '@vue/test-utils';
 import PrimeVue from 'primevue/config';
 import Dialog from 'primevue/dialog';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import i18n from '../../src/i18n/i18n';
 import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
 import { tenancyService } from '../../src/services/TenancyService';
@@ -11,9 +11,7 @@ if (typeof window === 'undefined') (global as any).window = {};
 
 // ---- Router Mock ----
 const routerPushMock = vi.fn();
-vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: routerPushMock }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({ push: routerPushMock }),}));
 
 // ---- PrimeVue/Dialog Mock ----
 vi.mock('primevue/dialog', () => ({
@@ -24,18 +22,20 @@ vi.mock('primevue/dialog', () => ({
 }));
 
 // ---- Pinia store mock ----
-vi.mock('@/stores/ProjectStore', () => ({
-  useProjectStore: () => ({ projectId: 'proj-1' }),
-}));
+vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
 
 describe('ProjectTenancies.vue', () => {
   let wrapper: VueWrapper<any>;
 
   const mockTenants = [
-    { id: '1', firstName: 'John', lastName: 'Doe' },
+    {
+ id: '1', firstName: 'John', lastName: 'Doe' 
+},
   ];
   const mockTenancies = [
-    { id: 't1', rentalStart: '2023-01-01', rentalEnd: '2024-01-01', listOfTenants: mockTenants, listOfUnits: [] },
+    {
+ id: 't1', rentalStart: '2023-01-01', rentalEnd: '2024-01-01', listOfTenants: mockTenants, listOfUnits: [] 
+},
   ];
 
   beforeEach(async () => {
@@ -43,6 +43,7 @@ describe('ProjectTenancies.vue', () => {
     vi.spyOn(tenancyService, 'fetchTenancyData').mockResolvedValue(mockTenancies);
 
     wrapper = mount(ProjectTenancies, {
+      props: {projectId: 'proj-1',},
       global: {
         plugins: [PrimeVue, i18n],
         components: { Dialog },

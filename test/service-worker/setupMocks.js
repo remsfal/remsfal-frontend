@@ -1,3 +1,4 @@
+/* global global */
 import sinon from 'sinon';
 
 // setupMocks.js
