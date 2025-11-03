@@ -276,7 +276,6 @@ async function getCity() {
   const userService = new UserService();
   const zip = (editedAddress.value.zip ?? '').toString().trim();
 
-  // 1. lokale Eingabeprüfung
   if (!zip) {
     errorMessage.value.zip = 'Bitte geben Sie eine Postleitzahl ein!';
     return;
@@ -286,7 +285,6 @@ async function getCity() {
     return;
   }
 
-  // 2. API-Aufruf – aber kein Fehlertext bei Backendproblemen
   try {
     const address = await userService.getCityFromZip(zip);
 
