@@ -1059,7 +1059,12 @@
         "summary" : "Expose the JSON Web Key Set used to sign tokens.",
         "responses" : {
           "200" : {
-            "description" : "JWKS containing the public keys"
+            "description" : "JWKS containing the public keys",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           }
         }
       }

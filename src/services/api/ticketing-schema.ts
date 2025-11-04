@@ -250,7 +250,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description No user authentication provided via session cookie */
                 401: {
@@ -359,7 +361,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -413,7 +417,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -477,7 +483,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -672,7 +680,10 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                        "application/octet-stream": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -730,7 +741,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -785,7 +798,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -849,7 +864,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -918,7 +935,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -974,7 +993,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {
@@ -1045,7 +1066,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
                 /** @description Invalid input */
                 400: {

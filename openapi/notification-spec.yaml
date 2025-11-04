@@ -775,6 +775,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
       summary: Send Test Emails
       tags:
       - Mailing Resource
