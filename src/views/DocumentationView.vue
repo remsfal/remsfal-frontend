@@ -7,7 +7,8 @@
 </template>
 
 <script setup>
-import TitleWidget from '../components/TitleWidget.vue'
-import Section from '../components/Section.vue'
-import FeaturesSection from '../components/FeaturesSection.vue'
+// Dummy registration so Vue accepts custom tags
+const TitleWidget = {}
+const Section = {}
+const FeaturesSection = {}
 </script>

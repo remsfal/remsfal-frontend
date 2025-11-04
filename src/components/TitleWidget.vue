@@ -1,6 +1,4 @@
 <template>
-  <div data-test="title-widget">TitleWidget</div>
+  <!-- stub -->
 </template>
-<script setup>
-// stub minimal
-</script>
+<script setup></script>
