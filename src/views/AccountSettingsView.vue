@@ -98,7 +98,7 @@ async function fetchUserProfile() {
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
-      if (userProfile.value.address) {
+      if (userProfile?.value?.address) {
         addressProfile.value = userProfile.value.address;
         editedAddress.value = { ...userProfile.value.address };
       }
@@ -284,16 +284,13 @@ async function getCity() {
 
     const address = await userService.getCityFromZip(zip);
 
-    if (address && address.length > 0) {
-      const firstAddress = address[0];
-      if (firstAddress) {
-        editedAddress.value.city = firstAddress.city;
-        editedAddress.value.province = firstAddress.province;
-        editedAddress.value.countryCode = firstAddress.countryCode;
-        errorMessage.value.zip = '';
-        errorMessage.value.city = '';
-        errorMessage.value.province = '';
-      }
+    if (address && address.city) {
+      editedAddress.value.city = address.city;
+      editedAddress.value.province = address.province;
+      editedAddress.value.countryCode = address.countryCode;
+      errorMessage.value.zip = '';
+      errorMessage.value.city = '';
+      errorMessage.value.province = '';
     }
   } catch (error) {
     console.log(error);
