@@ -276,6 +276,7 @@ async function getCity() {
   const userService = new UserService();
   const zip = (editedAddress.value.zip ?? '').toString().trim();
 
+  // 1. lokale Eingabeprüfung
   if (!zip) {
     errorMessage.value.zip = 'Bitte geben Sie eine Postleitzahl ein!';
     return;
@@ -285,19 +286,18 @@ async function getCity() {
     return;
   }
 
+  // 2. API-Aufruf – kein Fehlertext bei Backendproblemen
   try {
     const address = await userService.getCityFromZip(zip);
 
-    if (address && address.length > 0) {
-      const firstAddress = address[0];
-      if (firstAddress) {
-        editedAddress.value.city = firstAddress.city;
-        editedAddress.value.province = firstAddress.province;
-        editedAddress.value.countryCode = firstAddress.countryCode;
-        errorMessage.value.zip = '';
-        errorMessage.value.city = '';
-        errorMessage.value.province = '';
-      }
+    if (address && address.city) {
+      editedAddress.value.city = address.city;
+      editedAddress.value.province = address.province;
+      editedAddress.value.countryCode = address.countryCode;
+
+      errorMessage.value.zip = '';
+      errorMessage.value.city = '';
+      errorMessage.value.province = '';
     } else {
       // keine Ergebnisse, aber PLZ gilt trotzdem als gültig
       errorMessage.value.zip = '';
