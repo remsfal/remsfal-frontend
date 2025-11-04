@@ -70,7 +70,7 @@
     "cypress": "^15.5.0",
     "eslint": "^9.38.0",
     "eslint-plugin-cypress": "^5.2.0",
-    "eslint-plugin-vue": "^10.5.0",
+    "eslint-plugin-vue": "^10.5.1",
     "flush-promises": "^1.0.2",
     "globals": "^16.4.0",
     "jsdom": "^27.0.0",
