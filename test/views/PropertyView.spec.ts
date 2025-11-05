@@ -122,6 +122,6 @@ describe('PropertyView.vue', () => {
     await wrapper.vm.save();
     await flushPromises();
 
-    expect(mockPush).toHaveBeenCalledWith('/projects/project1/units');
+    expect(mockPush).toHaveBeenCalledWith({ name: 'RentableUnits', params: { projectId: 'project1' } });
   });
 });
