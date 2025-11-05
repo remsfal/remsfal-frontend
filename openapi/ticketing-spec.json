@@ -286,6 +286,9 @@
           "trade" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/AddressJson"
           }
         }
       },
@@ -1186,7 +1189,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat sessions retrieved"
+            "description" : "Chat sessions retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "404" : {
             "description" : "Project or task not found"
@@ -1257,7 +1265,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat session details retrieved"
+            "description" : "Chat session details retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1297,7 +1310,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat session deleted"
+            "description" : "Chat session deleted",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1389,7 +1407,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat messages retrieved"
+            "description" : "Chat messages retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1501,7 +1524,12 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Chat message updated"
+            "description" : "Chat message updated",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1549,7 +1577,13 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat message retrieved"
+            "description" : "Chat message retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              },
+              "application/octet-stream" : { }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1597,7 +1631,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat message deleted"
+            "description" : "Chat message deleted",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1639,7 +1678,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Participants retrieved"
+            "description" : "Participants retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1689,7 +1733,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Participant removed"
+            "description" : "Participant removed",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1737,7 +1786,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Participant details retrieved"
+            "description" : "Participant details retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1797,7 +1851,12 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Participant role updated"
+            "description" : "Participant role updated",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
