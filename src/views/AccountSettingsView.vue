@@ -464,7 +464,7 @@ const isDisabled = computed(() => {
               </div>
             </div>
             <Message class="required" size="small" severity="secondary" variant="simple">
-              {{ t('accountSettings.userProfile.plichtfelder') }}
+              {{ t('accountSettings.userProfile.requiredFields') }}
             </Message>
           </template>
         </Card>
@@ -597,12 +597,12 @@ const isDisabled = computed(() => {
         <div class="buttons-container centered-buttons">
           <Button severity="info">
             <RouterLink to="/projects">
-              {{ t('accountSettings.userProfile.verwaltung') }}
+              {{ t('accountSettings.userProfile.managementView') }}
             </RouterLink>
           </Button>
           <Button severity="info">
             <RouterLink to="/tenancies">
-              {{ t('accountSettings.userProfile.mieter') }}
+              {{ t('accountSettings.userProfile.tenanciesView') }}
             </RouterLink>
           </Button>
           <Button severity="info">
