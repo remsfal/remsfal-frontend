@@ -3986,6 +3986,7 @@ export interface components {
             phone?: string;
             email?: string;
             trade?: string;
+            address?: components["schemas"]["AddressJson"];
         };
         Cookie: {
             name?: string;

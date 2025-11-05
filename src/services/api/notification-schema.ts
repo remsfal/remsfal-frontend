@@ -155,6 +155,7 @@ export interface components {
             phone?: string;
             email?: string;
             trade?: string;
+            address?: components["schemas"]["AddressJson"];
         };
         /** @description A country item of a list */
         CountryItemJson: {

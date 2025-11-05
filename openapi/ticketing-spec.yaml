@@ -211,6 +211,8 @@ components:
         trade:
           type: string
           maxLength: 255
+        address:
+          $ref: "#/components/schemas/AddressJson"
     CountryItemJson:
       description: A country item of a list
       type: object
