@@ -21,7 +21,7 @@ export function showValidationErrorToast(toast: ToastServiceMethods, details: st
 }
 
 export function navigateToObjects(router: Router, projectId: string) {
-  router.push(`/projects/${projectId}/units`);
+  router.push({ name: 'RentableUnits', params: { projectId } });
 }
 
 export function handleCancel(hasChanges: Ref<boolean>, router: Router, projectId: string) {
