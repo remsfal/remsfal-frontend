@@ -1,20 +1,13 @@
-import { typedRequest } from '@/services/api/typedRequest';
-import type { components } from '@/services/api/platform-schema';
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type ProjectList = components['schemas']['ProjectListJson'];
+export type ProjectList = ApiComponents['schemas']['ProjectListJson'];
 export type ProjectItem = NonNullable<ProjectList['projects']>[number];
-export type Project = components['schemas']['ProjectJson'];
+export type Project = ApiComponents['schemas']['ProjectJson'];
 
 export default class ProjectService {
-  static readonly BASE_PATH = '/api/v1/projects' as const;
-
   // Get projects with pagination
   async getProjects(offset = 0, limit = 10): Promise<ProjectList> {
-    const projectList = await typedRequest<'/api/v1/projects', 'get', ProjectList>(
-      'get',
-      ProjectService.BASE_PATH,
-      { params: { query: { offset, limit } } },
-    );
+    const projectList = await apiClient.get('/api/v1/projects', {params: { offset, limit },});
     console.log('GET projects:', projectList);
     return projectList;
   }
@@ -35,11 +28,7 @@ export default class ProjectService {
 
   // Create a new project
   async createProject(title: string): Promise<Project> {
-    const project = await typedRequest<'/api/v1/projects', 'post', Project>(
-      'post',
-      ProjectService.BASE_PATH,
-      { body: { title } },
-    );
+    const project = await apiClient.post('/api/v1/projects', { title }) as Project;
     console.log('POST create project:', project);
     return project;
   }
@@ -47,11 +36,7 @@ export default class ProjectService {
   // Get a single project
   async getProject(projectId: string): Promise<Project> {
     try {
-      const project = await typedRequest<'/api/v1/projects/{projectId}', 'get', Project>(
-        'get',
-        `${ProjectService.BASE_PATH}/{projectId}`,
-        { pathParams: { projectId } },
-      );
+      const project = await apiClient.get('/api/v1/projects/{projectId}', {pathParams: { projectId },});
       console.log('project returned', project);
       return project;
     } catch (error: any) {
@@ -62,22 +47,14 @@ export default class ProjectService {
 
   // Update a project
   async updateProject(projectId: string, data: Project): Promise<Project> {
-    const updated = await typedRequest<'/api/v1/projects/{projectId}', 'patch', Project>(
-      'patch',
-      `${ProjectService.BASE_PATH}/{projectId}`,
-      { pathParams: { projectId }, body: data },
-    );
+    const updated = await apiClient.patch('/api/v1/projects/{projectId}', data, {pathParams: { projectId },});
     console.log('PATCH update project:', updated);
     return updated;
   }
 
   // Delete a project
   async deleteProject(projectId: string): Promise<void> {
-    await typedRequest<'/api/v1/projects/{projectId}', 'delete'>(
-      'delete',
-      `${ProjectService.BASE_PATH}/{projectId}`,
-      { pathParams: { projectId } },
-    );
+    await apiClient.delete('/api/v1/projects/{projectId}', {pathParams: { projectId },});
     console.log('DELETE project', projectId);
   }
 }
