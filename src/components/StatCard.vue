@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-  <Card class="mb-6">
+  <Card>
     <template #content>
       <div class="p-4 flex items-center gap-4">
         <div

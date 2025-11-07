@@ -206,7 +206,7 @@ const recentActivities = [
     </h1>
 
     <!-- Dynamische Summary Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       <StatCard
         v-for="(card, index) in statCards"
         :key="index"
