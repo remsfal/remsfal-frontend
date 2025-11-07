@@ -211,6 +211,8 @@ components:
         trade:
           type: string
           maxLength: 255
+        address:
+          $ref: "#/components/schemas/AddressJson"
     CountryItemJson:
       description: A country item of a list
       type: object
@@ -775,6 +777,9 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema: {}
       summary: Send Test Emails
       tags:
       - Mailing Resource
