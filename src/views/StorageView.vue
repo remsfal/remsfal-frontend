@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { storageService, type Storage } from '@/services/StorageService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import { handleCancel, showSavingErrorToast, showValidationErrorToast, valuesAreEqual } from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -29,10 +29,10 @@ const originalValues = ref({
 
 const hasChanges = computed(() => {
   return (
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    location.value !== originalValues.value.location ||
-    usableSpace.value !== originalValues.value.usableSpace
+    !valuesAreEqual(title.value, originalValues.value.title) ||
+    !valuesAreEqual(description.value, originalValues.value.description) ||
+    !valuesAreEqual(location.value, originalValues.value.location) ||
+    !valuesAreEqual(usableSpace.value, originalValues.value.usableSpace)
   );
 });
 
