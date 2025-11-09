@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
@@ -16,6 +17,7 @@ const props = defineProps<{
   status?: Status;
 }>();
 const issueService = new IssueService();
+const router = useRouter();
 
 // Reactive state
 const title = ref('');
@@ -108,6 +110,11 @@ const loadMyIssues = async () => {
   }
 };
 
+// --- Handle row selection ---
+const onIssueSelect = (issue: IssueItem) => {
+  router.push({ name: 'IssueEdit', params: { issueId: issue.id } });
+};
+
 // --- Initialize on mount ---
 onMounted(() => {
   loadIssues();
@@ -157,13 +164,13 @@ watch(
 
           <!-- Issues Table -->
           <div v-if="props.owner">
-            <IssueTable :issues="myIssues" />
+            <IssueTable :issues="myIssues" @rowSelect="onIssueSelect" />
           </div>
           <div v-else-if="props.status">
-            <IssueTable :issues="issuesByStatusOpen" />
+            <IssueTable :issues="issuesByStatusOpen" @rowSelect="onIssueSelect" />
           </div>
           <div v-else>
-            <IssueTable :issues="issues" />
+            <IssueTable :issues="issues" @rowSelect="onIssueSelect" />
           </div>
 
           <!-- Create Button -->
