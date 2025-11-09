@@ -12,6 +12,13 @@ const props = defineProps<{
 
 <template>
   <DataTable :value="props.issues" tableStyle="min-width: 60rem" :paginator="true" :rows="5">
+    <template #header>
+      <div class="flex justify-between flex-col sm:flex-row">
+        <div>
+          <!-- Placeholder for future controls if needed -->
+        </div>
+      </div>
+    </template>
     <Column field="title" header="Title" sortable />
     <Column field="owner" header="Owner" sortable />
     <Column field="status" header="Status" sortable />
