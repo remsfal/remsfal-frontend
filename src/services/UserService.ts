@@ -1,8 +1,15 @@
-import { typedRequest } from '../../src/services/api/typedRequest';
-import type { paths } from '../../src/services/api/platform-schema'; // generated OpenAPI types
+import { typedRequest } from '@/services/api/typedRequest';
+import type { paths } from '@/services/api/platform-schema';
 
-type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
-type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
+export type User =
+  paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
+export type UserUpdateRequest =
+  paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
+export type AddressInfo =
+  paths['/api/v1/address']['get']['responses'][200]['content']['application/json'][number];
+
+type UserGetResponse = User;
+type UserPatchRequestBody = UserUpdateRequest;
 
 export default class UserService {
   private static readonly USER_ENDPOINT = '/api/v1/user' as const;
