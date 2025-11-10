@@ -18,12 +18,12 @@ export default class UserService {
     return (addresses.length > 0 ? addresses[0] : {}) as AddressInfo;
   }
 
-   // Update user
+  // Update user
   async updateUser(updatedUser: UserUpdateRequest): Promise<User> {
     return apiClient.patch('/api/v1/user', updatedUser as any) as Promise<User>;
   }
 
- // Delete user, returns boolean success
+  // Delete user, returns boolean success
   async deleteUser(): Promise<boolean> {
     try {
       await apiClient.delete('/api/v1/user');
