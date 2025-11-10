@@ -4,7 +4,7 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
-import { StatusValues } from '@/services/TaskService'; // runtime-safe Status object
+import { StatusValues } from '@/services/IssueService.ts'; // runtime-safe Status object
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -52,38 +52,41 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
       ],
     },
     {
-      label: 'managerMenu.taskManagement',
+      label: 'managerMenu.issueManagement.label', // optional: if i18n key also changed
       items: [
         {
-          label: 'managerMenu.taskManagement.mine',
+          label: 'managerMenu.issueManagement.mine',
           icon: { type: 'fa', name: ['fas', 'list'] },
           navigate: () => {
             if (!currentProjectId) return;
             router.push({
-              name: 'TaskOverview',
+              name: 'IssueOverview',
               params: { projectId: currentProjectId },
               query: { owner: sessionStore.user?.id },
             });
           },
         },
         {
-          label: 'managerMenu.taskManagement.open',
+          label: 'managerMenu.issueManagement.open',
           icon: { type: 'fa', name: ['fas', 'list-check'] },
           navigate: () => {
             if (!currentProjectId) return;
             router.push({
-              name: 'TaskOverview',
+              name: 'IssueOverview',
               params: { projectId: currentProjectId },
               query: { status: StatusValues.OPEN },
             });
           },
         },
         {
-          label: 'managerMenu.taskManagement.all',
+          label: 'managerMenu.issueManagement.all',
           icon: { type: 'fa', name: ['far', 'rectangle-list'] },
           navigate: () => {
             if (!currentProjectId) return;
-            router.push({ name: 'TaskOverview', params: { projectId: currentProjectId } });
+            router.push({
+              name: 'IssueOverview',
+              params: { projectId: currentProjectId },
+            });
           },
         },
       ],

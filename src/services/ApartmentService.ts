@@ -1,22 +1,15 @@
-import { typedRequest } from '@/services/api/typedRequest';
-import type { components } from '@/services/api/platform-schema';
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type Apartment = components['schemas']['ApartmentJson'];
+export type Apartment = ApiComponents['schemas']['ApartmentJson'];
 
 export default class ApartmentService {
-  static readonly BASE_PATH = '/api/v1/projects' as const;
-
   // Create a new apartment
   async createApartment(projectId: string, buildingId: string, data: Apartment): Promise<Apartment> {
-    const apartment = await typedRequest<
+    const apartment = await apiClient.post(
       '/api/v1/projects/{projectId}/buildings/{buildingId}/apartments',
-      'post',
-      Apartment
-    >(
-      'post',
-      `${ApartmentService.BASE_PATH}/{projectId}/buildings/{buildingId}/apartments`,
-      { pathParams: { projectId, buildingId }, body: data },
-    );
+      data,
+      { pathParams: { projectId, buildingId } },
+    ) as Apartment;
     console.log('POST create apartment:', apartment);
     return apartment;
   }
@@ -24,15 +17,10 @@ export default class ApartmentService {
   // Get a single apartment
   async getApartment(projectId: string, apartmentId: string): Promise<Apartment> {
     try {
-      const apartment = await typedRequest<
+      const apartment = await apiClient.get(
         '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-        'get',
-        Apartment
-      >(
-        'get',
-        `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
         { pathParams: { projectId, apartmentId } },
-      );
+      ) as Apartment;
       console.log('GET apartment:', apartment);
       return apartment;
     } catch (error: any) {
@@ -43,15 +31,11 @@ export default class ApartmentService {
 
   // Update an apartment
   async updateApartment(projectId: string, apartmentId: string, data: Apartment): Promise<Apartment> {
-    const updated = await typedRequest<
+    const updated = await apiClient.patch(
       '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-      'patch',
-      Apartment
-    >(
-      'patch',
-      `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
-      { pathParams: { projectId, apartmentId }, body: data },
-    );
+      data,
+      { pathParams: { projectId, apartmentId } },
+    ) as Apartment;
     console.log('PATCH update apartment:', updated);
     return updated;
   }
@@ -59,13 +43,9 @@ export default class ApartmentService {
   // Delete an apartment (returns boolean for success/failure)
   async deleteApartment(projectId: string, apartmentId: string): Promise<boolean> {
     try {
-      await typedRequest<
+      await apiClient.delete(
         '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-        'delete'
-      >(
-        'delete',
-        `${ApartmentService.BASE_PATH}/{projectId}/apartments/{apartmentId}`,
-        { pathParams: { projectId, apartmentId } },
+        {pathParams: { projectId, apartmentId },},
       );
       console.log('DELETE apartment successful', apartmentId);
       return true;

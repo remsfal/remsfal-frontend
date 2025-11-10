@@ -24,26 +24,6 @@
           }
         }
       },
-      "AddressModel" : {
-        "type" : "object",
-        "properties" : {
-          "street" : {
-            "type" : "string"
-          },
-          "city" : {
-            "type" : "string"
-          },
-          "province" : {
-            "type" : "string"
-          },
-          "zip" : {
-            "type" : "string"
-          },
-          "country" : {
-            "$ref" : "#/components/schemas/Locale"
-          }
-        }
-      },
       "ApartmentJson" : {
         "description" : "An apartment inside a building according to WoFIV",
         "type" : "object",
@@ -144,7 +124,7 @@
             "maxLength" : 255
           },
           "address" : {
-            "$ref" : "#/components/schemas/AddressModel"
+            "$ref" : "#/components/schemas/AddressJson"
           }
         }
       },
@@ -200,7 +180,7 @@
           "projectId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "taskId" : {
+          "issueId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "createdAt" : {
@@ -208,6 +188,24 @@
           },
           "modifiedAt" : {
             "$ref" : "#/components/schemas/Instant"
+          }
+        }
+      },
+      "ChatSessionListJson" : {
+        "description" : "A list of chat sessions",
+        "type" : "object",
+        "required" : [ "size" ],
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Number of chat sessions in the list"
+          },
+          "chatSessions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ChatSessionJson"
+            }
           }
         }
       },
@@ -288,6 +286,9 @@
           "trade" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/AddressJson"
           }
         }
       },
@@ -318,15 +319,109 @@
           }
         }
       },
-      "Date" : {
-        "type" : "string",
-        "format" : "date",
-        "examples" : [ "2022-03-10" ]
-      },
       "Instant" : {
         "type" : "string",
         "format" : "date-time",
         "examples" : [ "2022-03-10T16:15:50Z" ]
+      },
+      "IssueItemJson" : {
+        "description" : "An issue item with basic information",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "owner" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }
+      },
+      "IssueJson" : {
+        "description" : "An issue",
+        "type" : "object",
+        "properties" : {
+          "reporterId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "tenancyId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "title" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "ownerId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "blockedBy" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "relatedTo" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "duplicateOf" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }
+      },
+      "IssueListJson" : {
+        "description" : "A list of issues",
+        "type" : "object",
+        "required" : [ "first", "size", "total" ],
+        "properties" : {
+          "first" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Index of the first element in list of total available entries, starting at 1",
+            "examples" : [ 1 ]
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 100,
+            "minimum" : 1,
+            "description" : "Number of elements in list",
+            "default" : 10
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Total number of available elements"
+          },
+          "issues" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueItemJson"
+            }
+          }
+        }
       },
       "LocalDate" : {
         "type" : "string",
@@ -337,66 +432,6 @@
         "type" : "string",
         "format" : "date-time",
         "examples" : [ "2022-03-10T12:15:50" ]
-      },
-      "Locale" : {
-        "type" : "object",
-        "properties" : {
-          "language" : {
-            "type" : "string"
-          },
-          "script" : {
-            "type" : "string"
-          },
-          "country" : {
-            "type" : "string"
-          },
-          "variant" : {
-            "type" : "string"
-          },
-          "extensionKeys" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string",
-              "format" : "char"
-            }
-          },
-          "unicodeLocaleAttributes" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "unicodeLocaleKeys" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "iSO3Language" : {
-            "type" : "string"
-          },
-          "iSO3Country" : {
-            "type" : "string"
-          },
-          "displayLanguage" : {
-            "type" : "string"
-          },
-          "displayScript" : {
-            "type" : "string"
-          },
-          "displayCountry" : {
-            "type" : "string"
-          },
-          "displayVariant" : {
-            "type" : "string"
-          },
-          "displayName" : {
-            "type" : "string"
-          }
-        }
       },
       "MemberRole" : {
         "type" : "string",
@@ -749,143 +784,6 @@
           }
         }
       },
-      "TaskItemJson" : {
-        "description" : "A task item with basic information",
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "title" : {
-            "type" : "string"
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "owner" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }
-      },
-      "TaskItemJson1" : {
-        "description" : "A task item with basic information from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "title" : {
-            "type" : "string"
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          }
-        }
-      },
-      "TaskJson" : {
-        "description" : "A task",
-        "type" : "object",
-        "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "projectId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "title" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "ownerId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "blockedBy" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "relatedTo" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "duplicateOf" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }
-      },
-      "TaskJson1" : {
-        "description" : "A task from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "title" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/Type"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/Status"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "createdAt" : {
-            "$ref" : "#/components/schemas/Date"
-          }
-        }
-      },
-      "TaskListJson" : {
-        "description" : "A list of tasks",
-        "type" : "object",
-        "properties" : {
-          "tasks" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TaskItemJson"
-            }
-          }
-        }
-      },
-      "TaskListJson1" : {
-        "description" : "A list of tasks from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "tasks" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TaskItemJson1"
-            }
-          }
-        }
-      },
       "TenancyItemJson" : {
         "description" : "A tenancy item with basic information from a tenant's perspective",
         "type" : "object",
@@ -993,7 +891,7 @@
       },
       "Type" : {
         "type" : "string",
-        "enum" : [ "TASK", "DEFECT", "MAINTENANCE" ]
+        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "UUID" : {
         "type" : "string",
@@ -1073,40 +971,107 @@
     }
   },
   "paths" : {
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats" : {
-      "post" : {
-        "summary" : "Create a new chat session",
+    "/ticketing/v1/issues" : {
+      "get" : {
+        "summary" : "Retrieve information for all issues.",
         "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
+          "description" : "Maximum number of projects to return",
+          "name" : "limit",
+          "in" : "query",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 500,
+            "exclusiveMinimum" : 0,
+            "default" : "50"
+          },
+          "required" : true
+        }, {
+          "description" : "Offset of the first project to return",
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "minimum" : 0,
+            "default" : "0"
+          },
+          "required" : true
+        }, {
+          "description" : "Filter to return only issues of a specific user",
+          "name" : "owner",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
+          "description" : "Filter to return only issues of a specific project",
+          "name" : "projectId",
+          "in" : "query",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "Filter to return only issuesfor a specific rental",
+          "name" : "rentalId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "Filter to return only issuesfor a specific rental type",
+          "name" : "rentalType",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UnitType"
+          }
+        }, {
+          "description" : "Filter to return only issues with a specific status",
+          "name" : "status",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/Status"
+          }
+        }, {
+          "description" : "Filter to return only issuesfor a specific tenancy",
+          "name" : "tenancyId",
+          "in" : "query",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new issue.",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IssueJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
           "201" : {
-            "description" : "Chat session created"
-          },
-          "400" : {
-            "description" : "Invalid input"
-          },
-          "404" : {
-            "description" : "Project or task not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
+            "description" : "Issue created successfully",
+            "headers" : {
+              "Location" : {
+                "description" : "URL of the new issue"
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1120,48 +1085,119 @@
         } ]
       }
     },
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}" : {
-      "post" : {
-        "summary" : "Add a participant to chat session",
+    "/ticketing/v1/issues/{issueId}" : {
+      "patch" : {
+        "summary" : "Update information of an issue.",
         "parameters" : [ {
-          "description" : "ID of the project",
+          "description" : "ID of the issue",
           "required" : true,
-          "name" : "projectId",
+          "name" : "issueId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
-        }, {
-          "name" : "sessionId",
-          "in" : "path",
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IssueJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The issue does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "get" : {
+        "summary" : "Retrieve information of an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
           "required" : true,
+          "name" : "issueId",
+          "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
-        }, {
+        } ],
+        "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The property does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "delete" : {
+        "summary" : "Delete an existing issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The issue was deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/issues/{issueId}/chats" : {
+      "get" : {
+        "summary" : "Get all chat sessions for an issue",
+        "parameters" : [ {
           "description" : "ID of the task",
           "required" : true,
-          "name" : "taskId",
+          "name" : "issueId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat session joined"
-          },
-          "400" : {
-            "description" : "Invalid input"
+            "description" : "Chat sessions retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "404" : {
-            "description" : "Project, task, or chat session not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
+            "description" : "Project or task not found"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1174,47 +1210,73 @@
           "SecurityScheme" : [ ]
         } ]
       },
+      "post" : {
+        "summary" : "Create a new chat session",
+        "parameters" : [ {
+          "description" : "ID of the task",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Chat session created"
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "404" : {
+            "description" : "Project or task not found"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}" : {
       "get" : {
         "summary" : "Get chat session details",
         "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "name" : "sessionId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "description" : "ID of the task",
           "required" : true,
-          "name" : "taskId",
+          "name" : "issueId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the chat session",
+          "required" : true,
+          "name" : "sessionId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat session details retrieved"
+            "description" : "Chat session details retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
           },
           "404" : {
             "description" : "Project, task, or chat session not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1230,44 +1292,36 @@
       "delete" : {
         "summary" : "Delete chat session",
         "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "name" : "sessionId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "description" : "ID of the task",
           "required" : true,
-          "name" : "taskId",
+          "name" : "issueId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the chat session",
+          "required" : true,
+          "name" : "sessionId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat session deleted"
+            "description" : "Chat session deleted",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
           },
           "404" : {
             "description" : "Project, task, or chat session not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1281,34 +1335,24 @@
         } ]
       }
     },
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages" : {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages" : {
       "post" : {
         "summary" : "Send a chat message in a chat session",
         "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "name" : "sessionId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "description" : "ID of the task",
           "required" : true,
-          "name" : "taskId",
+          "name" : "issueId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the chat session",
+          "required" : true,
+          "name" : "sessionId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "requestBody" : {
@@ -1334,9 +1378,6 @@
           "404" : {
             "description" : "Project, task, or chat session not found"
           },
-          "500" : {
-            "description" : "Internal server error"
-          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
@@ -1348,44 +1389,36 @@
       "get" : {
         "summary" : "Get chat logs in a chat session",
         "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "name" : "sessionId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "description" : "ID of the task",
           "required" : true,
-          "name" : "taskId",
+          "name" : "issueId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the chat session",
+          "required" : true,
+          "name" : "sessionId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat messages retrieved"
+            "description" : "Chat messages retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
           },
           "404" : {
             "description" : "Project, task, or chat session not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1399,34 +1432,24 @@
         } ]
       }
     },
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages/upload" : {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/upload" : {
       "post" : {
         "summary" : "Send a file in a chat session",
         "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "name" : "sessionId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "description" : "ID of the task",
           "required" : true,
-          "name" : "taskId",
+          "name" : "issueId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the chat session",
+          "required" : true,
+          "name" : "sessionId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "requestBody" : {
@@ -1452,9 +1475,6 @@
           "404" : {
             "description" : "Project, task, or chat session not found"
           },
-          "500" : {
-            "description" : "Internal server error"
-          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
@@ -1464,43 +1484,32 @@
         } ]
       }
     },
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/messages/{messageId}" : {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/{messageId}" : {
       "put" : {
         "summary" : "Update a chat message in a chat session",
         "parameters" : [ {
+          "description" : "ID of the task",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
           "description" : "The chat message ID",
           "required" : true,
           "name" : "messageId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the chat session",
           "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "requestBody" : {
@@ -1515,7 +1524,12 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Chat message updated"
+            "description" : "Chat message updated",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1525,9 +1539,6 @@
           },
           "404" : {
             "description" : "Project, task, chat session, or chat message not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1540,53 +1551,45 @@
       "get" : {
         "summary" : "Get a chat message in a chat session",
         "parameters" : [ {
+          "description" : "ID of the task",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
           "description" : "The chat message ID",
           "required" : true,
           "name" : "messageId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the chat session",
           "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat message retrieved"
+            "description" : "Chat message retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              },
+              "application/octet-stream" : { }
+            }
           },
           "400" : {
             "description" : "Invalid input"
           },
           "404" : {
             "description" : "Project, task, chat session, or chat message not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1602,44 +1605,38 @@
       "delete" : {
         "summary" : "Delete a chat message in a chat session",
         "parameters" : [ {
+          "description" : "ID of the task",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
           "description" : "The chat message ID to delete",
           "required" : true,
           "name" : "messageId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the chat session",
           "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Chat message deleted"
+            "description" : "Chat message deleted",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -1650,9 +1647,6 @@
           "404" : {
             "description" : "Project, task, chat session, or chat message not found"
           },
-          "500" : {
-            "description" : "Internal server error"
-          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           }
@@ -1662,48 +1656,40 @@
         } ]
       }
     },
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants" : {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants" : {
       "get" : {
         "summary" : "Get participants in chat session",
         "parameters" : [ {
-          "description" : "ID of the project",
-          "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "name" : "sessionId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "description" : "ID of the task",
           "required" : true,
-          "name" : "taskId",
+          "name" : "issueId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the chat session",
+          "required" : true,
+          "name" : "sessionId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Participants retrieved"
+            "description" : "Participants retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
           },
           "404" : {
             "description" : "Project, task, or chat session not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1717,57 +1703,48 @@
         } ]
       }
     },
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants/{participantId}" : {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}" : {
       "delete" : {
         "summary" : "Remove participant from chat session",
         "parameters" : [ {
+          "description" : "ID of the task",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
           "description" : "The participant ID to remove",
           "required" : true,
           "name" : "participantId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the chat session",
           "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Participant removed"
+            "description" : "Participant removed",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
           },
           "404" : {
             "description" : "Project, task, chat session, or participant not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1783,53 +1760,44 @@
       "get" : {
         "summary" : "Get participant details in chat session",
         "parameters" : [ {
+          "description" : "ID of the task",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
           "description" : "The participant ID",
           "required" : true,
           "name" : "participantId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the chat session",
           "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Participant details retrieved"
+            "description" : "Participant details retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
           },
           "404" : {
             "description" : "Project, task, chat session, or participant not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -1843,43 +1811,32 @@
         } ]
       }
     },
-    "/api/v1/projects/{projectId}/tasks/{taskId}/chats/{sessionId}/participants/{participantId}/role" : {
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}/role" : {
       "put" : {
         "summary" : "Change participant role in chat session",
         "parameters" : [ {
+          "description" : "ID of the task",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
           "description" : "The participant ID",
           "required" : true,
           "name" : "participantId",
           "in" : "path",
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "ID of the project",
+          "description" : "ID of the chat session",
           "required" : true,
-          "name" : "projectId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
           "name" : "sessionId",
           "in" : "path",
-          "required" : true,
           "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          }
-        }, {
-          "description" : "ID of the task",
-          "required" : true,
-          "name" : "taskId",
-          "in" : "path",
-          "schema" : {
-            "type" : "string",
-            "pattern" : "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            "$ref" : "#/components/schemas/UUID"
           }
         } ],
         "requestBody" : {
@@ -1894,16 +1851,18 @@
         },
         "responses" : {
           "200" : {
-            "description" : "Participant role updated"
+            "description" : "Participant role updated",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
           },
           "404" : {
             "description" : "Project, task, chat session, or participant not found"
-          },
-          "500" : {
-            "description" : "Internal server error"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
