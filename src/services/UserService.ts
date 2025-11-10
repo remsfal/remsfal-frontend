@@ -1,57 +1,33 @@
-import { typedRequest } from '@/services/api/typedRequest';
-import type { paths } from '@/services/api/platform-schema';
+import { apiClient, type ApiComponents, type ApiPaths } from '@/services/ApiClient.ts';
 
-export type User =
-  paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
-export type UserUpdateRequest =
-  paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
-export type AddressInfo =
-  paths['/api/v1/address']['get']['responses'][200]['content']['application/json'][number];
-
-type UserGetResponse = User;
-type UserPatchRequestBody = UserUpdateRequest;
+export type User = ApiComponents['schemas']['UserJson'];
+export type AddressInfo = ApiComponents['schemas']['AddressJson'];
+export type UserUpdateRequest = ApiPaths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
 
 export default class UserService {
-  private static readonly USER_ENDPOINT = '/api/v1/user' as const;
-  private static readonly ADDRESS_ENDPOINT = '/api/v1/address' as const;
-
-  // Get current user data, typed from OpenAPI
-  async getUser(): Promise<UserGetResponse> {
-    return typedRequest<typeof UserService.USER_ENDPOINT, 'get'>(
-      'get',
-      UserService.USER_ENDPOINT
-    );
+  // Get current user data
+  async getUser(): Promise<User> {
+    return apiClient.get('/api/v1/user') as Promise<User>;
   }
 
-  // Get city info from zip code, typed from OpenAPI
-  getCityFromZip(zip: string) {
-    return typedRequest<typeof UserService.ADDRESS_ENDPOINT, 'get'>(
-      'get',
-      UserService.ADDRESS_ENDPOINT,
-      {params: {query: { zip },},}
-    );
+  // Get city info from zip code - API returns array, take first element
+  async getCityFromZip(zip: string): Promise<AddressInfo> {
+    const result = await apiClient.get('/api/v1/address', {params: { zip },});
+    // API returns an array of addresses, we take the first one
+    const addresses = Array.isArray(result) ? result : [];
+    return (addresses.length > 0 ? addresses[0] : {}) as AddressInfo;
   }
 
-  async updateUser(updatedUser: Partial<UserPatchRequestBody>) {
-    await typedRequest<typeof UserService.USER_ENDPOINT, 'patch'>(
-      'patch',
-      UserService.USER_ENDPOINT,
-      { body: updatedUser }
-    );
-
-    // Immer den frischen Stand laden (falls Backend 204/boolean/alten Stand liefert)
-    return this.getUser();
+   // Update user
+  async updateUser(updatedUser: UserUpdateRequest): Promise<User> {
+    return apiClient.patch('/api/v1/user', updatedUser as any) as Promise<User>;
   }
 
-
-  // Delete user, returns boolean success
-  async deleteUser() {
+ // Delete user, returns boolean success
+  async deleteUser(): Promise<boolean> {
     try {
-      await typedRequest<typeof UserService.USER_ENDPOINT, 'delete'>(
-        'delete',
-        UserService.USER_ENDPOINT
-      );
-     
+      await apiClient.delete('/api/v1/user');
+      console.log('DELETE user');
       return true;
     } catch (error) {
       console.error('DELETE user failed:', error);
