@@ -1,4 +1,3 @@
-<!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -106,47 +105,9 @@ onMounted(async () => {
   }
 });
 
-async function fetchUserProfile() {
-  try {
-    const userService = new UserService();
-    const profile = await userService.getUser();
-    if (profile) {
-      userProfile.value = profile;
-      editedUserProfile.value = { ...profile };
-      if (userProfile.value.address) {
-        addressProfile.value = userProfile.value.address;
-        editedAddress.value = { ...userProfile.value.address };
-      }
-    }
-  } catch (error) {
-    console.error('Das Benutzerprofil konnte nicht gefunden werden', error);
-  }
-}
-
-function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string {
-  const value =
-    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
-  return typeof value === 'string' ? value : '';
-}
-
-
-function getUpdatedAddressValue(field: keyof Address): string {
-  const value =
-    (editedAddress.value as Record<keyof Address, unknown>)?.[field] ??
-    (addressProfile.value as Record<keyof Address, unknown>)?.[field];
-  return typeof value === 'string' ? value : '';
-}
 // Email validation and change tracking (Neu)
 const emailError = ref('');
 
-function onEmailInput() {
-  const v = editedUserProfile.value.email ?? '';
-  emailError.value =
-    v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
-      ? ''
-      : 'Bitte gültige E-Mail eingeben!';
-  changes.value = true; // sorgt dafür, dass der Speichern-Button erscheint
-}
 function validateEmail() {
    const v = editedUserProfile.value.email?.trim() ?? '';
   if (!v) {
@@ -186,19 +147,40 @@ async function saveProfile(): Promise<void> {
       // ggf. weitere erlaubte Felder deiner API hier ergänzen
     ];
 
-    const editedFiltered: Partial<UserPatchRequestBody> = {};
-    userFields.forEach((f) => {
-      // @ts-ignore – baseUser stammt aus GET, editedUser aus PATCH-Body
-      const newVal = editedUser[f];
-      // @ts-ignore
-      const oldVal = (baseUser as any)[f];
-      if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
-        // leere Strings nicht senden
-        if (!(typeof newVal === 'string' && newVal.trim() === '')) {
-          (editedFiltered as any)[f] = newVal;
-        }
-      }
-    });
+type Patch = Partial<UserPatchRequestBody>;
+
+// helper: assign a correctly typed field into the patch object
+function assignPatch<K extends keyof UserPatchRequestBody>(
+  obj: Patch,
+  key: K,
+  value: UserPatchRequestBody[K]
+) {
+  // cast only the container to a key-safe record; no `any`
+  (obj as Record<K, UserPatchRequestBody[K]>)[key] = value;
+}
+
+const editedFiltered: Patch = {};
+
+userFields.forEach((f) => {
+  // make the loop key a real model key
+  const key = f as keyof UserPatchRequestBody;
+
+  // assuming `editedUser` is Partial<UserPatchRequestBody>
+  const newVal = editedUser[key];
+  const oldVal = (baseUser as Patch)[key];
+
+  // IMPORTANT: guard undefined so TS knows we're assigning a real value
+  if (newVal === undefined) return;
+
+  // only send if it actually changed
+  if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+    // don't send empty strings
+    if (!(typeof newVal === 'string' && newVal.trim() === '')) {
+      assignPatch(editedFiltered, key, newVal);
+    }
+  }
+});
+
 
     // 3) Adresse nur mitsenden, wenn sie sich geändert hat UND vollständig/valide ist
     let addressPatch: Partial<Address> | undefined;
@@ -230,8 +212,8 @@ async function saveProfile(): Promise<void> {
     // 4) Finalen PATCH-Body zusammenstellen
     const patchBody: Partial<UserPatchRequestBody> = clean({
       ...editedFiltered,
-      ...(addressPatch ? { address: addressPatch as any } : {}),
-    });
+      ...(addressPatch ? { address: addressPatch} : {}),
+    } satisfies Partial<UserPatchRequestBody>);
 
     if (Object.keys(patchBody).length === 0) {
       // Nichts geändert – Save-Dialog trotzdem positiv?
@@ -286,7 +268,12 @@ async function saveProfile(): Promise<void> {
   saveError.value = false;
   changes.value = false;
 }
-catch (e: any) {
+catch (err: unknown) {
+  const e = err as {
+    response?: { data?: { message?: string } };
+    message?: string;
+  };
+
   console.error('Fehler beim Aktualisieren des Benutzerprofils:', e);
   const serverMsg =
     e?.response?.data?.message ||
@@ -483,38 +470,74 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
       return false;
     }
   }
-
   return true;
 }
 
 // Entfernt undefined, null, '' rekursiv
-function clean<T extends Record<string, any>>(obj: T): T {
-  const out: any = Array.isArray(obj) ? [] : {};
-  Object.entries(obj).forEach(([k, v]) => {
-    if (v === undefined || v === null) return;
-    if (typeof v === 'string' && v.trim() === '') return;
-    if (typeof v === 'object' && v !== null) {
-      const nested = clean(v as any);
-      if (Object.keys(nested).length === 0) return;
+function clean<T extends Record<string, unknown>>(obj: T): T {
+  if (Array.isArray(obj)) {
+    const out: unknown[] = [];
+    for (const v of obj as unknown[]) {
+      if (v === undefined || v === null) continue;
+      if (typeof v === 'string' && v.trim() === '') continue;
+
+      if (typeof v === 'object') {
+        const nested = clean(v as Record<string, unknown>);
+        const isEmptyArray = Array.isArray(nested) && nested.length === 0;
+        const isEmptyObject =
+          typeof nested === 'object' &&
+          nested !== null &&
+          !Array.isArray(nested) &&
+          Object.keys(nested as Record<string, unknown>).length === 0;
+        if (isEmptyArray || isEmptyObject) continue;
+        out.push(nested);
+      } else {
+        out.push(v);
+      }
+    }
+    return out as unknown as T;
+  }
+
+  // Objekt-Zweig
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === undefined || v === null) continue;
+    if (typeof v === 'string' && v.trim() === '') continue;
+
+    if (typeof v === 'object') {
+      const nested = clean(v as Record<string, unknown>);
+      const isEmptyArray = Array.isArray(nested) && nested.length === 0;
+      const isEmptyObject =
+        typeof nested === 'object' &&
+        nested !== null &&
+        !Array.isArray(nested) &&
+        Object.keys(nested as Record<string, unknown>).length === 0;
+      if (isEmptyArray || isEmptyObject) continue;
       out[k] = nested;
     } else {
       out[k] = v;
     }
-  });
-  return out;
+  }
+  return out as T;
 }
 
 // Liefert nur Felder, die sich geändert haben (shallow)
-function diff<T extends Record<string, any>>(orig: T, edited: T): Partial<T> {
+function diff<T extends Record<string, unknown>>(orig: T, edited: T): Partial<T> {
   const patch: Partial<T> = {};
-  Object.keys(edited || {}).forEach((key) => {
-    const k = key as keyof T;
-    if (JSON.stringify(edited?.[k]) !== JSON.stringify(orig?.[k])) {
-      (patch as any)[k] = edited?.[k];
+
+  for (const key of Object.keys(edited ?? {}) as (keyof T)[]) {
+    const newVal = edited[key];
+    const oldVal = orig[key];
+
+    // Vergleiche per JSON für einfache Gleichheit
+    if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+      patch[key] = newVal;
     }
-  });
+  }
+
   return patch;
 }
+
 
 // Check if any error message or email error is not empty to disable save button
 const isDisabled = computed(() => {
@@ -525,7 +548,7 @@ const isDisabled = computed(() => {
 
 watch(
   [editedUserProfile, editedAddress],
-  ([newUser, newAddr], [oldUser, oldAddr]) => {
+  ([newUser, newAddr]) => {
     // vergleiche, ob sich irgendwas geändert hat
     if (
       !compareObjects(userProfile.value || {}, newUser as User) ||
@@ -591,30 +614,28 @@ watch(
               </div>
 
               <div class="input-container">
-              
-<label class="label" for="eMail">E-Mail:</label>
-<InputText
-  id="eMail"
-  name="email"
-  type="email"
-  inputmode="email"
-  autocomplete="email"
-  v-model="editedUserProfile.email"
-  required
-  :invalid="emailError !== ''"
-  @input="validateEmail"
-  @blur="validateEmail"
-/>
-<Message
-  class="error"
-  :class="{ active: emailError }"
-  size="small"
-  severity="error"
-  variant="simple"
->
-  {{ emailError }}
-</Message>
-
+                <label class="label" for="eMail">E-Mail:</label>
+                <InputText
+                  id="eMail"
+                  v-model="editedUserProfile.email"
+                  name="email"
+                  type="email"
+                  inputmode="email"
+                  autocomplete="email"
+                  required
+                  :invalid="emailError !== ''"
+                  @input="validateEmail"
+                  @blur="validateEmail"
+                />
+                <Message
+                  class="error"
+                  :class="{ active: emailError }"
+                  size="small"
+                  severity="error"
+                  variant="simple"
+                >
+                  {{ emailError }}
+                </Message>
               </div>
               <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
