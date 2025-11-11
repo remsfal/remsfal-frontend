@@ -482,12 +482,12 @@ const isDisabled = computed(() => {
         </Card>
         <Card>
           <template #title>
-            <h4>Meine Adresse</h4>
+            <h4>{{ t('accountSettings.address.title') }}</h4>
           </template>
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="street">Straße und Hausnummer*:</label>
+                <label class="label" for="street">{{ t('accountSettings.address.street') }}*:</label>
                 <InputText
                   id="street"
                   v-model="editedAddress.street"
@@ -505,7 +505,7 @@ const isDisabled = computed(() => {
                 </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Postleitzahl*:</label>
+                <label class="label" for="zip">{{ t('accountSettings.address.zip') }}*:</label>
                 <InputText
                   id="zip"
                   v-model="editedAddress.zip"
@@ -523,7 +523,7 @@ const isDisabled = computed(() => {
                 </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Stadt*:</label>
+                <label class="label" for="city">{{ t('accountSettings.address.city') }}*:</label>
                 <InputText
                   id="city"
                   v-model="editedAddress.city"
@@ -541,7 +541,7 @@ const isDisabled = computed(() => {
                 </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Bundesland*:</label>
+                <label class="label" for="province">{{ t('accountSettings.address.province') }}*:</label>
                 <InputText
                   id="province"
                   v-model="editedAddress.province"
@@ -559,7 +559,7 @@ const isDisabled = computed(() => {
                 </Message>
               </div>
               <div class="input-container">
-                <label for="country" class="label">Land*:</label>
+                <label for="country" class="label">{{ t('accountSettings.address.country') }}*:</label>
                 <select
                   id="country"
                   v-model="editedAddress.countryCode"
@@ -577,7 +577,7 @@ const isDisabled = computed(() => {
               </div>
 
               <div class="input-container">
-                <label for="countryCode" class="label">Länderkürzel*:</label>
+                <label for="countryCode" class="label">{{ t('accountSettings.address.countryCode') }}*:</label>
                 <InputText
                   id="countryCode"
                   v-model="editedAddress.countryCode"
@@ -598,7 +598,7 @@ const isDisabled = computed(() => {
               </div>
             </div>
             <Message class="required" size="small" variant="simple">
-              *Pflichtfelder
+              {{ t('accountSettings.userProfile.requiredFields') }}
             </Message>
           </template>
         </Card>
