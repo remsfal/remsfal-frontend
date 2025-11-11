@@ -28,7 +28,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
             };
         };
@@ -153,6 +155,7 @@ export interface components {
             phone?: string;
             email?: string;
             trade?: string;
+            address?: components["schemas"]["AddressJson"];
         };
         /** @description A country item of a list */
         CountryItemJson: {
