@@ -11,6 +11,7 @@
     "build": "run-s type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "coverage": "node scripts/merge-coverage.js",
+    "coverage:unit": "vitest run --coverage && nyc report --temp-dir .nyc_output/vitest --reporter=lcov --reporter=text --reporter=html",
     "cypress": "cypress open",
     "test": "run-s test:unit test:e2e",
     "test:unit": "vitest run",
