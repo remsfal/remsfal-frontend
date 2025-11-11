@@ -1,6 +1,6 @@
 {
   "reporter": ["lcov", "text", "json", "html"],
-  "report-dir": "coverage-cypress",
+  "report-dir": "coverage",
   "temp-dir": ".nyc_output",
   "include": [
     "src/**/*.{ts,js,vue}"
