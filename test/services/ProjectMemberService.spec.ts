@@ -1,11 +1,9 @@
-import {describe, it, expect, beforeAll, afterAll, afterEach} from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { projectMemberService, type ProjectMember } from '../../src/services/ProjectMemberService';
 import { server } from '../mocks/server';
-import { http, HttpResponse } from 'msw';
+import { testErrorHandling, useTestServer } from '../utils/testHelpers';
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+useTestServer(server);
 
 describe('projectMemberService (MSW)', () => {
   const projectId = 'project123';
@@ -21,17 +19,13 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should handle errors when fetching members', async () => {
-    server.use(
-      http.get('/api/v1/projects/:projectId/members', () =>
-        HttpResponse.json({ message: 'Internal Server Error' }, { status: 500 }),
-      ),
+    await testErrorHandling(
+      server,
+      '/api/v1/projects/:projectId/members',
+      'get',
+      500,
+      () => projectMemberService.getMembers(projectId),
     );
-
-    try {
-      await projectMemberService.getMembers(projectId);
-    } catch (err) {
-      expect(err).toBeInstanceOf(Error);
-    }
   });
 
   it('should add a member to a project', async () => {
@@ -43,17 +37,13 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should handle errors when adding a member', async () => {
-    server.use(
-      http.post('/api/v1/projects/:projectId/members', () =>
-        HttpResponse.json({ message: 'Bad Request' }, { status: 400 }),
-      ),
+    await testErrorHandling(
+      server,
+      '/api/v1/projects/:projectId/members',
+      'post',
+      400,
+      () => projectMemberService.addMember(projectId, member),
     );
-
-    try {
-      await projectMemberService.addMember(projectId, member);
-    } catch (err) {
-      expect(err).toBeInstanceOf(Error);
-    }
   });
 
   it('should update a member role in a project', async () => {
@@ -62,17 +52,13 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should handle errors when updating a member role', async () => {
-    server.use(
-      http.patch('/api/v1/projects/:projectId/members/:memberId', () =>
-        HttpResponse.json({ message: 'Not Found' }, { status: 404 }),
-      ),
+    await testErrorHandling(
+      server,
+      '/api/v1/projects/:projectId/members/:memberId',
+      'patch',
+      404,
+      () => projectMemberService.updateMemberRole(projectId, 'member123', { role: member.role }),
     );
-
-    try {
-      await projectMemberService.updateMemberRole(projectId, 'member123', { role: member.role });
-    } catch (err) {
-      expect(err).toBeInstanceOf(Error);
-    }
   });
 
   it('should remove a member from a project', async () => {
@@ -81,16 +67,12 @@ describe('projectMemberService (MSW)', () => {
   });
 
   it('should handle errors when removing a member', async () => {
-    server.use(
-      http.delete('/api/v1/projects/:projectId/members/:memberId', () =>
-        HttpResponse.json({ message: 'Forbidden' }, { status: 403 }),
-      ),
+    await testErrorHandling(
+      server,
+      '/api/v1/projects/:projectId/members/:memberId',
+      'delete',
+      403,
+      () => projectMemberService.removeMember(projectId, 'member123'),
     );
-
-    try {
-      await projectMemberService.removeMember(projectId, 'member123');
-    } catch (err) {
-      expect(err).toBeInstanceOf(Error);
-    }
   });
 });

@@ -43,6 +43,7 @@ describe('ProjectTenancies.vue', () => {
     vi.spyOn(tenancyService, 'fetchTenancyData').mockResolvedValue(mockTenancies);
 
     wrapper = mount(ProjectTenancies, {
+      props: {projectId: 'proj-1',},
       global: {
         plugins: [PrimeVue, i18n],
         components: { Dialog },

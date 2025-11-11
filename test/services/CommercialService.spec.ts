@@ -56,5 +56,14 @@ describe('CommercialService with MSW', () => {
 
   test('deleteCommercial succeeds', async () => {
     await expect(commercialService.deleteCommercial(projectId, commercialId)).resolves.toBe(true);
-  });  
+  });
+
+  test('getCommercial handles errors', async () => {
+    await expect(commercialService.getCommercial(projectId, 'not-found')).rejects.toThrow();
+  });
+
+  test('deleteCommercial returns false on error', async () => {
+    const result = await commercialService.deleteCommercial(projectId, 'cannot-delete');
+    expect(result).toBe(false);
+  });
 });
