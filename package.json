@@ -41,7 +41,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "idb": "^8.0.3",
     "lightningcss": "^1.30.2",
-    "msw": "^2.11.6",
+    "msw": "^2.12.1",
     "pinia": "^3.0.3",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.9",
@@ -103,6 +103,6 @@
     }
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.52.4"
+    "@rollup/rollup-linux-x64-gnu": "^4.53.1"
   }
 }
