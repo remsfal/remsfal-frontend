@@ -128,7 +128,8 @@ function abort() {
 
       <div class="flex justify-end gap-3 mt-6">
         <Button type="button" :label="t('button.cancel')" severity="secondary" @click="abort" />
-        <Button type="submit" :label="t('button.create')" icon="pi pi-plus" />
+        <!-- Added @click.prevent to trigger createProject on button click -->
+        <Button type="submit" :label="t('button.create')" icon="pi pi-plus" @click.prevent="createProject" />
       </div>
     </form>
   </Dialog>
