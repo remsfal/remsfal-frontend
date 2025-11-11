@@ -5,7 +5,7 @@
  * Script to merge coverage from both Vitest unit tests and Cypress E2E tests using NYC
  */
 import { execSync } from 'child_process';
-import { existsSync, rmSync, cpSync, readdirSync } from 'fs';
+import { existsSync, rmSync, cpSync } from 'fs';
 import { join } from 'path';
 
 const nycOutput = '.nyc_output';
