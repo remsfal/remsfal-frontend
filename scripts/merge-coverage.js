@@ -38,24 +38,33 @@ try {
     console.warn('⚠️  No Vitest coverage-final.json found');
   }
 
-  // Step 4: Run Cypress E2E tests with coverage (if available)
-  console.log('🌐 Running Cypress E2E tests...');
+  // Step 4: Run Cypress E2E tests with coverage (if not already collected)
+  console.log('🌐 Checking for Cypress E2E coverage...');
+  
+  // Check if cypress coverage files exist in .nyc_output
+  const cypressCoverageExists = existsSync(join(nycOutput, 'out.json'));
+  
+  if (cypressCoverageExists) {
+    console.log('✓ Found existing Cypress coverage data, skipping E2E test execution');
+  } else if (process.env.SKIP_E2E !== 'true') {
+    console.log('📝 No existing coverage found, running E2E tests...');
+    try {
+      // Build the project first
+      console.log('🔨 Building project for E2E tests...');
+      execSync('npm run build', { stdio: 'inherit', shell: false });
 
-  try {
-    // Build the project first
-    console.log('🔨 Building project for E2E tests...');
-    execSync('npm run build', { stdio: 'inherit', shell: false });
-
-    // Start server and run E2E tests
-    console.log('🚀 Running E2E tests with coverage collection...');
-    execSync('npm run test:e2e', {
-      stdio: 'inherit',
-      shell: false,
-    });
-
-  } catch (error) {
-    console.warn('⚠️  E2E tests failed or are not available, continuing with Vitest coverage only...');
-    console.debug('E2E error:', error.message);
+      // Start server and run E2E tests
+      console.log('🚀 Running E2E tests with coverage collection...');
+      execSync('npm run test:e2e', {
+        stdio: 'inherit',
+        shell: false,
+      });
+    } catch (error) {
+      console.warn('⚠️  E2E tests failed or are not available, continuing with Vitest coverage only...');
+      console.debug('E2E error:', error.message);
+    }
+  } else {
+    console.warn('⚠️  SKIP_E2E is set, skipping E2E test execution. Cypress coverage should be collected separately.');
   }
 
   // Step 5: Generate merged coverage report using NYC

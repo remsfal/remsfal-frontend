@@ -47,6 +47,8 @@ jobs:
       - name: Build Coverage Report (only on LTS version)
         if: ${{ matrix.node-version == 'lts/*' }}
         run: npm run coverage
+        env:
+          SKIP_E2E: 'true'
       - name: Upload Coverage Reports (only on LTS version)
         if: ${{ matrix.node-version == 'lts/*' }}
         uses: actions/upload-artifact@v5
