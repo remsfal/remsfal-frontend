@@ -8,6 +8,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       coverage: {
+        provider: 'istanbul',
         reporter: ['lcov', 'text', 'json', 'html'],
         reportsDirectory: 'coverage-vitest',
         include: ['src/**/*.ts', 'src/**/*.vue'],
