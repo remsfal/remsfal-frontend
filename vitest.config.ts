@@ -7,6 +7,7 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      maxWorkers: '50%',
       coverage: {
         provider: 'istanbul',
         reporter: ['json', 'text'],
