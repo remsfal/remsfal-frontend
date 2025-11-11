@@ -17,7 +17,7 @@
   "accountSettings.address.country": "Country",
   "accountSettings.address.countryCode": "Country Code",
   "accountSettings.address.selectCountry": "Select Country",
-  "accountSettings.userProfile.pflichtfelder": "*Required Fields",
+  "accountSettings.userProfile.requiredFields": "*Required Fields",
   "accountSettings.address.street": "Street and House Number",
   "accountSettings.delete.delete": "Delete Account",
   "accountSettings.delete.deleteWarning": "Are you sure you want to delete your account? All your data will be irretrievably deleted.",

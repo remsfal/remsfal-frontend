@@ -586,7 +586,7 @@ const isDisabled = computed(() => {
               </div>
             </div>
             <Message class="required" size="small" variant="simple">
-              {{ t('accountSettings.userProfile.pflichtfelder') }}
+              {{ t('accountSettings.userProfile.requiredFields') }}
             </Message>
           </template>
         </Card>
