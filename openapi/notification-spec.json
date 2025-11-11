@@ -286,6 +286,9 @@
           "trade" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/AddressJson"
           }
         }
       },
@@ -980,7 +983,12 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
           }
         },
         "summary" : "Send Test Emails",
