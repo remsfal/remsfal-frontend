@@ -8,9 +8,18 @@ export default mergeConfig(
   defineConfig({
     test: {
       coverage: {
-        reporter: ['lcov', 'text', 'json', 'html'],
-        reportsDirectory: 'coverage-vitest',
-        exclude: [...(configDefaults.coverage?.exclude || []), 'scripts/**'],
+        provider: 'istanbul',
+        reporter: ['json', 'text'],
+        reportsDirectory: '.nyc_output/vitest',
+        include: ['src/**/*.ts', 'src/**/*.vue'],
+        exclude: [
+          ...(configDefaults.coverage?.exclude || []),
+          'scripts/**',
+          'public/**',
+          'dist/**',
+          'src/assets/**',
+          'src/services/api/*-schema.ts',
+        ],
       },
       environment: 'jsdom',
       globals: true,
