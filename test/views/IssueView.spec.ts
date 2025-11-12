@@ -22,33 +22,35 @@ describe('IssueView', () => {
 
   describe('Button rendering and interaction', () => {
     it('renders the button when owner is defined', () => {
-      const button = wrapper.find('.my-btn');
-      expect(button.exists()).toBe(true);
-      expect(button.text()).toBe('Aufgabe erstellen');
+      const buttons = wrapper.findAllComponents({ name: 'Button' });
+      const createButton = buttons.find(b => b.text().includes('Aufgabe erstellen'));
+      expect(createButton).toBeDefined();
+      expect(createButton?.text()).toBe('Aufgabe erstellen');
     });
 
     it('sets "visible" to true when the button is clicked', async () => {
-      const button = wrapper.find('.my-btn');
-      await button.trigger('click');
+      const buttons = wrapper.findAllComponents({ name: 'Button' });
+      const createButton = buttons.find(b => b.text().includes('Aufgabe erstellen'));
+      await createButton?.trigger('click');
       expect((wrapper.vm as IssueViewVm).visible).toBe(true);
     });
   });
 
   describe('Header rendering', () => {
     it('renders "Meine Aufgaben" when owner prop is defined', () => {
-      const header = wrapper.find('h2');
+      const header = wrapper.find('h1');
       expect(header.text()).toBe('Meine Aufgaben');
     });
 
     it('renders "Offene Aufgaben" when status prop is defined and owner is undefined', async () => {
       await wrapper.setProps({ owner: null, status: 'OPEN' });
-      const header = wrapper.find('h2');
+      const header = wrapper.find('h1');
       expect(header.text()).toBe('Offene Aufgaben');
     });
 
     it('renders "Alle Aufgaben" when neither owner nor status is defined', async () => {
       await wrapper.setProps({ owner: null, status: null });
-      const header = wrapper.find('h2');
+      const header = wrapper.find('h1');
       expect(header.text()).toBe('Alle Aufgaben');
     });
   });
