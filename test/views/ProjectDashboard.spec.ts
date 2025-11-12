@@ -52,4 +52,25 @@ describe('ProjectDashboard.vue', () => {
     expect(wrapper.findAllComponents(Chart).length).toBeGreaterThanOrEqual(4); 
 
   });
+
+  it('renders the dashboard page with correct German translation', () => {
+    const i18n = createI18n({
+      legacy: false,
+      locale: 'de',
+      messages: {de: {projectDashboard: {title: 'Dies ist die Projekt-Dashboard-Seite für Projekt {0}.',},},},
+    });
+
+    const wrapper = mount(ProjectDashboard, {
+      global: {
+        plugins: [PrimeVue, i18n],
+        components: {
+          Card,
+          Chart,
+        },
+      },
+    });
+
+    const text = wrapper.text().replace(/\s+/g, ' ');
+    expect(text).toContain('Dies ist die Projekt-Dashboard-Seite für Projekt 1');
+  });
 });
