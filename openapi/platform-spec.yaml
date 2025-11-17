@@ -2797,7 +2797,7 @@ paths:
       summary: Retrieve information for all tenancies of a lessee.
       responses:
         "200":
-          description: OK
+          description: List of tenancies successfully returned
           content:
             application/json:
               schema:
@@ -2820,7 +2820,7 @@ paths:
           $ref: "#/components/schemas/UUID"
       responses:
         "200":
-          description: The tenancy exists
+          description: Apartment for specified tenancy and rental ID returned
           content:
             application/json:
               schema:
@@ -2846,6 +2846,12 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: Building for specified tenancy and rental ID returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyJson1"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -2867,6 +2873,12 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: Commercial for specified tenancy and rental ID returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyJson1"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -2888,6 +2900,12 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: Property for specified tenancy and rental ID returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyJson1"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -2909,6 +2927,12 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: Site for specified tenancy and rental ID returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyJson1"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -2930,6 +2954,12 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: Storage for specified tenancy and rental ID returned.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyJson1"
         "401":
           description: No user authentication provided via session cookie
         "404":
