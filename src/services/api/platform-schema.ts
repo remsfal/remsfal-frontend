@@ -3449,7 +3449,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
+                /** @description List of tenancies successfully returned */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -3490,7 +3490,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The tenancy exists */
+                /** @description Apartment for specified tenancy and rental ID returned */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -3545,6 +3545,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Building for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3591,6 +3600,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Commercial for specified tenancy and rental ID returned. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3637,6 +3655,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Property for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3683,6 +3710,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Site for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3729,6 +3765,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Storage for specified tenancy and rental ID returned. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
