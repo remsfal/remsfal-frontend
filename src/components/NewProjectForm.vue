@@ -109,6 +109,7 @@ function abort() {
 <template>
   <Dialog
     v-model:visible="visible"
+    modal
     :header="t('newProjectForm.input.name')"
     :style="{ width: '35rem' }"
     :closable="true"
