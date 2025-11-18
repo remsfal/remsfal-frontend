@@ -2,8 +2,6 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueTable from '../../src/components/IssueTable.vue';
 import DataTable from 'primevue/datatable';
-import Button from 'primevue/button';
-import { RouterLinkStub } from '@vue/test-utils';
 import { type IssueItem } from '../../src/services/IssueService';
 
 const mockIssues: IssueItem[] = [
@@ -22,10 +20,7 @@ describe('IssueTable', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    wrapper = mount(IssueTable, {
-      props: { issues: mockIssues },
-      global: { stubs: { RouterLink: RouterLinkStub } }, // Stub router links
-    });
+    wrapper = mount(IssueTable, { props: { issues: mockIssues } });
   });
 
   it('renders the DataTable with issues', () => {
@@ -46,16 +41,14 @@ describe('IssueTable', () => {
     });
   });
 
-  it('renders edit button with correct RouterLink', () => {
-    const editButtons = wrapper.findAllComponents(Button);
-    expect(editButtons.length).toBe(mockIssues.length);
-
-    mockIssues.forEach((issue, index) => {
-      const routerLink = wrapper.findAllComponents(RouterLinkStub)[index];
-      expect(routerLink.props().to).toEqual({
-        name: 'IssueEdit',
-        params: { issueId: issue.id }, // <-- fixed param name
-      });
-    });
+  it('emits rowSelect event when row is selected', async () => {
+    const dataTable = wrapper.findComponent(DataTable);
+    
+    // Simulate row selection
+    await dataTable.vm.$emit('rowSelect', { data: mockIssues[0] });
+    
+    // Check that the event was emitted
+    expect(wrapper.emitted('rowSelect')).toBeTruthy();
+    expect(wrapper.emitted('rowSelect')?.[0]).toEqual([mockIssues[0]]);
   });
 });
