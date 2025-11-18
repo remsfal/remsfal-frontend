@@ -276,7 +276,7 @@ async function getCity() {
   const userService = new UserService();
   const zip = (editedAddress.value.zip ?? '').toString().trim();
 
-  // 1. lokale Eingabeprüfung
+  // 1. local input validation
   if (!zip) {
     errorMessage.value.zip = 'Bitte geben Sie eine Postleitzahl ein!';
     return;
@@ -286,7 +286,7 @@ async function getCity() {
     return;
   }
 
-  // 2. API-Aufruf – kein Fehlertext bei Backendproblemen
+  // 2. API call – do not show a wrong "ZIP invalid" message on backend issues
   try {
     const address = await userService.getCityFromZip(zip);
 
@@ -299,15 +299,18 @@ async function getCity() {
       errorMessage.value.city = '';
       errorMessage.value.province = '';
     } else {
-      // keine Ergebnisse, aber PLZ gilt trotzdem als gültig
+      // no results, but ZIP is still treated as valid
       errorMessage.value.zip = '';
     }
   } catch (error) {
-    console.error('Adress-Service nicht erreichbar:', error);
-    // kein falsches "PLZ ungültig"
+    console.error('Address service not reachable:', error);
+    // no false "ZIP invalid" message
     errorMessage.value.zip = '';
   }
 }
+
+
+
 
 
 
