@@ -1,4 +1,5 @@
 describe('NewProjectView E2E Tests', () => {
+    const longTitle = 'a'.repeat(101);
   beforeEach(() => {
     cy.intercept('GET', 'http://localhost:4173/api/v1/projects', {
       statusCode: 200,
@@ -44,8 +45,7 @@ describe('NewProjectView E2E Tests', () => {
   });
 
   it('should show error when project title exceeds max length', () => {
-    const longTitle = Array(102).join('a'); // 101 characters, max is 100
-    
+
     // Type the long title character by character to trigger the watch
     cy.get('#projectTitle').clear().invoke('val', longTitle).trigger('input');
     
@@ -101,8 +101,7 @@ describe('NewProjectView E2E Tests', () => {
   });
 
   it('should clear error message when fixing title length', () => {
-    const longTitle = Array(102).join('a');
-    
+
     // Type long title to trigger error
     cy.get('#projectTitle').clear().invoke('val', longTitle).trigger('input');
     
@@ -153,7 +152,7 @@ describe('NewProjectView E2E Tests', () => {
   it('should render the view with proper styling', () => {
     // Check parent container has proper classes
     cy.get('.flex.items-center.justify-center').should('exist');
-    cy.get('.min-h-\\[80vh\\]').should('exist');
+    cy.get('.min-h-\[80vh\]').should('exist');
     cy.get('.bg-gray-50').should('exist');
   });
 });
