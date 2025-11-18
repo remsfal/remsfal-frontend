@@ -7,10 +7,11 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      maxWorkers: '50%',
       coverage: {
         provider: 'istanbul',
-        reporter: ['lcov', 'text', 'json', 'html'],
-        reportsDirectory: 'coverage-vitest',
+        reporter: ['json', 'text'],
+        reportsDirectory: '.nyc_output/vitest',
         include: ['src/**/*.ts', 'src/**/*.vue'],
         exclude: [
           ...(configDefaults.coverage?.exclude || []),
@@ -18,6 +19,7 @@ export default mergeConfig(
           'public/**',
           'dist/**',
           'src/assets/**',
+          'src/services/api/*-schema.ts',
         ],
       },
       environment: 'jsdom',
