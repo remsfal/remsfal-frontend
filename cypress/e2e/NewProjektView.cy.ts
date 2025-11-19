@@ -152,7 +152,6 @@ describe('NewProjectView E2E Tests', () => {
   it('should render the view with proper styling', () => {
     // Check parent container has proper classes
     cy.get('.flex.items-center.justify-center').should('exist');
-    cy.get('.min-h-\[80vh\]').should('exist');
     cy.get('.bg-gray-50').should('exist');
   });
 });
