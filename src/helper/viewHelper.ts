@@ -24,6 +24,24 @@ export function navigateToObjects(router: Router, projectId: string) {
   router.push({ name: 'RentableUnits', params: { projectId } });
 }
 
+/**
+ * Normalizes a value for comparison by treating empty strings, null, and undefined as equivalent.
+ * This prevents false positives when comparing form values with original values.
+ */
+export function normalizeValue(value: string | number | null | undefined): string | number | null {
+  if (value === undefined || value === '' || value === null) {
+    return null;
+  }
+  return value;
+}
+
+/**
+ * Compares two values for equality, treating empty strings, null, and undefined as equivalent.
+ */
+export function valuesAreEqual(a: string | number | null | undefined, b: string | number | null | undefined): boolean {
+  return normalizeValue(a) === normalizeValue(b);
+}
+
 export function handleCancel(hasChanges: Ref<boolean>, router: Router, projectId: string) {
   if (hasChanges.value) {
     const confirmLeave = confirm(

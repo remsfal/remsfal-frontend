@@ -3,7 +3,11 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { propertyService, type PropertyUnit } from '@/services/PropertyService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, navigateToObjects, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import {handleCancel,
+  navigateToObjects,
+  showSavingErrorToast,
+  showValidationErrorToast,
+  valuesAreEqual,} from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -106,14 +110,14 @@ const hasChanges = computed(() => {
   const orig = originalValues.value as any;
 
   return (
-    title.value !== orig.title ||
-    description.value !== orig.description ||
-    district.value !== orig.cadastralDistrict ||
-    corridor.value !== orig.cadastralSection || // map cadastralSection
-    parcel.value !== orig.plot || // map plot
-    landRegisterEntry.value !== orig.landRegistry ||
-    usageType.value !== orig.economyType || // map economyType
-    plotArea.value !== orig.plotArea // map plotArea
+    !valuesAreEqual(title.value, orig.title) ||
+    !valuesAreEqual(description.value, orig.description) ||
+    !valuesAreEqual(district.value, orig.cadastralDistrict) ||
+    !valuesAreEqual(corridor.value, orig.cadastralSection) ||
+    !valuesAreEqual(parcel.value, orig.plot) ||
+    !valuesAreEqual(landRegisterEntry.value, orig.landRegistry) ||
+    !valuesAreEqual(usageType.value, orig.economyType) ||
+    !valuesAreEqual(plotArea.value, orig.plotArea)
   );
 });
 
