@@ -4050,6 +4050,32 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
+        /** @description Represents a message or invoice in the user's inbox */
+        InboxMessage: {
+            /** @description Unique identifier of the message */
+            id?: string;
+            /**
+             * @description Type of message (Message | Invoice)
+             * @enum {string}
+             */
+            type?: "Message" | "Invoice";
+            /** @description Sender or contractor associated with the message */
+            contractor?: string;
+            /** @description Subject or title of the message */
+            subject?: string;
+            /** @description Property or building related to the message */
+            property?: string;
+            /** @description Tenant or person related to the message */
+            tenant?: string;
+            /** @description Date and time when the message was received */
+            receivedAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Whether the message has been read */
+            read?: boolean;
+            /** @description ID of the user who owns the message */
+            userId?: string;
+            /** @description URL to the related GitHub issue or external resource */
+            issueLink?: string;
+        };
         /**
          * Format: date-time
          * @example 2022-03-10T16:15:50Z
@@ -4112,6 +4138,11 @@ export interface components {
         LocalDateTime: string;
         /** @enum {string} */
         MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50-04:00
+         */
+        OffsetDateTime: string;
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
             id: components["schemas"]["UUID"];
