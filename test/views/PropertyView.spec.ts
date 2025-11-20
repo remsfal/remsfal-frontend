@@ -113,4 +113,15 @@ describe('PropertyView.vue', () => {
     expect(wrapper.vm.validationErrors).toContain('Grundstücksfläche darf nicht negativ sein.');
     expect(wrapper.vm.isValid).toBe(false);
   });
+
+  it('redirects to correct property view path after successful save', async () => {
+    (propertyService.updateProperty as any).mockResolvedValue({});
+    mockPush.mockClear();
+
+    wrapper.vm.title = 'Updated Title';
+    await wrapper.vm.save();
+    await flushPromises();
+
+    expect(mockPush).toHaveBeenCalledWith({ name: 'RentableUnits', params: { projectId: 'project1' } });
+  });
 });
