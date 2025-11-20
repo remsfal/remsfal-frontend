@@ -4,7 +4,11 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast, valuesAreEqual } from '@/helper/viewHelper';
+import {handleCancel,
+  navigateToObjects,
+  showSavingErrorToast,
+  showValidationErrorToast,
+  valuesAreEqual,} from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -135,7 +139,7 @@ const save = async () => {
       detail: t('commercialUnit.saveSuccessDetail'),
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/commercial/${props.unitId}`);
+    navigateToObjects(router, props.projectId);
   } catch (err) {
     console.error('Error saving commercial unit:', err);
     showSavingErrorToast(toast, t('commercialUnit.saveError'));

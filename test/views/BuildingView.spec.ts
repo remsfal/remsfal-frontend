@@ -3,7 +3,9 @@ import {describe, it, expect, vi, beforeEach, Mock} from 'vitest';
 import Component from '../../src/views/BuildingView.vue';
 import { buildingService } from '../../src/services/BuildingService';
 
-vi.mock('vue-router', () => ({useRouter: () => ({push: vi.fn(),}),}));
+const mockPush = vi.fn();
+
+vi.mock('vue-router', () => ({useRouter: () => ({push: mockPush,}),}));
 
 vi.mock('../../src/services/BuildingService', () => ({
   buildingService: {
@@ -124,5 +126,15 @@ describe('BuildingView.vue', () => {
         country: { country: 'DE' },
       },
     });
+  });
+
+  it('redirects to correct building view path after successful save', async () => {
+    (buildingService.updateBuilding as Mock).mockResolvedValue({});
+    mockPush.mockClear();
+
+    wrapper.vm.title = 'Updated Title';
+    await wrapper.vm.save();
+
+    expect(mockPush).toHaveBeenCalledWith({ name: 'RentableUnits', params: { projectId: 'project1' } });
   });
 });
