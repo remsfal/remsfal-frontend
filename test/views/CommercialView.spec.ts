@@ -110,4 +110,14 @@ describe('CommercialView.vue', () => {
     expect(errorSpy).toHaveBeenCalledWith('Keine unitId');
     errorSpy.mockRestore();
   });
+
+  it('redirects to correct commercial view path after successful save', async () => {
+    (commercialService.updateCommercial as Mock).mockResolvedValue({});
+    mockPush.mockClear();
+
+    wrapper.vm.title = 'Updated Title';
+    await wrapper.vm.save();
+
+    expect(mockPush).toHaveBeenCalledWith({ name: 'RentableUnits', params: { projectId: 'project1' } });
+  });
 });
