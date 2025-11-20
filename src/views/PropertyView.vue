@@ -20,11 +20,15 @@ const router = useRouter();
 const title = ref('');
 const description = ref('');
 const district = ref(''); // Gemarkung (cadastralDistrict)
-const corridor = ref(''); // Flur
-const parcel = ref(''); // Flurstück
+const sheetNumber = ref(''); // Blattnummer
+const corridor = ref(''); // Flur (cadastralSection)
+const parcel = ref(''); // Flurstück (plot)
+const plotNumber = ref<number | null>(null); // Flurstücksnummer
 const landRegisterEntry = ref(''); // Liegenschaftsbuch (landRegistry)
-const usageType = ref<string | null>(null); // Wirtschaftsart
-const plotArea = ref<number | null>(null); // Grundstücksfläche (effectiveSpace)
+const usageType = ref<string | null>(null); // Wirtschaftsart (economyType)
+const location = ref(''); // Lage
+const plotArea = ref<number | null>(null); // Grundstücksfläche
+const space = ref<number | null>(null); // Nutzfläche
 
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
@@ -113,11 +117,15 @@ const hasChanges = computed(() => {
     !valuesAreEqual(title.value, orig.title) ||
     !valuesAreEqual(description.value, orig.description) ||
     !valuesAreEqual(district.value, orig.cadastralDistrict) ||
+    !valuesAreEqual(sheetNumber.value, orig.sheetNumber) ||
     !valuesAreEqual(corridor.value, orig.cadastralSection) ||
     !valuesAreEqual(parcel.value, orig.plot) ||
+    !valuesAreEqual(plotNumber.value, orig.plotNumber) ||
     !valuesAreEqual(landRegisterEntry.value, orig.landRegistry) ||
     !valuesAreEqual(usageType.value, orig.economyType) ||
-    !valuesAreEqual(plotArea.value, orig.plotArea)
+    !valuesAreEqual(location.value, orig.location) ||
+    !valuesAreEqual(plotArea.value, orig.plotArea) ||
+    !valuesAreEqual(space.value, orig.space)
   );
 });
 
@@ -138,6 +146,12 @@ const validationErrors = computed(() => {
   } else if (plotArea.value < 0) {
     errors.push('Grundstücksfläche darf nicht negativ sein.');
   }
+  if (plotNumber.value !== null && plotNumber.value <= 0) {
+    errors.push('Flurstücksnummer muss größer als 0 sein.');
+  }
+  if (space.value !== null && space.value < 0) {
+    errors.push('Nutzfläche darf nicht negativ sein.');
+  }
   return errors;
 });
 
@@ -153,11 +167,15 @@ const fetchPropertyDetails = async () => {
     title.value = data.title || '';
     description.value = data.description || '';
     district.value = data.cadastralDistrict || '';
+    sheetNumber.value = data.sheetNumber || '';
     corridor.value = data.cadastralSection || ''; // map cadastralSection
     parcel.value = data.plot || ''; // map plot
+    plotNumber.value = data.plotNumber ?? null;
     landRegisterEntry.value = data.landRegistry || '';
     usageType.value = data.economyType || null; // map economyType
+    location.value = data.location || '';
     plotArea.value = data.plotArea ?? null; // map plotArea
+    space.value = data.space ?? null;
 
     // Store original values for change detection
     originalValues.value = { ...data };
@@ -195,11 +213,15 @@ const save = async () => {
     title: title.value,
     description: description.value,
     cadastralDistrict: district.value,
+    sheetNumber: sheetNumber.value || undefined,
     cadastralSection: corridor.value, // frontend corridor → backend cadastralSection
     plot: parcel.value, // frontend parcel → backend plot
+    plotNumber: plotNumber.value ?? undefined,
     landRegistry: landRegisterEntry.value,
     economyType: usageType.value ?? undefined, // convert null → undefined
+    location: location.value || undefined,
     plotArea: plotArea.value ?? undefined, // convert null → undefined
+    space: space.value ?? undefined,
   };
 
   try {
@@ -252,6 +274,12 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             <input id="district" v-model="district" type="text" class="form-input w-full">
           </div>
 
+          <!-- Blattnummer -->
+          <div>
+            <label for="sheetNumber" class="block text-gray-700 mb-1">Blattnummer</label>
+            <input id="sheetNumber" v-model="sheetNumber" type="text" class="form-input w-full">
+          </div>
+
           <!-- Flur -->
           <div>
             <label for="corridor" class="block text-gray-700 mb-1">Flur</label>
@@ -262,6 +290,18 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           <div>
             <label for="parcel" class="block text-gray-700 mb-1">Flurstück</label>
             <input id="parcel" v-model="parcel" type="text" class="form-input w-full">
+          </div>
+
+          <!-- Flurstücksnummer -->
+          <div>
+            <label for="plotNumber" class="block text-gray-700 mb-1">Flurstücksnummer</label>
+            <input
+              id="plotNumber"
+              v-model.number="plotNumber"
+              type="number"
+              min="1"
+              class="form-input w-full"
+            >
           </div>
 
           <!-- Liegenschaftsbuch -->
@@ -299,8 +339,28 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
               id="plotArea"
               v-model.number="plotArea"
               type="number"
+              min="0"
               class="form-input w-full"
             >
+          </div>
+
+          <!-- Nutzfläche -->
+          <div>
+            <label for="space" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
+            <input
+              id="space"
+              v-model.number="space"
+              type="number"
+              step="0.01"
+              min="0"
+              class="form-input w-full"
+            >
+          </div>
+
+          <!-- Lage -->
+          <div class="col-span-2">
+            <label for="location" class="block text-gray-700 mb-1">Lage</label>
+            <input id="location" v-model="location" type="text" class="form-input w-full">
           </div>
 
           <!-- Validierungsfehler -->
