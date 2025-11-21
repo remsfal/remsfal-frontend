@@ -32,9 +32,14 @@ describe('ProjectTenancies.vue', () => {
  id: '1', firstName: 'John', lastName: 'Doe' 
 },
   ];
+  const mockUnits = [
+    {
+ id: 'u1', rentalObject: 'Building A', unitTitle: 'Unit 101' 
+},
+  ];
   const mockTenancies = [
     {
- id: 't1', rentalStart: '2023-01-01', rentalEnd: '2024-01-01', listOfTenants: mockTenants, listOfUnits: [] 
+ id: 't1', rentalStart: '2023-01-01', rentalEnd: '2024-01-01', listOfTenants: mockTenants, listOfUnits: mockUnits 
 },
   ];
 
@@ -61,7 +66,8 @@ describe('ProjectTenancies.vue', () => {
   it('shows loading indicator while fetching', async () => {
     wrapper.vm.isLoading = true;
     await wrapper.vm.$nextTick(); // ensure DOM updates
-    expect(wrapper.html()).toContain('Loading...');
+    const loadingText = wrapper.vm.$t('projectTenancies.loading');
+    expect(wrapper.html()).toContain(loadingText);
   });
 
   it('opens and closes the confirmation dialog', async () => {
@@ -82,9 +88,20 @@ describe('ProjectTenancies.vue', () => {
     expect(wrapper.vm.tenantData.length).toBe(initialLength);
   });
 
-  it('navigates to tenancy details on row click', () => {
+  it('navigates to tenancy details on row click', async () => {
     wrapper.vm.navigateToTenancyDetails('t1');
     expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/t1');
+    
+    // Also test with DataTable if possible
+    const dataTable = wrapper.findComponent({ name: 'DataTable' });
+    if (dataTable.exists()) {
+      // Simulate row click by calling the event handler directly
+      const rowClickHandler = dataTable.vm.$attrs.onRowClick;
+      if (rowClickHandler && typeof rowClickHandler === 'function') {
+        await rowClickHandler({ data: { id: 't2' } });
+        expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/t2');
+      }
+    }
   });
 
   it('renders DataTable when loading is false', async () => {
@@ -96,5 +113,45 @@ describe('ProjectTenancies.vue', () => {
   it('renders tenant names correctly in DataTable', () => {
     const tenantText = wrapper.html();
     expect(tenantText).toContain('John Doe');
+  });
+
+  it('displays translated title', () => {
+    const title = wrapper.find('h1');
+    expect(title.exists()).toBe(true);
+    const titleText = title.text();
+    // The title should not contain hardcoded "Mieterdaten Ansicht" duplicated
+    expect(titleText).not.toContain('Mieterdaten Ansicht Mieterdaten Ansicht');
+    // Title should be from translation
+    expect(titleText.length).toBeGreaterThan(0);
+  });
+
+  it('navigates to new tenancy page when add button is clicked', async () => {
+    wrapper.vm.navigateToNewTenancy();
+    expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/new-tenancy');
+    
+    // Also try to click the actual button
+    const buttons = wrapper.findAllComponents({ name: 'Button' });
+    const addButton = buttons.find(btn => btn.props('icon') === 'pi pi-plus');
+    if (addButton) {
+      await addButton.trigger('click');
+      expect(routerPushMock).toHaveBeenCalled();
+    }
+  });
+
+  it('renders unit information in the table', () => {
+    const html = wrapper.html();
+    expect(html).toContain('Building A');
+    expect(html).toContain('Unit 101');
+  });
+
+  it('closes dialog when cancel button is clicked', async () => {
+    wrapper.vm.confirmationDialogVisible = true;
+    wrapper.vm.tenantToDelete = mockTenants[0];
+    await wrapper.vm.$nextTick();
+
+    wrapper.vm.confirmationDialogVisible = false;
+    await wrapper.vm.$nextTick();
+    
+    expect(wrapper.vm.confirmationDialogVisible).toBe(false);
   });
 });

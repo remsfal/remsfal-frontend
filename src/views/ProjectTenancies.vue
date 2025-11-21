@@ -62,10 +62,10 @@ onMounted(async () => {
   <main>
     <div class="grid grid-cols-12 gap-4">
       <h1 class="col-span-12">
-        {{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht
+        {{ t('projectTenancies.title') }}
       </h1>
       <div v-if="isLoading">
-        Loading...
+        {{ t('projectTenancies.loading') }}
       </div>
       <div v-if="!isLoading" class="col-span-12 card">
         <DataTable
@@ -80,10 +80,10 @@ onMounted(async () => {
           class="custom-scroll-height cursor-pointer"
           @rowClick="navigateToTenancyDetails($event.data.id)"
         >
-          <Column field="rentalStart" header="Mietbeginn" :sortable="true" />
-          <Column field="rentalEnd" header="Mietende" :sortable="true" />
+          <Column field="rentalStart" :header="t('projectTenancies.table.rentalStart')" :sortable="true" />
+          <Column field="rentalEnd" :header="t('projectTenancies.table.rentalEnd')" :sortable="true" />
 
-          <Column field="listOfTenants" header="Mieter">
+          <Column field="listOfTenants" :header="t('projectTenancies.table.tenants')">
             <template #body="slotProps">
               <div class="space-y-2">
                 <div
@@ -97,7 +97,7 @@ onMounted(async () => {
             </template>
           </Column>
 
-          <Column field="listOfUnits" header="Wohneinheiten">
+          <Column field="listOfUnits" :header="t('projectTenancies.table.units')">
             <template #body="slotProps">
               <div class="space-y-2">
                 <div
@@ -116,7 +116,7 @@ onMounted(async () => {
           <Button
             type="button"
             icon="pi pi-plus"
-            label="Neuen Mieter hinzufügen"
+            :label="t('projectTenancies.button.addTenant')"
             class="mr-2 mb-2"
             @click="navigateToNewTenancy"
           />
@@ -124,16 +124,20 @@ onMounted(async () => {
       </div>
     </div>
 
-    <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
+    <Dialog v-model:visible="confirmationDialogVisible" :header="t('projectTenancies.dialog.confirmationTitle')" modal>
       <div class="p-fluid">
         <p>
-          Sind Sie sicher, dass Sie {{ tenantToDelete?.firstName }}
-          {{ tenantToDelete?.lastName }} löschen möchten?
+          {{
+            t('projectTenancies.dialog.confirmDelete', {
+              firstName: tenantToDelete?.firstName,
+              lastName: tenantToDelete?.lastName
+            })
+          }}
         </p>
       </div>
       <template #footer>
-        <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
-        <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
+        <Button :label="t('projectTenancies.dialog.cancel')" icon="pi pi-times" @click="confirmationDialogVisible = false" />
+        <Button :label="t('projectTenancies.dialog.delete')" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
       </template>
     </Dialog>
   </main>
