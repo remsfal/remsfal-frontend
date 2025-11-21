@@ -62,7 +62,7 @@ onMounted(async () => {
   <main>
     <div class="grid grid-cols-12 gap-4">
       <h1 class="col-span-12">
-        {{ t('projectTenancies.title', [projectId]) }}
+        {{ t('projectTenancies.title', [projectId]) }} Mieterdaten Ansicht
       </h1>
       <div v-if="isLoading">
         {{ t('projectTenancies.loading') }}
