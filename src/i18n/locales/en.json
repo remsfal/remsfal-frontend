@@ -66,7 +66,7 @@
   "projectSettings.saveSuccess": "Project name successfully updated.",
   "projectSettings.saveError": "Could not save project name.",
   "projectSettings.propertyNamePlaceholder": "Property name",
-  "projectTenancies.title": "Tenant Data View for Project {0}",
+  "projectTenancies.title": "Tenant Data View",
   "projectTenancies.loading": "Loading...",
   "projectTenancies.table.rentalStart": "Rental Start",
   "projectTenancies.table.rentalEnd": "Rental End",
