@@ -3,7 +3,11 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { apartmentService } from '@/services/ApartmentService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast, valuesAreEqual } from '@/helper/viewHelper';
+import {handleCancel,
+  navigateToObjects,
+  showSavingErrorToast,
+  showValidationErrorToast,
+  valuesAreEqual,} from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -142,7 +146,7 @@ const save = async () => {
       detail: 'Apartment erfolgreich gespeichert.',
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/apartment/${props.unitId}`);
+    navigateToObjects(router, props.projectId);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
     showSavingErrorToast(toast, 'Apartment konnte nicht gespeichert werden.');

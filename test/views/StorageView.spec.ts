@@ -104,4 +104,14 @@ describe('StorageView.vue', () => {
 
     confirmSpy.mockRestore();
   });
+
+  it('redirects to correct storage view path after successful save', async () => {
+    mockPush.mockClear();
+    wrapper.vm.title = 'Updated Title';
+    
+    await wrapper.vm.save();
+    await flushPromises();
+
+    expect(mockPush).toHaveBeenCalledWith({ name: 'RentableUnits', params: { projectId: 'project1' } });
+  });
 });
