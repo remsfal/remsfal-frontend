@@ -16,9 +16,14 @@
 ####
 FROM nginx:stable
 
+# use only label confrorm to OCI specifications https://github.com/opencontainers/image-spec/blob/main/annotations.md
+LABEL org.opencontainers.image.authors="REMSFAL maintainers <info@remsfal.de>" \
+      org.opencontainers.image.vendor="REMSFAL Immobiliensoftware GmbH <info@remsfal.online>" \
+      org.opencontainers.image.title="REMSFAL Frontend" \
+      org.opencontainers.image.url="https://github.com/remsfal/remsfal-frontend"
+
 RUN apt-get update && apt-get upgrade -y \
     && apt-get --no-install-recommends install -y \
-    curl \
     htop  \
     vim  \
     && rm -rf /var/lib/apt/lists/*

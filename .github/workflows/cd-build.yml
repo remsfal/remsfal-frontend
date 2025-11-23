@@ -1,24 +1,29 @@
 name: CD Build
+
 on:
   push:
-     branches:
-       - main
+    branches: ["main"]
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 permissions:
-    contents: read
-    packages: write
-    id-token: write
+  attestations: write
+  contents: read
+  id-token: write
+  packages: write
 
 jobs:
-  lts-build:
+  build-and-push-to-registry:
+    name: Build and Deploy Docker Image
     runs-on: ubuntu-latest
+    # Only run this workflow for the official REMSFAL repository
+    if: github.repository == 'remsfal/remsfal-frontend'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      - name: Set up Node.js 20
+      - name: Set up Node.js LTS
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
@@ -59,10 +64,6 @@ jobs:
           tags: |
             type=raw,value=latest
             type=sha
-          labels: |
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description=CD for Node.js 20 LTS
-            org.opencontainers.image.source= ${{ github.repository }}
 
         # Should we use cache-from and cache-to here for speed up?
       - name: Build and push Docker image
@@ -73,4 +74,10 @@ jobs:
             file: ./docker/Dockerfile
             push: true
             tags: ${{ steps.meta.outputs.tags }}
-            labels: ${{ steps.meta.outputs.labels }}
+      - name: Generate artifact attestation
+        id: attest
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
