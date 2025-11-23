@@ -17,8 +17,19 @@ jobs:
     name: "Release and Deployment"
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App Token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.REMSFAL_BOT_ID }}
+          private-key: ${{ secrets.REMSFAL_BOT_KEY }}
+          owner: remsfal
+          repositories: remsfal-frontend
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          fetch-depth: 0
       - name: Set up Node.js and Configure NPM Registry
         uses: actions/setup-node@v4
         with:
@@ -44,7 +55,7 @@ jobs:
       - name: Set Git Identity for Release Commits
         run: |
           git config user.email "info@remsfal.de"
-          git config user.name "remsfal-bot[bot]"
+          git config user.name "REMSFAL Bot"
 
       - name: Determine Release Version and Run npm version
         id: determine_version
