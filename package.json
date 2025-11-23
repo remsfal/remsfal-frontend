@@ -5,7 +5,16 @@
   "type": "module",
   "homepage": "https://remsfal.de",
   "license": "MIT",
-  "repository": "github:remsfal/remsfal-frontend",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remsfal/remsfal-frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/remsfal/remsfal-frontend/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "run-s type-check \"build-only {@}\" --",
