@@ -3057,7 +3057,7 @@ paths:
       - SecurityScheme: []
 info:
   title: remsfal-platform API
-  version: 1.0.8-SNAPSHOT
+  version: 1.0.9-SNAPSHOT
 servers:
 - url: http://localhost:8080
   description: Auto generated value
