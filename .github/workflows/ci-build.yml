@@ -19,7 +19,7 @@ jobs:
         node-version: [current, lts/*]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Build REMSFAL
@@ -73,7 +73,7 @@ jobs:
     if: github.event_name == 'pull_request' && github.actor != 'remsfal-bot[bot]'
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Check PR branches
         env:
           HEAD_REF: ${{ github.head_ref }}
