@@ -1051,7 +1051,7 @@
   },
   "info" : {
     "title" : "remsfal-notification API",
-    "version" : "1.0.0-SNAPSHOT"
+    "version" : "1.0.6-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8082",
