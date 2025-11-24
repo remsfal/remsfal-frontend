@@ -319,6 +319,54 @@
           }
         }
       },
+      "InboxMessage" : {
+        "description" : "Represents a message or invoice in the user's inbox",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "Unique identifier of the message"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "Type of message (Message | Invoice)",
+            "enum" : [ "Message", "Invoice" ]
+          },
+          "contractor" : {
+            "type" : "string",
+            "description" : "Sender or contractor associated with the message"
+          },
+          "subject" : {
+            "type" : "string",
+            "description" : "Subject or title of the message"
+          },
+          "property" : {
+            "type" : "string",
+            "description" : "Property or building related to the message"
+          },
+          "tenant" : {
+            "type" : "string",
+            "description" : "Tenant or person related to the message"
+          },
+          "receivedAt" : {
+            "description" : "Date and time when the message was received",
+            "type" : "string",
+            "$ref" : "#/components/schemas/OffsetDateTime"
+          },
+          "read" : {
+            "type" : "boolean",
+            "description" : "Whether the message has been read"
+          },
+          "userId" : {
+            "type" : "string",
+            "description" : "ID of the user who owns the message"
+          },
+          "issueLink" : {
+            "type" : "string",
+            "description" : "URL to the related GitHub issue or external resource"
+          }
+        }
+      },
       "Instant" : {
         "type" : "string",
         "format" : "date-time",
@@ -436,6 +484,11 @@
       "MemberRole" : {
         "type" : "string",
         "enum" : [ "PROPRIETOR", "MANAGER", "LESSOR", "STAFF", "COLLABORATOR" ]
+      },
+      "OffsetDateTime" : {
+        "type" : "string",
+        "format" : "date-time",
+        "examples" : [ "2022-03-10T12:15:50-04:00" ]
       },
       "ProjectItemJson" : {
         "description" : "A project item with the user's member role only",
@@ -998,7 +1051,7 @@
   },
   "info" : {
     "title" : "remsfal-notification API",
-    "version" : "1.0.0-SNAPSHOT"
+    "version" : "1.0.9-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8082",
