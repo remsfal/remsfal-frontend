@@ -31,7 +31,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           fetch-depth: 0
       - name: Set up Node.js and Configure NPM Registry
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           # Configures the .npmrc file for authentication with the GitHub Packages Registry
