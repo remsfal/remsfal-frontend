@@ -1932,7 +1932,7 @@
   },
   "info" : {
     "title" : "remsfal-ticketing API",
-    "version" : "1.0.6-SNAPSHOT"
+    "version" : "1.0.5"
   },
   "servers" : [ {
     "url" : "http://localhost:8081",
