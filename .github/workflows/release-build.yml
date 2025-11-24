@@ -89,6 +89,16 @@ jobs:
           git push
           git push origin ${{ steps.determine_version.outputs.RELEASE_TAG }}
 
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.determine_version.outputs.RELEASE_TAG }}
+          # Simple release notes body
+          body: |
+            Release version ${{ steps.determine_version.outputs.RELEASE_TAG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set Project to Next Development Version
         run: |
           # 1. Increment version to the next patch number (e.g., 1.0.1). This updates package.json but creates no tag/commit.
