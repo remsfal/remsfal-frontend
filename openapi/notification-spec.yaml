@@ -828,7 +828,7 @@ paths:
       - Mailing Resource
 info:
   title: remsfal-notification API
-  version: 1.0.10-SNAPSHOT
+  version: 1.0.11-SNAPSHOT
 servers:
 - url: http://localhost:8082
   description: Auto generated value
