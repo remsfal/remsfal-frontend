@@ -90,7 +90,7 @@ jobs:
           git push origin ${{ steps.determine_version.outputs.RELEASE_TAG }}
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.determine_version.outputs.RELEASE_TAG }}
           # Simple release notes body
