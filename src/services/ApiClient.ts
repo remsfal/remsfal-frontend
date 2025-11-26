@@ -105,16 +105,22 @@ function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
   emitToast('error', 'error.general', 'error.apiRequest');
   return Promise.reject(error);
 }
+
+// Status codes that explicitly allow or expect no response body
+const NO_BODY_EXPECTED = [204]; // 204 No Content
+
+// Status codes where response body is optional
+const BODY_OPTIONAL = [201, 202, 205]; // 201 Created, 202 Accepted, 205 Reset Content
+
 // this interceptor is used to handle all success ajax request
 function responseHandler(response: AxiosResponse): AxiosResponse {
   // Handle all 2xx responses gracefully
   if (response.status >= 200 && response.status < 300) {
-    // Status codes that explicitly allow or expect no response body
-    const noBodyExpected = [204]; // 204 No Content
-    const bodyOptional = [201, 202, 205]; // 201 Created, 202 Accepted, 205 Reset Content
-    
     // Only validate data presence for status codes that should have a body
-    if (!noBodyExpected.includes(response.status) && !bodyOptional.includes(response.status)) {
+    const shouldHaveBody = !NO_BODY_EXPECTED.includes(response.status) && 
+                          !BODY_OPTIONAL.includes(response.status);
+    
+    if (shouldHaveBody) {
       const data = response?.data;
       if (!data) {
         emitToast('error', 'error.general', 'error.apiResponse');
