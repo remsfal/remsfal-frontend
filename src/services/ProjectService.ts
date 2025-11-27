@@ -35,19 +35,14 @@ export default class ProjectService {
 
   // Get a single project
   async getProject(projectId: string): Promise<Project> {
-    try {
-      const project = await apiClient.get('/api/v1/projects/{projectId}', {pathParams: { projectId },});
-      console.log('project returned', project);
-      return project;
-    } catch (error: any) {
-      console.error('project retrieval error', error?.response?.status || error);
-      throw error?.response?.status || error;
-    }
+    const project = await apiClient.get('/api/v1/projects/{projectId}', {pathParams: { projectId },}) as Project;
+    console.log('project returned', project);
+    return project;
   }
 
   // Update a project
   async updateProject(projectId: string, data: Project): Promise<Project> {
-    const updated = await apiClient.patch('/api/v1/projects/{projectId}', data, {pathParams: { projectId },});
+    const updated = await apiClient.patch('/api/v1/projects/{projectId}', data, {pathParams: { projectId },}) as Project;
     console.log('PATCH update project:', updated);
     return updated;
   }
