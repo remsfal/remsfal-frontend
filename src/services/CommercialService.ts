@@ -17,17 +17,12 @@ export default class CommercialService {
 
   // Get a single commercial unit
   async getCommercial(projectId: string, commercialId: string): Promise<Commercial> {
-    try {
-      const commercial = await apiClient.get(
-        '/api/v1/projects/{projectId}/commercials/{commercialId}',
-        { pathParams: { projectId, commercialId } },
-      );
-      console.log('GET commercial:', commercial);
-      return commercial;
-    } catch (error: any) {
-      console.error('commercial retrieval error', error?.response?.status || error);
-      throw error?.response?.status || error;
-    }
+    const commercial = await apiClient.get(
+      '/api/v1/projects/{projectId}/commercials/{commercialId}',
+      { pathParams: { projectId, commercialId } },
+    ) as Commercial;
+    console.log('GET commercial:', commercial);
+    return commercial;
   }
 
   // Update a commercial unit
@@ -36,24 +31,18 @@ export default class CommercialService {
       '/api/v1/projects/{projectId}/commercials/{commercialId}',
       data,
       { pathParams: { projectId, commercialId } },
-    );
+    ) as Commercial;
     console.log('PATCH update commercial:', updated);
     return updated;
   }
 
-  // Delete a commercial unit (returns boolean for success/failure)
-  async deleteCommercial(projectId: string, commercialId: string): Promise<boolean> {
-    try {
-      await apiClient.delete(
-        '/api/v1/projects/{projectId}/commercials/{commercialId}',
-        {pathParams: { projectId, commercialId },},
-      );
-      console.log('DELETE commercial successful', commercialId);
-      return true;
-    } catch (error) {
-      console.error('DELETE commercial failed:', error);
-      return false;
-    }
+  // Delete a commercial unit
+  async deleteCommercial(projectId: string, commercialId: string): Promise<void> {
+    await apiClient.delete(
+      '/api/v1/projects/{projectId}/commercials/{commercialId}',
+      {pathParams: { projectId, commercialId },},
+    );
+    console.log('DELETE commercial successful', commercialId);
   }
 }
 
