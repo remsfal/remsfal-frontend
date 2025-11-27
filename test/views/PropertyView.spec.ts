@@ -146,6 +146,6 @@ describe('PropertyView.vue', () => {
     wrapper.vm.title = 'Updated Title';
     await wrapper.vm.save();
     await flushPromises();
-    expect(mockPush).toHaveBeenCalledWith({ name: 'RentableUnits', params: { projectId: 'project1' }
+    expect(mockPush).toHaveBeenCalledWith({ name: 'RentableUnits', params: { projectId: 'project1' } });
   });
 });
