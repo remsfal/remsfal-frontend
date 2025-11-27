@@ -1615,6 +1615,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description A list of contractors was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorListJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1709,6 +1718,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing contractor was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1786,6 +1804,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing contractor was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -4032,6 +4059,13 @@ export interface components {
             email?: string;
             trade?: string;
             address?: components["schemas"]["AddressJson"];
+        };
+        ContractorListJson: {
+            contractors?: components["schemas"]["ContractorJson"][];
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int64 */
+            total?: number;
         };
         Cookie: {
             name?: string;

@@ -213,6 +213,19 @@ components:
           maxLength: 255
         address:
           $ref: "#/components/schemas/AddressJson"
+    ContractorListJson:
+      type: object
+      properties:
+        contractors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContractorJson"
+        offset:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int64
     Cookie:
       type: object
       properties:
@@ -1740,6 +1753,12 @@ paths:
           default: "0"
         required: true
       responses:
+        "200":
+          description: A list of contractors was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractorListJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -1794,6 +1813,12 @@ paths:
               $ref: "#/components/schemas/ContractorJson"
         required: true
       responses:
+        "200":
+          description: An existing contractor was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractorJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -1814,6 +1839,12 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: An existing contractor was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractorJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
