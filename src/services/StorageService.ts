@@ -16,17 +16,12 @@ export default class StorageService {
 
   // Get a single storage
   async getStorage(projectId: string, storageId: string): Promise<Storage> {
-    try {
-      const storage = await apiClient.get(
-        '/api/v1/projects/{projectId}/storages/{storageId}',
-        {pathParams: { projectId, storageId },},
-      );
-      console.log('GET storage:', storage);
-      return storage;
-    } catch (error: any) {
-      console.error('Storage retrieval error', error?.response?.status || error);
-      throw error?.response?.status || error;
-    }
+    const storage = await apiClient.get(
+      '/api/v1/projects/{projectId}/storages/{storageId}',
+      {pathParams: { projectId, storageId },},
+    );
+    console.log('GET storage:', storage);
+    return storage;
   }
 
   // Update a storage
