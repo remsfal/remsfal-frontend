@@ -1,0 +1,123 @@
+name: "RELEASE Build"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Optional release version (e.g., 1.0.0, if not provided, will be auto-calculated)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    name: "Release and Deployment"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App Token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.REMSFAL_BOT_ID }}
+          private-key: ${{ secrets.REMSFAL_BOT_KEY }}
+          owner: remsfal
+          repositories: remsfal-frontend
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          fetch-depth: 0
+      - name: Set up Node.js and Configure NPM Registry
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          # Configures the .npmrc file for authentication with the GitHub Packages Registry
+          registry-url: 'https://npm.pkg.github.com/'
+          # Provides the token required for authentication
+          scope: '@${{ github.repository_owner }}'
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: remsfal-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: remsfal-${{ env.cache-name }}
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set Git Identity for Release Commits
+        run: |
+          git config user.email "info@remsfal.de"
+          git config user.name "REMSFAL Bot"
+
+      - name: Determine Release Version and Run npm version
+        id: determine_version
+        run: |
+          VERSION_INPUT="${{ github.event.inputs.release_version }}"
+          
+          # 1. Increment version based on input (creates commit and tag locally)
+          if [ -n "$VERSION_INPUT" ]; then
+            echo "Executing release with custom version $VERSION_INPUT..."
+            # Capture the output, which is the new tag name (e.g., v1.0.0)
+            RELEASE_TAG=$(npm version $VERSION_INPUT -m "Release version %s")
+          else
+            echo "Executing release with automatic patch increment..."
+            # Capture the output, which is the new tag name (e.g., v1.0.1)
+            RELEASE_TAG=$(npm version patch -m "Release version %s")
+          fi
+          
+          # 2. The RELEASE_TAG variable now holds the tag name (e.g., v1.0.0) directly from npm version
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Publish to GitHub Packages Registry
+        run: |
+          # Publishes the package to the GitHub Packages Registry.
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Release Commit and Tag
+        run: |
+          # Pushes the commit and the tag created by 'npm version' back to the remote repository.
+          git push
+          git push origin ${{ steps.determine_version.outputs.RELEASE_TAG }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.determine_version.outputs.RELEASE_TAG }}
+          # Simple release notes body
+          body: |
+            Release version ${{ steps.determine_version.outputs.RELEASE_TAG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Project to Next Development Version
+        run: |
+          # 1. Increment version to the next patch number (e.g., 1.0.1). This updates package.json but creates no tag/commit.
+          npm version patch --no-git-tag-version
+          
+          # 2. Get the new, standard version number (e.g., 1.0.1) from the updated package.json
+          NEW_PATCH_VERSION=$(node -p "require('./package.json').version")
+          
+          # 3. Construct the full development version string (e.g., 1.0.1-SNAPSHOT)
+          NEW_DEV_VERSION="${NEW_PATCH_VERSION}-SNAPSHOT"
+          echo "New development version will be: $NEW_DEV_VERSION"
+          
+          # 4. Use 'npm version' to set the final SNAPSHOT version string, addressing the user's request.
+          # This updates package.json again with the '-SNAPSHOT' suffix.
+          npm version $NEW_DEV_VERSION --no-git-tag-version
+          
+          # 5. Commit the new development version
+          git add package.json
+          git commit -m "Set next development version to $NEW_DEV_VERSION [skip ci]"
+          
+          # 6. Push the new development version commit back to the branch
+          git push
