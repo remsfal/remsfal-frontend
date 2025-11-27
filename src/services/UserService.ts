@@ -7,7 +7,7 @@ export type UserUpdateRequest = ApiPaths['/api/v1/user']['patch']['requestBody']
 export default class UserService {
   // Get current user data
   async getUser(): Promise<User> {
-    return apiClient.get('/api/v1/user') as Promise<User>;
+    return apiClient.get('/api/v1/user');
   }
 
   // Get city info from zip code - API returns array, take first element
@@ -20,18 +20,14 @@ export default class UserService {
 
   // Update user
   async updateUser(updatedUser: UserUpdateRequest): Promise<User> {
-    return apiClient.patch('/api/v1/user', updatedUser as any) as Promise<User>;
+    return apiClient.patch('/api/v1/user', updatedUser);
   }
 
-  // Delete user, returns boolean success
-  async deleteUser(): Promise<boolean> {
-    try {
-      await apiClient.delete('/api/v1/user');
-      console.log('DELETE user');
-      return true;
-    } catch (error) {
-      console.error('DELETE user failed:', error);
-      return false;
-    }
+  // Delete user
+  async deleteUser(): Promise<void> {
+    await apiClient.delete('/api/v1/user');
+    console.log('DELETE user');
   }
 }
+
+export const userService = new UserService();
