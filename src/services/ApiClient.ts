@@ -105,12 +105,52 @@ function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
   emitToast('error', 'error.general', 'error.apiRequest');
   return Promise.reject(error);
 }
-// this interceptor is used to handle all success ajax request
+
+/**
+ * HTTP Status Code Categories for Response Body Validation
+ * 
+ * Status codes that should NOT have a response body:
+ * - 204 No Content: By definition, this status code must not contain a body
+ * 
+ * Status codes where response body is OPTIONAL:
+ * - 201 Created: May return the created resource OR just a Location header
+ * - 202 Accepted: May return status information OR no body
+ * - 205 Reset Content: Instructs client to reset view, body is optional
+ * 
+ * All other 2xx status codes (200, 203, 206, etc.) are expected to have a response body.
+ * If they don't, it indicates a potential API error.
+ */
+const NO_BODY_EXPECTED = [204]; // 204 No Content
+const BODY_OPTIONAL = [201, 202, 205]; // 201 Created, 202 Accepted, 205 Reset Content
+
+/**
+ * Response interceptor for successful HTTP responses (2xx).
+ * 
+ * This interceptor validates that responses which should contain data actually have it.
+ * It gracefully handles all 2xx status codes, differentiating between:
+ * - Status codes that must not have a body (204)
+ * - Status codes where body is optional (201, 202, 205)
+ * - Status codes that should have a body (200, 203, 206, etc.)
+ * 
+ * Shows an error toast only when a response that should have data is empty or undefined.
+ * Note: Empty arrays [], empty strings "", 0, and false are considered valid response data.
+ * 
+ * @param response - The Axios response object
+ * @returns The unmodified response object
+ */
 function responseHandler(response: AxiosResponse): AxiosResponse {
-  if (response.status === 200 || response.status === 201) {
-    const data = response?.data;
-    if (!data) {
-      emitToast('error', 'error.general', 'error.apiResponse');
+  // Handle all 2xx responses gracefully
+  if (response.status >= 200 && response.status < 300) {
+    // Determine if this status code should have a response body
+    const shouldHaveBody = !NO_BODY_EXPECTED.includes(response.status) && 
+                          !BODY_OPTIONAL.includes(response.status);
+    
+    if (shouldHaveBody) {
+      const data = response?.data;
+      // Check for null or undefined only - allow falsy values like 0, false, '', []
+      if (data === null || data === undefined) {
+        emitToast('error', 'error.general', 'error.apiResponse');
+      }
     }
   }
   return response;

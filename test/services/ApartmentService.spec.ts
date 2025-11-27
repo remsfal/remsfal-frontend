@@ -145,24 +145,26 @@ describe('ApartmentService', () => {
 
   describe('deleteApartment', () => {
     it('should delete an apartment successfully', async () => {
-      const result = await apartmentService.deleteApartment('project-1', 'apartment-1');
-      expect(result).toBe(true);
+      await apartmentService.deleteApartment('project-1', 'apartment-1');
+      // If no error is thrown, the delete was successful
     });
 
-    it('should return false on deletion failure', async () => {
-      const result = await apartmentService.deleteApartment('project-1', 'cannot-delete');
-      expect(result).toBe(false);
+    it('should throw error on deletion failure', async () => {
+      await expect(
+        apartmentService.deleteApartment('project-1', 'cannot-delete'),
+      ).rejects.toThrow();
     });
 
-    it('should return false on network errors', async () => {
+    it('should throw error on network errors', async () => {
       server.use(
         http.delete('/api/v1/projects/:projectId/apartments/:apartmentId', () => {
           return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
         }),
       );
 
-      const result = await apartmentService.deleteApartment('project-1', 'apartment-1');
-      expect(result).toBe(false);
+      await expect(
+        apartmentService.deleteApartment('project-1', 'apartment-1'),
+      ).rejects.toThrow();
     });
   });
 });

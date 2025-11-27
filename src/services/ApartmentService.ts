@@ -16,17 +16,12 @@ export default class ApartmentService {
 
   // Get a single apartment
   async getApartment(projectId: string, apartmentId: string): Promise<Apartment> {
-    try {
-      const apartment = await apiClient.get(
-        '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-        { pathParams: { projectId, apartmentId } },
-      ) as Apartment;
-      console.log('GET apartment:', apartment);
-      return apartment;
-    } catch (error: any) {
-      console.error('apartment retrieval error', error?.response?.status || error);
-      throw error?.response?.status || error;
-    }
+    const apartment = await apiClient.get(
+      '/api/v1/projects/{projectId}/apartments/{apartmentId}',
+      { pathParams: { projectId, apartmentId } },
+    ) as Apartment;
+    console.log('GET apartment:', apartment);
+    return apartment;
   }
 
   // Update an apartment
@@ -40,19 +35,13 @@ export default class ApartmentService {
     return updated;
   }
 
-  // Delete an apartment (returns boolean for success/failure)
-  async deleteApartment(projectId: string, apartmentId: string): Promise<boolean> {
-    try {
-      await apiClient.delete(
-        '/api/v1/projects/{projectId}/apartments/{apartmentId}',
-        {pathParams: { projectId, apartmentId },},
-      );
-      console.log('DELETE apartment successful', apartmentId);
-      return true;
-    } catch (error) {
-      console.error('DELETE apartment failed:', error);
-      return false;
-    }
+  // Delete an apartment
+  async deleteApartment(projectId: string, apartmentId: string): Promise<void> {
+    await apiClient.delete(
+      '/api/v1/projects/{projectId}/apartments/{apartmentId}',
+      {pathParams: { projectId, apartmentId },},
+    );
+    console.log('DELETE apartment successful', apartmentId);
   }
 }
 
