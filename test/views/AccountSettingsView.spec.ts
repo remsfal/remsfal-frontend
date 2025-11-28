@@ -1,13 +1,10 @@
 import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import AccountSettingsView from '../../src/views/AccountSettingsView.vue';
-import router from '../../src/router';
-import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import { createPinia } from 'pinia';
 import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
-import i18n from '../../src/i18n/i18n';
 
 describe('AccountSettingsView', () => {
   let wrapper: VueWrapper;
@@ -17,12 +14,7 @@ describe('AccountSettingsView', () => {
     const app = createApp(App);
     app.use(pinia);
 
-    wrapper = mount(AccountSettingsView, {
-      global: {
-        plugins: [PrimeVue, router, i18n],
-        components: { Card },
-      },
-    });
+    wrapper = mount(AccountSettingsView, {global: {components: { Card },},});
 
     // Mock methods
     wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({

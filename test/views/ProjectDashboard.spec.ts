@@ -2,24 +2,15 @@
 import {describe, it, expect, vi} from 'vitest';
 import { mount } from '@vue/test-utils';
 import ProjectDashboard from '../../src/views/ProjectDashboard.vue';
-import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
-import { createI18n } from 'vue-i18n';
 
 vi.mock('vue-router', () => ({useRoute: () => ({params: {projectId: '1',},}),}));
 
 describe('ProjectDashboard.vue', () => {
   it('renders the dashboard page with correct translation', () => {
-    const i18n = createI18n({
-      legacy: false,
-      locale: 'en',
-      messages: {en: {projectDashboard: {title: 'This is the project dashboard page for project {0}',},},},
-    });
-
     const wrapper = mount(ProjectDashboard, {
       global: {
-        plugins: [PrimeVue, i18n],
         components: {
           Card,
           Chart,
@@ -28,7 +19,7 @@ describe('ProjectDashboard.vue', () => {
     });
 
     const text = wrapper.text().replace(/\s+/g, ' ');
-    expect(text).toContain('This is the project dashboard page for project 1');
+    expect(text).toContain('Dies ist die Projekt-Dashboard-Seite für Projekt 1');
 
     // Summary Cards Inhalte
     expect(text).toContain('Projekte');
@@ -54,15 +45,8 @@ describe('ProjectDashboard.vue', () => {
   });
 
   it('renders the dashboard page with correct German translation', () => {
-    const i18n = createI18n({
-      legacy: false,
-      locale: 'de',
-      messages: {de: {projectDashboard: {title: 'Dies ist die Projekt-Dashboard-Seite für Projekt {0}.',},},},
-    });
-
     const wrapper = mount(ProjectDashboard, {
       global: {
-        plugins: [PrimeVue, i18n],
         components: {
           Card,
           Chart,

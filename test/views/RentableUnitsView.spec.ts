@@ -2,8 +2,6 @@ import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
-import PrimeVue from 'primevue/config';
-import i18n from '../../src/i18n/i18n';
 
 vi.mock('@/services/PropertyService');
 
@@ -20,7 +18,7 @@ describe('RentableUnitsView', () => {
         {
           key: '1',
           data: {
- type: 'PROPERTY', title: 'Root', usable_space: 100 
+ type: 'PROPERTY', title: 'Root', usable_space: 100
 },
           children: [],
         },
@@ -32,7 +30,7 @@ describe('RentableUnitsView', () => {
 
     wrapper = mount(RentableUnitsView, {
       props: { projectId: '123' },
-      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
+      global: { stubs: { teleport: true } },
     });
 
     await flushPromises();
@@ -47,7 +45,7 @@ describe('RentableUnitsView', () => {
 
     wrapper = mount(RentableUnitsView, {
       props: { projectId: '123' },
-      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
+      global: { stubs: { teleport: true } },
     });
 
     await flushPromises();
@@ -70,7 +68,7 @@ describe('RentableUnitsView', () => {
     wrapper = mount(RentableUnitsView, {
       props: { projectId: '1' },
       attachTo: document.body,
-      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
+      global: { stubs: { teleport: true } },
     });
 
     await flushPromises();
@@ -88,7 +86,7 @@ describe('RentableUnitsView', () => {
     wrapper = mount(RentableUnitsView, {
       props: { projectId: '123' },
       attachTo: document.body,
-      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
+      global: { stubs: { teleport: true } },
     });
 
     await flushPromises();
@@ -112,7 +110,7 @@ describe('RentableUnitsView', () => {
     wrapper = mount(RentableUnitsView, {
       props: { projectId: 'projId' },
       attachTo: document.body,
-      global: { plugins: [PrimeVue, i18n], stubs: { teleport: true } },
+      global: { stubs: { teleport: true } },
     });
 
     await flushPromises();

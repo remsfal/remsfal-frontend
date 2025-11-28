@@ -8,6 +8,8 @@ export default mergeConfig(
   defineConfig({
     test: {
       maxWorkers: '50%',
+      pool: 'forks',
+      logHeapUsage: true,
       coverage: {
         provider: 'istanbul',
         reporter: ['json', 'text'],
@@ -28,7 +30,10 @@ export default mergeConfig(
       restoreMocks: true,
       clearMocks: true,
       exclude: [...configDefaults.exclude, 'e2e/*'],
-      setupFiles: [resolve(__dirname, 'test/setup/vitest.setup.ts')],
+      setupFiles: [
+        resolve(__dirname, 'test/setup/jsdom-fix.ts'),
+        resolve(__dirname, 'test/setup/vitest.setup.ts'),
+      ],
       root: fileURLToPath(new URL('./', import.meta.url)),
     },
   }),

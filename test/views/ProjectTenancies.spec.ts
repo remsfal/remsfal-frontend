@@ -1,8 +1,6 @@
 import {mount, VueWrapper, flushPromises} from '@vue/test-utils';
-import PrimeVue from 'primevue/config';
 import Dialog from 'primevue/dialog';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import i18n from '../../src/i18n/i18n';
 import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
 import { tenancyService } from '../../src/services/TenancyService';
 
@@ -49,10 +47,7 @@ describe('ProjectTenancies.vue', () => {
 
     wrapper = mount(ProjectTenancies, {
       props: {projectId: 'proj-1',},
-      global: {
-        plugins: [PrimeVue, i18n],
-        components: { Dialog },
-      },
+      global: {components: { Dialog },},
     });
 
     // Wait for onMounted fetch

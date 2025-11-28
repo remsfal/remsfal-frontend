@@ -4,7 +4,7 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
-import { StatusValues } from '@/services/IssueService.ts'; // runtime-safe Status object
+import { StatusValues } from '@/services/IssueService.ts';
 
 const router = useRouter();
 const projectStore = useProjectStore();

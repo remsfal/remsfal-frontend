@@ -112,7 +112,7 @@ function abort() {
     modal
     :header="t('newProjectForm.input.name')"
     :style="{ width: '35rem' }"
-    :closable="true"
+    closable
     @hide="abort"
   >
     <form @submit.prevent="createProject">
@@ -141,7 +141,5 @@ function abort() {
 </template>
 
 <style scoped>
-:deep(.p-inputtext) {
-  border-radius: 0.5rem;
-}
+
 </style>

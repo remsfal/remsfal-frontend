@@ -33,7 +33,7 @@ config.global.plugins = [
   ToastService,
   DialogService,
   ConfirmationService,
-  createTestingPinia(),
+  createTestingPinia({ createSpy: vi.fn }),
   router,
   i18n,
 ];
