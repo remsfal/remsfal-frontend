@@ -79,8 +79,8 @@ const deleteProject = async () => {
     await projectService.deleteProject(props.projectId);
     toast.add({
       severity: 'success',
-      summary: t('success.created'),
-      detail: t('property.deleteSuccess'),
+      summary: t('success.saved'),
+      detail: t('projectSettings.deleteSuccess'),
       life: 3000,
     });
     showDeleteDialog.value = false;
@@ -90,7 +90,7 @@ const deleteProject = async () => {
     toast.add({
       severity: 'error',
       summary: t('error.general'),
-      detail: t('property.deleteError'),
+      detail: t('projectSettings.deleteError'),
       life: 6000,
     });
   }
@@ -156,18 +156,18 @@ watch(
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
       <div class="text-red-600 font-semibold text-xl">
-        {{ t('property.dangerZone.title') }}
+        {{ t('projectSettings.dangerZone.title') }}
       </div>
     </template>
     <template #content>
       <div class="flex flex-col gap-4">
         <p class="text-gray-700">
-          {{ t('property.dangerZone.description') }}
+          {{ t('projectSettings.dangerZone.description') }}
         </p>
         <div>
           <Button
             severity="danger"
-            :label="t('property.dangerZone.deleteButton')"
+            :label="t('projectSettings.dangerZone.deleteButton')"
             icon="pi pi-trash"
             @click="showDeleteDialog = true"
           />
@@ -179,12 +179,12 @@ watch(
   <!-- Delete Confirmation Dialog -->
   <Dialog
     v-model:visible="showDeleteDialog"
-    :header="t('property.dangerZone.confirmTitle')"
+    :header="t('projectSettings.dangerZone.confirmTitle')"
     :modal="true"
     :style="{ width: '30rem' }"
   >
     <p class="mb-4">
-      {{ t('property.dangerZone.confirmMessage') }}
+      {{ t('projectSettings.dangerZone.confirmMessage') }}
     </p>
     <template #footer>
       <Button
@@ -193,7 +193,7 @@ watch(
         @click="showDeleteDialog = false"
       />
       <Button
-        :label="t('property.dangerZone.confirmDeleteButton')"
+        :label="t('projectSettings.dangerZone.confirmDeleteButton')"
         severity="danger"
         icon="pi pi-trash"
         @click="deleteProject"
