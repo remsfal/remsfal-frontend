@@ -251,7 +251,7 @@ const deleteProperty = async () => {
     await propertyService.deleteProperty(props.projectId, props.unitId);
     toast.add({
       severity: 'success',
-      summary: 'Erfolg',
+      summary: t('success.created'),
       detail: t('property.deleteSuccess'),
       life: 3000,
     });
@@ -261,7 +261,7 @@ const deleteProperty = async () => {
     console.error('Error deleting property:', err);
     toast.add({
       severity: 'error',
-      summary: 'Fehler',
+      summary: t('error.general'),
       detail: t('property.deleteError'),
       life: 6000,
     });
