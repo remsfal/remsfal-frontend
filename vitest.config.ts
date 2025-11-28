@@ -28,8 +28,17 @@ export default mergeConfig(
       restoreMocks: true,
       clearMocks: true,
       exclude: [...configDefaults.exclude, 'e2e/*'],
-      setupFiles: [resolve(__dirname, 'test/setup/vitest.setup.ts')],
+      setupFiles: [
+        resolve(__dirname, 'test/setup/jsdom-fix.ts'),
+        resolve(__dirname, 'test/setup/vitest.setup.ts'),
+      ],
       root: fileURLToPath(new URL('./', import.meta.url)),
+      pool: 'forks',
+      poolOptions: {
+        forks: {
+          singleFork: true,
+        },
+      },
     },
   }),
 );

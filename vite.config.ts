@@ -33,7 +33,8 @@ export default defineConfig({
   optimizeDeps: {noDiscovery: true,},
   plugins: [
     vue(),
-    vueDevTools(),
+    // Disable DevTools in test environment to avoid localStorage issues
+    process.env.VITEST ? undefined : vueDevTools(),
     Components({resolvers: [PrimeVueResolver()],}),
     // Only use istanbul plugin for Cypress E2E tests, not for Vitest unit tests
     // Vitest sets VITEST=true, so we skip istanbul plugin during unit tests
