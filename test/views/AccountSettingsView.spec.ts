@@ -14,11 +14,7 @@ describe('AccountSettingsView', () => {
     const app = createApp(App);
     app.use(pinia);
 
-    wrapper = mount(AccountSettingsView, {
-      global: {
-        components: { Card },
-      },
-    });
+    wrapper = mount(AccountSettingsView, {global: {components: { Card },},});
 
     // Mock methods
     wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({

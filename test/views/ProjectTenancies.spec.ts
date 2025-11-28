@@ -47,9 +47,7 @@ describe('ProjectTenancies.vue', () => {
 
     wrapper = mount(ProjectTenancies, {
       props: {projectId: 'proj-1',},
-      global: {
-        components: { Dialog },
-      },
+      global: {components: { Dialog },},
     });
 
     // Wait for onMounted fetch
