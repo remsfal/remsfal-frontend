@@ -251,17 +251,17 @@ const deleteProperty = async () => {
     await propertyService.deleteProperty(props.projectId, props.unitId);
     toast.add({
       severity: 'success',
-      summary: t('property.deleteSuccess'),
+      summary: 'Erfolg',
       detail: t('property.deleteSuccess'),
       life: 3000,
     });
     showDeleteDialog.value = false;
     navigateToObjects(router, props.projectId);
   } catch (err) {
-    console.error('Fehler beim Löschen:', err);
+    console.error('Error deleting property:', err);
     toast.add({
       severity: 'error',
-      summary: t('property.deleteError'),
+      summary: 'Fehler',
       detail: t('property.deleteError'),
       life: 6000,
     });
