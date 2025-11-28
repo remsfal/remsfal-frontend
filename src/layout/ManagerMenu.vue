@@ -52,7 +52,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
       ],
     },
     {
-      label: 'managerMenu.issueManagement.label', // optional: if i18n key also changed
+      label: 'managerMenu.issueManagement',
       items: [
         {
           label: 'managerMenu.issueManagement.mine',

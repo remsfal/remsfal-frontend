@@ -127,6 +127,7 @@ function abort() {
           type="text"
           :placeholder="t('newProjectForm.input.exampleAddress')"
           :class="{ 'p-invalid': errorMessage }"
+          autofocus
         />
         <small class="p-error text-xs h-4">{{ errorMessage || ' ' }}</small>
       </div>
