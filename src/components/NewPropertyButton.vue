@@ -92,6 +92,7 @@ const createProperty = async () => {
         :placeholder="t('rentableUnits.form.titlePlaceholder')"
         class="flex-auto"
         autocomplete="on"
+        autofocus
       />
     </div>
 
