@@ -2,12 +2,14 @@
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import ProjectMemberSettings from '@/components/ProjectMemberSettings.vue';
 import { ref, onMounted, watch, computed } from 'vue';
 import { projectService } from '@/services/ProjectService';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import { useProjectStore } from '@/stores/ProjectStore';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   projectId: string;
@@ -16,11 +18,13 @@ const props = defineProps<{
 const { t } = useI18n();
 const toast = useToast();
 const projectStore = useProjectStore();
+const router = useRouter();
 
 // State
 const projectName = ref('');
 const originalProjectName = ref('');
 const loading = ref(false);
+const showDeleteDialog = ref(false);
 
 // Fetch project data
 const fetchProject = async (id: string) => {
@@ -66,6 +70,29 @@ const saveProjectName = async () => {
     });
   } finally {
     loading.value = false;
+  }
+};
+
+// Delete project
+const deleteProject = async () => {
+  try {
+    await projectService.deleteProject(props.projectId);
+    toast.add({
+      severity: 'success',
+      summary: t('success.created'),
+      detail: t('property.deleteSuccess'),
+      life: 3000,
+    });
+    showDeleteDialog.value = false;
+    router.push('/projects');
+  } catch (err) {
+    console.error('Error deleting project:', err);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('property.deleteError'),
+      life: 6000,
+    });
   }
 };
 
@@ -124,6 +151,55 @@ watch(
   </Card>
 
   <ProjectMemberSettings :projectId="props.projectId" />
+
+  <!-- Danger Zone Card -->
+  <Card class="flex flex-col gap-4 basis-full">
+    <template #title>
+      <div class="text-red-600 font-semibold text-xl">
+        {{ t('property.dangerZone.title') }}
+      </div>
+    </template>
+    <template #content>
+      <div class="flex flex-col gap-4">
+        <p class="text-gray-700">
+          {{ t('property.dangerZone.description') }}
+        </p>
+        <div>
+          <Button
+            severity="danger"
+            :label="t('property.dangerZone.deleteButton')"
+            icon="pi pi-trash"
+            @click="showDeleteDialog = true"
+          />
+        </div>
+      </div>
+    </template>
+  </Card>
+
+  <!-- Delete Confirmation Dialog -->
+  <Dialog
+    v-model:visible="showDeleteDialog"
+    :header="t('property.dangerZone.confirmTitle')"
+    :modal="true"
+    :style="{ width: '30rem' }"
+  >
+    <p class="mb-4">
+      {{ t('property.dangerZone.confirmMessage') }}
+    </p>
+    <template #footer>
+      <Button
+        :label="t('button.cancel')"
+        severity="secondary"
+        @click="showDeleteDialog = false"
+      />
+      <Button
+        :label="t('property.dangerZone.confirmDeleteButton')"
+        severity="danger"
+        icon="pi pi-trash"
+        @click="deleteProject"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <style scoped>
