@@ -84,7 +84,8 @@ const deleteProject = async () => {
       life: 3000,
     });
     showDeleteDialog.value = false;
-    router.push('/projects');
+    await projectStore.refreshProjectList();
+    await router.push('/projects');
   } catch (err) {
     console.error('Error deleting project:', err);
     toast.add({
