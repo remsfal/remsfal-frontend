@@ -8,6 +8,8 @@ export default mergeConfig(
   defineConfig({
     test: {
       maxWorkers: '50%',
+      pool: 'forks',
+      logHeapUsage: true,
       coverage: {
         provider: 'istanbul',
         reporter: ['json', 'text'],
@@ -33,12 +35,6 @@ export default mergeConfig(
         resolve(__dirname, 'test/setup/vitest.setup.ts'),
       ],
       root: fileURLToPath(new URL('./', import.meta.url)),
-      pool: 'forks',
-      poolOptions: {
-        forks: {
-          singleFork: true,
-        },
-      },
     },
   }),
 );
