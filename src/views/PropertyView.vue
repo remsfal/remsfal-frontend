@@ -3,6 +3,10 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { propertyService, type PropertyUnit } from '@/services/PropertyService';
 import { useToast } from 'primevue/usetoast';
+import { useI18n } from 'vue-i18n';
+import Dialog from 'primevue/dialog';
+import Button from 'primevue/button';
+import Card from 'primevue/card';
 import {handleCancel,
   navigateToObjects,
   showSavingErrorToast,
@@ -16,6 +20,9 @@ const props = defineProps<{
 
 const toast = useToast();
 const router = useRouter();
+const { t } = useI18n();
+
+const showDeleteDialog = ref(false);
 
 const title = ref('');
 const description = ref('');
@@ -239,6 +246,28 @@ const save = async () => {
   }
 };
 
+const deleteProperty = async () => {
+  try {
+    await propertyService.deleteProperty(props.projectId, props.unitId);
+    toast.add({
+      severity: 'success',
+      summary: t('property.deleteSuccess'),
+      detail: t('property.deleteSuccess'),
+      life: 3000,
+    });
+    showDeleteDialog.value = false;
+    navigateToObjects(router, props.projectId);
+  } catch (err) {
+    console.error('Fehler beim Löschen:', err);
+    toast.add({
+      severity: 'error',
+      summary: t('property.deleteError'),
+      detail: t('property.deleteError'),
+      life: 6000,
+    });
+  }
+};
+
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
@@ -394,6 +423,57 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
         </div>
       </form>
     </div>
+
+    <!-- Danger Zone Card -->
+    <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto mt-6">
+      <Card>
+        <template #title>
+          <div class="text-red-600 font-semibold text-xl">
+            {{ t('property.dangerZone.title') }}
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-col gap-4">
+            <p class="text-gray-700">
+              {{ t('property.dangerZone.description') }}
+            </p>
+            <div>
+              <Button
+                severity="danger"
+                :label="t('property.dangerZone.deleteButton')"
+                icon="pi pi-trash"
+                @click="showDeleteDialog = true"
+              />
+            </div>
+          </div>
+        </template>
+      </Card>
+    </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <Dialog
+      v-model:visible="showDeleteDialog"
+      :header="t('property.dangerZone.confirmTitle')"
+      :modal="true"
+      :style="{ width: '30rem' }"
+    >
+      <p class="mb-4">
+        {{ t('property.dangerZone.confirmMessage') }}
+      </p>
+      <template #footer>
+        <Button
+          :label="t('button.cancel')"
+          severity="secondary"
+          @click="showDeleteDialog = false"
+        />
+        <Button
+          :label="t('property.dangerZone.confirmDeleteButton')"
+          severity="danger"
+          icon="pi pi-trash"
+          @click="deleteProperty"
+        />
+      </template>
+    </Dialog>
   </div>
 </template>
 
