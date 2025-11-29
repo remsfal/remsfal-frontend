@@ -1,16 +1,8 @@
-import {describe, test, expect, beforeAll, afterAll, afterEach} from 'vitest';
-import { setupServer } from 'msw/node';
-import { handlers } from '../../test/mocks/handlers'; 
+import { describe, test, expect } from 'vitest';
 import UserService from '../../src/services/UserService';
-
-const server = setupServer(...handlers);
 
 describe('UserService with MSW', () => {
   const userService = new UserService();
-
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
 
   test('getUser returns user data', async () => {
     const user = await userService.getUser();

@@ -1,18 +1,10 @@
-import {describe, test, expect, beforeAll, afterAll, afterEach} from 'vitest';
-import { setupServer } from 'msw/node';
-import { handlers } from '../../test/mocks/handlers'; 
+import { describe, test, expect } from 'vitest';
 import { commercialService } from '../../src/services/CommercialService';
-
-const server = setupServer(...handlers);
 
 describe('CommercialService with MSW', () => {
   const projectId = 'project-1';
   const buildingId = 'building-1';
   const commercialId = 'commercial-1';
-
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
 
   test('getCommercial returns commercial data', async () => {
     const commercial = await commercialService.getCommercial(projectId, commercialId);

@@ -1,9 +1,9 @@
 import { mount, flushPromises } from '@vue/test-utils';
-import {describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll} from 'vitest';
+import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
 import Component from '../../src/views/PropertyView.vue';
 import { propertyService } from '../../src/services/PropertyService';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
+import { server } from '../mocks/server';
 
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({useRouter: () => ({ push: mockPush }),}));
@@ -26,15 +26,13 @@ const handlers = [
   }),
 ];
 
-// MSW Node server
-const server = setupServer(...handlers);
+beforeEach(() => {
+  server.use(...handlers);
+});
 
-beforeAll(() => server.listen());
 afterEach(() => {
-  server.resetHandlers();
   lastUpdatedProperty = null;
 });
-afterAll(() => server.close());
 
 describe('PropertyView.vue', () => {
   let wrapper: any;
