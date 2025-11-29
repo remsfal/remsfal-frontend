@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
-import { setupServer } from 'msw/node';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
+import { server } from '../mocks/server';
 import { storageService, type Storage } from '@/services/StorageService';
 
 const mockStorage: Storage = {
@@ -11,48 +11,45 @@ const mockStorage: Storage = {
   usableSpace: 10,
 };
 
-const handlers = [
-  http.post('/api/v1/projects/:projectId/buildings/:buildingId/storages', async ({ request }) => {
-    const body = (await request.json()) as Storage;
-    return HttpResponse.json(
-      {
-        ...body,
-        id: 'new-storage-id',
-      },
-      { status: 201 },
-    );
-  }),
-  http.get('/api/v1/projects/:projectId/storages/:storageId', ({ params }) => {
-    if (params.storageId === 'not-found') {
-      return HttpResponse.json({ message: 'Storage not found' }, { status: 404 });
-    }
-    return HttpResponse.json({
-      ...mockStorage,
-      id: params.storageId,
-    });
-  }),
-  http.patch('/api/v1/projects/:projectId/storages/:storageId', async ({ request, params }) => {
-    const body = (await request.json()) as Partial<Storage>;
-    return HttpResponse.json({
-      ...mockStorage,
-      ...body,
-      id: params.storageId,
-    });
-  }),
-  http.delete('/api/v1/projects/:projectId/storages/:storageId', ({ params }) => {
-    if (params.storageId === 'cannot-delete') {
-      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
-    }
-    return HttpResponse.json({}, { status: 204 });
-  }),
-];
-
-const server = setupServer(...handlers);
-
 describe('StorageService', () => {
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  // Override global handlers with test-specific ones
+  beforeEach(() => {
+    server.use(
+      http.post('/api/v1/projects/:projectId/buildings/:buildingId/storages', async ({ request }) => {
+        const body = (await request.json()) as Storage;
+        return HttpResponse.json(
+          {
+            ...body,
+            id: 'new-storage-id',
+          },
+          { status: 201 },
+        );
+      }),
+      http.get('/api/v1/projects/:projectId/storages/:storageId', ({ params }) => {
+        if (params.storageId === 'not-found') {
+          return HttpResponse.json({ message: 'Storage not found' }, { status: 404 });
+        }
+        return HttpResponse.json({
+          ...mockStorage,
+          id: params.storageId,
+        });
+      }),
+      http.patch('/api/v1/projects/:projectId/storages/:storageId', async ({ request, params }) => {
+        const body = (await request.json()) as Partial<Storage>;
+        return HttpResponse.json({
+          ...mockStorage,
+          ...body,
+          id: params.storageId,
+        });
+      }),
+      http.delete('/api/v1/projects/:projectId/storages/:storageId', ({ params }) => {
+        if (params.storageId === 'cannot-delete') {
+          return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+        }
+        return HttpResponse.json({}, { status: 204 });
+      }),
+    );
+  });
 
   describe('createStorage', () => {
     it('should create a new storage', async () => {

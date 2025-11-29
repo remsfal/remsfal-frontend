@@ -1,46 +1,38 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
-import { setupServer } from 'msw/node';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
+import { server } from '../mocks/server';
 import { apiClient } from '@/services/ApiClient';
 
-// Mock handlers for testing
-const handlers = [
-  http.get('/api/v1/test', () => {
-    return HttpResponse.json({ message: 'GET success' });
-  }),
-  http.get('/api/v1/test/:id', ({ params }) => {
-    return HttpResponse.json({ id: params.id, message: 'GET with path param' });
-  }),
-  http.post('/api/v1/test', async ({ request }) => {
-    const body = await request.json();
-    return HttpResponse.json({ ...body, created: true }, { status: 201 });
-  }),
-  http.put('/api/v1/test/:id', async ({ request, params }) => {
-    const body = await request.json();
-    return HttpResponse.json({
- ...body, id: params.id, updated: true 
-});
-  }),
-  http.patch('/api/v1/test/:id', async ({ request, params }) => {
-    const body = await request.json();
-    return HttpResponse.json({
- ...body, id: params.id, patched: true 
-});
-  }),
-  http.delete('/api/v1/test/:id', ({ params }) => {
-    return HttpResponse.json({ id: params.id, deleted: true });
-  }),
-  http.get('/api/v1/error', () => {
-    return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
-  }),
-];
-
-const server = setupServer(...handlers);
-
 describe('ApiClient', () => {
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  // Set up test-specific handlers for ApiClient testing
+  beforeEach(() => {
+    server.use(
+      http.get('/api/v1/test', () => {
+        return HttpResponse.json({ message: 'GET success' });
+      }),
+      http.get('/api/v1/test/:id', ({ params }) => {
+        return HttpResponse.json({ id: params.id, message: 'GET with path param' });
+      }),
+      http.post('/api/v1/test', async ({ request }) => {
+        const body = await request.json();
+        return HttpResponse.json({ ...body, created: true }, { status: 201 });
+      }),
+      http.put('/api/v1/test/:id', async ({ request, params }) => {
+        const body = await request.json();
+        return HttpResponse.json({ ...body, id: params.id, updated: true });
+      }),
+      http.patch('/api/v1/test/:id', async ({ request, params }) => {
+        const body = await request.json();
+        return HttpResponse.json({ ...body, id: params.id, patched: true });
+      }),
+      http.delete('/api/v1/test/:id', ({ params }) => {
+        return HttpResponse.json({ id: params.id, deleted: true });
+      }),
+      http.get('/api/v1/error', () => {
+        return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
+      }),
+    );
+  });
 
   describe('GET requests', () => {
     it('should perform a simple GET request', async () => {

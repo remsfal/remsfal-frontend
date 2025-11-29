@@ -1,11 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import {propertyService,
   type PropertyUnit,
   type PropertyList,
   toRentableUnitView,
   EntityType,} from '@/services/PropertyService';
-import { setupTestServer, testErrorHandling } from '../utils/testHelpers';
+import { testErrorHandling } from '../utils/testHelpers';
+import { server } from '../mocks/server';
 
 const mockProperty: PropertyUnit = {
   id: 'property-1',
@@ -62,9 +63,10 @@ const handlers = [
   }),
 ];
 
-const server = setupTestServer(...handlers);
-
 describe('PropertyService', () => {
+  beforeEach(() => {
+    server.use(...handlers);
+  });
 
   describe('createProperty', () => {
     it('should create a new property', async () => {

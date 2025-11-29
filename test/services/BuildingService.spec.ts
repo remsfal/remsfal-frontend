@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
+import { server } from '../mocks/server';
 import { buildingService, type Building } from '@/services/BuildingService';
-import { setupTestServer, testErrorHandling } from '../utils/testHelpers';
+import { testErrorHandling } from '../utils/testHelpers';
 
 const mockBuilding: Building = {
   id: 'building-1',
@@ -14,45 +15,45 @@ const mockBuilding: Building = {
   rent: 5000,
 };
 
-const handlers = [
-  http.post('/api/v1/projects/:projectId/properties/:propertyId/buildings', async ({ request }) => {
-    const body = (await request.json()) as Building;
-    return HttpResponse.json(
-      {
-        ...body,
-        id: 'new-building-id',
-      },
-      { status: 201 },
-    );
-  }),
-  http.get('/api/v1/projects/:projectId/buildings/:buildingId', ({ params }) => {
-    if (params.buildingId === 'not-found') {
-      return HttpResponse.json({ message: 'Building not found' }, { status: 404 });
-    }
-    return HttpResponse.json({
-      ...mockBuilding,
-      id: params.buildingId,
-    });
-  }),
-  http.patch('/api/v1/projects/:projectId/buildings/:buildingId', async ({ request, params }) => {
-    const body = (await request.json()) as Partial<Building>;
-    return HttpResponse.json({
-      ...mockBuilding,
-      ...body,
-      id: params.buildingId,
-    });
-  }),
-  http.delete('/api/v1/projects/:projectId/buildings/:buildingId', ({ params }) => {
-    if (params.buildingId === 'cannot-delete') {
-      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
-    }
-    return HttpResponse.json({}, { status: 204 });
-  }),
-];
-
-const server = setupTestServer(...handlers);
-
 describe('BuildingService', () => {
+  // Override global handlers with test-specific ones
+  beforeEach(() => {
+    server.use(
+      http.post('/api/v1/projects/:projectId/properties/:propertyId/buildings', async ({ request }) => {
+        const body = (await request.json()) as Building;
+        return HttpResponse.json(
+          {
+            ...body,
+            id: 'new-building-id',
+          },
+          { status: 201 },
+        );
+      }),
+      http.get('/api/v1/projects/:projectId/buildings/:buildingId', ({ params }) => {
+        if (params.buildingId === 'not-found') {
+          return HttpResponse.json({ message: 'Building not found' }, { status: 404 });
+        }
+        return HttpResponse.json({
+          ...mockBuilding,
+          id: params.buildingId,
+        });
+      }),
+      http.patch('/api/v1/projects/:projectId/buildings/:buildingId', async ({ request, params }) => {
+        const body = (await request.json()) as Partial<Building>;
+        return HttpResponse.json({
+          ...mockBuilding,
+          ...body,
+          id: params.buildingId,
+        });
+      }),
+      http.delete('/api/v1/projects/:projectId/buildings/:buildingId', ({ params }) => {
+        if (params.buildingId === 'cannot-delete') {
+          return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+        }
+        return HttpResponse.json({}, { status: 204 });
+      }),
+    );
+  });
 
   describe('createBuilding', () => {
     it('should create a new building', async () => {
