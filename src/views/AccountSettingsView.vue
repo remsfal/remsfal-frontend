@@ -351,6 +351,76 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
 const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
+
+
+
+
+
+type AlternativeEmail = {
+  id: string;
+  email: string;
+};
+
+
+const alternativeEmails = ref<AlternativeEmail[]>([]);
+
+
+const visible = ref(false);
+
+
+const alternativeEmail = ref<string>('');      
+const isEmailInvalid = ref(false);
+const emailErrorMessage = ref('');
+
+
+function createId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+
+// Reset form state
+function resetForm() {
+  alternativeEmail.value = '';
+  isEmailInvalid.value = false;
+  emailErrorMessage.value = '';
+}
+
+
+function validateEmail(email: string) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+const saveAlternativeEmail = () => {
+  if (!alternativeEmail.value || !validateEmail(alternativeEmail.value)) {
+    isEmailInvalid.value = true;
+    emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
+    return;
+  } else {
+    isEmailInvalid.value = false;
+    emailErrorMessage.value = '';
+  }
+
+
+  alternativeEmails.value.push({
+    id: createId(),
+    email: alternativeEmail.value,
+  });
+
+
+  // close dialog
+  visible.value = false;
+
+
+  // Reset form
+  resetForm();
+};
+
+
+function removeAlternativeEmail(id: string) {
+  alternativeEmails.value = alternativeEmails.value.filter((e) => e.id !== id);
+}
+
+
 </script>
 
 <template>
@@ -406,12 +476,81 @@ const isDisabled = computed(() => {
               </div>
 
               <div class="input-container">
-                <label class="label" for="eMail">E-Mail:</label>
+                <label class="label" for="eMail">{{ t('accountSettings.userProfile.email') }}:</label>
                 <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
                 <Message class="error" size="small" severity="error" variant="simple" />
               </div>
+
               <div class="input-container">
-                <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
+                <label class="label" for="alternative-eMail">{{ t('accountSettings.userProfile.alternative-email') }}:</label>
+                
+                <div class="flex justify-front mt-1">
+                <Button
+                  label="Alternative E-Mail hinzufügen"
+                  icon="pi pi-plus"
+                  style="width: auto"
+                  @click="visible = true"
+                />
+                </div>
+                
+                <!-- Only display this field if an alternative email exists -->
+                <div v-if="alternativeEmails.length > 0" class="flex items-center gap-2 mt-4">
+                <InputText id="alternative-eMail"  class="alt-email-input flex-grow" :value="alternativeEmails[0]?.email || ''" disabled required />
+                <Message class="error" size="small" severity="error" variant="simple" />
+                
+                <!-- Trash deletes the alternative email -->
+                <i class="pi pi-trash cursor-pointer text-lg"
+                @click="removeAlternativeEmail(alternativeEmails[0]!.id)">
+                </i>
+
+              </div>
+              </div>
+
+              <Dialog
+                v-model:visible="visible"
+                modal :style="{ width: '35rem' }"  
+                header="Alternative E-Mail hinzufügen"
+                @hide="resetForm">
+              <div class="flex flex-col gap-1 mb-6">
+              <div class="flex items-center gap-6">
+                <label for="email"
+                  class="font-semibold w-29">E-Mail Adresse
+                </label>
+
+                 <InputText
+                id="email" class="flex-grow"
+                v-model="alternativeEmail"
+                type="email"
+                autocomplete="off"
+                :invalid="isEmailInvalid"
+                placeholder="Alternative E-Mail-Adresse"/>
+              </div>
+              <small
+                v-if="isEmailInvalid"
+                class="text-red-500 ml-28">{{ emailErrorMessage }}
+              </small>
+           </div>
+
+           <div class="flex justify-end gap-2 mt-6">
+             <Button
+                type="button"
+                :label="t('button.cancel')"
+                severity="secondary"
+                @click="visible = false"
+             />
+              <Button
+                type="button"
+                :label="t('button.add')"
+                @click= "saveAlternativeEmail"
+              />
+             </div>
+             </Dialog>
+
+
+
+
+              <div class="input-container">
+                <label class="label flex justify-front mt-4" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
                 <InputText
                   id="mobilePhoneNumber"
                   v-model="editedUserProfile.mobilePhoneNumber"
@@ -805,4 +944,10 @@ input:focus {
   font-size: 10px;
   border: none;
 }
+
+.alt-email-input {
+  min-width: 0; /* prevent Overflow */
+}
+
+
 </style>
