@@ -5,11 +5,9 @@
  * Script to merge coverage from both Vitest unit tests and Cypress E2E tests using NYC
  */
 import { execSync } from 'child_process';
-import { existsSync, rmSync, cpSync } from 'fs';
-import { join } from 'path';
+import { existsSync, rmSync } from 'fs';
 
 const nycOutput = '.nyc_output';
-const vitestNycOutput = '.nyc_output/vitest';
 const coverageFinal = 'coverage';
 
 console.log('🧪 Starting combined coverage collection...\n');
@@ -23,22 +21,11 @@ try {
     }
   });
 
-  // Step 2: Run Vitest unit tests with coverage
+  // Step 2: Run Vitest unit tests with coverage using npm script
   console.log('📊 Running Vitest unit tests with coverage...');
-  execSync('vitest run --coverage', { stdio: 'inherit', shell: false });
+  execSync('npm run coverage:unit', { stdio: 'inherit', shell: false });
 
-  // Step 3: Copy Vitest coverage data to .nyc_output root
-  const vitestCoverageFile = join(vitestNycOutput, 'coverage-final.json');
-  if (existsSync(vitestCoverageFile)) {
-    console.log('📋 Copying Vitest coverage data...');
-    const destPath = join(nycOutput, 'vitest-coverage-final.json');
-    cpSync(vitestCoverageFile, destPath);
-    console.log('✓ Copied coverage-final.json from Vitest');
-  } else {
-    console.warn('⚠️  No Vitest coverage-final.json found');
-  }
-
-  // Step 4: Run Cypress E2E tests with coverage (if available)
+  // Step 3: Run Cypress E2E tests with coverage (if available)
   console.log('🌐 Running Cypress E2E tests...');
 
   try {
@@ -58,7 +45,7 @@ try {
     console.debug('E2E error:', error.message);
   }
 
-  // Step 5: Generate merged coverage report using NYC
+  // Step 4: Generate merged coverage report using NYC
   if (existsSync(nycOutput)) {
     console.log('📈 Generating merged coverage reports...');
     execSync('nyc report --reporter=lcov --reporter=json --reporter=text --reporter=html', {

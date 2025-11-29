@@ -19,11 +19,15 @@ describe('ApiClient', () => {
       }),
       http.put('/api/v1/test/:id', async ({ request, params }) => {
         const body = await request.json();
-        return HttpResponse.json({ ...body, id: params.id, updated: true });
+        return HttpResponse.json({
+            ...body, id: params.id, updated: true
+        });
       }),
       http.patch('/api/v1/test/:id', async ({ request, params }) => {
         const body = await request.json();
-        return HttpResponse.json({ ...body, id: params.id, patched: true });
+        return HttpResponse.json({
+          ...body, id: params.id, patched: true
+        });
       }),
       http.delete('/api/v1/test/:id', ({ params }) => {
         return HttpResponse.json({ id: params.id, deleted: true });

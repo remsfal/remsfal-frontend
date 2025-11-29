@@ -790,7 +790,8 @@ export const handlers = [
 
   // GET single project
   http.get(`${API_BASE}/projects/:projectId`, ({ params }) => {
-    if (params.projectId === 'not-found' || params.projectId === 'non-existing' || params.projectId === 'non-existent-project-id') {
+    if (params.projectId === 'not-found' || params.projectId === 'non-existing'
+      || params.projectId === 'non-existent-project-id') {
       return HttpResponse.json({ message: 'Project not found' }, { status: 404 });
     }
     if (params.projectId === 'network-error-project-id') {
