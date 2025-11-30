@@ -5,64 +5,68 @@
  * Script to merge coverage from both Vitest unit tests and Cypress E2E tests using NYC
  */
 import { execSync } from 'child_process';
-import { existsSync, rmSync } from 'fs';
+import { existsSync, mkdirSync, cpSync } from 'fs';
 
 const nycOutput = '.nyc_output';
 const coverageFinal = 'coverage';
+const coverageVitest = 'coverage-vitest';
+const coverageCypress = 'coverage-cypress';
 
-console.log('🧪 Starting combined coverage collection...\n');
+console.log('📊 Merging coverage reports...\n');
 
 try {
-  // Step 1: Clean up previous coverage data
-  console.log('🧹 Cleaning previous coverage data...');
-  [nycOutput, coverageFinal].forEach(dir => {
-    if (existsSync(dir)) {
-      rmSync(dir, { recursive: true, force: true });
-    }
-  });
+  // Check if coverage directories exist
+  const hasVitest = existsSync(coverageVitest);
+  const hasCypress = existsSync(coverageCypress);
 
-  // Step 2: Run Vitest unit tests with coverage using npm script
-  console.log('📊 Running Vitest unit tests with coverage...');
-  execSync('npm run coverage:unit', { stdio: 'inherit', shell: false });
-
-  // Step 3: Run Cypress E2E tests with coverage (if available)
-  console.log('🌐 Running Cypress E2E tests...');
-
-  try {
-    // Build the project first
-    console.log('🔨 Building project for E2E tests...');
-    execSync('npm run build', { stdio: 'inherit', shell: false });
-
-    // Start server and run E2E tests
-    console.log('🚀 Running E2E tests with coverage collection...');
-    execSync('npm run test:e2e', {
-      stdio: 'inherit',
-      shell: false,
-    });
-
-  } catch (error) {
-    console.warn('⚠️  E2E tests failed or are not available, continuing with Vitest coverage only...');
-    console.debug('E2E error:', error.message);
-  }
-
-  // Step 4: Generate merged coverage report using NYC
-  if (existsSync(nycOutput)) {
-    console.log('📈 Generating merged coverage reports...');
-    execSync('nyc report --reporter=lcov --reporter=json --reporter=text --reporter=html', {
-      stdio: 'inherit',
-      shell: false
-    });
-
-    console.log('\n✅ Combined coverage collection completed!');
-    console.log('📁 Final coverage reports available in: coverage/');
-    console.log('📄 LCOV report: coverage/lcov.info');
-    console.log('🌐 HTML report: coverage/index.html');
-  } else {
-    console.log('❌ No coverage data found');
+  if (!hasVitest && !hasCypress) {
+    console.log('❌ No coverage data found. Run coverage:unit and/or coverage:e2e first.');
     process.exit(1);
   }
 
+  // Create .nyc_output directory if it doesn't exist
+  if (!existsSync(nycOutput)) {
+    mkdirSync(nycOutput, { recursive: true });
+  }
+
+  // Copy coverage data to .nyc_output for merging
+  if (hasVitest && existsSync(`${coverageVitest}/coverage-final.json`)) {
+    console.log('📋 Found Vitest coverage data');
+    cpSync(`${coverageVitest}/coverage-final.json`, `${nycOutput}/vitest.json`);
+  }
+
+  if (hasCypress && existsSync(`${coverageCypress}/coverage-final.json`)) {
+    console.log('📋 Found Cypress coverage data');
+    cpSync(`${coverageCypress}/coverage-final.json`, `${nycOutput}/cypress.json`);
+  }
+
+  // Merge coverage reports using NYC
+  console.log('🔀 Merging coverage reports with NYC...');
+  execSync(`nyc merge ${nycOutput} ${nycOutput}/coverage.json`, {
+    stdio: 'inherit',
+    shell: false
+  });
+
+  // Generate merged reports
+  console.log('📈 Generating merged coverage reports...');
+  execSync(`nyc report --temp-dir ${nycOutput} --reporter=html --reporter=lcov --reporter=text --reporter=json --report-dir ${coverageFinal}`, {
+    stdio: 'inherit',
+    shell: false
+  });
+
+  console.log('\n✅ Coverage merge completed!');
+  console.log('📁 Merged coverage reports available in: coverage/');
+  console.log('📄 LCOV report: coverage/lcov.info');
+  console.log('🌐 HTML report: coverage/index.html');
+
+  if (hasVitest) {
+    console.log('\n📊 Unit test coverage: coverage-vitest/index.html');
+  }
+  if (hasCypress) {
+    console.log('📊 E2E test coverage: coverage-cypress/index.html');
+  }
+
 } catch (error) {
-  console.error('❌ Error during coverage collection:', error.message);
+  console.error('❌ Error during coverage merge:', error.message);
   process.exit(1);
 }

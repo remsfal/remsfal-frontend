@@ -1,7 +1,7 @@
 import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
-import { EntityType, propertyService } from '../../src/services/PropertyService';
+import { EntityType, type PropertyList, propertyService } from '../../src/services/PropertyService';
 import { buildingService } from '../../src/services/BuildingService';
 
 vi.mock('@/services/PropertyService');
@@ -32,7 +32,7 @@ describe('RentableUnitsView', () => {
       first: 0,
       size: 1,
       total: 1,
-    } as any);
+    } as PropertyList);
 
     wrapper = mount(RentableUnitsView, {
       props: { projectId: '123' },
@@ -69,7 +69,7 @@ describe('RentableUnitsView', () => {
       first: 0,
       size: 1,
       total: 1,
-    } as any);
+    } as PropertyList);
 
     wrapper = mount(RentableUnitsView, {
       props: { projectId: '1' },
@@ -90,7 +90,7 @@ describe('RentableUnitsView', () => {
       first: 0,
       size: 0,
       total: 0,
-    } as any);
+    } as PropertyList);
 
     wrapper = mount(RentableUnitsView, {
       props: { projectId: 'projId' },
@@ -121,7 +121,7 @@ describe('RentableUnitsView', () => {
       first: 0,
       size: 0,
       total: 0,
-    } as any);
+    } as PropertyList);
 
     wrapper = mount(RentableUnitsView, {
       props: { projectId: 'projId' },

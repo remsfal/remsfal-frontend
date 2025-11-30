@@ -40,7 +40,7 @@ function getUnitTypeTranslation(): string {
     <Dialog
       v-model:visible="showDeleteDialog"
       :header="t('rentableUnits.delete.confirmTitle')"
-      :modal="true"
+      modal
       :style="{ width: '30rem' }"
       data-testid="deleteRentableUnitDialog"
     >
