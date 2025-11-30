@@ -197,6 +197,21 @@ export const projectMemberService = new ProjectMemberService();
 - Query parameters: `{ params: { filter: 'active' } }`
 - Full type safety is enforced at compile time
 
+**Resource-Specific Services** (CRITICAL):
+- **Each backend resource has its own dedicated service** - do NOT call `apiClient` directly from views or components
+- Examples of existing services:
+  - `PropertyService` - For properties (`/api/v1/projects/{projectId}/properties`)
+  - `ApartmentService` - For apartments (`/api/v1/projects/{projectId}/apartments`)
+  - `BuildingService` - For buildings (`/api/v1/projects/{projectId}/buildings`)
+  - `SiteService` - For sites (`/api/v1/projects/{projectId}/sites`)
+  - `CommercialService` - For commercial units (`/api/v1/projects/{projectId}/commercials`)
+  - `StorageService` - For storage units (`/api/v1/projects/{projectId}/storages`)
+  - `ProjectMemberService` - For project members
+  - `IssueService` - For issues/tickets
+  - `TenancyService` - For tenancies
+- **When implementing CRUD operations**, always use the appropriate service for each resource type
+- **Never bypass services** - Components and views should ONLY call services, never `apiClient` directly
+
 **Error Handling**:
 - API errors flow through EventStore → toast display
 - Axios interceptor emits events on API failures
@@ -278,6 +293,8 @@ Key environment variables in `.env`:
 - Don't forget to handle loading and error states
 - Don't use direct DOM manipulation - use Vue's reactivity
 - Don't use kebab-case for attributes or events (use camelCase)
+- **Don't call `apiClient` directly from views or components** - always use the appropriate resource-specific service
+- **Don't create a single service for multiple resource types** - each resource (apartment, building, site, etc.) has its own dedicated service
 
 ## Important Patterns and Conventions
 
@@ -336,3 +353,5 @@ When helping with this codebase:
 - Maintain responsive design principles with Tailwind
 - Use camelCase for attributes and events (NOT kebab-case)
 - Prefer editing existing components over creating new files
+- **Always use resource-specific services** - identify which resource is being operated on (property, apartment, building, site, commercial, storage, etc.) and use the corresponding service
+- **When implementing delete/update operations for rentable units**, ensure you're calling the correct service based on the unit type (e.g., `apartmentService.deleteApartment()` for apartments, `buildingService.deleteBuilding()` for buildings)

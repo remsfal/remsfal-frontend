@@ -129,9 +129,7 @@ describe('DeleteRentableUnitButton.vue', () => {
     };
 
     // Create a new wrapper with different node
-    const apartmentWrapper = mount(DeleteRentableUnitButton, {
-      props: { node: apartmentNode },
-    });
+    const apartmentWrapper = mount(DeleteRentableUnitButton, {props: { node: apartmentNode },});
 
     // Test the getUnitTypeTranslation method directly
     const translatedType = apartmentWrapper.vm.getUnitTypeTranslation();

@@ -3,6 +3,11 @@ import { ref, onMounted } from 'vue';
 import {propertyService,
   type RentableUnitTreeNode,
   toRentableUnitView,} from '@/services/PropertyService';
+import { apartmentService } from '@/services/ApartmentService';
+import { buildingService } from '@/services/BuildingService';
+import { commercialService } from '@/services/CommercialService';
+import { siteService } from '@/services/SiteService';
+import { storageService } from '@/services/StorageService';
 import type { components } from '@/services/api/platform-schema';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
@@ -87,16 +92,35 @@ function onDeleteNode(node: RentableUnitTreeNode) {
         .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
         .catch((err) => console.error('Error deleting property:', err));
       break;
-    // TODO: implement other entity deletes
     case 'SITE':
+      siteService
+        .deleteSite(props.projectId, node.key)
+        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .catch((err) => console.error('Error deleting site:', err));
       break;
     case 'BUILDING':
+      buildingService
+        .deleteBuilding(props.projectId, node.key)
+        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .catch((err) => console.error('Error deleting building:', err));
       break;
     case 'APARTMENT':
+      apartmentService
+        .deleteApartment(props.projectId, node.key)
+        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .catch((err) => console.error('Error deleting apartment:', err));
       break;
     case 'COMMERCIAL':
+      commercialService
+        .deleteCommercial(props.projectId, node.key)
+        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .catch((err) => console.error('Error deleting commercial:', err));
       break;
     case 'STORAGE':
+      storageService
+        .deleteStorage(props.projectId, node.key)
+        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .catch((err) => console.error('Error deleting storage:', err));
       break;
   }
 }

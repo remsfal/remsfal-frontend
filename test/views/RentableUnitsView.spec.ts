@@ -2,8 +2,14 @@ import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
 import { EntityType, propertyService } from '../../src/services/PropertyService';
+import { buildingService } from '../../src/services/BuildingService';
 
 vi.mock('@/services/PropertyService');
+vi.mock('@/services/ApartmentService');
+vi.mock('@/services/BuildingService');
+vi.mock('@/services/CommercialService');
+vi.mock('@/services/SiteService');
+vi.mock('@/services/StorageService');
 
 describe('RentableUnitsView', () => {
   let wrapper: VueWrapper;
@@ -57,7 +63,7 @@ describe('RentableUnitsView', () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
       properties: [
         {
- key: '1', data: { title: 'Test', type: EntityType.Property }, children: [] 
+ key: '1', data: { title: 'Test', type: EntityType.Property }, children: []
 },
       ],
       first: 0,
@@ -73,39 +79,18 @@ describe('RentableUnitsView', () => {
 
     await flushPromises();
 
-    const deleteBtn = wrapper.find('[data-testid="deleteNode"]');
+    const deleteBtn = wrapper.find('[data-testid="deleteRentableUnitButton"]');
     expect(deleteBtn.exists()).toBe(true);
-
-    await deleteBtn.trigger('click');
-    await flushPromises();
-
-    expect((wrapper.vm as any).showDeleteDialog).toBe(true);
   });
 
-  it('confirmDeleteNode sets nodeToDelete and showDeleteDialog', async () => {
-    wrapper = mount(RentableUnitsView, {
-      props: { projectId: '123' },
-      attachTo: document.body,
-      global: { stubs: { teleport: true } },
-    });
-
-    await flushPromises();
-
-    const sampleNode = {
-      key: '1',
-      data: {
- type: EntityType.Project, title: 'ABCDF', description: '', tenant: '', usable_space: 0 
-},
-      children: [],
-    };
-    (wrapper.vm as any).confirmDeleteNode(sampleNode);
-
-    expect((wrapper.vm as any).nodeToDelete).toEqual(sampleNode);
-    expect((wrapper.vm as any).showDeleteDialog).toBe(true);
-  });
-
-  it('deleteConfirmed calls deleteProperty and closes dialog', async () => {
+  it('onDeleteNode calls propertyService.deleteProperty for PROPERTY type', async () => {
     const deleteSpy = vi.mocked(propertyService.deleteProperty).mockResolvedValue(undefined);
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
+      properties: [],
+      first: 0,
+      size: 0,
+      total: 0,
+    } as any);
 
     wrapper = mount(RentableUnitsView, {
       props: { projectId: 'projId' },
@@ -116,20 +101,47 @@ describe('RentableUnitsView', () => {
     await flushPromises();
 
     const sampleNode = {
-      key: '1',
+      key: 'prop-1',
       data: {
- type: EntityType.Property, title: '', description: '', tenant: '', usable_space: 0 
+ type: EntityType.Property, title: 'Test Property', description: '', tenant: '', usable_space: 0
 },
       children: [],
     };
-    (wrapper.vm as any).nodeToDelete = sampleNode;
-    (wrapper.vm as any).showDeleteDialog = true;
 
-    (wrapper.vm as any).deleteConfirmed();
+    (wrapper.vm as any).onDeleteNode(sampleNode);
     await flushPromises();
 
-    expect(deleteSpy).toHaveBeenCalledWith('projId', '1');
-    expect((wrapper.vm as any).showDeleteDialog).toBe(false);
-    expect((wrapper.vm as any).nodeToDelete).toBeNull();
+    expect(deleteSpy).toHaveBeenCalledWith('projId', 'prop-1');
+  });
+
+  it('onDeleteNode calls buildingService.deleteBuilding for BUILDING type', async () => {
+    const deleteSpy = vi.mocked(buildingService.deleteBuilding).mockResolvedValue(undefined);
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
+      properties: [],
+      first: 0,
+      size: 0,
+      total: 0,
+    } as any);
+
+    wrapper = mount(RentableUnitsView, {
+      props: { projectId: 'projId' },
+      attachTo: document.body,
+      global: { stubs: { teleport: true } },
+    });
+
+    await flushPromises();
+
+    const sampleNode = {
+      key: 'building-1',
+      data: {
+ type: EntityType.Building, title: 'Test Building', description: '', tenant: '', usable_space: 0
+},
+      children: [],
+    };
+
+    (wrapper.vm as any).onDeleteNode(sampleNode);
+    await flushPromises();
+
+    expect(deleteSpy).toHaveBeenCalledWith('projId', 'building-1');
   });
 });
