@@ -16,7 +16,11 @@
     "src/services/api/*-schema.ts",
     "coverage-cypress/**",
     "coverage-vitest/**",
-    "coverage/**"
+    "coverage/**",
+    "*.d.ts",
+    "*.config.cjs",
+    "*.config.js",
+    "*.config.ts"
   ],
   "all": true,
   "check-coverage": false
