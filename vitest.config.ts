@@ -12,8 +12,8 @@ export default mergeConfig(
       logHeapUsage: true,
       coverage: {
         provider: 'istanbul',
-        reporter: ['json', 'text'],
-        reportsDirectory: '.nyc_output/vitest',
+        reporter: ['json', 'text', 'html', 'lcov'],
+        reportsDirectory: 'coverage-vitest',
         include: ['src/**/*.ts', 'src/**/*.vue'],
         exclude: [
           ...(configDefaults.coverage?.exclude || []),

@@ -1,22 +1,26 @@
 {
-  "reporter": ["lcov", "text", "json", "html"],
-  "report-dir": "coverage",
-  "temp-dir": ".nyc_output",
-  "include": [
-    "src/**/*.{ts,js,vue}"
-  ],
+  "report-dir": "coverage-cypress",
+  "reporter": ["html", "lcov", "text", "json"],
   "exclude": [
-    "src/services/api/*-schema.ts",
-    "node_modules/**",
+    "**/*.spec.ts",
+    "**/*.spec.js",
+    "**/*.cy.ts",
+    "**/*.cy.js",
     "test/**",
     "cypress/**",
-    "scripts/**",
+    "node_modules/**",
     "dist/**",
-    "*.config.*"
-  ],
-  "extension": [
-    ".ts",
-    ".vue"
+    "scripts/**",
+    "public/**",
+    "src/assets/**",
+    "src/services/api/*-schema.ts",
+    "coverage-cypress/**",
+    "coverage-vitest/**",
+    "coverage/**",
+    "*.d.ts",
+    "*.config.cjs",
+    "*.config.js",
+    "*.config.ts"
   ],
   "all": true,
   "check-coverage": false
