@@ -95,8 +95,8 @@
   "newProjectForm.title.error": "The property name must not exceed {maxLength} characters",
   "newProjectForm.input.name": "Property Name",
   "newProjectForm.input.exampleAddress": "e.g. 12 Example Street, Berlin",
-  "projectTable.title": "Title",
-  "projectTable": "Role",
+  "projectTable.title": "Designation",
+  "projectTable": "My Role",
   "privacy.title": "Privacy Policy",
   "toolbar.newProject": "New Project",
   "toolbar.logout": "Log out",
@@ -157,6 +157,9 @@
   "rentableUnits.table.tenant": "Tenant",
   "rentableUnits.table.area": "Area",
   "rentableUnits.view.title": "Rentable Units",
+  "rentableUnits.delete.confirmTitle": "Really delete rentable unit?",
+  "rentableUnits.delete.confirmMessage": "Are you sure you want to delete {type} \"{title}\"? This action cannot be undone.",
+  "rentableUnits.delete.confirmDeleteButton": "Delete permanently",
   "toolbar.inbox": "Inbox",
   "inbox.title": "Inbox",
   "inbox.loading": "Loading messages…",
@@ -238,5 +241,11 @@
   "projectSettings.newProjectMemberButton.emailPlaceholder": "Email address of the new member",
   "projectSettings.newProjectMemberButton.roleLabel": "Member Role",
   "projectSettings.newProjectMemberButton.invalidEmail": "Please enter a valid email address",
-  "projectSettings.newProjectMemberButton.invalidRole": "Please select a valid role"
+  "projectSettings.newProjectMemberButton.invalidRole": "Please select a valid role",
+  "unitTypes.property": "Property",
+  "unitTypes.site": "Site",
+  "unitTypes.building": "Building",
+  "unitTypes.apartment": "Apartment",
+  "unitTypes.storage": "Storage",
+  "unitTypes.commercial": "Commercial"
 }

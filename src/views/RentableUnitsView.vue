@@ -5,7 +5,6 @@ import {propertyService,
   toRentableUnitView,} from '@/services/PropertyService';
 import type { components } from '@/services/api/platform-schema';
 import { useRouter } from 'vue-router';
-import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import { useI18n } from 'vue-i18n';
@@ -14,6 +13,7 @@ import TreeTable, {type TreeTableExpandedKeys,
 import NewRentableUnitButton from '@/components/NewRentableUnitButton.vue';
 import { useToast } from 'primevue/usetoast';
 import NewPropertyButton from '@/components/NewPropertyButton.vue';
+import DeleteRentableUnitButton from '@/components/DeleteRentableUnitButton.vue';
 
 const props = defineProps<{ projectId: string }>();
 const { t } = useI18n();
@@ -26,8 +26,6 @@ const isLoading = ref(true);
 const error = ref<string | null>(null);
 const expandedKeys = ref<TreeTableExpandedKeys>({});
 const selectedKey = ref<TreeTableSelectionKeys>({});
-const showDeleteDialog = ref(false);
-const nodeToDelete = ref<RentableUnitTreeNode | null>(null);
 
 // --- Functions ---
 async function fetchPropertyTree(projectId: string) {
@@ -77,20 +75,6 @@ function onNewRentableUnit(title: string) {
   });
 }
 
-function confirmDeleteNode(node: RentableUnitTreeNode) {
-  nodeToDelete.value = node;
-  showDeleteDialog.value = true;
-}
-
-const deleteConfirmed = () => {
-  if (nodeToDelete.value) {
-    onDeleteNode(nodeToDelete.value);
-  }
-  showDeleteDialog.value = false;
-  nodeToDelete.value = null; // reset
-};
-
-
 function onDeleteNode(node: RentableUnitTreeNode) {
   if (!node.data) return;
 
@@ -117,6 +101,10 @@ function onDeleteNode(node: RentableUnitTreeNode) {
   }
 }
 
+function translateType(type: string): string {
+  return t(`unitTypes.${type.toLowerCase()}`);
+}
+
 // --- Lifecycle ---
 onMounted(() =>
   fetchPropertyTree(props.projectId).finally(() => {
@@ -127,7 +115,8 @@ onMounted(() =>
 
 // --- Expose refs & methods for tests ---
 defineExpose({
- showDeleteDialog, nodeToDelete, confirmDeleteNode, deleteConfirmed, onDeleteNode,expandedKeys 
+  onDeleteNode,
+  expandedKeys,
 });
 </script>
 
@@ -180,7 +169,7 @@ defineExpose({
 
             <Column field="type" :header="t('rentableUnits.table.type')">
               <template #body="{ node }">
-                <div>{{ node.data.type }}</div>
+                <div>{{ translateType(node.data.type) }}</div>
               </template>
             </Column>
 
@@ -211,13 +200,7 @@ defineExpose({
                     :type="node.data.type"
                     @newUnit="onNewRentableUnit"
                   />
-                  <Button
-                    type="button"
-                    icon="pi pi-trash"
-                    severity="danger"
-                    data-testid="deleteNode"
-                    @click="confirmDeleteNode(node)"
-                  />
+                  <DeleteRentableUnitButton :node="node" @delete="onDeleteNode" />
                 </div>
               </template>
             </Column>
@@ -228,28 +211,5 @@ defineExpose({
         </div>
       </div>
     </div>
-    <Dialog
-      v-model:visible="showDeleteDialog"
-      header="Löschen bestätigen"
-      modal
-      data-testid="deleteDialog"
-    >
-      <p>Bist du sicher, dass du dieses Objekt löschen möchtest?</p>
-      <template #footer>
-        <Button
-          label="Abbrechen"
-          icon="pi pi-times"
-          data-testid="cancelDelete"
-          @click="showDeleteDialog = false"
-        />
-        <Button
-          label="Löschen"
-          icon="pi pi-check"
-          severity="danger"
-          data-testid="confirmDeleteButton"
-          @click="deleteConfirmed"
-        />
-      </template>
-    </Dialog>
   </main>
 </template>
