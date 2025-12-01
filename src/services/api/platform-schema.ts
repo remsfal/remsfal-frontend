@@ -1615,6 +1615,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description A list of contractors was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorListJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1709,6 +1718,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing contractor was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1786,6 +1804,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing contractor was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3449,7 +3476,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
+                /** @description List of tenancies successfully returned */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -3490,7 +3517,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The tenancy exists */
+                /** @description Apartment for specified tenancy and rental ID returned */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -3545,6 +3572,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Building for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3591,6 +3627,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Commercial for specified tenancy and rental ID returned. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3637,6 +3682,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Property for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3683,6 +3737,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Site for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3729,6 +3792,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Storage for specified tenancy and rental ID returned. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3988,6 +4060,13 @@ export interface components {
             trade?: string;
             address?: components["schemas"]["AddressJson"];
         };
+        ContractorListJson: {
+            contractors?: components["schemas"]["ContractorJson"][];
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int64 */
+            total?: number;
+        };
         Cookie: {
             name?: string;
             value?: string;
@@ -4004,6 +4083,32 @@ export interface components {
         /** @description A list of countries */
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
+        };
+        /** @description Represents a message or invoice in the user's inbox */
+        InboxMessage: {
+            /** @description Unique identifier of the message */
+            id?: string;
+            /**
+             * @description Type of message (Message | Invoice)
+             * @enum {string}
+             */
+            type?: "Message" | "Invoice";
+            /** @description Sender or contractor associated with the message */
+            contractor?: string;
+            /** @description Subject or title of the message */
+            subject?: string;
+            /** @description Property or building related to the message */
+            property?: string;
+            /** @description Tenant or person related to the message */
+            tenant?: string;
+            /** @description Date and time when the message was received */
+            receivedAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Whether the message has been read */
+            read?: boolean;
+            /** @description ID of the user who owns the message */
+            userId?: string;
+            /** @description URL to the related GitHub issue or external resource */
+            issueLink?: string;
         };
         /**
          * Format: date-time
@@ -4067,6 +4172,11 @@ export interface components {
         LocalDateTime: string;
         /** @enum {string} */
         MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50-04:00
+         */
+        OffsetDateTime: string;
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
             id: components["schemas"]["UUID"];

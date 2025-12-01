@@ -7,8 +7,12 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      maxWorkers: '50%',
+      pool: 'forks',
+      logHeapUsage: true,
       coverage: {
-        reporter: ['lcov', 'text', 'json', 'html'],
+        provider: 'istanbul',
+        reporter: ['json', 'text', 'html', 'lcov'],
         reportsDirectory: 'coverage-vitest',
         include: ['src/**/*.ts', 'src/**/*.vue'],
         exclude: [
@@ -17,6 +21,7 @@ export default mergeConfig(
           'public/**',
           'dist/**',
           'src/assets/**',
+          'src/services/api/*-schema.ts',
         ],
       },
       environment: 'jsdom',
@@ -25,7 +30,10 @@ export default mergeConfig(
       restoreMocks: true,
       clearMocks: true,
       exclude: [...configDefaults.exclude, 'e2e/*'],
-      setupFiles: [resolve(__dirname, 'test/setup/vitest.setup.ts')],
+      setupFiles: [
+        resolve(__dirname, 'test/setup/jsdom-fix.ts'),
+        resolve(__dirname, 'test/setup/vitest.setup.ts'),
+      ],
       root: fileURLToPath(new URL('./', import.meta.url)),
     },
   }),

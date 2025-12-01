@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import Column from 'primevue/column';
 import { useI18n } from 'vue-i18n';
+import type { MemberRole } from '@/services/ProjectMemberService';
 
 const { t } = useI18n();
 
@@ -25,6 +26,10 @@ function onPageChange(event: DataTablePageEvent): void {
     isLoading.value = false;
   });
 }
+
+function translateRole(role: MemberRole): string {
+  return t(`roles.${role.toLowerCase()}`);
+}
 </script>
 
 <template>
@@ -43,6 +48,10 @@ function onPageChange(event: DataTablePageEvent): void {
     @page="onPageChange"
   >
     <Column field="name" :header="t('projectTable.title')" style="min-width: 200px" />
-    <Column field="memberRole" :header="t('projectTable.role')" style="min-width: 200px" />
+    <Column :header="t('projectTable.role')" style="min-width: 200px">
+      <template #body="slotProps">
+        {{ translateRole(slotProps.data.memberRole) }}
+      </template>
+    </Column>
   </DataTable>
 </template>

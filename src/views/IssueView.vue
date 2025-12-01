@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
@@ -16,6 +17,7 @@ const props = defineProps<{
   status?: Status;
 }>();
 const issueService = new IssueService();
+const router = useRouter();
 
 // Reactive state
 const title = ref('');
@@ -108,6 +110,11 @@ const loadMyIssues = async () => {
   }
 };
 
+// --- Handle row selection ---
+const onIssueSelect = (issue: IssueItem) => {
+  router.push({ name: 'IssueEdit', params: { issueId: issue.id } });
+};
+
 // --- Initialize on mount ---
 onMounted(() => {
   loadIssues();
@@ -129,93 +136,49 @@ watch(
 
 <template>
   <main>
-    <div class="header">
-      <div v-if="props.owner">
-        <h2>Meine Aufgaben</h2>
-      </div>
-      <div v-else-if="props.status">
-        <h2>Offene Aufgaben</h2>
-      </div>
-      <div v-else>
-        <h2>Alle Aufgaben</h2>
-      </div>
-    </div>
-
     <div class="grid grid-cols-12 gap-4">
-      <!-- Create Issue Dialog -->
-      <Dialog v-model:visible="visible" modal header="Aufgabe erstellen" :style="{ width: '50rem' }">
-        <div class="flex items-center gap-6 mb-6">
-          <label for="title" class="font-semibold w-24">Titel</label>
-          <InputText id="title" v-model="title" class="flex-auto" autocomplete="off" />
-        </div>
-        <div class="flex items-center gap-6 mb-20">
-          <label for="description" class="font-semibold w-24">Beschreibung</label>
-          <InputText id="description" v-model="description" class="flex-auto" autocomplete="off" />
-        </div>
-        <div class="flex justify-end gap-2">
-          <Button type="button" label="Abbrechen" severity="secondary" @click="visible = false" />
-          <Button type="button" label="Erstellen" @click="createIssue" />
-        </div>
-      </Dialog>
+      <div class="col-span-12">
+        <h1 class="w-full">
+          <span v-if="props.owner">Meine Aufgaben</span>
+          <span v-else-if="props.status">Offene Aufgaben</span>
+          <span v-else>Alle Aufgaben</span>
+        </h1>
+      </div>
+      <div class="col-span-12">
+        <div class="card">
+          <!-- Create Issue Dialog -->
+          <Dialog v-model:visible="visible" modal header="Aufgabe erstellen" :style="{ width: '50rem' }">
+            <div class="flex items-center gap-6 mb-6">
+              <label for="title" class="font-semibold w-24">Titel</label>
+              <InputText id="title" v-model="title" class="flex-auto" autocomplete="off" />
+            </div>
+            <div class="flex items-center gap-6 mb-20">
+              <label for="description" class="font-semibold w-24">Beschreibung</label>
+              <InputText id="description" v-model="description" class="flex-auto" autocomplete="off" />
+            </div>
+            <div class="flex justify-end gap-2">
+              <Button type="button" label="Abbrechen" severity="secondary" @click="visible = false" />
+              <Button type="button" label="Erstellen" @click="createIssue" />
+            </div>
+          </Dialog>
 
-      <!-- Issues Table -->
-      <div class="issue-list-wrapper">
-        <div v-if="props.owner">
-          <IssueTable :issues="myIssues">
-            <Button label="Aufgabe erstellen" class="my-btn" @click="openCreateIssueDialog" />
-          </IssueTable>
-        </div>
-        <div v-else-if="props.status">
-          <IssueTable :issues="issuesByStatusOpen" />
-        </div>
-        <div v-else>
-          <IssueTable :issues="issues">
-            <Button label="Aufgabe erstellen" class="my-btn" @click="openCreateIssueDialog" />
-          </IssueTable>
+          <!-- Issues Table -->
+          <div v-if="props.owner">
+            <IssueTable :issues="myIssues" @rowSelect="onIssueSelect" />
+          </div>
+          <div v-else-if="props.status">
+            <IssueTable :issues="issuesByStatusOpen" @rowSelect="onIssueSelect" />
+          </div>
+          <div v-else>
+            <IssueTable :issues="issues" @rowSelect="onIssueSelect" />
+          </div>
+
+          <!-- Create Button -->
+          <div v-if="props.owner || !props.status" class="flex justify-end basis-auto mt-6">
+            <Button label="Aufgabe erstellen" @click="openCreateIssueDialog" />
+          </div>
         </div>
       </div>
     </div>
   </main>
 </template>
-
-<style scoped>
-.header {
-  text-align: left;
-  margin: 20px 0;
-}
-
-.grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.issue-list-wrapper {
-  margin-top: 50px;
-  width: 100%;
-}
-
-.card {
-  padding: 20px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  max-width: 600px;
-  margin: 20px 0;
-}
-
-.button-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.button-wrapper button {
-  width: 300px;
-}
-
-.my-btn {
-  padding: 10px 50px;
-}
-</style>

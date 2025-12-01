@@ -3,7 +3,11 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { apartmentService } from '@/services/ApartmentService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import {handleCancel,
+  navigateToObjects,
+  showSavingErrorToast,
+  showValidationErrorToast,
+  valuesAreEqual,} from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -33,12 +37,12 @@ const originalValues = ref({
 
 // Detect changes
 const hasChanges = computed(() => 
-  title.value !== originalValues.value.title ||
-  location.value !== originalValues.value.location ||
-  heatingSpace.value !== originalValues.value.heatingSpace ||
-  livingSpace.value !== originalValues.value.livingSpace ||
-  usableSpace.value !== originalValues.value.usableSpace ||
-  description.value !== originalValues.value.description
+  !valuesAreEqual(title.value, originalValues.value.title) ||
+  !valuesAreEqual(location.value, originalValues.value.location) ||
+  !valuesAreEqual(heatingSpace.value, originalValues.value.heatingSpace) ||
+  !valuesAreEqual(livingSpace.value, originalValues.value.livingSpace) ||
+  !valuesAreEqual(usableSpace.value, originalValues.value.usableSpace) ||
+  !valuesAreEqual(description.value, originalValues.value.description)
 );
 
 // Validation
@@ -142,7 +146,7 @@ const save = async () => {
       detail: 'Apartment erfolgreich gespeichert.',
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/apartment/${props.unitId}`);
+    navigateToObjects(router, props.projectId);
   } catch (err) {
     console.error('Fehler beim Speichern:', err);
     showSavingErrorToast(toast, 'Apartment konnte nicht gespeichert werden.');

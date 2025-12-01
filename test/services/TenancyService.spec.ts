@@ -1,16 +1,8 @@
-import {describe, test, expect, beforeAll, afterAll, afterEach} from 'vitest';
-import { setupServer } from 'msw/node';
-import { handlers } from '../../test/mocks/handlers';
+import { describe, test, expect } from 'vitest';
 import TenancyService from '../../src/services/TenancyService';
-
-const server = setupServer(...handlers);
 
 describe('TenancyService with MSW', () => {
   const tenancyService = new TenancyService();
-
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
 
   test('fetchTenancyData returns all tenancies', async () => {
     const tenancies = await tenancyService.fetchTenancyData();

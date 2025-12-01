@@ -29,7 +29,11 @@ watch(projectTitle, (newTitle) => {
       : '';
 });
 
-async function createProject() {
+async function createProject(event?: Event) {
+  if (event) {
+    event.preventDefault();
+  }
+
   if (projectTitle.value.length > maxLength) return;
 
   const title = projectTitle.value.trim();
@@ -108,33 +112,34 @@ function abort() {
     modal
     :header="t('newProjectForm.input.name')"
     :style="{ width: '35rem' }"
-    :closable="true"
+    closable
     @hide="abort"
   >
-    <div class="flex flex-col gap-4">
-      <label for="projectTitle" class="font-semibold">
-        {{ t('newProjectForm.input.name') }}
-      </label>
+    <form @submit.prevent="createProject">
+      <div class="flex flex-col gap-4">
+        <label for="projectTitle" class="font-semibold">
+          {{ t('newProjectForm.input.name') }}
+        </label>
 
-      <InputText
-        id="projectTitle"
-        v-model="projectTitle"
-        type="text"
-        :placeholder="t('newProjectForm.input.exampleAddress')"
-        :class="{ 'p-invalid': errorMessage }"
-      />
-      <small class="p-error text-xs h-4">{{ errorMessage || ' ' }}</small>
-    </div>
+        <InputText
+          id="projectTitle"
+          v-model="projectTitle"
+          type="text"
+          :placeholder="t('newProjectForm.input.exampleAddress')"
+          :class="{ 'p-invalid': errorMessage }"
+          autofocus
+        />
+        <small class="p-error text-xs h-4">{{ errorMessage || ' ' }}</small>
+      </div>
 
-    <div class="flex justify-end gap-3 mt-6">
-      <Button type="button" :label="t('button.cancel')" severity="secondary" @click="abort" />
-      <Button type="button" :label="t('button.create')" icon="pi pi-plus" @click="createProject" />
-    </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <Button type="button" :label="t('button.cancel')" severity="secondary" @click="abort" />
+        <Button type="submit" :label="t('button.create')" icon="pi pi-plus" @click="createProject" />
+      </div>
+    </form>
   </Dialog>
 </template>
 
 <style scoped>
-:deep(.p-inputtext) {
-  border-radius: 0.5rem;
-}
+
 </style>

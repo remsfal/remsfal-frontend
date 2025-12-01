@@ -4,7 +4,11 @@ import { useRouter } from 'vue-router';
 import { buildingService } from '@/services/BuildingService';
 import type { components } from '../../src/services/api/platform-schema';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import {handleCancel,
+  navigateToObjects,
+  showSavingErrorToast,
+  showValidationErrorToast,
+  valuesAreEqual,} from '@/helper/viewHelper';
 
 const props = defineProps<{ projectId: string; unitId: string }>();
 const router = useRouter();
@@ -239,17 +243,17 @@ const originalValues = ref({
 
 const hasChanges = computed(
   () =>
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    livingSpace.value !== originalValues.value.livingSpace ||
-    commercialSpace.value !== originalValues.value.commercialSpace ||
-    usableSpace.value !== originalValues.value.usableSpace ||
-    heatingSpace.value !== originalValues.value.heatingSpace ||
-    street.value !== originalValues.value.street ||
-    city.value !== originalValues.value.city ||
-    province.value !== originalValues.value.province ||
-    zip.value !== originalValues.value.zip ||
-    country.value !== originalValues.value.country,
+    !valuesAreEqual(title.value, originalValues.value.title) ||
+    !valuesAreEqual(description.value, originalValues.value.description) ||
+    !valuesAreEqual(livingSpace.value, originalValues.value.livingSpace) ||
+    !valuesAreEqual(commercialSpace.value, originalValues.value.commercialSpace) ||
+    !valuesAreEqual(usableSpace.value, originalValues.value.usableSpace) ||
+    !valuesAreEqual(heatingSpace.value, originalValues.value.heatingSpace) ||
+    !valuesAreEqual(street.value, originalValues.value.street) ||
+    !valuesAreEqual(city.value, originalValues.value.city) ||
+    !valuesAreEqual(province.value, originalValues.value.province) ||
+    !valuesAreEqual(zip.value, originalValues.value.zip) ||
+    !valuesAreEqual(country.value, originalValues.value.country),
 );
 
 const validationErrors = computed(() => {
@@ -368,7 +372,7 @@ const save = () => {
         detail: 'Gebäude erfolgreich gespeichert.',
         life: 3000,
       });
-      router.push(`/project/${props.projectId}/building/${props.unitId}`);
+      navigateToObjects(router, props.projectId);
     })
     .catch((err) => {
       console.error('Fehler beim Speichern:', err);

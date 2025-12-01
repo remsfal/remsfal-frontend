@@ -33,16 +33,19 @@ export default defineConfig({
   optimizeDeps: {noDiscovery: true,},
   plugins: [
     vue(),
-    vueDevTools(),
+    // Disable DevTools in test environment to avoid localStorage issues
+    process.env.VITEST ? undefined : vueDevTools(),
     Components({resolvers: [PrimeVueResolver()],}),
-    istanbul({
-      include: 'src/*',
+    // Only use istanbul plugin for Cypress E2E tests, not for Vitest unit tests
+    // Vitest sets VITEST=true, so we skip istanbul plugin during unit tests
+    process.env.VITEST ? undefined : istanbul({
+      include: 'src/**/*',
       exclude: ['node_modules', 'cypress/', 'test/'],
       extension: ['.ts', '.vue'],
-      cypress: true,
       requireEnv: false,
+      cypress: true,
     }),
-  ],
+  ].filter(Boolean),
   resolve: {alias: {'@': fileURLToPath(new URL('./src', import.meta.url)),},},
   server: {
     // https://vitejs.dev/config/server-options.html
