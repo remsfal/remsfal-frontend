@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
 import Card from 'primevue/card';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
@@ -13,7 +12,11 @@ import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import { IssueService, type Issue } from '@/services/IssueService';
 
-const route = useRoute();
+const props = defineProps<{
+  projectId: string;
+  issueId: string;
+}>();
+
 const issueService = new IssueService();
 
 // Mock data types for chat sessions and messages
@@ -55,7 +58,7 @@ const chatSessions = ref<ChatSession[]>([
         id: '2',
         author: 'Jane Smith',
         authorAvatar: 'JS',
-        content: 'I agree. We should schedule an emergency inspection today. I\'ll contact the plumber.',
+        content: "I agree. We should schedule an emergency inspection today. I'll contact the plumber.",
         timestamp: '2024-12-01T11:45:00Z',
       },
       {
@@ -82,7 +85,7 @@ const chatSessions = ref<ChatSession[]>([
         id: '5',
         author: 'John Doe',
         authorAvatar: 'JD',
-        content: 'Thanks for the update. What\'s the estimated time for repair?',
+        content: "Thanks for the update. What's the estimated time for repair?",
         timestamp: '2024-12-01T14:15:00Z',
       },
       {
@@ -102,7 +105,7 @@ const chatSessions = ref<ChatSession[]>([
         id: '7',
         author: 'Jane Smith',
         authorAvatar: 'JS',
-        content: 'I\'ve notified the tenant about the repair schedule. They\'re okay with tomorrow morning.',
+        content: "I've notified the tenant about the repair schedule. They're okay with tomorrow morning.",
         timestamp: '2024-12-01T15:00:00Z',
       },
     ],
@@ -113,17 +116,18 @@ const chatSessions = ref<ChatSession[]>([
 const fetchIssue = async () => {
   loading.value = true;
   try {
-    const projectId = route.params.projectId as string;
-    const issueId = route.params.issueId as string;
-    issue.value = await issueService.getIssue(projectId, issueId);
+    issue.value = await issueService.getIssue(props.projectId, props.issueId);
   } catch (error) {
     console.error('Error fetching issue:', error);
     // For mockup purposes, show sample data when API fails
     issue.value = {
-      id: route.params.issueId as string,
-      projectId: route.params.projectId as string,
+      id: props.issueId,
+      projectId: props.projectId,
       title: 'Water Leak in Apartment 3B',
-      description: 'Tenant reported a water leak coming from the bathroom ceiling. The issue appears to be getting worse and requires immediate attention. Water is dripping from the ceiling fixture and pooling on the bathroom floor.',
+      description:
+        'Tenant reported a water leak coming from the bathroom ceiling. ' +
+        'The issue appears to be getting worse and requires immediate attention. ' +
+        'Water is dripping from the ceiling fixture and pooling on the bathroom floor.',
       status: 'IN_PROGRESS',
       type: 'DEFECT',
       ownerId: 'user-123',
