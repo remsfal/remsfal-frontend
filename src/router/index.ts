@@ -209,6 +209,12 @@ const managerRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/IssueEdit.vue'),
       },
       {
+        path: 'issuedetails/:issueId',
+        name: 'IssueDetails',
+        props: true,
+        component: () => import('@/views/IssueDetailsView.vue'),
+      },
+      {
         path: 'chat',
         name: 'ProjectChatView',
         props: true,
