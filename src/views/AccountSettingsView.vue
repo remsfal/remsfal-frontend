@@ -352,75 +352,119 @@ const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
 
-
-
-
-
+// Defines the structure of an alternative email object
 type AlternativeEmail = {
   id: string;
   email: string;
 };
 
-
+// Reactive list that stores all alternative email entries
 const alternativeEmails = ref<AlternativeEmail[]>([]);
 
-
+// Controls the visibility of the dialog popup
 const visible = ref(false);
 
-
-const alternativeEmail = ref<string>('');      
+const alternativeEmail = ref<string>(''); 
+// Computed value: true if at least one alternative email exists
+const hasAlternativeEmail = computed(() => alternativeEmails.value.length > 0);
+// Validation state flags
 const isEmailInvalid = ref(false);
 const emailErrorMessage = ref('');
+// Success/error indicators for UI feedback
+const altEmailSuccess = ref(false);
+const altEmailError = ref(false);
 
-
+// Generates a unique ID for each alternative email entry
 function createId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
-
-// Reset form state
+// Resets all form and validation states when closing or reopening the dialog
 function resetForm() {
   alternativeEmail.value = '';
   isEmailInvalid.value = false;
   emailErrorMessage.value = '';
 }
 
-
+// Basic frontend email format validation using regex
 function validateEmail(email: string) {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return emailRegex.test(email);
 }
-const saveAlternativeEmail = () => {
-  if (!alternativeEmail.value || !validateEmail(alternativeEmail.value)) {
+
+// Extends the UserPatchRequestBody to include optional alternative email
+type UserPatchRequestBodyWithAlt = UserPatchRequestBody & {
+  alternativeEmail?: string;
+};
+
+// Handles saving the alternative email to backend and updating UI state
+const saveAlternativeEmail = async () => {
+  // Read entered alternative email and primary email from the profile
+  const enteredEmail = alternativeEmail.value.trim();
+  const primaryEmail = (
+    editedUserProfile.value.email ||
+    userProfile.value?.email ||
+    ''
+  ).trim().toLowerCase();
+
+ // 1. Check for empty value or invalid email format
+  if (!enteredEmail || !validateEmail(enteredEmail)) {
     isEmailInvalid.value = true;
     emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
     return;
-  } else {
-    isEmailInvalid.value = false;
-    emailErrorMessage.value = '';
   }
 
+  // 2. Email must not match the primary email
+  if (enteredEmail.toLowerCase() === primaryEmail) {
+    isEmailInvalid.value = true;
+    // eigenen Text-Key benutzen (oder testweise einfach String)
+    // emailErrorMessage.value = t('accountSettings.userProfile.alternativeEmailMustDiffer');
+    emailErrorMessage.value =
+      'Die alternative E-Mail darf nicht der primären entsprechen.';
+    return;
+  }
 
-  alternativeEmails.value.push({
-    id: createId(),
-    email: alternativeEmail.value,
-  });
+ // Reset validation state because input is valid
+  isEmailInvalid.value = false;
+  emailErrorMessage.value = '';
 
+  try {
+    const userService = new UserService();
 
-  // close dialog
-  visible.value = false;
+    // Send PATCH request to update the user with a new alternative email
+    await userService.updateUser(
+      {
+        alternativeEmail: enteredEmail,
+      } as UserPatchRequestBodyWithAlt,
+    );
 
+     // Show success state
+    altEmailSuccess.value = true;
+    altEmailError.value = false;
 
-  // Reset form
-  resetForm();
+    // Add the new email to the local list (UI update)
+    alternativeEmails.value.push({
+      id: createId(),
+      email: enteredEmail,
+    });
+
+     // Close the dialog and reset the form
+    visible.value = false;
+    resetForm();
+  } catch (e) {
+    // Show error state if backend update fails
+    altEmailSuccess.value = false;
+    altEmailError.value = true;
+  }
 };
 
-
+// Removes an alternative email entry by ID
 function removeAlternativeEmail(id: string) {
   alternativeEmails.value = alternativeEmails.value.filter((e) => e.id !== id);
+  // Reset success/error indicators after deletion
+  altEmailSuccess.value = false;
+  altEmailError.value = false;
 }
-
-
 </script>
 
 <template>
@@ -482,62 +526,92 @@ function removeAlternativeEmail(id: string) {
               </div>
 
               <div class="input-container">
+                <!-- Label for the alternative email section -->
                 <label class="label" for="alternative-eMail">{{ t('accountSettings.userProfile.alternative-email') }}:</label>
                 
-                <div class="flex justify-front mt-1">
+                <!-- Button to open dialog for adding alternative email -->
+                <div class="flex justify-front mt-3">
                 <Button
                   label="Alternative E-Mail hinzufügen"
                   icon="pi pi-plus"
                   style="width: auto"
                   @click="visible = true"
+                  :disabled="hasAlternativeEmail"
                 />
                 </div>
                 
-                <!-- Only display this field if an alternative email exists -->
-                <div v-if="alternativeEmails.length > 0" class="flex items-center gap-2 mt-4">
-                <InputText id="alternative-eMail"  class="alt-email-input flex-grow" :value="alternativeEmails[0]?.email || ''" disabled required />
-                <Message class="error" size="small" severity="error" variant="simple" />
+                 <!-- Only show the alternative email field if one exists -->
+                <div v-if="alternativeEmails.length > 0" class="flex items-center gap-1 mt-4 mb-2.5">
+                <div class="alt-email-wrapper">
+                  <InputText id="alternative-eMail"  class="alt-email-input flex-grow" :value="alternativeEmails[0]?.email || ''" disabled required />
                 
-                <!-- Trash deletes the alternative email -->
-                <i class="pi pi-trash cursor-pointer text-lg"
+                 <!-- SUCCESS CHECKMARK shown after successful save -->
+                <span
+                  v-if="altEmailSuccess"
+                  class="alt-email-icon alt-email-icon--success"
+                >
+                   ✔
+                </span>
+
+                 <!-- ERROR ICON shown if backend returns an error -->
+                <span
+                  v-if="altEmailError"
+                  class="alt-email-icon alt-email-icon--error"
+                >
+                  ✗
+                </span>
+              </div>
+  
+                <!-- Trash icon deletes the existing alternative email -->
+                <i class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
                 @click="removeAlternativeEmail(alternativeEmails[0]!.id)">
                 </i>
 
               </div>
-              </div>
+            </div>
 
+              <!-- Dialog for entering the alternative email -->
               <Dialog
                 v-model:visible="visible"
                 modal :style="{ width: '35rem' }"  
                 header="Alternative E-Mail hinzufügen"
                 @hide="resetForm">
+
               <div class="flex flex-col gap-1 mb-6">
-              <div class="flex items-center gap-6">
+               <!-- Email input row -->
+               <div class="flex items-center gap-6">
                 <label for="email"
                   class="font-semibold w-29">E-Mail Adresse
                 </label>
-
-                 <InputText
-                id="email" class="flex-grow"
-                v-model="alternativeEmail"
-                type="email"
-                autocomplete="off"
-                :invalid="isEmailInvalid"
-                placeholder="Alternative E-Mail-Adresse"/>
+  
+                <!-- Editable input inside dialog -->
+                <InputText
+                  id="email" class="flex-grow"
+                  v-model="alternativeEmail"
+                  type="email"
+                  autocomplete="off"
+                  :invalid="isEmailInvalid"
+                  placeholder="Alternative E-Mail-Adresse"/>
               </div>
+
+              <!-- Validation error message -->
               <small
                 v-if="isEmailInvalid"
-                class="text-red-500 ml-28">{{ emailErrorMessage }}
+                class="text-red-500 mt-2 ml-36 text-sm">{{ emailErrorMessage }}
               </small>
            </div>
 
+           <!-- Dialog buttons -->
            <div class="flex justify-end gap-2 mt-6">
+             <!-- Cancel closes the dialog with no action -->
              <Button
                 type="button"
                 :label="t('button.cancel')"
                 severity="secondary"
                 @click="visible = false"
              />
+
+              <!-- Save triggers frontend + backend validation -->
               <Button
                 type="button"
                 :label="t('button.add')"
@@ -546,10 +620,7 @@ function removeAlternativeEmail(id: string) {
              </div>
              </Dialog>
 
-
-
-
-              <div class="input-container">
+                <div class="input-container">
                 <label class="label flex justify-front mt-4" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
                 <InputText
                   id="mobilePhoneNumber"
@@ -945,9 +1016,46 @@ input:focus {
   border: none;
 }
 
-.alt-email-input {
-  min-width: 0; /* prevent Overflow */
+.alt-email-wrapper {
+  position: relative;
+  width: 95%;
 }
 
+.alt-email-input {
+  width: 100%;
+  padding-right: 10px;
+}
+
+.alt-email-icon {
+  position: absolute;
+  right: 15px;           
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+}
+
+.alt-email-icon--success {
+  color: #16a34a;       
+}
+
+.alt-email-icon--error {
+  color: #dc2626;       
+}
+
+.alt-trash-icon {
+  padding: 11px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  align-items: center;
+  height: 100%;
+  margin-top: -5px;
+  margin-left: 7px
+}
+
+.alt-trash-icon:hover {
+  color: white !important;
+  background-color: #0FA57A;
+  padding: 11px;
+}
 
 </style>
