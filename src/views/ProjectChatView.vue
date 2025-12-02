@@ -4,6 +4,7 @@ import Panel from 'primevue/panel';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 type ChatMessage = {
   sender: string;
@@ -47,6 +48,25 @@ function sendMessage() {
   if (!newMessage.value.trim()) return;
   createMessage({ text: newMessage.value });
   newMessage.value = '';
+}
+
+async function takePhoto() {
+  try {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Prompt, // Allows user to choose between camera or gallery
+    });
+
+    if (image.dataUrl) {
+      createMessage({ image: image.dataUrl });
+      selectedFileName.value = 'Foto aufgenommen';
+    }
+  } catch (error) {
+    console.error('Fehler beim Aufnehmen des Fotos:', error);
+    // User cancelled or permission denied - fail silently
+  }
 }
 
 function handleFileUpload(event: Event) {
@@ -121,6 +141,12 @@ function handleFileUpload(event: Event) {
             @keyup.enter="sendMessage"
           />
           <div class="flex items-center gap-2">
+            <Button
+              icon="pi pi-camera"
+              class="p-button-rounded p-button-info"
+              data-testid="camera-button"
+              @click="takePhoto"
+            />
             <label
               class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded border
                border-blue-300 hover:bg-blue-200"
