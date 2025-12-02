@@ -73,6 +73,7 @@ const errorMessage = ref({
   mobilePhoneNumber: '',
   businessPhoneNumber: '',
   privatePhoneNumber: '',
+  locale: '',
   street: '',
   zip: '',
   city: '',
@@ -101,6 +102,11 @@ async function fetchUserProfile() {
       if (userProfile?.value?.address) {
         addressProfile.value = userProfile.value.address;
         editedAddress.value = { ...userProfile.value.address };
+      }
+      if (userProfile?.value?.locale) {
+        editedUserProfile.value.locale = userProfile.locale;
+      } else {
+        editedUserProfile.value.locale = 'de';
       }
     }
   } catch (error) {
@@ -134,6 +140,7 @@ async function saveProfile(): Promise<void> {
       lastName: getUpdatedValue('lastName'),
       mobilePhoneNumber: getUpdatedValue('mobilePhoneNumber'),
       privatePhoneNumber: getUpdatedValue('privatePhoneNumber'),
+      locale: getUpdatedValue('locale'),
     };
 
     if (editedAddress.value && validateAddress(editedAddress.value)) {
@@ -462,6 +469,20 @@ const isDisabled = computed(() => {
                   {{ errorMessage.privatePhoneNumber }}
                 </Message>
               </div>
+
+              <div class="input-container">
+                <label class="label" for="locale">{{ t('accountSettings.userProfile.language') }}:</label>
+
+                <Dropdown
+                  id="locale"
+                  v-model="editedUserProfile.locale"
+                  :options="[{ label: 'Deutsch', value: 'de' }, { label: 'English', value: 'en' }]"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Sprache wählen"
+                />
+              </div>
+
             </div>
             <Message class="required" size="small" severity="secondary" variant="simple">
               {{ t('accountSettings.userProfile.requiredFields') }}
