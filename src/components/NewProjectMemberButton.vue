@@ -97,6 +97,7 @@ const addMember = async () => {
           :placeholder="t('projectSettings.newProjectMemberButton.emailPlaceholder')"
           class="flex-auto"
           autocomplete="off"
+          autofocus
           :invalid="isEmailInvalid"
         />
       </div>

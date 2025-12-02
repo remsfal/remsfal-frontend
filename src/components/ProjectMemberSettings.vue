@@ -23,7 +23,6 @@ const fetchMembers = async () => {
   await projectMemberService
     .getMembers(props.projectId)
     .then((list) => {
-      console.log('Fetched members:', list);
       // TEMP FIX: cast to expected type until backend spec is fixed
       members.value = (list as { members: ProjectMember[] }).members;
     })
@@ -33,7 +32,6 @@ const fetchMembers = async () => {
 };
 
 const updateMemberRole = async (member: ProjectMember) => {
-  console.log('Member object passed to updateMemberRole:', member);
   try {
     // TEMP FIX: pass memberId and a body with role
     if (!member.id) {

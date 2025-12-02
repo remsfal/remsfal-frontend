@@ -1,7 +1,5 @@
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import PrimeVue from 'primevue/config'
-import i18n from '../../src/i18n/i18n'
 import { it, expect, vi } from 'vitest'
 import ManagerTopbar from '../../src/layout/ManagerTopbar.vue'
 import { useInboxStore } from '../../src/stores/InboxStore'
@@ -23,7 +21,7 @@ it('updates unread count in topbar when messages change in inbox', async () => {
     { id: '2', isRead: false },
   ] as any
 
-  const topbar = mount(ManagerTopbar, { global: { plugins: [pinia, PrimeVue, i18n] } })
+  const topbar = mount(ManagerTopbar, { global: { plugins: [pinia] } })
 
   // Should now see badge with '2'
   expect(topbar.text()).toContain('2')
