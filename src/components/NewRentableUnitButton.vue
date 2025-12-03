@@ -239,6 +239,7 @@ async function createStorage(): Promise<void> {
         placeholder="Titel der neun Einheit"
         class="flex-auto"
         autocomplete="on"
+        autofocus
       />
     </div>
     <div class="flex items-center gap-6 mb-20">

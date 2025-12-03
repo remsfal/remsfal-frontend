@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
 const API_BASE = '/api/v1';
+const TICKETING_BASE = '/ticketing/v1';
 
 // Used in tests to capture the last request data for each entity.
 // This object allows test assertions to verify the payloads sent to mock handlers.
@@ -17,26 +18,22 @@ export const lastRequests: Record<string, Record<string, unknown> | null> = {
 };
 
 export const handlers = [
-  // GET user once
-  http.get(
-    `${API_BASE}/user`,
-    () => {
-      return HttpResponse.json(
-        {
-          id: 'user-123',
-          name: 'John Doe',
-          email: 'john@example.com',
-        },
-        { status: 200 },
-      );
-    },
-    { once: true },
-  ),
+  // GET user
+  http.get(`${API_BASE}/user`, () => {
+    return HttpResponse.json(
+      {
+        id: 'user-123',
+        name: 'John Doe',
+        email: 'john@example.com',
+      },
+      { status: 200 },
+    );
+  }),
 
   // GET address with query param
   http.get(`${API_BASE}/address`, ({ request }) => {
     const url = new URL(request.url, 'http://localhost');
-    const zip = url.searchParams.get('query[zip]');
+    const zip = url.searchParams.get('zip') || url.searchParams.get('query[zip]');
     if (zip === '12345') {
       return HttpResponse.json(
         [
@@ -130,6 +127,9 @@ export const handlers = [
 
   // GET commercial unit
   http.get(`${API_BASE}/projects/:projectId/commercials/:commercialId`, ({ params }) => {
+    if (params.commercialId === 'not-found') {
+      return HttpResponse.json({ message: 'Commercial not found' }, { status: 404 });
+    }
     return HttpResponse.json({
       id: params.commercialId,
       title: 'Commercial Space 1',
@@ -172,7 +172,10 @@ export const handlers = [
   ),
 
   // DELETE commercial
-  http.delete(`${API_BASE}/projects/:projectId/commercials/:commercialId`, () => {
+  http.delete(`${API_BASE}/projects/:projectId/commercials/:commercialId`, ({ params }) => {
+    if (params.commercialId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
 
@@ -224,7 +227,7 @@ export const handlers = [
     });
   }),
 
-  // PATCH update property
+  // PATCH update property (unit-based endpoint)
   http.patch(
     `${API_BASE}/projects/:projectId/units/:unitId/property`,
     async ({ request, params }) => {
@@ -232,6 +235,20 @@ export const handlers = [
       return HttpResponse.json({
         id: `${params.unitId}-property`,
         ...lastRequests.property,
+        updatedAt: new Date().toISOString(),
+      });
+    },
+  ),
+
+  // PATCH update property (property-based endpoint)
+  http.patch(
+    `${API_BASE}/projects/:projectId/properties/:propertyId`,
+    async ({ request, params }) => {
+      const body = (await request.json()) as Record<string, unknown>;
+      lastRequests.property = body;
+      return HttpResponse.json({
+        id: params.propertyId,
+        ...body,
         updatedAt: new Date().toISOString(),
       });
     },
@@ -289,26 +306,28 @@ export const handlers = [
   // GET all tenancies
   http.get(`${API_BASE}/tenancies`, () => {
     return HttpResponse.json(
-      [
-        {
-          id: 't1',
-          rentalStart: new Date().toISOString(),
-          rentalEnd: new Date().toISOString(),
-          tenants: [{
- id: 'u1', name: 'Max Mustermann', email: 'max@example.com' 
+      {
+        tenancies: [
+          {
+            id: 't1',
+            rentalStart: new Date().toISOString(),
+            rentalEnd: new Date().toISOString(),
+            tenants: [{
+ id: 'u1', name: 'Max Mustermann', email: 'max@example.com'
 }],
-          listOfUnits: [{ id: 'unit1', title: 'Unit 1' }],
-          active: true,
-        },
-        {
-          id: 't2',
-          rentalStart: new Date().toISOString(),
-          rentalEnd: new Date().toISOString(),
-          tenants: [],
-          listOfUnits: [],
-          active: true,
-        },
-      ],
+            listOfUnits: [{ id: 'unit1', title: 'Unit 1' }],
+            active: true,
+          },
+          {
+            id: 't2',
+            rentalStart: new Date().toISOString(),
+            rentalEnd: new Date().toISOString(),
+            tenants: [],
+            listOfUnits: [],
+            active: true,
+          },
+        ],
+      },
       { status: 200 },
     );
   }),
@@ -376,6 +395,9 @@ export const handlers = [
 
   // GET single site
   http.get(`${API_BASE}/projects/:projectId/sites/:siteId`, ({ params }) => {
+    if (params.siteId === 'not-found') {
+      return HttpResponse.json({ message: 'Site not found' }, { status: 404 });
+    }
     return HttpResponse.json({
       id: params.siteId,
       title: 'New Site',
@@ -415,7 +437,10 @@ export const handlers = [
   }),
 
   // DELETE site
-  http.delete(`${API_BASE}/projects/:projectId/sites/:siteId`, () => {
+  http.delete(`${API_BASE}/projects/:projectId/sites/:siteId`, ({ params }) => {
+    if (params.siteId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
     return new HttpResponse(null, { status: 204 });
   }),
 
@@ -471,5 +496,371 @@ export const handlers = [
     const body = (await request.json()) as Record<string, unknown> | undefined;
     lastRequests.updatedTask = { id: params.taskId, ...(body ?? {}) };
     return HttpResponse.json(lastRequests.updatedTask);
+  }),
+
+  // -------- INBOX SERVICE HANDLERS --------
+
+  // GET inbox messages
+  http.get(`${API_BASE}/inbox`, () => {
+    return HttpResponse.json({
+      messages: [
+        {
+          id: '1',
+          type: 'Nachricht',
+          contractor: 'Bau GmbH',
+          project: 'Neubau Musterstraße',
+          unit: 'Wohnung 101',
+          tenant: 'Max Müller',
+          owner: 'Immobilien AG',
+          senderName: 'Max Mustermann',
+          senderEmail: 'max.mustermann@example.com',
+          subject: 'Kücheninstallation abgeschlossen',
+          body: 'Die Installation der Küche in Wohnung 101 wurde erfolgreich abgeschlossen.',
+          receivedAt: new Date('2025-06-01T10:15:00').toISOString(),
+          isRead: false,
+        },
+        {
+          id: '2',
+          type: 'Rechnung',
+          contractor: 'Sanitär AG',
+          project: 'Neubau Musterstraße',
+          unit: 'Wohnung 102',
+          tenant: 'Irene Schmidt',
+          owner: 'Immobilien AG',
+          senderName: 'Erika Musterfrau',
+          senderEmail: 'erika.musterfrau@example.com',
+          subject: 'Rechnung für Badezimmerarbeiten Mai 2025',
+          body: 'Anbei findest du die aktuelle Rechnung für Mai 2025.',
+          receivedAt: new Date('2025-05-28T14:30:00').toISOString(),
+          isRead: false,
+        },
+        {
+          id: '3',
+          type: 'Nachricht',
+          contractor: 'Facility Service GmbH',
+          project: 'Campus Treskowallee',
+          unit: 'Büro A029',
+          tenant: 'HTW Berlin',
+          owner: 'Campus Management GmbH',
+          senderName: 'System-Benachrichtigung',
+          senderEmail: 'noreply@remsfal.de',
+          subject: 'Wartungsarbeiten geplant',
+          body: 'Am 2025-06-10 findet eine Systemwartung von 01:00 bis 03:00 Uhr statt.',
+          receivedAt: new Date('2025-05-25T08:00:00').toISOString(),
+          isRead: true,
+        },
+        {
+          id: '4',
+          type: 'Nachricht',
+          contractor: 'Bau GmbH',
+          project: 'Neubau Musterstraße',
+          unit: 'Wohnung 202',
+          tenant: 'Bernd Beispiel',
+          owner: 'Immobilien AG',
+          senderName: 'Johannes Beispiel',
+          senderEmail: 'johannes.beispiel@example.com',
+          subject: 'Frage zum Objekt „Wohnung 202"',
+          body: 'Hallo, ich habe eine Frage zu den notwendigen Wartungsarbeiten.',
+          receivedAt: new Date('2025-05-20T09:45:00').toISOString(),
+          isRead: false,
+        },
+        {
+          id: '5',
+          type: 'Rechnung',
+          contractor: 'Elektro AG',
+          project: 'Campus Treskowallee',
+          unit: 'Raum A002',
+          tenant: 'HTW Berlin',
+          owner: 'Campus Management GmbH',
+          senderName: 'Maria Beispiel',
+          senderEmail: 'maria.beispiel@example.com',
+          subject: 'Rechnung für Elektroarbeiten April 2025',
+          body: 'Die Rechnung für die Elektroarbeiten im April 2025 findest du im Anhang.',
+          receivedAt: new Date('2025-05-18T11:20:00').toISOString(),
+          isRead: false,
+        },
+        {
+          id: '6',
+          type: 'Nachricht',
+          contractor: 'Sicherheit GmbH',
+          project: 'Campus Treskowallee',
+          unit: 'Raum A008',
+          tenant: 'HTW Berlin',
+          owner: 'Campus Management GmbH',
+          senderName: 'Sicherheitsdienst',
+          senderEmail: 'security@facility.de',
+          subject: 'Alarm: Rauchmelder ausgelöst',
+          body: 'Im Raum A008 wurde um 22:30 Uhr der Rauchmelder ausgelöst.',
+          receivedAt: new Date('2025-05-15T22:31:00').toISOString(),
+          isRead: true,
+        },
+        {
+          id: '7',
+          type: 'Nachricht',
+          contractor: 'Facility Service GmbH',
+          project: 'Neubau Musterstraße',
+          unit: 'Wohnung 101',
+          tenant: 'Max Müller',
+          owner: 'Immobilien AG',
+          senderName: 'Lisa Beispiel',
+          senderEmail: 'lisa.beispiel@example.com',
+          subject: 'Meeting Protokoll',
+          body: 'Das Protokoll des Meetings vom 10.05.2025 findest du im Anhang.',
+          receivedAt: new Date('2025-05-12T16:00:00').toISOString(),
+          isRead: false,
+        },
+      ],
+    });
+  }),
+
+  // -------- TICKETING SERVICE HANDLERS --------
+
+  // GET list of issues (ticketing microservice)
+  http.get(`${TICKETING_BASE}/issues`, ({ request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const owner = url.searchParams.get('owner');
+
+    const allIssues = [
+      {
+        id: 'issue-1',
+        title: 'Test Issue 1',
+        description: 'Test Description 1',
+        status: 'OPEN',
+        ownerId: 'owner1',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'issue-2',
+        title: 'Test Issue 2',
+        description: 'Test Description 2',
+        status: 'IN_PROGRESS',
+        ownerId: 'owner2',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'issue-3',
+        title: 'Test Issue 3',
+        description: 'Test Description 3',
+        status: 'CLOSED',
+        ownerId: 'owner1',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    let filteredIssues = allIssues;
+
+    if (status) {
+      filteredIssues = filteredIssues.filter((issue) => issue.status === status);
+    }
+
+    if (owner) {
+      filteredIssues = filteredIssues.filter((issue) => issue.ownerId === owner);
+    }
+
+    return HttpResponse.json({
+      issues: filteredIssues,
+      first: 0,
+      size: filteredIssues.length,
+      total: filteredIssues.length,
+    });
+  }),
+
+  // GET single issue (ticketing microservice)
+  http.get(`${TICKETING_BASE}/issues/:issueId`, ({ params }) => {
+    if (params.issueId === 'non-existing' || params.issueId === 'non-existing-id') {
+      return HttpResponse.json({ message: 'Issue not found' }, { status: 404 });
+    }
+    return HttpResponse.json({
+      id: params.issueId,
+      title: 'Test Issue',
+      description: 'A test issue description',
+      status: 'OPEN',
+      ownerId: 'owner1',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }),
+
+  // POST create issue (ticketing microservice)
+  http.post(`${TICKETING_BASE}/issues`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: 'new-issue-id',
+      ...body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }),
+
+  // PATCH update issue (ticketing microservice)
+  http.patch(`${TICKETING_BASE}/issues/:issueId`, async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: params.issueId,
+      ...body,
+      updatedAt: new Date().toISOString(),
+    });
+  }),
+
+  // DELETE issue (ticketing microservice)
+  http.delete(`${TICKETING_BASE}/issues/:issueId`, ({ params }) => {
+    if (params.issueId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
+    return HttpResponse.json({}, { status: 204 });
+  }),
+
+  // -------- BUILDINGS HANDLERS (additional) --------
+
+  // GET building
+  http.get(`${API_BASE}/projects/:projectId/buildings/:buildingId`, ({ params }) => {
+    if (params.buildingId === 'not-found') {
+      return HttpResponse.json({ message: 'Building not found' }, { status: 404 });
+    }
+    return HttpResponse.json({
+      id: params.buildingId,
+      title: 'Building ' + params.buildingId,
+      description: 'A sample building',
+      livingSpace: 500,
+      commercialSpace: 100,
+      usableSpace: 550,
+      heatingSpace: 480,
+      rent: 5000,
+    });
+  }),
+
+  // POST create building
+  http.post(`${API_BASE}/projects/:projectId/properties/:propertyId/buildings`, async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: 'new-building-id',
+      ...body,
+    });
+  }),
+
+  // PATCH update building
+  http.patch(`${API_BASE}/projects/:projectId/buildings/:buildingId`, async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: params.buildingId,
+      ...body,
+    });
+  }),
+
+  // DELETE building
+  http.delete(`${API_BASE}/projects/:projectId/buildings/:buildingId`, ({ params }) => {
+    if (params.buildingId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
+    return HttpResponse.json({}, { status: 204 });
+  }),
+
+  // -------- PROJECTS HANDLERS (additional) --------
+
+  // GET projects list
+  http.get(`${API_BASE}/projects`, ({ request }) => {
+    const url = new URL(request.url);
+    const offset = parseInt(url.searchParams.get('offset') || '0');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+
+    return HttpResponse.json({
+      projects: [
+        {
+          id: 'project-1',
+          title: 'Project 1',
+          description: 'Test project 1',
+          memberRole: 'MANAGER',
+        },
+        {
+          id: 'project-2',
+          title: 'Project 2',
+          description: 'Test project 2',
+          memberRole: 'CONTRACTOR',
+        },
+      ],
+      offset,
+      limit,
+      total: 2,
+    });
+  }),
+
+  // GET single project
+  http.get(`${API_BASE}/projects/:projectId`, ({ params }) => {
+    if (params.projectId === 'not-found' || params.projectId === 'non-existing'
+      || params.projectId === 'non-existent-project-id') {
+      return HttpResponse.json({ message: 'Project not found' }, { status: 404 });
+    }
+    if (params.projectId === 'network-error-project-id') {
+      return HttpResponse.json({ message: 'Network Error' }, { status: 500 });
+    }
+    return HttpResponse.json({
+      id: params.projectId,
+      title: 'Project ' + params.projectId,
+      description: 'Test project description',
+      memberRole: 'MANAGER',
+    });
+  }),
+
+  // POST create project
+  http.post(`${API_BASE}/projects`, async ({ request }) => {
+    const body = (await request.json()) as { title: string };
+    return HttpResponse.json({
+      id: 'new-project-id',
+      title: body.title,
+      memberRole: 'MANAGER',
+    });
+  }),
+
+  // PATCH update project
+  http.patch(`${API_BASE}/projects/:projectId`, async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: params.projectId,
+      ...body,
+    });
+  }),
+
+  // DELETE project
+  http.delete(`${API_BASE}/projects/:projectId`, () => {
+    return HttpResponse.json({}, { status: 204 });
+  }),
+
+  // -------- APARTMENTS HANDLERS (additional) --------
+
+  // GET apartment
+  http.get(`${API_BASE}/projects/:projectId/apartments/:apartmentId`, ({ params }) => {
+    if (params.apartmentId === 'not-found') {
+      return HttpResponse.json({ message: 'Apartment not found' }, { status: 404 });
+    }
+    return HttpResponse.json({
+      id: params.apartmentId,
+      title: 'Apartment ' + params.apartmentId,
+      description: 'A sample apartment',
+      livingSpace: 100,
+      usableSpace: 80,
+      heatingSpace: 60,
+      location: 'Floor 2',
+    });
+  }),
+
+  // PATCH update apartment (without buildingId in path)
+  http.patch(`${API_BASE}/projects/:projectId/apartments/:apartmentId`, async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: params.apartmentId,
+      ...body,
+    });
+  }),
+
+  // DELETE apartment
+  http.delete(`${API_BASE}/projects/:projectId/apartments/:apartmentId`, ({ params }) => {
+    if (params.apartmentId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
+    return HttpResponse.json({}, { status: 204 });
   }),
 ];

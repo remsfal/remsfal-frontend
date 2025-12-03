@@ -2,7 +2,7 @@ name: "CI Build"
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "dev"]
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -19,7 +19,7 @@ jobs:
         node-version: [current, lts/*]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Build REMSFAL
@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Run Unit Test with Vitest (test)
-        run: npm run test:unit
+        run: npm run coverage:unit
       - name: Run E2E Test with Cypress (test)
         uses: cypress-io/github-action@v6
         with:
@@ -46,7 +46,7 @@ jobs:
       # Generate reports for Sonar Analysis
       - name: Build Coverage Report (only on LTS version)
         if: ${{ matrix.node-version == 'lts/*' }}
-        run: npm run coverage
+        run: npm run coverage:merge
       - name: Upload Coverage Reports (only on LTS version)
         if: ${{ matrix.node-version == 'lts/*' }}
         uses: actions/upload-artifact@v5
@@ -70,10 +70,10 @@ jobs:
   check-branches:
     name: "Check Pull Request Conditions"
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.actor != 'remsfal-bot[bot]'
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Check PR branches
         env:
           HEAD_REF: ${{ github.head_ref }}

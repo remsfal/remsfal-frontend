@@ -4,7 +4,11 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 import { useToast } from 'primevue/usetoast';
-import { handleCancel, showSavingErrorToast, showValidationErrorToast } from '@/helper/viewHelper';
+import {handleCancel,
+  navigateToObjects,
+  showSavingErrorToast,
+  showValidationErrorToast,
+  valuesAreEqual,} from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;
@@ -31,11 +35,11 @@ const originalValues = ref({
 
 const hasChanges = computed(() => {
   return (
-    title.value !== originalValues.value.title ||
-    description.value !== originalValues.value.description ||
-    commercialSpace.value !== originalValues.value.commercialSpace ||
-    heatingSpace.value !== originalValues.value.heatingSpace ||
-    location.value !== originalValues.value.location
+    !valuesAreEqual(title.value, originalValues.value.title) ||
+    !valuesAreEqual(description.value, originalValues.value.description) ||
+    !valuesAreEqual(commercialSpace.value, originalValues.value.commercialSpace) ||
+    !valuesAreEqual(heatingSpace.value, originalValues.value.heatingSpace) ||
+    !valuesAreEqual(location.value, originalValues.value.location)
   );
 });
 
@@ -135,7 +139,7 @@ const save = async () => {
       detail: t('commercialUnit.saveSuccessDetail'),
       life: 6000,
     });
-    router.push(`/project/${props.projectId}/commercial/${props.unitId}`);
+    navigateToObjects(router, props.projectId);
   } catch (err) {
     console.error('Error saving commercial unit:', err);
     showSavingErrorToast(toast, t('commercialUnit.saveError'));

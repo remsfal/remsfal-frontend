@@ -1,19 +1,18 @@
-import axios, {AxiosError,
-  type AxiosInstance,
-  type AxiosRequestConfig,
-  type InternalAxiosRequestConfig,
-  type AxiosResponse,} from 'axios';
-import type { paths as chatPaths, components as chatComponents } from './api/chat-schema';
+import axios from 'axios';
+import type {AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+  AxiosResponse} from 'axios';
+import type { paths as ticketingPaths, components as ticketingComponents } from './api/ticketing-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
 import { useEventBus } from '@/stores/EventStore.ts';
 
 // Combine all OpenAPI paths
-export type ApiPaths = chatPaths & platformPaths & notificationPaths;
+export type ApiPaths = ticketingPaths & platformPaths & notificationPaths;
 // Combine all OpenAPI components
-export type ApiComponents = chatComponents & platformComponents & notificationComponents;
-
-const bus = useEventBus();
+export type ApiComponents = ticketingComponents & platformComponents & notificationComponents;
 
 /**
  * Extend AxiosRequestConfig to support a `pathParams` object for URL placeholder substitution.
@@ -51,7 +50,7 @@ function replacePlaceholders(
   pathParams: AxiosRequestConfig['pathParams'] = {},
   style: AxiosRequestConfig['pathParamsPlaceholderStyle'] = 'curly',
 ): string {
-  // Precompiled safe regex patterns
+   // Precompiled safe regex patterns
   const patterns = {
     curly: /\{(\w+)\}/g,
     colon: /:(\w+)/g,
@@ -70,7 +69,7 @@ function replacePlaceholders(
     }
     return encodeURIComponent(String(val));
   });
-  // Double-check that no placeholders remain
+    // Double-check that no placeholders remain
   if (/\{(\w+)\}/.test(url) || /:(\w+)/.test(url)) {
     throw new Error(`Not all path parameters were replaced. Result: "${url}"`);
   }
@@ -79,8 +78,17 @@ function replacePlaceholders(
 }
 
 /**
- * Axios request interceptor that replaces URL placeholders
+* Axios request interceptor that replaces URL placeholders
  * using the `config.pathParams` object before sending the request.
+ */
+function emitToast(severity: string, summary: string, detail: string) {
+  const bus = useEventBus();
+  bus.emit('toast:translate', {
+ severity, summary, detail 
+});
+}
+/**
+ * Axios interceptors
  */
 function requestHandler(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
   if (config.url && config.pathParams) {
@@ -94,29 +102,63 @@ function requestHandler(config: InternalAxiosRequestConfig): InternalAxiosReques
 
 function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
   console.error(`[request error] [${JSON.stringify(error)}]`);
-  bus.emit('toast:translate', {
- severity: 'error', summary: 'error.general', detail: 'error.apiRequest' 
-});
+  emitToast('error', 'error.general', 'error.apiRequest');
   return Promise.reject(error);
 }
-// this interceptor is used to handle all success ajax request
+
+/**
+ * HTTP Status Code Categories for Response Body Validation
+ * 
+ * Status codes that should NOT have a response body:
+ * - 204 No Content: By definition, this status code must not contain a body
+ * 
+ * Status codes where response body is OPTIONAL:
+ * - 201 Created: May return the created resource OR just a Location header
+ * - 202 Accepted: May return status information OR no body
+ * - 205 Reset Content: Instructs client to reset view, body is optional
+ * 
+ * All other 2xx status codes (200, 203, 206, etc.) are expected to have a response body.
+ * If they don't, it indicates a potential API error.
+ */
+const NO_BODY_EXPECTED = [204]; // 204 No Content
+const BODY_OPTIONAL = [201, 202, 205]; // 201 Created, 202 Accepted, 205 Reset Content
+
+/**
+ * Response interceptor for successful HTTP responses (2xx).
+ * 
+ * This interceptor validates that responses which should contain data actually have it.
+ * It gracefully handles all 2xx status codes, differentiating between:
+ * - Status codes that must not have a body (204)
+ * - Status codes where body is optional (201, 202, 205)
+ * - Status codes that should have a body (200, 203, 206, etc.)
+ * 
+ * Shows an error toast only when a response that should have data is empty or undefined.
+ * Note: Empty arrays [], empty strings "", 0, and false are considered valid response data.
+ * 
+ * @param response - The Axios response object
+ * @returns The unmodified response object
+ */
 function responseHandler(response: AxiosResponse): AxiosResponse {
-  if (response.status == 200 || response.status == 201) {
-    const data = response?.data;
-    if (!data) {
-      bus.emit('toast:translate', {
- severity: 'error', summary: 'error.general', detail: 'error.apiResponse' 
-});
+  // Handle all 2xx responses gracefully
+  if (response.status >= 200 && response.status < 300) {
+    // Determine if this status code should have a response body
+    const shouldHaveBody = !NO_BODY_EXPECTED.includes(response.status) && 
+                          !BODY_OPTIONAL.includes(response.status);
+    
+    if (shouldHaveBody) {
+      const data = response?.data;
+      // Check for null or undefined only - allow falsy values like 0, false, '', []
+      if (data === null || data === undefined) {
+        emitToast('error', 'error.general', 'error.apiResponse');
+      }
     }
   }
   return response;
 }
 
 function responseErrorHandler(error: AxiosError) {
-  console.error(`[request error] [${JSON.stringify(error)}]`);
-  bus.emit('toast:translate', {
- severity: 'error', summary: 'error.general', detail: 'error.apiResponse' 
-});
+  console.error(`[response error] [${JSON.stringify(error)}]`);
+  emitToast('error', 'error.general', 'error.apiResponse');
   return Promise.reject(error);
 }
 
@@ -127,4 +169,188 @@ function createAxiosInstance() {
   return instance;
 }
 
-export const apiClient: AxiosInstance = createAxiosInstance();
+// ============================================================================
+// Type-Safe API Client with OpenAPI Validation
+// ============================================================================
+
+type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
+
+type PathsForMethod<M extends HttpMethod> = {
+  [P in keyof ApiPaths]: M extends keyof ApiPaths[P] ? P : never;
+}[keyof ApiPaths];
+
+// Extract request body type
+type RequestBody<P extends keyof ApiPaths, M extends HttpMethod> =
+  P extends keyof ApiPaths
+    ? M extends keyof ApiPaths[P]
+      ? ApiPaths[P][M] extends { requestBody?: { content: { 'application/json': infer Body } } }
+        ? Body
+        : never
+      : never
+    : never;
+
+// Extract path parameters
+type PathParams<P extends keyof ApiPaths, M extends HttpMethod> =
+  P extends keyof ApiPaths
+    ? M extends keyof ApiPaths[P]
+      ? ApiPaths[P][M] extends { parameters: { path?: infer Params } }
+        ? Params
+        : Record<string, never>
+      : Record<string, never>
+    : Record<string, never>;
+
+// Extract query parameters
+type QueryParams<P extends keyof ApiPaths, M extends HttpMethod> =
+  P extends keyof ApiPaths
+    ? M extends keyof ApiPaths[P]
+      ? ApiPaths[P][M] extends { parameters: { query?: infer Params } }
+        ? Params
+        : Record<string, never>
+      : Record<string, never>
+    : Record<string, never>;
+
+// Extract response type
+type ResponseType<P extends keyof ApiPaths, M extends HttpMethod> =
+  P extends keyof ApiPaths
+    ? M extends keyof ApiPaths[P]
+      ? ApiPaths[P][M] extends { responses: { 200: { content: { 'application/json': infer Res } } } }
+        ? Res
+        : ApiPaths[P][M] extends { responses: { 204: any } }
+          ? void
+          : ApiPaths[P][M] extends { responses: { 200: any } }
+            ? void
+            : unknown
+      : unknown
+    : unknown;
+
+// Convert path parameters to Record<string, string | number>
+type PathParamsConfig<P> = {
+  [K in keyof P]: string | number;
+};
+
+// Request options
+type RequestOptions<P extends keyof ApiPaths, M extends HttpMethod> = {
+  pathParams?: PathParamsConfig<PathParams<P, M>>;
+  params?: QueryParams<P, M>;
+  config?: AxiosRequestConfig;
+};
+
+/**
+ * Type-safe API client wrapper with full OpenAPI validation.
+ * Wraps the Axios instance with interceptors while providing compile-time type safety.
+ */
+class ApiClient {
+  private instance: AxiosInstance;
+
+  constructor() {
+    this.instance = createAxiosInstance();
+  }
+
+  /**
+   * Type-safe GET request
+   *
+   * @example
+   * const members = await apiClient.get('/api/v1/projects/{projectId}/members', {
+   *   pathParams: { projectId: '123' }
+   * });
+   */
+  async get<P extends PathsForMethod<'get'>>(
+    path: P,
+    options?: RequestOptions<P, 'get'>
+  ): Promise<ResponseType<P, 'get'>> {
+    const response = await this.instance.get(path as string, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+
+  /**
+   * Type-safe POST request
+   *
+   * @example
+   * const member = await apiClient.post('/api/v1/projects/{projectId}/members',
+   *   { email: 'user@example.com', role: 'MANAGER' },
+   *   { pathParams: { projectId: '123' } }
+   * );
+   */
+  async post<P extends PathsForMethod<'post'>>(
+    path: P,
+    body: RequestBody<P, 'post'>,
+    options?: RequestOptions<P, 'post'>
+  ): Promise<ResponseType<P, 'post'>> {
+    const response = await this.instance.post(path as string, body, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+
+  /**
+   * Type-safe PUT request
+   *
+   * @example
+   * const updated = await apiClient.put('/api/v1/projects/{projectId}',
+   *   { title: 'New Title' },
+   *   { pathParams: { projectId: '123' } }
+   * );
+   */
+  async put<P extends PathsForMethod<'put'>>(
+    path: P,
+    body: RequestBody<P, 'put'>,
+    options?: RequestOptions<P, 'put'>
+  ): Promise<ResponseType<P, 'put'>> {
+    const response = await this.instance.put(path as string, body, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+
+  /**
+   * Type-safe PATCH request
+   *
+   * @example
+   * const updated = await apiClient.patch('/api/v1/projects/{projectId}/members/{memberId}',
+   *   { role: 'CONTRACTOR' },
+   *   { pathParams: { projectId: '123', memberId: '456' } }
+   * );
+   */
+  async patch<P extends PathsForMethod<'patch'>>(
+    path: P,
+    body: RequestBody<P, 'patch'>,
+    options?: RequestOptions<P, 'patch'>
+  ): Promise<ResponseType<P, 'patch'>> {
+    const response = await this.instance.patch(path as string, body, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+
+  /**
+   * Type-safe DELETE request
+   *
+   * @example
+   * await apiClient.delete('/api/v1/projects/{projectId}/members/{memberId}', {
+   *   pathParams: { projectId: '123', memberId: '456' }
+   * });
+   */
+  async delete<P extends PathsForMethod<'delete'>>(
+    path: P,
+    options?: RequestOptions<P, 'delete'>
+  ): Promise<ResponseType<P, 'delete'>> {
+    const response = await this.instance.delete(path as string, {
+      pathParams: options?.pathParams,
+      params: options?.params,
+      ...options?.config,
+    });
+    return response.data;
+  }
+}
+
+export const apiClient = new ApiClient();

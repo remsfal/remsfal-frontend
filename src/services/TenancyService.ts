@@ -1,17 +1,15 @@
-import { typedRequest } from '../../src/services/api/typedRequest';
-import type { components } from '../../src/services/api/platform-schema';
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type TenancyItem = components['schemas']['TenancyItemJson'];
-export type TenancyTenantItem = components['schemas']['UserJson'];
-export type TenancyJson = components['schemas']['TenancyJson'];
+export type TenancyItem = ApiComponents['schemas']['TenancyItemJson'];
+export type TenancyTenantItem = ApiComponents['schemas']['UserJson'];
+export type TenancyJson = ApiComponents['schemas']['TenancyJson'];
 export type TenancyListJson = TenancyJson[];
 
 export default class TenancyService {
   async fetchTenancyData(): Promise<TenancyListJson> {
-    return typedRequest<'/api/v1/tenancies', 'get', TenancyListJson>(
-      'get',
-      '/api/v1/tenancies'
-    );
+    const result = await apiClient.get('/api/v1/tenancies');
+    // API returns an object with tenancies array, we need to return the array
+    return (result as any).tenancies || [];
   }
 
   async fetchTenantData(): Promise<TenancyTenantItem[]> {
@@ -48,7 +46,7 @@ export default class TenancyService {
     // TODO: Implement API call
     console.log('Updating unit', unit);
   }
-  
+
 }
 
 export const tenancyService = new TenancyService();

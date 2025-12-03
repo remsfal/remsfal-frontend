@@ -98,7 +98,7 @@ async function fetchUserProfile() {
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
-      if (userProfile.value.address) {
+      if (userProfile?.value?.address) {
         addressProfile.value = userProfile.value.address;
         editedAddress.value = { ...userProfile.value.address };
       }
@@ -284,16 +284,13 @@ async function getCity() {
 
     const address = await userService.getCityFromZip(zip);
 
-    if (address && address.length > 0) {
-      const firstAddress = address[0];
-      if (firstAddress) {
-        editedAddress.value.city = firstAddress.city;
-        editedAddress.value.province = firstAddress.province;
-        editedAddress.value.countryCode = firstAddress.countryCode;
-        errorMessage.value.zip = '';
-        errorMessage.value.city = '';
-        errorMessage.value.province = '';
-      }
+    if (address && address.city) {
+      editedAddress.value.city = address.city;
+      editedAddress.value.province = address.province;
+      editedAddress.value.countryCode = address.countryCode;
+      errorMessage.value.zip = '';
+      errorMessage.value.city = '';
+      errorMessage.value.province = '';
     }
   } catch (error) {
     console.log(error);
@@ -500,7 +497,7 @@ function removeAlternativeEmail(id: string) {
               </div>
 
               <div class="input-container">
-                <label class="label" for="lastName">Nachname*:</label>
+                <label class="label" for="lastName">{{ t('accountSettings.userProfile.lastName') }}:</label>
                 <InputText
                   id="lastName"
                   v-model="editedUserProfile.lastName"
@@ -520,7 +517,7 @@ function removeAlternativeEmail(id: string) {
               </div>
 
               <div class="input-container">
-                <label class="label" for="eMail">E-Mail:</label>
+                <label class="label" for="eMail">{{ t('accountSettings.userProfile.email') }}:</label>
                 <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
                 <Message class="error" size="small" severity="error" variant="simple" />
               </div>
@@ -639,7 +636,7 @@ function removeAlternativeEmail(id: string) {
                 </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="businessPhoneNumber">Geschäftliche Telefonnummer:</label>
+                <label class="label" for="businessPhoneNumber">{{ t('accountSettings.userProfile.businessPhone') }}:</label>
                 <InputText
                   id="businessPhoneNumber"
                   v-model="editedUserProfile.businessPhoneNumber"
@@ -658,7 +655,7 @@ function removeAlternativeEmail(id: string) {
               </div>
 
               <div class="input-container">
-                <label class="label" for="privatePhoneNumber">Handynummer:</label>
+                <label class="label" for="privatePhoneNumber">{{ t('accountSettings.userProfile.privatePhone') }}:</label>
                 <InputText
                   id="privatePhoneNumber"
                   v-model="editedUserProfile.privatePhoneNumber"
@@ -677,18 +674,18 @@ function removeAlternativeEmail(id: string) {
               </div>
             </div>
             <Message class="required" size="small" severity="secondary" variant="simple">
-              *Pflichtfelder
+              {{ t('accountSettings.userProfile.requiredFields') }}
             </Message>
           </template>
         </Card>
         <Card>
           <template #title>
-            <h4>Meine Adresse</h4>
+            <h4>{{ t('accountSettings.address.title') }}</h4>
           </template>
           <template #content>
             <div>
               <div class="input-container">
-                <label class="label" for="street">Straße und Hausnummer*:</label>
+                <label class="label" for="street">{{ t('accountSettings.address.street') }}*:</label>
                 <InputText
                   id="street"
                   v-model="editedAddress.street"
@@ -706,7 +703,7 @@ function removeAlternativeEmail(id: string) {
                 </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Postleitzahl*:</label>
+                <label class="label" for="zip">{{ t('accountSettings.address.zip') }}*:</label>
                 <InputText
                   id="zip"
                   v-model="editedAddress.zip"
@@ -724,7 +721,7 @@ function removeAlternativeEmail(id: string) {
                 </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Stadt*:</label>
+                <label class="label" for="city">{{ t('accountSettings.address.city') }}*:</label>
                 <InputText
                   id="city"
                   v-model="editedAddress.city"
@@ -742,7 +739,7 @@ function removeAlternativeEmail(id: string) {
                 </Message>
               </div>
               <div class="input-container">
-                <label class="label" for="zip">Bundesland*:</label>
+                <label class="label" for="province">{{ t('accountSettings.address.province') }}*:</label>
                 <InputText
                   id="province"
                   v-model="editedAddress.province"
@@ -760,7 +757,7 @@ function removeAlternativeEmail(id: string) {
                 </Message>
               </div>
               <div class="input-container">
-                <label for="country" class="label">Land*:</label>
+                <label for="country" class="label">{{ t('accountSettings.address.country') }}*:</label>
                 <select
                   id="country"
                   v-model="editedAddress.countryCode"
@@ -778,7 +775,7 @@ function removeAlternativeEmail(id: string) {
               </div>
 
               <div class="input-container">
-                <label for="countryCode" class="label">Länderkürzel*:</label>
+                <label for="countryCode" class="label">{{ t('accountSettings.address.countryCode') }}*:</label>
                 <InputText
                   id="countryCode"
                   v-model="editedAddress.countryCode"
@@ -799,7 +796,7 @@ function removeAlternativeEmail(id: string) {
               </div>
             </div>
             <Message class="required" size="small" variant="simple">
-              *Pflichtfelder
+              {{ t('accountSettings.userProfile.requiredFields') }}
             </Message>
           </template>
         </Card>
@@ -810,12 +807,12 @@ function removeAlternativeEmail(id: string) {
         <div class="buttons-container centered-buttons">
           <Button severity="info">
             <RouterLink to="/projects">
-              Zur Verwalter Ansicht
+              {{ t('accountSettings.userProfile.managementView') }}
             </RouterLink>
           </Button>
           <Button severity="info">
             <RouterLink to="/tenancies">
-              Zur Mieter Ansicht
+              {{ t('accountSettings.userProfile.tenanciesView') }}
             </RouterLink>
           </Button>
           <Button severity="info">

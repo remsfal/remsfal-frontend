@@ -2,90 +2,72 @@
 /* eslint-env node */
 /* global process */
 /**
- * Script to merge coverage from both Vitest unit tests and Cypress E2E tests
+ * Script to merge coverage from both Vitest unit tests and Cypress E2E tests using NYC
  */
 import { execSync } from 'child_process';
-import {existsSync, rmSync, mkdirSync, readFileSync, appendFileSync, cpSync} from 'fs';
+import { existsSync, mkdirSync, cpSync } from 'fs';
 
+const nycOutput = '.nyc_output';
+const coverageFinal = 'coverage';
 const coverageVitest = 'coverage-vitest';
 const coverageCypress = 'coverage-cypress';
-const coverageFinal = 'coverage';
-const nycTemp = '.nyc_output';
 
-console.log('🧪 Starting combined coverage collection...\n');
+console.log('📊 Merging coverage reports...\n');
 
 try {
-  // Clean up previous coverage data
-  console.log('🧹 Cleaning previous coverage data...');
-  [coverageVitest, coverageCypress, coverageFinal, nycTemp].forEach(dir => {
-    if (existsSync(dir)) {
-      rmSync(dir, { recursive: true, force: true });
-    }
-  });
+  // Check if coverage directories exist
+  const hasVitest = existsSync(coverageVitest);
+  const hasCypress = existsSync(coverageCypress);
 
-  // Step 1: Run Vitest unit tests with coverage
-  console.log('📊 Running Vitest unit tests with coverage...');
-  execSync('vitest run --coverage', { stdio: 'inherit', shell: false });
-
-  // Step 2: Run Cypress E2E tests with coverage (if Cypress is available)
-  console.log('🌐 Checking for Cypress E2E tests...');
-  
-  let cypressCoverageAvailable = false;
-  try {
-    // Build the project first
-    console.log('🔨 Building project for E2E tests...');
-    execSync('npm run build', { stdio: 'inherit', shell: false });
-
-    // Start server and run E2E tests
-    console.log('🚀 Running E2E tests with coverage collection...');
-    execSync('start-server-and-test preview http://localhost:4173 "cypress run --e2e"', { 
-      stdio: 'inherit',
-      shell: false,
-      env: { ...process.env, NODE_ENV: 'test' }
-    });
-    
-    // Generate NYC coverage report for Cypress
-    if (existsSync(nycTemp)) {
-      console.log('📈 Generating Cypress coverage reports...');
-      execSync('nyc report --reporter=lcov --reporter=json --reporter=text', { stdio: 'inherit', shell: false });
-      cypressCoverageAvailable = true;
-    }
-  } catch (error) {
-    console.warn('⚠️  E2E tests are not available or failed, continuing with Vitest coverage only...');
-    console.debug('E2E error:', error.message);
-  }
-
-  // Step 3: Use Vitest coverage as base and merge if Cypress coverage exists
-  if (existsSync(coverageVitest)) {
-    console.log('📊 Using Vitest coverage as base...');
-    if (!existsSync(coverageFinal)) {
-      mkdirSync(coverageFinal, { recursive: true });
-    }
-    
-    // Copy Vitest coverage to final directory
-    cpSync(coverageVitest, coverageFinal, { recursive: true });
-    
-    if (cypressCoverageAvailable && existsSync(coverageCypress) && existsSync(`${coverageCypress}/lcov.info`)) {
-      console.log('🔄 Merging Cypress E2E coverage...');
-      // Append Cypress lcov to final lcov
-      const cypressLcov = readFileSync(`${coverageCypress}/lcov.info`, 'utf8');
-      appendFileSync(`${coverageFinal}/lcov.info`, '\n' + cypressLcov);
-    }
-    
-  } else if (existsSync(coverageCypress)) {
-    console.log('📊 Only Cypress coverage available, using as final coverage...');
-    cpSync(coverageCypress, coverageFinal, { recursive: true });
-    
-  } else {
-    console.log('❌ No coverage data found from either source');
+  if (!hasVitest && !hasCypress) {
+    console.log('❌ No coverage data found. Run coverage:unit and/or coverage:e2e first.');
     process.exit(1);
   }
 
-  console.log('\n✅ Combined coverage collection completed!');
-  console.log('📁 Final coverage reports available in: coverage/');
+  // Create .nyc_output directory if it doesn't exist
+  if (!existsSync(nycOutput)) {
+    mkdirSync(nycOutput, { recursive: true });
+  }
+
+  // Copy coverage data to .nyc_output for merging
+  if (hasVitest && existsSync(`${coverageVitest}/coverage-final.json`)) {
+    console.log('📋 Found Vitest coverage data');
+    cpSync(`${coverageVitest}/coverage-final.json`, `${nycOutput}/vitest.json`);
+  }
+
+  if (hasCypress && existsSync(`${coverageCypress}/coverage-final.json`)) {
+    console.log('📋 Found Cypress coverage data');
+    cpSync(`${coverageCypress}/coverage-final.json`, `${nycOutput}/cypress.json`);
+  }
+
+  // Merge coverage reports using NYC
+  console.log('🔀 Merging coverage reports with NYC...');
+  execSync(`nyc merge ${nycOutput} ${nycOutput}/coverage.json`, {
+    stdio: 'inherit',
+    shell: false
+  });
+
+  // Generate merged reports
+  console.log('📈 Generating merged coverage reports...');
+  execSync(`nyc report --temp-dir ${nycOutput} --reporter=html --reporter=lcov --reporter=text \
+                     --reporter=json --report-dir ${coverageFinal}`, {
+    stdio: 'inherit',
+    shell: false
+  });
+
+  console.log('\n✅ Coverage merge completed!');
+  console.log('📁 Merged coverage reports available in: coverage/');
   console.log('📄 LCOV report: coverage/lcov.info');
-  
+  console.log('🌐 HTML report: coverage/index.html');
+
+  if (hasVitest) {
+    console.log('\n📊 Unit test coverage: coverage-vitest/index.html');
+  }
+  if (hasCypress) {
+    console.log('📊 E2E test coverage: coverage-cypress/index.html');
+  }
+
 } catch (error) {
-  console.error('❌ Error during coverage collection:', error.message);
+  console.error('❌ Error during coverage merge:', error.message);
   process.exit(1);
 }

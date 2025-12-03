@@ -129,7 +129,9 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": unknown;
+                    };
                 };
             };
         };
@@ -205,6 +207,49 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/authentication/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh the access and refresh tokens using the refresh token cookie. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: {
+                    remsfal_refresh_token?: components["schemas"]["Cookie"];
+                };
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tokens refreshed successfully, new tokens set as cookies */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized - Invalid or missing refresh token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1570,6 +1615,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description A list of contractors was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorListJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1664,6 +1718,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing contractor was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1741,6 +1804,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing contractor was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3387,192 +3459,6 @@ export interface paths {
         };
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/tasks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve information for all tasks. */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Filter to return only tasks of a specific user */
-                    owner?: components["schemas"]["UUID"];
-                    /** @description Filter to return only tasks with a specific status */
-                    status?: components["schemas"]["Status"];
-                };
-                header?: never;
-                path: {
-                    /** @description ID of the project */
-                    projectId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        /** Create a new task. */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the project */
-                    projectId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["TaskJson"];
-                };
-            };
-            responses: {
-                /** @description Task created successfully */
-                201: {
-                    headers: {
-                        /** @description URL of the new task */
-                        Location?: unknown;
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/projects/{projectId}/tasks/{taskId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve information of a task. */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the project */
-                    projectId: components["schemas"]["UUID"];
-                    /** @description ID of the task */
-                    taskId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The property does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        /** Delete an existing task. */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the project */
-                    projectId: components["schemas"]["UUID"];
-                    /** @description ID of the task */
-                    taskId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description The task was deleted successfully */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        /** Update information of a task. */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the project */
-                    projectId: components["schemas"]["UUID"];
-                    /** @description ID of the task */
-                    taskId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["TaskJson"];
-                };
-            };
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The task does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        trace?: never;
-    };
     "/api/v1/tenancies": {
         parameters: {
             query?: never;
@@ -3590,7 +3476,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
+                /** @description List of tenancies successfully returned */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -3631,6 +3517,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Apartment for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3677,6 +3572,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Building for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3723,6 +3627,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Commercial for specified tenancy and rental ID returned. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3769,6 +3682,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Property for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3815,6 +3737,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Site for specified tenancy and rental ID returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3861,6 +3792,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description Storage for specified tenancy and rental ID returned. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyJson1"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -3883,176 +3823,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/api/v1/tenancies/{tenancyId}/{rentalType}/{rentalId}tasks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve information for all tasks. */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Filter to return only tasks with a specific status */
-                    status?: components["schemas"]["Status"];
-                };
-                header?: never;
-                path: {
-                    /** @description ID of the rental */
-                    rentalId: components["schemas"]["UUID"];
-                    /** @description Type of the rental */
-                    rentalType: string;
-                    /** @description ID of the tenancy */
-                    tenancyId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        /** Create a new task. */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the rental */
-                    rentalId: components["schemas"]["UUID"];
-                    /** @description Type of the rental */
-                    rentalType: string;
-                    /** @description ID of the tenancy */
-                    tenancyId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["TaskJson1"];
-                };
-            };
-            responses: {
-                /** @description Task created successfully */
-                201: {
-                    headers: {
-                        /** @description URL of the new task */
-                        Location?: unknown;
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/tenancies/{tenancyId}/{rentalType}/{rentalId}tasks/{taskId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve information of a task. */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the rental */
-                    rentalId: components["schemas"]["UUID"];
-                    /** @description Type of the rental */
-                    rentalType: string;
-                    /** @description ID of the task */
-                    taskId: components["schemas"]["UUID"];
-                    /** @description ID of the tenancy */
-                    tenancyId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The property does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Update information of a task. */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the rental */
-                    rentalId: components["schemas"]["UUID"];
-                    /** @description Type of the rental */
-                    rentalType: string;
-                    /** @description ID of the task */
-                    taskId: components["schemas"]["UUID"];
-                    /** @description ID of the tenancy */
-                    tenancyId: components["schemas"]["UUID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["TaskJson1"];
-                };
-            };
-            responses: {
-                /** @description No user authentication provided via session cookie */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description The task does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         trace?: never;
     };
     "/api/v1/user": {
@@ -4187,13 +3957,6 @@ export interface components {
             zip?: string;
             countryCode?: string;
         };
-        AddressModel: {
-            street?: string;
-            city?: string;
-            province?: string;
-            zip?: string;
-            country?: components["schemas"]["Locale"];
-        };
         /** @description An apartment inside a building according to WoFIV */
         ApartmentJson: {
             type?: components["schemas"]["UnitType"];
@@ -4233,7 +3996,7 @@ export interface components {
             description?: string;
             id?: components["schemas"]["UUID"];
             title?: string;
-            address?: components["schemas"]["AddressModel"];
+            address?: components["schemas"]["AddressJson"];
         };
         /** @description A single chat message */
         ChatMessageJson: {
@@ -4254,9 +4017,18 @@ export interface components {
         ChatSessionJson: {
             sessionId?: components["schemas"]["UUID"];
             projectId?: components["schemas"]["UUID"];
-            taskId?: components["schemas"]["UUID"];
+            issueId?: components["schemas"]["UUID"];
             createdAt?: components["schemas"]["Instant"];
             modifiedAt?: components["schemas"]["Instant"];
+        };
+        /** @description A list of chat sessions */
+        ChatSessionListJson: {
+            /**
+             * Format: int32
+             * @description Number of chat sessions in the list
+             */
+            size: number;
+            chatSessions?: components["schemas"]["ChatSessionJson"][];
         };
         /** @description An commercial inside a building */
         CommercialJson: {
@@ -4286,6 +4058,22 @@ export interface components {
             phone?: string;
             email?: string;
             trade?: string;
+            address?: components["schemas"]["AddressJson"];
+        };
+        ContractorListJson: {
+            contractors?: components["schemas"]["ContractorJson"][];
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int64 */
+            total?: number;
+        };
+        Cookie: {
+            name?: string;
+            value?: string;
+            /** Format: int32 */
+            version?: number;
+            path?: string;
+            domain?: string;
         };
         /** @description A country item of a list */
         CountryItemJson: {
@@ -4296,16 +4084,82 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
-        /**
-         * Format: date
-         * @example 2022-03-10
-         */
-        Date: string;
+        /** @description Represents a message or invoice in the user's inbox */
+        InboxMessage: {
+            /** @description Unique identifier of the message */
+            id?: string;
+            /**
+             * @description Type of message (Message | Invoice)
+             * @enum {string}
+             */
+            type?: "Message" | "Invoice";
+            /** @description Sender or contractor associated with the message */
+            contractor?: string;
+            /** @description Subject or title of the message */
+            subject?: string;
+            /** @description Property or building related to the message */
+            property?: string;
+            /** @description Tenant or person related to the message */
+            tenant?: string;
+            /** @description Date and time when the message was received */
+            receivedAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Whether the message has been read */
+            read?: boolean;
+            /** @description ID of the user who owns the message */
+            userId?: string;
+            /** @description URL to the related GitHub issue or external resource */
+            issueLink?: string;
+        };
         /**
          * Format: date-time
          * @example 2022-03-10T16:15:50Z
          */
         Instant: string;
+        /** @description An issue item with basic information */
+        IssueItemJson: {
+            id?: components["schemas"]["UUID"];
+            name?: string;
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+            owner?: components["schemas"]["UUID"];
+        };
+        /** @description An issue */
+        IssueJson: {
+            reporterId?: components["schemas"]["UUID"];
+            tenancyId?: components["schemas"]["UUID"];
+            id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            title?: string;
+            type?: components["schemas"]["Type"];
+            status?: components["schemas"]["Status"];
+            ownerId?: components["schemas"]["UUID"];
+            description?: string;
+            blockedBy?: components["schemas"]["UUID"];
+            relatedTo?: components["schemas"]["UUID"];
+            duplicateOf?: components["schemas"]["UUID"];
+        };
+        /** @description A list of issues */
+        IssueListJson: {
+            /**
+             * Format: int32
+             * @description Index of the first element in list of total available entries, starting at 1
+             * @example 1
+             */
+            first: number;
+            /**
+             * Format: int32
+             * @description Number of elements in list
+             * @default 10
+             */
+            size: number;
+            /**
+             * Format: int32
+             * @description Total number of available elements
+             */
+            total: number;
+            issues?: components["schemas"]["IssueItemJson"][];
+        };
         /**
          * Format: date
          * @example 2022-03-10
@@ -4316,24 +4170,13 @@ export interface components {
          * @example 2022-03-10T12:15:50
          */
         LocalDateTime: string;
-        Locale: {
-            language?: string;
-            script?: string;
-            country?: string;
-            variant?: string;
-            extensionKeys?: string[];
-            unicodeLocaleAttributes?: string[];
-            unicodeLocaleKeys?: string[];
-            iSO3Language?: string;
-            iSO3Country?: string;
-            displayLanguage?: string;
-            displayScript?: string;
-            displayCountry?: string;
-            displayVariant?: string;
-            displayName?: string;
-        };
         /** @enum {string} */
         MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50-04:00
+         */
+        OffsetDateTime: string;
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
             id: components["schemas"]["UUID"];
@@ -4492,55 +4335,6 @@ export interface components {
             id?: components["schemas"]["UUID"];
             title?: string;
         };
-        /** @description A task item with basic information */
-        TaskItemJson: {
-            id?: components["schemas"]["UUID"];
-            name?: string;
-            title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            owner?: components["schemas"]["UUID"];
-        };
-        /** @description A task item with basic information from a tenant's perspective */
-        TaskItemJson1: {
-            id?: components["schemas"]["UUID"];
-            name?: string;
-            title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-        };
-        /** @description A task */
-        TaskJson: {
-            reporterId?: components["schemas"]["UUID"];
-            id?: components["schemas"]["UUID"];
-            projectId?: components["schemas"]["UUID"];
-            title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            ownerId?: components["schemas"]["UUID"];
-            description?: string;
-            blockedBy?: components["schemas"]["UUID"];
-            relatedTo?: components["schemas"]["UUID"];
-            duplicateOf?: components["schemas"]["UUID"];
-        };
-        /** @description A task from a tenant's perspective */
-        TaskJson1: {
-            reporterId?: components["schemas"]["UUID"];
-            id?: components["schemas"]["UUID"];
-            title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            description?: string;
-            createdAt?: components["schemas"]["Date"];
-        };
-        /** @description A list of tasks */
-        TaskListJson: {
-            tasks?: components["schemas"]["TaskItemJson"][];
-        };
-        /** @description A list of tasks from a tenant's perspective */
-        TaskListJson1: {
-            tasks?: components["schemas"]["TaskItemJson1"][];
-        };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {
             id?: string;
@@ -4593,7 +4387,7 @@ export interface components {
             tenancies?: components["schemas"]["TenancyItemJson"][];
         };
         /** @enum {string} */
-        Type: "TASK" | "DEFECT" | "MAINTENANCE";
+        Type: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
         /** Format: uuid */
         UUID: string;
         /** @enum {string} */

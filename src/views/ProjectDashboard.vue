@@ -122,13 +122,13 @@ const costChartOptions = {
 
 const upcomingTasks = [
   {
- title: 'Dokumentation', dueDate: '2025-06-10', status: 'Offen' 
+ title: 'Dokumentation', dueDate: '2025-06-10', status: 'Offen'
 },
   {
- title: 'Review Meeting', dueDate: '2025-06-12', status: 'In Bearbeitung' 
+ title: 'Review Meeting', dueDate: '2025-06-12', status: 'In Bearbeitung'
 },
   {
- title: 'Rechnungsfreigabe', dueDate: '2025-06-14', status: 'Erledigt' 
+ title: 'Rechnungsfreigabe', dueDate: '2025-06-14', status: 'Erledigt'
 },
 ];
 
@@ -188,13 +188,13 @@ const defectChartOptions = {
 
 const recentActivities = [
   {
- title: 'Dokumentation abgeschlossen', date: '2025-06-04', type: 'completed' 
+ title: 'Dokumentation abgeschlossen', date: '2025-06-04', type: 'completed'
 },
   {
- title: 'Status geändert: "Review Meeting"', date: '2025-06-03', type: 'updated' 
+ title: 'Status geändert: "Review Meeting"', date: '2025-06-03', type: 'updated'
 },
   {
- title: 'Neuer Mangel gemeldet', date: '2025-06-01', type: 'issue' 
+ title: 'Neuer Mangel gemeldet', date: '2025-06-01', type: 'issue'
 },
 ];
 </script>
@@ -206,7 +206,7 @@ const recentActivities = [
     </h1>
 
     <!-- Dynamische Summary Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+    <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       <StatCard
         v-for="(card, index) in statCards"
         :key="index"

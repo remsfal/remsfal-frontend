@@ -41,9 +41,17 @@ describe('SiteService (MSW)', () => {
   });
 
   it('should delete a site', async () => {
-    await expect(siteService.deleteSite(projectId, siteId)).resolves.toBe(true);
+    await siteService.deleteSite(projectId, siteId);
+    // If no error is thrown, the delete was successful
   });
-  
-  
-  
+
+  it('should handle get site errors', async () => {
+    await expect(siteService.getSite(projectId, 'not-found')).rejects.toThrow();
+  });
+
+  it('should handle delete site errors', async () => {
+    await expect(
+      siteService.deleteSite(projectId, 'cannot-delete'),
+    ).rejects.toThrow();
+  });
 });

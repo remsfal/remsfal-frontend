@@ -1,8 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
-import PrimeVue from 'primevue/config';
-import i18n from '../../src/i18n/i18n';
 import { tenancyService } from '../../src/services/TenancyService';
 
 // ---- Mocks ----
@@ -38,7 +36,7 @@ describe('ProjectTenanciesDetails', () => {
     vi.spyOn(tenancyService, 'updateTenancy').mockResolvedValue(undefined);
     vi.spyOn(tenancyService, 'deleteTenancy').mockResolvedValue(undefined);
 
-    wrapper = mount(ProjectTenanciesDetails, {global: { plugins: [PrimeVue, i18n] },});
+    wrapper = mount(ProjectTenanciesDetails);
     await flushPromises();
   });
 

@@ -157,6 +157,10 @@ npm run format
 ### Common Patterns
 
 1. **API Calls**: Use services in `src/services/` directory
+   - **CRITICAL**: Each backend resource has its own dedicated service
+   - Examples: `PropertyService`, `ApartmentService`, `BuildingService`, `SiteService`, `CommercialService`, `StorageService`
+   - **Never call `apiClient` directly** from views or components
+   - Always use the appropriate service for each resource type
 2. **Error Handling**: Implement proper error boundaries and user feedback
 3. **Loading States**: Show loading indicators for async operations
 4. **Form Validation**: Use PrimeVue form validation patterns
@@ -186,6 +190,8 @@ npm run format
 - Don't skip internationalization for user-facing text
 - Don't forget to handle loading and error states
 - Don't use direct DOM manipulation - use Vue's reactivity
+- **Don't call `apiClient` directly from views or components** - always use the appropriate resource-specific service
+- **Don't create a single service for multiple resource types** - each resource has its own dedicated service
 
 ## Context for AI Assistance
 
@@ -198,3 +204,25 @@ When helping with this codebase:
 - Include appropriate tests for new functionality
 - Consider internationalization requirements
 - Maintain responsive design principles
+- **Always use resource-specific services** - identify which resource is being operated on (property, apartment, building, site, commercial, storage, etc.) and use the corresponding service
+- **When implementing CRUD operations for rentable units**, ensure you're calling the correct service based on the unit type
+
+## Service Layer Architecture
+
+The application follows a strict **resource-per-service** pattern:
+
+- **PropertyService** - Manages properties (`/api/v1/projects/{projectId}/properties`)
+- **ApartmentService** - Manages apartments (`/api/v1/projects/{projectId}/apartments`)
+- **BuildingService** - Manages buildings (`/api/v1/projects/{projectId}/buildings`)
+- **SiteService** - Manages sites (`/api/v1/projects/{projectId}/sites`)
+- **CommercialService** - Manages commercial units (`/api/v1/projects/{projectId}/commercials`)
+- **StorageService** - Manages storage units (`/api/v1/projects/{projectId}/storages`)
+- **ProjectMemberService** - Manages project members
+- **IssueService** - Manages issues/tickets
+- **TenancyService** - Manages tenancies
+
+**Key Rules**:
+1. Each service wraps `apiClient` from `@/services/ApiClient.ts`
+2. Views and components NEVER call `apiClient` directly
+3. When working with different resource types (e.g., in a tree view with properties, buildings, apartments), import and use ALL relevant services
+4. Use type-safe methods: `service.get()`, `service.post()`, `service.patch()`, `service.delete()`
