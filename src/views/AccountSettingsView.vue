@@ -520,7 +520,7 @@ function removeAlternativeEmail(id: string) {
               </div>
 
               <div class="input-container">
-                <label class="label" for="eMail">{{ t('accountSettings.userProfile.email') }}:</label>
+                <label class="label" for="eMail">E-Mail:</label>
                 <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
                 <Message class="error" size="small" severity="error" variant="simple" />
               </div>
@@ -530,7 +530,7 @@ function removeAlternativeEmail(id: string) {
                 <label class="label" for="alternative-eMail">{{ t('accountSettings.userProfile.alternative-email') }}:</label>
                 
                 <!-- Button to open dialog for adding alternative email -->
-                <div class="flex justify-front mt-3">
+                <div class="flex justify-front mt-3 mb-5">
                 <Button
                   label="Alternative E-Mail hinzufügen"
                   icon="pi pi-plus"
@@ -541,7 +541,7 @@ function removeAlternativeEmail(id: string) {
                 </div>
                 
                  <!-- Only show the alternative email field if one exists -->
-                <div v-if="alternativeEmails.length > 0" class="flex items-center gap-1 mt-4 mb-2.5">
+                <div v-if="alternativeEmails.length > 0" class="flex items-center gap-1 mt-1 mb-5">
                 <div class="alt-email-wrapper">
                   <InputText id="alternative-eMail"  class="alt-email-input flex-grow" :value="alternativeEmails[0]?.email || ''" disabled required />
                 
@@ -621,7 +621,7 @@ function removeAlternativeEmail(id: string) {
              </Dialog>
 
                 <div class="input-container">
-                <label class="label flex justify-front mt-4" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
+                <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
                 <InputText
                   id="mobilePhoneNumber"
                   v-model="editedUserProfile.mobilePhoneNumber"
