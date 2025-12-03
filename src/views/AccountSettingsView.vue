@@ -13,6 +13,7 @@ import UserService from '@/services/UserService';
 import { RouterLink } from 'vue-router'
 
 const { t } = useI18n();
+const i18n = useI18n();
 
 type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
 type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
@@ -355,6 +356,14 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
 const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
+
+
+function setLocale() {
+  const newLocale = editedUserProfile.value.locale;
+  locale.value = newLocale;
+}
+
+
 </script>
 
 <template>
@@ -480,7 +489,21 @@ const isDisabled = computed(() => {
                   optionLabel="label"
                   optionValue="value"
                   placeholder="Sprache wählen"
+                  @change="setLocale()"
                 />
+              </div>
+
+              <div class="p-link layout-topbar-button">
+                <Select v-model="i18n.locale" :options="i18n.availableLocales">
+                  <Dropdown
+                    id="locale"
+                    v-model="editedUserProfile.locale"
+                    :options="[{ label: 'Deutsch', value: 'de' }, { label: 'English', value: 'en' }]"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Sprache wählen"
+                  />
+                </Select>
               </div>
 
             </div>
