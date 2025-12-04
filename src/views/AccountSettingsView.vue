@@ -1,6 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted} from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
@@ -357,13 +357,6 @@ const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
 
-
-function setLocale() {
-  const newLocale = editedUserProfile.value.locale;
-  locale.value = newLocale;
-}
-
-
 </script>
 
 <template>
@@ -481,7 +474,7 @@ function setLocale() {
 
               <div class="input-container">
                 <label class="label" for="locale">{{ t('accountSettings.userProfile.language') }}:</label>
-
+                
                 <Dropdown
                   id="locale"
                   v-model="editedUserProfile.locale"
@@ -489,21 +482,9 @@ function setLocale() {
                   optionLabel="label"
                   optionValue="value"
                   placeholder="Sprache wählen"
-                  @change="setLocale()"
+                  @update:modelValue="i18n.locale.value = $event"
                 />
-              </div>
 
-              <div class="p-link layout-topbar-button">
-                <Select v-model="i18n.locale" :options="i18n.availableLocales">
-                  <Dropdown
-                    id="locale"
-                    v-model="editedUserProfile.locale"
-                    :options="[{ label: 'Deutsch', value: 'de' }, { label: 'English', value: 'en' }]"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Sprache wählen"
-                  />
-                </Select>
               </div>
 
             </div>
