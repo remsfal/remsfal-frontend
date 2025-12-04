@@ -938,6 +938,30 @@ paths:
       responses:
         "302":
           description: Redirect user to the frontend spa
+  /api/v1/authentication/token:
+    post:
+      summary: Login user via app token directly.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - app_id
+              properties:
+                app_id:
+                  type: string
+                app_token:
+                  type: string
+                dev_services:
+                  type: boolean
+                  default: "false"
+        required: true
+      responses:
+        "204":
+          description: Tokens are set as cookies
+        "401":
+          description: Unauthorized - Invalid token
   /api/v1/projects:
     get:
       summary: Retrieve information for all projects
