@@ -430,9 +430,7 @@ const saveAlternativeEmail = async () => {
 
     // Send PATCH request to update the user with a new alternative email
     await userService.updateUser(
-      {
-        alternativeEmail: enteredEmail,
-      } as UserPatchRequestBodyWithAlt,
+      { alternativeEmail: enteredEmail } as UserPatchRequestBodyWithAlt,
     );
 
      // Show success state
@@ -448,7 +446,7 @@ const saveAlternativeEmail = async () => {
      // Close the dialog and reset the form
     visible.value = false;
     resetForm();
-  } catch (e) {
+  } catch {
     // Show error state if backend update fails
     altEmailSuccess.value = false;
     altEmailError.value = true;
@@ -540,7 +538,12 @@ function removeAlternativeEmail(id: string) {
                  <!-- Only show the alternative email field if one exists -->
                 <div v-if="alternativeEmails.length > 0" class="flex items-center gap-1 mt-1 mb-5">
                 <div class="alt-email-wrapper">
-                  <InputText id="alternative-eMail"  class="alt-email-input flex-grow" :value="alternativeEmails[0]?.email || ''" disabled required />
+                  <InputText 
+                    id="alternative-eMail"  
+                    class="alt-email-input flex-grow" 
+                    :value="alternativeEmails[0]?.email || ''" 
+                    disabled 
+                    required />
                 
                  <!-- SUCCESS CHECKMARK shown after successful save -->
                 <span
