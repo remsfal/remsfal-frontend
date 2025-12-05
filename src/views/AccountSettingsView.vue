@@ -526,48 +526,48 @@ function removeAlternativeEmail(id: string) {
                 
                 <!-- Button to open dialog for adding alternative email -->
                 <div class="flex justify-front mt-3 mb-5">
-                <Button
-                  label="Alternative E-Mail hinzufügen"
-                  icon="pi pi-plus"
-                  style="width: auto"
-                  @click="visible = true"
-                  :disabled="hasAlternativeEmail"
-                />
+                  <Button
+                    label="Alternative E-Mail hinzufügen"
+                    icon="pi pi-plus"
+                    style="width: auto"
+                    :disabled="hasAlternativeEmail"
+                    @click="visible = true"
+                  />
                 </div>
                 
-                 <!-- Only show the alternative email field if one exists -->
+                <!-- Only show the alternative email field if one exists -->
                 <div v-if="alternativeEmails.length > 0" class="flex items-center gap-1 mt-1 mb-5">
-                <div class="alt-email-wrapper">
-                  <InputText 
-                    id="alternative-eMail"  
-                    class="alt-email-input flex-grow" 
-                    :value="alternativeEmails[0]?.email || ''" 
-                    disabled 
-                    required />
+                  <div class="alt-email-wrapper">
+                    <InputText 
+                      id="alternative-eMail"  
+                      class="alt-email-input flex-grow" 
+                      :value="alternativeEmails[0]?.email || ''" 
+                      disabled 
+                      required 
+                    />
                 
                  <!-- SUCCESS CHECKMARK shown after successful save -->
                 <span
                   v-if="altEmailSuccess"
                   class="alt-email-icon alt-email-icon-success"
                 >
-                   ✔
+                      ✔
                 </span>
 
                  <!-- ERROR ICON shown if backend returns an error -->
                 <span
-                  v-if="altEmailError"
-                  class="alt-email-icon alt-email-icon-error"
-                >
-                  ✗
-                </span>
+                      v-if="altEmailError"
+                      class="alt-email-icon alt-email-icon-error"
+                    >
+                      ✗
+                    </span>
               </div>
   
                 <!-- Trash icon deletes the existing alternative email -->
                 <i class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
-                @click="removeAlternativeEmail(alternativeEmails[0]!.id)">
-                </i>
-
-              </div>
+                  @click="removeAlternativeEmail(alternativeEmails[0]!.id)"
+                  />
+                </div>
             </div>
 
               <!-- Dialog for entering the alternative email -->
@@ -576,47 +576,47 @@ function removeAlternativeEmail(id: string) {
                 modal :style="{ width: '35rem' }"  
                 header="Alternative E-Mail hinzufügen"
                 @hide="resetForm">
-
-              <div class="flex flex-col gap-1 mb-6">
-               <!-- Email input row -->
-               <div class="flex items-center gap-6">
-                <label for="email"
-                  class="font-semibold w-29">E-Mail Adresse
-                </label>
+                <div class="flex flex-col gap-1 mb-6">
+                  <!-- Email input row -->
+                  <div class="flex items-center gap-6">
+                  <label for="email"
+                            class="font-semibold w-29">E-Mail Adresse
+                           </label>
   
                 <!-- Editable input inside dialog -->
                 <InputText
-                  id="email" class="flex-grow"
-                  v-model="alternativeEmail"
-                  type="email"
-                  autocomplete="off"
-                  :invalid="isEmailInvalid"
-                  placeholder="Alternative E-Mail-Adresse"/>
-              </div>
+                      id="email" 
+                      class="flex-grow"
+                      v-model="alternativeEmail"
+                      type="email"
+                      autocomplete="off"
+                      :invalid="isEmailInvalid"
+                      placeholder="Alternative E-Mail-Adresse"/>
+                  </div>
 
-              <!-- Validation error message -->
-              <small
-                v-if="isEmailInvalid"
-                class="text-red-500 mt-2 ml-36 text-sm">{{ emailErrorMessage }}
-              </small>
-           </div>
+                  <!-- Validation error message -->
+                  <small
+                    v-if="isEmailInvalid"
+                    class="text-red-500 mt-2 ml-36 text-sm">{{ emailErrorMessage }}
+                      </small>
+                </div>
 
-           <!-- Dialog buttons -->
-           <div class="flex justify-end gap-2 mt-6">
-             <!-- Cancel closes the dialog with no action -->
-             <Button
-                type="button"
-                :label="t('button.cancel')"
-                severity="secondary"
-                @click="visible = false"
-             />
+                <!-- Dialog buttons -->
+                <div class="flex justify-end gap-2 mt-6">
+                     <!-- Cancel closes the dialog with no action -->
+                <Button
+                       type="button"
+                       :label="t('button.cancel')"
+                       severity="secondary"
+                       @click="visible = false"
+                />
 
-              <!-- Save triggers frontend + backend validation -->
-              <Button
-                type="button"
-                :label="t('button.add')"
-                @click= "saveAlternativeEmail"
-              />
+                  <!-- Save triggers frontend + backend validation -->
+                  <Button
+                        type="button"
+                        :label="t('button.add')"
+                        @click="saveAlternativeEmail"
+                   />
              </div>
              </Dialog>
 
