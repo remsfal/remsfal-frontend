@@ -548,7 +548,7 @@ function removeAlternativeEmail(id: string) {
                  <!-- SUCCESS CHECKMARK shown after successful save -->
                 <span
                   v-if="altEmailSuccess"
-                  class="alt-email-icon alt-email-icon--success"
+                  class="alt-email-icon alt-email-icon-success"
                 >
                    ✔
                 </span>
@@ -556,7 +556,7 @@ function removeAlternativeEmail(id: string) {
                  <!-- ERROR ICON shown if backend returns an error -->
                 <span
                   v-if="altEmailError"
-                  class="alt-email-icon alt-email-icon--error"
+                  class="alt-email-icon alt-email-icon-error"
                 >
                   ✗
                 </span>
@@ -1034,11 +1034,11 @@ input:focus {
   font-size: 16px;
 }
 
-.alt-email-icon--success {
+.alt-email-icon-success {
   color: #16a34a;       
 }
 
-.alt-email-icon--error {
+.alt-email-icon-error {
   color: #dc2626;       
 }
 
