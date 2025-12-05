@@ -1,6 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
-import { ref, computed, onMounted} from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
@@ -11,6 +11,7 @@ import Message from 'primevue/message';
 import type {paths} from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
 import { RouterLink } from 'vue-router'
+import { locales, type Locale } from '@/i18n/i18n';
 
 const { t } = useI18n();
 const i18n = useI18n();
@@ -106,8 +107,7 @@ async function fetchUserProfile() {
       }
       if (userProfile?.value?.locale) {
         editedUserProfile.value.locale = userProfile.locale;
-      } else {
-        editedUserProfile.value.locale = 'de';
+        i18n.locale.value = validateLocale(userProfile.locale);
       }
     }
   } catch (error) {
@@ -169,6 +169,10 @@ function validateAddress(address: Partial<Address>): boolean {
   return Object.values(address)
     .filter((value): value is string => typeof value === 'string')
     .every((value) => value.trim().length > 0);
+}
+
+function validateLocale(locale: string): Locale {
+  return locales.includes(locale as Locale) ? (locale as Locale) : 'en';
 }
 
 function logout(): void {
@@ -481,7 +485,7 @@ const isDisabled = computed(() => {
                   :options="[{ label: 'Deutsch', value: 'de' }, { label: 'English', value: 'en' }]"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Sprache wählen"
+                  placeholder= "Sprache auswählen"
                   @update:modelValue="i18n.locale.value = $event"
                 />
 
