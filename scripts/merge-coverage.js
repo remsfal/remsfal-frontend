@@ -50,7 +50,7 @@ try {
   // Generate merged reports
   console.log('📈 Generating merged coverage reports...');
   execSync(`nyc report --temp-dir ${nycOutput} --reporter=html --reporter=lcov --reporter=text \
-                     --reporter=json --report-dir ${coverageFinal}`, {
+                     --reporter=json --report-dir ${coverageFinal} --all`, {
     stdio: 'inherit',
     shell: false
   });
