@@ -108,27 +108,60 @@ Card (class="flex flex-col gap-4 basis-full")
 ├── Title: "Related Issues" (font-semibold text-xl)
 └── Content:
     ├── Section: "Blocks" (collapsed by default)
-    │   ├── [Placeholder: List item - "#ISSUE-45: Setup database schema"]
+    │   ├── List item 1: "#ISSUE-156: Implement OAuth2 token refresh mechanism"
+    │   │   └── Status badge: IN_PROGRESS | Priority: HIGH
+    │   ├── List item 2: "#ISSUE-178: Create API endpoint for user preferences"
+    │   │   └── Status badge: OPEN | Priority: MEDIUM
+    │   ├── List item 3: "#ISSUE-192: Add database migration for settings table"
+    │   │   └── Status badge: OPEN | Priority: HIGH
     │   └── Action: [+ Add Blocking Issue button]
     │
     ├── Section: "Blocked By" (collapsed by default)
-    │   ├── [Placeholder: List item - "#ISSUE-12: API authentication"]
-    │   └── Action: [Remove icon button]
+    │   ├── List item 1: "#ISSUE-89: Setup Redis caching infrastructure"
+    │   │   └── Status badge: IN_PROGRESS | Priority: HIGH | Assignee: M. Schmidt
+    │   ├── List item 2: "#ISSUE-134: Deploy staging environment configuration"
+    │   │   └── Status badge: IN_PROGRESS | Priority: MEDIUM | Assignee: A. Weber
+    │   └── Action: [Remove icon button for each item]
     │
     ├── Section: "Duplicate Of" (collapsed by default)
-    │   └── [Placeholder: Empty state or single issue reference]
+    │   ├── List item: "#ISSUE-67: Fix authentication timeout on login page"
+    │   │   └── Status badge: CLOSED | Resolution: FIXED
+    │   └── Note: "This issue will be closed automatically when marked as duplicate"
     │
     └── Section: "Related To" (collapsed by default)
-        ├── [Placeholder: List item - "#ISSUE-67: User profile page"]
-        ├── [Placeholder: List item - "#ISSUE-89: Password reset flow"]
+        ├── List item 1: "#ISSUE-201: Update user documentation for login flow"
+        │   └── Status badge: OPEN | Priority: LOW
+        ├── List item 2: "#ISSUE-145: Implement password strength indicator"
+        │   └── Status badge: CLOSED | Priority: MEDIUM
+        ├── List item 3: "#ISSUE-223: Add two-factor authentication support"
+        │   └── Status badge: OPEN | Priority: HIGH
         └── Action: [+ Add Related Issue button]
 ```
 
+**Example Placeholder Content:**
+
+**Blocks Section:**
+- #ISSUE-156: Implement OAuth2 token refresh mechanism (IN_PROGRESS, HIGH)
+- #ISSUE-178: Create API endpoint for user preferences (OPEN, MEDIUM)
+- #ISSUE-192: Add database migration for settings table (OPEN, HIGH)
+
+**Blocked By Section:**
+- #ISSUE-89: Setup Redis caching infrastructure (IN_PROGRESS, HIGH) - M. Schmidt
+- #ISSUE-134: Deploy staging environment configuration (IN_PROGRESS, MEDIUM) - A. Weber
+
+**Duplicate Of Section:**
+- #ISSUE-67: Fix authentication timeout on login page (CLOSED, FIXED)
+
+**Related To Section:**
+- #ISSUE-201: Update user documentation for login flow (OPEN, LOW)
+- #ISSUE-145: Implement password strength indicator (CLOSED, MEDIUM)
+- #ISSUE-223: Add two-factor authentication support (OPEN, HIGH)
+
 **Placeholder Elements:**
 - Accordion/Expandable sections for each relation type
-- Issue list items (clickable links)
+- Issue list items (clickable links) with status badges
 - Add/Remove action buttons
-- Empty state messaging
+- Empty state messaging for sections without relations
 
 ---
 
@@ -145,40 +178,86 @@ Card (class="flex flex-col gap-4 basis-full")
         ├── Tab 1: "Comments" (active)
         │   └── Content:
         │       ├── Comment Item 1
-        │       │   ├── Avatar + Username: [Placeholder: "Alice Johnson"]
-        │       │   ├── Timestamp: [Placeholder: "2025-12-05 09:15"]
-        │       │   └── Message: [Placeholder: "This looks like a duplicate of #ISSUE-23"]
+        │       │   ├── Avatar: [Circle with initials "AJ" in blue]
+        │       │   ├── Username: "Alice Johnson" (font-medium text-gray-900)
+        │       │   ├── Role badge: "Developer" (small gray badge)
+        │       │   ├── Timestamp: "Dec 5, 2025 at 9:15 AM" (text-gray-500 text-sm)
+        │       │   └── Message: "I reviewed the authentication flow and noticed this 
+        │       │       issue is similar to #ISSUE-67. The root cause appears to be 
+        │       │       session timeout handling. I recommend checking the Redis 
+        │       │       configuration before proceeding with the fix."
         │       │
         │       ├── Comment Item 2
-        │       │   ├── Avatar + Username: [Placeholder: "Bob Williams"]
-        │       │   ├── Timestamp: [Placeholder: "2025-12-05 10:30"]
-        │       │   └── Message: [Placeholder: "I've started working on this, ETA 2 days"]
+        │       │   ├── Avatar: [Circle with initials "BW" in green]
+        │       │   ├── Username: "Bob Williams" (font-medium text-gray-900)
+        │       │   ├── Role badge: "Tech Lead" (small gray badge)
+        │       │   ├── Timestamp: "Dec 5, 2025 at 10:30 AM" (text-gray-500 text-sm)
+        │       │   └── Message: "@Alice Johnson Good catch! I've started working on 
+        │       │       this issue. Planning to implement the token refresh mechanism 
+        │       │       first, then update the session management. ETA: 2 business days."
         │       │
         │       └── Add Comment Section:
-        │           ├── Textarea: [Placeholder: "Write a comment..."]
-        │           └── Button: "Post Comment"
+        │           ├── Textarea: [Placeholder: "Write a comment..." with markdown support icon]
+        │           ├── Formatting toolbar: [Bold, Italic, Code, Link buttons]
+        │           └── Button: "Post Comment" (primary button, right-aligned)
         │
         └── Tab 2: "Activity Log" (inactive)
             └── Content:
                 ├── Activity Entry 1
-                │   ├── Icon: [Status change icon]
-                │   ├── User: [Placeholder: "Jane Smith"]
-                │   ├── Action: [Placeholder: "changed status from OPEN to IN_PROGRESS"]
-                │   └── Timestamp: [Placeholder: "2025-12-04 16:45"]
+                │   ├── Icon: [pi pi-refresh in orange circle]
+                │   ├── User avatar: [Circle with initials "JS" in purple]
+                │   ├── User: "Jane Smith" (font-medium)
+                │   ├── Action: "changed status from OPEN to IN_PROGRESS"
+                │   ├── Timestamp: "Dec 4, 2025 at 4:45 PM" (text-gray-500)
+                │   └── Additional info: Previous: OPEN → Current: IN_PROGRESS
                 │
-                └── Activity Entry 2
-                    ├── Icon: [Assignment icon]
-                    ├── User: [Placeholder: "John Doe"]
-                    ├── Action: [Placeholder: "assigned to Jane Smith"]
-                    └── Timestamp: [Placeholder: "2025-12-03 11:20"]
+                ├── Activity Entry 2
+                │   ├── Icon: [pi pi-user in blue circle]
+                │   ├── User avatar: [Circle with initials "JD" in red]
+                │   ├── User: "John Doe" (font-medium)
+                │   ├── Action: "assigned this issue to Jane Smith"
+                │   ├── Timestamp: "Dec 3, 2025 at 11:20 AM" (text-gray-500)
+                │   └── Additional info: Assignee: None → Jane Smith
 ```
+
+**Example Placeholder Content:**
+
+**Comments Tab (2 example messages):**
+
+1. **Comment by Alice Johnson** (Developer)
+   - Avatar: Circle with "AJ" initials (blue background)
+   - Posted: Dec 5, 2025 at 9:15 AM
+   - Message: "I reviewed the authentication flow and noticed this issue is similar to #ISSUE-67. The root cause appears to be session timeout handling. I recommend checking the Redis configuration before proceeding with the fix."
+
+2. **Comment by Bob Williams** (Tech Lead)
+   - Avatar: Circle with "BW" initials (green background)
+   - Posted: Dec 5, 2025 at 10:30 AM
+   - Message: "@Alice Johnson Good catch! I've started working on this issue. Planning to implement the token refresh mechanism first, then update the session management. ETA: 2 business days."
+
+**Activity Log Tab (2 example entries):**
+
+1. **Status Change Activity**
+   - Icon: pi pi-refresh (orange)
+   - User: Jane Smith (avatar with "JS")
+   - Action: "changed status from OPEN to IN_PROGRESS"
+   - Timestamp: Dec 4, 2025 at 4:45 PM
+   - Details: Previous: OPEN → Current: IN_PROGRESS
+
+2. **Assignment Activity**
+   - Icon: pi pi-user (blue)
+   - User: John Doe (avatar with "JD")
+   - Action: "assigned this issue to Jane Smith"
+   - Timestamp: Dec 3, 2025 at 11:20 AM
+   - Details: Assignee: None → Jane Smith
 
 **Placeholder Elements:**
 - PrimeVue TabView with 2 tabs
-- Comment/message cards with user info
-- Timestamp formatting
-- Activity timeline entries
-- Comment input area
+- Comment cards with user avatars (circular with initials)
+- User role badges (Developer, Tech Lead, etc.)
+- Timestamp formatting (relative or absolute)
+- Activity timeline entries with icons
+- Comment input area with markdown support
+- Mention support (@username)
 
 **Implementation Note:** Use `primevue/tabview` and `primevue/tabpanel` components.
 
@@ -193,20 +272,71 @@ Card (class="flex flex-col gap-4 basis-full")
 Card (class="flex flex-col gap-4 basis-full border-dashed")
 ├── Title: "Additional Information" (font-semibold text-xl text-gray-400)
 └── Content:
-    └── Placeholder Message:
-        "This section is reserved for future fields that will be 
-        provided by the backend API, such as:
-        - Custom fields
-        - Integration data
-        - Workflow-specific metadata
-        - Attachments
-        - Time tracking information"
+    ├── Placeholder Section Header: "Future Backend Fields" (text-gray-500 italic)
+    │
+    ├── Example Item 1: Attachments
+    │   ├── Icon: [pi pi-paperclip]
+    │   ├── Label: "Attachments" (text-gray-600)
+    │   └── Placeholder content:
+    │       ├── File 1: "screenshot-login-error.png" (2.4 MB) - Uploaded Dec 3, 2025
+    │       ├── File 2: "authentication-flow-diagram.pdf" (856 KB) - Uploaded Dec 4, 2025
+    │       └── Action: [+ Upload Attachment button]
+    │
+    ├── Example Item 2: Time Tracking
+    │   ├── Icon: [pi pi-clock]
+    │   ├── Label: "Time Tracking" (text-gray-600)
+    │   └── Placeholder content:
+    │       ├── Estimated time: 8 hours
+    │       ├── Time logged: 5.5 hours
+    │       ├── Remaining: 2.5 hours
+    │       └── Action: [Log Time button]
+    │
+    └── Example Item 3: Custom Fields
+        ├── Icon: [pi pi-tags]
+        ├── Label: "Custom Metadata" (text-gray-600)
+        └── Placeholder content:
+            ├── Field: "Affected Modules" → Value: "Authentication, Session Management"
+            ├── Field: "Client Environment" → Value: "Production, Staging"
+            └── Field: "Severity Level" → Value: "Critical - affects user login"
 ```
 
+**Example Placeholder Content:**
+
+**1. Attachments**
+- Icon: pi pi-paperclip (gray)
+- Files:
+  - screenshot-login-error.png (2.4 MB) - Uploaded by A. Johnson on Dec 3, 2025
+  - authentication-flow-diagram.pdf (856 KB) - Uploaded by B. Williams on Dec 4, 2025
+  - session-logs.txt (124 KB) - Uploaded by J. Smith on Dec 5, 2025
+- Action: Upload Attachment button
+
+**2. Time Tracking**
+- Icon: pi pi-clock (gray)
+- Estimated Time: 8 hours
+- Time Logged: 5.5 hours (by 2 team members)
+- Remaining: 2.5 hours
+- Action: Log Time button
+- Time entries:
+  - Bob Williams: 3 hours - "Initial investigation and setup"
+  - Jane Smith: 2.5 hours - "Implementation of token refresh"
+
+**3. Custom Fields / Metadata**
+- Icon: pi pi-tags (gray)
+- Affected Modules: "Authentication, Session Management, User Service"
+- Client Environment: "Production, Staging"
+- Severity Level: "Critical - affects user login functionality"
+- Browser Compatibility: "All modern browsers (Chrome, Firefox, Safari)"
+- API Version: "v2.3.1"
+
 **Visual Style:**
-- Dashed border to indicate placeholder nature
-- Muted colors (gray-400, gray-500)
-- Italic text for description
+- Dashed border (border-dashed border-gray-300) to indicate placeholder nature
+- Muted colors (gray-400, gray-500) for all text
+- Italic text for section descriptions
+- Icons with reduced opacity (opacity-50)
+- "Future field" badge in top-right corner of card
+- Light gray background (bg-gray-50) for the entire card content
+
+**Note:** These fields represent examples of what might be added in future iterations. Actual fields will be determined by backend API capabilities and business requirements.
 
 ---
 
