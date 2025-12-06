@@ -606,7 +606,7 @@ const isDisabled = computed(() => {
             </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/customers">
+            <RouterLink to="/contractor/overview">
               Zur Auftragnehmer Ansicht
             </RouterLink>
           </Button>
