@@ -15,6 +15,7 @@ const props = defineProps<{
   projectId: string;
   owner?: string;
   status?: Status;
+  category?: string;
 }>();
 const issueService = new IssueService();
 const router = useRouter();
@@ -79,7 +80,9 @@ const createIssue = async () => {
 // --- Load all issues ---
 const loadIssues = async () => {
   try {
-    const issueList = await issueService.getIssues(props.projectId);
+    // <--- 2. UPDATE: category an den Service übergeben
+    // Signatur: (projectId, status, category)
+    const issueList = await issueService.getIssues(props.projectId, undefined, props.category);
     issues.value = issueList?.issues ?? [];
   } catch (err) {
     console.error(err);
@@ -89,7 +92,8 @@ const loadIssues = async () => {
 // --- Load only open issues ---
 const loadIssuesWithOpenStatus = async () => {
   try {
-    const issueList = await issueService.getIssues(props.projectId, ISSUE_STATUS_OPEN);
+    // <--- 2. UPDATE: category auch hier übergeben
+    const issueList = await issueService.getIssues(props.projectId, ISSUE_STATUS_OPEN, props.category);
     issuesByStatusOpen.value = issueList.issues || [];
   } catch (err) {
     console.error(err);
@@ -99,8 +103,12 @@ const loadIssuesWithOpenStatus = async () => {
 // --- Load issues for current owner ---
 const loadMyIssues = async () => {
   try {
-    const issueList = await issueService.getIssues(props.projectId);
+    // <--- 2. UPDATE: Auch hier category beachten
+    const issueList = await issueService.getIssues(props.projectId, undefined, props.category);
+
     // Filter locally and assign owner for the table
+    // (Hinweis: Da dein neuer Service jetzt auch 'ownerId' kann, könntest du das
+    // theoretisch auch direkt filtern lassen, aber so bleibt deine Logik konsistent)
     myIssues.value = issueList.issues?.map(issue => ({
       ...issue,
       owner: props.owner,
@@ -139,9 +147,15 @@ watch(
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
         <h1 class="w-full">
-          <span v-if="props.owner">Meine Aufgaben</span>
-          <span v-else-if="props.status">Offene Aufgaben</span>
-          <span v-else>Alle Aufgaben</span>
+          <span v-if="props.category === 'DEFECT'">
+             <span v-if="props.owner">Meine Mängel</span>
+             <span v-else-if="props.status">Offene Mängel</span>
+             <span v-else>Alle Mängel</span>
+          </span>
+          <span v-else> <span v-if="props.owner">Meine Aufgaben</span>
+             <span v-else-if="props.status">Offene Aufgaben</span>
+             <span v-else>Alle Aufgaben</span>
+          </span>
         </h1>
       </div>
       <div class="col-span-12">

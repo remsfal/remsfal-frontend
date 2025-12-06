@@ -26,6 +26,7 @@ export class IssueService {
   async getIssues(
     projectId: string,
     status?: Status,
+    category?: string, // <--- 1. ÄNDERUNG: Neuer optionaler Parameter hier einfügen
     ownerId?: string,
     limit = 100,
     offset = 0,
@@ -36,6 +37,7 @@ export class IssueService {
         limit,
         offset,
         ...(status ? { status } : {}),
+        ...(category ? { category } : {}), // <--- 2. ÄNDERUNG: Parameter an das Backend weitergeben
         ...(ownerId ? { owner: ownerId } : {}),
       },
     }) as IssueList;
@@ -44,7 +46,7 @@ export class IssueService {
       first: data.first ?? 0,
       size: data.size ?? 0,
       total: data.total ?? 0,
-      issues: data.issues ?? [], // ✅ Always return an array
+      issues: data.issues ?? [],
     };
   }
 

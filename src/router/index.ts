@@ -199,6 +199,7 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           owner: route.query.owner,
           status: route.query.status,
+          category: route.query.category,
         }),
         component: () => import('@/views/IssueView.vue'),
       },
