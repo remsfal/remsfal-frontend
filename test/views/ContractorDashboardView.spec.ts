@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect} from 'vitest';
 import { mount } from '@vue/test-utils';
 import ContractorDashboardView from '@/views/ContractorDashboardView.vue';
 
@@ -35,7 +35,7 @@ it("renders finance table headings", () => {
     expect(rows.length).toBeGreaterThan(0);
 });
 it("has CSS variables for dark mode", () => {
-    const wrapper = mount(ContractorDashboardView);
+    //const wrapper = mount(ContractorDashboardView);
 
     const rootStyle = getComputedStyle(document.documentElement);
 

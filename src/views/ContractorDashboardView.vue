@@ -4,12 +4,12 @@ import { ref } from "vue";
 import Chart from "primevue/chart";
 
 /* ---------- KPI DATEN ---------- */
-const kpi = ref({
+/*const kpi = ref({
   open: 4,
   progress: 7,
   done: 15,
   overdue: 3,
-});
+});*/
 
 /* ---------- BAR CHART ---------- */
 const monthlyData = ref({
