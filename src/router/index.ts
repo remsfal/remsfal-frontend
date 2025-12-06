@@ -254,6 +254,11 @@ const contractorRoutes: RouteRecordRaw[] = [
         props: true,
         component: () => import('@/views/ContractorView.vue'),
       },
+        {
+            path: 'overview',
+            name: 'ContractorDashboard',
+            component: () => import('@/views/ContractorDashboardView.vue'),
+        },
     ],
   },
 ];
