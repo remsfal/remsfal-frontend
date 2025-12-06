@@ -12,10 +12,23 @@
 This wireframe defines the structural layout for the **Issue Details View** using a card-based design pattern consistent with the ProjectSettings view. All sections use PrimeVue Card components with TailwindCSS utility classes.
 
 **Backend Schema Alignment:**
-- Field names and types match the OpenAPI schema definitions
-- Uses `IssueJson` schema fields: `ownerId`, `reporterId`, `projectId`, `status`, `type`
-- Project references use `ProjectItemJson` structure
+- Field names and types match the OpenAPI schema definitions from `ticketing-schema.ts`
+- Uses `IssueJson` schema fields:
+  - `id` (UUID) - Issue identifier
+  - `title` (string) - Issue title
+  - `description` (string) - Issue description
+  - `type` (Type enum: APPLICATION | TASK | DEFECT | MAINTENANCE)
+  - `status` (Status enum: PENDING | OPEN | IN_PROGRESS | CLOSED | REJECTED)
+  - `ownerId` (UUID) - Issue owner/assignee
+  - `reporterId` (UUID) - Issue reporter
+  - `projectId` (UUID) - Associated project
+  - `tenancyId` (UUID) - Optional tenancy reference
+  - `blockedBy` (UUID) - Single issue blocking this one
+  - `relatedTo` (UUID) - Single related issue
+  - `duplicateOf` (UUID) - Single duplicate issue reference
+- Project references use `ProjectItemJson` structure (id, name, memberRole)
 - User roles follow `MemberRole` enum values (PROPRIETOR, MANAGER, LESSOR, STAFF, COLLABORATOR)
+- Chat/communication endpoint: `/ticketing/v1/issues/{issueId}/chats`
 
 **Navigation:**
 - Breadcrumb navigation and previous/next issue navigation are **optional future enhancements**
@@ -45,15 +58,16 @@ This wireframe defines the structural layout for the **Issue Details View** usin
 Card (class="flex flex-col gap-4 basis-full")
 ├── Title: "Issue Overview" (font-semibold text-xl)
 └── Content:
-    ├── Issue ID: #[ISSUE-123]
-    ├── Issue Title: [Placeholder: "Fix login authentication bug"]
-    └── Current Status: [Badge/Tag: OPEN | IN_PROGRESS | CLOSED]
+    ├── Issue ID: [Placeholder: UUID from IssueJson.id]
+    ├── Issue Title: [Placeholder: "Fix login authentication bug" - IssueJson.title]
+    └── Current Status: [Badge: OPEN | IN_PROGRESS | CLOSED | PENDING | REJECTED]
+        └── Maps to: IssueJson.status (Status enum)
 ```
 
 **Placeholder Fields:**
-- Issue ID (read-only, auto-generated)
-- Issue Title (editable text)
-- Status (dropdown or badge)
+- Issue ID → `id` (UUID, read-only, auto-generated)
+- Issue Title → `title` (string, editable)
+- Status → `status` (Status enum: PENDING, OPEN, IN_PROGRESS, CLOSED, REJECTED)
 
 ---
 
@@ -72,10 +86,10 @@ Card (class="flex flex-col gap-4 basis-full")
 ```
 
 **Placeholder Fields:**
-- Description text (markdown-enabled)
+- Description text → `description` (string, markdown-enabled)
 - Edit/Preview toggle functionality (placeholder only)
 
-**Note:** Markdown rendering component to be determined (e.g., vue-markdown or similar).
+**Note:** The `description` field in IssueJson supports markdown formatting. Markdown rendering component to be determined (e.g., vue-markdown or similar).
 
 ---
 
@@ -89,31 +103,37 @@ Card (class="flex flex-col gap-4 basis-full")
 ├── Title: "Metadata" (font-semibold text-xl)
 └── Content: (grid layout for field-value pairs)
     ├── Reporter: [Placeholder: "John Doe" with avatar icon]
-    │   └── Maps to: reporterId (UUID from IssueJson)
+    │   └── Maps to: IssueJson.reporterId (UUID, optional)
     ├── Owner/Assignee: [Placeholder: "Jane Smith" with avatar + dropdown]
-    │   └── Maps to: ownerId (UUID from IssueJson)
+    │   └── Maps to: IssueJson.ownerId (UUID, optional)
     ├── Project: [Placeholder: "Building A Renovation" - read-only link]
-    │   └── Maps to: projectId (UUID, displayed via ProjectItemJson)
+    │   └── Maps to: IssueJson.projectId (UUID, displayed via ProjectItemJson)
     ├── Issue Type: [Placeholder: "TASK" - badge or label]
-    │   └── Maps to: type (from IssueJson)
+    │   └── Maps to: IssueJson.type (Type enum: APPLICATION | TASK | DEFECT | MAINTENANCE)
     ├── Status: [Placeholder: "IN_PROGRESS" - colored badge]
-    │   └── Maps to: status (PENDING, OPEN, IN_PROGRESS, CLOSED, REJECTED)
+    │   └── Maps to: IssueJson.status (Status enum: PENDING | OPEN | IN_PROGRESS | CLOSED | REJECTED)
+    ├── Tenancy: [Placeholder: "Apartment 3B - Smith Family" - optional link]
+    │   └── Maps to: IssueJson.tenancyId (UUID, optional)
     ├── Created At: [Placeholder: "2025-12-01 10:30:00"]
-    │   └── Backend timestamp field
+    │   └── Backend timestamp field (not in IssueJson - from audit metadata)
     └── Last Modified: [Placeholder: "2025-12-05 14:22:15"]
-        └── Backend timestamp field
+        └── Backend timestamp field (not in IssueJson - from audit metadata)
 ```
 
 **Placeholder Fields:**
-- Reporter → `reporterId` (user reference with avatar, UUID)
-- Owner/Assignee → `ownerId` (user dropdown/autocomplete, UUID)
-- Project → `projectId` (displayed using ProjectItemJson with name and memberRole)
-- Issue Type → `type` (badge, from Type enum)
-- Status → `status` (colored badge: PENDING, OPEN, IN_PROGRESS, CLOSED, REJECTED)
-- Created timestamp (from backend)
-- Modified timestamp (from backend)
+- Reporter → `reporterId` (UUID, optional - resolves to user with avatar)
+- Owner/Assignee → `ownerId` (UUID, optional - user dropdown/autocomplete)
+- Project → `projectId` (UUID, optional - displayed using ProjectItemJson structure with name and memberRole)
+- Issue Type → `type` (Type enum: APPLICATION, TASK, DEFECT, MAINTENANCE - displayed as badge)
+- Status → `status` (Status enum: PENDING, OPEN, IN_PROGRESS, CLOSED, REJECTED - colored badge)
+- Tenancy → `tenancyId` (UUID, optional - links to associated tenancy)
+- Created timestamp (from backend audit metadata)
+- Modified timestamp (from backend audit metadata)
 
-**Note:** "Assignee" in UI maps to `ownerId` field in IssueJson schema.
+**Schema Notes:**
+- All UUID fields are optional in IssueJson
+- "Assignee" in UI terminology maps to `ownerId` field in backend schema
+- ProjectItemJson provides: `id` (UUID), `name` (string), `memberRole` (MemberRole enum)
 
 ---
 
@@ -121,72 +141,83 @@ Card (class="flex flex-col gap-4 basis-full")
 
 **Purpose:** Manage relationships between issues (blocks, duplicates, related).
 
+**Important Schema Note:**  
+In `IssueJson`, the relation fields (`blockedBy`, `relatedTo`, `duplicateOf`) each store a **single UUID**, not an array. The wireframe shows multiple items for UI illustration purposes, but the backend currently supports only one relation per type.
+
 **Structure:**
 ```
 Card (class="flex flex-col gap-4 basis-full")
 ├── Title: "Related Issues" (font-semibold text-xl)
 └── Content:
     ├── Section: "Blocks" (collapsed by default)
-    │   ├── List item 1: "#ISSUE-156: Implement OAuth2 token refresh mechanism"
-    │   │   └── Status badge: IN_PROGRESS | Priority: HIGH
-    │   ├── List item 2: "#ISSUE-178: Create API endpoint for user preferences"
-    │   │   └── Status badge: OPEN | Priority: MEDIUM
-    │   ├── List item 3: "#ISSUE-192: Add database migration for settings table"
-    │   │   └── Status badge: OPEN | Priority: HIGH
-    │   └── Action: [+ Add Blocking Issue button]
+    │   ├── Note: "Issues that this issue blocks (reverse lookup, not in IssueJson)"
+    │   ├── List placeholder: Display issues where their blockedBy field equals this issue's ID
+    │   └── Action: [Informational only - managed from blocked issues]
     │
     ├── Section: "Blocked By" (collapsed by default)
-    │   ├── List item 1: "#ISSUE-89: Setup Redis caching infrastructure"
-    │   │   └── Status badge: IN_PROGRESS | Priority: HIGH | Assignee: M. Schmidt
-    │   ├── List item 2: "#ISSUE-134: Deploy staging environment configuration"
-    │   │   └── Status badge: IN_PROGRESS | Priority: MEDIUM | Assignee: A. Weber
-    │   └── Action: [Remove icon button for each item]
+    │   ├── Maps to: IssueJson.blockedBy (single UUID, optional)
+    │   ├── Placeholder: "#ISSUE-89: Setup Redis caching infrastructure"
+    │   │   └── Status badge: IN_PROGRESS | Owner: M. Schmidt
+    │   └── Action: [Change/Remove button to update blockedBy field]
     │
     ├── Section: "Duplicate Of" (collapsed by default)
-    │   ├── List item: "#ISSUE-67: Fix authentication timeout on login page"
-    │   │   └── Status badge: CLOSED | Resolution: FIXED
-    │   └── Note: "This issue will be closed automatically when marked as duplicate"
+    │   ├── Maps to: IssueJson.duplicateOf (single UUID, optional)
+    │   ├── Placeholder: "#ISSUE-67: Fix authentication timeout on login page"
+    │   │   └── Status badge: CLOSED
+    │   └── Action: [Change/Remove button - sets this issue to duplicate]
     │
     └── Section: "Related To" (collapsed by default)
-        ├── List item 1: "#ISSUE-201: Update user documentation for login flow"
-        │   └── Status badge: OPEN | Priority: LOW
-        ├── List item 2: "#ISSUE-145: Implement password strength indicator"
-        │   └── Status badge: CLOSED | Priority: MEDIUM
-        ├── List item 3: "#ISSUE-223: Add two-factor authentication support"
-        │   └── Status badge: OPEN | Priority: HIGH
-        └── Action: [+ Add Related Issue button]
+        ├── Maps to: IssueJson.relatedTo (single UUID, optional)
+        ├── Placeholder: "#ISSUE-201: Update user documentation for login flow"
+        │   └── Status badge: OPEN
+        └── Action: [Change/Remove button to update relatedTo field]
 ```
 
 **Example Placeholder Content:**
 
-**Blocks Section:**
-- #ISSUE-156: Implement OAuth2 token refresh mechanism (IN_PROGRESS, HIGH)
-- #ISSUE-178: Create API endpoint for user preferences (OPEN, MEDIUM)
-- #ISSUE-192: Add database migration for settings table (OPEN, HIGH)
+**Blocks Section (Reverse Lookup):**
+- This section shows issues that are blocked by THIS issue
+- Populated by querying other issues where their `blockedBy` UUID equals this issue's `id`
+- Example: "#ISSUE-156: Implement OAuth2 token refresh mechanism" (IN_PROGRESS)
+- Not directly stored in this issue's IssueJson
 
 **Blocked By Section:**
-- #ISSUE-89: Setup Redis caching infrastructure (IN_PROGRESS, HIGH) - M. Schmidt
-- #ISSUE-134: Deploy staging environment configuration (IN_PROGRESS, MEDIUM) - A. Weber
+- Maps to: IssueJson.blockedBy (single UUID)
+- Example: #ISSUE-89: Setup Redis caching infrastructure (IN_PROGRESS) - Owner: M. Schmidt
+- Action: Change or remove the blocking issue reference
 
 **Duplicate Of Section:**
-- #ISSUE-67: Fix authentication timeout on login page (CLOSED, FIXED)
+- Maps to: IssueJson.duplicateOf (single UUID)
+- Example: #ISSUE-67: Fix authentication timeout on login page (CLOSED)
+- Note: Marking as duplicate may auto-close this issue
 
 **Related To Section:**
-- #ISSUE-201: Update user documentation for login flow (OPEN, LOW)
-- #ISSUE-145: Implement password strength indicator (CLOSED, MEDIUM)
-- #ISSUE-223: Add two-factor authentication support (OPEN, HIGH)
+- Maps to: IssueJson.relatedTo (single UUID)
+- Example: #ISSUE-201: Update user documentation for login flow (OPEN)
+- Action: Change or remove the related issue reference
 
 **Placeholder Elements:**
 - Accordion/Expandable sections for each relation type
-- Issue list items (clickable links) with status badges
-- Add/Remove action buttons
-- Empty state messaging for sections without relations
+- Issue reference with clickable link to navigate to related issue
+- Status badges showing current state of related issues
+- Change/Remove action buttons to modify relation fields
+- Empty state messaging when no relation is set
+
+**Backend Schema Constraints:**
+- Each relation type (`blockedBy`, `relatedTo`, `duplicateOf`) stores only a **single UUID**
+- "Blocks" section requires reverse lookup (query issues where their `blockedBy` equals this issue's `id`)
+- All relation fields are optional in IssueJson
 
 ---
 
 ### 5. Chats Section (PrimeVue TabView Concept)
 
 **Purpose:** Display different communication channels using tabbed interface.
+
+**Backend Integration:**
+- Endpoint: `GET /ticketing/v1/issues/{issueId}/chats`
+- Returns chat sessions for the issue
+- Schema details to be determined (currently returns `unknown` type in API spec)
 
 **Structure:**
 ```
@@ -409,15 +440,17 @@ Card (class="flex flex-col gap-4 basis-full border-dashed")
 
 ### Colors & States
 - **Primary Actions:** Default PrimeVue button styling
-- **Status Badges:**
+- **Status Badges** (from Status enum: PENDING | OPEN | IN_PROGRESS | CLOSED | REJECTED):
+  - PENDING: Gray/Neutral color
   - OPEN: Blue/Info color
   - IN_PROGRESS: Orange/Warning color
   - CLOSED: Green/Success color
   - REJECTED: Red/Danger color
-- **Priority Badges:**
-  - HIGH: Red
-  - MEDIUM: Orange
-  - LOW: Green
+- **Type Badges** (from Type enum: APPLICATION | TASK | DEFECT | MAINTENANCE):
+  - APPLICATION: Purple/Primary color
+  - TASK: Blue/Info color
+  - DEFECT: Red/Danger color
+  - MAINTENANCE: Orange/Warning color
 
 ### Responsive Behavior
 - All cards: `col-span-12` (full width)
@@ -429,9 +462,12 @@ Card (class="flex flex-col gap-4 basis-full border-dashed")
 ## Questions / Assumptions
 
 ### 1. **Issue Relations Management**
-**Question:** Should users be able to create new relation types beyond the standard ones (blocks, blocked by, duplicate of, related to)? Or should these be fixed categories?
+**Question:** The backend schema (`IssueJson`) currently stores only **single UUIDs** for relations (`blockedBy`, `relatedTo`, `duplicateOf`). Should the UI support:
+- (A) Only one relation per type (matching backend schema exactly)?
+- (B) Multiple relations per type (requiring backend schema expansion to arrays)?
+- (C) A "Blocks" section via reverse lookup (querying issues where their `blockedBy` equals this issue's ID)?
 
-**Current Assumption:** Using fixed relation categories as shown in IssueEdit.vue (blockedBy, duplicateOf, relatedTo).
+**Current Assumption:** Using single relations as defined in IssueJson schema. "Blocks" section would require reverse lookup query.
 
 ---
 
@@ -470,7 +506,17 @@ Card (class="flex flex-col gap-4 basis-full border-dashed")
 
 ---
 
-### 7. **Attachment Handling**
+### 7. **Chat/Comments Schema**
+**Question:** The chat endpoint (`GET /ticketing/v1/issues/{issueId}/chats`) currently returns type `unknown` in the schema. What is the expected structure for:
+- Chat messages (user, timestamp, content, attachments)?
+- Activity log entries (action type, actor, timestamp, changes)?
+- Should comments support threading/replies?
+
+**Current Assumption:** Placeholder structure with user info, timestamps, and text content. Actual schema needs definition.
+
+---
+
+### 8. **Attachment Handling**
 **Question:** Should attachments be part of the "Future Fields" section, or should they have a dedicated card/tab in the initial implementation?
 
 **Current Assumption:** Attachments are deferred to "Future Fields" section. If needed urgently, they can be added as a new card or integrated into the Comments tab.
@@ -485,6 +531,10 @@ Card (class="flex flex-col gap-4 basis-full border-dashed")
 - Form validation rules to be defined based on backend API schema
 - Internationalization (i18n) keys to be added during implementation phase
 - All placeholder text should be replaced with actual i18n keys
+- **Backend Schema Constraints:**
+  - IssueJson relation fields (`blockedBy`, `relatedTo`, `duplicateOf`) are single UUIDs, not arrays
+  - Chat/message schema needs definition (currently `unknown` type)
+  - All IssueJson fields are optional except for constraints defined in backend validation
 
 ---
 
