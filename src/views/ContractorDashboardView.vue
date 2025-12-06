@@ -159,70 +159,49 @@ const invoicesOverdue = ref([
     <!-- KPI SECTION -->
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
       <div class="kpi-card">
-        <div class="kpi-icon bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
-          <i class="pi pi-folder-open" />
+        <div class="kpi-icon kpi-blue">
+          <i class="pi pi-folder-open"></i>
         </div>
         <div>
-          <p class="kpi-title">
-            Offene Aufträge
-          </p>
-          <p class="kpi-value">
-            {{ kpi.open }}
-          </p>
-          <p class="kpi-sub">
-            +1 seit gestern
-          </p>
+          <p class="kpi-title">Offene Aufträge</p>
+          <p class="kpi-value">4</p>
+          <p class="kpi-sub">+1 seit gestern</p>
         </div>
       </div>
 
+
       <div class="kpi-card">
-        <div class="kpi-icon bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300">
-          <i class="pi pi-spinner-dotted" />
+        <div class="kpi-icon kpi-amber">
+          <i class="pi pi-spin pi-spinner"></i>
         </div>
         <div>
-          <p class="kpi-title">
-            In Bearbeitung
-          </p>
-          <p class="kpi-value">
-            {{ kpi.progress }}
-          </p>
-          <p class="kpi-sub">
-            +2 seit letzter Woche
-          </p>
+          <p class="kpi-title">In Bearbeitung</p>
+          <p class="kpi-value">7</p>
+          <p class="kpi-sub">+2 seit letzter Woche</p>
         </div>
       </div>
 
+
       <div class="kpi-card">
-        <div class="kpi-icon bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300">
-          <i class="pi pi-check-circle" />
+        <div class="kpi-icon kpi-green">
+          <i class="pi pi-check-circle"></i>
         </div>
         <div>
-          <p class="kpi-title">
-            Abgeschlossen (Monat)
-          </p>
-          <p class="kpi-value">
-            {{ kpi.done }}
-          </p>
-          <p class="kpi-sub">
-            +5 abgeschlossen
-          </p>
+          <p class="kpi-title">Abgeschlossen (Monat)</p>
+          <p class="kpi-value">15</p>
+          <p class="kpi-sub">+5 abgeschlossen</p>
         </div>
       </div>
 
+
       <div class="kpi-card">
-        <div class="kpi-icon bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300">
-          <i class="pi pi-clock" />
+        <div class="kpi-icon kpi-red">
+          <i class="pi pi-clock"></i>
         </div>
         <div>
-          <p class="kpi-title">
-            Fälligkeit überschritten
-          </p>
-          <p class="kpi-value">
-            {{ kpi.overdue }}
-          </p>
-          <p class="kpi-sub">
-            Heute +1
-          </p>
+          <p class="kpi-title">Fälligkeit überschritten</p>
+          <p class="kpi-value">3</p>
+          <p class="kpi-sub">Heute +1</p>
         </div>
       </div>
     </section>
@@ -408,7 +387,7 @@ const invoicesOverdue = ref([
   padding: 1.5rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   align-items: center;
 }
 
@@ -416,17 +395,52 @@ const invoicesOverdue = ref([
   background: #1f2937;
 }
 
-.kpi-title { color: #6b7280; font-size: .9rem; }
+/* --- ICON CONTAINER --- */
+.kpi-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;     /* Icon Size */
+  color: white;
+}
+
+/* farben */
+.kpi-blue  { background: #3b82f6; } /* blue-500 */
+.kpi-green { background: #22c55e; } /* green-500 */
+.kpi-red   { background: #ef4444; } /* red-500 */
+.kpi-amber { background: #f59e0b; } /* amber-500 */
+
+/* dark mode */
+.app-dark .kpi-blue  { background: #1e3a8a; }
+.app-dark .kpi-green { background: #166534; }
+.app-dark .kpi-red   { background: #7f1d1d; }
+.app-dark .kpi-amber { background: #713f12; }
+
+/* text */
+.kpi-title {
+  font-size: .9rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
 .app-dark .kpi-title { color: #9ca3af; }
 
-.kpi-value { font-size: 2rem; font-weight: 700; margin-top: .25rem; }
+.kpi-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0;
+}
 
 .kpi-sub {
   font-size: .75rem;
-  margin-top: .25rem;
   color: #9ca3af;
+  margin-top: 0.1rem;
 }
 
+.app-dark .kpi-sub { color: #d1d5db; }
 
 /* ------------------------------------------------------
  * TASK TABLE
@@ -604,5 +618,4 @@ const invoicesOverdue = ref([
   --chart-text: #e5e7eb;
   --chart-grid: rgba(255,255,255,0.15);
 }
-
 </style>
