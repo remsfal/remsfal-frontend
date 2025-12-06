@@ -41,7 +41,7 @@ describe('RentableUnitsView', () => {
 
     await flushPromises();
 
-    expect(wrapper.find('h1').text()).toBe('Wirtschaftseinheiten');
+    expect(wrapper.findComponent({ name: 'RentableUnitsTable' }).exists()).toBe(true);
     expect(wrapper.findComponent({ name: 'TreeTable' }).exists()).toBe(true);
     expect(propertyService.getPropertyTree).toHaveBeenCalledWith('123');
   });
