@@ -239,29 +239,37 @@ const tenantRoutes: RouteRecordRaw[] = [
 ];
 
 const contractorRoutes: RouteRecordRaw[] = [
-  {
-    path: '/customers',
-    components: {
-      default: AppLayout,
-      topbar: ContractorTopbar,
-      sidebar: ContractorMenu,
-    },
-    props: {default: {fullscreen: false,},},
-    children: [
-      {
-        path: '',
-        name: 'ContractorView',
-        props: true,
-        component: () => import('@/views/ContractorView.vue'),
-      },
-        {
-            path: 'overview',
-            name: 'ContractorDashboard',
-            component: () => import('@/views/ContractorDashboardView.vue'),
+    {
+        path: '/contractor',
+        components: {
+            default: AppLayout,
+            topbar: ContractorTopbar,
+            sidebar: ContractorMenu,
         },
-    ],
-  },
+        props: {
+            default: { fullscreen: false },
+            topbar: true,
+            sidebar: true,
+        },
+
+        children: [
+            {
+                path: '',
+                name: 'ContractorView',
+                component: () => import('@/views/ContractorView.vue'),
+                props: true,
+            },
+
+            {
+                path: 'overview',
+                name: 'ContractorDashboard',
+                component: () => import('@/views/ContractorDashboardView.vue'),
+                props: true,
+            },
+        ],
+    },
 ];
+
 
 const routes: Readonly<RouteRecordRaw[]> = [
   ...fullscreenRoutes,

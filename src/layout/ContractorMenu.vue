@@ -10,12 +10,12 @@ const model = ref([
       {
         label: 'consultantMenu.home.overview',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: '/customers/overview',
+        to: '/contractor/overview',
       },
       {
         label: 'consultantMenu.home.client',
         icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
-        to: '/customers/overview',
+        to: '/contractor/overview',
       },
     ],
   },
@@ -25,17 +25,17 @@ const model = ref([
       {
         label: 'consultantMenu.clientManagement.open',
         icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
-        to: '/customers/overview'
+        to: '/contractor/overview'
       },
       {
         label: 'consultantMenu.clientManagement.ongoing',
         icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
-        to: '/customers/overview',
+        to: '/contractor/overview',
       },
       {
         label: 'consultantMenu.clientManagement.closed',
         icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
-        to: '/customers/overview',
+        to: '/contractor/overview',
       },
     ],
   },
