@@ -4,6 +4,7 @@ import AppTopbar from '@/layout/AppTopbar.vue';
 import Button from 'primevue/button';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { shouldShowDevLogin } from '@/helper/platform';
 
 const { t } = useI18n();
 const sessionStore = useUserSessionStore();
@@ -19,6 +20,13 @@ const logout = () => {
 
 const login = (route: string) => {
   window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
+};
+
+const loginDev = async () => {
+  const success = await sessionStore.loginDev();
+  if (success) {
+    router.push('/projects');
+  }
 };
 </script>
 
@@ -37,12 +45,20 @@ const login = (route: string) => {
       <span>{{ t('toolbar.logout') }}</span>
     </Button>
     <Button
-      v-if="sessionStore.user == null"
+      v-if="sessionStore.user == null && !shouldShowDevLogin()"
       class="layout-topbar-action"
       @click="login('/projects')"
     >
       <i class="pi pi-sign-in" />
       <span>{{ t('toolbar.login') }}</span>
+    </Button>
+    <Button
+      v-if="sessionStore.user == null && shouldShowDevLogin()"
+      class="layout-topbar-action"
+      @click="loginDev()"
+    >
+      <i class="pi pi-code" />
+      <span>{{ t('toolbar.devLogin') }}</span>
     </Button>
   </AppTopbar>
 </template>

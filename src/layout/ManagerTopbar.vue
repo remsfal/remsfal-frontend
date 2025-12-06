@@ -9,6 +9,8 @@ import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
 import { computed } from 'vue';
 import { useInboxStore } from '@/stores/InboxStore'
+import { shouldShowDevLogin } from '@/helper/platform';
+
 const { t } = useI18n();
 
 const sessionStore = useUserSessionStore();
@@ -44,6 +46,13 @@ const login = (route: string) => {
   window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
 };
 
+const loginDev = async () => {
+  const success = await sessionStore.loginDev();
+  if (success) {
+    router.push('/projects');
+  }
+};
+
 const onInboxClick = () => {
   router.push('/inbox');
 };
@@ -53,6 +62,13 @@ const unreadCount = computed(() =>
     ? inboxStore.messages.filter(m => !m?.isRead).length
     : 0
 )
+
+// Computed property for Dev Login visibility
+const showDevLoginButton = computed(() => {
+  const show = sessionStore.user == null && shouldShowDevLogin();
+  console.log('showDevLoginButton computed:', show, 'user:', sessionStore.user);
+  return show;
+});
 </script>
 
 <template>
@@ -106,12 +122,20 @@ const unreadCount = computed(() =>
       <span>{{ t('toolbar.logout') }}</span>
     </Button>
     <Button
-      v-if="sessionStore.user == null"
+      v-if="sessionStore.user == null && !showDevLoginButton"
       class="layout-topbar-action"
       @click="login('/projects')"
     >
       <i class="pi pi-sign-in" />
       <span>{{ t('toolbar.login') }}</span>
+    </Button>
+    <Button
+      v-if="showDevLoginButton"
+      class="layout-topbar-action"
+      @click="loginDev()"
+    >
+      <i class="pi pi-code" />
+      <span>{{ t('toolbar.devLogin') }}</span>
     </Button>
     <LocaleSwitch />
   </AppTopbar>
