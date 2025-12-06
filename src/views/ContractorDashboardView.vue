@@ -9,7 +9,7 @@ import Chart from "primevue/chart";
   progress: 7,
   done: 15,
   overdue: 3,
-});*/
+}); */
 
 /* ---------- BAR CHART ---------- */
 const monthlyData = ref({
@@ -352,23 +352,23 @@ const invoicesOverdue = ref([
 
 /* ------------------------------------------------------
  * GLOBAL CARD STYLE
- * ----------------------------------------------------*/
+ * ---------------------------------------------------- */
 .card {
   background: white;
   border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
   transition: 0.2s ease;
   padding: 1.5rem;
 }
 
 .app-dark .card {
   background: #1f2937;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.35);
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 25px rgb(0 0 0 / 0.18);
 }
 
 .card-title {
@@ -380,12 +380,12 @@ const invoicesOverdue = ref([
 
 /* ------------------------------------------------------
  * KPI CARDS
- * ----------------------------------------------------*/
+ * ---------------------------------------------------- */
 .kpi-card {
   background: white;
   border-radius: 0.75rem;
   padding: 1.5rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.08);
   display: flex;
   gap: 1.2rem;
   align-items: center;
@@ -444,7 +444,7 @@ const invoicesOverdue = ref([
 
 /* ------------------------------------------------------
  * TASK TABLE
- * ----------------------------------------------------*/
+ * ---------------------------------------------------- */
 .task-table { border-collapse: collapse; }
 
 .task-table th {
@@ -470,7 +470,7 @@ const invoicesOverdue = ref([
 
 /* ------------------------------------------------------
  * FINANCE TABLE DESIGN
- * ----------------------------------------------------*/
+ * ---------------------------------------------------- */
 .finance-table {
   width: 100%;
   border-collapse: collapse;
@@ -503,7 +503,7 @@ const invoicesOverdue = ref([
 
 /* ------------------------------------------------------
  * INVOICE TABLE
- * ----------------------------------------------------*/
+ * ---------------------------------------------------- */
 .invoice-table {
   width: 100%;
   border-collapse: separate;
@@ -559,17 +559,17 @@ const invoicesOverdue = ref([
 
 /* ------------------------------------------------------
  * FINANCE CHART
- * ----------------------------------------------------*/
+ * ---------------------------------------------------- */
 .finance-card {
   padding: 1.5rem;
   border-radius: 0.75rem;
   background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
 }
 
 .app-dark .finance-card {
   background: #1f2937;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.35);
 }
 
 .finance-title {
@@ -611,11 +611,11 @@ const invoicesOverdue = ref([
 /* CSS Vars */
 :root {
   --chart-text: #1f2937;
-  --chart-grid: rgba(0,0,0,0.1);
+  --chart-grid: rgb(0 0 0 / 0.1);
 }
 
 .app-dark {
   --chart-text: #e5e7eb;
-  --chart-grid: rgba(255,255,255,0.15);
+  --chart-grid: rgb(255 255 255 / 0.15);
 }
 </style>
