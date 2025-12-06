@@ -106,8 +106,8 @@ async function fetchUserProfile() {
         editedAddress.value = { ...userProfile.value.address };
       }
       if (userProfile?.value?.locale) {
-        editedUserProfile.value.locale = userProfile.locale;
-        i18n.locale.value = validateLocale(userProfile.locale);
+        editedUserProfile.value.locale = userProfile.value.locale;
+        i18n.locale.value = validateLocale(userProfile.value.locale);
       }
     }
   } catch (error) {

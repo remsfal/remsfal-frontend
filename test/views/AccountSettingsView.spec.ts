@@ -20,10 +20,12 @@ describe('AccountSettingsView', () => {
     wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({
       firstName: 'First Name',
       lastName: 'Last Name',
+      locale: 'de',
     });
     wrapper.vm.$options.saveProfile = vi.fn().mockResolvedValue({
       firstName: 'Updated First Name',
       lastName: 'Updated Last Name',
+      locale: 'de',
       address: {
         street: 'Updated Street',
         city: 'Updated City',
@@ -159,5 +161,25 @@ describe('AccountSettingsView', () => {
       expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
     });
     
+  });
+
+  describe('Locale handling', () => {
+    test('validateLocale falls back to "en" when locale is invalid', () => {
+      const result = wrapper.vm.validateLocale('xx');
+      expect(result).toBe('en');
+    });
+
+    test('fetchUserProfile sets editedUserProfile.locale and i18n.locale when backend returns de', async () => {
+
+      const result = await wrapper.vm.$options.fetchUserProfile();
+
+      wrapper.vm.userProfile = result;
+      wrapper.vm.editedUserProfile = { ...result };
+      wrapper.vm.i18n.locale.value = wrapper.vm.validateLocale(result.locale);
+
+      expect(wrapper.vm.editedUserProfile.locale).toBe('de');
+      expect(wrapper.vm.i18n.locale.value).toBe('de');
+    });
+
   });
 });
