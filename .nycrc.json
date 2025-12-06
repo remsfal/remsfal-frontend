@@ -1,6 +1,12 @@
 {
   "report-dir": "coverage-cypress",
   "reporter": ["html", "lcov", "text", "json"],
+  "all": true,
+  "extension": [".ts", ".vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue"
+  ],
   "exclude": [
     "**/*.spec.ts",
     "**/*.spec.js",
@@ -21,7 +27,5 @@
     "*.config.cjs",
     "*.config.js",
     "*.config.ts"
-  ],
-  "all": true,
-  "check-coverage": false
+  ]
 }
