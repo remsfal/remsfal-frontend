@@ -4,7 +4,7 @@ import { apiClient, type ApiComponents } from '@/services/ApiClient';
 export type User = ApiComponents['schemas']['UserJson'];
 
 export const useUserSessionStore = defineStore('user-session', {
-  state: () => ({user: null as User | null,}),
+  state: () => ({ user: null as User | null, }),
 
   actions: {
     async refreshSessionState() {
@@ -17,6 +17,57 @@ export const useUserSessionStore = defineStore('user-session', {
         if (error?.response?.status === 401) {
           this.user = null;
         }
+      }
+    },
+
+    async loginDev(): Promise<boolean> {
+      const params = new URLSearchParams();
+      params.append('app_id', 'dev');
+      params.append('app_token', 'dev');
+      params.append('dev_services', 'true');
+
+      try {
+        const response = await fetch('/api/v1/authentication/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          credentials: 'include',
+          body: params,
+        });
+
+        if (response.ok) {
+          console.log('Dev Login successful!');
+          await this.refreshSessionState();
+          return true;
+        } else {
+          console.error('Dev Login failed:', response.status, response.statusText);
+          return false;
+        }
+      } catch (error) {
+        console.error('Dev Login error:', error);
+        return false;
+      }
+    },
+
+    async loginWithToken(token: string) {
+      const params = new URLSearchParams();
+      params.append('token', token);
+
+      try {
+        const response = await fetch('/api/v1/authentication/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          credentials: 'include',
+          body: params,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Token login failed with status ${response.status}`);
+        }
+
+        await this.refreshSessionState();
+      } catch (error: any) {
+        console.error('Token-based login failed:', error);
+        throw error;
       }
     },
   },
