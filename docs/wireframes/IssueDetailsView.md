@@ -11,6 +11,16 @@
 
 This wireframe defines the structural layout for the **Issue Details View** using a card-based design pattern consistent with the ProjectSettings view. All sections use PrimeVue Card components with TailwindCSS utility classes.
 
+**Backend Schema Alignment:**
+- Field names and types match the OpenAPI schema definitions
+- Uses `IssueJson` schema fields: `ownerId`, `reporterId`, `projectId`, `status`, `type`
+- Project references use `ProjectItemJson` structure
+- User roles follow `MemberRole` enum values (PROPRIETOR, MANAGER, LESSOR, STAFF, COLLABORATOR)
+
+**Navigation:**
+- Breadcrumb navigation and previous/next issue navigation are **optional future enhancements**
+- Current wireframe includes a "Back" button for basic navigation
+
 ---
 
 ## Layout Structure
@@ -79,22 +89,31 @@ Card (class="flex flex-col gap-4 basis-full")
 ├── Title: "Metadata" (font-semibold text-xl)
 └── Content: (grid layout for field-value pairs)
     ├── Reporter: [Placeholder: "John Doe" with avatar icon]
-    ├── Assignee: [Placeholder: "Jane Smith" with avatar + dropdown]
+    │   └── Maps to: reporterId (UUID from IssueJson)
+    ├── Owner/Assignee: [Placeholder: "Jane Smith" with avatar + dropdown]
+    │   └── Maps to: ownerId (UUID from IssueJson)
     ├── Project: [Placeholder: "Building A Renovation" - read-only link]
+    │   └── Maps to: projectId (UUID, displayed via ProjectItemJson)
     ├── Issue Type: [Placeholder: "TASK" - badge or label]
-    ├── Priority: [Placeholder: "HIGH | MEDIUM | LOW" - colored badge]
+    │   └── Maps to: type (from IssueJson)
+    ├── Status: [Placeholder: "IN_PROGRESS" - colored badge]
+    │   └── Maps to: status (PENDING, OPEN, IN_PROGRESS, CLOSED, REJECTED)
     ├── Created At: [Placeholder: "2025-12-01 10:30:00"]
+    │   └── Backend timestamp field
     └── Last Modified: [Placeholder: "2025-12-05 14:22:15"]
+        └── Backend timestamp field
 ```
 
 **Placeholder Fields:**
-- Reporter (user reference with avatar)
-- Assignee (user dropdown/autocomplete)
-- Project (link to project details)
-- Issue Type (badge)
-- Priority (colored badge)
-- Created timestamp
-- Modified timestamp
+- Reporter → `reporterId` (user reference with avatar, UUID)
+- Owner/Assignee → `ownerId` (user dropdown/autocomplete, UUID)
+- Project → `projectId` (displayed using ProjectItemJson with name and memberRole)
+- Issue Type → `type` (badge, from Type enum)
+- Status → `status` (colored badge: PENDING, OPEN, IN_PROGRESS, CLOSED, REJECTED)
+- Created timestamp (from backend)
+- Modified timestamp (from backend)
+
+**Note:** "Assignee" in UI maps to `ownerId` field in IssueJson schema.
 
 ---
 
@@ -180,7 +199,7 @@ Card (class="flex flex-col gap-4 basis-full")
         │       ├── Comment Item 1
         │       │   ├── Avatar: [Circle with initials "AJ" in blue]
         │       │   ├── Username: "Alice Johnson" (font-medium text-gray-900)
-        │       │   ├── Role badge: "Developer" (small gray badge)
+        │       │   ├── Role badge: "STAFF" (small gray badge - from MemberRole enum)
         │       │   ├── Timestamp: "Dec 5, 2025 at 9:15 AM" (text-gray-500 text-sm)
         │       │   └── Message: "I reviewed the authentication flow and noticed this 
         │       │       issue is similar to #ISSUE-67. The root cause appears to be 
@@ -190,7 +209,7 @@ Card (class="flex flex-col gap-4 basis-full")
         │       ├── Comment Item 2
         │       │   ├── Avatar: [Circle with initials "BW" in green]
         │       │   ├── Username: "Bob Williams" (font-medium text-gray-900)
-        │       │   ├── Role badge: "Tech Lead" (small gray badge)
+        │       │   ├── Role badge: "MANAGER" (small gray badge - from MemberRole enum)
         │       │   ├── Timestamp: "Dec 5, 2025 at 10:30 AM" (text-gray-500 text-sm)
         │       │   └── Message: "@Alice Johnson Good catch! I've started working on 
         │       │       this issue. Planning to implement the token refresh mechanism 
@@ -206,7 +225,7 @@ Card (class="flex flex-col gap-4 basis-full")
                 ├── Activity Entry 1
                 │   ├── Icon: [pi pi-refresh in orange circle]
                 │   ├── User avatar: [Circle with initials "JS" in purple]
-                │   ├── User: "Jane Smith" (font-medium)
+                │   ├── User: "Jane Smith" (font-medium) - Role: MANAGER
                 │   ├── Action: "changed status from OPEN to IN_PROGRESS"
                 │   ├── Timestamp: "Dec 4, 2025 at 4:45 PM" (text-gray-500)
                 │   └── Additional info: Previous: OPEN → Current: IN_PROGRESS
@@ -214,23 +233,25 @@ Card (class="flex flex-col gap-4 basis-full")
                 ├── Activity Entry 2
                 │   ├── Icon: [pi pi-user in blue circle]
                 │   ├── User avatar: [Circle with initials "JD" in red]
-                │   ├── User: "John Doe" (font-medium)
-                │   ├── Action: "assigned this issue to Jane Smith"
+                │   ├── User: "John Doe" (font-medium) - Role: PROPRIETOR
+                │   ├── Action: "assigned this issue to Jane Smith (updated ownerId)"
                 │   ├── Timestamp: "Dec 3, 2025 at 11:20 AM" (text-gray-500)
-                │   └── Additional info: Assignee: None → Jane Smith
+                │   └── Additional info: ownerId: null → Jane Smith's UUID
 ```
 
 **Example Placeholder Content:**
 
 **Comments Tab (2 example messages):**
 
-1. **Comment by Alice Johnson** (Developer)
+1. **Comment by Alice Johnson** (STAFF)
    - Avatar: Circle with "AJ" initials (blue background)
+   - Role: STAFF (MemberRole enum)
    - Posted: Dec 5, 2025 at 9:15 AM
    - Message: "I reviewed the authentication flow and noticed this issue is similar to #ISSUE-67. The root cause appears to be session timeout handling. I recommend checking the Redis configuration before proceeding with the fix."
 
-2. **Comment by Bob Williams** (Tech Lead)
+2. **Comment by Bob Williams** (MANAGER)
    - Avatar: Circle with "BW" initials (green background)
+   - Role: MANAGER (MemberRole enum)
    - Posted: Dec 5, 2025 at 10:30 AM
    - Message: "@Alice Johnson Good catch! I've started working on this issue. Planning to implement the token refresh mechanism first, then update the session management. ETA: 2 business days."
 
@@ -238,22 +259,22 @@ Card (class="flex flex-col gap-4 basis-full")
 
 1. **Status Change Activity**
    - Icon: pi pi-refresh (orange)
-   - User: Jane Smith (avatar with "JS")
+   - User: Jane Smith (avatar with "JS") - Role: MANAGER
    - Action: "changed status from OPEN to IN_PROGRESS"
    - Timestamp: Dec 4, 2025 at 4:45 PM
    - Details: Previous: OPEN → Current: IN_PROGRESS
 
 2. **Assignment Activity**
    - Icon: pi pi-user (blue)
-   - User: John Doe (avatar with "JD")
-   - Action: "assigned this issue to Jane Smith"
+   - User: John Doe (avatar with "JD") - Role: PROPRIETOR
+   - Action: "assigned this issue to Jane Smith (ownerId updated)"
    - Timestamp: Dec 3, 2025 at 11:20 AM
-   - Details: Assignee: None → Jane Smith
+   - Details: ownerId: null → Jane Smith's UUID
 
 **Placeholder Elements:**
 - PrimeVue TabView with 2 tabs
 - Comment cards with user avatars (circular with initials)
-- User role badges (Developer, Tech Lead, etc.)
+- User role badges using MemberRole enum (PROPRIETOR, MANAGER, LESSOR, STAFF, COLLABORATOR)
 - Timestamp formatting (relative or absolute)
 - Activity timeline entries with icons
 - Comment input area with markdown support
@@ -291,7 +312,23 @@ Card (class="flex flex-col gap-4 basis-full border-dashed")
     │       ├── Remaining: 2.5 hours
     │       └── Action: [Log Time button]
     │
-    └── Example Item 3: Custom Fields
+    ├── Example Item 3: Workflow Stage
+    │   ├── Icon: [pi pi-sitemap]
+    │   ├── Label: "Workflow Stage" (text-gray-600)
+    │   └── Placeholder content:
+    │       ├── Current Stage: "In Development"
+    │       ├── Stage Progress: 3 of 5 stages completed
+    │       ├── Stage Timeline: [Backlog → Analysis → Development → Testing → Done]
+    │       └── Next Stage: "Testing" (available when development complete)
+    │
+    ├── Example Item 4: Tags
+    │   ├── Icon: [pi pi-tag]
+    │   ├── Label: "Tags" (text-gray-600)
+    │   └── Placeholder content:
+    │       ├── Tags: [authentication] [security] [backend] [high-priority]
+    │       └── Action: [+ Add Tag button with autocomplete]
+    │
+    └── Example Item 5: Custom Fields / Metadata
         ├── Icon: [pi pi-tags]
         ├── Label: "Custom Metadata" (text-gray-600)
         └── Placeholder content:
@@ -320,7 +357,26 @@ Card (class="flex flex-col gap-4 basis-full border-dashed")
   - Bob Williams: 3 hours - "Initial investigation and setup"
   - Jane Smith: 2.5 hours - "Implementation of token refresh"
 
-**3. Custom Fields / Metadata**
+**3. Workflow Stage**
+- Icon: pi pi-sitemap (gray)
+- Current Stage: "In Development"
+- Stage Progress: 3 of 5 stages completed
+- Stage Timeline Visual: [✓ Backlog] → [✓ Analysis] → [• Development] → [Testing] → [Done]
+- Next Stage: "Testing" (available when development work is complete)
+- Stage Description: "Development phase includes coding, unit testing, and code review"
+
+**4. Tags**
+- Icon: pi pi-tag (gray)
+- Comma-separated labels for categorization and filtering
+- Example Tags: 
+  - [authentication] - blue badge
+  - [security] - red badge
+  - [backend] - green badge
+  - [high-priority] - orange badge
+- Action: Add Tag button with autocomplete dropdown
+- Use case: Filter and search issues by tags across the project
+
+**5. Custom Fields / Metadata**
 - Icon: pi pi-tags (gray)
 - Affected Modules: "Authentication, Session Management, User Service"
 - Client Environment: "Production, Staging"
@@ -400,10 +456,10 @@ Card (class="flex flex-col gap-4 basis-full border-dashed")
 
 ---
 
-### 5. **Navigation & Context**
+### 5. **Navigation & Context (Optional Future Enhancement)**
 **Question:** Should this view include breadcrumb navigation showing Project > Issues > [Issue Title]? Should there be "Previous/Next Issue" navigation buttons?
 
-**Current Assumption:** Including a "Back" button (as in IssueEdit.vue) but no breadcrumbs or issue navigation in this wireframe. These can be added to the layout wrapper.
+**Current Assumption:** Including a "Back" button (as in IssueEdit.vue) for basic navigation. Breadcrumb navigation and previous/next issue navigation are considered **optional future enhancements** and are not included in this initial wireframe. These can be added to the layout wrapper when needed.
 
 ---
 
