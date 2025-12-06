@@ -538,4 +538,148 @@ Card (class="flex flex-col gap-4 basis-full border-dashed")
 
 ---
 
+## Vue 3 Component File Structure
+
+### Folder Organization
+
+```
+src/
+├── views/
+│   └── IssueDetailsView.vue                    # Parent view component
+│
+└── components/
+    └── issue-details/                          # Issue Details feature folder
+        │
+        ├── cards/                              # Main card components
+        │   ├── IssueOverviewCard.vue           # Card 1: Issue ID, title, status
+        │   ├── IssueDescriptionCard.vue        # Card 2: Markdown description
+        │   ├── IssueMetadataCard.vue           # Card 3: Reporter, owner, project, type, status, tenancy
+        │   ├── IssueRelationsCard.vue          # Card 4: Blocks, Blocked By, Duplicate Of, Related To
+        │   ├── IssueCommunicationCard.vue      # Card 5: Comments & Activity Log (TabView)
+        │   └── IssueFutureFieldsCard.vue       # Card 6: Attachments, time tracking, workflow, tags
+        │
+        ├── badges/                             # Badge components (reusable)
+        │   ├── StatusBadge.vue                 # Status enum badge (PENDING, OPEN, IN_PROGRESS, CLOSED, REJECTED)
+        │   ├── TypeBadge.vue                   # Type enum badge (APPLICATION, TASK, DEFECT, MAINTENANCE)
+        │   └── MemberRoleBadge.vue             # MemberRole enum badge (PROPRIETOR, MANAGER, LESSOR, STAFF, COLLABORATOR)
+        │
+        ├── user/                               # User-related components
+        │   └── UserAvatar.vue                  # Circular avatar with initials
+        │
+        ├── communication/                      # Communication tab components
+        │   ├── CommentItem.vue                 # Single comment with avatar, role, timestamp, message
+        │   ├── ActivityLogItem.vue             # Single activity entry with icon, user, action, timestamp
+        │   └── AddCommentForm.vue              # Textarea + formatting toolbar + Post button
+        │
+        ├── relations/                          # Relations card sub-components
+        │   ├── IssueRelationItem.vue           # Single related issue link with status badge
+        │   └── AccordionSection.vue            # Expandable/collapsible section (Blocks, Blocked By, etc.)
+        │
+        └── future-fields/                      # Future fields sub-components
+            ├── AttachmentItem.vue              # Single file attachment with icon, name, size, date
+            ├── TimeTrackingItem.vue            # Time tracking entry with user, hours, description
+            ├── WorkflowStageItem.vue           # Workflow stage progress indicator
+            ├── TagItem.vue                     # Single tag badge (clickable)
+            └── CustomFieldItem.vue             # Key-value pair for custom metadata
+```
+
+### Component Hierarchy
+
+```
+IssueDetailsView.vue
+│
+├── IssueOverviewCard.vue
+│   ├── StatusBadge.vue
+│   └── (displays: id, title, status)
+│
+├── IssueDescriptionCard.vue
+│   └── (markdown preview/edit toggle)
+│
+├── IssueMetadataCard.vue
+│   ├── UserAvatar.vue (for reporter)
+│   ├── UserAvatar.vue (for owner/assignee)
+│   ├── TypeBadge.vue
+│   ├── StatusBadge.vue
+│   └── (displays: reporterId, ownerId, projectId, type, status, tenancyId, timestamps)
+│
+├── IssueRelationsCard.vue
+│   ├── AccordionSection.vue (for "Blocks" - reverse lookup)
+│   │   └── IssueRelationItem.vue (multiple)
+│   │       └── StatusBadge.vue
+│   ├── AccordionSection.vue (for "Blocked By" - single UUID)
+│   │   └── IssueRelationItem.vue
+│   │       └── StatusBadge.vue
+│   ├── AccordionSection.vue (for "Duplicate Of" - single UUID)
+│   │   └── IssueRelationItem.vue
+│   │       └── StatusBadge.vue
+│   └── AccordionSection.vue (for "Related To" - single UUID)
+│       └── IssueRelationItem.vue
+│           └── StatusBadge.vue
+│
+├── IssueCommunicationCard.vue
+│   ├── PrimeVue TabView
+│   │   ├── Tab 1: "Comments"
+│   │   │   ├── CommentItem.vue (multiple)
+│   │   │   │   ├── UserAvatar.vue
+│   │   │   │   ├── MemberRoleBadge.vue
+│   │   │   │   └── (message content)
+│   │   │   └── AddCommentForm.vue
+│   │   └── Tab 2: "Activity Log"
+│   │       └── ActivityLogItem.vue (multiple)
+│   │           ├── UserAvatar.vue
+│   │           ├── MemberRoleBadge.vue
+│   │           └── (action details)
+│   └── (endpoint: GET /ticketing/v1/issues/{issueId}/chats)
+│
+└── IssueFutureFieldsCard.vue
+    ├── AttachmentItem.vue (multiple)
+    ├── TimeTrackingItem.vue (multiple)
+    │   └── UserAvatar.vue
+    ├── WorkflowStageItem.vue
+    ├── TagItem.vue (multiple)
+    └── CustomFieldItem.vue (multiple)
+```
+
+### Component Responsibilities
+
+**Views:**
+- **IssueDetailsView.vue**: Main container, fetches issue data via IssueService, grid layout with full-width cards
+
+**Card Components:**
+- **IssueOverviewCard.vue**: Displays `id`, `title`, `status`
+- **IssueDescriptionCard.vue**: Displays `description` with markdown support
+- **IssueMetadataCard.vue**: Displays all metadata fields (reporter, owner, project, type, status, tenancy, timestamps)
+- **IssueRelationsCard.vue**: Manages relations (`blockedBy`, `relatedTo`, `duplicateOf` as single UUIDs, "Blocks" as reverse lookup)
+- **IssueCommunicationCard.vue**: PrimeVue TabView with Comments and Activity Log tabs
+- **IssueFutureFieldsCard.vue**: Placeholder for future fields with dashed border styling
+
+**Reusable Subcomponents:**
+- **StatusBadge.vue**: Color-coded badge for Status enum values
+- **TypeBadge.vue**: Color-coded badge for Type enum values
+- **MemberRoleBadge.vue**: Small badge for MemberRole enum values
+- **UserAvatar.vue**: Circular avatar with user initials
+- **CommentItem.vue**: Single comment display with user info
+- **ActivityLogItem.vue**: Single activity log entry with icon and details
+- **AddCommentForm.vue**: Textarea with formatting toolbar
+- **IssueRelationItem.vue**: Clickable link to related issue
+- **AccordionSection.vue**: Expandable/collapsible container
+- **AttachmentItem.vue**: File attachment display with actions
+- **TimeTrackingItem.vue**: Time entry with user and hours
+- **WorkflowStageItem.vue**: Stage progress indicator
+- **TagItem.vue**: Colored tag badge
+- **CustomFieldItem.vue**: Key-value field display
+
+### Data Flow & Conventions
+
+- **Props Down, Events Up**: Parent passes data via props, children emit events for actions
+- **Component Syntax**: Use `<script setup>` with TypeScript
+- **Props**: Define with `defineProps<T>()`
+- **State**: Local reactive state with `ref()` and `computed()`
+- **Styling**: PrimeVue Card + TailwindCSS utilities
+- **Layout**: `grid grid-cols-12 gap-4`, cards span `col-span-12`
+- **Typography**: Titles `font-semibold text-xl`, labels `font-medium text-gray-700`
+- **i18n**: All user-facing text via `$t()` from vue-i18n
+
+---
+
 **End of Wireframe Document**
