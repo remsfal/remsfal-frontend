@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import Badge from 'primevue/badge';
-
-defineProps<{
-  role: string;
-}>();
+// TODO: Member role badge placeholder
 </script>
 
 <template>
-  <Badge :value="role" severity="secondary" size="small" />
+  <span><!-- Member role badge --></span>
 </template>
