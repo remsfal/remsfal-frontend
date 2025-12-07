@@ -56,6 +56,50 @@ class PropertyService {
   async deleteProperty(projectId: string, propertyId: string): Promise<void> {
     return apiClient.delete('/api/v1/projects/{projectId}/properties/{propertyId}', {pathParams: { projectId, propertyId },});
   }
+
+  async getBreadcrumbPath(projectId: string, targetNodeId: string): Promise<{ title: string; id: string; type: UnitType }[]> {
+    try {
+      // 1. Wir holen den ganzen Baum (da wir die Parents sonst nicht kennen)
+      const data = await this.getPropertyTree(projectId);
+      const tree = data.properties as RentableUnitTreeNode[];
+
+      // 2. Rekursive Suchfunktion
+      const findPath = (
+        nodes: RentableUnitTreeNode[],
+        targetId: string,
+        currentPath: RentableUnitTreeNode[]
+      ): RentableUnitTreeNode[] | null => {
+        for (const node of nodes) {
+          // Treffer? Pfad zurückgeben + aktuellen Node
+          if (node.key === targetId) {
+            return [...currentPath, node];
+          }
+          // Hat Kinder? Rekursiv weitersuchen
+          if (node.children && node.children.length > 0) {
+            const found = findPath(node.children, targetId, [...currentPath, node]);
+            if (found) return found;
+          }
+        }
+        return null; // Nichts gefunden in diesem Ast
+      };
+
+      // 3. Suche starten
+      const resultNodes = findPath(tree, targetNodeId, []);
+      
+      if (!resultNodes) return [];
+
+      // 4. Mapping auf einfaches Format für die Breadcrumbs
+      return resultNodes.map(node => ({
+        title: node.data?.title || 'Unbenannt',
+        id: node.key,
+        type: node.data?.type as UnitType
+      }));
+
+    } catch (e) {
+      console.error('Breadcrumb calculation failed', e);
+      return [];
+    }
+  }
 }
 
 export const propertyService = new PropertyService();
