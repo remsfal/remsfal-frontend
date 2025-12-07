@@ -13,8 +13,12 @@ const navItems = computed(() => {
   // Fallback: Wenn wir nicht in einem Projekt sind
   if (!projectId.value) {
     return [
-      { label: 'Projekte', to: { name: 'ProjectSelection' }, icon: 'pi-briefcase' },
-      { label: 'Einstellungen', to: { name: 'AccountSettings' }, icon: 'pi-cog' },
+      {
+ label: 'Projekte', to: { name: 'ProjectSelection' }, icon: 'pi-briefcase' 
+},
+      {
+ label: 'Einstellungen', to: { name: 'AccountSettings' }, icon: 'pi-cog' 
+},
     ];
   }
 
@@ -100,17 +104,17 @@ function toggleMoreMenu(event: Event) {
       :key="item.label"
       :to="item.to"
       class="nav-item"
-      active-class="active"
+      activeClass="active"
     >
-      <i :class="['pi', item.icon]" style="font-size: 1.2rem;"></i>
+      <i class="pi" :class="[item.icon]" style="font-size: 1.2rem;" />
       <span class="sr-only">{{ item.label }}</span>
     </router-link>
 
     <button v-if="hasMoreItems" class="nav-item more-btn" @click="toggleMoreMenu">
-      <i class="pi pi-ellipsis-h" style="font-size: 1.2rem;"></i>
+      <i class="pi pi-ellipsis-h" style="font-size: 1.2rem;" />
     </button>
 
-    <Menu ref="menu" id="overlay_menu" :model="moreItems" :popup="true" />
+    <Menu id="overlay_menu" ref="menu" :model="moreItems" :popup="true" />
   </div>
 </template>
 

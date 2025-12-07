@@ -1,25 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import MobileNavBar from '../../src/components/MobileNavBar.vue'; // Pfad wie in deinem Snippet
+import MobileNavBar from '../../src/components/MobileNavBar.vue';
 import PrimeVue from 'primevue/config';
 import Menu from 'primevue/menu';
 
 
 const mocks = vi.hoisted(() => {
-  return {
-    push: vi.fn()
-  };
+  return {push: vi.fn()};
 });
 
 vi.mock('vue-router', () => ({
-  useRoute: () => ({
-    params: {
-      projectId: 'test-project-id-123'
-    }
-  }),
-  useRouter: () => ({
-    push: mocks.push
-  }),
+  useRoute: () => ({params: {projectId: 'test-project-id-123'}}),
+  useRouter: () => ({push: mocks.push}),
 
   RouterLink: {
     name: 'RouterLink',
@@ -36,9 +28,7 @@ describe('MobileNavBar.vue', () => {
     return mount(MobileNavBar, {
       global: {
         plugins: [PrimeVue],
-        stubs: {
-          RouterLink: true
-        }
+        stubs: {RouterLink: true}
       }
     });
   };
