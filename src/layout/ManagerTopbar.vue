@@ -5,7 +5,6 @@ import { useProjectStore } from '@/stores/ProjectStore';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
-import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
 import { computed } from 'vue';
 import { useInboxStore } from '@/stores/InboxStore'
@@ -113,6 +112,5 @@ const unreadCount = computed(() =>
       <i class="pi pi-sign-in" />
       <span>{{ t('toolbar.login') }}</span>
     </Button>
-    <LocaleSwitch />
   </AppTopbar>
 </template>

@@ -108,6 +108,8 @@ async function fetchUserProfile() {
       if (userProfile?.value?.locale) {
         editedUserProfile.value.locale = userProfile.value.locale;
         i18n.locale.value = validateLocale(userProfile.value.locale);
+      } else {
+        editedUserProfile.value.locale = i18n.locale.value;
       }
     }
   } catch (error) {
@@ -482,10 +484,10 @@ const isDisabled = computed(() => {
                 <Dropdown
                   id="locale"
                   v-model="editedUserProfile.locale"
-                  :options="[{ label: 'Deutsch', value: 'de' }, { label: 'English', value: 'en' }]"
-                  optionLabel="label"
+                  :options="[{ language: 'Deutsch', value: 'de' }, { language: 'English', value: 'en' }]"
+                  optionLabel="language"
                   optionValue="value"
-                  placeholder= "Sprache auswählen"
+                  placeholder= "Select language"
                   @update:modelValue="i18n.locale.value = $event"
                 />
 
