@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router'; // useRouter hinzugefügt
+import { useRoute, useRouter, RouterLink } from 'vue-router';
 import Menu from 'primevue/menu';
 
-// Zugriff auf Route & Router
+
 const route = useRoute();
-const router = useRouter(); // <--- WICHTIG für das Menü
+const router = useRouter();
 
 const projectId = computed(() => route.params.projectId);
 
 const navItems = computed(() => {
-  // Fallback: Wenn wir nicht in einem Projekt sind
+
   if (!projectId.value) {
     return [
       {
@@ -22,7 +22,7 @@ const navItems = computed(() => {
     ];
   }
 
-  // Die Navigationspunkte
+
   return [
     {
       label: 'Dashboard',
@@ -52,7 +52,7 @@ const navItems = computed(() => {
       to: { name: 'ProjectTenancies', params: { projectId: projectId.value } },
       icon: 'pi-users'
     },
-    // --- Items für das More-Menu ---
+
     {
       label: 'Objekte',
       to: { name: 'RentableUnits', params: { projectId: projectId.value } },
@@ -71,16 +71,16 @@ const navItems = computed(() => {
   ];
 });
 
-// Logik für Anzeige
+
 const MAX_VISIBLE = 4;
 const visibleItems = computed(() => navItems.value.slice(0, MAX_VISIBLE));
 
-// FIX: Wir mappen die Items und fügen 'command' hinzu
+
 const moreItems = computed(() => {
   return navItems.value.slice(MAX_VISIBLE).map(item => ({
     label: item.label,
     icon: item.icon,
-    // Das hier sorgt dafür, dass beim Klick wirklich navigiert wird:
+
     command: () => {
       router.push(item.to);
     }
@@ -89,7 +89,8 @@ const moreItems = computed(() => {
 
 const hasMoreItems = computed(() => navItems.value.length > MAX_VISIBLE);
 
-// Referenz auf das Menü
+
+// eslint-disable-next-line vue/require-typed-ref
 const menu = ref();
 
 function toggleMoreMenu(event: Event) {
@@ -99,7 +100,7 @@ function toggleMoreMenu(event: Event) {
 
 <template>
   <div class="mobile-nav-bar">
-    <router-link
+    <RouterLink
       v-for="item in visibleItems"
       :key="item.label"
       :to="item.to"
@@ -108,19 +109,19 @@ function toggleMoreMenu(event: Event) {
     >
       <i class="pi" :class="[item.icon]" style="font-size: 1.2rem;" />
       <span class="sr-only">{{ item.label }}</span>
-    </router-link>
+    </RouterLink>
 
     <button v-if="hasMoreItems" class="nav-item more-btn" @click="toggleMoreMenu">
       <i class="pi pi-ellipsis-h" style="font-size: 1.2rem;" />
     </button>
 
-    <Menu id="overlay_menu" ref="menu" :model="moreItems" :popup="true" />
+    <Menu id="overlay_menu" ref="menu" :model="moreItems" popup />
   </div>
 </template>
 
 <style scoped>
 .mobile-nav-bar {
-  display: none; /* Desktop: Aus */
+  display: none;
   position: fixed;
   bottom: 0;
   left: 0;
