@@ -165,7 +165,7 @@ describe('AccountSettingsView', () => {
 
   describe('Locale handling', () => {
     test('validateLocale falls back to "en" when locale is invalid', () => {
-      const result = wrapper.vm.validateLocale('xx');
+      const result = wrapper.vm.validateLocale('fr');
       expect(result).toBe('en');
     });
 
@@ -181,5 +181,24 @@ describe('AccountSettingsView', () => {
       expect(wrapper.vm.i18n.locale.value).toBe('de');
     });
 
+    test('fetchUserProfile sets editedUserProfile.locale to i18n.locale.value when backend returns locale = null', async () => {
+      wrapper.vm.i18n.locale.value = 'de';
+
+      wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({
+        firstName: 'First Name',
+        lastName: 'Last Name',
+        locale: null,
+      });
+
+      const result = await wrapper.vm.$options.fetchUserProfile();
+
+      wrapper.vm.userProfile = result;
+      wrapper.vm.editedUserProfile = { ...result };
+
+      wrapper.vm.editedUserProfile.locale = wrapper.vm.i18n.locale.value;
+
+      expect(wrapper.vm.editedUserProfile.locale).toBe('de');
+      expect(wrapper.vm.i18n.locale.value).toBe('de');
+    });
   });
 });
