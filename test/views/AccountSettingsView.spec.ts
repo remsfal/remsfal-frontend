@@ -2,6 +2,7 @@ import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import AccountSettingsView from '../../src/views/AccountSettingsView.vue';
 import Card from 'primevue/card';
+import Dropdown from "primevue/dropdown";
 import { createPinia } from 'pinia';
 import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
@@ -14,7 +15,7 @@ describe('AccountSettingsView', () => {
     const app = createApp(App);
     app.use(pinia);
 
-    wrapper = mount(AccountSettingsView, {global: {components: { Card },},});
+    wrapper = mount(AccountSettingsView, {global: {components: { Card, Dropdown },},});
 
     // Mock methods
     wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({
@@ -199,6 +200,22 @@ describe('AccountSettingsView', () => {
 
       expect(wrapper.vm.editedUserProfile.locale).toBe('de');
       expect(wrapper.vm.i18n.locale.value).toBe('de');
+    });
+
+    test('changing the locale dropdown updates editedUserProfile.locale and i18n.locale', async () => {
+      wrapper.vm.editedUserProfile.locale = 'de';
+      wrapper.vm.i18n.locale.value = 'de';
+
+      await nextTick();
+
+      const dropdown = wrapper.findComponent({ name: 'Dropdown' });
+      expect(dropdown.exists()).toBe(true);
+
+      await dropdown.vm.$emit('update:modelValue', 'en');
+      await nextTick();
+
+      expect(wrapper.vm.editedUserProfile.locale).toBe('en');
+      expect(wrapper.vm.i18n.locale.value).toBe('en');
     });
   });
 });
