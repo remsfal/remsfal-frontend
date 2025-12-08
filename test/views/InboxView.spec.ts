@@ -20,8 +20,28 @@ describe('InboxView.vue', () => {
   let store: ReturnType<typeof useInboxStore>;
 
   const mockMessages: InboxMessage[] = [
-    createMockInboxMessage({ id: '1', receivedAt: new Date('2025-01-10T10:00:00Z'), isRead: false, issueId: 'issue-101', issueTitle: 'Test Issue 1', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
-    createMockInboxMessage({ id: '2', receivedAt: new Date('2025-01-11T10:00:00Z'), isRead: true, issueId: 'issue-102', issueTitle: 'Test Issue 2', issueType: 'TASK', issueStatus: 'CLOSED', projectId: 'proj-2', projectName: 'Project 2' }),
+    createMockInboxMessage({
+      id: '1',
+      receivedAt: new Date('2025-01-10T10:00:00Z'),
+      isRead: false,
+      issueId: 'issue-101',
+      issueTitle: 'Test Issue 1',
+      issueType: 'DEFECT',
+      issueStatus: 'OPEN',
+      projectId: 'proj-1',
+      projectName: 'Project 1',
+    }),
+    createMockInboxMessage({
+      id: '2',
+      receivedAt: new Date('2025-01-11T10:00:00Z'),
+      isRead: true,
+      issueId: 'issue-102',
+      issueTitle: 'Test Issue 2',
+      issueType: 'TASK',
+      issueStatus: 'CLOSED',
+      projectId: 'proj-2',
+      projectName: 'Project 2',
+    }),
   ];
 
 

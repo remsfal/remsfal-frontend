@@ -10,8 +10,28 @@ describe('InboxMessageList', () => {
   let wrapper: VueWrapper;
 
   const mockMessages: InboxMessage[] = [
-    createMockInboxMessage({ id: '1', receivedAt: new Date('2025-01-10T10:00:00Z'), isRead: false, issueId: 'issue-101', issueTitle: 'Test Issue 1', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
-    createMockInboxMessage({ id: '2', receivedAt: new Date('2025-01-11T10:00:00Z'), isRead: true, issueId: 'issue-102', issueTitle: 'Test Issue 2', issueType: 'TASK', issueStatus: 'CLOSED', projectId: 'proj-2', projectName: 'Project 2' }),
+    createMockInboxMessage({
+      id: '1',
+      receivedAt: new Date('2025-01-10T10:00:00Z'),
+      isRead: false,
+      issueId: 'issue-101',
+      issueTitle: 'Test Issue 1',
+      issueType: 'DEFECT',
+      issueStatus: 'OPEN',
+      projectId: 'proj-1',
+      projectName: 'Project 1',
+    }),
+    createMockInboxMessage({
+      id: '2',
+      receivedAt: new Date('2025-01-11T10:00:00Z'),
+      isRead: true,
+      issueId: 'issue-102',
+      issueTitle: 'Test Issue 2',
+      issueType: 'TASK',
+      issueStatus: 'CLOSED',
+      projectId: 'proj-2',
+      projectName: 'Project 2',
+    }),
   ];
 
   afterEach(() => {
@@ -247,9 +267,39 @@ describe('InboxMessageList', () => {
 
     it('groups messages by project', () => {
       const messagesWithMultipleProjects: InboxMessage[] = [
-        createMockInboxMessage({ id: '1', receivedAt: new Date('2025-01-10T10:00:00Z'), isRead: false, issueId: 'issue-101', issueTitle: 'Test Issue 1', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
-        createMockInboxMessage({ id: '2', receivedAt: new Date('2025-01-11T10:00:00Z'), isRead: true, issueId: 'issue-102', issueTitle: 'Test Issue 2', issueType: 'TASK', issueStatus: 'CLOSED', projectId: 'proj-2', projectName: 'Project 2' }),
-        createMockInboxMessage({ id: '3', receivedAt: new Date('2025-01-12T10:00:00Z'), isRead: false, issueId: 'issue-103', issueTitle: 'Test Issue 3', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
+        createMockInboxMessage({
+          id: '1',
+          receivedAt: new Date('2025-01-10T10:00:00Z'),
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        }),
+        createMockInboxMessage({
+          id: '2',
+          receivedAt: new Date('2025-01-11T10:00:00Z'),
+          isRead: true,
+          issueId: 'issue-102',
+          issueTitle: 'Test Issue 2',
+          issueType: 'TASK',
+          issueStatus: 'CLOSED',
+          projectId: 'proj-2',
+          projectName: 'Project 2',
+        }),
+        createMockInboxMessage({
+          id: '3',
+          receivedAt: new Date('2025-01-12T10:00:00Z'),
+          isRead: false,
+          issueId: 'issue-103',
+          issueTitle: 'Test Issue 3',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        }),
       ];
 
       wrapper = mount(InboxMessageList, {
@@ -268,7 +318,17 @@ describe('InboxMessageList', () => {
     it('groups messages by date with today', () => {
       const today = new Date('2025-01-15T12:00:00Z');
       const messagesToday: InboxMessage[] = [
-        createMockInboxMessage({ id: '1', receivedAt: today, isRead: false, issueId: 'issue-101', issueTitle: 'Test Issue 1', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
+        createMockInboxMessage({
+          id: '1',
+          receivedAt: today,
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        }),
       ];
 
       wrapper = mount(InboxMessageList, {
@@ -287,7 +347,17 @@ describe('InboxMessageList', () => {
     it('groups messages by date with yesterday', () => {
       const yesterday = new Date('2025-01-14T12:00:00Z');
       const messagesYesterday: InboxMessage[] = [
-        createMockInboxMessage({ id: '1', receivedAt: yesterday, isRead: false, issueId: 'issue-101', issueTitle: 'Test Issue 1', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
+        createMockInboxMessage({
+          id: '1',
+          receivedAt: yesterday,
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        }),
       ];
 
       wrapper = mount(InboxMessageList, {
@@ -306,7 +376,17 @@ describe('InboxMessageList', () => {
     it('groups messages by date with week ago', () => {
       const weekAgo = new Date('2025-01-10T12:00:00Z');
       const messagesWeekAgo: InboxMessage[] = [
-        createMockInboxMessage({ id: '1', receivedAt: weekAgo, isRead: false, issueId: 'issue-101', issueTitle: 'Test Issue 1', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
+        createMockInboxMessage({
+          id: '1',
+          receivedAt: weekAgo,
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        }),
       ];
 
       wrapper = mount(InboxMessageList, {
@@ -325,7 +405,17 @@ describe('InboxMessageList', () => {
     it('groups messages by date with month ago', () => {
       const monthAgo = new Date('2024-12-15T12:00:00Z');
       const messagesMonthAgo: InboxMessage[] = [
-        createMockInboxMessage({ id: '1', receivedAt: monthAgo, isRead: false, issueId: 'issue-101', issueTitle: 'Test Issue 1', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
+        createMockInboxMessage({
+          id: '1',
+          receivedAt: monthAgo,
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        }),
       ];
 
       wrapper = mount(InboxMessageList, {
@@ -343,8 +433,28 @@ describe('InboxMessageList', () => {
 
     it('handles selected messages with project grouping', () => {
       const messagesWithMultipleProjects: InboxMessage[] = [
-        createMockInboxMessage({ id: '1', receivedAt: new Date('2025-01-10T10:00:00Z'), isRead: false, issueId: 'issue-101', issueTitle: 'Test Issue 1', issueType: 'DEFECT', issueStatus: 'OPEN', projectId: 'proj-1', projectName: 'Project 1' }),
-        createMockInboxMessage({ id: '2', receivedAt: new Date('2025-01-11T10:00:00Z'), isRead: true, issueId: 'issue-102', issueTitle: 'Test Issue 2', issueType: 'TASK', issueStatus: 'CLOSED', projectId: 'proj-2', projectName: 'Project 2' }),
+        createMockInboxMessage({
+          id: '1',
+          receivedAt: new Date('2025-01-10T10:00:00Z'),
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        }),
+        createMockInboxMessage({
+          id: '2',
+          receivedAt: new Date('2025-01-11T10:00:00Z'),
+          isRead: true,
+          issueId: 'issue-102',
+          issueTitle: 'Test Issue 2',
+          issueType: 'TASK',
+          issueStatus: 'CLOSED',
+          projectId: 'proj-2',
+          projectName: 'Project 2',
+        }),
       ];
 
       wrapper = mount(InboxMessageList, {
