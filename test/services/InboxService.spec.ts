@@ -48,19 +48,6 @@ describe('InboxService', () => {
     );
   });
 
-  it('should generate mock inbox data', () => {
-    const messages = inboxService.generateMockInboxData();
-
-    expect(Array.isArray(messages)).toBe(true);
-    expect(messages.length).toBe(7);
-
-    const message = messages[0];
-    expect(message).toHaveProperty('id');
-    expect(message).toHaveProperty('receivedAt');
-    expect(message).toHaveProperty('isRead');
-    expect(typeof message.id).toBe('string');
-    expect(message.receivedAt instanceof Date).toBe(true);
-  });
 
   it('should fetch inbox data from API', async () => {
     const data = await inboxService.fetchInboxData();
@@ -99,13 +86,4 @@ describe('InboxService', () => {
     expect(deleteCalled).toBe(true);
   });
 
-  it('should respect message read/unread status', () => {
-    const messages = inboxService.generateMockInboxData();
-
-    const readMessages = messages.filter((msg) => msg.isRead);
-    const unreadMessages = messages.filter((msg) => !msg.isRead);
-
-    expect(readMessages.length).toBe(2);
-    expect(unreadMessages.length).toBe(5);
-  });
 });

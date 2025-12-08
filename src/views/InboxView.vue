@@ -28,91 +28,29 @@ const {
   grouping,
 } = storeToRefs(inbox);
 
-const customFilters = computed<CustomFilter[]>(() => [
-  // Smart Filters (Kombinierte Filter)
-  {
-    id: 'smart-urgent',
-    name: t('inbox.filters.smart.urgent'),
-    icon: 'pi-exclamation-circle',
-    query: 'status:OPEN type:DEFECT',
-  },
-  {
-    id: 'smart-myTasks',
-    name: t('inbox.filters.myTasks'),
-    icon: 'pi-check-square',
-    query: 'status:OPEN type:TASK',
-  },
-  {
-    id: 'smart-pendingApps',
-    name: t('inbox.filters.smart.pendingApplications'),
-    icon: 'pi-hourglass',
-    query: 'status:PENDING type:APPLICATION',
-  },
-  {
-    id: 'smart-activeMaintenance',
-    name: t('inbox.filters.smart.activeMaintenance'),
-    icon: 'pi-cog',
-    query: 'status:IN_PROGRESS type:MAINTENANCE',
-  },
-  
-  // Status Filter
-  {
-    id: 'status-pending',
-    name: t('inbox.filters.status.pending'),
-    icon: 'pi-clock',
-    query: 'status:PENDING',
-  },
-  {
-    id: 'status-open',
-    name: t('inbox.filters.status.open'),
-    icon: 'pi-circle',
-    query: 'status:OPEN',
-  },
-  {
-    id: 'status-inProgress',
-    name: t('inbox.filters.status.inProgress'),
-    icon: 'pi-sync',
-    query: 'status:IN_PROGRESS',
-  },
-  {
-    id: 'status-closed',
-    name: t('inbox.filters.status.closed'),
-    icon: 'pi-check-circle',
-    query: 'status:CLOSED',
-  },
-  {
-    id: 'status-rejected',
-    name: t('inbox.filters.status.rejected'),
-    icon: 'pi-times-circle',
-    query: 'status:REJECTED',
-  },
-  
-  // Type Filter
-  {
-    id: 'type-application',
-    name: t('inbox.filters.type.application'),
-    icon: 'pi-file-edit',
-    query: 'type:APPLICATION',
-  },
-  {
-    id: 'type-task',
-    name: t('inbox.filters.type.task'),
-    icon: 'pi-list',
-    query: 'type:TASK',
-  },
-  {
-    id: 'type-defect',
-    name: t('inbox.filters.type.defect'),
-    icon: 'pi-exclamation-triangle',
-    query: 'type:DEFECT',
-  },
-  {
-    id: 'type-maintenance',
-    name: t('inbox.filters.type.maintenance'),
-    icon: 'pi-wrench',
-    query: 'type:MAINTENANCE',
-  },
-]);
+const customFilters = computed<CustomFilter[]>(() => {
+  const filterData = [
+    ['smart-urgent', 'inbox.filters.smart.urgent', 'pi-exclamation-circle', 'status:OPEN type:DEFECT'],
+    ['smart-myTasks', 'inbox.filters.myTasks', 'pi-check-square', 'status:OPEN type:TASK'],
+    ['smart-pendingApps', 'inbox.filters.smart.pendingApplications', 'pi-hourglass', 'status:PENDING type:APPLICATION'],
+    ['smart-activeMaintenance', 'inbox.filters.smart.activeMaintenance', 'pi-cog', 'status:IN_PROGRESS type:MAINTENANCE'],
+    ['status-pending', 'inbox.filters.status.pending', 'pi-clock', 'status:PENDING'],
+    ['status-open', 'inbox.filters.status.open', 'pi-circle', 'status:OPEN'],
+    ['status-inProgress', 'inbox.filters.status.inProgress', 'pi-sync', 'status:IN_PROGRESS'],
+    ['status-closed', 'inbox.filters.status.closed', 'pi-check-circle', 'status:CLOSED'],
+    ['status-rejected', 'inbox.filters.status.rejected', 'pi-times-circle', 'status:REJECTED'],
+    ['type-application', 'inbox.filters.type.application', 'pi-file-edit', 'type:APPLICATION'],
+    ['type-task', 'inbox.filters.type.task', 'pi-list', 'type:TASK'],
+    ['type-defect', 'inbox.filters.type.defect', 'pi-exclamation-triangle', 'type:DEFECT'],
+    ['type-maintenance', 'inbox.filters.type.maintenance', 'pi-wrench', 'type:MAINTENANCE'],
+  ];
+  return filterData.map(([id, nameKey, icon, query]) => ({
+    id: id as string,
+    name: t(nameKey as string),
+    icon: icon as string,
+    query: query as string,
+  }));
+});
 
 const activeFilterId = ref<string | null>(null);
 const activeNavItem = ref<'inbox' | 'done'>('inbox');
