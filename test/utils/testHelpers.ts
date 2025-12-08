@@ -142,8 +142,8 @@ export function createMockInboxMessages(
  * Creates mock messages for testing grouping scenarios
  */
 export function createGroupingTestMessages(): InboxMessage[] {
-  return [
-    createMockInboxMessage({
+  const overrides: Partial<InboxMessage>[] = [
+    {
       id: '1',
       receivedAt: new Date('2025-01-10T10:00:00Z'),
       isRead: false,
@@ -153,8 +153,8 @@ export function createGroupingTestMessages(): InboxMessage[] {
       issueStatus: 'OPEN',
       projectId: 'proj-1',
       projectName: 'Project 1',
-    }),
-    createMockInboxMessage({
+    },
+    {
       id: '2',
       receivedAt: new Date('2025-01-11T10:00:00Z'),
       isRead: true,
@@ -164,8 +164,8 @@ export function createGroupingTestMessages(): InboxMessage[] {
       issueStatus: 'CLOSED',
       projectId: 'proj-2',
       projectName: 'Project 2',
-    }),
-    createMockInboxMessage({
+    },
+    {
       id: '3',
       receivedAt: new Date('2025-01-12T10:00:00Z'),
       isRead: false,
@@ -175,6 +175,7 @@ export function createGroupingTestMessages(): InboxMessage[] {
       issueStatus: 'OPEN',
       projectId: 'proj-1',
       projectName: 'Project 1',
-    }),
+    },
   ];
+  return overrides.map(override => createMockInboxMessage(override));
 }
