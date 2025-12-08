@@ -111,7 +111,7 @@ function toggleMoreMenu(event: Event) {
       <span class="sr-only">{{ item.label }}</span>
     </RouterLink>
 
-    <button v-if="hasMoreItems" class="nav-item more-btn" @click="toggleMoreMenu">
+    <button v-if="hasMoreItems" type="button" class="nav-item more-btn" @click="toggleMoreMenu">
       <i class="pi pi-ellipsis-h" style="font-size: 1.2rem;" />
     </button>
 
