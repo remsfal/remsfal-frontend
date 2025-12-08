@@ -102,3 +102,33 @@ export async function testErrorHandling(
   createErrorHandler(server, path, method, status);
   await expectToReject(serviceCall());
 }
+
+/**
+ * Creates a mock InboxMessage object
+ */
+export function createMockInboxMessage(overrides?: Partial<import('../../src/services/InboxService').InboxMessage>): import('../../src/services/InboxService').InboxMessage {
+  return {
+    id: '1',
+    receivedAt: new Date('2025-01-10T10:00:00Z'),
+    isRead: false,
+    issueId: 'issue-101',
+    issueTitle: 'Test Issue 1',
+    issueType: 'DEFECT',
+    issueStatus: 'OPEN',
+    projectId: 'proj-1',
+    projectName: 'Project 1',
+    ...overrides,
+  };
+}
+
+/**
+ * Creates multiple mock InboxMessage objects
+ */
+export function createMockInboxMessages(count: number, baseOverrides?: Partial<import('../../src/services/InboxService').InboxMessage>): import('../../src/services/InboxService').InboxMessage[] {
+  return Array.from({ length: count }, (_, i) => createMockInboxMessage({
+    id: String(i + 1),
+    issueId: `issue-${101 + i}`,
+    issueTitle: `Test Issue ${i + 1}`,
+    ...baseOverrides,
+  }));
+}
