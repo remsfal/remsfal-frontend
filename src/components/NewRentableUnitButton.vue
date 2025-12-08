@@ -175,7 +175,6 @@ async function createStorage(): Promise<void> {
   <div v-if="props.type === EntityType.Property">
     <SplitButton
       label="Anlage hinzufügen"
-      severity="success"
       :model="[
         {
           label: 'Gebäude hinzufügen',
@@ -199,7 +198,6 @@ async function createStorage(): Promise<void> {
   <div v-if="props.type === EntityType.Building">
     <SplitButton
       label="Einheit hinzufügen"
-      severity="success"
       :model="[
         {
           label: 'Wohnung hinzufügen',
