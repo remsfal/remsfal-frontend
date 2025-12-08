@@ -1,7 +1,21 @@
 <script setup lang="ts">
-// TODO: Status badge placeholder
+import Badge from 'primevue/badge';
+
+interface Props {
+  status: 'PENDING' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED' | 'REJECTED';
+}
+
+defineProps<Props>();
+
+const statusColors = {
+  PENDING: 'secondary',
+  OPEN: 'info',
+  IN_PROGRESS: 'warn',
+  CLOSED: 'success',
+  REJECTED: 'danger'
+};
 </script>
 
 <template>
-  <span><!-- Status badge --></span>
+  <Badge :value="status" :severity="statusColors[status]" />
 </template>
