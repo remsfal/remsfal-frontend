@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import InboxMessageList from '../../../src/components/inbox/InboxMessageList.vue';
 import InboxEmptyState from '../../../src/components/inbox/InboxEmptyState.vue';
@@ -224,6 +224,251 @@ describe('InboxMessageList', () => {
     const items = wrapper.findAllComponents(InboxMessageItem);
     expect(items[0].props('isSelected')).toBe(true);
     expect(items[1].props('isSelected')).toBe(false);
+  });
+
+  describe('grouping functionality', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2025-01-15T12:00:00Z'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('returns null when grouping is null', () => {
+      wrapper = mount(InboxMessageList, {
+        props: {
+          messages: mockMessages,
+          selectedMessages: [],
+          searchQuery: '',
+          grouping: null,
+        },
+      });
+
+      const dataView = wrapper.findComponent({ name: 'DataView' });
+      expect(dataView.exists()).toBe(true);
+    });
+
+    it('returns null when messages array is empty with grouping', () => {
+      wrapper = mount(InboxMessageList, {
+        props: {
+          messages: [],
+          selectedMessages: [],
+          searchQuery: '',
+          grouping: 'project',
+        },
+      });
+
+      const emptyState = wrapper.findComponent(InboxEmptyState);
+      expect(emptyState.exists()).toBe(true);
+    });
+
+    it('groups messages by project', () => {
+      const messagesWithMultipleProjects: InboxMessage[] = [
+        {
+          id: '1',
+          receivedAt: new Date('2025-01-10T10:00:00Z'),
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        },
+        {
+          id: '2',
+          receivedAt: new Date('2025-01-11T10:00:00Z'),
+          isRead: true,
+          issueId: 'issue-102',
+          issueTitle: 'Test Issue 2',
+          issueType: 'TASK',
+          issueStatus: 'CLOSED',
+          projectId: 'proj-2',
+          projectName: 'Project 2',
+        },
+        {
+          id: '3',
+          receivedAt: new Date('2025-01-12T10:00:00Z'),
+          isRead: false,
+          issueId: 'issue-103',
+          issueTitle: 'Test Issue 3',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        },
+      ];
+
+      wrapper = mount(InboxMessageList, {
+        props: {
+          messages: messagesWithMultipleProjects,
+          selectedMessages: [],
+          searchQuery: '',
+          grouping: 'project',
+        },
+      });
+
+      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      expect(groupHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('groups messages by date with today', () => {
+      const today = new Date('2025-01-15T12:00:00Z');
+      const messagesToday: InboxMessage[] = [
+        {
+          id: '1',
+          receivedAt: today,
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        },
+      ];
+
+      wrapper = mount(InboxMessageList, {
+        props: {
+          messages: messagesToday,
+          selectedMessages: [],
+          searchQuery: '',
+          grouping: 'date',
+        },
+      });
+
+      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      expect(groupHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('groups messages by date with yesterday', () => {
+      const yesterday = new Date('2025-01-14T12:00:00Z');
+      const messagesYesterday: InboxMessage[] = [
+        {
+          id: '1',
+          receivedAt: yesterday,
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        },
+      ];
+
+      wrapper = mount(InboxMessageList, {
+        props: {
+          messages: messagesYesterday,
+          selectedMessages: [],
+          searchQuery: '',
+          grouping: 'date',
+        },
+      });
+
+      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      expect(groupHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('groups messages by date with week ago', () => {
+      const weekAgo = new Date('2025-01-10T12:00:00Z');
+      const messagesWeekAgo: InboxMessage[] = [
+        {
+          id: '1',
+          receivedAt: weekAgo,
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        },
+      ];
+
+      wrapper = mount(InboxMessageList, {
+        props: {
+          messages: messagesWeekAgo,
+          selectedMessages: [],
+          searchQuery: '',
+          grouping: 'date',
+        },
+      });
+
+      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      expect(groupHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('groups messages by date with month ago', () => {
+      const monthAgo = new Date('2024-12-15T12:00:00Z');
+      const messagesMonthAgo: InboxMessage[] = [
+        {
+          id: '1',
+          receivedAt: monthAgo,
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        },
+      ];
+
+      wrapper = mount(InboxMessageList, {
+        props: {
+          messages: messagesMonthAgo,
+          selectedMessages: [],
+          searchQuery: '',
+          grouping: 'date',
+        },
+      });
+
+      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      expect(groupHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('handles selected messages with project grouping', () => {
+      const messagesWithMultipleProjects: InboxMessage[] = [
+        {
+          id: '1',
+          receivedAt: new Date('2025-01-10T10:00:00Z'),
+          isRead: false,
+          issueId: 'issue-101',
+          issueTitle: 'Test Issue 1',
+          issueType: 'DEFECT',
+          issueStatus: 'OPEN',
+          projectId: 'proj-1',
+          projectName: 'Project 1',
+        },
+        {
+          id: '2',
+          receivedAt: new Date('2025-01-11T10:00:00Z'),
+          isRead: true,
+          issueId: 'issue-102',
+          issueTitle: 'Test Issue 2',
+          issueType: 'TASK',
+          issueStatus: 'CLOSED',
+          projectId: 'proj-2',
+          projectName: 'Project 2',
+        },
+      ];
+
+      wrapper = mount(InboxMessageList, {
+        props: {
+          messages: messagesWithMultipleProjects,
+          selectedMessages: [messagesWithMultipleProjects[0]],
+          searchQuery: '',
+          grouping: 'project',
+        },
+      });
+
+      const items = wrapper.findAllComponents(InboxMessageItem);
+      expect(items.length).toBeGreaterThan(0);
+      expect(items[0].props('isSelected')).toBe(true);
+    });
   });
 });
 
