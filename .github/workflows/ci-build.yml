@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Run Unit Test with Vitest (test)
-        run: npm run test:unit
+        run: npm run coverage:unit
       - name: Run E2E Test with Cypress (test)
         uses: cypress-io/github-action@v6
         with:
@@ -46,7 +46,7 @@ jobs:
       # Generate reports for Sonar Analysis
       - name: Build Coverage Report (only on LTS version)
         if: ${{ matrix.node-version == 'lts/*' }}
-        run: npm run coverage
+        run: npm run coverage:merge
       - name: Upload Coverage Reports (only on LTS version)
         if: ${{ matrix.node-version == 'lts/*' }}
         uses: actions/upload-artifact@v5

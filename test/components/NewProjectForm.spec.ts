@@ -38,7 +38,7 @@ describe('NewProjectForm.vue', () => {
       global: {
         stubs: {
           Dialog: { template: '<div><slot /></div>' },
-          Button: { template: '<button @click="$emit(\'click\')"><slot /></slot></button>' },
+          Button: { template: '<button @click="$emit(\'click\')"><slot /></button>' },
           InputText: {
             template: `<input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />`,
             props: ['modelValue'],

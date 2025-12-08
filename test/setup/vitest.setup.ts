@@ -12,6 +12,31 @@ import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
 import ConfirmationService from 'primevue/confirmationservice';
 
+// Set up MSW server globally
+import '../mocks/setupTests';
+
+// Suppress expected console errors and warnings in tests
+const originalConsoleError = console.error;
+const originalConsoleWarn = console.warn;
+
+console.error = (...args: unknown[]) => {
+  const message = String(args[0]);
+  // Suppress expected Axios response errors (these are intentional in error handling tests)
+  if (message === '[response error]' || message.includes('AxiosError')) {
+    return;
+  }
+  originalConsoleError.apply(console, args);
+};
+
+console.warn = (...args: unknown[]) => {
+  const message = String(args[0]);
+  // Suppress MSW warnings about unhandled requests (tests use vi.fn() mocks)
+  if (message.includes('[MSW]') || message.includes('intercepted a request')) {
+    return;
+  }
+  originalConsoleWarn.apply(console, args);
+};
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query: string) => {
@@ -33,7 +58,7 @@ config.global.plugins = [
   ToastService,
   DialogService,
   ConfirmationService,
-  createTestingPinia(),
+  createTestingPinia({ createSpy: vi.fn }),
   router,
   i18n,
 ];

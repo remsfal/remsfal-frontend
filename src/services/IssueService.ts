@@ -5,10 +5,6 @@ export type Issue = ApiComponents['schemas']['IssueJson'];
 export type IssueList = ApiComponents['schemas']['IssueListJson'];
 export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
 
-// API paths
-const issuesPath = '/ticketing/v1/issues';
-const issuePath = '/ticketing/v1/issues/{issueId}';
-
 // Status constants
 export const StatusValues = {
   PENDING: 'PENDING',
@@ -34,7 +30,7 @@ export class IssueService {
     limit = 100,
     offset = 0,
   ): Promise<IssueList> {
-    const data = (await apiClient.get(issuesPath, {
+    const data = await apiClient.get('/ticketing/v1/issues', {
       params: {
         projectId,
         limit,
@@ -42,7 +38,7 @@ export class IssueService {
         ...(status ? { status } : {}),
         ...(ownerId ? { owner: ownerId } : {}),
       },
-    })) as IssueList;
+    }) as IssueList;
 
     return {
       first: data.first ?? 0,
@@ -56,7 +52,7 @@ export class IssueService {
    * Get a single issue by its ID.
    */
   async getIssue(projectId: string, issueId: string): Promise<Issue> {
-    return apiClient.get(issuePath, {
+    return apiClient.get('/ticketing/v1/issues/{issueId}', {
       pathParams: { issueId },
       params: { projectId } as any,
     }) as Promise<Issue>;
@@ -66,7 +62,7 @@ export class IssueService {
    * Create a new issue in a project.
    */
   async createIssue(projectId: string, body: Partial<Issue>): Promise<Issue> {
-    return apiClient.post(issuesPath, body as any, {params: { projectId } as any,}) as Promise<Issue>;
+    return apiClient.post('/ticketing/v1/issues', body as any, {params: { projectId } as any,}) as Promise<Issue>;
   }
 
   /**
@@ -77,7 +73,7 @@ export class IssueService {
     issueId: string,
     body: Partial<Issue>,
   ): Promise<Issue> {
-    return apiClient.patch(issuePath, body as any, {
+    return apiClient.patch('/ticketing/v1/issues/{issueId}', body as any, {
       pathParams: { issueId },
       params: { projectId } as any,
     }) as Promise<Issue>;

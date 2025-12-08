@@ -73,7 +73,6 @@ const createProperty = async () => {
     type="button"
     icon="pi pi-plus"
     :label="t('rentableUnits.button.addProperty')"
-    severity="success"
     @click="visible = true"
   />
 
@@ -92,6 +91,7 @@ const createProperty = async () => {
         :placeholder="t('rentableUnits.form.titlePlaceholder')"
         class="flex-auto"
         autocomplete="on"
+        autofocus
       />
     </div>
 
