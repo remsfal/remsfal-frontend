@@ -135,7 +135,7 @@ function toggleMoreMenu(event: Event) {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-@media (max-width: 991px) {
+@media (width <= 991px) {
   .mobile-nav-bar {
     display: flex !important;
   }
@@ -170,7 +170,7 @@ function toggleMoreMenu(event: Event) {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
