@@ -17,8 +17,8 @@ describe('useInboxHelpers', () => {
 
   describe('getRelativeTime', () => {
     it('should return empty string for invalid date', () => {
-      expect(getRelativeTime(null as any)).toBe('');
-      expect(getRelativeTime(undefined as any)).toBe('');
+      expect(getRelativeTime(null)).toBe('');
+      expect(getRelativeTime(undefined)).toBe('');
     });
 
     it('should return "X minutes ago" for times less than 60 minutes', () => {

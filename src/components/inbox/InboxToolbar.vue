@@ -52,8 +52,15 @@ const groupingButtonLabel = computed(() => {
   return `${t('inbox.grouping.buttonLabel')}: ${groupingLabel.value}`;
 });
 
-const menuItems = computed(() => {
-  const items = groupingOptions.value.map(option => ({
+type MenuItem = {
+  label: string;
+  command: () => void;
+  class?: string;
+  separator?: boolean;
+};
+
+const menuItems = computed<MenuItem[]>(() => {
+  const items: MenuItem[] = groupingOptions.value.map(option => ({
     label: option.label,
     command: () => {
       if (props.grouping === option.value) {
@@ -70,7 +77,7 @@ const menuItems = computed(() => {
       label: t('inbox.grouping.clear'),
       command: () => emit('update:grouping', null),
       separator: true,
-    } as any);
+    });
   }
 
   return items;
@@ -136,7 +143,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
       <Menu
         ref="groupingMenu"
         :model="menuItems"
-        :popup="true"
+        popup
       />
     </div>
 

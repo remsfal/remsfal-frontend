@@ -45,7 +45,7 @@ const relativeTime = computed(() => getRelativeTime(props.message.receivedAt));
 
     <!-- Checkbox -->
     <div class="self-center" @click.stop>
-      <Checkbox :modelValue="isSelected" :binary="true" @change="emit('select')" />
+      <Checkbox :modelValue="isSelected" binary @change="emit('select')" />
     </div>
 
     <!-- Status Icon -->

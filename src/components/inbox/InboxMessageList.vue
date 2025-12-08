@@ -133,11 +133,12 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
       <!-- List Header -->
       <div 
         class="flex items-center gap-4 px-4 py-2.5 border-b border-[#d1d5db] 
-          dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+          dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50"
+      >
         <div class="w-2.5 flex-shrink-0" />
         <Checkbox 
           :modelValue="isAllSelected" 
-          :binary="true" 
+          binary 
           @change="emit('selectAll')" 
         />
         <span class="text-sm text-surface-600 dark:text-surface-400 font-medium">{{ t('inbox.actions.selectAll') }}</span>
@@ -172,7 +173,8 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
             <!-- Group Header -->
             <div 
               class="px-4 py-2 bg-surface-100 dark:bg-surface-800/50 border-b 
-                border-[#d1d5db] dark:border-surface-700 sticky top-0 z-10">
+                border-[#d1d5db] dark:border-surface-700 sticky top-0 z-10"
+            >
               <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">
                 {{ group.label }}
                 <span class="text-surface-500 dark:text-surface-500 ml-2 font-normal">

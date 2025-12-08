@@ -103,16 +103,18 @@ class InboxService {
   }
 
   async fetchInboxData(): Promise<InboxMessage[]> {
-    return await apiClient.get('/notification/inbox' as any) as InboxMessage[];
-    //return this.generateMockInboxData();
+    // @ts-expect-error: Endpoint not yet in generated schema
+    return await apiClient.get('/notification/inbox') as InboxMessage[];
   }
 
   async markAsRead(messageId: string): Promise<void> {
-    await apiClient.patch('/notification/inbox/{messageId}/read' as any, {}, {pathParams: { messageId }});
+    // @ts-expect-error: Endpoint not yet in generated schema
+    await apiClient.patch('/notification/inbox/{messageId}/read', {}, {pathParams: { messageId }});
   }
 
   async deleteMessage(messageId: string): Promise<void> {
-    await apiClient.delete('/notification/inbox/{messageId}' as any, {pathParams: { messageId }});
+    // @ts-expect-error: Endpoint not yet in generated schema
+    await apiClient.delete('/notification/inbox/{messageId}', {pathParams: { messageId }});
   }
 }
 
