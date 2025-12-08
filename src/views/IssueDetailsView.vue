@@ -5,6 +5,11 @@ import IssueMetadataCard from '@/components/issue-details/cards/IssueMetadataCar
 import IssueRelationsCard from '@/components/issue-details/cards/IssueRelationsCard.vue';
 import IssueCommunicationCard from '@/components/issue-details/cards/IssueCommunicationCard.vue';
 import IssueFutureFieldsCard from '@/components/issue-details/cards/IssueFutureFieldsCard.vue';
+
+defineProps<{
+  projectId: string;
+  issueId: string;
+}>();
 </script>
 
 <template>
