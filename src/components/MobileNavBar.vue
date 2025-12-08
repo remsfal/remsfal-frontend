@@ -27,7 +27,7 @@ const navItems = computed(() => {
     {
       label: 'Dashboard',
       to: { name: 'ProjectDashboard', params: { projectId: projectId.value } },
-      icon: 'pi-home'
+      icon: 'pi-chart-bar'
     },
     {
       label: 'Aufgaben',
@@ -36,7 +36,7 @@ const navItems = computed(() => {
         params: { projectId: projectId.value },
         query: { status: 'OPEN', category: 'TASK' }
       },
-      icon: 'pi-check-square'
+      icon: 'pi-list'
     },
     {
       label: 'Mängel',
