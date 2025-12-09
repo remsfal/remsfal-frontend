@@ -1,138 +1,162 @@
-import { mount } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
-import { nextTick } from 'vue';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { server } from '../mocks/server';
 import InboxView from '../../src/views/InboxView.vue';
 import { useInboxStore } from '../../src/stores/InboxStore';
+import InboxSidebar from '../../src/components/inbox/InboxSidebar.vue';
+import InboxToolbar from '../../src/components/inbox/InboxToolbar.vue';
+import InboxMessageList from '../../src/components/inbox/InboxMessageList.vue';
+import type { InboxMessage } from '../../src/services/InboxService';
+import { createMockInboxMessage } from '../utils/testHelpers';
 
 // Mocks
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
 
 describe('InboxView.vue', () => {
-  let store: any;
+  let wrapper: VueWrapper;
+  let store: ReturnType<typeof useInboxStore>;
 
-  const sampleData = [
-    {
+  const mockMessages: InboxMessage[] = [
+    createMockInboxMessage({
       id: '1',
-      type: 'A',
-      contractor: 'X',
-      project: 'P1',
-      unit: 'U1',
-      tenant: 'T1',
-      owner: 'O1',
+      receivedAt: new Date('2025-01-10T10:00:00Z'),
       isRead: false,
-      receivedAt: new Date('2025-06-01T10:00:00Z'),
-    },
-    {
+      issueId: 'issue-101',
+      issueTitle: 'Test Issue 1',
+      issueType: 'DEFECT',
+      issueStatus: 'OPEN',
+      projectId: 'proj-1',
+      projectName: 'Project 1',
+    }),
+    createMockInboxMessage({
       id: '2',
-      type: 'B',
-      contractor: 'Y',
-      project: 'P2',
-      unit: 'U2',
-      tenant: 'T2',
-      owner: 'O2',
+      receivedAt: new Date('2025-01-11T10:00:00Z'),
       isRead: true,
-      receivedAt: new Date('2025-06-05T23:59:59Z'),
-    },
-    {
-      id: '3',
-      type: 'A',
-      contractor: 'X',
-      project: 'P1',
-      unit: 'U1',
-      tenant: 'T1',
-      owner: 'O1',
-      isRead: false,
-      receivedAt: new Date('2025-06-10T12:00:00Z'),
-    },
+      issueId: 'issue-102',
+      issueTitle: 'Test Issue 2',
+      issueType: 'TASK',
+      issueStatus: 'CLOSED',
+      projectId: 'proj-2',
+      projectName: 'Project 2',
+    }),
   ];
 
+
   beforeEach(() => {
-    const pinia = createTestingPinia({stubActions: false,});
+    const pinia = createTestingPinia({ stubActions: false });
     store = useInboxStore(pinia);
-    store.fetchInbox = vi.fn().mockResolvedValue(undefined);
-    mount(InboxView, {global: {plugins: [pinia],},});
+
+    server.use(
+      http.get('http://localhost:8080/notification/inbox', () => {
+        return HttpResponse.json(mockMessages);
+      }),
+    );
+
+    wrapper = mount(InboxView, {global: {plugins: [pinia],},});
   });
 
-  it('calls fetchInbox on mount', () => {
-    expect(store.fetchInbox).toHaveBeenCalled();
+  it('calls fetchInbox on mount', async () => {
+    const fetchInboxSpy = vi.spyOn(store, 'fetchInbox');
+    await wrapper.vm.$nextTick();
+    // fetchInbox is called in onMounted, which happens after mount
+    expect(fetchInboxSpy).toHaveBeenCalled();
   });
 
-  it('clears filters when clearFilters is called', async () => {
-    store.filterType = ['a'];
-    store.clearFilters();
-    await nextTick();
-    expect(store.filterType).toEqual([]);
+
+  it('handles navigation between inbox and done', async () => {
+    const sidebar = wrapper.findComponent(InboxSidebar);
+    await sidebar.vm.$emit('update:activeNavItem', 'done');
+
+    // Check that sidebar receives the updated prop
+    await wrapper.vm.$nextTick();
+    const updatedSidebar = wrapper.findComponent(InboxSidebar);
+    expect(updatedSidebar.props('activeNavItem')).toBe('done');
   });
 
-  it('marks messages as read/unread', async () => {
-    const msg = { id: '1', isRead: false };
-    store.messages = [msg];
-    store.markAsRead(msg);
-    expect(store.messages[0].isRead).toBe(true);
-    store.markAsUnread(msg);
-    expect(store.messages[0].isRead).toBe(false);
+  it('handles filter application', async () => {
+    const sidebar = wrapper.findComponent(InboxSidebar);
+    const filter = {
+ id: '1', name: 'Open Defects', icon: 'pi-exclamation-circle', query: 'status:OPEN type:DEFECT' 
+};
+    
+    await sidebar.vm.$emit('filter-applied', filter);
+    await wrapper.vm.$nextTick();
+
+    // Filter should be applied to store
+    expect(store.filterIssueStatus).toContain('OPEN');
+    expect(store.filterIssueType).toContain('DEFECT');
   });
 
-  it('handles message deletion flow', async () => {
-    store.messages = [{ id: '1' }, { id: '2' }];
-    store.selectedMessages = [store.messages[0]];
+  it('handles search query updates', async () => {
+    const toolbar = wrapper.findComponent(InboxToolbar);
+    await toolbar.vm.$emit('update:searchQuery', 'test query');
 
-    store.requestDeleteSelected();
-    expect(store.isDeleteDialogVisible).toBe(true);
-
-    store.cancelDelete();
-    expect(store.isDeleteDialogVisible).toBe(false);
-
-    store.requestDeleteSelected();
-    store.confirmDeleteSelected();
-    await nextTick();
-    expect(store.messages.map((m: any) => m.id)).toEqual(['2']);
-    expect(store.selectedMessages).toEqual([]);
-    expect(store.isDeleteDialogVisible).toBe(false);
+    expect(store.searchQuery).toBe('test query');
   });
 
-  it('navigates on row click', () => {
-    const wrapper = mount(InboxView, {global: {plugins: [createTestingPinia({ stubActions: false })],},});
-    wrapper.vm.onRowClick({ originalEvent: new MouseEvent('click'), data: { id: 'xyz' } });
-    expect(mockPush).toHaveBeenCalledWith({ name: 'InboxDetail', params: { id: 'xyz' } });
+  it('handles tab changes', async () => {
+    const toolbar = wrapper.findComponent(InboxToolbar);
+    await toolbar.vm.$emit('update:activeTab', 'unread');
+
+    expect(store.activeTab).toBe('unread');
   });
 
-  describe('computed filteredMessages', () => {
-    beforeEach(() => {
-      store.messages = sampleData;
-    });
+  it('handles message selection', async () => {
+    store.messages = [...mockMessages];
+    const messageList = wrapper.findComponent(InboxMessageList);
+    await messageList.vm.$emit('select-item', mockMessages[0]);
+    await wrapper.vm.$nextTick();
 
-    it('no filter, all messages', () => {
-      store.filterType = [];
-      store.filterStatus = [];
-      store.filterDateRange = null;
-      expect(store.filteredMessages).toHaveLength(3);
-    });
+    expect(store.selectedMessages.some(m => m.id === mockMessages[0].id)).toBe(true);
+  });
 
-    it('filter by type', async () => {
-      store.filterType = ['A'];
-      await nextTick();
-      expect(store.filteredMessages.every((m: any) => m.type === 'A')).toBe(true);
-      expect(store.filteredMessages).toHaveLength(2);
-    });
+  it('handles mark as read for selected messages', async () => {
+    store.messages = [...mockMessages];
+    const messageToMark = { ...mockMessages[0] };
+    store.selectedMessages = [messageToMark];
+    const toolbar = wrapper.findComponent(InboxToolbar);
+    
+    server.use(
+      http.patch('http://localhost:8080/notification/inbox/:messageId/read', () => {
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
 
-    it('filter by status', async () => {
-      store.filterStatus = ['read'];
-      await nextTick();
-      expect(store.filteredMessages).toEqual([sampleData[1]]);
-    });
+    await toolbar.vm.$emit('mark-read-selected');
+    await new Promise(resolve => setTimeout(resolve, 0));
+    await wrapper.vm.$nextTick();
+    
+    // Message should be marked as read and selection cleared
+    expect(store.selectedMessages.length).toBe(0);
+  });
 
-    it('filter by date range (inclusive)', async () => {
-      store.filterDateRange = [new Date('2025-06-01T00:00:00Z'), new Date('2025-06-05T23:59:59Z')];
-      await nextTick();
-      expect(store.filteredMessages.map((m: any) => m.id)).toEqual(['1', '2']);
-    });
+  it('handles delete for selected messages', async () => {
+    store.messages = [...mockMessages];
+    const messageToDelete = { ...mockMessages[0] };
+    store.selectedMessages = [messageToDelete];
+    const toolbar = wrapper.findComponent(InboxToolbar);
+    
+    server.use(
+      http.delete('http://localhost:8080/notification/inbox/:messageId', () => {
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
 
-    it('rowClass for unread/read', () => {
-      expect(store.rowClass(sampleData[0])).toBe('font-semibold');
-      expect(store.rowClass(sampleData[1])).toBe('');
-    });
+    await toolbar.vm.$emit('delete-selected');
+    await new Promise(resolve => setTimeout(resolve, 0));
+    await wrapper.vm.$nextTick();
+    
+    // Message should be deleted and selection cleared
+    expect(store.selectedMessages.length).toBe(0);
+  });
+
+  it('handles navigation to issue', async () => {
+    const messageList = wrapper.findComponent(InboxMessageList);
+    await messageList.vm.$emit('navigate', mockMessages[0]);
+
+    expect(mockPush).toHaveBeenCalled();
   });
 });

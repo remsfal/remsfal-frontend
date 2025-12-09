@@ -2,6 +2,11 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { inboxService, type InboxMessage } from '@/services/InboxService';
 
+/**
+ * Normalizes message dates by converting string dates to Date objects.
+ * @param m - The inbox message to normalize
+ * @returns The normalized message with proper Date object
+ */
 function normalizeMessage(m: InboxMessage): InboxMessage {
   const received = (m as any).receivedAt;
   if (received && !(received instanceof Date)) {
@@ -11,26 +16,33 @@ function normalizeMessage(m: InboxMessage): InboxMessage {
 }
 
 export const useInboxStore = defineStore('inbox', () => {
-  // State
   const messages = ref<InboxMessage[]>([]);
   const isLoading = ref<boolean>(true);
   const selectedMessages = ref<InboxMessage[]>([]);
   const isDeleteDialogVisible = ref<boolean>(false);
 
-  // Filters
-  const filterType = ref<string[]>([]);
-  const filterContractor = ref<string[]>([]);
   const filterProject = ref<string[]>([]);
-  const filterUnit = ref<string[]>([]);
-  const filterTenant = ref<string[]>([]);
-  const filterOwner = ref<string[]>([]);
-  const filterStatus = ref<string[]>([]);
+  const filterIssueType = ref<string[]>([]);
+  const filterIssueStatus = ref<string[]>([]);
   const filterDateRange = ref<Date[] | null>(null);
+  const searchQuery = ref<string>('');
+  const activeTab = ref<'all' | 'unread'>('all');
+  const grouping = ref<'date' | 'project' | null>(null);
 
-  // Getters
+  /**
+   * Returns the count of unread messages.
+   */
+  const unreadCount = computed(() => messages.value.filter(m => !m.isRead).length);
 
+  /**
+   * Checks if a valid date range filter is set.
+   */
   const hasDateRange = computed(() => filterDateRange.value?.length === 2);
 
+  /**
+   * Returns normalized start and end dates for date range filtering.
+   * Start date is set to 00:00:00 and end date is set to 23:59:59.
+   */
   const dateRangeStartEnd = computed(() => {
     if (!hasDateRange.value) return { start: undefined as Date | undefined, end: undefined as Date | undefined };
     const [from, to] = filterDateRange.value!;
@@ -40,49 +52,72 @@ export const useInboxStore = defineStore('inbox', () => {
     return { start, end };
   });
 
+  /**
+   * Filters messages based on active tab, search query, and all filter criteria.
+   * Applies filters for: activeTab (all/unread), search query, project, issue type, issue status, and date range.
+   */
   const filteredMessages = computed<InboxMessage[]>(() => {
     const { start, end } = dateRangeStartEnd.value;
     const hasRange = !!(start && end);
+    const query = searchQuery.value.toLowerCase();
 
     return messages.value.filter((msg) => {
-      const status = msg.isRead ? 'read' : 'unread';
+      // Tab Filter (All vs Unread)
+      if (activeTab.value === 'unread' && msg.isRead) return false;
 
-      const inType        = !filterType.value.length       || filterType.value.includes(msg.type);
-      const inContractor  = !filterContractor.value.length || filterContractor.value.includes(msg.contractor);
-      const inProject     = !filterProject.value.length    || filterProject.value.includes(msg.project);
-      const inUnit        = !filterUnit.value.length       || filterUnit.value.includes(msg.unit);
-      const inTenant      = !filterTenant.value.length     || filterTenant.value.includes(msg.tenant);
-      const inOwner       = !filterOwner.value.length      || filterOwner.value.includes(msg.owner);
-      const inStatus      = !filterStatus.value.length     || filterStatus.value.includes(status);
+      // Search
+      const inSearch = !query || 
+        msg.issueTitle.toLowerCase().includes(query) || 
+        msg.projectName.toLowerCase().includes(query);
+
+      // Sidebar Filters
+      const inProject     = !filterProject.value.length     || filterProject.value.includes(msg.projectId);
+      const inIssueType   = !filterIssueType.value.length   || filterIssueType.value.includes(msg.issueType);
+      const inIssueStatus = !filterIssueStatus.value.length || filterIssueStatus.value.includes(msg.issueStatus);
+      
       const inDate = !hasRange ||
         (!!msg.receivedAt && msg.receivedAt >= (start as Date) && msg.receivedAt <= (end as Date));
 
-      return inType && inContractor && inProject && inUnit && inTenant && inOwner && inStatus && inDate;
+      return inSearch && inProject && inIssueType && inIssueStatus && inDate;
     });
   });
 
-  // Option lists for filters
-  const typeOptions = computed(() =>
-    Array.from(new Set(messages.value.map(m => m.type))).map(v => ({ label: v, value: v }))
-  );
-  const contractorOptions = computed(() =>
-    Array.from(new Set(messages.value.map(m => m.contractor))).map(v => ({ label: v, value: v }))
-  );
-  const projectOptions = computed(() =>
-    Array.from(new Set(messages.value.map(m => m.project))).map(v => ({ label: v, value: v }))
-  );
-  const unitOptions = computed(() =>
-    Array.from(new Set(messages.value.map(m => m.unit))).map(v => ({ label: v, value: v }))
-  );
-  const tenantOptions = computed(() =>
-    Array.from(new Set(messages.value.map(m => m.tenant))).map(v => ({ label: v, value: v }))
-  );
-  const ownerOptions = computed(() =>
-    Array.from(new Set(messages.value.map(m => m.owner))).map(v => ({ label: v, value: v }))
+  /**
+   * Returns unique project options for filter dropdowns.
+   * Maps projectId to projectName for display purposes.
+   */
+  const projectOptions = computed(() => {
+    const map = new Map<string, string>();
+    messages.value.forEach(m => map.set(m.projectId, m.projectName));
+    return Array.from(map.entries()).map(([value, label]) => ({ label, value }));
+  });
+
+  /**
+   * Returns unique issue type options for filter dropdowns.
+   */
+  const issueTypeOptions = computed(() =>
+    Array.from(new Set(messages.value.map(m => m.issueType))).map(v => ({ label: v, value: v }))
   );
 
-  // Actions
+  /**
+   * Returns unique issue status options for filter dropdowns.
+   */
+  const issueStatusOptions = computed(() =>
+    Array.from(new Set(messages.value.map(m => m.issueStatus))).map(v => ({ label: v, value: v }))
+  );
 
+  /**
+   * Computed property for grouped messages (currently returns filtered messages as-is).
+   * Reserved for future grouping functionality by date or project.
+   */
+  const groupedMessages = computed(() => {
+    return filteredMessages.value;
+  });
+
+  /**
+   * Fetches all inbox messages from the API and updates the store.
+   * Sets isLoading flag during the operation and normalizes message dates.
+   */
   async function fetchInbox() {
     isLoading.value = true;
     try {
@@ -91,59 +126,102 @@ export const useInboxStore = defineStore('inbox', () => {
     } finally {
       isLoading.value = false;
     }
-    console.log('Messages in store are:', messages.value)
   }
 
-  function markAsRead(msg: InboxMessage) {
-    msg.isRead = true;
-    messages.value = [...messages.value];
+  /**
+   * Marks a single message as read.
+   * Performs optimistic update before API call and reverts on error.
+   * @param msg - The message to mark as read
+   */
+  async function markAsRead(msg: InboxMessage) {
+    const messageInStore = messages.value.find(m => m.id === msg.id);
+    if (!messageInStore) return;
+    
+    const originalIsRead = messageInStore.isRead;
+    try {
+      // Optimistic update: update local state immediately
+      messageInStore.isRead = true;
+      messages.value = [...messages.value];
+      await inboxService.markAsRead(msg.id);
+    } catch (error) {
+      // Revert optimistic update on error
+      messageInStore.isRead = originalIsRead;
+      messages.value = [...messages.value];
+      console.error('Failed to mark message as read:', error);
+    }
   }
 
-  function markAsUnread(msg: InboxMessage) {
-    msg.isRead = false;
-    messages.value = [...messages.value];
+  /**
+   * Marks all selected messages as read.
+   * Performs optimistic update for all selected messages and calls API in parallel.
+   * Reverts all changes if any API call fails. Clears selection on success.
+   */
+  async function markReadSelected() {
+    const ids = selectedMessages.value.map(m => m.id);
+    const originalStates = new Map(selectedMessages.value.map(m => [m.id, m.isRead]));
+    
+    try {
+      // Optimistic update: update local state
+      messages.value.forEach(m => {
+        if (ids.includes(m.id)) {
+          m.isRead = true;
+        }
+      });
+      messages.value = [...messages.value];
+      
+      // Call API for all selected messages
+      await Promise.all(ids.map(id => inboxService.markAsRead(id)));
+      selectedMessages.value = [];
+    } catch (error) {
+      // Revert optimistic update on error
+      messages.value.forEach(m => {
+        if (ids.includes(m.id) && originalStates.has(m.id)) {
+          m.isRead = originalStates.get(m.id)!;
+        }
+      });
+      messages.value = [...messages.value];
+      console.error('Failed to mark messages as read:', error);
+    }
   }
 
-  function markReadSelected() {
-    selectedMessages.value.forEach(m => (m.isRead = true));
-    messages.value = [...messages.value];
-    selectedMessages.value = [];
-  }
-
-  function markUnreadSelected() {
-    selectedMessages.value.forEach(m => (m.isRead = false));
-    messages.value = [...messages.value];
-    selectedMessages.value = [];
-  }
-
-  function requestDeleteSelected() {
-    isDeleteDialogVisible.value = true;
-  }
-
-  function confirmDeleteSelected() {
+  /**
+   * Permanently deletes all selected messages.
+   * Performs optimistic update by removing messages from local state immediately.
+   * Calls API in parallel for all selected messages and restores messages on error.
+   * Clears selection and closes delete dialog on success.
+   */
+  async function confirmDeleteSelected() {
     const ids = new Set(selectedMessages.value.map(m => m.id));
-    messages.value = messages.value.filter(m => !ids.has(m.id));
-    selectedMessages.value = [];
-    isDeleteDialogVisible.value = false;
+    // Save messages before deletion for potential rollback - create deep copies
+    const messagesToDelete = messages.value
+      .filter(m => ids.has(m.id))
+      .map(m => ({ ...m, receivedAt: new Date(m.receivedAt) }));
+    
+    try {
+      // Optimistic update: remove from local state
+      messages.value = messages.value.filter(m => !ids.has(m.id));
+      selectedMessages.value = [];
+      
+      // Call API for all selected messages
+      await Promise.all(Array.from(ids).map(id => inboxService.deleteMessage(id)));
+      isDeleteDialogVisible.value = false;
+    } catch (error) {
+      // Revert optimistic update on error - restore deleted messages
+      messages.value = [...messages.value, ...messagesToDelete];
+      console.error('Failed to delete messages:', error);
+    }
   }
 
-  function cancelDelete() {
-    isDeleteDialogVisible.value = false;
-  }
-
+  /**
+   * Clears all active filters and search query.
+   * Resets project, issue type, issue status, date range filters, and search query to initial state.
+   */
   function clearFilters() {
-    filterType.value = [];
-    filterContractor.value = [];
     filterProject.value = [];
-    filterUnit.value = [];
-    filterTenant.value = [];
-    filterOwner.value = [];
-    filterStatus.value = [];
+    filterIssueType.value = [];
+    filterIssueStatus.value = [];
     filterDateRange.value = null;
-  }
-
-  function rowClass(data: InboxMessage) {
-    return !data.isRead ? 'font-semibold' : '';
+    searchQuery.value = '';
   }
 
   return {
@@ -152,36 +230,30 @@ export const useInboxStore = defineStore('inbox', () => {
     isLoading,
     selectedMessages,
     isDeleteDialogVisible,
-
-    // Filters
-    filterType,
-    filterContractor,
+    
+    // Filters State
     filterProject,
-    filterUnit,
-    filterTenant,
-    filterOwner,
-    filterStatus,
+    filterIssueType,
+    filterIssueStatus,
     filterDateRange,
+    searchQuery,
+    activeTab,
+    grouping,
 
     // Getters
     filteredMessages,
-    typeOptions,
-    contractorOptions,
+    unreadCount,
     projectOptions,
-    unitOptions,
-    tenantOptions,
-    ownerOptions,
-    rowClass,
+    issueTypeOptions,
+    issueStatusOptions,
+    groupedMessages,
 
     // Actions
     fetchInbox,
     markAsRead,
-    markAsUnread,
     markReadSelected,
-    markUnreadSelected,
-    requestDeleteSelected,
     confirmDeleteSelected,
-    cancelDelete,
     clearFilters,
   };
 });
+
