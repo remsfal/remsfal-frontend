@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import { tenantContractService, type TenantContractStatus, type TenantContractSummary } from '@/services/TenantContractService.ts';
+import { tenantContractService } from '@/services/TenantContractService.ts';
+import type { TenantContractStatus, TenantContractSummary } from '@/services/TenantContractService.ts';
 
 const mockContracts: TenantContractSummary[] = [
   {
