@@ -1001,6 +1001,9 @@
             "type" : "string",
             "pattern" : "^\\+[1-9]\\d{4,14}$"
           },
+          "locale" : {
+            "type" : "string"
+          },
           "registeredDate" : {
             "$ref" : "#/components/schemas/LocalDate"
           },

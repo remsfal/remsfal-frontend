@@ -486,6 +486,7 @@ export interface components {
             mobilePhoneNumber?: string;
             businessPhoneNumber?: string;
             privatePhoneNumber?: string;
+            locale?: string;
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
