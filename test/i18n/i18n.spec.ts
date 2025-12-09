@@ -12,10 +12,7 @@ describe('i18n browser locale detection', () => {
   });
 
   test('uses navigator.languages[0] and strips hyphen (e.g. "de-DE" → "de")', async () => {
-    vi.stubGlobal('navigator', {
-      languages: ['de-DE'],
-      language: 'de-DE'
-    });
+    vi.stubGlobal('navigator', { languages: ['de-DE'], language: 'de-DE'});
 
     const { default: i18n } = await loadI18n();
 
@@ -23,9 +20,7 @@ describe('i18n browser locale detection', () => {
   });
 
   test('fallbacks to navigator.language when navigator.languages is missing', async () => {
-    vi.stubGlobal('navigator', {
-      language: 'de-DE'
-    });
+    vi.stubGlobal('navigator', {language: 'de-DE'});
 
     const { default: i18n } = await loadI18n();
 
@@ -33,10 +28,7 @@ describe('i18n browser locale detection', () => {
   });
 
   test('falls back to "en" when browser locale is not supported', async () => {
-    vi.stubGlobal('navigator', {
-      languages: ['fr-FR'],
-      language: 'fr-FR'
-    });
+    vi.stubGlobal('navigator', {languages: ['fr-FR'], language: 'fr-FR'});
 
     const { default: i18n } = await loadI18n();
 

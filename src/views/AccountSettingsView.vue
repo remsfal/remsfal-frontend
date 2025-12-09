@@ -12,6 +12,7 @@ import type {paths} from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
 import { RouterLink } from 'vue-router'
 import { locales, type Locale } from '@/i18n/i18n';
+import Dropdown from 'primevue/dropdown';
 
 const { t } = useI18n();
 const i18n = useI18n();
