@@ -12,9 +12,8 @@ vi.mock('../../src/services/PropertyService', () => ({
 }));
 
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: mockPush }),
-}));
+// FIX: Alles in einer Zeile für den Linter
+vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
 
 const BreadcrumbStub = {
   name: 'BreadcrumbStub',
@@ -181,6 +180,8 @@ describe('UnitBreadcrumb.vue', () => {
     };
 
     (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Tree Error'));
+    
+    // FIX: Auch hier alles in eine Zeile, da das Objekt klein ist
     (propertyService.getProperty as any).mockResolvedValue({ title: 'Direct Property' });
 
     const wrapper = mount(UnitBreadcrumb, {
