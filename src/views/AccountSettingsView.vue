@@ -555,7 +555,7 @@ const isDisabled = computed(() => {
                   @change="updateCountryFromCode"
                 >
                   <option disabled value="">
-                    Land auswählen*
+                    {{ t('accountSettings.address.selectCountry') }}
                   </option>
                   <option v-for="country in countries" :key="country.code" :value="country.code">
                     {{ country.name }}
@@ -607,7 +607,7 @@ const isDisabled = computed(() => {
           </Button>
           <Button severity="info">
             <RouterLink to="/customers">
-              Zur Auftragnehmer Ansicht
+              {{ t('accountSettings.userProfile.contractorsView') }}
             </RouterLink>
           </Button>
           <Button
@@ -615,7 +615,7 @@ const isDisabled = computed(() => {
             type="button"
             icon="pi pi-user-edit"
             class="save-button btn"
-            label="Speichern"
+            :label="t('accountSettings.userProfile.saveButton')"
             :disabled="isDisabled"
             @click="saveProfile"
           />
@@ -624,7 +624,7 @@ const isDisabled = computed(() => {
             type="button"
             icon="pi pi-times"
             class="cancel-button btn"
-            label="Abbrechen"
+            :label="t('accountSettings.userProfile.cancelButton')"
             @click="cancel"
           />
           <Button
@@ -633,7 +633,7 @@ const isDisabled = computed(() => {
             severity="danger"
             aria-label="Cancel"
             class="delete-button btn"
-            label="Konto löschen"
+            :label="t('accountSettings.delete.delete')"
             @click="deleteAcc = true"
           />
         </div>
@@ -671,7 +671,9 @@ const isDisabled = computed(() => {
             :style="{ width: '50rem' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
           >
-            <p>Daten wurden erfolgreich gespeichert!</p>
+            <p>
+              {{ t('accountSettings.userProfile.saveSuccessMessage') }}
+            </p>
           </Dialog>
         </div>
         <div class="saveError">
@@ -683,7 +685,9 @@ const isDisabled = computed(() => {
             :style="{ width: '50rem' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
           >
-            <p>Daten konnten nicht gespeichert werden!</p>
+            <p>
+              {{ t('accountSettings.userProfile.saveErrorMessage') }}
+            </p>
           </Dialog>
         </div>
       </div>
