@@ -80,7 +80,7 @@ const loadBreadcrumbs = async () => {
           };
           pathNodes = [propertyNode, ...pathNodes];
         } catch {
-          // Ignorieren wenn auch das fehlschlägt
+          // Ignorieren
         }
       }
     }
@@ -101,7 +101,6 @@ const loadBreadcrumbs = async () => {
 
   // 4. Das letzte Stück (Wir selbst)
   if (props.mode === 'create') {
-    // FIX: Mehrzeilig für den Linter
     pathItems.push({
       label: 'Neu anlegen',
       icon: 'pi pi-plus',
@@ -126,7 +125,6 @@ const loadBreadcrumbs = async () => {
 
   // Fallback
   if (pathItems.length === 0) {
-    // FIX: Zeile umgebrochen, da sonst > 128 Zeichen
     pathItems.push({
       label: 'Zur Übersicht',
       icon: 'pi pi-arrow-left',
@@ -159,10 +157,14 @@ watch(
   padding: 0;
   font-size: 0.875rem;
 }
+
+/* HIER WAREN DIE FEHLER: Leerzeilen eingefügt */
+
 :deep(.p-menuitem-link) {
   padding-left: 0 !important;
   text-decoration: none !important;
 }
+
 :deep(.p-disabled) {
   opacity: 1 !important;
   font-weight: bold;
@@ -170,6 +172,7 @@ watch(
   cursor: default !important;
   pointer-events: none;
 }
+
 :deep(.p-menuitem-icon) {
   color: #666;
   margin-right: 0.5rem;
