@@ -10,6 +10,7 @@ interface BreadcrumbItem {
   disabled?: boolean;
   to?: any;
   id?: string;
+  icon?: string; // Icon-Eigenschaft im Interface
 }
 
 const props = defineProps<{ 
@@ -24,18 +25,31 @@ const props = defineProps<{
 const router = useRouter();
 const items = ref<BreadcrumbItem[]>([]);
 
+// --- ICON MAPPING ---
+const getIconForType = (type: string): string => {
+  switch (type) {
+    case 'PROPERTY': return 'pi pi-map';
+    case 'BUILDING': return 'pi pi-building';
+    case 'APARTMENT': return 'pi pi-home';
+    case 'COMMERCIAL': return 'pi pi-briefcase';
+    case 'STORAGE': return 'pi pi-box';
+    case 'SITE': return 'pi pi-tree';
+    default: return 'pi pi-folder'; // Fallback
+  }
+};
+
 const loadBreadcrumbs = async () => {
   const targetId = props.mode === 'create' ? props.parentId : props.unitId;
   let pathNodes: { title: string; id: string; type: any }[] = [];
 
-  // 1. Versuch: Pfad aus dem Baum laden
+  // 1. Normalen Pfad laden
   if (targetId && props.projectId) {
     try {
       pathNodes = await propertyService.getBreadcrumbPath(props.projectId, targetId);
     } catch (e) { }
   }
 
-  // 2. Grundstück erzwingen (contextParentId)
+  // 2. Grundstück erzwingen (Context Parent)
   if (props.contextParentId && props.projectId) {
     const parentExists = pathNodes.some(node => node.id === props.contextParentId);
     
@@ -49,28 +63,25 @@ const loadBreadcrumbs = async () => {
                throw new Error('Baum-Pfad leer');
            }
         } catch (e) { 
-           // VERSUCH B (FALLBACK): Direkt die Property-Daten laden!
-           // Das funktioniert auch, wenn der Baum kaputt ist.
+           // VERSUCH B (FALLBACK): Direkt laden
            try {
                const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
                const propertyNode = {
                    title: propertyData.title || 'Unbenanntes Grundstück',
-                   id: props.contextParentId, // Wir wissen die ID ja
+                   id: props.contextParentId,
                    type: 'PROPERTY' as any
                };
-               // Wir kleben diesen Node manuell davor
                pathNodes = [propertyNode, ...pathNodes];
-           } catch (apiErr) {
-               console.warn('Konnte Grundstück auch nicht direkt laden:', apiErr);
-           }
+           } catch (apiErr) { }
         }
     }
   }
 
-  // 3. Konvertieren
+  // 3. Konvertieren & ICONS HINZUFÜGEN
   let pathItems: BreadcrumbItem[] = pathNodes.map((node) => ({
     label: node.title,
     id: node.id,
+    icon: getIconForType(node.type), // <--- HIER WERDEN DIE ICONS GESETZT
     command: () => {
       router.push({ 
         name: toRentableUnitView(node.type), 
@@ -79,17 +90,20 @@ const loadBreadcrumbs = async () => {
     }
   }));
 
-  // 4. Das letzte Stück (Wir selbst / Außenanlage)
+  // 4. Das letzte Stück (Wir selbst)
   if (props.mode === 'create') {
-     pathItems.push({ label: 'Neu anlegen', disabled: true });
+     pathItems.push({ label: 'Neu anlegen', icon: 'pi pi-plus', disabled: true });
   } else {
      const lastItem = pathItems.length > 0 ? pathItems[pathItems.length - 1] : null;
      
-     // Wenn wir noch fehlen -> Anhängen
+     // Wenn wir noch fehlen (z.B. Außenanlage manuell anhängen)
      if (!lastItem || (props.unitId && lastItem.id !== props.unitId)) {
+         // Wir versuchen den Typ zu erraten für das Icon, oder nehmen einen Standard
+         // Da wir hier den Typ nicht explizit kennen, nehmen wir 'pi-file' oder lassen es leer
          pathItems.push({
-             label: props.currentTitle || 'Außenanlage',
-             disabled: true
+             label: props.currentTitle || 'Laden...',
+             disabled: true,
+             icon: 'pi pi-circle-fill' // Kleiner Punkt als Platzhalter für "Aktuelles"
          });
      } else {
          // Wir sind da -> Deaktivieren
@@ -102,6 +116,7 @@ const loadBreadcrumbs = async () => {
   if (pathItems.length === 0) {
       pathItems.push({
           label: 'Zur Übersicht',
+          icon: 'pi pi-arrow-left',
           command: () => router.push({ name: 'RentableUnitsView', params: { projectId: props.projectId } })
       });
   }
@@ -124,4 +139,5 @@ watch(() => [props.unitId, props.parentId, props.currentTitle, props.projectId, 
 .custom-breadcrumb { background: transparent; border: none; padding: 0; font-size: 0.875rem; }
 :deep(.p-menuitem-link) { padding-left: 0 !important; text-decoration: none !important; }
 :deep(.p-disabled) { opacity: 1 !important; font-weight: bold; color: #6c757d; cursor: default !important; pointer-events: none; }
+:deep(.p-menuitem-icon) { color: #666; margin-right: 0.5rem; } /* Icon Styling */
 </style>
