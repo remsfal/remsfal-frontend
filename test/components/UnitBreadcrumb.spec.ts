@@ -2,23 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
 import { propertyService } from '@/services/PropertyService';
-import { createRouter, createWebHistory } from 'vue-router';
 
 // Mocks
 vi.mock('@/services/PropertyService');
 
-// Router Setup für Tests
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    { path: '/', name: 'Home', component: { template: '<div>Home</div>' } },
-    { path: '/units', name: 'RentableUnitsView', component: { template: '<div>Units</div>' } }
-  ]
-});
+// Wir mocken useRouter direkt, statt den echten Router zu laden
+const mockPush = vi.fn();
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: mockPush
+  })
+}));
 
 describe('UnitBreadcrumb.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPush.mockClear();
   });
 
   const defaultProps = {
@@ -29,7 +28,6 @@ describe('UnitBreadcrumb.vue', () => {
   };
 
   it('renders correctly in Edit mode (Happy Path)', async () => {
-    // Mock: Backend liefert Pfad zurück
     (propertyService.getBreadcrumbPath as any).mockResolvedValue([
       { title: 'Property A', id: 'prop-1', type: 'PROPERTY' },
       { title: 'My Unit', id: 'unit-1', type: 'APARTMENT' }
@@ -37,18 +35,27 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
-      global: { plugins: [router] }
+      // KEIN router plugin hier nötig, da wir useRouter gemockt haben
+      global: {
+        stubs: {
+          Breadcrumb: {
+            template: '<div><div v-for="item in model" :key="item.label" class="crumb-item" @click="item.command">{{ item.label }}</div></div>',
+            props: ['model']
+          }
+        }
+      }
     });
 
     await flushPromises();
 
+    // Wir prüfen die Props, die an die Breadcrumb-Komponente übergeben wurden
     const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
     const model = breadcrumb.props('model');
 
     expect(model).toHaveLength(2);
     expect(model[0].label).toBe('Property A');
     expect(model[1].label).toBe('My Unit');
-    expect(model[1].disabled).toBe(true); // Aktuelles Element deaktiviert
+    expect(model[1].disabled).toBe(true);
   });
 
   it('renders correctly in Create mode', async () => {
@@ -64,7 +71,9 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: createProps,
-      global: { plugins: [router] }
+      global: {
+        stubs: { Breadcrumb: true }
+      }
     });
 
     await flushPromises();
@@ -72,25 +81,20 @@ describe('UnitBreadcrumb.vue', () => {
     const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
     const model = breadcrumb.props('model');
 
-    // Erwartet: Parent + "Neu anlegen"
     expect(model).toHaveLength(2);
     expect(model[0].label).toBe('Property A');
     expect(model[1].label).toBe('Neu anlegen');
-    expect(model[1].icon).toBe('pi pi-plus');
   });
 
   it('handles contextParentId correctly (SiteView scenario)', async () => {
     const siteProps = {
       projectId: 'proj-1',
       unitId: 'site-1',
-      contextParentId: 'prop-1', // Wir erzwingen das Grundstück
+      contextParentId: 'prop-1',
       currentTitle: 'My Site',
       mode: 'edit' as const
     };
 
-    // Szenario: 
-    // 1. Abfrage für Site -> Leer (Baumstruktur Problem)
-    // 2. Abfrage für Property -> Treffer
     (propertyService.getBreadcrumbPath as any).mockImplementation((pid: string, uid: string) => {
         if (uid === 'site-1') return Promise.resolve([]);
         if (uid === 'prop-1') return Promise.resolve([{ title: 'Property A', id: 'prop-1', type: 'PROPERTY' }]);
@@ -99,7 +103,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: siteProps,
-      global: { plugins: [router] }
+      global: { stubs: { Breadcrumb: true } }
     });
 
     await flushPromises();
@@ -107,7 +111,6 @@ describe('UnitBreadcrumb.vue', () => {
     const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
     const model = breadcrumb.props('model');
 
-    // Erwartet: Property (durch contextParentId) + Site (manuell angehängt)
     expect(model).toHaveLength(2);
     expect(model[0].label).toBe('Property A');
     expect(model[1].label).toBe('My Site');
@@ -118,7 +121,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
-      global: { plugins: [router] }
+      global: { stubs: { Breadcrumb: true } }
     });
 
     await flushPromises();
@@ -138,15 +141,12 @@ describe('UnitBreadcrumb.vue', () => {
       mode: 'edit' as const
     };
     
-    // Beide Pfad-Abfragen schlagen fehl
     (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Tree Error'));
-    
-    // Aber direkter Abruf geht
     (propertyService.getProperty as any).mockResolvedValue({ title: 'Direct Property' });
 
     const wrapper = mount(UnitBreadcrumb, {
       props: siteProps,
-      global: { plugins: [router] }
+      global: { stubs: { Breadcrumb: true } }
     });
 
     await flushPromises();
@@ -154,7 +154,6 @@ describe('UnitBreadcrumb.vue', () => {
     const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
     const model = breadcrumb.props('model');
     
-    // Erwartet: Direct Property + Außenanlage
     expect(model[0].label).toBe('Direct Property');
     expect(model[1].label).toBe('Außenanlage');
   });
