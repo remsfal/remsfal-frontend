@@ -18,10 +18,16 @@ type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']
 type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
 type AddressListResponse = paths['/api/v1/address']['get']['responses'][200]['content']['application/json'];
 type Address = AddressListResponse extends (infer U)[] ? U : never;
-type User = UserGetResponse & { address?: Address };
+type User = UserGetResponse & { 
+  address?: Address;
+  alternativeEmail?: string | null;
+};
+type UserPatchRequestBodyWithAlt = UserPatchRequestBody & {
+  alternativeEmail?: string | null;
+};
 
-const userProfile = ref<UserGetResponse | null>(null);
-const editedUserProfile = ref<Partial<UserPatchRequestBody>>({});
+const userProfile = ref<User | null>(null);
+const editedUserProfile = ref<Partial<UserPatchRequestBodyWithAlt>>({});
 
 const addressProfile = ref<Address | null>(null);
 const editedAddress = ref<Partial<Address>>({});
@@ -94,10 +100,13 @@ onMounted(() => {
 async function fetchUserProfile() {
   try {
     const userService = new UserService();
-    const profile = await userService.getUser();
+    const profile = (await userService.getUser()) as User;
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
+
+      alternativeEmail.value = profile.alternativeEmail ?? '';
+
       if (userProfile?.value?.address) {
         addressProfile.value = userProfile.value.address;
         editedAddress.value = { ...userProfile.value.address };
@@ -108,9 +117,9 @@ async function fetchUserProfile() {
   }
 }
 
-function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string {
+function getUpdatedValue<K extends keyof UserPatchRequestBodyWithAlt>(field: K): string {
   const value =
-    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
+    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof User];
   return typeof value === 'string' ? value : '';
 }
 
@@ -349,33 +358,6 @@ const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
 
-// Defines the structure of an alternative email object
-type AlternativeEmail = {
-  id: string;
-  email: string;
-};
-
-// Reactive list that stores all alternative email entries
-const alternativeEmails = ref<AlternativeEmail[]>([]);
-
-// Controls the visibility of the dialog popup
-const visible = ref(false);
-
-const alternativeEmail = ref<string>(''); 
-// Computed value: true if at least one alternative email exists
-const hasAlternativeEmail = computed(() => alternativeEmails.value.length > 0);
-// Validation state flags
-const isEmailInvalid = ref(false);
-const emailErrorMessage = ref('');
-// Success/error indicators for UI feedback
-const altEmailSuccess = ref(false);
-const altEmailError = ref(false);
-
-// Generates a unique ID for each alternative email entry
-function createId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
-}
-
 // Resets all form and validation states when closing or reopening the dialog
 function resetForm() {
   alternativeEmail.value = '';
@@ -389,77 +371,107 @@ function validateEmail(email: string) {
   return emailRegex.test(email);
 }
 
-// Extends the UserPatchRequestBody to include optional alternative email
-type UserPatchRequestBodyWithAlt = UserPatchRequestBody & {
-  alternativeEmail?: string;
-};
+// Dialog visibility + alternative email input model
+const visible = ref(false);
+const alternativeEmail = ref<string>('');
 
-// Handles saving the alternative email to backend and updating UI state
+// Validation + UI state for alternative email dialog
+const isEmailInvalid = ref(false);
+const emailErrorMessage = ref('');
+const altEmailSuccess = ref(false);
+const altEmailError = ref(false);
+
 const saveAlternativeEmail = async () => {
-  // Read entered alternative email and primary email from the profile
   const enteredEmail = alternativeEmail.value.trim();
+
   const primaryEmail = (
     editedUserProfile.value.email ||
     userProfile.value?.email ||
     ''
   ).trim().toLowerCase();
 
- // 1. Check for empty value or invalid email format
+  // 1. Check for empty value or invalid email format
   if (!enteredEmail || !validateEmail(enteredEmail)) {
     isEmailInvalid.value = true;
     emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
     return;
   }
 
-  // 2. Email must not match the primary email
+  // 2. Alternative email must not match the primary email
   if (enteredEmail.toLowerCase() === primaryEmail) {
     isEmailInvalid.value = true;
-    // eigenen Text-Key benutzen (oder testweise einfach String)
-    // emailErrorMessage.value = t('accountSettings.userProfile.alternativeEmailMustDiffer');
     emailErrorMessage.value =
       'Die alternative E-Mail darf nicht der primären entsprechen.';
     return;
   }
 
- // Reset validation state because input is valid
+  // Reset validation once input is valid
   isEmailInvalid.value = false;
   emailErrorMessage.value = '';
 
   try {
     const userService = new UserService();
 
-    // Send PATCH request to update the user with a new alternative email
-    await userService.updateUser(
+    // Send PATCH request to backend to update alternative email
+     await userService.updateUser(
       { alternativeEmail: enteredEmail } as UserPatchRequestBodyWithAlt,
     );
 
-     // Show success state
+    // Update local frontend state manually so UI updates immediately
+    if (userProfile.value) {
+      userProfile.value = {
+        ...userProfile.value,
+        alternativeEmail: enteredEmail,
+      };
+    }
+    editedUserProfile.value = {
+      ...editedUserProfile.value,
+      alternativeEmail: enteredEmail,
+    };
+
+    // Show success indicator
     altEmailSuccess.value = true;
     altEmailError.value = false;
 
-    // Add the new email to the local list (UI update)
-    alternativeEmails.value.push({
-      id: createId(),
-      email: enteredEmail,
-    });
-
-     // Close the dialog and reset the form
+    // Close dialog
     visible.value = false;
-    resetForm();
-  } catch {
-    // Show error state if backend update fails
+  } catch (e) {
+    console.error('Alternative E-Mail konnte nicht gespeichert werden', e);
     altEmailSuccess.value = false;
     altEmailError.value = true;
   }
 };
 
-// Removes an alternative email entry by ID
-function removeAlternativeEmail(id: string) {
-  alternativeEmails.value = alternativeEmails.value.filter((e) => e.id !== id);
-  // Reset success/error indicators after deletion
-  altEmailSuccess.value = false;
-  altEmailError.value = false;
-}
+const deleteAlternativeEmail = async () => {
+  try {
+    const userService = new UserService();
+
+    // Send PATCH request to remove alternative email (empty string or null)
+    await userService.updateUser(
+      { alternativeEmail: '' } as UserPatchRequestBodyWithAlt,
+    );
+
+    // Update local frontend state to remove email visually
+    if (userProfile.value) {
+      userProfile.value = {
+        ...userProfile.value,
+        alternativeEmail: null,
+      };
+    }
+    editedUserProfile.value = {
+      ...editedUserProfile.value,
+      alternativeEmail: null,
+    };
+
+    // Reset local helper states
+    alternativeEmail.value = '';
+    altEmailSuccess.value = false;
+    altEmailError.value = false;
+  } catch (e) {
+    console.error('Alternative E-Mail konnte nicht gelöscht werden', e);
+    altEmailError.value = true;
+  }
+};
 </script>
 
 <template>
@@ -530,18 +542,21 @@ function removeAlternativeEmail(id: string) {
                     label="Alternative E-Mail hinzufügen"
                     icon="pi pi-plus"
                     style="width: auto"
-                    :disabled="hasAlternativeEmail"
+                    :disabled="!!userProfile?.alternativeEmail"
                     @click="visible = true"
                   />
                 </div>
                 
                 <!-- Only show the alternative email field if one exists -->
-                <div v-if="alternativeEmails.length > 0" class="flex items-center gap-1 mt-1 mb-5">
+                <div 
+                    v-if="userProfile?.alternativeEmail" 
+                    class="flex items-center gap-1 mt-1 mb-5"
+                >
                   <div class="alt-email-wrapper">
                     <InputText 
                       id="alternative-eMail"  
                       class="alt-email-input flex-grow" 
-                      :value="alternativeEmails[0]?.email || ''" 
+                      :value="userProfile?.alternativeEmail ?? ''"
                       disabled 
                       required 
                     />
@@ -565,7 +580,7 @@ function removeAlternativeEmail(id: string) {
   
                 <!-- Trash icon deletes the existing alternative email -->
                 <i class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
-                  @click="removeAlternativeEmail(alternativeEmails[0]!.id)"
+                   @click="deleteAlternativeEmail"
                   />
                 </div>
             </div>
@@ -580,25 +595,25 @@ function removeAlternativeEmail(id: string) {
                   <!-- Email input row -->
                   <div class="flex items-center gap-6">
                   <label for="email"
-                            class="font-semibold w-29">E-Mail Adresse
-                           </label>
+                    class="font-semibold w-29">E-Mail Adresse
+                  </label>
   
                 <!-- Editable input inside dialog -->
                 <InputText
                       id="email" 
-                      class="flex-grow"
                       v-model="alternativeEmail"
+                      class="flex-grow"
                       type="email"
                       autocomplete="off"
                       :invalid="isEmailInvalid"
-                      placeholder="Alternative E-Mail-Adresse"/>
+                      placeholder="Alternative E-Mail-Adresse" />
                   </div>
 
                   <!-- Validation error message -->
                   <small
                     v-if="isEmailInvalid"
                     class="text-red-500 mt-2 ml-36 text-sm">{{ emailErrorMessage }}
-                      </small>
+                  </small>
                 </div>
 
                 <!-- Dialog buttons -->
