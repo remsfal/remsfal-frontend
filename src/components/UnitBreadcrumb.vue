@@ -1,105 +1,127 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
 import { propertyService, toRentableUnitView } from '@/services/PropertyService';
 
+interface BreadcrumbItem {
+  label?: string;
+  command?: () => void;
+  disabled?: boolean;
+  to?: any;
+  id?: string;
+}
+
 const props = defineProps<{ 
   projectId: string; 
-  unitId?: string;       // ID der Einheit (zum Bearbeiten)
-  parentId?: string;     // ID des Elternteils (beim Erstellen)
-  currentTitle?: string; // Titel der aktuellen Seite (optional)
+  unitId?: string;       
+  parentId?: string;     
+  contextParentId?: string; 
+  currentTitle?: string; 
   mode?: 'edit' | 'create';
 }>();
 
-const home = ref({ icon: 'pi pi-home', to: '/' }); // Ggf. anpassen auf Dashboard-Route
-const items = ref<any[]>([]);
+const router = useRouter();
+const items = ref<BreadcrumbItem[]>([]);
 
-// Lädt die Pfad-Daten vom Backend
 const loadBreadcrumbs = async () => {
-  // 1. Basis-Pfad: Immer "Projekte" -> "Übersicht"
-  const baseItems = [
-    { label: 'Projekte', to: '/projects' }, // Passe '/projects' an deine Route an
-    { 
-      label: 'Wirtschaftseinheiten', 
-      to: { name: 'RentableUnitsView', params: { projectId: props.projectId } } 
-    }
-  ];
-
-  let pathItems: any[] = [];
-  
-  // Entscheiden, welche ID wir suchen (die eigene oder die des Elternteils)
   const targetId = props.mode === 'create' ? props.parentId : props.unitId;
+  let pathNodes: { title: string; id: string; type: any }[] = [];
 
-  if (targetId) {
+  // 1. Versuch: Pfad aus dem Baum laden
+  if (targetId && props.projectId) {
     try {
-      // 2. Den Pfad vom Service holen (Deine neue Methode!)
-      const pathData = await propertyService.getBreadcrumbPath(props.projectId, targetId);
-      
-      // 3. Pfad in Breadcrumb-Items umwandeln
-      pathItems = pathData.map(node => ({
-        label: node.title,
-        to: { 
-          name: toRentableUnitView(node.type), 
-          params: { projectId: props.projectId, unitId: node.id } 
+      pathNodes = await propertyService.getBreadcrumbPath(props.projectId, targetId);
+    } catch (e) { }
+  }
+
+  // 2. Grundstück erzwingen (contextParentId)
+  if (props.contextParentId && props.projectId) {
+    const parentExists = pathNodes.some(node => node.id === props.contextParentId);
+    
+    if (!parentExists) {
+        // VERSUCH A: Über den Baum
+        try {
+           const parentPath = await propertyService.getBreadcrumbPath(props.projectId, props.contextParentId);
+           if (parentPath.length > 0) {
+               pathNodes = [...parentPath, ...pathNodes];
+           } else {
+               throw new Error('Baum-Pfad leer');
+           }
+        } catch (e) { 
+           // VERSUCH B (FALLBACK): Direkt die Property-Daten laden!
+           // Das funktioniert auch, wenn der Baum kaputt ist.
+           try {
+               const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
+               const propertyNode = {
+                   title: propertyData.title || 'Unbenanntes Grundstück',
+                   id: props.contextParentId, // Wir wissen die ID ja
+                   type: 'PROPERTY' as any
+               };
+               // Wir kleben diesen Node manuell davor
+               pathNodes = [propertyNode, ...pathNodes];
+           } catch (apiErr) {
+               console.warn('Konnte Grundstück auch nicht direkt laden:', apiErr);
+           }
         }
-      }));
-    } catch (e) {
-      console.error("Breadcrumb Fehler:", e);
     }
   }
 
-  // 4. Den letzten Teil hinzufügen (Bearbeiten vs. Neu Erstellen)
+  // 3. Konvertieren
+  let pathItems: BreadcrumbItem[] = pathNodes.map((node) => ({
+    label: node.title,
+    id: node.id,
+    command: () => {
+      router.push({ 
+        name: toRentableUnitView(node.type), 
+        params: { projectId: props.projectId, unitId: node.id }, 
+      });
+    }
+  }));
+
+  // 4. Das letzte Stück (Wir selbst / Außenanlage)
   if (props.mode === 'create') {
-     // Wir sind im Erstell-Modus, also fügen wir "Neu..." hinzu
-     pathItems.push({ label: 'Neu anlegen', disabled: true, class: 'font-bold' });
+     pathItems.push({ label: 'Neu anlegen', disabled: true });
   } else {
-     // Wir sind im Bearbeiten-Modus
-     // Wenn wir einen aktuellen Titel haben (z.B. "Musterstraße 12"), zeigen wir ihn an
-     // Falls nicht (weil noch am Laden), zeigt der Pfad zumindest bis zum Parent korrekt an.
-     if (props.currentTitle) {
-        // Falls der Titel schon im pathItems ist (manchmal ist der letzte Node das Item selbst),
-        // müssten wir ihn ggf. deaktivieren. Einfacher ist:
-        // Wir nehmen an, pathItems enthält den Pfad bis inkl. der aktuellen Unit.
-        if (pathItems.length > 0) {
-            pathItems[pathItems.length - 1].disabled = true; // Die aktuelle Seite ist nicht klickbar
-        }
+     const lastItem = pathItems.length > 0 ? pathItems[pathItems.length - 1] : null;
+     
+     // Wenn wir noch fehlen -> Anhängen
+     if (!lastItem || (props.unitId && lastItem.id !== props.unitId)) {
+         pathItems.push({
+             label: props.currentTitle || 'Außenanlage',
+             disabled: true
+         });
+     } else {
+         // Wir sind da -> Deaktivieren
+         lastItem.disabled = true;
+         if (props.currentTitle) lastItem.label = props.currentTitle;
      }
   }
 
-  // Alles zusammenfügen
-  items.value = [...baseItems, ...pathItems];
+  // Fallback
+  if (pathItems.length === 0) {
+      pathItems.push({
+          label: 'Zur Übersicht',
+          command: () => router.push({ name: 'RentableUnitsView', params: { projectId: props.projectId } })
+      });
+  }
+
+  items.value = [...pathItems];
 };
 
-// Initial laden
-onMounted(() => {
-  loadBreadcrumbs();
-});
+onMounted(() => { loadBreadcrumbs(); });
 
-// Neu laden, wenn sich IDs ändern (wichtig, wenn man zwischen Einheiten navigiert)
-watch(() => [props.unitId, props.parentId, props.currentTitle], () => {
+watch(() => [props.unitId, props.parentId, props.currentTitle, props.projectId, props.contextParentId], () => {
   loadBreadcrumbs();
 });
 </script>
 
 <template>
-  <Breadcrumb 
-    :home="home" 
-    :model="items" 
-    class="custom-breadcrumb mb-4 pl-0" 
-  />
+  <Breadcrumb :model="items" class="custom-breadcrumb mb-4 pl-0" />
 </template>
 
 <style scoped>
-/* Styling, damit es so aussieht wie in deinem Screenshot (ohne grauen Kasten) */
-.custom-breadcrumb {
-    background: transparent;
-    border: none;
-    padding: 0;
-    font-size: 0.875rem; /* Etwas kleinerer Text wie üblich bei Breadcrumbs */
-}
-
-/* Optional: Farbe der Links anpassen */
-:deep(.p-menuitem-link) {
-    padding-left: 0 !important;
-}
+.custom-breadcrumb { background: transparent; border: none; padding: 0; font-size: 0.875rem; }
+:deep(.p-menuitem-link) { padding-left: 0 !important; text-decoration: none !important; }
+:deep(.p-disabled) { opacity: 1 !important; font-weight: bold; color: #6c757d; cursor: default !important; pointer-events: none; }
 </style>

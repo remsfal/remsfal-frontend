@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue'; // <--- IMPORTIEREN
+import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue'; // <--- WICHTIG: Das hier muss genutzt werden
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { apartmentService } from '@/services/ApartmentService';
@@ -83,7 +83,6 @@ const fetchApartment = async () => {
       description?: string;
     };
 
-    // assign to reactive refs
     title.value = data.title || '';
     location.value = data.location || '';
     heatingSpace.value = data.heatingSpace ?? null;
@@ -91,7 +90,6 @@ const fetchApartment = async () => {
     usableSpace.value = data.usableSpace ?? null;
     description.value = data.description || '';
 
-    // normalize data for originalValues
     originalValues.value = {
       title: data.title || '',
       location: data.location || '',
@@ -123,7 +121,6 @@ onMounted(() => {
   }
 });
 
-// Save
 const save = async () => {
   if (!isValid.value) {
     showValidationErrorToast(toast, validationErrors.value);
@@ -154,7 +151,6 @@ const save = async () => {
   }
 };
 
-// Cancel
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 

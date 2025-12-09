@@ -33,62 +33,59 @@ class PropertyService {
     return apiClient.post(
       '/api/v1/projects/{projectId}/properties',
       property,
-      {pathParams: { projectId },},
+      { pathParams: { projectId } },
     ) as Promise<PropertyUnit>;
   }
 
   async getPropertyTree(projectId: string): Promise<PropertyList> {
-    return apiClient.get('/api/v1/projects/{projectId}/properties', {pathParams: { projectId },});
+    return apiClient.get('/api/v1/projects/{projectId}/properties', { pathParams: { projectId } });
   }
 
   async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
-    return apiClient.get('/api/v1/projects/{projectId}/properties/{propertyId}', {pathParams: { projectId, propertyId },});
+    return apiClient.get('/api/v1/projects/{projectId}/properties/{propertyId}', { pathParams: { projectId, propertyId } });
   }
 
   async updateProperty(projectId: string, propertyId: string, property: PropertyUnit): Promise<PropertyUnit> {
     return apiClient.patch(
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       property,
-      {pathParams: { projectId, propertyId },},
+      { pathParams: { projectId, propertyId } },
     );
   }
 
   async deleteProperty(projectId: string, propertyId: string): Promise<void> {
-    return apiClient.delete('/api/v1/projects/{projectId}/properties/{propertyId}', {pathParams: { projectId, propertyId },});
+    return apiClient.delete('/api/v1/projects/{projectId}/properties/{propertyId}', { pathParams: { projectId, propertyId } });
   }
 
+  /**
+   * Berechnet den Pfad (Breadcrumbs) zu einer bestimmten Node-ID
+   */
   async getBreadcrumbPath(projectId: string, targetNodeId: string): Promise<{ title: string; id: string; type: UnitType }[]> {
     try {
-      // 1. Wir holen den ganzen Baum (da wir die Parents sonst nicht kennen)
       const data = await this.getPropertyTree(projectId);
       const tree = data.properties as RentableUnitTreeNode[];
 
-      // 2. Rekursive Suchfunktion
       const findPath = (
         nodes: RentableUnitTreeNode[],
         targetId: string,
         currentPath: RentableUnitTreeNode[]
       ): RentableUnitTreeNode[] | null => {
         for (const node of nodes) {
-          // Treffer? Pfad zurückgeben + aktuellen Node
           if (node.key === targetId) {
             return [...currentPath, node];
           }
-          // Hat Kinder? Rekursiv weitersuchen
           if (node.children && node.children.length > 0) {
             const found = findPath(node.children, targetId, [...currentPath, node]);
             if (found) return found;
           }
         }
-        return null; // Nichts gefunden in diesem Ast
+        return null;
       };
 
-      // 3. Suche starten
       const resultNodes = findPath(tree, targetNodeId, []);
       
       if (!resultNodes) return [];
 
-      // 4. Mapping auf einfaches Format für die Breadcrumbs
       return resultNodes.map(node => ({
         title: node.data?.title || 'Unbenannt',
         id: node.key,
@@ -98,6 +95,42 @@ class PropertyService {
     } catch (e) {
       console.error('Breadcrumb calculation failed', e);
       return [];
+    }
+  }
+
+  /**
+   * Findet die ID des Elternteils für eine bestimmte Einheit im Baum.
+   * Wichtig für Einheiten wie Sites, die ihre Parent-ID nicht im eigenen Objekt haben.
+   */
+  async getParentId(projectId: string, childId: string): Promise<string | undefined> {
+    try {
+      const data = await this.getPropertyTree(projectId);
+      const tree = data.properties as RentableUnitTreeNode[];
+
+      // Rekursive Suche: Wir geben immer die ID des aktuellen Knotens als 'parent' an die Kinder weiter
+      const findParent = (
+        nodes: RentableUnitTreeNode[],
+        target: string,
+        parent: string | undefined
+      ): string | undefined => {
+        for (const node of nodes) {
+          // Haben wir das Kind gefunden? Dann gib den parent zurück, den wir von oben bekommen haben
+          if (node.key === target) {
+            return parent;
+          }
+          // Weitersuchen in den Kindern -> jetzt ist 'node.key' der neue Parent
+          if (node.children && node.children.length > 0) {
+            const found = findParent(node.children, target, node.key);
+            if (found) return found;
+          }
+        }
+        return undefined;
+      };
+
+      return findParent(tree, childId, undefined);
+    } catch (e) {
+      console.error('Fehler bei der Eltern-Suche:', e);
+      return undefined;
     }
   }
 }

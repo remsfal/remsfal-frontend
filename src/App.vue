@@ -8,6 +8,7 @@ import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useEventBus } from '@/stores/EventStore.ts';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 
 defineOptions({
   created() {
@@ -18,7 +19,7 @@ defineOptions({
     console.log('App created!');
   },
 });
-
+const route = useRoute();
 const { layoutConfig, layoutState } = useLayout();
 
 const containerClass = computed(() => {
@@ -54,7 +55,7 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
     <!-- Sakai AppLayout used as Named Router View -->
     <RouterView name="topbar" />
     <RouterView name="sidebar" />
-    <RouterView />
+    <<RouterView :key="route.fullPath" />
     <div class="layout-mask animate-fadein" />
   </div>
   <Toast />
