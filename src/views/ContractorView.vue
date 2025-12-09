@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
@@ -59,7 +60,6 @@ const normalize = (val?: string) => {
   return v && v.length > 0 ? v : undefined;
 };
 
-// Pflichtfeld-Checks
 const isCompanyValid = computed(() => !!form.value.companyName.trim());
 const isEmailValid = computed(() => !!form.value.email.trim());
 const isStreetValid = computed(() => !!form.value.address.street.trim());
@@ -109,7 +109,6 @@ const buildPayload = (): Contractor => {
   const f = form.value;
   const addr = f.address;
 
-  // Pflichtfelder sind durch validate() garantiert gesetzt
   const street = addr.street.trim();
   const zip = addr.zip.trim();
   const city = addr.city.trim();
@@ -204,7 +203,6 @@ const submitForm = async () => {
     contractorTableRef.value?.reload();
   } catch (err: any) {
     if (err?.message === 'invalid-form') {
-      // Nur Frontend-Validation, kein Request wurde gesendet
       return;
     }
     console.error('Error saving contractor', err);
@@ -233,36 +231,56 @@ const deleteContractor = async (contractor: Contractor) => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
+      <!-- Header-Card im ProjectSettings-Stil -->
       <div class="col-span-12">
-        <div class="card flex justify-between items-center">
-          <h2 class="text-2xl font-semibold">Auftragnehmer Ansicht</h2>
-          <Button
-              label="Neuen Auftragnehmer hinzufügen"
-              icon="pi pi-plus"
-              @click="openCreateDialog"
-          />
-        </div>
+        <Card class="w-full">
+          <template #title>
+            <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <div>
+                <div class="text-xl font-semibold">Auftraggeber & Dienstleister</div>
+                <div class="text-sm text-gray-500">
+                  Verwalte hier externe Firmen, die für dieses Projekt beauftragt werden können.
+                </div>
+              </div>
+              <Button
+                  label="Neuen Auftragnehmer hinzufügen"
+                  icon="pi pi-plus"
+                  @click="openCreateDialog"
+              />
+            </div>
+          </template>
+        </Card>
       </div>
 
+      <!-- Tabelle in Card -->
       <div class="col-span-12">
-        <div class="card">
-          <ContractorTable
-              ref="contractorTableRef"
-              :projectId="props.projectId"
-              @edit="openEditDialog"
-              @delete="deleteContractor"
-          />
-        </div>
+        <Card class="w-full">
+          <template #title>
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-semibold">Übersicht</span>
+            </div>
+          </template>
+          <template #content>
+            <ContractorTable
+                ref="contractorTableRef"
+                :projectId="props.projectId"
+                @edit="openEditDialog"
+                @delete="deleteContractor"
+            />
+          </template>
+        </Card>
       </div>
     </div>
 
+    <!-- Dialog für Neu / Bearbeiten -->
     <Dialog
         v-model:visible="showDialog"
         :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
         :modal="true"
-        :style="{ width: '40rem' }"
+        :style="{ width: '42rem' }"
     >
       <div class="flex flex-col gap-4 mt-2">
+        <!-- Fehlerhinweise -->
         <p v-if="globalError" class="text-red-600 text-sm">
           {{ globalError }}
         </p>
@@ -272,20 +290,22 @@ const deleteContractor = async (contractor: Contractor) => {
         </div>
 
         <!-- Stammdaten -->
-        <div class="font-semibold text-sm text-gray-600">Stammdaten</div>
-
-        <div class="flex flex-col gap-1">
-          <label class="font-medium">
-            Firma <span class="text-red-500">*</span>
-          </label>
-          <InputText
-              v-model="form.companyName"
-              :class="{ 'p-invalid': showErrors && !isCompanyValid }"
-          />
+        <div class="border-b pb-2">
+          <h4 class="font-semibold text-sm text-gray-700">Stammdaten</h4>
         </div>
 
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex-1 flex flex-col gap-1">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label class="font-medium">
+              Firma <span class="text-red-500">*</span>
+            </label>
+            <InputText
+                v-model="form.companyName"
+                :class="{ 'p-invalid': showErrors && !isCompanyValid }"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1">
             <label class="font-medium">
               E-Mail <span class="text-red-500">*</span>
             </label>
@@ -294,7 +314,8 @@ const deleteContractor = async (contractor: Contractor) => {
                 :class="{ 'p-invalid': showErrors && !isEmailValid }"
             />
           </div>
-          <div class="flex-1 flex flex-col gap-1">
+
+          <div class="flex flex-col gap-1">
             <label class="font-medium">
               Telefon <span class="text-xs text-gray-500">(optional)</span>
             </label>
@@ -303,79 +324,88 @@ const deleteContractor = async (contractor: Contractor) => {
                 :class="{ 'p-invalid': showErrors && !isPhoneValid }"
             />
           </div>
-        </div>
 
-        <div class="flex flex-col gap-1">
-          <label class="font-medium">
-            Gewerk <span class="text-xs text-gray-500">(optional)</span>
-          </label>
-          <InputText v-model="form.trade" />
+          <div class="flex flex-col gap-1">
+            <label class="font-medium">
+              Gewerk <span class="text-xs text-gray-500">(optional)</span>
+            </label>
+            <InputText v-model="form.trade" />
+          </div>
         </div>
 
         <!-- Adresse -->
-        <div class="border-t pt-3 font-semibold text-sm text-gray-600">
-          Adresse
+        <div class="border-b pt-2 pb-2">
+          <h4 class="font-semibold text-sm text-gray-700">Adresse</h4>
         </div>
 
-        <div class="flex flex-col gap-1">
-          <label class="font-medium">
-            Straße <span class="text-red-500">*</span>
-          </label>
-          <InputText
-              v-model="form.address.street"
-              :class="{ 'p-invalid': showErrors && !isStreetValid }"
-          />
-        </div>
-
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex-1 flex flex-col gap-1">
+        <div class="grid grid-cols-1 gap-4">
+          <div class="flex flex-col gap-1">
             <label class="font-medium">
-              PLZ <span class="text-red-500">*</span>
+              Straße <span class="text-red-500">*</span>
             </label>
             <InputText
-                v-model="form.address.zip"
-                :class="{ 'p-invalid': showErrors && !isZipValid }"
+                v-model="form.address.street"
+                :class="{ 'p-invalid': showErrors && !isStreetValid }"
             />
           </div>
-          <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">
-              Ort <span class="text-red-500">*</span>
-            </label>
-            <InputText
-                v-model="form.address.city"
-                :class="{ 'p-invalid': showErrors && !isCityValid }"
-            />
-          </div>
-        </div>
 
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">
-              Bundesland / Region
-              <span class="text-xs text-gray-500">(optional)</span>
-            </label>
-            <InputText v-model="form.address.province" />
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="font-medium">
+                PLZ <span class="text-red-500">*</span>
+              </label>
+              <InputText
+                  v-model="form.address.zip"
+                  :class="{ 'p-invalid': showErrors && !isZipValid }"
+              />
+            </div>
+            <div class="flex flex-col gap-1 md:col-span-2">
+              <label class="font-medium">
+                Ort <span class="text-red-500">*</span>
+              </label>
+              <InputText
+                  v-model="form.address.city"
+                  :class="{ 'p-invalid': showErrors && !isCityValid }"
+              />
+            </div>
           </div>
-          <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">
-              Ländercode (z. B. DE)
-              <span class="text-xs text-gray-500">(optional, Standard DE)</span>
-            </label>
-            <InputText v-model="form.address.countryCode" />
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="font-medium">
+                Bundesland / Region
+                <span class="text-xs text-gray-500">(optional)</span>
+              </label>
+              <InputText v-model="form.address.province" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="font-medium">
+                Ländercode (z. B. DE)
+                <span class="text-xs text-gray-500">(optional, Standard DE)</span>
+              </label>
+              <InputText v-model="form.address.countryCode" />
+            </div>
           </div>
         </div>
       </div>
 
       <template #footer>
-        <Button
-            label="Abbrechen"
-            severity="secondary"
-            @click="closeDialog"
-        />
-        <Button
-            :label="isEditMode ? 'Speichern' : 'Anlegen'"
-            @click="submitForm"
-        />
+        <div class="flex justify-between w-full">
+          <span class="text-xs text-gray-500 self-center">
+            Pflichtfelder müssen ausgefüllt sein, bevor gespeichert werden kann.
+          </span>
+          <div class="flex gap-2">
+            <Button
+                label="Abbrechen"
+                severity="secondary"
+                @click="closeDialog"
+            />
+            <Button
+                :label="isEditMode ? 'Speichern' : 'Anlegen'"
+                @click="submitForm"
+            />
+          </div>
+        </div>
       </template>
     </Dialog>
   </main>
