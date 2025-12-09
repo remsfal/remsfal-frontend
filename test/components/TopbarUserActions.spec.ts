@@ -8,10 +8,10 @@ import { ref } from 'vue';
 
 // Router mock
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({useRouter: () => ({ push: mockPush }),}));
+vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }), }));
 
 // Mock composable
-vi.mock('@/composable/useTopbarUserActions', () => ({useTopbarUserActions: vi.fn(),}));
+vi.mock('@/composables/useTopbarUserActions', () => ({ useTopbarUserActions: vi.fn(), }));
 
 describe('TopbarUserActions.vue', () => {
     let mockActions: any;
@@ -47,7 +47,7 @@ describe('TopbarUserActions.vue', () => {
 
             mockActions.sessionStore = userStore;
 
-            const wrapper = mount(TopbarUserActions, {global: { plugins: [pinia] },});
+            const wrapper = mount(TopbarUserActions, { global: { plugins: [pinia] }, });
 
             await flushPromises();
 
@@ -60,7 +60,7 @@ describe('TopbarUserActions.vue', () => {
             userStore.user = { email: 'user@example.com' } as any;
             mockActions.sessionStore = userStore;
 
-            const wrapper = mount(TopbarUserActions, {global: { plugins: [pinia] },});
+            const wrapper = mount(TopbarUserActions, { global: { plugins: [pinia] }, });
 
             await flushPromises();
 
@@ -77,7 +77,7 @@ describe('TopbarUserActions.vue', () => {
             mockActions.sessionStore = userStore;
             mockActions.showDevLoginButton.value = false;
 
-            const wrapper = mount(TopbarUserActions, {global: { plugins: [pinia] },});
+            const wrapper = mount(TopbarUserActions, { global: { plugins: [pinia] }, });
 
             await flushPromises();
 

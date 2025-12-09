@@ -10,7 +10,7 @@ import AppTopbar from '@/layout/AppTopbar.vue';
 import { computed } from 'vue';
 import { useInboxStore } from '@/stores/InboxStore';
 import TopbarUserActions from '@/components/TopbarUserActions.vue';
-import { useTopbarUserActions } from '@/composables/useTopbarUserActions';
+import { useTopbarUserActions } from '../composables/useTopbarUserActions';
 
 const { t } = useI18n();
 

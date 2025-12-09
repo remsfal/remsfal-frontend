@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import { useTopbarUserActions } from '@/composables/useTopbarUserActions';
+import { useTopbarUserActions } from '../composables/useTopbarUserActions';
 
 const {
   t,
