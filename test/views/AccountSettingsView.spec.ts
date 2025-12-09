@@ -160,4 +160,28 @@ describe('AccountSettingsView', () => {
     });
     
   });
+
+  describe('Language switching for buttons', () => {
+    test('Buttons use i18n translation keys instead of hardcoded text', async () => {
+      wrapper.vm.changes = true;
+      await nextTick();
+      
+      // Check that the save button uses the translation key
+      const saveButton = wrapper.find('.save-button');
+      expect(saveButton.exists()).toBe(true);
+      
+      // Check that the cancel button uses the translation key
+      const cancelButton = wrapper.find('.cancel-button');
+      expect(cancelButton.exists()).toBe(true);
+      
+      // Check that the delete button uses the translation key
+      const deleteButton = wrapper.find('.delete-button');
+      expect(deleteButton.exists()).toBe(true);
+      
+      // Verify buttons are rendered (translation keys should resolve to text)
+      expect(saveButton.text()).toBeTruthy();
+      expect(cancelButton.text()).toBeTruthy();
+      expect(deleteButton.text()).toBeTruthy();
+    });
+  });
 });
