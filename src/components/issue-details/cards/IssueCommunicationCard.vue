@@ -14,7 +14,7 @@ import MemberRoleBadge from '@/components/issue-details/badges/MemberRoleBadge.v
     <template #content>
       <TabView>
         <!-- Comments Tab -->
-        <TabPanel header="Comments">
+        <TabPanel value="0" header="Comments">
           <div class="flex flex-col gap-4">
             <!-- Comment 1 -->
             <div class="flex gap-3 p-3 border rounded">
@@ -65,7 +65,7 @@ import MemberRoleBadge from '@/components/issue-details/badges/MemberRoleBadge.v
         </TabPanel>
 
         <!-- Activity Log Tab -->
-        <TabPanel header="Activity Log">
+        <TabPanel value="1" header="Activity Log">
           <div class="flex flex-col gap-3">
             <!-- Activity 1 -->
             <div class="flex gap-3 p-3 border-l-4 border-blue-500 bg-blue-50">
