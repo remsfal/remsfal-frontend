@@ -549,8 +549,8 @@ const deleteAlternativeEmail = async () => {
                 
                 <!-- Only show the alternative email field if one exists -->
                 <div 
-                    v-if="userProfile?.alternativeEmail" 
-                    class="flex items-center gap-1 mt-1 mb-5"
+                v-if="userProfile?.alternativeEmail" 
+                class="flex items-center gap-1 mt-1 mb-5"
                 >
                   <div class="alt-email-wrapper">
                     <InputText 
@@ -561,52 +561,55 @@ const deleteAlternativeEmail = async () => {
                       required 
                     />
                 
-                 <!-- SUCCESS CHECKMARK shown after successful save -->
-                <span
-                  v-if="altEmailSuccess"
-                  class="alt-email-icon alt-email-icon-success"
-                >
+                    <!-- SUCCESS CHECKMARK shown after successful save -->
+                    <span
+                      v-if="altEmailSuccess"
+                      class="alt-email-icon alt-email-icon-success"
+                    >
                       ✔
-                </span>
+                    </span>
 
-                 <!-- ERROR ICON shown if backend returns an error -->
-                <span
+                    <!-- ERROR ICON shown if backend returns an error -->
+                    <span
                       v-if="altEmailError"
                       class="alt-email-icon alt-email-icon-error"
                     >
                       ✗
                     </span>
-              </div>
+                  </div>
   
-                <!-- Trash icon deletes the existing alternative email -->
-                <i class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
-                   @click="deleteAlternativeEmail"
+                  <!-- Trash icon deletes the existing alternative email -->
+                  <i class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
+                     @click="deleteAlternativeEmail"
                   />
                 </div>
-            </div>
+              </div>
 
               <!-- Dialog for entering the alternative email -->
               <Dialog
                 v-model:visible="visible"
                 modal :style="{ width: '35rem' }"  
                 header="Alternative E-Mail hinzufügen"
-                @hide="resetForm">
+                @hide="resetForm"
+              >
                 <div class="flex flex-col gap-1 mb-6">
                   <!-- Email input row -->
                   <div class="flex items-center gap-6">
-                  <label for="email"
-                    class="font-semibold w-29">E-Mail Adresse
-                  </label>
+                  
+                    <label for="email"
+                          class="font-semibold w-29">E-Mail Adresse
+                    </label>
   
-                <!-- Editable input inside dialog -->
-                <InputText
+                    <!-- Editable input inside dialog -->
+                    <InputText
                       id="email" 
                       v-model="alternativeEmail"
                       class="flex-grow"
                       type="email"
                       autocomplete="off"
                       :invalid="isEmailInvalid"
-                      placeholder="Alternative E-Mail-Adresse" />
+                      placeholder="Alternative E-Mail-Adresse" 
+                    />
                   </div>
 
                   <!-- Validation error message -->
@@ -618,24 +621,24 @@ const deleteAlternativeEmail = async () => {
 
                 <!-- Dialog buttons -->
                 <div class="flex justify-end gap-2 mt-6">
-                     <!-- Cancel closes the dialog with no action -->
-                <Button
-                       type="button"
-                       :label="t('button.cancel')"
-                       severity="secondary"
-                       @click="visible = false"
-                />
+                  <!-- Cancel closes the dialog with no action -->
+                  <Button
+                    type="button"
+                    :label="t('button.cancel')"
+                    severity="secondary"
+                    @click="visible = false"
+                  />
 
                   <!-- Save triggers frontend + backend validation -->
                   <Button
-                        type="button"
-                        :label="t('button.add')"
-                        @click="saveAlternativeEmail"
-                   />
-             </div>
-             </Dialog>
+                    type="button"
+                    :label="t('button.add')"
+                    @click="saveAlternativeEmail"
+                  />
+                </div>
+              </Dialog>
 
-                <div class="input-container">
+            <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
                 <InputText
                   id="mobilePhoneNumber"
@@ -1069,7 +1072,7 @@ input:focus {
 
 .alt-trash-icon:hover {
   color: white !important;
-  background-color: #0FA57A;
+  background-color: #047857;
   padding: 11px;
 }
 
