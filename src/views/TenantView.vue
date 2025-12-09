@@ -39,17 +39,25 @@ const statusClasses = (status: TenantContractStatus) =>
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
 
+const normalizeContracts = (
+  data: TenantContractSummary[] | { contracts?: TenantContractSummary[] } | unknown,
+): TenantContractSummary[] => {
+  if (Array.isArray((data as { contracts?: TenantContractSummary[] })?.contracts)) {
+    return (data as { contracts: TenantContractSummary[] }).contracts;
+  }
+  if (Array.isArray(data)) {
+    return data;
+  }
+  return [];
+};
+
 const loadContracts = async () => {
   loading.value = true;
   error.value = null;
 
   try {
     const data = await tenantContractService.listContracts();
-    const list = Array.isArray((data as any)?.contracts)
-      ? (data as any).contracts
-      : Array.isArray(data)
-        ? data
-        : [];
+    const list = normalizeContracts(data);
     if (list.length) {
       contracts.value = list;
     }
@@ -68,7 +76,9 @@ onMounted(loadContracts);
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12 space-y-1">
-        <h1 class="text-2xl font-semibold text-gray-900">Meine Mietverträge</h1>
+        <h1 class="text-2xl font-semibold text-gray-900">
+          Meine Mietverträge
+        </h1>
         <p class="text-gray-600">
           Übersicht deiner Mietverhältnisse. Tippe auf einen Vertrag, um Details zu sehen.
         </p>
