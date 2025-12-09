@@ -292,6 +292,25 @@
           }
         }
       },
+      "ContractorListJson" : {
+        "type" : "object",
+        "properties" : {
+          "contractors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContractorJson"
+            }
+          },
+          "offset" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
       "Cookie" : {
         "type" : "object",
         "properties" : {
@@ -1022,6 +1041,9 @@
             "type" : "string",
             "pattern" : "^\\+[1-9]\\d{4,14}$"
           },
+          "locale" : {
+            "type" : "string"
+          },
           "registeredDate" : {
             "$ref" : "#/components/schemas/LocalDate"
           },
@@ -1199,6 +1221,42 @@
         "responses" : {
           "302" : {
             "description" : "Redirect user to the frontend spa"
+          }
+        }
+      }
+    },
+    "/api/v1/authentication/token" : {
+      "post" : {
+        "summary" : "Login user via app token directly.",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "app_id" ],
+                "properties" : {
+                  "app_id" : {
+                    "type" : "string"
+                  },
+                  "app_token" : {
+                    "type" : "string"
+                  },
+                  "dev_services" : {
+                    "type" : "boolean",
+                    "default" : "false"
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Tokens are set as cookies"
+          },
+          "401" : {
+            "description" : "Unauthorized - Invalid token"
           }
         }
       }
@@ -2410,6 +2468,16 @@
           "required" : true
         } ],
         "responses" : {
+          "200" : {
+            "description" : "A list of contractors was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorListJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2491,6 +2559,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "An existing contractor was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2519,6 +2597,16 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "An existing contractor was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },

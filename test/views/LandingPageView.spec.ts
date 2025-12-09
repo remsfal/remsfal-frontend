@@ -6,7 +6,7 @@ describe('LandingPageView', () => {
   let wrapper: VueWrapper;
 
   test('renders properly', () => {
-    wrapper = mount(LandingPage, {props: { msg: 'Herzlich Willkommen' },});
-    expect(wrapper.text()).toContain('Herzlich Willkommen');
+    wrapper = mount(LandingPage);
+    expect(wrapper.text()).toContain('Die erste Open-Source-Software für ganzheitliches, digitales Facility Management');
   });
 });

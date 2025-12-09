@@ -175,7 +175,6 @@ async function createStorage(): Promise<void> {
   <div v-if="props.type === EntityType.Property">
     <SplitButton
       label="Anlage hinzufügen"
-      severity="success"
       :model="[
         {
           label: 'Gebäude hinzufügen',
@@ -199,7 +198,6 @@ async function createStorage(): Promise<void> {
   <div v-if="props.type === EntityType.Building">
     <SplitButton
       label="Einheit hinzufügen"
-      severity="success"
       :model="[
         {
           label: 'Wohnung hinzufügen',
@@ -239,6 +237,7 @@ async function createStorage(): Promise<void> {
         placeholder="Titel der neun Einheit"
         class="flex-auto"
         autocomplete="on"
+        autofocus
       />
     </div>
     <div class="flex items-center gap-6 mb-20">

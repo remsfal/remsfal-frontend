@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
-import { setupServer } from 'msw/node';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
+import { server } from '../mocks/server';
 import { apartmentService, type Apartment } from '@/services/ApartmentService';
 
 const mockApartment: Apartment = {
@@ -14,48 +14,45 @@ const mockApartment: Apartment = {
   rooms: 3,
 };
 
-const handlers = [
-  http.post('/api/v1/projects/:projectId/buildings/:buildingId/apartments', async ({ request }) => {
-    const body = (await request.json()) as Apartment;
-    return HttpResponse.json(
-      {
-        ...body,
-        id: 'new-apartment-id',
-      },
-      { status: 201 },
-    );
-  }),
-  http.get('/api/v1/projects/:projectId/apartments/:apartmentId', ({ params }) => {
-    if (params.apartmentId === 'not-found') {
-      return HttpResponse.json({ message: 'Apartment not found' }, { status: 404 });
-    }
-    return HttpResponse.json({
-      ...mockApartment,
-      id: params.apartmentId,
-    });
-  }),
-  http.patch('/api/v1/projects/:projectId/apartments/:apartmentId', async ({ request, params }) => {
-    const body = (await request.json()) as Partial<Apartment>;
-    return HttpResponse.json({
-      ...mockApartment,
-      ...body,
-      id: params.apartmentId,
-    });
-  }),
-  http.delete('/api/v1/projects/:projectId/apartments/:apartmentId', ({ params }) => {
-    if (params.apartmentId === 'cannot-delete') {
-      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
-    }
-    return HttpResponse.json({}, { status: 204 });
-  }),
-];
-
-const server = setupServer(...handlers);
-
 describe('ApartmentService', () => {
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  // Override global handlers with test-specific ones
+  beforeEach(() => {
+    server.use(
+      http.post('/api/v1/projects/:projectId/buildings/:buildingId/apartments', async ({ request }) => {
+        const body = (await request.json()) as Apartment;
+        return HttpResponse.json(
+          {
+            ...body,
+            id: 'new-apartment-id',
+          },
+          { status: 201 },
+        );
+      }),
+      http.get('/api/v1/projects/:projectId/apartments/:apartmentId', ({ params }) => {
+        if (params.apartmentId === 'not-found') {
+          return HttpResponse.json({ message: 'Apartment not found' }, { status: 404 });
+        }
+        return HttpResponse.json({
+          ...mockApartment,
+          id: params.apartmentId,
+        });
+      }),
+      http.patch('/api/v1/projects/:projectId/apartments/:apartmentId', async ({ request, params }) => {
+        const body = (await request.json()) as Partial<Apartment>;
+        return HttpResponse.json({
+          ...mockApartment,
+          ...body,
+          id: params.apartmentId,
+        });
+      }),
+      http.delete('/api/v1/projects/:projectId/apartments/:apartmentId', ({ params }) => {
+        if (params.apartmentId === 'cannot-delete') {
+          return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+        }
+        return HttpResponse.json({}, { status: 204 });
+      }),
+    );
+  });
 
   describe('createApartment', () => {
     it('should create a new apartment', async () => {
@@ -145,24 +142,26 @@ describe('ApartmentService', () => {
 
   describe('deleteApartment', () => {
     it('should delete an apartment successfully', async () => {
-      const result = await apartmentService.deleteApartment('project-1', 'apartment-1');
-      expect(result).toBe(true);
+      await apartmentService.deleteApartment('project-1', 'apartment-1');
+      // If no error is thrown, the delete was successful
     });
 
-    it('should return false on deletion failure', async () => {
-      const result = await apartmentService.deleteApartment('project-1', 'cannot-delete');
-      expect(result).toBe(false);
+    it('should throw error on deletion failure', async () => {
+      await expect(
+        apartmentService.deleteApartment('project-1', 'cannot-delete'),
+      ).rejects.toThrow();
     });
 
-    it('should return false on network errors', async () => {
+    it('should throw error on network errors', async () => {
       server.use(
         http.delete('/api/v1/projects/:projectId/apartments/:apartmentId', () => {
           return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
         }),
       );
 
-      const result = await apartmentService.deleteApartment('project-1', 'apartment-1');
-      expect(result).toBe(false);
+      await expect(
+        apartmentService.deleteApartment('project-1', 'apartment-1'),
+      ).rejects.toThrow();
     });
   });
 });

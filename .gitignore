@@ -29,6 +29,9 @@ coverage-*
 # ESLint and other reports
 reports/
 
+# Test results
+test-results/
+
 # nyc test coverage
 .nyc_output
 

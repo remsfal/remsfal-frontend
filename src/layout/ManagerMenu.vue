@@ -4,7 +4,7 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
-import { StatusValues } from '@/services/IssueService.ts'; // runtime-safe Status object
+import { StatusValues } from '@/services/IssueService.ts';
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -52,7 +52,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
       ],
     },
     {
-      label: 'managerMenu.issueManagement.label', // optional: if i18n key also changed
+      label: 'managerMenu.issueManagement',
       items: [
         {
           label: 'managerMenu.issueManagement.mine',

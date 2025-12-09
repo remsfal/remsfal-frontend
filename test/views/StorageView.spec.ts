@@ -1,7 +1,7 @@
 import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
-import {describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll} from 'vitest';
-import { setupServer } from 'msw/node';
-import { handlers } from '../mocks/handlers'; // adjust path if needed
+import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
+import { server } from '../mocks/server';
+import { handlers } from '../mocks/handlers';
 import Component from '../../src/views/StorageView.vue';
 
 // Centralized validation messages
@@ -15,11 +15,9 @@ const VALIDATION_MESSAGES = {
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({useRouter: () => ({push: mockPush,}),}));
 
-// Setup MSW server with your handlers
-const server = setupServer(...handlers);
-beforeAll(() => server.listen());
+// Register test-specific handlers with global server
+beforeEach(() => server.use(...handlers));
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
 
 describe('StorageView.vue', () => {
   let wrapper: VueWrapper<any>;

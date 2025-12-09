@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { projectService, type Project, type ProjectList } from '@/services/ProjectService';
-import { setupTestServer, testErrorHandling } from '../utils/testHelpers';
+import { server } from '../mocks/server';
+import { testErrorHandling } from '../utils/testHelpers';
 
 const mockProjects: ProjectList = {
   projects: [
@@ -68,9 +69,10 @@ const handlers = [
   }),
 ];
 
-const server = setupTestServer(...handlers);
-
 describe('ProjectService', () => {
+  beforeEach(() => {
+    server.use(...handlers);
+  });
 
   describe('getProjects', () => {
     it('should fetch projects with default pagination', async () => {

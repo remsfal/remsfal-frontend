@@ -294,6 +294,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/authentication/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login user via app token directly. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        app_id: string;
+                        app_token?: string;
+                        /** @default false */
+                        dev_services?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Tokens are set as cookies */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized - Invalid token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/projects": {
         parameters: {
             query?: never;
@@ -1615,6 +1665,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description A list of contractors was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorListJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1709,6 +1768,15 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description An existing contractor was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -1786,6 +1854,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description An existing contractor was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ContractorJson"];
+                    };
+                };
                 /** @description No user authentication provided via session cookie */
                 401: {
                     headers: {
@@ -4033,6 +4110,13 @@ export interface components {
             trade?: string;
             address?: components["schemas"]["AddressJson"];
         };
+        ContractorListJson: {
+            contractors?: components["schemas"]["ContractorJson"][];
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int64 */
+            total?: number;
+        };
         Cookie: {
             name?: string;
             value?: string;
@@ -4370,6 +4454,7 @@ export interface components {
             mobilePhoneNumber?: string;
             businessPhoneNumber?: string;
             privatePhoneNumber?: string;
+            locale?: string;
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
