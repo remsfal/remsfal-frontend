@@ -1,105 +1,66 @@
+import { shallowMount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount } from '@vue/test-utils';
-import flushPromises from 'flush-promises';
+
+// Service mocken – Pfad MUSS exakt dem Import in ContractorTable.vue entsprechen
+vi.mock('@/services/ContractorService', () => ({
+  contractorService: {
+    getContractors: vi.fn(),
+  },
+}));
+
 import ContractorTable from '../../src/components/ContractorTable.vue';
 import { contractorService } from '@/services/ContractorService';
 
-vi.mock('@/services/ContractorService', () => ({ contractorService: { getIssues: vi.fn() } }));
+const PROJECT_ID = 'test-project-id';
+
+const factory = () =>
+    shallowMount(ContractorTable, {
+      props: {
+        projectId: PROJECT_ID,
+      },
+      global: {
+        stubs: {
+          DataTable: true,
+          Column: true,
+          Button: true,
+          InputText: true,
+          Checkbox: true,
+        },
+      },
+    });
 
 describe('ContractorTable.vue', () => {
-const mockIssues = [
-  {
- id: '1', title: 'Issue 1', status: 'OPEN', description: 'Beschreibung 1' 
-},
-  {
- id: '2', title: 'Issue 2', status: 'CLOSED', description: 'Beschreibung 2' 
-},
-];
-
   beforeEach(() => {
-    vi.resetAllMocks();
-  });
-
-  it('shows loading while fetching issues', async () => {
-    contractorService.getIssues.mockImplementation(
-      () => new Promise(() => {})
-    );
-
-    const wrapper = mount(ContractorTable);
-
-    expect(wrapper.vm.isLoading).toBe(true);
-  });
-
-  it('loads issues successfully and renders table rows', async () => {
-    contractorService.getIssues.mockResolvedValue({
-      issues: mockIssues,
-      first: 0,
-      size: 2,
-      total: 2,
+    vi.clearAllMocks();
+    // Standard-Response, damit loadContractors nicht crasht
+    (contractorService.getContractors as any).mockResolvedValue({
+      contractors: [],
     });
-
-    const wrapper = mount(ContractorTable);
-    await flushPromises();
-
-    expect(wrapper.vm.isLoading).toBe(false);
-    expect(wrapper.vm.issues).toEqual(mockIssues);
-
-    const rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(mockIssues.length + 1);
   });
 
-  it('expands a row when expander is clicked', async () => {
-    contractorService.getIssues.mockResolvedValue({
-      issues: mockIssues,
-      first: 0,
-      size: 2,
-      total: 2,
-    });
+  it('lädt Contractors beim Mount mit der übergebenen projectId', async () => {
+    factory();
 
-    const wrapper = mount(ContractorTable);
-    await flushPromises();
-
-    expect(wrapper.vm.expandedRows).toEqual({});
-
-    wrapper.vm.expandedRows[mockIssues[0].id] = true;
-    await flushPromises();
-
-    expect(wrapper.vm.expandedRows[mockIssues[0].id]).toBe(true);
+    // onMounted(loadContractors) ruft getContractors einmal auf
+    expect(contractorService.getContractors).toHaveBeenCalledTimes(1);
+    expect(contractorService.getContractors).toHaveBeenCalledWith(PROJECT_ID);
   });
 
-  it('handles empty issues list gracefully', async () => {
-    contractorService.getIssues.mockResolvedValue({
-      issues: [],
-      first: 0,
-      size: 0,
-      total: 0,
-    });
+  it('stellt eine reload-Methode bereit, die getContractors erneut aufruft', async () => {
+    const wrapper = factory();
+    const vm = wrapper.vm as any;
 
-    const wrapper = mount(ContractorTable);
-    await flushPromises();
+    // reload ist über defineExpose verfügbar
+    expect(typeof vm.reload).toBe('function');
 
-    expect(wrapper.vm.issues).toEqual([]);
-    expect(wrapper.vm.isLoading).toBe(false);
-    expect(wrapper.vm.expandedRows).toEqual({});
+    // initialer Call durch onMounted
+    expect(contractorService.getContractors).toHaveBeenCalledTimes(1);
 
-    const rows = wrapper.findAll('tr');
-    expect(rows.length).toBeGreaterThanOrEqual(1);
-  });
+    // reload aufrufen
+    await vm.reload();
 
-  it('handles fetch errors gracefully', async () => {
-    contractorService.getIssues.mockRejectedValue(new Error('Fetch failed'));
-
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const wrapper = mount(ContractorTable);
-    await flushPromises();
-
-    expect(wrapper.vm.issues).toEqual([]);
-    expect(wrapper.vm.isLoading).toBe(false);
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Failed to load issues',
-      expect.any(Error)
-    );
-
-    consoleSpy.mockRestore();
+    // jetzt zweimal: einmal Mount, einmal reload
+    expect(contractorService.getContractors).toHaveBeenCalledTimes(2);
+    expect(contractorService.getContractors).toHaveBeenLastCalledWith(PROJECT_ID);
   });
 });
