@@ -9,9 +9,17 @@ export type Locale = 'en' | 'de';
 
 export const locales: Locale[] = ['en', 'de'];
 
+const browserLocale =
+  navigator.languages?.[0] ||
+  navigator.language ||
+  'en';
+
+const newLocale = browserLocale.split('-')[0];
+const locale = locales.includes(newLocale as Locale) ? (newLocale as Locale) : 'en';
+
 const i18n = createI18n({
   legacy: false,
-  locale: 'de',
+  locale,
   fallback: 'en',
   messages: {
     de,
