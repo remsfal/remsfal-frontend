@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
@@ -11,27 +11,24 @@ const props = defineProps<{
   projectId: string;
 }>();
 
-// Referenz auf die Tabelle, damit wir nach Create/Update/Delete neu laden können
 const contractorTableRef = ref<InstanceType<typeof ContractorTable> | null>(null);
 
-// Dialog-Status
 const showDialog = ref(false);
 const isEditMode = ref(false);
-
-// aktuell bearbeiteter Contractor (bei Edit/Delete)
 const currentContractor = ref<Contractor | null>(null);
 
-// Formular-Typ passend zu ContractorJson & AddressJson
+// ---------- Formular-Model ----------
+
 type ContractorForm = {
   companyName: string;
-  email?: string;
+  email: string;
   phone?: string;
   trade?: string;
-  address?: {
-    street?: string;
-    city?: string;
+  address: {
+    street: string;
+    city: string;
     province?: string;
-    zip?: string;
+    zip: string;
     countryCode?: string;
   };
 };
@@ -52,56 +49,116 @@ const createEmptyForm = (): ContractorForm => ({
 
 const form = ref<ContractorForm>(createEmptyForm());
 
-// Hilfsfunktion: leere Strings zu undefined machen
-const normalize = (value?: string) => {
-  const v = value?.trim();
+// ---------- Errors & Validation ----------
+
+const globalError = ref<string | null>(null);
+const showErrors = ref(false);
+
+const normalize = (val?: string) => {
+  const v = val?.trim();
   return v && v.length > 0 ? v : undefined;
 };
 
-const buildPayload = (): Contractor => {
-  const f = form.value;
-  const addr = f.address ?? {};
+// Pflichtfeld-Checks
+const isCompanyValid = computed(() => !!form.value.companyName.trim());
+const isEmailValid = computed(() => !!form.value.email.trim());
+const isStreetValid = computed(() => !!form.value.address.street.trim());
+const isZipValid = computed(() => !!form.value.address.zip.trim());
+const isCityValid = computed(() => !!form.value.address.city.trim());
 
-  const normalizedAddress = {
-    street: normalize(addr.street),
-    city: normalize(addr.city),
-    province: normalize(addr.province),
-    zip: normalize(addr.zip),
-    countryCode: normalize(addr.countryCode),
-  };
+// Telefon: nur prüfen, wenn etwas eingetragen ist
+const isPhoneValid = computed(() => {
+  const phone = form.value.phone?.trim();
+  if (!phone) return true;
+  return /^\+?[0-9]{10,14}$/.test(phone);
+});
 
-  let hasAddress = Object.values(normalizedAddress).some((v) => v !== undefined);
+const validate = (): boolean => {
+  showErrors.value = true;
+  globalError.value = null;
 
-  // Workaround für Backend: Wenn irgendeine Adresse da ist, brauchen wir ein Land.
-  if (hasAddress && !normalizedAddress.countryCode) {
-    normalizedAddress.countryCode = 'DE';
+  const missing: string[] = [];
+
+  if (!isCompanyValid.value) missing.push('Firma');
+  if (!isEmailValid.value) missing.push('E-Mail');
+  if (!isStreetValid.value) missing.push('Straße');
+  if (!isZipValid.value) missing.push('PLZ');
+  if (!isCityValid.value) missing.push('Ort');
+
+  if (missing.length > 0) {
+    globalError.value = `Bitte folgende Pflichtfelder ausfüllen: ${missing.join(', ')}.`;
+    return false;
   }
 
-  // nach Default ggf. nochmal prüfen (theoretisch nicht nötig, aber sauber)
-  hasAddress = Object.values(normalizedAddress).some((v) => v !== undefined);
+  if (!isPhoneValid.value) {
+    globalError.value =
+        'Telefonnummer muss 10–14 Ziffern enthalten und darf optional mit + beginnen.';
+    return false;
+  }
+
+  return true;
+};
+
+// ---------- Payload für Backend ----------
+
+const buildPayload = (): Contractor => {
+  if (!validate()) {
+    throw new Error('invalid-form');
+  }
+
+  const f = form.value;
+  const addr = f.address;
+
+  // Pflichtfelder sind durch validate() garantiert gesetzt
+  const street = addr.street.trim();
+  const zip = addr.zip.trim();
+  const city = addr.city.trim();
+
+  // Province & CountryCode automatisch für Backend setzen
+  let province = normalize(addr.province);
+  if (!province) {
+    province = city; // z.B. Berlin -> Province Berlin
+  }
+
+  let countryCode = normalize(addr.countryCode);
+  if (!countryCode) {
+    countryCode = 'DE';
+  }
+
+  const addressPayload = {
+    street,
+    city,
+    province,
+    zip,
+    countryCode,
+  };
 
   return {
-    companyName: (f.companyName || '').trim(),
-    email: normalize(f.email) as string | undefined,
-    phone: normalize(f.phone) as string | undefined,
-    trade: normalize(f.trade) as string | undefined,
-    ...(hasAddress ? { address: normalizedAddress } : {}),
+    companyName: f.companyName.trim(),
+    email: f.email.trim(),
+    phone: normalize(f.phone),
+    trade: normalize(f.trade),
+    address: addressPayload,
   } as Contractor;
 };
 
+// ---------- Dialog-Handling ----------
 
-// Dialog öffnen: Neuer Auftragnehmer
 const openCreateDialog = () => {
   isEditMode.value = false;
   currentContractor.value = null;
   form.value = createEmptyForm();
+  globalError.value = null;
+  showErrors.value = false;
   showDialog.value = true;
 };
 
-// Dialog öffnen: Bearbeiten
 const openEditDialog = (contractor: Contractor) => {
   isEditMode.value = true;
   currentContractor.value = contractor;
+  globalError.value = null;
+  showErrors.value = false;
+
   form.value = {
     companyName: contractor.companyName ?? '',
     email: contractor.email ?? '',
@@ -115,19 +172,23 @@ const openEditDialog = (contractor: Contractor) => {
       countryCode: contractor.address?.countryCode ?? '',
     },
   };
+
   showDialog.value = true;
 };
 
 const closeDialog = () => {
   showDialog.value = false;
+  globalError.value = null;
+  showErrors.value = false;
 };
 
-// Speichern (Create oder Update)
+// ---------- Speichern & Löschen ----------
+
 const submitForm = async () => {
   try {
     if (!props.projectId) return;
 
-    const payload = buildPayload();
+    const payload = buildPayload(); // wirft 'invalid-form', wenn Pflichtfelder fehlen
 
     if (isEditMode.value && currentContractor.value?.id) {
       await contractorService.updateContractor(
@@ -136,20 +197,21 @@ const submitForm = async () => {
           payload,
       );
     } else {
-      await contractorService.createContractor(
-          props.projectId,
-          payload,
-      );
+      await contractorService.createContractor(props.projectId, payload);
     }
 
     showDialog.value = false;
     contractorTableRef.value?.reload();
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.message === 'invalid-form') {
+      // Nur Frontend-Validation, kein Request wurde gesendet
+      return;
+    }
     console.error('Error saving contractor', err);
+    globalError.value = 'Beim Speichern ist ein Fehler aufgetreten. Details in der Konsole.';
   }
 };
 
-// Löschen
 const deleteContractor = async (contractor: Contractor) => {
   if (!props.projectId || !contractor.id) return;
 
@@ -163,6 +225,7 @@ const deleteContractor = async (contractor: Contractor) => {
     contractorTableRef.value?.reload();
   } catch (err) {
     console.error('Error deleting contractor', err);
+    globalError.value = 'Beim Löschen ist ein Fehler aufgetreten. Details in der Konsole.';
   }
 };
 </script>
@@ -170,7 +233,6 @@ const deleteContractor = async (contractor: Contractor) => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <!-- Header-Card -->
       <div class="col-span-12">
         <div class="card flex justify-between items-center">
           <h2 class="text-2xl font-semibold">Auftragnehmer Ansicht</h2>
@@ -182,7 +244,6 @@ const deleteContractor = async (contractor: Contractor) => {
         </div>
       </div>
 
-      <!-- Tabelle -->
       <div class="col-span-12">
         <div class="card">
           <ContractorTable
@@ -195,7 +256,6 @@ const deleteContractor = async (contractor: Contractor) => {
       </div>
     </div>
 
-    <!-- Dialog für Neu / Bearbeiten -->
     <Dialog
         v-model:visible="showDialog"
         :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
@@ -203,55 +263,105 @@ const deleteContractor = async (contractor: Contractor) => {
         :style="{ width: '40rem' }"
     >
       <div class="flex flex-col gap-4 mt-2">
+        <p v-if="globalError" class="text-red-600 text-sm">
+          {{ globalError }}
+        </p>
+
+        <div class="text-xs text-gray-500 mb-1">
+          <span class="text-red-500">*</span> kennzeichnet Pflichtfelder.
+        </div>
+
+        <!-- Stammdaten -->
+        <div class="font-semibold text-sm text-gray-600">Stammdaten</div>
+
         <div class="flex flex-col gap-1">
-          <label class="font-medium">Firma *</label>
-          <InputText v-model="form.companyName" />
+          <label class="font-medium">
+            Firma <span class="text-red-500">*</span>
+          </label>
+          <InputText
+              v-model="form.companyName"
+              :class="{ 'p-invalid': showErrors && !isCompanyValid }"
+          />
         </div>
 
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">E-Mail</label>
-            <InputText v-model="form.email" />
+            <label class="font-medium">
+              E-Mail <span class="text-red-500">*</span>
+            </label>
+            <InputText
+                v-model="form.email"
+                :class="{ 'p-invalid': showErrors && !isEmailValid }"
+            />
           </div>
           <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">Telefon</label>
-            <InputText v-model="form.phone" />
+            <label class="font-medium">
+              Telefon <span class="text-xs text-gray-500">(optional)</span>
+            </label>
+            <InputText
+                v-model="form.phone"
+                :class="{ 'p-invalid': showErrors && !isPhoneValid }"
+            />
           </div>
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="font-medium">Gewerk</label>
+          <label class="font-medium">
+            Gewerk <span class="text-xs text-gray-500">(optional)</span>
+          </label>
           <InputText v-model="form.trade" />
         </div>
 
-        <div class="border-t pt-3 text-sm font-semibold">
-          Adresse (optional)
+        <!-- Adresse -->
+        <div class="border-t pt-3 font-semibold text-sm text-gray-600">
+          Adresse
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="font-medium">Straße</label>
-          <InputText v-model="form.address!.street" />
+          <label class="font-medium">
+            Straße <span class="text-red-500">*</span>
+          </label>
+          <InputText
+              v-model="form.address.street"
+              :class="{ 'p-invalid': showErrors && !isStreetValid }"
+          />
         </div>
 
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">PLZ</label>
-            <InputText v-model="form.address!.zip" />
+            <label class="font-medium">
+              PLZ <span class="text-red-500">*</span>
+            </label>
+            <InputText
+                v-model="form.address.zip"
+                :class="{ 'p-invalid': showErrors && !isZipValid }"
+            />
           </div>
           <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">Ort</label>
-            <InputText v-model="form.address!.city" />
+            <label class="font-medium">
+              Ort <span class="text-red-500">*</span>
+            </label>
+            <InputText
+                v-model="form.address.city"
+                :class="{ 'p-invalid': showErrors && !isCityValid }"
+            />
           </div>
         </div>
 
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">Bundesland / Region</label>
-            <InputText v-model="form.address!.province" />
+            <label class="font-medium">
+              Bundesland / Region
+              <span class="text-xs text-gray-500">(optional)</span>
+            </label>
+            <InputText v-model="form.address.province" />
           </div>
           <div class="flex-1 flex flex-col gap-1">
-            <label class="font-medium">Ländercode (z. B. DE)</label>
-            <InputText v-model="form.address!.countryCode" />
+            <label class="font-medium">
+              Ländercode (z. B. DE)
+              <span class="text-xs text-gray-500">(optional, Standard DE)</span>
+            </label>
+            <InputText v-model="form.address.countryCode" />
           </div>
         </div>
       </div>
