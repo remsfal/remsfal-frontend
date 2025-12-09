@@ -219,7 +219,7 @@ describe('AccountSettingsView', () => {
     });
 
     test('i18n uses browser locale initially, then backend locale overwrites it after fetchUserProfile', async () => {
-      Object.defineProperty(window.navigator, 'language', {
+      Object.defineProperty(globalThis.navigator, 'language', {
         value: 'en',
         configurable: true,
       });

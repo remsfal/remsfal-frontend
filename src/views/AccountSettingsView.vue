@@ -488,13 +488,13 @@ const isDisabled = computed(() => {
                   :options="[{ language: 'Deutsch', value: 'de' }, { language: 'English', value: 'en' }]"
                   optionLabel="language"
                   optionValue="value"
-                  placeholder= "Select language"
+                  placeholder="Select language"
                   @update:modelValue="i18n.locale.value = $event"
                 />
 
-              </div>
-
             </div>
+
+          </div>
             <Message class="required" size="small" severity="secondary" variant="simple">
               {{ t('accountSettings.userProfile.requiredFields') }}
             </Message>
