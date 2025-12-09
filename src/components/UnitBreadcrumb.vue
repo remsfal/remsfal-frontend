@@ -10,7 +10,7 @@ interface BreadcrumbItem {
   disabled?: boolean;
   to?: any;
   id?: string;
-  icon?: string; // Icon-Eigenschaft im Interface
+  icon?: string;
 }
 
 const props = defineProps<{ 
@@ -25,7 +25,6 @@ const props = defineProps<{
 const router = useRouter();
 const items = ref<BreadcrumbItem[]>([]);
 
-// --- ICON MAPPING ---
 const getIconForType = (type: string): string => {
   switch (type) {
     case 'PROPERTY': return 'pi pi-map';
@@ -34,7 +33,7 @@ const getIconForType = (type: string): string => {
     case 'COMMERCIAL': return 'pi pi-briefcase';
     case 'STORAGE': return 'pi pi-box';
     case 'SITE': return 'pi pi-tree';
-    default: return 'pi pi-folder'; // Fallback
+    default: return 'pi pi-folder';
   }
 };
 
@@ -46,34 +45,44 @@ const loadBreadcrumbs = async () => {
   if (targetId && props.projectId) {
     try {
       pathNodes = await propertyService.getBreadcrumbPath(props.projectId, targetId);
-    } catch (e) { }
+    } catch {
+      // Fehler ignorieren
+    }
   }
 
   // 2. Grundstück erzwingen (Context Parent)
   if (props.contextParentId && props.projectId) {
-    const parentExists = pathNodes.some(node => node.id === props.contextParentId);
+    const parentExists = pathNodes.some((node) => node.id === props.contextParentId);
     
     if (!parentExists) {
-        // VERSUCH A: Über den Baum
-        try {
-           const parentPath = await propertyService.getBreadcrumbPath(props.projectId, props.contextParentId);
-           if (parentPath.length > 0) {
-               pathNodes = [...parentPath, ...pathNodes];
-           } else {
-               throw new Error('Baum-Pfad leer');
-           }
-        } catch (e) { 
-           // VERSUCH B (FALLBACK): Direkt laden
-           try {
-               const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
-               const propertyNode = {
-                   title: propertyData.title || 'Unbenanntes Grundstück',
-                   id: props.contextParentId,
-                   type: 'PROPERTY' as any
-               };
-               pathNodes = [propertyNode, ...pathNodes];
-           } catch (apiErr) { }
+      // VERSUCH A: Über den Baum
+      try {
+        const parentPath = await propertyService.getBreadcrumbPath(
+          props.projectId,
+          props.contextParentId,
+        );
+        if (parentPath.length > 0) {
+          pathNodes = [...parentPath, ...pathNodes];
+        } else {
+          throw new Error('Baum-Pfad leer');
         }
+      } catch { 
+        // VERSUCH B (FALLBACK): Direkt laden
+        try {
+          const propertyData = await propertyService.getProperty(
+            props.projectId,
+            props.contextParentId,
+          );
+          const propertyNode = {
+            title: propertyData.title || 'Unbenanntes Grundstück',
+            id: props.contextParentId,
+            type: 'PROPERTY' as any,
+          };
+          pathNodes = [propertyNode, ...pathNodes];
+        } catch {
+          // Ignorieren wenn auch das fehlschlägt
+        }
+      }
     }
   }
 
@@ -81,44 +90,51 @@ const loadBreadcrumbs = async () => {
   let pathItems: BreadcrumbItem[] = pathNodes.map((node) => ({
     label: node.title,
     id: node.id,
-    icon: getIconForType(node.type), // <--- HIER WERDEN DIE ICONS GESETZT
+    icon: getIconForType(node.type),
     command: () => {
       router.push({ 
         name: toRentableUnitView(node.type), 
         params: { projectId: props.projectId, unitId: node.id }, 
       });
-    }
+    },
   }));
 
   // 4. Das letzte Stück (Wir selbst)
   if (props.mode === 'create') {
-     pathItems.push({ label: 'Neu anlegen', icon: 'pi pi-plus', disabled: true });
+    // FIX: Mehrzeilig für den Linter
+    pathItems.push({
+      label: 'Neu anlegen',
+      icon: 'pi pi-plus',
+      disabled: true,
+    });
   } else {
-     const lastItem = pathItems.length > 0 ? pathItems[pathItems.length - 1] : null;
+    const lastItem = pathItems.length > 0 ? pathItems[pathItems.length - 1] : null;
      
-     // Wenn wir noch fehlen (z.B. Außenanlage manuell anhängen)
-     if (!lastItem || (props.unitId && lastItem.id !== props.unitId)) {
-         // Wir versuchen den Typ zu erraten für das Icon, oder nehmen einen Standard
-         // Da wir hier den Typ nicht explizit kennen, nehmen wir 'pi-file' oder lassen es leer
-         pathItems.push({
-             label: props.currentTitle || 'Laden...',
-             disabled: true,
-             icon: 'pi pi-circle-fill' // Kleiner Punkt als Platzhalter für "Aktuelles"
-         });
-     } else {
-         // Wir sind da -> Deaktivieren
-         lastItem.disabled = true;
-         if (props.currentTitle) lastItem.label = props.currentTitle;
-     }
+    // Wenn wir noch fehlen
+    if (!lastItem || (props.unitId && lastItem.id !== props.unitId)) {
+      pathItems.push({
+        label: props.currentTitle || 'Laden...',
+        disabled: true,
+        icon: 'pi pi-circle-fill',
+      });
+    } else {
+      // Wir sind da -> Deaktivieren
+      lastItem.disabled = true;
+      if (props.currentTitle) lastItem.label = props.currentTitle;
+    }
   }
 
   // Fallback
   if (pathItems.length === 0) {
-      pathItems.push({
-          label: 'Zur Übersicht',
-          icon: 'pi pi-arrow-left',
-          command: () => router.push({ name: 'RentableUnitsView', params: { projectId: props.projectId } })
-      });
+    // FIX: Zeile umgebrochen, da sonst > 128 Zeichen
+    pathItems.push({
+      label: 'Zur Übersicht',
+      icon: 'pi pi-arrow-left',
+      command: () => router.push({
+        name: 'RentableUnitsView',
+        params: { projectId: props.projectId },
+      }),
+    });
   }
 
   items.value = [...pathItems];
@@ -126,9 +142,10 @@ const loadBreadcrumbs = async () => {
 
 onMounted(() => { loadBreadcrumbs(); });
 
-watch(() => [props.unitId, props.parentId, props.currentTitle, props.projectId, props.contextParentId], () => {
-  loadBreadcrumbs();
-});
+watch(
+  () => [props.unitId, props.parentId, props.currentTitle, props.projectId, props.contextParentId],
+  () => { loadBreadcrumbs(); },
+);
 </script>
 
 <template>
@@ -136,8 +153,25 @@ watch(() => [props.unitId, props.parentId, props.currentTitle, props.projectId, 
 </template>
 
 <style scoped>
-.custom-breadcrumb { background: transparent; border: none; padding: 0; font-size: 0.875rem; }
-:deep(.p-menuitem-link) { padding-left: 0 !important; text-decoration: none !important; }
-:deep(.p-disabled) { opacity: 1 !important; font-weight: bold; color: #6c757d; cursor: default !important; pointer-events: none; }
-:deep(.p-menuitem-icon) { color: #666; margin-right: 0.5rem; } /* Icon Styling */
+.custom-breadcrumb {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+}
+:deep(.p-menuitem-link) {
+  padding-left: 0 !important;
+  text-decoration: none !important;
+}
+:deep(.p-disabled) {
+  opacity: 1 !important;
+  font-weight: bold;
+  color: #6c757d;
+  cursor: default !important;
+  pointer-events: none;
+}
+:deep(.p-menuitem-icon) {
+  color: #666;
+  margin-right: 0.5rem;
+}
 </style>

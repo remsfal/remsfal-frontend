@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import { useLayout } from '@/layout/composables/layout';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserSessionStore } from '@/stores/UserSession';
-import { useEventBus } from '@/stores/EventStore.ts';
+import { useEventBus } from '@/stores/EventStore'; // '.ts' Endung ist in Imports meist optional/unerwünscht
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
 
 defineOptions({
   created() {
@@ -19,6 +18,7 @@ defineOptions({
     console.log('App created!');
   },
 });
+
 const route = useRoute();
 const { layoutConfig, layoutState } = useLayout();
 
@@ -35,11 +35,15 @@ const containerClass = computed(() => {
 const { t } = useI18n();
 const toast = useToast();
 const bus = useEventBus();
+
 bus.on('toast:translate', ({ severity, summary, detail }) => {
   bus.emit('toast:show', {
- severity: severity, summary: t(summary), detail: t(detail) 
+    severity: severity,
+    summary: t(summary),
+    detail: t(detail),
+  });
 });
-});
+
 bus.on('toast:show', ({ severity, summary, detail }) => {
   toast.add({
     severity: severity,
@@ -52,10 +56,11 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
 
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <!-- Sakai AppLayout used as Named Router View -->
     <RouterView name="topbar" />
     <RouterView name="sidebar" />
-    <<RouterView :key="route.fullPath" />
+    
+    <RouterView :key="route.fullPath" />
+    
     <div class="layout-mask animate-fadein" />
   </div>
   <Toast />
