@@ -1,3 +1,4 @@
+
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
 export type Status = ApiComponents['schemas']['Status'];
