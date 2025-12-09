@@ -6,14 +6,10 @@ import { useUserSessionStore } from '../../src/stores/UserSession';
 
 // Router mock
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({
-    useRouter: () => ({ push: mockPush }),
-}));
+vi.mock('vue-router', () => ({useRouter: () => ({ push: mockPush }),}));
 
 // Mock platform helper (since TopbarUserActions uses it)
-vi.mock('../../src/helper/platform', () => ({
-    shouldShowDevLogin: vi.fn().mockReturnValue(false),
-}));
+vi.mock('../../src/helper/platform', () => ({shouldShowDevLogin: vi.fn().mockReturnValue(false),}));
 
 describe('ContractorTopbar.vue', () => {
     it('should render TopbarUserActions', async () => {
@@ -21,9 +17,7 @@ describe('ContractorTopbar.vue', () => {
         const userStore = useUserSessionStore(pinia);
         userStore.user = { email: 'contractor@example.com' } as any;
 
-        const wrapper = mount(ContractorTopbar, {
-            global: { plugins: [pinia] },
-        });
+        const wrapper = mount(ContractorTopbar, {global: { plugins: [pinia] },});
 
         await flushPromises();
 
