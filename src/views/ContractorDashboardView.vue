@@ -292,24 +292,31 @@ const invoicesOverdue = ref([
 :root {
   --blue: #3b82f6;
 }
+
 :root {
   --green: #22c55e;
 }
+
 :root {
   --red: #ef4444;
 }
+
 :root {
   --amber: #f59e0b;
 }
+
 :root {
   --card-bg: white;
 }
+
 :root {
   --card-bg-dark: #1f2937;
 }
+
 :root {
   --shadow: 0 4px 12px rgb(0 0 0 / 0.08);
 }
+
 :root {
   --shadow-dark: 0 4px 12px rgb(0 0 0 / 0.35);
 }
@@ -320,12 +327,15 @@ const invoicesOverdue = ref([
 .card {
   background: var(--card-bg);
 }
+
 .card {
   border-radius: 0.75rem;
 }
+
 .card {
   box-shadow: var(--shadow);
 }
+
 .card {
   transition: 0.2s ease;
 }
@@ -333,6 +343,7 @@ const invoicesOverdue = ref([
 .app-dark .card {
   background: var(--card-bg-dark);
 }
+
 .app-dark .card {
   box-shadow: var(--shadow-dark);
 }
@@ -340,6 +351,7 @@ const invoicesOverdue = ref([
 .card:hover {
   transform: translateY(-2px);
 }
+
 .card:hover {
   box-shadow: 0 8px 25px rgb(0 0 0 / 0.18);
 }
@@ -347,9 +359,11 @@ const invoicesOverdue = ref([
 .card-title {
   font-size: 1.25rem;
 }
+
 .card-title {
   font-weight: 600;
 }
+
 .card-title {
   margin-bottom: 1rem;
 }
@@ -360,21 +374,27 @@ const invoicesOverdue = ref([
 .kpi-card {
   background: var(--card-bg);
 }
+
 .kpi-card {
   border-radius: 0.75rem;
 }
+
 .kpi-card {
   padding: 1.5rem;
 }
+
 .kpi-card {
   box-shadow: var(--shadow);
 }
+
 .kpi-card {
   display: flex;
 }
+
 .kpi-card {
   gap: 1.2rem;
 }
+
 .kpi-card {
   align-items: center;
 }
@@ -386,24 +406,31 @@ const invoicesOverdue = ref([
 .kpi-icon {
   width: 54px;
 }
+
 .kpi-icon {
   height: 54px;
 }
+
 .kpi-icon {
   border-radius: 14px;
 }
+
 .kpi-icon {
   display: flex;
 }
+
 .kpi-icon {
   align-items: center;
 }
+
 .kpi-icon {
   justify-content: center;
 }
+
 .kpi-icon {
   font-size: 26px;
 }
+
 .kpi-icon {
   color: white;
 }
@@ -411,12 +438,15 @@ const invoicesOverdue = ref([
 .kpi-blue {
   background: var(--blue);
 }
+
 .kpi-green {
   background: var(--green);
 }
+
 .kpi-red {
   background: var(--red);
 }
+
 .kpi-amber {
   background: var(--amber);
 }
@@ -424,9 +454,11 @@ const invoicesOverdue = ref([
 .kpi-title {
   font-size: .9rem;
 }
+
 .kpi-title {
   color: #6b7280;
 }
+
 .kpi-title {
   margin-bottom: .25rem;
 }
@@ -434,6 +466,7 @@ const invoicesOverdue = ref([
 .kpi-value {
   font-size: 2rem;
 }
+
 .kpi-value {
   font-weight: 700;
 }
@@ -441,6 +474,7 @@ const invoicesOverdue = ref([
 .kpi-sub {
   font-size: .75rem;
 }
+
 .kpi-sub {
   color: #9ca3af;
 }
@@ -451,9 +485,11 @@ const invoicesOverdue = ref([
 .invoice-table {
   width: 100%;
 }
+
 .invoice-table {
   border-collapse: separate;
 }
+
 .invoice-table {
   border-spacing: 0 8px;
 }
@@ -461,12 +497,15 @@ const invoicesOverdue = ref([
 .invoice-table th {
   text-align: left;
 }
+
 .invoice-table th {
   padding: 8px 10px;
 }
+
 .invoice-table th {
   font-size: 0.9rem;
 }
+
 .invoice-table th {
   color: #6b7280;
 }
@@ -474,12 +513,15 @@ const invoicesOverdue = ref([
 .invoice-table td {
   background: #f9fafb;
 }
+
 .invoice-table td {
   padding: 14px 10px;
 }
+
 .invoice-table td {
   border-radius: 8px;
 }
+
 .invoice-table td {
   font-size: 0.95rem;
 }
@@ -487,6 +529,7 @@ const invoicesOverdue = ref([
 .app-dark .invoice-table td {
   background: #374151;
 }
+
 .app-dark .invoice-table td {
   color: #e5e7eb;
 }
@@ -494,12 +537,15 @@ const invoicesOverdue = ref([
 .status-pill {
   padding: 4px 10px;
 }
+
 .status-pill {
   font-size: 0.75rem;
 }
+
 .status-pill {
   border-radius: 6px;
 }
+
 .status-pill {
   font-weight: 600;
 }
@@ -507,6 +553,7 @@ const invoicesOverdue = ref([
 .status-open {
   background: #dbeafe;
 }
+
 .status-open {
   color: #1e40af;
 }
@@ -514,6 +561,7 @@ const invoicesOverdue = ref([
 .status-overdue {
   background: #fee2e2;
 }
+
 .status-overdue {
   color: #991b1b;
 }
@@ -521,6 +569,7 @@ const invoicesOverdue = ref([
 .app-dark .status-open {
   background: #1e3a8a;
 }
+
 .app-dark .status-open {
   color: #bfdbfe;
 }
@@ -528,6 +577,7 @@ const invoicesOverdue = ref([
 .app-dark .status-overdue {
   background: #7f1d1d;
 }
+
 .app-dark .status-overdue {
   color: #fecaca;
 }
@@ -538,12 +588,15 @@ const invoicesOverdue = ref([
 .finance-card {
   padding: 1.5rem;
 }
+
 .finance-card {
   border-radius: .75rem;
 }
+
 .finance-card {
   background: var(--card-bg);
 }
+
 .finance-card {
   box-shadow: var(--shadow);
 }
@@ -551,6 +604,7 @@ const invoicesOverdue = ref([
 .app-dark .finance-card {
   background: var(--card-bg-dark);
 }
+
 .app-dark .finance-card {
   box-shadow: var(--shadow-dark);
 }
@@ -558,9 +612,11 @@ const invoicesOverdue = ref([
 .finance-title {
   font-size: 1.3rem;
 }
+
 .finance-title {
   font-weight: 600;
 }
+
 .finance-title {
   margin-bottom: 1rem;
 }
@@ -568,15 +624,19 @@ const invoicesOverdue = ref([
 .finance-legend {
   display: flex;
 }
+
 .finance-legend {
   gap: 1.5rem;
 }
+
 .finance-legend {
   margin-bottom: 1rem;
 }
+
 .finance-legend {
   font-size: 0.9rem;
 }
+
 .finance-legend {
   align-items: center;
 }
@@ -584,9 +644,11 @@ const invoicesOverdue = ref([
 .finance-dot {
   width: 14px;
 }
+
 .finance-dot {
   height: 14px;
 }
+
 .finance-dot {
   border-radius: 4px;
 }
