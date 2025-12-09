@@ -1,18 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
-import { propertyService } from '@/services/PropertyService';
+// FIX: Relative Pfade nutzen statt Alias '@', damit TypeScript die Dateien findet
+import UnitBreadcrumb from '../../src/components/UnitBreadcrumb.vue';
+import { propertyService } from '../../src/services/PropertyService';
 
-// Mocks
-vi.mock('@/services/PropertyService');
+// Mocks (auch hier den Pfad anpassen, damit er sicher matcht)
+vi.mock('../../src/services/PropertyService');
 
-// Wir mocken useRouter direkt, statt den echten Router zu laden
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({
     push: mockPush
   })
 }));
+
+// Stub als Variable für robustes Finden
+const BreadcrumbStub = {
+  name: 'BreadcrumbStub',
+  props: ['model'],
+  template: '<div class="p-breadcrumb-stub"></div>'
+};
 
 describe('UnitBreadcrumb.vue', () => {
   beforeEach(() => {
@@ -35,23 +42,19 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
-      // KEIN router plugin hier nötig, da wir useRouter gemockt haben
       global: {
         stubs: {
-          Breadcrumb: {
-            template: '<div><div v-for="item in model" :key="item.label" class="crumb-item" @click="item.command">{{ item.label }}</div></div>',
-            props: ['model']
-          }
+          Breadcrumb: BreadcrumbStub
         }
       }
     });
 
     await flushPromises();
 
-    // Wir prüfen die Props, die an die Breadcrumb-Komponente übergeben wurden
-    const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
-    const model = breadcrumb.props('model');
+    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
+    expect(breadcrumb.exists()).toBe(true);
 
+    const model = breadcrumb.props('model');
     expect(model).toHaveLength(2);
     expect(model[0].label).toBe('Property A');
     expect(model[1].label).toBe('My Unit');
@@ -72,13 +75,13 @@ describe('UnitBreadcrumb.vue', () => {
     const wrapper = mount(UnitBreadcrumb, {
       props: createProps,
       global: {
-        stubs: { Breadcrumb: true }
+        stubs: { Breadcrumb: BreadcrumbStub }
       }
     });
 
     await flushPromises();
 
-    const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
     const model = breadcrumb.props('model');
 
     expect(model).toHaveLength(2);
@@ -103,12 +106,12 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: siteProps,
-      global: { stubs: { Breadcrumb: true } }
+      global: { stubs: { Breadcrumb: BreadcrumbStub } }
     });
 
     await flushPromises();
 
-    const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
     const model = breadcrumb.props('model');
 
     expect(model).toHaveLength(2);
@@ -121,12 +124,12 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
-      global: { stubs: { Breadcrumb: true } }
+      global: { stubs: { Breadcrumb: BreadcrumbStub } }
     });
 
     await flushPromises();
 
-    const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
     const model = breadcrumb.props('model');
 
     expect(model).toHaveLength(1);
@@ -146,14 +149,15 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: siteProps,
-      global: { stubs: { Breadcrumb: true } }
+      global: { stubs: { Breadcrumb: BreadcrumbStub } }
     });
 
     await flushPromises();
     
-    const breadcrumb = wrapper.findComponent({ name: 'Breadcrumb' });
+    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
     const model = breadcrumb.props('model');
     
+    expect(model).toHaveLength(2);
     expect(model[0].label).toBe('Direct Property');
     expect(model[1].label).toBe('Außenanlage');
   });
