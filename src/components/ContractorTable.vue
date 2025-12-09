@@ -5,7 +5,9 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Checkbox from 'primevue/checkbox';
 import { ref, onMounted, watch, computed } from 'vue';
-import { contractorService, type Contractor, type ContractorList } from '@/services/ContractorService';
+import {contractorService,
+  type Contractor,
+  type ContractorList,} from '@/services/ContractorService';
 
 const props = defineProps<{
   projectId: string;
@@ -22,7 +24,7 @@ const expandedRows = ref<Record<string, boolean>>({});
 const searchTerm = ref('');
 const showArchive = ref(false);
 
-// merkt, welche Contractor-IDs als "archiviert" markiert sind
+// Merkt sich (nur im Frontend), welche Auftragnehmer "archiviert" sind
 const archiveState = ref<Record<string, boolean>>({});
 
 const loadContractors = async () => {
@@ -71,7 +73,7 @@ const toggleArchived = (id: string | undefined, value: boolean) => {
   };
 };
 
-// Grundliste je nach Archiv-Ansicht
+// Liste je nach Archiv-Ansicht
 const baseList = computed(() => {
   if (showArchive.value) {
     return contractors.value.filter((c) => isArchived(c));
@@ -80,7 +82,7 @@ const baseList = computed(() => {
   }
 });
 
-// gefilterte Liste für Suche
+// Suche
 const filteredContractors = computed(() => {
   const term = searchTerm.value.trim().toLowerCase();
   const source = baseList.value;
@@ -103,50 +105,51 @@ const countLabel = computed(() =>
     showArchive.value ? 'archivierte Auftragnehmer' : 'Auftragnehmer',
 );
 
-// Ermöglicht dem Parent ein Reload nach Create/Update/Delete
+// Erlaubt dem Parent ein Reload nach Create/Update/Delete
 defineExpose({reload: loadContractors,});
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
-    <!-- Toolbar über der Tabelle -->
+    <!-- Toolbar -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
       <span class="text-sm text-gray-500">
-        {{ filteredContractors.length }} {{ countLabel }}
-        gefunden
+        {{ filteredContractors.length }} {{ countLabel }} gefunden
       </span>
+
       <div class="flex items-center gap-2">
-        <!-- Archiv-/Aktiv-Button mit Farben & Icon -->
+        <!-- Archiv / Aktiv umschalten -->
         <Button
-            :label="showArchive ? 'Aktive anzeigen' : 'Archiv anzeigen'"
-            :icon="showArchive ? 'pi pi-list' : 'pi pi-archive'"
-            :severity="showArchive ? 'success' : 'secondary'"
-            size="small"
-            class="min-w-[11rem]"
-            @click="showArchive = !showArchive"
+          :label="showArchive ? 'Aktive anzeigen' : 'Archiv anzeigen'"
+          :icon="showArchive ? 'pi pi-list' : 'pi pi-archive'"
+          :severity="showArchive ? 'success' : 'secondary'"
+          size="small"
+          class="min-w-[11rem]"
+          @click="showArchive = !showArchive"
         />
+
         <span class="text-sm text-gray-500 hidden md:inline">Suche:</span>
         <InputText
-            v-model="searchTerm"
-            placeholder="Nach Firma, E-Mail oder Gewerk suchen"
-            class="w-full md:w-96"
+          v-model="searchTerm"
+          placeholder="Nach Firma, E-Mail oder Gewerk suchen"
+          class="w-full md:w-96"
         />
       </div>
     </div>
 
-    <!-- Tabelle mit Transition für smoothen View-Switch -->
+    <!-- Tabelle mit Transition zwischen Aktiv/Archiv -->
     <Transition name="fade-scale">
       <DataTable
-          v-model:expandedRows="expandedRows"
-          :key="showArchive ? 'archive' : 'active'"
-          :value="filteredContractors"
-          scrollable
-          :loading="isLoading"
-          rowHover
-          :rows="10"
-          dataKey="id"
-          paginator
-          tableStyle="min-width: 75rem"
+        :key="showArchive ? 'archive' : 'active'"
+        v-model:expandedRows="expandedRows"
+        :value="filteredContractors"
+        scrollable
+        :loading="isLoading"
+        rowHover
+        :rows="10"
+        dataKey="id"
+        paginator
+        tableStyle="min-width: 75rem"
       >
         <Column :expander="true" headerStyle="width: 3rem" />
 
@@ -159,7 +162,10 @@ defineExpose({reload: loadContractors,});
         <Column header="Adresse" style="min-width: 260px">
           <template #body="slotProps">
             <span v-if="slotProps.data.address">
-              {{ slotProps.data.address.street }},
+              {{ slotProps.data.address.street }}
+              <span v-if="slotProps.data.address.houseNumber">
+                {{ ' ' + slotProps.data.address.houseNumber }}
+              </span>,
               {{ slotProps.data.address.zip }}
               {{ slotProps.data.address.city }}
             </span>
@@ -169,16 +175,14 @@ defineExpose({reload: loadContractors,});
           </template>
         </Column>
 
-        <!-- Abgeschlossen-Checkbox -->
+        <!-- Abgeschlossen -->
         <Column header="Abgeschlossen" style="width: 140px">
           <template #body="slotProps">
             <div class="flex justify-center">
               <Checkbox
-                  binary
-                  :modelValue="isArchived(slotProps.data)"
-                  @update:modelValue="(val) =>
-                  toggleArchived(slotProps.data.id as string | undefined, val)"
-                  :pt="{
+                binary
+                :modelValue="isArchived(slotProps.data)"
+                :pt="{
                   box: {
                     class: isArchived(slotProps.data)
                       ? 'bg-green-500 border-green-500'
@@ -190,6 +194,8 @@ defineExpose({reload: loadContractors,});
                       : '',
                   },
                 }"
+                @update:modelValue="(val) =>
+                  toggleArchived(slotProps.data.id as string | undefined, val)"
               />
             </div>
           </template>
@@ -200,129 +206,145 @@ defineExpose({reload: loadContractors,});
           <template #body="slotProps">
             <div class="flex gap-2 justify-end">
               <Button
-                  icon="pi pi-pencil"
-                  severity="secondary"
-                  rounded
-                  text
-                  v-tooltip.top="'Bearbeiten'"
-                  @click="emit('edit', slotProps.data)"
+                v-tooltip.top="'Bearbeiten'"
+                icon="pi pi-pencil"
+                severity="secondary"
+                rounded
+                text
+                @click="emit('edit', slotProps.data)"
               />
               <Button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  rounded
-                  text
-                  v-tooltip.top="'Löschen'"
-                  @click="emit('delete', slotProps.data)"
+                v-tooltip.top="'Löschen'"
+                icon="pi pi-trash"
+                severity="danger"
+                rounded
+                text
+                @click="emit('delete', slotProps.data)"
               />
             </div>
           </template>
         </Column>
 
-        <!-- Erweiterte Details mit eigener Transition -->
+        <!-- Detailansicht -->
         <template #expansion="slotProps">
           <Transition name="expand-row">
             <div
-                :key="slotProps.data.id"
-                class="p-5 border rounded-2xl bg-surface-50/80 flex flex-col gap-4 shadow-sm"
+              :key="slotProps.data.id"
+              class="p-6 border rounded-2xl bg-surface-50/80 shadow-sm"
             >
-              <!-- Header -->
-              <div
+              <div class="flex flex-col gap-4">
+                <!-- Header -->
+                <div
                   class="flex flex-col md:flex-row md:items-center md:justify-between gap-2"
-              >
-                <div>
-                  <h4 class="font-semibold text-lg text-gray-800">
-                    {{ slotProps.data.companyName }}
-                  </h4>
-                  <p class="text-xs text-gray-500 mt-1">
-                    {{ slotProps.data.email || 'Keine E-Mail hinterlegt' }}
-                  </p>
-                </div>
+                >
+                  <div>
+                    <h4 class="font-semibold text-lg text-gray-800">
+                      {{ slotProps.data.companyName }}
+                    </h4>
+                    <p class="text-xs text-gray-500 mt-1">
+                      {{ slotProps.data.email || 'Keine E-Mail hinterlegt' }}
+                    </p>
+                  </div>
 
-                <div class="flex items-center gap-3">
-                  <span
+                  <div class="flex items-center gap-3">
+                    <span
                       v-if="isArchived(slotProps.data)"
                       class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700"
-                  >
-                    <i class="pi pi-check-circle mr-1 text-xs" />
-                    Abgeschlossen (Archiv)
-                  </span>
-                  <span
+                    >
+                      <i class="pi pi-check-circle mr-1 text-xs" />
+                      Abgeschlossen (Archiv)
+                    </span>
+                    <span
                       v-else
                       class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700"
-                  >
-                    <i class="pi pi-briefcase mr-1 text-xs" />
-                    Aktiv
-                  </span>
-                </div>
-              </div>
-
-              <!-- Inhalt in zwei Spalten -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                <!-- Kontakt & Gewerke -->
-                <div class="space-y-3">
-                  <div>
-                    <div class="text-xs font-semibold uppercase text-gray-400">
-                      Kontakt
-                    </div>
-                    <div class="mt-1 space-y-1">
-                      <p v-if="slotProps.data.phone">
-                        <span class="font-medium text-gray-700">Telefon:</span>
-                        <span class="ml-1 text-gray-800">
-                          {{ slotProps.data.phone }}
-                        </span>
-                      </p>
-                      <p v-else class="text-gray-400">
-                        Keine Telefonnummer hinterlegt.
-                      </p>
-                    </div>
+                    >
+                      <i class="pi pi-briefcase mr-1 text-xs" />
+                      Aktiv
+                    </span>
                   </div>
+                </div>
 
-                  <div>
-                    <div class="text-xs font-semibold uppercase text-gray-400">
-                      Gewerk
+                <!-- Zwei Spalten -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-x-16 text-sm">
+                  <!-- Kontakt + Gewerk -->
+                  <div class="space-y-4">
+                    <div>
+                      <div
+                        class="text-[11px] font-semibold uppercase tracking-wide text-gray-400"
+                      >
+                        Kontakt
+                      </div>
+                      <div class="mt-1 space-y-1">
+                        <p v-if="slotProps.data.phone">
+                          <span class="font-medium text-gray-700">Telefon:</span>
+                          <span class="ml-1 text-gray-800">
+                            {{ slotProps.data.phone }}
+                          </span>
+                        </p>
+                        <p v-else class="text-gray-400">
+                          Keine Telefonnummer hinterlegt.
+                        </p>
+                      </div>
                     </div>
-                    <div class="mt-1">
-                      <span
+
+                    <div>
+                      <div
+                        class="text-[11px] font-semibold uppercase tracking-wide text-gray-400"
+                      >
+                        Gewerk
+                      </div>
+                      <div class="mt-1">
+                        <span
                           v-if="slotProps.data.trade"
                           class="inline-flex items-center px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium"
-                      >
-                        {{ slotProps.data.trade }}
-                      </span>
-                      <span v-else class="text-gray-400 text-sm">
-                        Kein Gewerk hinterlegt.
-                      </span>
+                        >
+                          {{ slotProps.data.trade }}
+                        </span>
+                        <span v-else class="text-gray-400 text-sm">
+                          Kein Gewerk hinterlegt.
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Adresse -->
-                <div class="space-y-3">
-                  <div>
-                    <div class="text-xs font-semibold uppercase text-gray-400">
-                      Adresse
-                    </div>
-                    <div class="mt-1 space-y-1" v-if="slotProps.data.address">
-                      <p class="text-gray-800">
-                        {{ slotProps.data.address.street }}
-                      </p>
-                      <p class="text-gray-800">
-                        {{ slotProps.data.address.zip }}
-                        {{ slotProps.data.address.city }}
-                      </p>
-                      <p v-if="slotProps.data.address.province" class="text-gray-700">
-                        {{ slotProps.data.address.province }}
-                      </p>
-                      <p
+                  <!-- Adresse -->
+                  <div class="space-y-3">
+                    <div>
+                      <div
+                        class="text-[11px] font-semibold uppercase tracking-wide text-gray-400"
+                      >
+                        Adresse
+                      </div>
+
+                      <div v-if="slotProps.data.address" class="mt-1 space-y-1">
+                        <p class="text-gray-800">
+                          {{ slotProps.data.address.street }}
+                          <span v-if="slotProps.data.address.houseNumber">
+                            {{ ' ' + slotProps.data.address.houseNumber }}
+                          </span>
+                        </p>
+                        <p class="text-gray-800">
+                          {{ slotProps.data.address.zip }}
+                          {{ slotProps.data.address.city }}
+                        </p>
+                        <p
+                          v-if="slotProps.data.address.province"
+                          class="text-gray-700"
+                        >
+                          {{ slotProps.data.address.province }}
+                        </p>
+                        <p
                           v-if="slotProps.data.address.countryCode"
                           class="text-gray-700"
-                      >
-                        Land: {{ slotProps.data.address.countryCode }}
+                        >
+                          Land: {{ slotProps.data.address.countryCode }}
+                        </p>
+                      </div>
+
+                      <p v-else class="mt-1 text-gray-400">
+                        Keine Adresse hinterlegt.
                       </p>
                     </div>
-                    <p v-else class="mt-1 text-gray-400">
-                      Keine Adresse hinterlegt.
-                    </p>
                   </div>
                 </div>
               </div>
