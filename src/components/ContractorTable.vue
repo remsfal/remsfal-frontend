@@ -10,7 +10,7 @@ import {contractorService,
   type ContractorList,} from '@/services/ContractorService';
 
 const props = defineProps<{
-  projectId: string;
+  projectId?: string;
 }>();
 
 const emit = defineEmits<{
