@@ -86,7 +86,8 @@ const validate = (): boolean => {
   if (!isCityValid.value) missing.push('Ort');
 
   if (missing.length > 0) {
-    globalError.value = `Bitte folgende Pflichtfelder ausfüllen: ${missing.join(', ')}.`;
+    globalError.value =
+        'Bitte folgende Pflichtfelder ausfüllen: ' + missing.join(', ') + '.';
     return false;
   }
 
@@ -187,28 +188,50 @@ const submitForm = async () => {
   try {
     if (!props.projectId) return;
 
-    const payload = buildPayload(); // wirft 'invalid-form', wenn Pflichtfelder fehlen
+    // Basis-Payload aus dem Formular bauen (ohne id / projectId)
+    let payload = buildPayload();
 
     if (isEditMode.value && currentContractor.value?.id) {
+      // 🔥 WICHTIG: Für PATCH die id mitsenden, weil das Backend sie verlangt
+      payload = {
+        ...payload,
+        id: currentContractor.value.id,
+      } as Contractor;
+
       await contractorService.updateContractor(
           props.projectId,
           currentContractor.value.id,
           payload,
       );
     } else {
+      // Für POST KEINE id mitsenden (muss laut Backend null sein)
       await contractorService.createContractor(props.projectId, payload);
     }
 
     showDialog.value = false;
+    globalError.value = null;
+    showErrors.value = false;
     contractorTableRef.value?.reload();
   } catch (err: any) {
+    console.error('Error saving contractor', err);
+
+    // Frontend-Validierung (Pflichtfelder o. Telefon) hat schon eine Meldung gesetzt
     if (err?.message === 'invalid-form') {
       return;
     }
-    console.error('Error saving contractor', err);
-    globalError.value = 'Beim Speichern ist ein Fehler aufgetreten. Details in der Konsole.';
+
+    // Backend: 400 = meistens ungültige Adresse
+    if (err?.response?.status === 400) {
+      globalError.value =
+          'Die eingegebene Adresse wurde vom Backend als ungültig abgelehnt. ' +
+          'Bitte prüfen Sie Straße, PLZ, Ort und den Ländercode.';
+    } else {
+      globalError.value =
+          'Beim Speichern ist ein Fehler aufgetreten. Details in der Konsole.';
+    }
   }
 };
+
 
 const deleteContractor = async (contractor: Contractor) => {
   if (!props.projectId || !contractor.id) return;
@@ -231,7 +254,7 @@ const deleteContractor = async (contractor: Contractor) => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <!-- Header-Card im ProjectSettings-Stil -->
+      <!-- Header-Card -->
       <div class="col-span-12">
         <Card class="w-full">
           <template #title>
@@ -252,7 +275,7 @@ const deleteContractor = async (contractor: Contractor) => {
         </Card>
       </div>
 
-      <!-- Tabelle in Card -->
+      <!-- Tabelle -->
       <div class="col-span-12">
         <Card class="w-full">
           <template #title>
@@ -272,7 +295,7 @@ const deleteContractor = async (contractor: Contractor) => {
       </div>
     </div>
 
-    <!-- Dialog für Neu / Bearbeiten -->
+    <!-- Dialog Neu/Bearbeiten -->
     <Dialog
         v-model:visible="showDialog"
         :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
@@ -280,14 +303,14 @@ const deleteContractor = async (contractor: Contractor) => {
         :style="{ width: '42rem' }"
     >
       <div class="flex flex-col gap-4 mt-2">
-        <!-- Fehlerhinweise -->
+        <!-- Rote Fehlermeldung im Stil der Pflichtfelder -->
         <p v-if="globalError" class="text-red-600 text-sm">
           {{ globalError }}
         </p>
 
-        <div class="text-xs text-gray-500 mb-1">
+        <p class="text-xs text-gray-500 mb-1">
           <span class="text-red-500">*</span> kennzeichnet Pflichtfelder.
-        </div>
+        </p>
 
         <!-- Stammdaten -->
         <div class="border-b pb-2">
