@@ -24,12 +24,12 @@ describe('i18n browser locale detection', () => {
 
   test('fallbacks to navigator.language when navigator.languages is missing', async () => {
     vi.stubGlobal('navigator', {
-      language: 'en-US'
+      language: 'de-DE'
     });
 
     const { default: i18n } = await loadI18n();
 
-    expect(i18n.global.locale.value).toBe('en');
+    expect(i18n.global.locale.value).toBe('de');
   });
 
   test('falls back to "en" when browser locale is not supported', async () => {

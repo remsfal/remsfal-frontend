@@ -11,6 +11,11 @@ import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
 import ConfirmationService from 'primevue/confirmationservice';
+import { beforeAll } from 'vitest'
+
+beforeAll(() => {
+  i18n.global.locale.value = 'de'
+})
 
 // Set up MSW server globally
 import '../mocks/setupTests';
