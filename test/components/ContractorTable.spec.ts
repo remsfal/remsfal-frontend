@@ -2,11 +2,8 @@ import { shallowMount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Service mocken – Pfad MUSS exakt dem Import in ContractorTable.vue entsprechen
-vi.mock('@/services/ContractorService', () => ({
-  contractorService: {
-    getContractors: vi.fn(),
-  },
-}));
+vi.mock('@/services/ContractorService', () => ({ contractorService: { getContractors: vi.fn() } }));
+
 
 import ContractorTable from '../../src/components/ContractorTable.vue';
 import { contractorService } from '@/services/ContractorService';
@@ -15,9 +12,7 @@ const PROJECT_ID = 'test-project-id';
 
 const factory = () =>
     shallowMount(ContractorTable, {
-      props: {
-        projectId: PROJECT_ID,
-      },
+      props: { projectId: PROJECT_ID },
       global: {
         stubs: {
           DataTable: true,
@@ -33,9 +28,7 @@ describe('ContractorTable.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Standard-Response, damit loadContractors nicht crasht
-    (contractorService.getContractors as any).mockResolvedValue({
-      contractors: [],
-    });
+    (contractorService.getContractors as any).mockResolvedValue({ contractors: [] });
   });
 
   it('lädt Contractors beim Mount mit der übergebenen projectId', async () => {

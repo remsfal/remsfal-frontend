@@ -260,15 +260,17 @@ const deleteContractor = async (contractor: Contractor) => {
           <template #title>
             <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div>
-                <div class="text-xl font-semibold">Auftraggeber & Dienstleister</div>
+                <div class="text-xl font-semibold">
+                  Auftraggeber & Dienstleister
+                </div>
                 <div class="text-sm text-gray-500">
                   Verwalte hier externe Firmen, die für dieses Projekt beauftragt werden können.
                 </div>
               </div>
               <Button
-                  label="Neuen Auftragnehmer hinzufügen"
-                  icon="pi pi-plus"
-                  @click="openCreateDialog"
+                label="Neuen Auftragnehmer hinzufügen"
+                icon="pi pi-plus"
+                @click="openCreateDialog"
               />
             </div>
           </template>
@@ -285,10 +287,10 @@ const deleteContractor = async (contractor: Contractor) => {
           </template>
           <template #content>
             <ContractorTable
-                ref="contractorTableRef"
-                :projectId="props.projectId"
-                @edit="openEditDialog"
-                @delete="deleteContractor"
+              ref="contractorTableRef"
+              :projectId="props.projectId"
+              @edit="openEditDialog"
+              @delete="deleteContractor"
             />
           </template>
         </Card>
@@ -297,10 +299,10 @@ const deleteContractor = async (contractor: Contractor) => {
 
     <!-- Dialog Neu/Bearbeiten -->
     <Dialog
-        v-model:visible="showDialog"
-        :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
-        :modal="true"
-        :style="{ width: '42rem' }"
+      v-model:visible="showDialog"
+      :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
+      :modal="true"
+      :style="{ width: '42rem' }"
     >
       <div class="flex flex-col gap-4 mt-2">
         <!-- Rote Fehlermeldung im Stil der Pflichtfelder -->
@@ -314,7 +316,9 @@ const deleteContractor = async (contractor: Contractor) => {
 
         <!-- Stammdaten -->
         <div class="border-b pb-2">
-          <h4 class="font-semibold text-sm text-gray-700">Stammdaten</h4>
+          <h4 class="font-semibold text-sm text-gray-700">
+            Stammdaten
+          </h4>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -323,8 +327,8 @@ const deleteContractor = async (contractor: Contractor) => {
               Firma <span class="text-red-500">*</span>
             </label>
             <InputText
-                v-model="form.companyName"
-                :class="{ 'p-invalid': showErrors && !isCompanyValid }"
+              v-model="form.companyName"
+              :class="{ 'p-invalid': showErrors && !isCompanyValid }"
             />
           </div>
 
@@ -333,8 +337,8 @@ const deleteContractor = async (contractor: Contractor) => {
               E-Mail <span class="text-red-500">*</span>
             </label>
             <InputText
-                v-model="form.email"
-                :class="{ 'p-invalid': showErrors && !isEmailValid }"
+              v-model="form.email"
+              :class="{ 'p-invalid': showErrors && !isEmailValid }"
             />
           </div>
 
@@ -343,8 +347,8 @@ const deleteContractor = async (contractor: Contractor) => {
               Telefon <span class="text-xs text-gray-500">(optional)</span>
             </label>
             <InputText
-                v-model="form.phone"
-                :class="{ 'p-invalid': showErrors && !isPhoneValid }"
+              v-model="form.phone"
+              :class="{ 'p-invalid': showErrors && !isPhoneValid }"
             />
           </div>
 
@@ -358,7 +362,9 @@ const deleteContractor = async (contractor: Contractor) => {
 
         <!-- Adresse -->
         <div class="border-b pt-2 pb-2">
-          <h4 class="font-semibold text-sm text-gray-700">Adresse</h4>
+          <h4 class="font-semibold text-sm text-gray-700">
+            Adresse
+          </h4>
         </div>
 
         <div class="grid grid-cols-1 gap-4">
@@ -367,8 +373,8 @@ const deleteContractor = async (contractor: Contractor) => {
               Straße <span class="text-red-500">*</span>
             </label>
             <InputText
-                v-model="form.address.street"
-                :class="{ 'p-invalid': showErrors && !isStreetValid }"
+              v-model="form.address.street"
+              :class="{ 'p-invalid': showErrors && !isStreetValid }"
             />
           </div>
 
@@ -378,8 +384,8 @@ const deleteContractor = async (contractor: Contractor) => {
                 PLZ <span class="text-red-500">*</span>
               </label>
               <InputText
-                  v-model="form.address.zip"
-                  :class="{ 'p-invalid': showErrors && !isZipValid }"
+                v-model="form.address.zip"
+                :class="{ 'p-invalid': showErrors && !isZipValid }"
               />
             </div>
             <div class="flex flex-col gap-1 md:col-span-2">
@@ -387,8 +393,8 @@ const deleteContractor = async (contractor: Contractor) => {
                 Ort <span class="text-red-500">*</span>
               </label>
               <InputText
-                  v-model="form.address.city"
-                  :class="{ 'p-invalid': showErrors && !isCityValid }"
+                v-model="form.address.city"
+                :class="{ 'p-invalid': showErrors && !isCityValid }"
               />
             </div>
           </div>
@@ -419,13 +425,13 @@ const deleteContractor = async (contractor: Contractor) => {
           </span>
           <div class="flex gap-2">
             <Button
-                label="Abbrechen"
-                severity="secondary"
-                @click="closeDialog"
+              label="Abbrechen"
+              severity="secondary"
+              @click="closeDialog"
             />
             <Button
-                :label="isEditMode ? 'Speichern' : 'Anlegen'"
-                @click="submitForm"
+              :label="isEditMode ? 'Speichern' : 'Anlegen'"
+              @click="submitForm"
             />
           </div>
         </div>

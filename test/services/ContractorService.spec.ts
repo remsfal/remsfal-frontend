@@ -1,16 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Erst ApiClient mocken – WICHTIG: Pfad exakt wie in ContractorService.ts
-vi.mock('@/services/ApiClient.ts', () => {
-  return {
-    apiClient: {
-      get: vi.fn(),
-      post: vi.fn(),
-      patch: vi.fn(),
-      delete: vi.fn(),
-    },
-  };
-});
+vi.mock('@/services/ApiClient.ts', () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
 
 // Danach Service & apiClient importieren
 import { ContractorService, contractorService } from '@/services/ContractorService';
@@ -34,9 +32,7 @@ describe('ContractorService', () => {
     const result = await service.getContractors(PROJECT_ID);
 
     expect(apiClient.get).toHaveBeenCalledTimes(1);
-    expect(apiClient.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${PROJECT_ID}/contractors`,
-    );
+    expect(apiClient.get).toHaveBeenCalledWith(`/api/v1/projects/${PROJECT_ID}/contractors`);
     expect(result).toBe(fakeList);
   });
 
@@ -79,18 +75,12 @@ describe('ContractorService', () => {
   it('updateContractor ruft apiClient.patch mit richtiger URL und Payload auf', async () => {
     const service = new ContractorService();
 
-    const payload = {
-      companyName: 'Geänderte Firma',
-    } as any;
-
+    const payload = { companyName: 'Geänderte Firma' } as any;
     const fakeResponse = { id: CONTRACTOR_ID, ...payload } as any;
+
     (apiClient.patch as any).mockResolvedValue(fakeResponse);
 
-    const result = await service.updateContractor(
-        PROJECT_ID,
-        CONTRACTOR_ID,
-        payload,
-    );
+    const result = await service.updateContractor(PROJECT_ID, CONTRACTOR_ID, payload);
 
     expect(apiClient.patch).toHaveBeenCalledTimes(1);
     expect(apiClient.patch).toHaveBeenCalledWith(
@@ -118,8 +108,6 @@ describe('ContractorService', () => {
 
     await contractorService.getContractors(PROJECT_ID);
 
-    expect(apiClient.get).toHaveBeenCalledWith(
-        `/api/v1/projects/${PROJECT_ID}/contractors`,
-    );
+    expect(apiClient.get).toHaveBeenCalledWith(`/api/v1/projects/${PROJECT_ID}/contractors`);
   });
 });
