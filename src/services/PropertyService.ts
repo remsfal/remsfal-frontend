@@ -57,8 +57,7 @@ class PropertyService {
   }
 
   /**
-   * Berechnet den Pfad (Breadcrumbs).
-   * Expliziter Rückgabetyp verhindert 'Unexpected any' Fehler.
+   * Berechnet den Pfad (Breadcrumbs) zu einer bestimmten Node-ID.
    */
   async getBreadcrumbPath(projectId: string, targetNodeId: string): Promise<{ title: string; id: string; type: UnitType }[]> {
     try {
@@ -89,7 +88,8 @@ class PropertyService {
       return resultNodes.map((node) => ({
         title: node.data?.title || 'Unbenannt',
         id: node.key,
-        type: node.data?.type as UnitType 
+        // FIX: Wir brauchen 'as UnitType', weil node.data?.type 'undefined' sein könnte
+        type: node.data?.type as UnitType, 
       }));
 
     } catch (e) {
@@ -128,4 +128,4 @@ class PropertyService {
   }
 }
 
-export const propertyService = new PropertyService(); 
+export const propertyService = new PropertyService();

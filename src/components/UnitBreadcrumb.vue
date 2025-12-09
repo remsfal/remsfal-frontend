@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
 import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
 
-// --- TYPEN DEFINIEREN ---
+// --- Interfaces ---
 interface BreadcrumbNode {
   title: string;
   id: string;
@@ -32,7 +32,7 @@ const props = defineProps<{
 const router = useRouter();
 const items = ref<BreadcrumbItem[]>([]);
 
-// --- HILFSFUNKTIONEN ---
+// --- Helper Functions (Reduces Complexity) ---
 
 const getIconForType = (type: string): string => {
   const icons: Record<string, string> = {
@@ -46,9 +46,9 @@ const getIconForType = (type: string): string => {
   return icons[type] || 'pi pi-folder';
 };
 
-// 1. Daten laden
+// 1. Fetch raw path data
 const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbNode[]> => {
-  // Sicherheitscheck für Tests
+  // Safe-guard: Check if method exists (prevents existing tests from crashing)
   if (!targetId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
     return [];
   }
@@ -59,8 +59,9 @@ const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbN
   }
 };
 
-// 2. Elternteil ergänzen
+// 2. Ensure parent exists (for SiteView)
 const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<BreadcrumbNode[]> => {
+  // Safe-guard
   if (!props.contextParentId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
     return currentNodes;
   }
@@ -78,6 +79,7 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
       return [...parentPath, ...currentNodes];
     }
     
+    // Fallback: Fetch directly
     if (typeof propertyService.getProperty === 'function') {
       const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
       const propertyNode: BreadcrumbNode = {
@@ -93,7 +95,7 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
   }
 };
 
-// 3. Mapping
+// 3. Map to Breadcrumb Items
 const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
   return nodes.map((node) => ({
     label: node.title,
@@ -108,7 +110,7 @@ const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
   }));
 };
 
-// 4. Letztes Element
+// 4. Process the last item (Active/Create state)
 const processLastItem = (list: BreadcrumbItem[]) => {
   const newList = [...list];
 
@@ -125,7 +127,7 @@ const processLastItem = (list: BreadcrumbItem[]) => {
   const isSelfInList = lastItem && props.unitId && lastItem.id === props.unitId;
 
   if (!isSelfInList) {
-    // HIER WAR DER LINTER FEHLER: Jetzt mehrzeilig
+    // Manually append if missing
     newList.push({
       label: props.currentTitle || 'Außenanlage',
       disabled: true,
@@ -139,7 +141,7 @@ const processLastItem = (list: BreadcrumbItem[]) => {
   return newList;
 };
 
-// --- HAUPT-ABLAUF ---
+// --- Main Logic ---
 const loadBreadcrumbs = async () => {
   const targetId = props.mode === 'create' ? props.parentId : props.unitId;
 
@@ -149,6 +151,7 @@ const loadBreadcrumbs = async () => {
   let resultItems = mapNodesToItems(pathNodes);
   resultItems = processLastItem(resultItems);
 
+  // Fallback
   if (resultItems.length === 0) {
     resultItems.push({
       label: 'Zur Übersicht',
