@@ -11,9 +11,7 @@ const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", 
  *  BASIS-CHART-OPTIONEN (für alle Diagramme)
  * ----------------------------------------------------*/
 const baseChartOptions = {
-  plugins: {
-    legend: { labels: { color: "var(--text-color)" } }
-  },
+  plugins: {legend: { labels: { color: "var(--text-color)" } }},
   scales: {
     x: { ticks: { color: "var(--text-color)" } },
     y: { ticks: { color: "var(--text-color)" } }
@@ -24,10 +22,18 @@ const baseChartOptions = {
  *  KPI-KARTEN (dynamisch statt 4x Duplikate)
  * ====================================================*/
 const kpiCards = ref([
-  { icon: "pi-folder-open", color: "kpi-blue", title: "Offene Aufträge", value: 4, sub: "+1 seit gestern" },
-  { icon: "pi-spin pi-spinner", color: "kpi-amber", title: "In Bearbeitung", value: 7, sub: "+2 seit letzter Woche" },
-  { icon: "pi-check-circle", color: "kpi-green", title: "Abgeschlossen (Monat)", value: 15, sub: "+5 abgeschlossen" },
-  { icon: "pi-clock", color: "kpi-red", title: "Fälligkeit überschritten", value: 3, sub: "Heute +1" }
+  {
+ icon: "pi-folder-open", color: "kpi-blue", title: "Offene Aufträge", value: 4, sub: "+1 seit gestern" 
+},
+  {
+ icon: "pi-spin pi-spinner", color: "kpi-amber", title: "In Bearbeitung", value: 7, sub: "+2 seit letzter Woche" 
+},
+  {
+ icon: "pi-check-circle", color: "kpi-green", title: "Abgeschlossen (Monat)", value: 15, sub: "+5 abgeschlossen" 
+},
+  {
+ icon: "pi-clock", color: "kpi-red", title: "Fälligkeit überschritten", value: 3, sub: "Heute +1" 
+}
 ]);
 
 /* ======================================================
@@ -36,9 +42,15 @@ const kpiCards = ref([
 const monthlyData = ref({
   labels: MONTHS,
   datasets: [
-    { label: "Offene Aufträge", backgroundColor: "#ef4444", data: [0,0,0,0,0,0,0,0,0,0,2,7] },
-    { label: "In Bearbeitung", backgroundColor: "#fbbf24", data: [0,1,0,2,1,3,0,0,1,1,3,5] },
-    { label: "Erledigt", backgroundColor: "#22c55e", data: [5,6,8,7,8,9,7,6,5,8,9,9] }
+    {
+ label: "Offene Aufträge", backgroundColor: "#ef4444", data: [0,0,0,0,0,0,0,0,0,0,2,7] 
+},
+    {
+ label: "In Bearbeitung", backgroundColor: "#fbbf24", data: [0,1,0,2,1,3,0,0,1,1,3,5] 
+},
+    {
+ label: "Erledigt", backgroundColor: "#22c55e", data: [5,6,8,7,8,9,7,6,5,8,9,9] 
+}
   ]
 });
 const monthlyOptions = ref({ ...baseChartOptions });
@@ -52,11 +64,7 @@ const urgencyData = ref({
 });
 const urgencyOptions = ref({
   cutout: "60%",
-  plugins: {
-    legend: {
-      labels: { color: "var(--text-color)" }
-    }
-  },
+  plugins: {legend: {labels: { color: "var(--text-color)" }}},
   scales: {
     x: { display: false },
     y: { display: false }
@@ -92,18 +100,22 @@ const financeLineData = ref({
 const financeLineOptions = ref({
   ...baseChartOptions,
   maintainAspectRatio: false,
-  plugins: {
-    legend: { labels: { color: "var(--text-color)", font: { size: 14 } } }
-  }
+  plugins: {legend: { labels: { color: "var(--text-color)", font: { size: 14 } } }}
 });
 
 /* ======================================================
  *  4) LISTEN (Tasks, Kundenanfragen)
  * ====================================================*/
 const todayTasks = ref([
-  { title: "Dokumentation aktualisieren", project: "Projekt A", status: "Offen" },
-  { title: "Baustellenbegehung", project: "Projekt B", status: "In Bearbeitung" },
-  { title: "Rechnung prüfen", project: "Projekt C", status: "Erledigt" }
+  {
+ title: "Dokumentation aktualisieren", project: "Projekt A", status: "Offen" 
+},
+  {
+ title: "Baustellenbegehung", project: "Projekt B", status: "In Bearbeitung" 
+},
+  {
+ title: "Rechnung prüfen", project: "Projekt C", status: "Erledigt" 
+}
 ]);
 
 const customerRequests = ref([
@@ -115,13 +127,21 @@ const customerRequests = ref([
  *  5) RECHNUNGEN (Offen + Überfällig)
  * ====================================================*/
 const invoicesOpen = ref([
-  { id: "RE-2025-001", customer: "Müller Bau GmbH", amount: 750, due: "2025-12-10", status: "offen" },
-  { id: "RE-2025-003", customer: "Schneider Immobilien", amount: 1250, due: "2025-12-15", status: "offen" }
+  {
+ id: "RE-2025-001", customer: "Müller Bau GmbH", amount: 750, due: "2025-12-10", status: "offen" 
+},
+  {
+ id: "RE-2025-003", customer: "Schneider Immobilien", amount: 1250, due: "2025-12-15", status: "offen" 
+}
 ]);
 
 const invoicesOverdue = ref([
-  { id: "RE-2025-002", customer: "Hoch & Tief AG", amount: 900, due: "2025-11-28", status: "überfällig" },
-  { id: "RE-2025-004", customer: "BauConcept KG", amount: 450, due: "2025-11-25", status: "überfällig" }
+  {
+ id: "RE-2025-002", customer: "Hoch & Tief AG", amount: 900, due: "2025-11-28", status: "überfällig" 
+},
+  {
+ id: "RE-2025-004", customer: "BauConcept KG", amount: 450, due: "2025-11-25", status: "überfällig" 
+}
 ]);
 </script>
 

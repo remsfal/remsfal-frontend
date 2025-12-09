@@ -13,9 +13,7 @@ vi.mock('chart.js', () => {
 
   return {
     // Chart.js expects static register():
-    Chart: {
-      register: () => {},
-    },
+    Chart: {register: () => {},},
 
     // Elements
     ArcElement: FakeElement,

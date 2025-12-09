@@ -8,9 +8,7 @@ function mountView() {
         global: {
             stubs: {
                 // PrimeVue Chart MUST be stubbed for Vitest
-                Chart: {
-                    template: '<div data-test="chart-stub"></div>'
-                }
+                Chart: {template: '<div data-test="chart-stub"></div>'}
             }
         }
     });
