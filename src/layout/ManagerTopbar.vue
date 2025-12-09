@@ -8,8 +8,9 @@ import Select, { type SelectChangeEvent } from 'primevue/select';
 import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
 import { computed } from 'vue';
-import { useInboxStore } from '@/stores/InboxStore'
-import { shouldShowDevLogin } from '@/helper/platform';
+import { useInboxStore } from '@/stores/InboxStore';
+import TopbarUserActions from '@/components/TopbarUserActions.vue';
+import { useTopbarUserActions } from '@/composables/useTopbarUserActions';
 
 const { t } = useI18n();
 
@@ -18,6 +19,10 @@ const projectStore = useProjectStore();
 const inboxStore = useInboxStore();
 
 const router = useRouter();
+
+// Use the composable for shared actions to avoid duplication
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { onAccountSettingsClick, logout, login, loginDev, showDevLoginButton } = useTopbarUserActions();
 
 const onProjectSelectionChange = (event: SelectChangeEvent) => {
   console.log('new project selected ', event.value.name);
@@ -34,25 +39,6 @@ const onHomeClick = () => {
   router.push('/projects');
 };
 
-const onAccountSettingsClick = () => {
-  router.push('/account-settings');
-};
-
-const logout = () => {
-  window.location.pathname = '/api/v1/authentication/logout';
-};
-
-const login = (route: string) => {
-  window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
-};
-
-const loginDev = async () => {
-  const success = await sessionStore.loginDev();
-  if (success) {
-    router.push('/projects');
-  }
-};
-
 const onInboxClick = () => {
   router.push('/inbox');
 };
@@ -61,14 +47,7 @@ const unreadCount = computed(() =>
   inboxStore.messages
     ? inboxStore.messages.filter(m => !m?.isRead).length
     : 0
-)
-
-// Computed property for Dev Login visibility
-const showDevLoginButton = computed(() => {
-  const show = sessionStore.user == null && shouldShowDevLogin();
-  console.log('showDevLoginButton computed:', show, 'user:', sessionStore.user);
-  return show;
-});
+);
 </script>
 
 <template>
@@ -98,14 +77,8 @@ const showDevLoginButton = computed(() => {
       <i class="pi pi-plus" />
       <span>{{ t('toolbar.newProject') }}</span>
     </Button>
-    <Button
-      v-if="sessionStore.user != null"
-      class="layout-topbar-action"
-      @click="onAccountSettingsClick()"
-    >
-      <i class="pi pi-user" />
-      <span>{{ sessionStore.user.email }}</span>
-    </Button>
+    
+    <!-- Inbox button remains separate as it has specific logic (unread count) -->
     <Button
       v-if="sessionStore.user != null"
       class="layout-topbar-shortcut-button layout-topbar-action"
@@ -117,26 +90,10 @@ const showDevLoginButton = computed(() => {
       </span>
       <span>{{ t('toolbar.inbox') }}</span>
     </Button>
-    <Button v-if="sessionStore.user != null" class="layout-topbar-action" @click="logout()">
-      <i class="pi pi-sign-out" />
-      <span>{{ t('toolbar.logout') }}</span>
-    </Button>
-    <Button
-      v-if="sessionStore.user == null && !showDevLoginButton"
-      class="layout-topbar-action"
-      @click="login('/projects')"
-    >
-      <i class="pi pi-sign-in" />
-      <span>{{ t('toolbar.login') }}</span>
-    </Button>
-    <Button
-      v-if="showDevLoginButton"
-      class="layout-topbar-action"
-      @click="loginDev()"
-    >
-      <i class="pi pi-code" />
-      <span>{{ t('toolbar.devLogin') }}</span>
-    </Button>
+
+    <!-- Use shared component for common user actions -->
+    <TopbarUserActions />
+
     <LocaleSwitch />
   </AppTopbar>
 </template>
