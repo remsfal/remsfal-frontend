@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
 import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
 
-// --- Interfaces für Typensicherheit ---
+// --- TYPEN DEFINIEREN ---
 interface BreadcrumbNode {
   title: string;
   id: string;
@@ -32,7 +32,7 @@ const props = defineProps<{
 const router = useRouter();
 const items = ref<BreadcrumbItem[]>([]);
 
-// --- Hilfsfunktionen ---
+// --- HILFSFUNKTIONEN ---
 
 const getIconForType = (type: string): string => {
   const icons: Record<string, string> = {
@@ -46,9 +46,9 @@ const getIconForType = (type: string): string => {
   return icons[type] || 'pi pi-folder';
 };
 
-// Lädt die rohen Daten (Nodes)
+// 1. Daten laden
 const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbNode[]> => {
-  // Sicherheitscheck für Tests: Existiert die Methode im Mock?
+  // Sicherheitscheck für Tests
   if (!targetId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
     return [];
   }
@@ -59,7 +59,7 @@ const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbN
   }
 };
 
-// Ergänzt fehlendes Elternteil (für SiteView)
+// 2. Elternteil ergänzen
 const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<BreadcrumbNode[]> => {
   if (!props.contextParentId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
     return currentNodes;
@@ -69,7 +69,6 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
   if (parentExists) return currentNodes;
 
   try {
-    // Versuch 1: Über den Baum laden
     const parentPath = (await propertyService.getBreadcrumbPath(
       props.projectId,
       props.contextParentId,
@@ -79,8 +78,6 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
       return [...parentPath, ...currentNodes];
     }
     
-    // Versuch 2: Direkt laden (Fallback)
-    // Auch hier Sicherheitscheck für Tests
     if (typeof propertyService.getProperty === 'function') {
       const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
       const propertyNode: BreadcrumbNode = {
@@ -96,7 +93,7 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
   }
 };
 
-// Konvertiert Nodes in Breadcrumb Items
+// 3. Mapping
 const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
   return nodes.map((node) => ({
     label: node.title,
@@ -111,29 +108,30 @@ const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
   }));
 };
 
-// Verarbeitet das letzte Element (Neu / Edit)
+// 4. Letztes Element
 const processLastItem = (list: BreadcrumbItem[]) => {
   const newList = [...list];
 
-  // Modus: Create
   if (props.mode === 'create') {
-    newList.push({ label: 'Neu anlegen', icon: 'pi pi-plus', disabled: true });
+    newList.push({
+      label: 'Neu anlegen',
+      icon: 'pi pi-plus',
+      disabled: true,
+    });
     return newList;
   }
 
-  // Modus: Edit
   const lastItem = newList.length > 0 ? newList[newList.length - 1] : undefined;
   const isSelfInList = lastItem && props.unitId && lastItem.id === props.unitId;
 
   if (!isSelfInList) {
-    // Wir fehlen in der Liste -> Manuell anhängen
+    // HIER WAR DER LINTER FEHLER: Jetzt mehrzeilig
     newList.push({
       label: props.currentTitle || 'Außenanlage',
       disabled: true,
       icon: 'pi pi-circle-fill',
     });
-  } else if (lastItem) { // Check für TS 'possibly undefined'
-    // Wir sind in der Liste -> Deaktivieren & Titel updaten
+  } else if (lastItem) {
     lastItem.disabled = true;
     if (props.currentTitle) lastItem.label = props.currentTitle;
   }
@@ -141,19 +139,16 @@ const processLastItem = (list: BreadcrumbItem[]) => {
   return newList;
 };
 
-// --- Haupt-Logik ---
+// --- HAUPT-ABLAUF ---
 const loadBreadcrumbs = async () => {
   const targetId = props.mode === 'create' ? props.parentId : props.unitId;
 
-  // 1. Laden & Ergänzen
   let pathNodes = await fetchPathNodes(targetId);
   pathNodes = await ensureContextParent(pathNodes);
-
-  // 2. Mappen & Veredeln
+  
   let resultItems = mapNodesToItems(pathNodes);
   resultItems = processLastItem(resultItems);
 
-  // 3. Fallback bei leerer Liste
   if (resultItems.length === 0) {
     resultItems.push({
       label: 'Zur Übersicht',
