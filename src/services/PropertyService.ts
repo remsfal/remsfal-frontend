@@ -1,8 +1,7 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
 /** -------------------- TYPES & UTILS -------------------- **/
 
-// Backend-driven types for properties and tree nodes
 export type PropertyUnit = ApiComponents['schemas']['PropertyJson'];
 export type PropertyList = ApiComponents['schemas']['PropertyListJson'];
 export type RentableUnitTreeNode = ApiComponents['schemas']['RentalUnitTreeNodeJson'];
@@ -58,12 +57,13 @@ class PropertyService {
   }
 
   /**
-   * Berechnet den Pfad (Breadcrumbs) zu einer bestimmten Node-ID
+   * Berechnet den Pfad (Breadcrumbs).
+   * Expliziter Rückgabetyp verhindert 'Unexpected any' Fehler.
    */
   async getBreadcrumbPath(projectId: string, targetNodeId: string): Promise<{ title: string; id: string; type: UnitType }[]> {
     try {
       const data = await this.getPropertyTree(projectId);
-      const tree = data.properties as RentableUnitTreeNode[];
+      const tree = (data.properties || []) as RentableUnitTreeNode[];
 
       const findPath = (
         nodes: RentableUnitTreeNode[],
@@ -86,10 +86,10 @@ class PropertyService {
       
       if (!resultNodes) return [];
 
-      return resultNodes.map(node => ({
+      return resultNodes.map((node) => ({
         title: node.data?.title || 'Unbenannt',
         id: node.key,
-        type: node.data?.type as UnitType
+        type: node.data?.type as UnitType 
       }));
 
     } catch (e) {
@@ -98,27 +98,20 @@ class PropertyService {
     }
   }
 
-  /**
-   * Findet die ID des Elternteils für eine bestimmte Einheit im Baum.
-   * Wichtig für Einheiten wie Sites, die ihre Parent-ID nicht im eigenen Objekt haben.
-   */
   async getParentId(projectId: string, childId: string): Promise<string | undefined> {
     try {
       const data = await this.getPropertyTree(projectId);
-      const tree = data.properties as RentableUnitTreeNode[];
+      const tree = (data.properties || []) as RentableUnitTreeNode[];
 
-      // Rekursive Suche: Wir geben immer die ID des aktuellen Knotens als 'parent' an die Kinder weiter
       const findParent = (
         nodes: RentableUnitTreeNode[],
         target: string,
         parent: string | undefined
       ): string | undefined => {
         for (const node of nodes) {
-          // Haben wir das Kind gefunden? Dann gib den parent zurück, den wir von oben bekommen haben
           if (node.key === target) {
             return parent;
           }
-          // Weitersuchen in den Kindern -> jetzt ist 'node.key' der neue Parent
           if (node.children && node.children.length > 0) {
             const found = findParent(node.children, target, node.key);
             if (found) return found;
@@ -135,4 +128,4 @@ class PropertyService {
   }
 }
 
-export const propertyService = new PropertyService();
+export const propertyService = new PropertyService(); 

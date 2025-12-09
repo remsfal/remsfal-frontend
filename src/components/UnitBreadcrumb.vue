@@ -2,13 +2,20 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
-import { propertyService, toRentableUnitView } from '@/services/PropertyService';
+import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
+
+// --- Interfaces für Typensicherheit ---
+interface BreadcrumbNode {
+  title: string;
+  id: string;
+  type: UnitType;
+}
 
 interface BreadcrumbItem {
-  label?: string;
+  label: string;
   command?: () => void;
   disabled?: boolean;
-  to?: any;
+  to?: unknown; 
   id?: string;
   icon?: string;
 }
@@ -25,69 +32,73 @@ const props = defineProps<{
 const router = useRouter();
 const items = ref<BreadcrumbItem[]>([]);
 
+// --- Hilfsfunktionen ---
+
 const getIconForType = (type: string): string => {
-  switch (type) {
-    case 'PROPERTY': return 'pi pi-map';
-    case 'BUILDING': return 'pi pi-building';
-    case 'APARTMENT': return 'pi pi-home';
-    case 'COMMERCIAL': return 'pi pi-briefcase';
-    case 'STORAGE': return 'pi pi-box';
-    case 'SITE': return 'pi pi-tree';
-    default: return 'pi pi-folder';
+  const icons: Record<string, string> = {
+    PROPERTY: 'pi pi-map',
+    BUILDING: 'pi pi-building',
+    APARTMENT: 'pi pi-home',
+    COMMERCIAL: 'pi pi-briefcase',
+    STORAGE: 'pi pi-box',
+    SITE: 'pi pi-tree',
+  };
+  return icons[type] || 'pi pi-folder';
+};
+
+// Lädt die rohen Daten (Nodes)
+const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbNode[]> => {
+  // Sicherheitscheck für Tests: Existiert die Methode im Mock?
+  if (!targetId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
+    return [];
+  }
+  try {
+    return (await propertyService.getBreadcrumbPath(props.projectId, targetId)) as BreadcrumbNode[];
+  } catch {
+    return [];
   }
 };
 
-const loadBreadcrumbs = async () => {
-  const targetId = props.mode === 'create' ? props.parentId : props.unitId;
-  let pathNodes: { title: string; id: string; type: any }[] = [];
-
-  // 1. Normalen Pfad laden
-  if (targetId && props.projectId) {
-    try {
-      pathNodes = await propertyService.getBreadcrumbPath(props.projectId, targetId);
-    } catch {
-      // Fehler ignorieren
-    }
+// Ergänzt fehlendes Elternteil (für SiteView)
+const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<BreadcrumbNode[]> => {
+  if (!props.contextParentId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
+    return currentNodes;
   }
 
-  // 2. Grundstück erzwingen (Context Parent)
-  if (props.contextParentId && props.projectId) {
-    const parentExists = pathNodes.some((node) => node.id === props.contextParentId);
+  const parentExists = currentNodes.some((node) => node.id === props.contextParentId);
+  if (parentExists) return currentNodes;
+
+  try {
+    // Versuch 1: Über den Baum laden
+    const parentPath = (await propertyService.getBreadcrumbPath(
+      props.projectId,
+      props.contextParentId,
+    )) as BreadcrumbNode[];
     
-    if (!parentExists) {
-      // VERSUCH A: Über den Baum
-      try {
-        const parentPath = await propertyService.getBreadcrumbPath(
-          props.projectId,
-          props.contextParentId,
-        );
-        if (parentPath.length > 0) {
-          pathNodes = [...parentPath, ...pathNodes];
-        } else {
-          throw new Error('Baum-Pfad leer');
-        }
-      } catch { 
-        // VERSUCH B (FALLBACK): Direkt laden
-        try {
-          const propertyData = await propertyService.getProperty(
-            props.projectId,
-            props.contextParentId,
-          );
-          const propertyNode = {
-            title: propertyData.title || 'Unbenanntes Grundstück',
-            id: props.contextParentId,
-            type: 'PROPERTY' as any,
-          };
-          pathNodes = [propertyNode, ...pathNodes];
-        } catch {
-          // Ignorieren
-        }
-      }
+    if (parentPath.length > 0) {
+      return [...parentPath, ...currentNodes];
     }
+    
+    // Versuch 2: Direkt laden (Fallback)
+    // Auch hier Sicherheitscheck für Tests
+    if (typeof propertyService.getProperty === 'function') {
+      const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
+      const propertyNode: BreadcrumbNode = {
+        title: propertyData.title || 'Unbenanntes Grundstück',
+        id: props.contextParentId,
+        type: 'PROPERTY' as UnitType,
+      };
+      return [propertyNode, ...currentNodes];
+    }
+    return currentNodes;
+  } catch {
+    return currentNodes;
   }
+};
 
-  // 3. Konvertieren & ICONS HINZUFÜGEN
-  let pathItems: BreadcrumbItem[] = pathNodes.map((node) => ({
+// Konvertiert Nodes in Breadcrumb Items
+const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
+  return nodes.map((node) => ({
     label: node.title,
     id: node.id,
     icon: getIconForType(node.type),
@@ -98,44 +109,63 @@ const loadBreadcrumbs = async () => {
       });
     },
   }));
+};
 
-  // 4. Das letzte Stück (Wir selbst)
+// Verarbeitet das letzte Element (Neu / Edit)
+const processLastItem = (list: BreadcrumbItem[]) => {
+  const newList = [...list];
+
+  // Modus: Create
   if (props.mode === 'create') {
-    pathItems.push({
-      label: 'Neu anlegen',
-      icon: 'pi pi-plus',
-      disabled: true,
-    });
-  } else {
-    const lastItem = pathItems.length > 0 ? pathItems[pathItems.length - 1] : null;
-     
-    // Wenn wir noch fehlen
-    if (!lastItem || (props.unitId && lastItem.id !== props.unitId)) {
-      pathItems.push({
-        label: props.currentTitle || 'Laden...',
-        disabled: true,
-        icon: 'pi pi-circle-fill',
-      });
-    } else {
-      // Wir sind da -> Deaktivieren
-      lastItem.disabled = true;
-      if (props.currentTitle) lastItem.label = props.currentTitle;
-    }
+    newList.push({ label: 'Neu anlegen', icon: 'pi pi-plus', disabled: true });
+    return newList;
   }
 
-  // Fallback
-  if (pathItems.length === 0) {
-    pathItems.push({
+  // Modus: Edit
+  const lastItem = newList.length > 0 ? newList[newList.length - 1] : undefined;
+  const isSelfInList = lastItem && props.unitId && lastItem.id === props.unitId;
+
+  if (!isSelfInList) {
+    // Wir fehlen in der Liste -> Manuell anhängen
+    newList.push({
+      label: props.currentTitle || 'Außenanlage',
+      disabled: true,
+      icon: 'pi pi-circle-fill',
+    });
+  } else if (lastItem) { // Check für TS 'possibly undefined'
+    // Wir sind in der Liste -> Deaktivieren & Titel updaten
+    lastItem.disabled = true;
+    if (props.currentTitle) lastItem.label = props.currentTitle;
+  }
+
+  return newList;
+};
+
+// --- Haupt-Logik ---
+const loadBreadcrumbs = async () => {
+  const targetId = props.mode === 'create' ? props.parentId : props.unitId;
+
+  // 1. Laden & Ergänzen
+  let pathNodes = await fetchPathNodes(targetId);
+  pathNodes = await ensureContextParent(pathNodes);
+
+  // 2. Mappen & Veredeln
+  let resultItems = mapNodesToItems(pathNodes);
+  resultItems = processLastItem(resultItems);
+
+  // 3. Fallback bei leerer Liste
+  if (resultItems.length === 0) {
+    resultItems.push({
       label: 'Zur Übersicht',
       icon: 'pi pi-arrow-left',
-      command: () => router.push({
-        name: 'RentableUnitsView',
-        params: { projectId: props.projectId },
+      command: () => router.push({ 
+        name: 'RentableUnitsView', 
+        params: { projectId: props.projectId } 
       }),
     });
   }
 
-  items.value = [...pathItems];
+  items.value = resultItems;
 };
 
 onMounted(() => { loadBreadcrumbs(); });
@@ -157,8 +187,6 @@ watch(
   padding: 0;
   font-size: 0.875rem;
 }
-
-/* HIER WAREN DIE FEHLER: Leerzeilen eingefügt */
 
 :deep(.p-menuitem-link) {
   padding-left: 0 !important;
