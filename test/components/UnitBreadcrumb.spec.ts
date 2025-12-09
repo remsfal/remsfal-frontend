@@ -13,9 +13,7 @@ vi.mock('../../src/services/PropertyService', () => ({
 
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
+  useRouter: () => ({ push: mockPush }),
 }));
 
 const BreadcrumbStub = {
@@ -53,11 +51,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
-      global: {
-        stubs: {
-          Breadcrumb: BreadcrumbStub,
-        },
-      },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
     });
 
     await flushPromises();
@@ -89,11 +83,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: createProps,
-      global: {
-        stubs: {
-          Breadcrumb: BreadcrumbStub,
-        },
-      },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
     });
 
     await flushPromises();
@@ -131,11 +121,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: siteProps,
-      global: {
-        stubs: {
-          Breadcrumb: BreadcrumbStub,
-        },
-      },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
     });
 
     await flushPromises();
@@ -153,11 +139,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
-      global: {
-        stubs: {
-          Breadcrumb: BreadcrumbStub,
-        },
-      },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
     });
 
     await flushPromises();
@@ -177,11 +159,7 @@ describe('UnitBreadcrumb.vue', () => {
         projectId: 'p1',
         mode: 'edit',
       },
-      global: {
-        stubs: {
-          Breadcrumb: BreadcrumbStub,
-        },
-      },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
     });
 
     await flushPromises();
@@ -203,17 +181,11 @@ describe('UnitBreadcrumb.vue', () => {
     };
 
     (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Tree Error'));
-    (propertyService.getProperty as any).mockResolvedValue({
-      title: 'Direct Property',
-    });
+    (propertyService.getProperty as any).mockResolvedValue({ title: 'Direct Property' });
 
     const wrapper = mount(UnitBreadcrumb, {
       props: siteProps,
-      global: {
-        stubs: {
-          Breadcrumb: BreadcrumbStub,
-        },
-      },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
     });
 
     await flushPromises();
