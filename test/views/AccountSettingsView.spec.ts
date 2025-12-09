@@ -217,5 +217,25 @@ describe('AccountSettingsView', () => {
       expect(wrapper.vm.editedUserProfile.locale).toBe('en');
       expect(wrapper.vm.i18n.locale.value).toBe('en');
     });
+
+    test('i18n uses browser locale initially, then backend locale overwrites it after fetchUserProfile', async () => {
+      Object.defineProperty(window.navigator, 'language', {
+        value: 'en',
+        configurable: true,
+      });
+
+      expect(wrapper.vm.i18n.locale.value).toBe('en');
+
+      const result = await wrapper.vm.$options.fetchUserProfile();
+
+      wrapper.vm.userProfile = result;
+      wrapper.vm.editedUserProfile = { ...result };
+      wrapper.vm.i18n.locale.value = wrapper.vm.validateLocale(result.locale);
+
+      await nextTick();
+
+      expect(wrapper.vm.i18n.locale.value).toBe('de');
+      expect(wrapper.vm.editedUserProfile.locale).toBe('de');
+    });
   });
 });
