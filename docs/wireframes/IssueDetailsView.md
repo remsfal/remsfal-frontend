@@ -682,4 +682,200 @@ IssueDetailsView.vue
 
 ---
 
+## Visual Representation
+
+This section provides an overview of the current visual mockup implementation with placeholder content.
+
+### Current Implementation Status
+
+✅ **Completed Components** (11 total):
+
+**Main View:**
+- `IssueDetailsView.vue` - Grid layout container with all card components
+
+**Card Components (6):**
+1. `IssueOverviewCard.vue` - Issue ID (#ISSUE-123), title, and status badge
+2. `IssueDescriptionCard.vue` - Markdown description with Edit/Preview toggle
+3. `IssueMetadataCard.vue` - Reporter, owner, project, type/status badges, timestamps
+4. `IssueRelationsCard.vue` - Accordion sections with placeholder issues
+5. `IssueCommunicationCard.vue` - TabView with Comments and Activity Log tabs
+6. `IssueFutureFieldsCard.vue` - Attachments, time tracking, workflow, tags, custom fields
+
+**Reusable Components (4):**
+- `StatusBadge.vue` - Color-coded status badges (5 states)
+- `TypeBadge.vue` - Color-coded type badges (4 types)
+- `MemberRoleBadge.vue` - Small role badges (5 roles)
+- `UserAvatar.vue` - Circular avatars with initials
+
+### Component Preview Examples
+
+#### 1. Issue Overview Card
+```
+┌─────────────────────────────────────────────┐
+│ Issue Overview                              │
+├─────────────────────────────────────────────┤
+│ Issue ID: #ISSUE-123                        │
+│ Title: Fix login bug on mobile devices      │
+│ Status: [OPEN] (blue badge)                 │
+└─────────────────────────────────────────────┘
+```
+
+#### 2. Issue Description Card
+```
+┌─────────────────────────────────────────────┐
+│ Description                    [Edit] [Preview]│
+├─────────────────────────────────────────────┤
+│ ## Issue Summary                            │
+│ Users are unable to log in on mobile       │
+│ devices after the latest update...          │
+│                                             │
+│ ### Steps to Reproduce                      │
+│ 1. Open mobile app                          │
+│ 2. Enter credentials                        │
+│ 3. Click login button                       │
+└─────────────────────────────────────────────┘
+```
+
+#### 3. Metadata Card
+```
+┌─────────────────────────────────────────────┐
+│ Metadata                                    │
+├─────────────────────────────────────────────┤
+│ Reporter:    [JD] John Doe                  │
+│ Owner:       [JS] Jane Smith ▼              │
+│ Project:     Building A Renovation          │
+│ Type:        [TASK] (purple badge)          │
+│ Status:      [IN_PROGRESS] (yellow badge)   │
+│ Tenancy:     Apartment 3B                   │
+│ Created:     2025-01-15 10:30 AM            │
+│ Modified:    2025-01-16 02:45 PM            │
+└─────────────────────────────────────────────┘
+```
+
+#### 4. Relations Card (Accordion)
+```
+┌─────────────────────────────────────────────┐
+│ Relations                                   │
+├─────────────────────────────────────────────┤
+│ ▼ Blocks (2)                                │
+│   • #ISSUE-125: Update API endpoints [OPEN] │
+│   • #ISSUE-127: Deploy infrastructure [OPEN]│
+│                                             │
+│ ▶ Blocked By (1)                            │
+│ ▶ Duplicate Of (1)                          │
+│ ▶ Related To (2)                            │
+└─────────────────────────────────────────────┘
+```
+
+#### 5. Communication Card (Tabs)
+```
+┌─────────────────────────────────────────────┐
+│ Communication                               │
+│ [Comments] [Activity Log]                   │
+├─────────────────────────────────────────────┤
+│ [AJ] Alice Johnson • STAFF • 2h ago         │
+│ │ I've identified the issue. The session   │
+│ │ token expires too quickly on mobile...   │
+│                                             │
+│ [BW] Bob Williams • MANAGER • 1h ago        │
+│ │ Thanks for investigating! Can you...     │
+│                                             │
+│ ┌───────────────────────────────────────┐   │
+│ │ Write a comment...                    │   │
+│ └───────────────────────────────────────┘   │
+│                              [Post]         │
+└─────────────────────────────────────────────┘
+```
+
+#### 6. Future Fields Card (Dashed Border)
+```
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
+│ Future Fields (Placeholder)                 │
+├ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┤
+│ 📎 Attachments (3)                          │
+│   • screenshot.png (245 KB)                 │
+│   • error-log.txt (12 KB)                   │
+│   • video-repro.mp4 (3.2 MB)                │
+│                                             │
+│ ⏱ Time Tracking                             │
+│   Estimated: 8h | Logged: 5.5h              │
+│   ▓▓▓▓▓▓▓░░░░ 69%                           │
+│                                             │
+│ 🔄 Workflow Stage (3 of 5)                  │
+│   [✓ Backlog] → [✓ Analysis] → [• Dev]     │
+│                                             │
+│ 🏷 Tags                                      │
+│   [bug] [mobile] [authentication]           │
+│   [high-priority] [session-management]      │
+│                                             │
+│ 📋 Custom Metadata                          │
+│   Affected Modules: Auth, Session           │
+│   Client Environment: iOS, Android          │
+│   Severity Level: High                      │
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘
+```
+
+### Badge Color Reference
+
+**Status Badges:**
+- 🔵 PENDING (blue) - `bg-blue-100 text-blue-700`
+- 🔵 OPEN (blue) - `bg-blue-100 text-blue-700`
+- 🟡 IN_PROGRESS (yellow) - `bg-yellow-100 text-yellow-700`
+- 🟢 CLOSED (green) - `bg-green-100 text-green-700`
+- 🔴 REJECTED (red) - `bg-red-100 text-red-700`
+
+**Type Badges:**
+- 🔵 APPLICATION (blue) - `bg-blue-100 text-blue-700`
+- 🟣 TASK (purple) - `bg-purple-100 text-purple-700`
+- 🔴 DEFECT (red) - `bg-red-100 text-red-700`
+- 🟠 MAINTENANCE (orange) - `bg-orange-100 text-orange-700`
+
+**Role Badges (Small):**
+- PROPRIETOR, MANAGER, LESSOR, STAFF, COLLABORATOR
+- Size: `text-xs px-2 py-0.5`
+- Colors vary by role
+
+### Navigation
+
+**Route Configuration:**
+- Path: `/projects/:projectId/issues/:issueId`
+- Example: `/projects/abc123/issues/ISSUE-456`
+- Props: `projectId` and `issueId` from URL parameters
+
+### Implementation Notes
+
+- ✅ All components created with placeholder content
+- ✅ PrimeVue components integrated (Card, TabView, Accordion, Badge, Avatar, Button, Textarea)
+- ✅ TailwindCSS utility classes for styling
+- ✅ Route configured for navigation
+- ⚠️ **No backend integration** - all data is hardcoded placeholders
+- ⚠️ **Non-functional buttons** - Edit, Preview, Post, Change, Remove buttons are placeholders
+- ⚠️ **No state management** - no reactive data binding or API calls
+
+### Next Steps for Full Implementation
+
+1. **Backend Integration:**
+   - Implement IssueService for API calls
+   - Connect to `/ticketing/v1/issues/{issueId}` endpoint
+   - Handle loading states and error scenarios
+
+2. **Functionality:**
+   - Make Edit/Preview toggle functional
+   - Implement comment posting
+   - Enable relation management (add/remove)
+   - Add form validation
+
+3. **State Management:**
+   - Add Pinia store for issue state
+   - Implement reactive data updates
+   - Handle optimistic updates
+
+4. **User Experience:**
+   - Add loading skeletons
+   - Implement error boundaries
+   - Add success/error toast notifications
+   - Implement real-time updates (if needed)
+
+---
+
 **End of Wireframe Document**
