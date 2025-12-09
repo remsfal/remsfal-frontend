@@ -76,6 +76,7 @@
     "@types/node": "^24.8.1",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitest/coverage-istanbul": "^4.0.14",
+    "@vue/language-core": "^3.1.7",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "autoprefixer": "^10.4.21",
@@ -109,7 +110,7 @@
     "vitest": "^4.0.3",
     "vue-eslint-parser": "^10.2.0",
     "vue-i18n-extract": "^2.0.7",
-    "vue-tsc": "^3.1.0"
+    "vue-tsc": "^3.1.7"
   },
   "overrides": {
     "glob": "^9.3.2",
