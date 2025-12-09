@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
 import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
 
-// --- Interfaces ---
 interface BreadcrumbNode {
   title: string;
   id: string;
@@ -32,8 +31,6 @@ const props = defineProps<{
 const router = useRouter();
 const items = ref<BreadcrumbItem[]>([]);
 
-// --- Helper Functions ---
-
 const getIconForType = (type: string): string => {
   const icons: Record<string, string> = {
     PROPERTY: 'pi pi-map',
@@ -46,7 +43,6 @@ const getIconForType = (type: string): string => {
   return icons[type] || 'pi pi-folder';
 };
 
-// 1. Fetch raw path data
 const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbNode[]> => {
   if (!targetId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
     return [];
@@ -58,27 +54,33 @@ const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbN
   }
 };
 
-// 2. Ensure parent exists
 const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<BreadcrumbNode[]> => {
-  if (!props.contextParentId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
-    return currentNodes;
-  }
+  if (!props.contextParentId || !props.projectId) return currentNodes;
 
   const parentExists = currentNodes.some((node) => node.id === props.contextParentId);
   if (parentExists) return currentNodes;
 
-  try {
-    const parentPath = (await propertyService.getBreadcrumbPath(
-      props.projectId,
-      props.contextParentId,
-    )) as BreadcrumbNode[];
-    
-    if (parentPath.length > 0) {
-      return [...parentPath, ...currentNodes];
+  // FIX: Getrennte Try-Catch Blöcke, damit der Fallback auch bei Fehler im ersten Block ausgeführt wird
+  
+  // Versuch 1: Über den Baum
+  if (typeof propertyService.getBreadcrumbPath === 'function') {
+    try {
+      const parentPath = (await propertyService.getBreadcrumbPath(
+        props.projectId,
+        props.contextParentId,
+      )) as BreadcrumbNode[];
+      
+      if (parentPath.length > 0) {
+        return [...parentPath, ...currentNodes];
+      }
+    } catch {
+      // Ignorieren und weiter zum Fallback
     }
+  }
     
-    // Fallback: Direkt laden
-    if (typeof propertyService.getProperty === 'function') {
+  // Versuch 2: Direkt laden (Fallback)
+  if (typeof propertyService.getProperty === 'function') {
+    try {
       const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
       const propertyNode: BreadcrumbNode = {
         title: propertyData.title || 'Unbenanntes Grundstück',
@@ -86,14 +88,14 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
         type: 'PROPERTY' as UnitType,
       };
       return [propertyNode, ...currentNodes];
+    } catch {
+      // Auch das fehlgeschlagen
     }
-    return currentNodes;
-  } catch {
-    return currentNodes;
   }
+  
+  return currentNodes;
 };
 
-// 3. Map to Breadcrumb Items
 const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
   return nodes.map((node) => ({
     label: node.title,
@@ -108,7 +110,6 @@ const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
   }));
 };
 
-// 4. Process the last item
 const processLastItem = (list: BreadcrumbItem[]) => {
   const newList = [...list];
 
@@ -125,11 +126,18 @@ const processLastItem = (list: BreadcrumbItem[]) => {
   const isSelfInList = lastItem && props.unitId && lastItem.id === props.unitId;
 
   if (!isSelfInList) {
-    newList.push({
-      label: props.currentTitle || 'Außenanlage',
-      disabled: true,
-      icon: 'pi pi-circle-fill',
-    });
+    // FIX: Wir hängen nur an, wenn wir auch wirklich etwas anzuzeigen haben (Titel oder ID).
+    // Wenn beides fehlt (wie im "Alles kaputt"-Test), lassen wir die Liste leer,
+    // damit der "Zur Übersicht"-Fallback greifen kann.
+    const fallbackLabel = props.currentTitle || (props.unitId ? 'Außenanlage' : null);
+    
+    if (fallbackLabel) {
+      newList.push({
+        label: fallbackLabel,
+        disabled: true,
+        icon: 'pi pi-circle-fill',
+      });
+    }
   } else if (lastItem) {
     lastItem.disabled = true;
     if (props.currentTitle) lastItem.label = props.currentTitle;
@@ -138,7 +146,6 @@ const processLastItem = (list: BreadcrumbItem[]) => {
   return newList;
 };
 
-// --- Main Logic ---
 const loadBreadcrumbs = async () => {
   const targetId = props.mode === 'create' ? props.parentId : props.unitId;
 

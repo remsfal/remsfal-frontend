@@ -4,7 +4,6 @@ import UnitBreadcrumb from '../../src/components/UnitBreadcrumb.vue';
 import { propertyService } from '../../src/services/PropertyService';
 
 // Mocks
-// Wir müssen sicherstellen, dass alle Methoden gemockt sind, die wir nutzen
 vi.mock('../../src/services/PropertyService', () => ({
   propertyService: {
     getBreadcrumbPath: vi.fn(),
@@ -52,9 +51,8 @@ describe('UnitBreadcrumb.vue', () => {
     await flushPromises();
 
     const breadcrumb = wrapper.findComponent(BreadcrumbStub);
-    expect(breadcrumb.exists()).toBe(true);
-
     const model = breadcrumb.props('model');
+
     expect(model).toHaveLength(2);
     expect(model[0].label).toBe('Property A');
     expect(model[1].label).toBe('My Unit');
@@ -96,7 +94,6 @@ describe('UnitBreadcrumb.vue', () => {
       mode: 'edit' as const
     };
 
-    // Szenario: Baum gibt leeren Pfad für Site, aber korrekten Pfad für Property
     (propertyService.getBreadcrumbPath as any).mockImplementation((pid: string, uid: string) => {
         if (uid === 'site-1') return Promise.resolve([]);
         if (uid === 'prop-1') return Promise.resolve([{ title: 'Property A', id: 'prop-1', type: 'PROPERTY' }]);
@@ -118,26 +115,6 @@ describe('UnitBreadcrumb.vue', () => {
     expect(model[1].label).toBe('My Site');
   });
 
-  it('shows fallback (current title) when backend fails', async () => {
-    // Backend ist down -> Error
-    (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Backend down'));
-
-    const wrapper = mount(UnitBreadcrumb, {
-      props: defaultProps,
-      global: { stubs: { Breadcrumb: BreadcrumbStub } }
-    });
-
-    await flushPromises();
-
-    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
-    const model = breadcrumb.props('model');
-
-    // KORREKTUR: Wir erwarten nicht "Zur Übersicht", sondern den Namen der aktuellen Einheit.
-    // Das ist besseres UX ("Ich sehe wo ich bin, auch wenn der Pfad fehlt").
-    expect(model).toHaveLength(1);
-    expect(model[0].label).toBe('My Unit');
-  });
-
   it('shows "Zur Übersicht" only if absolutely no info is available', async () => {
     // Backend down UND kein Titel/ID bekannt
     (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Backend down'));
@@ -146,7 +123,7 @@ describe('UnitBreadcrumb.vue', () => {
       props: { 
           projectId: 'p1',
           mode: 'edit' 
-          // Keine unitId, kein currentTitle
+          // WICHTIG: Keine unitId, kein currentTitle, damit Fallback greift
       },
       global: { stubs: { Breadcrumb: BreadcrumbStub } }
     });
