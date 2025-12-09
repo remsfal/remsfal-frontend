@@ -1,7 +1,5 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
-/** -------------------- TYPES & UTILS -------------------- **/
-
 export type PropertyUnit = ApiComponents['schemas']['PropertyJson'];
 export type PropertyList = ApiComponents['schemas']['PropertyListJson'];
 export type RentableUnitTreeNode = ApiComponents['schemas']['RentalUnitTreeNodeJson'];
@@ -24,8 +22,6 @@ export function toRentableUnitView(entity: UnitType | undefined): string {
   }
   return entity[0]!.toUpperCase() + entity.substring(1).toLowerCase() + 'View';
 }
-
-/** -------------------- SERVICE -------------------- **/
 
 class PropertyService {
   async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
@@ -56,9 +52,6 @@ class PropertyService {
     return apiClient.delete('/api/v1/projects/{projectId}/properties/{propertyId}', { pathParams: { projectId, propertyId } });
   }
 
-  /**
-   * Berechnet den Pfad (Breadcrumbs) zu einer bestimmten Node-ID.
-   */
   async getBreadcrumbPath(projectId: string, targetNodeId: string): Promise<{ title: string; id: string; type: UnitType }[]> {
     try {
       const data = await this.getPropertyTree(projectId);
@@ -88,8 +81,7 @@ class PropertyService {
       return resultNodes.map((node) => ({
         title: node.data?.title || 'Unbenannt',
         id: node.key,
-        // FIX: Wir brauchen 'as UnitType', weil node.data?.type 'undefined' sein könnte
-        type: node.data?.type as UnitType, 
+        type: node.data?.type ?? EntityType.Property, // Fallback statt Cast
       }));
 
     } catch (e) {

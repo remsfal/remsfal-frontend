@@ -32,7 +32,7 @@ const props = defineProps<{
 const router = useRouter();
 const items = ref<BreadcrumbItem[]>([]);
 
-// --- Helper Functions (Reduces Complexity) ---
+// --- Helper Functions ---
 
 const getIconForType = (type: string): string => {
   const icons: Record<string, string> = {
@@ -48,7 +48,6 @@ const getIconForType = (type: string): string => {
 
 // 1. Fetch raw path data
 const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbNode[]> => {
-  // Safe-guard: Check if method exists (prevents existing tests from crashing)
   if (!targetId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
     return [];
   }
@@ -59,9 +58,8 @@ const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbN
   }
 };
 
-// 2. Ensure parent exists (for SiteView)
+// 2. Ensure parent exists
 const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<BreadcrumbNode[]> => {
-  // Safe-guard
   if (!props.contextParentId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
     return currentNodes;
   }
@@ -79,7 +77,7 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
       return [...parentPath, ...currentNodes];
     }
     
-    // Fallback: Fetch directly
+    // Fallback: Direkt laden
     if (typeof propertyService.getProperty === 'function') {
       const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
       const propertyNode: BreadcrumbNode = {
@@ -110,7 +108,7 @@ const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
   }));
 };
 
-// 4. Process the last item (Active/Create state)
+// 4. Process the last item
 const processLastItem = (list: BreadcrumbItem[]) => {
   const newList = [...list];
 
@@ -127,7 +125,6 @@ const processLastItem = (list: BreadcrumbItem[]) => {
   const isSelfInList = lastItem && props.unitId && lastItem.id === props.unitId;
 
   if (!isSelfInList) {
-    // Manually append if missing
     newList.push({
       label: props.currentTitle || 'Außenanlage',
       disabled: true,
@@ -151,7 +148,6 @@ const loadBreadcrumbs = async () => {
   let resultItems = mapNodesToItems(pathNodes);
   resultItems = processLastItem(resultItems);
 
-  // Fallback
   if (resultItems.length === 0) {
     resultItems.push({
       label: 'Zur Übersicht',
