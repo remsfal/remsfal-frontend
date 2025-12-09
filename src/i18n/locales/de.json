@@ -10,7 +10,7 @@
   "accountSettings.userProfile.userSince": "Mitglied seit",
   "accountSettings.userProfile.firstName": "Vorname",
   "accountSettings.userProfile.lastName": "Nachname",
-  "accountSettings.userProfile.requiredFields": "*Plichtfelder",
+  "accountSettings.userProfile.requiredFields": "*Pflichtfelder",
   "accountSettings.userProfile.managementView": "Zur Verwalter Ansicht",
   "accountSettings.userProfile.tenanciesView": "Zur Mieter Ansicht",
   "accountSettings.userProfile.contractorsView": "Zur Auftragnehmer Ansicht",
