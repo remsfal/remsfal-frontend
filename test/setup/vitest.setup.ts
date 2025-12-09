@@ -1,5 +1,38 @@
 import { config } from '@vue/test-utils';
 import { vi } from 'vitest';
+
+vi.mock('primevue/chart', () => ({
+  default: {
+    name: 'Chart',
+    template: '<div data-test="chart-stub"></div>',
+  },
+}));
+
+vi.mock('chart.js', () => {
+  class FakeElement {}
+
+  return {
+    // Chart.js expects static register():
+    Chart: {
+      register: () => {},
+    },
+
+    // Elements
+    ArcElement: FakeElement,
+    BarElement: FakeElement,
+    LineElement: FakeElement,
+    PointElement: FakeElement,
+
+    // Scales
+    CategoryScale: FakeElement,
+    LinearScale: FakeElement,
+    RadialLinearScale: FakeElement,
+
+    // Plugins
+    Tooltip: FakeElement,
+    Legend: FakeElement,
+  };
+});
 import PrimeVue from 'primevue/config';
 import router from '../../src/router';
 import i18n from '../../src/i18n/i18n';
