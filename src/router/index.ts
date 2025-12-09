@@ -188,6 +188,13 @@ const managerRoutes: RouteRecordRaw[] = [
        * Contractor Views
        * --------------------------------------------------------------------
        */
+      {
+        path: 'contractors',
+        name: 'ProjectContractors',
+        props: (route: RouteLocationNormalizedLoaded) => ({projectId: route.params.projectId,}),
+        component: () => import('@/views/ContractorView.vue'),
+      },
+
       /* --------------------------------------------------------------------
        * Issue Views
        * --------------------------------------------------------------------

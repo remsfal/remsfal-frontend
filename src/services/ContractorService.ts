@@ -1,30 +1,62 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type Status = ApiComponents['schemas']['Status'];
-export type Issue = ApiComponents['schemas']['IssueJson'];
-export type IssueList = ApiComponents['schemas']['IssueListJson'];
-export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
+export type Contractor = ApiComponents['schemas']['ContractorJson'];
+export type ContractorList = ApiComponents['schemas']['ContractorListJson'];
 
 export class ContractorService {
   /**
-   * Get all issues for contractors, optionally filtered by status or owner.
+   * Alle Auftragnehmer eines Projekts laden
    */
-  async getIssues(status?: Status, ownerId?: string, limit = 100, offset = 0): Promise<IssueList> {
-    return apiClient.get('/ticketing/v1/issues', {
-      params: {
-        limit,
-        offset,
-        ...(status ? { status } : {}),
-        ...(ownerId ? { owner: ownerId } : {}),
-      },
-    }) as Promise<IssueList>;
+  async getContractors(projectId: string): Promise<ContractorList> {
+    return apiClient.get(
+        `/api/v1/projects/${projectId}/contractors` as any
+    ) as Promise<ContractorList>;
   }
 
   /**
-   * Get a single issue by its ID.
+   * Einzelnen Auftragnehmer laden
    */
-  async getIssue(issueId: string): Promise<Issue> {
-    return apiClient.get('/ticketing/v1/issues/{issueId}', {pathParams: { issueId },}) as Promise<Issue>;
+  async getContractor(projectId: string, contractorId: string): Promise<Contractor> {
+    return apiClient.get(
+        `/api/v1/projects/${projectId}/contractors/${contractorId}` as any
+    ) as Promise<Contractor>;
+  }
+
+  /**
+   * Auftragnehmer anlegen
+   */
+  async createContractor(
+      projectId: string,
+      payload: Omit<Contractor, 'id' | 'projectId'>
+  ): Promise<Contractor> {
+    return apiClient.post(
+        `/api/v1/projects/${projectId}/contractors` as any,
+        payload
+    ) as Promise<Contractor>;
+  }
+
+  /**
+   * Auftragnehmer aktualisieren
+   */
+  async updateContractor(
+      projectId: string,
+      contractorId: string,
+      payload: Partial<Contractor>
+  ): Promise<Contractor> {
+    return apiClient.patch(
+        `/api/v1/projects/${projectId}/contractors/${contractorId}` as any,
+        payload
+    ) as Promise<Contractor>;
+  }
+
+  /**
+   * Auftragnehmer löschen
+   */
+  async deleteContractor(projectId: string, contractorId: string): Promise<void> {
+    await apiClient.delete(
+        `/api/v1/projects/${projectId}/contractors/${contractorId}` as any
+    );
   }
 }
+
 export const contractorService = new ContractorService();
