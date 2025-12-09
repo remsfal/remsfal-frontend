@@ -8,7 +8,10 @@ import Select, { type SelectChangeEvent } from 'primevue/select';
 import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
 import { computed } from 'vue';
-import { useInboxStore } from '@/stores/InboxStore'
+import { useInboxStore } from '@/stores/InboxStore';
+import TopbarUserActions from '@/components/TopbarUserActions.vue';
+import { useTopbarUserActions } from '../composables/useTopbarUserActions';
+
 const { t } = useI18n();
 
 const sessionStore = useUserSessionStore();
@@ -16,6 +19,10 @@ const projectStore = useProjectStore();
 const inboxStore = useInboxStore();
 
 const router = useRouter();
+
+// Use the composable for shared actions to avoid duplication
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { onAccountSettingsClick, logout, login, loginDev, showDevLoginButton } = useTopbarUserActions();
 
 const onProjectSelectionChange = (event: SelectChangeEvent) => {
   console.log('new project selected ', event.value.name);
@@ -32,18 +39,6 @@ const onHomeClick = () => {
   router.push('/projects');
 };
 
-const onAccountSettingsClick = () => {
-  router.push('/account-settings');
-};
-
-const logout = () => {
-  window.location.pathname = '/api/v1/authentication/logout';
-};
-
-const login = (route: string) => {
-  window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
-};
-
 const onInboxClick = () => {
   router.push('/inbox');
 };
@@ -52,7 +47,7 @@ const unreadCount = computed(() =>
   inboxStore.messages
     ? inboxStore.messages.filter(m => !m?.isRead).length
     : 0
-)
+);
 </script>
 
 <template>
@@ -82,14 +77,8 @@ const unreadCount = computed(() =>
       <i class="pi pi-plus" />
       <span>{{ t('toolbar.newProject') }}</span>
     </Button>
-    <Button
-      v-if="sessionStore.user != null"
-      class="layout-topbar-action"
-      @click="onAccountSettingsClick()"
-    >
-      <i class="pi pi-user" />
-      <span>{{ sessionStore.user.email }}</span>
-    </Button>
+    
+    <!-- Inbox button remains separate as it has specific logic (unread count) -->
     <Button
       v-if="sessionStore.user != null"
       class="layout-topbar-shortcut-button layout-topbar-action"
@@ -101,18 +90,10 @@ const unreadCount = computed(() =>
       </span>
       <span>{{ t('toolbar.inbox') }}</span>
     </Button>
-    <Button v-if="sessionStore.user != null" class="layout-topbar-action" @click="logout()">
-      <i class="pi pi-sign-out" />
-      <span>{{ t('toolbar.logout') }}</span>
-    </Button>
-    <Button
-      v-if="sessionStore.user == null"
-      class="layout-topbar-action"
-      @click="login('/projects')"
-    >
-      <i class="pi pi-sign-in" />
-      <span>{{ t('toolbar.login') }}</span>
-    </Button>
+
+    <!-- Use shared component for common user actions -->
+    <TopbarUserActions />
+
     <LocaleSwitch />
   </AppTopbar>
 </template>

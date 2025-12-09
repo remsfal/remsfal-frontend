@@ -50,6 +50,8 @@ export default defineConfig({
   server: {
     // https://vitejs.dev/config/server-options.html
     strictPort: true,
+    port: 5173,
+    host: '0.0.0.0',
     proxy: {
       '/api': createProxyConfig('http://localhost:8080', 'Platform Microservice'),
       '/ticketing': createProxyConfig('http://localhost:8081', 'Ticketing Microservice'),
