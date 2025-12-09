@@ -1,11 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-// FIX: Relative Pfade nutzen statt Alias '@', damit TypeScript die Dateien findet
 import UnitBreadcrumb from '../../src/components/UnitBreadcrumb.vue';
 import { propertyService } from '../../src/services/PropertyService';
 
-// Mocks (auch hier den Pfad anpassen, damit er sicher matcht)
-vi.mock('../../src/services/PropertyService');
+// Mocks
+// Wir müssen sicherstellen, dass alle Methoden gemockt sind, die wir nutzen
+vi.mock('../../src/services/PropertyService', () => ({
+  propertyService: {
+    getBreadcrumbPath: vi.fn(),
+    getProperty: vi.fn(),
+  },
+}));
 
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
@@ -14,7 +19,6 @@ vi.mock('vue-router', () => ({
   })
 }));
 
-// Stub als Variable für robustes Finden
 const BreadcrumbStub = {
   name: 'BreadcrumbStub',
   props: ['model'],
@@ -42,11 +46,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
-      global: {
-        stubs: {
-          Breadcrumb: BreadcrumbStub
-        }
-      }
+      global: { stubs: { Breadcrumb: BreadcrumbStub } }
     });
 
     await flushPromises();
@@ -74,9 +74,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     const wrapper = mount(UnitBreadcrumb, {
       props: createProps,
-      global: {
-        stubs: { Breadcrumb: BreadcrumbStub }
-      }
+      global: { stubs: { Breadcrumb: BreadcrumbStub } }
     });
 
     await flushPromises();
@@ -98,6 +96,7 @@ describe('UnitBreadcrumb.vue', () => {
       mode: 'edit' as const
     };
 
+    // Szenario: Baum gibt leeren Pfad für Site, aber korrekten Pfad für Property
     (propertyService.getBreadcrumbPath as any).mockImplementation((pid: string, uid: string) => {
         if (uid === 'site-1') return Promise.resolve([]);
         if (uid === 'prop-1') return Promise.resolve([{ title: 'Property A', id: 'prop-1', type: 'PROPERTY' }]);
@@ -119,11 +118,36 @@ describe('UnitBreadcrumb.vue', () => {
     expect(model[1].label).toBe('My Site');
   });
 
-  it('shows fallback when everything fails', async () => {
+  it('shows fallback (current title) when backend fails', async () => {
+    // Backend ist down -> Error
     (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Backend down'));
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
+      global: { stubs: { Breadcrumb: BreadcrumbStub } }
+    });
+
+    await flushPromises();
+
+    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
+    const model = breadcrumb.props('model');
+
+    // KORREKTUR: Wir erwarten nicht "Zur Übersicht", sondern den Namen der aktuellen Einheit.
+    // Das ist besseres UX ("Ich sehe wo ich bin, auch wenn der Pfad fehlt").
+    expect(model).toHaveLength(1);
+    expect(model[0].label).toBe('My Unit');
+  });
+
+  it('shows "Zur Übersicht" only if absolutely no info is available', async () => {
+    // Backend down UND kein Titel/ID bekannt
+    (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Backend down'));
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: { 
+          projectId: 'p1',
+          mode: 'edit' 
+          // Keine unitId, kein currentTitle
+      },
       global: { stubs: { Breadcrumb: BreadcrumbStub } }
     });
 
@@ -141,10 +165,14 @@ describe('UnitBreadcrumb.vue', () => {
       projectId: 'proj-1',
       unitId: 'site-1',
       contextParentId: 'prop-1',
-      mode: 'edit' as const
+      mode: 'edit' as const,
+      currentTitle: 'Außenanlage'
     };
     
+    // 1. Pfad laden schlägt fehl
     (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Tree Error'));
+    
+    // 2. Direktes Laden klappt
     (propertyService.getProperty as any).mockResolvedValue({ title: 'Direct Property' });
 
     const wrapper = mount(UnitBreadcrumb, {
@@ -158,7 +186,7 @@ describe('UnitBreadcrumb.vue', () => {
     const model = breadcrumb.props('model');
     
     expect(model).toHaveLength(2);
-    expect(model[0].label).toBe('Direct Property');
-    expect(model[1].label).toBe('Außenanlage');
+    expect(model[0].label).toBe('Direct Property'); // Geladen via getProperty
+    expect(model[1].label).toBe('Außenanlage');    // Manuell angehängt
   });
 });
