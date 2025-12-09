@@ -84,4 +84,69 @@ describe('TopbarUserActions.vue', () => {
             expect(wrapper.text()).toContain('Anmelden');
         });
     });
+    describe('User Interactions', () => {
+        it('should call logout when logout button is clicked', async () => {
+            const pinia = createTestingPinia({ stubActions: false });
+            const userStore = useUserSessionStore(pinia);
+            userStore.user = { email: 'test@example.com' } as any;
+            mockActions.sessionStore = userStore;
+
+            const wrapper = mount(TopbarUserActions, { global: { plugins: [pinia] }, });
+            await flushPromises();
+
+            // Find logout button (by icon or text)
+            const logoutButton = wrapper.findAll('.layout-topbar-action').find(b => b.text().includes('Abmelden'));
+            await logoutButton?.trigger('click');
+
+            expect(mockActions.logout).toHaveBeenCalled();
+        });
+
+        it('should call onAccountSettingsClick when user email is clicked', async () => {
+            const pinia = createTestingPinia({ stubActions: false });
+            const userStore = useUserSessionStore(pinia);
+            userStore.user = { email: 'user@example.com' } as any;
+            mockActions.sessionStore = userStore;
+
+            const wrapper = mount(TopbarUserActions, { global: { plugins: [pinia] }, });
+            await flushPromises();
+
+            // Find account button
+            const accountButton = wrapper.findAll('.layout-topbar-action').find(b => b.text().includes('user@example.com'));
+            await accountButton?.trigger('click');
+
+            expect(mockActions.onAccountSettingsClick).toHaveBeenCalled();
+        });
+
+        it('should call login when login button is clicked', async () => {
+            const pinia = createTestingPinia({ stubActions: false });
+            const userStore = useUserSessionStore(pinia);
+            userStore.user = null;
+            mockActions.sessionStore = userStore;
+            mockActions.showDevLoginButton.value = false;
+
+            const wrapper = mount(TopbarUserActions, { global: { plugins: [pinia] }, });
+            await flushPromises();
+
+            const loginButton = wrapper.findAll('.layout-topbar-action').find(b => b.text().includes('Anmelden'));
+            await loginButton?.trigger('click');
+
+            expect(mockActions.login).toHaveBeenCalledWith('/projects');
+        });
+
+        it('should call loginDev when dev login button is clicked', async () => {
+            const pinia = createTestingPinia({ stubActions: false });
+            const userStore = useUserSessionStore(pinia);
+            userStore.user = null;
+            mockActions.sessionStore = userStore;
+            mockActions.showDevLoginButton.value = true;
+
+            const wrapper = mount(TopbarUserActions, { global: { plugins: [pinia] }, });
+            await flushPromises();
+
+            const devLoginButton = wrapper.findAll('.layout-topbar-action').find(b => b.text().includes('Dev Login'));
+            await devLoginButton?.trigger('click');
+
+            expect(mockActions.loginDev).toHaveBeenCalled();
+        });
+    });
 });
