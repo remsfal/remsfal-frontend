@@ -63,7 +63,7 @@ describe('AdressDisplay', () => {
             expect(wrapper.vm.editedAddress.street).toBe('Valid Street 123');
             await input.trigger('blur');
             errorMessage = wrapper.find('input#street ~ .error');
-            expect(errorMessage.exists()).toBe('');
+            expect(errorMessage.text()).toBe('');
         });
 
         test('An emtpty input value shows an error message', async () => {
@@ -90,7 +90,7 @@ describe('AdressDisplay', () => {
     test('saveAddress is called when the save button is clicked', async () => {
         wrapper.vm.changes = true;
         await nextTick();
-        const saveButton = wrapper.find('button#save-address');
+        const saveButton = wrapper.find('.save-button');
         expect(saveButton.exists()).toBe(true);
 
         await wrapper.vm.saveAddress();
@@ -100,7 +100,7 @@ describe('AdressDisplay', () => {
     test('Changes are discarded after clicking the cancel button', async () => {
         wrapper.vm.changes = true;
         await nextTick();
-        const cancelButton = wrapper.find('button#cancel-address');
+        const cancelButton = wrapper.find('.cancel-button');
         expect(cancelButton.exists()).toBe(true);
 
         await cancelButton.trigger('click');

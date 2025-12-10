@@ -380,6 +380,7 @@ const isDisabled = computed(() => {
           v-if="changes"
           label="Speichern"
           icon="pi pi-user-edit"
+          class="save-button"
           :disabled="isDisabled"
           @click="saveAddress()"
         />
@@ -388,6 +389,7 @@ const isDisabled = computed(() => {
           label="Abbrechen"
           icon="pi pi-times"
           severity="secondary"
+          class="cancel-button"
           @click="cancel()"
         />
       </div>
