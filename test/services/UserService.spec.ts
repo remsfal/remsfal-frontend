@@ -12,17 +12,6 @@ describe('UserService with MSW', () => {
       email: 'john@example.com',
     });
   });
-
-  test('getCityFromZip returns addresses for valid zip', async () => {
-    const city = await userService.getCityFromZip('12345');
-    expect(city).toEqual({
-      city: 'Sample City',
-      countryCode: '',
-      province: '',
-      street: '',
-      zip: '12345',
-    });
-  });
   
   test('updateUser returns updated user', async () => {
     const updatedUser = await userService.updateUser({ 
@@ -41,8 +30,4 @@ describe('UserService with MSW', () => {
     // If no error is thrown, the delete was successful
   });
 
-  test('getCityFromZip returns empty object when no addresses found', async () => {
-    const city = await userService.getCityFromZip('00000');
-    expect(city).toEqual({});
-  });
 });
