@@ -878,4 +878,106 @@ This section provides an overview of the current visual mockup implementation wi
 
 ---
 
+## Current Implementation Screenshots
+
+The following screenshots show the actual implemented Issue Details View with placeholder content as specified in this wireframe:
+
+### 1. Issue Overview & Description
+![Issue Overview Card](https://github.com/user-attachments/assets/aa43e10d-6915-4426-b21a-8e9cc550c9e4)
+
+**Shows:**
+- Issue ID: #ISSUE-123
+- Title: "Fix login bug on mobile devices"
+- Status badge: OPEN (blue)
+- Description section with markdown content
+- Edit button (non-functional placeholder)
+- Navigation sidebar
+
+### 2. Metadata Card
+![Metadata Card](https://github.com/user-attachments/assets/6b182135-74c2-48e8-91b5-24ce4e6af7cf)
+
+**Shows:**
+- Reporter: John Doe (with avatar initials "JD")
+- Owner/Assignee: Jane Smith (with avatar initials "JS")
+- Project: Building A Renovation
+- Type: TASK badge (purple)
+- Status: IN_PROGRESS badge (orange)
+- Tenancy: Apartment 3B
+- Created: 2024-12-01 10:30 AM
+- Last Modified: 2024-12-08 09:15 AM
+- Related Issues accordion (collapsed sections)
+- Communication section with Comments/Activity Log tabs
+
+### 3. Communication Card - Comments Tab
+![Communication Comments](https://github.com/user-attachments/assets/b24b16ee-95c7-4013-8d57-b074f5412460)
+
+**Shows:**
+- TabView with "Comments" and "Activity Log" tabs
+- Comment from Alice Johnson (STAFF badge, "AJ" avatar)
+  - Timestamp: 2024-12-07 2:30 PM
+  - Message about session token expiration logic
+- Comment from Bob Williams (MANAGER badge, "BW" avatar)
+  - Timestamp: 2024-12-08 9:00 AM
+  - Assignment and prioritization message
+- "Write a comment..." textarea (non-functional)
+- Post button (disabled, placeholder only)
+- Note: "Comment functionality is non-functional (placeholder only)"
+
+### 4. Future Fields Card - Part 1
+![Future Fields Attachments & Time Tracking](https://github.com/user-attachments/assets/19d908f5-cb85-4cc1-b2c0-65af127bdb9d)
+
+**Shows:**
+- Dashed border card with "Future Fields" header and "Placeholder" badge
+- **Attachments section:**
+  - screenshot-login-error.png (245 KB) - Uploaded: 2024-12-01
+  - error-logs.pdf (1.2 MB) - Uploaded: 2024-12-02
+  - session-trace.log (89 KB) - Uploaded: 2024-12-05
+- **Time Tracking section:**
+  - Estimated: 8h (blue background)
+  - Logged: 5.5h (green background)
+  - Time entries:
+    - Alice Johnson - 3h (Investigation)
+    - Jane Smith - 2.5h (Implementation)
+
+### 5. Future Fields Card - Part 2
+![Future Fields Workflow, Tags & Custom Metadata](https://github.com/user-attachments/assets/c1870de0-75b2-4194-b436-ef720c775438)
+
+**Shows:**
+- **Workflow Stage:**
+  - Stage 3 of 5: Development
+  - Visual timeline: Backlog → Planning → Development (current) → Testing → Done
+  - Green progress indicator for completed stages
+  - Blue indicator for current stage
+- **Tags:**
+  - bug (red badge)
+  - mobile (blue badge)
+  - authentication (orange badge)
+  - high-priority (pink badge)
+  - session-management (gray badge)
+- **Custom Metadata:**
+  - Affected Modules: Auth, Session
+  - Client Environment: Mobile App v2.3.1
+
+### Implementation Notes
+
+All screenshots reflect the placeholder content defined in this wireframe:
+- ✅ Card-based layout using PrimeVue components
+- ✅ TailwindCSS utility classes for styling
+- ✅ Color-coded badges for Status, Type, and Roles
+- ✅ User avatars with initials
+- ✅ Accordion for relations (collapsed state shown)
+- ✅ TabView for communication (Comments/Activity Log)
+- ✅ Dashed border for Future Fields placeholder
+- ✅ All enum values correctly displayed (Status, Type, MemberRole)
+- ✅ Backend schema field mappings visible (ownerId, reporterId, projectId, etc.)
+
+**Visual Design Consistency:**
+- Matches ProjectSettings view styling
+- Uses Remsfal brand colors and typography
+- Follows German language labels in sidebar
+- Maintains consistent spacing (gap-4) between cards
+- Proper responsive grid layout
+
+---
+
 **End of Wireframe Document**
