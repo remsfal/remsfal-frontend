@@ -145,6 +145,7 @@ onMounted(loadContracts);
           <div
             v-else
             class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-gray-500"
+            data-testid="empty-state"
           >
             Keine Verträge gefunden.
           </div>
