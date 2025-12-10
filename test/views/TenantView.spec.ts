@@ -3,6 +3,20 @@ import { mount } from '@vue/test-utils';
 import flushPromises from 'flush-promises';
 import { tenantContractService, type TenantContractSummary } from '../../src/services/TenantContractService';
 
+vi.mock('../../src/services/TenantContractService', async () => {
+  const actual = await vi.importActual<typeof import('../../src/services/TenantContractService')>(
+    '../../src/services/TenantContractService',
+  );
+
+  return {
+    ...actual,
+    tenantContractService: {
+      listContracts: vi.fn(),
+      getContract: vi.fn(),
+    },
+  };
+});
+
 describe('TenantView', () => {
   const mockContracts: TenantContractSummary[] = [
     {
@@ -30,7 +44,7 @@ describe('TenantView', () => {
   });
 
   it('renders contracts from API', async () => {
-    vi.spyOn(tenantContractService, 'listContracts').mockResolvedValue(mockContracts);
+    vi.mocked(tenantContractService.listContracts).mockResolvedValue(mockContracts);
     const { default: TenantView } = await import('../../src/views/TenantView.vue');
 
     const wrapper = mount(TenantView);
@@ -45,7 +59,7 @@ describe('TenantView', () => {
   });
 
   it('shows error notice and fallback when fetch fails', async () => {
-    vi.spyOn(tenantContractService, 'listContracts').mockRejectedValue(new Error('fail'));
+    vi.mocked(tenantContractService.listContracts).mockRejectedValue(new Error('fail'));
     const { default: TenantView } = await import('../../src/views/TenantView.vue');
 
     const wrapper = mount(TenantView);
@@ -55,7 +69,7 @@ describe('TenantView', () => {
   });
 
   it('shows empty state when no contracts returned', async () => {
-    vi.spyOn(tenantContractService, 'listContracts').mockResolvedValue([]);
+    vi.mocked(tenantContractService.listContracts).mockResolvedValue([]);
     const { default: TenantView } = await import('../../src/views/TenantView.vue');
 
     const wrapper = mount(TenantView);

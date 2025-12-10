@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 import { tenantContractService } from '@/services/TenantContractService.ts';
 import type { TenantContractStatus, TenantContractSummary } from '@/services/TenantContractService.ts';
 
-const mockContracts: TenantContractSummary[] = [
+const fallbackContracts: TenantContractSummary[] = [
   {
     id: 'CNT-001',
     address: 'Hauptstr. 12, 70173 Stuttgart',
@@ -28,7 +28,7 @@ const mockContracts: TenantContractSummary[] = [
   },
 ];
 
-const contracts = ref<TenantContractSummary[]>(mockContracts);
+const contracts = ref<TenantContractSummary[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -58,12 +58,11 @@ const loadContracts = async () => {
   try {
     const data = await tenantContractService.listContracts();
     const list = normalizeContracts(data);
-    if (list.length) {
-      contracts.value = list;
-    }
+    contracts.value = list;
   } catch (err) {
     console.error(err);
     error.value = 'Verträge konnten nicht geladen werden. Anzeige mit Demo-Daten.';
+    contracts.value = fallbackContracts;
   } finally {
     loading.value = false;
   }
