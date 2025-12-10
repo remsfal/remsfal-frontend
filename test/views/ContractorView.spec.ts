@@ -15,6 +15,16 @@ vi.mock('@/services/ContractorService', () => ({
 
 const { contractorService } = await import('@/services/ContractorService');
 
+// Minimaltyp für das, was wir vom ViewModel brauchen
+type ContractorViewVm = {
+  deleteContractor: (contractor: {
+    id?: string;
+    companyName?: string;
+    email?: string;
+    address?: { street?: string; city?: string; zip?: string };
+  }) => Promise<void>;
+};
+
 const mountView = () => {
   return mount(ContractorView, {
     props: { projectId: PROJECT_ID },
@@ -60,9 +70,11 @@ describe('ContractorView.vue', () => {
 
   it('deletes a contractor when confirmed', async () => {
     const wrapper = mountView();
-    const vm: any = wrapper.vm;
+    const vm = wrapper.vm as unknown as ContractorViewVm;
 
-    const confirmSpy = vi.spyOn(window, 'confirm').mockImplementation(() => true);
+    const confirmSpy = vi
+        .spyOn(globalThis, 'confirm')
+        .mockImplementation(() => true);
 
     const contractor = {
       id: 'to-delete',
@@ -77,16 +89,21 @@ describe('ContractorView.vue', () => {
 
     await vm.deleteContractor(contractor);
 
-    expect(contractorService.deleteContractor).toHaveBeenCalledWith(PROJECT_ID, 'to-delete');
+    expect(contractorService.deleteContractor).toHaveBeenCalledWith(
+        PROJECT_ID,
+        'to-delete',
+    );
 
     confirmSpy.mockRestore();
   });
 
   it('does not delete contractor when user cancels confirm dialog', async () => {
     const wrapper = mountView();
-    const vm: any = wrapper.vm;
+    const vm = wrapper.vm as unknown as ContractorViewVm;
 
-    const confirmSpy = vi.spyOn(window, 'confirm').mockImplementation(() => false);
+    const confirmSpy = vi
+        .spyOn(globalThis, 'confirm')
+        .mockImplementation(() => false);
 
     const contractor = {
       id: 'to-not-delete',
@@ -101,7 +118,10 @@ describe('ContractorView.vue', () => {
 
     await vm.deleteContractor(contractor);
 
-    expect(contractorService.deleteContractor).not.toHaveBeenCalledWith(PROJECT_ID, 'to-not-delete');
+    expect(contractorService.deleteContractor).not.toHaveBeenCalledWith(
+        PROJECT_ID,
+        'to-not-delete',
+    );
 
     confirmSpy.mockRestore();
   });
