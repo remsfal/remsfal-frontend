@@ -127,7 +127,7 @@ const buildPayload = (): Contractor => {
   // Province & CountryCode automatisch für Backend setzen
   let province = normalize(addr.province);
   if (!province) {
-    province = city; // z.B. Berlin -> Province Berlin
+    province = city;
   }
 
   let countryCode = normalize(addr.countryCode);
@@ -198,7 +198,6 @@ const submitForm = async () => {
   try {
     if (!props.projectId) return;
 
-    // Basis-Payload aus dem Formular bauen (ohne id / projectId)
     let payload = buildPayload();
 
     if (isEditMode.value && currentContractor.value?.id) {
@@ -223,7 +222,6 @@ const submitForm = async () => {
   } catch (err: unknown) {
     console.error('Error saving contractor', err);
 
-    // Frontend-Validierung (Pflichtfelder o. Telefon) hat schon eine Meldung gesetzt
     if (isErrorWithMessage(err) && err.message === 'invalid-form') {
       return;
     }
@@ -276,7 +274,7 @@ const deleteContractor = async (contractor: Contractor) => {
             >
               <div>
                 <div class="text-xl font-semibold">
-                  Auftraggeber & Dienstleister
+                  Auftraggeber &amp; Dienstleister
                 </div>
                 <div class="text-sm text-gray-500">
                   Verwalte hier externe Firmen, die für dieses Projekt
@@ -325,7 +323,6 @@ const deleteContractor = async (contractor: Contractor) => {
         :style="{ width: '42rem' }"
     >
       <div class="flex flex-col gap-4 mt-2">
-        <!-- Rote Fehlermeldung im Stil der Pflichtfelder -->
         <p v-if="globalError" class="text-red-600 text-sm">
           {{ globalError }}
         </p>
@@ -347,8 +344,8 @@ const deleteContractor = async (contractor: Contractor) => {
               Firma <span class="text-red-500">*</span>
             </label>
             <InputText
-                inputId="companyName"
                 v-model="form.companyName"
+                inputId="companyName"
                 :class="{ 'p-invalid': showErrors && !isCompanyValid }"
             />
           </div>
@@ -358,8 +355,8 @@ const deleteContractor = async (contractor: Contractor) => {
               E-Mail <span class="text-red-500">*</span>
             </label>
             <InputText
-                inputId="email"
                 v-model="form.email"
+                inputId="email"
                 :class="{ 'p-invalid': showErrors && !isEmailValid }"
             />
           </div>
@@ -369,17 +366,21 @@ const deleteContractor = async (contractor: Contractor) => {
               Telefon <span class="text-xs text-gray-500">(optional)</span>
             </label>
             <InputText
-                inputId="phone"
                 v-model="form.phone"
+                inputId="phone"
                 :class="{ 'p-invalid': showErrors && !isPhoneValid }"
             />
           </div>
 
           <div class="flex flex-col gap-1">
             <label class="font-medium" for="trade">
-              Gewerk <span class="text-xs text-gray-500">(optional)</span>
+              Gewerk
+              <span class="text-xs text-gray-500">(optional)</span>
             </label>
-            <InputText inputId="trade" v-model="form.trade" />
+            <InputText
+                v-model="form.trade"
+                inputId="trade"
+            />
           </div>
         </div>
 
@@ -396,8 +397,8 @@ const deleteContractor = async (contractor: Contractor) => {
               Straße <span class="text-red-500">*</span>
             </label>
             <InputText
-                inputId="street"
                 v-model="form.address.street"
+                inputId="street"
                 :class="{ 'p-invalid': showErrors && !isStreetValid }"
             />
           </div>
@@ -408,8 +409,8 @@ const deleteContractor = async (contractor: Contractor) => {
                 PLZ <span class="text-red-500">*</span>
               </label>
               <InputText
-                  inputId="zip"
                   v-model="form.address.zip"
+                  inputId="zip"
                   :class="{ 'p-invalid': showErrors && !isZipValid }"
               />
             </div>
@@ -418,8 +419,8 @@ const deleteContractor = async (contractor: Contractor) => {
                 Ort <span class="text-red-500">*</span>
               </label>
               <InputText
-                  inputId="city"
                   v-model="form.address.city"
+                  inputId="city"
                   :class="{ 'p-invalid': showErrors && !isCityValid }"
               />
             </div>
@@ -431,7 +432,10 @@ const deleteContractor = async (contractor: Contractor) => {
                 Bundesland / Region
                 <span class="text-xs text-gray-500">(optional)</span>
               </label>
-              <InputText inputId="province" v-model="form.address.province" />
+              <InputText
+                  v-model="form.address.province"
+                  inputId="province"
+              />
             </div>
             <div class="flex flex-col gap-1">
               <label class="font-medium" for="countryCode">
@@ -441,8 +445,8 @@ const deleteContractor = async (contractor: Contractor) => {
                 </span>
               </label>
               <InputText
-                  inputId="countryCode"
                   v-model="form.address.countryCode"
+                  inputId="countryCode"
               />
             </div>
           </div>
