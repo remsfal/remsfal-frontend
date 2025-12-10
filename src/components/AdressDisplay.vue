@@ -74,8 +74,11 @@ const errorMessage = ref<{
 }>({});
 
 onMounted(async () => {
-  await fetchAddress();
-  console.log('Loaded address:', addressProfile.value);
+  if (!addressProfile.value) {
+    addressProfile.value = {};
+  }
+
+  fetchAddress();
 });
 
 // Lade Adresse aus dem User-Objekt
