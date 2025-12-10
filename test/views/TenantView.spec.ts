@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import flushPromises from 'flush-promises';
-import { tenantContractService, type TenantContractSummary } from '../../src/services/TenantContractService';
+import { tenantContractService, type TenantContractSummary } from '@/services/TenantContractService.ts';
 
-vi.mock('../../src/services/TenantContractService', async () => {
-  const actual = await vi.importActual<typeof import('../../src/services/TenantContractService')>(
-    '../../src/services/TenantContractService',
+vi.mock('@/services/TenantContractService.ts', async () => {
+  const actual = await vi.importActual<typeof import('@/services/TenantContractService.ts')>(
+    '@/services/TenantContractService.ts',
   );
 
   return {
