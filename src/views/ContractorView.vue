@@ -66,11 +66,21 @@ const isStreetValid = computed(() => !!form.value.address.street.trim());
 const isZipValid = computed(() => !!form.value.address.zip.trim());
 const isCityValid = computed(() => !!form.value.address.city.trim());
 
+// Hilfstypen für Fehler-Handling
+type ErrorWithResponse = {
+  response?: {
+    status?: number;
+  };
+};
+
+const isErrorWithMessage = (e: unknown): e is { message: string } =>
+    typeof (e as { message?: unknown }).message === 'string';
+
 // Telefon: nur prüfen, wenn etwas eingetragen ist
 const isPhoneValid = computed(() => {
   const phone = form.value.phone?.trim();
   if (!phone) return true;
-  return /^\+?[0-9]{10,14}$/.test(phone);
+  return /^\+?\d{10,14}$/.test(phone);
 });
 
 const validate = (): boolean => {
@@ -192,7 +202,6 @@ const submitForm = async () => {
     let payload = buildPayload();
 
     if (isEditMode.value && currentContractor.value?.id) {
-      // 🔥 WICHTIG: Für PATCH die id mitsenden, weil das Backend sie verlangt
       payload = {
         ...payload,
         id: currentContractor.value.id,
@@ -204,7 +213,6 @@ const submitForm = async () => {
           payload,
       );
     } else {
-      // Für POST KEINE id mitsenden (muss laut Backend null sein)
       await contractorService.createContractor(props.projectId, payload);
     }
 
@@ -212,16 +220,17 @@ const submitForm = async () => {
     globalError.value = null;
     showErrors.value = false;
     contractorTableRef.value?.reload();
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error saving contractor', err);
 
     // Frontend-Validierung (Pflichtfelder o. Telefon) hat schon eine Meldung gesetzt
-    if (err?.message === 'invalid-form') {
+    if (isErrorWithMessage(err) && err.message === 'invalid-form') {
       return;
     }
 
-    // Backend: 400 = meistens ungültige Adresse
-    if (err?.response?.status === 400) {
+    const status = (err as ErrorWithResponse).response?.status;
+
+    if (status === 400) {
       globalError.value =
           'Die eingegebene Adresse wurde vom Backend als ungültig abgelehnt. ' +
           'Bitte prüfen Sie Straße, PLZ, Ort und den Ländercode.';
@@ -232,21 +241,25 @@ const submitForm = async () => {
   }
 };
 
-
 const deleteContractor = async (contractor: Contractor) => {
   if (!props.projectId || !contractor.id) return;
 
-  const confirmed = window.confirm(
-      `Auftragnehmer "${contractor.companyName}" wirklich löschen?`,
-  );
+  const hasConfirm = typeof globalThis.confirm === 'function';
+  const confirmed = hasConfirm
+      ? globalThis.confirm(
+          `Auftragnehmer "${contractor.companyName}" wirklich löschen?`,
+      )
+      : false;
+
   if (!confirmed) return;
 
   try {
     await contractorService.deleteContractor(props.projectId, contractor.id);
     contractorTableRef.value?.reload();
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('Error deleting contractor', err);
-    globalError.value = 'Beim Löschen ist ein Fehler aufgetreten. Details in der Konsole.';
+    globalError.value =
+        'Beim Löschen ist ein Fehler aufgetreten. Details in der Konsole.';
   }
 };
 </script>
@@ -258,19 +271,22 @@ const deleteContractor = async (contractor: Contractor) => {
       <div class="col-span-12">
         <Card class="w-full">
           <template #title>
-            <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div
+                class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
+            >
               <div>
                 <div class="text-xl font-semibold">
                   Auftraggeber & Dienstleister
                 </div>
                 <div class="text-sm text-gray-500">
-                  Verwalte hier externe Firmen, die für dieses Projekt beauftragt werden können.
+                  Verwalte hier externe Firmen, die für dieses Projekt
+                  beauftragt werden können.
                 </div>
               </div>
               <Button
-                label="Neuen Auftragnehmer hinzufügen"
-                icon="pi pi-plus"
-                @click="openCreateDialog"
+                  label="Neuen Auftragnehmer hinzufügen"
+                  icon="pi pi-plus"
+                  @click="openCreateDialog"
               />
             </div>
           </template>
@@ -287,10 +303,10 @@ const deleteContractor = async (contractor: Contractor) => {
           </template>
           <template #content>
             <ContractorTable
-              ref="contractorTableRef"
-              :projectId="props.projectId"
-              @edit="openEditDialog"
-              @delete="deleteContractor"
+                ref="contractorTableRef"
+                :projectId="props.projectId"
+                @edit="openEditDialog"
+                @delete="deleteContractor"
             />
           </template>
         </Card>
@@ -299,10 +315,14 @@ const deleteContractor = async (contractor: Contractor) => {
 
     <!-- Dialog Neu/Bearbeiten -->
     <Dialog
-      v-model:visible="showDialog"
-      :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
-      :modal="true"
-      :style="{ width: '42rem' }"
+        v-model:visible="showDialog"
+        :header="
+        isEditMode
+          ? 'Auftragnehmer bearbeiten'
+          : 'Neuen Auftragnehmer anlegen'
+      "
+        modal
+        :style="{ width: '42rem' }"
     >
       <div class="flex flex-col gap-4 mt-2">
         <!-- Rote Fehlermeldung im Stil der Pflichtfelder -->
@@ -323,40 +343,43 @@ const deleteContractor = async (contractor: Contractor) => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
-            <label class="font-medium">
+            <label class="font-medium" for="companyName">
               Firma <span class="text-red-500">*</span>
             </label>
             <InputText
-              v-model="form.companyName"
-              :class="{ 'p-invalid': showErrors && !isCompanyValid }"
+                inputId="companyName"
+                v-model="form.companyName"
+                :class="{ 'p-invalid': showErrors && !isCompanyValid }"
             />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="font-medium">
+            <label class="font-medium" for="email">
               E-Mail <span class="text-red-500">*</span>
             </label>
             <InputText
-              v-model="form.email"
-              :class="{ 'p-invalid': showErrors && !isEmailValid }"
+                inputId="email"
+                v-model="form.email"
+                :class="{ 'p-invalid': showErrors && !isEmailValid }"
             />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="font-medium">
+            <label class="font-medium" for="phone">
               Telefon <span class="text-xs text-gray-500">(optional)</span>
             </label>
             <InputText
-              v-model="form.phone"
-              :class="{ 'p-invalid': showErrors && !isPhoneValid }"
+                inputId="phone"
+                v-model="form.phone"
+                :class="{ 'p-invalid': showErrors && !isPhoneValid }"
             />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="font-medium">
+            <label class="font-medium" for="trade">
               Gewerk <span class="text-xs text-gray-500">(optional)</span>
             </label>
-            <InputText v-model="form.trade" />
+            <InputText inputId="trade" v-model="form.trade" />
           </div>
         </div>
 
@@ -369,50 +392,58 @@ const deleteContractor = async (contractor: Contractor) => {
 
         <div class="grid grid-cols-1 gap-4">
           <div class="flex flex-col gap-1">
-            <label class="font-medium">
+            <label class="font-medium" for="street">
               Straße <span class="text-red-500">*</span>
             </label>
             <InputText
-              v-model="form.address.street"
-              :class="{ 'p-invalid': showErrors && !isStreetValid }"
+                inputId="street"
+                v-model="form.address.street"
+                :class="{ 'p-invalid': showErrors && !isStreetValid }"
             />
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="flex flex-col gap-1">
-              <label class="font-medium">
+              <label class="font-medium" for="zip">
                 PLZ <span class="text-red-500">*</span>
               </label>
               <InputText
-                v-model="form.address.zip"
-                :class="{ 'p-invalid': showErrors && !isZipValid }"
+                  inputId="zip"
+                  v-model="form.address.zip"
+                  :class="{ 'p-invalid': showErrors && !isZipValid }"
               />
             </div>
             <div class="flex flex-col gap-1 md:col-span-2">
-              <label class="font-medium">
+              <label class="font-medium" for="city">
                 Ort <span class="text-red-500">*</span>
               </label>
               <InputText
-                v-model="form.address.city"
-                :class="{ 'p-invalid': showErrors && !isCityValid }"
+                  inputId="city"
+                  v-model="form.address.city"
+                  :class="{ 'p-invalid': showErrors && !isCityValid }"
               />
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1">
-              <label class="font-medium">
+              <label class="font-medium" for="province">
                 Bundesland / Region
                 <span class="text-xs text-gray-500">(optional)</span>
               </label>
-              <InputText v-model="form.address.province" />
+              <InputText inputId="province" v-model="form.address.province" />
             </div>
             <div class="flex flex-col gap-1">
-              <label class="font-medium">
+              <label class="font-medium" for="countryCode">
                 Ländercode (z. B. DE)
-                <span class="text-xs text-gray-500">(optional, Standard DE)</span>
+                <span class="text-xs text-gray-500">
+                  (optional, Standard DE)
+                </span>
               </label>
-              <InputText v-model="form.address.countryCode" />
+              <InputText
+                  inputId="countryCode"
+                  v-model="form.address.countryCode"
+              />
             </div>
           </div>
         </div>
@@ -421,17 +452,18 @@ const deleteContractor = async (contractor: Contractor) => {
       <template #footer>
         <div class="flex justify-between w-full">
           <span class="text-xs text-gray-500 self-center">
-            Pflichtfelder müssen ausgefüllt sein, bevor gespeichert werden kann.
+            Pflichtfelder müssen ausgefüllt sein, bevor gespeichert werden
+            kann.
           </span>
           <div class="flex gap-2">
             <Button
-              label="Abbrechen"
-              severity="secondary"
-              @click="closeDialog"
+                label="Abbrechen"
+                severity="secondary"
+                @click="closeDialog"
             />
             <Button
-              :label="isEditMode ? 'Speichern' : 'Anlegen'"
-              @click="submitForm"
+                :label="isEditMode ? 'Speichern' : 'Anlegen'"
+                @click="submitForm"
             />
           </div>
         </div>
