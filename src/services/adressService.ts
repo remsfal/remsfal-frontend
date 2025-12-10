@@ -1,4 +1,4 @@
-import { apiClient, type ApiComponents, type ApiPaths } from '@/services/ApiClient.ts';
+import { apiClient, type ApiComponents} from '@/services/ApiClient.ts';
 
 export type AddressInfo = ApiComponents['schemas']['AddressJson'];
 
