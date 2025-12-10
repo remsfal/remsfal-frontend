@@ -165,9 +165,7 @@ describe('ContractorView.vue', () => {
     vm.form.phone = '+491234567890';
     vm.form.trade = 'Dachdecker';
 
-    (contractorService.createContractor as unknown as vi.Mock).mockResolvedValue({
-      id: 'c1',
-    });
+    (contractorService.createContractor as unknown as vi.Mock).mockResolvedValue({id: 'c1',});
 
     await vm.submitForm();
 
@@ -206,9 +204,7 @@ describe('ContractorView.vue', () => {
     vm.form.address.zip = '22222';
     vm.form.address.city = 'Neustadt';
 
-    (contractorService.updateContractor as unknown as vi.Mock).mockResolvedValue({
-      id: 'c-123',
-    });
+    (contractorService.updateContractor as unknown as vi.Mock).mockResolvedValue({id: 'c-123',});
 
     await vm.submitForm();
 
