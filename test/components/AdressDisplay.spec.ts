@@ -104,7 +104,7 @@ describe('AdressDisplay', () => {
         expect(cancelButton.exists()).toBe(true);
 
         await cancelButton.trigger('click');
-        expect(wrapper.vm.editedAddress).toEqual(wrapper.vm.addresProfile);
+        expect(wrapper.vm.editedAddress).toEqual(wrapper.vm.addressProfile);
     });
 
     describe('Validation of isDisabled method', async () => {
