@@ -268,6 +268,29 @@ describe('AccountSettingsView', () => {
       expect(wrapper.vm.altEmailSuccess).toBe(false);
       expect(wrapper.vm.altEmailError).toBe(false);
     });
+    
+    test('sets error flag when deleteAlternativeEmail backend call fails', async () => {
+      wrapper.vm.userProfile = {
+      id: '1',
+      firstName: 'First',
+      lastName: 'Last',
+      email: 'primary@example.com',
+      alternativeEmail: 'alt@example.com',
+    } as UserProfileStub;
+
+      wrapper.vm.editedUserProfile = {...wrapper.vm.userProfile,};
+
+      wrapper.vm.altEmailSuccess = false;
+      wrapper.vm.altEmailError = false;
+      wrapper.vm.alternativeEmail = 'alt@example.com';
+
+      vi.spyOn(UserService.prototype, 'updateUser').mockRejectedValue(new Error('Boom'));
+
+      await wrapper.vm.deleteAlternativeEmail();
+
+      expect(wrapper.vm.altEmailError).toBe(true);
+    });
+
     test('resetForm clears dialog state', () => {
       wrapper.vm.alternativeEmail = 'old@example.com';
       wrapper.vm.isEmailInvalid = true;
