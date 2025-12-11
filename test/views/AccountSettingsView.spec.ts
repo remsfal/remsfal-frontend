@@ -161,18 +161,14 @@ describe('AccountSettingsView', () => {
     });
     
   });
-    describe('Alternative email handling', () => {
+     describe('Alternative email handling', () => {
     test('marks email invalid if empty or invalid', async () => {
-      // Arrange
       wrapper.vm.alternativeEmail = 'not-an-email';
       wrapper.vm.editedUserProfile.email = 'primary@example.com';
 
-      // Act
       await wrapper.vm.saveAlternativeEmail();
 
-      // Assert
       expect(wrapper.vm.isEmailInvalid).toBe(true);
-      // exakte Übersetzung kennen wir nicht, wichtig ist: es gibt eine Fehlermeldung
       expect(wrapper.vm.emailErrorMessage).toBeTruthy();
     });
 
@@ -189,7 +185,6 @@ describe('AccountSettingsView', () => {
     });
 
     test('successful alternative email save updates profile and flags', async () => {
-      // Ausgangsprofil vorbereiten
       wrapper.vm.userProfile = {
         id: '1',
         firstName: 'First',
@@ -198,9 +193,7 @@ describe('AccountSettingsView', () => {
         alternativeEmail: null,
       } as any;
 
-      wrapper.vm.editedUserProfile = {
-        ...wrapper.vm.userProfile,
-      };
+      wrapper.vm.editedUserProfile = {...wrapper.vm.userProfile,};
 
       wrapper.vm.alternativeEmail = 'alt@example.com';
 
@@ -210,9 +203,7 @@ describe('AccountSettingsView', () => {
 
       await wrapper.vm.saveAlternativeEmail();
 
-      expect(updateUserSpy).toHaveBeenCalledWith(
-        { alternativeEmail: 'alt@example.com' },
-      );
+      expect(updateUserSpy).toHaveBeenCalledWith({ alternativeEmail: 'alt@example.com' });
       expect(wrapper.vm.userProfile.alternativeEmail).toBe('alt@example.com');
       expect(wrapper.vm.editedUserProfile.alternativeEmail).toBe('alt@example.com');
       expect(wrapper.vm.altEmailSuccess).toBe(true);
@@ -229,9 +220,7 @@ describe('AccountSettingsView', () => {
         alternativeEmail: null,
       } as any;
 
-      wrapper.vm.editedUserProfile = {
-        ...wrapper.vm.userProfile,
-      };
+      wrapper.vm.editedUserProfile = {...wrapper.vm.userProfile,};
 
       wrapper.vm.alternativeEmail = 'alt@example.com';
 
@@ -252,9 +241,7 @@ describe('AccountSettingsView', () => {
         alternativeEmail: 'alt@example.com',
       } as any;
 
-      wrapper.vm.editedUserProfile = {
-        ...wrapper.vm.userProfile,
-      };
+      wrapper.vm.editedUserProfile = {...wrapper.vm.userProfile,};
 
       wrapper.vm.altEmailSuccess = true;
       wrapper.vm.altEmailError = false;
@@ -266,14 +253,12 @@ describe('AccountSettingsView', () => {
 
       await wrapper.vm.deleteAlternativeEmail();
 
-      expect(updateUserSpy).toHaveBeenCalledWith(
-        { alternativeEmail: '' },
-      );
+      expect(updateUserSpy).toHaveBeenCalledWith({ alternativeEmail: '' });
       expect(wrapper.vm.userProfile.alternativeEmail).toBeNull();
       expect(wrapper.vm.editedUserProfile.alternativeEmail).toBeNull();
       expect(wrapper.vm.alternativeEmail).toBe('');
       expect(wrapper.vm.altEmailSuccess).toBe(false);
       expect(wrapper.vm.altEmailError).toBe(false);
-   });
- });
+    });
+  });
 });
