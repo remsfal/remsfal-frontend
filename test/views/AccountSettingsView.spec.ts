@@ -5,6 +5,7 @@ import Card from 'primevue/card';
 import { createPinia } from 'pinia';
 import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
+import UserService from '../../src/services/UserService';
 
 describe('AccountSettingsView', () => {
   let wrapper: VueWrapper;
@@ -160,4 +161,119 @@ describe('AccountSettingsView', () => {
     });
     
   });
+    describe('Alternative email handling', () => {
+    test('marks email invalid if empty or invalid', async () => {
+      // Arrange
+      wrapper.vm.alternativeEmail = 'not-an-email';
+      wrapper.vm.editedUserProfile.email = 'primary@example.com';
+
+      // Act
+      await wrapper.vm.saveAlternativeEmail();
+
+      // Assert
+      expect(wrapper.vm.isEmailInvalid).toBe(true);
+      // exakte Übersetzung kennen wir nicht, wichtig ist: es gibt eine Fehlermeldung
+      expect(wrapper.vm.emailErrorMessage).toBeTruthy();
+    });
+
+    test('rejects alternative email equal to primary email', async () => {
+      wrapper.vm.editedUserProfile.email = 'same@example.com';
+      wrapper.vm.alternativeEmail = 'same@example.com';
+
+      await wrapper.vm.saveAlternativeEmail();
+
+      expect(wrapper.vm.isEmailInvalid).toBe(true);
+      expect(wrapper.vm.emailErrorMessage).toBe(
+        'Die alternative E-Mail darf nicht der primären entsprechen.',
+      );
+    });
+
+    test('successful alternative email save updates profile and flags', async () => {
+      // Ausgangsprofil vorbereiten
+      wrapper.vm.userProfile = {
+        id: '1',
+        firstName: 'First',
+        lastName: 'Last',
+        email: 'primary@example.com',
+        alternativeEmail: null,
+      } as any;
+
+      wrapper.vm.editedUserProfile = {
+        ...wrapper.vm.userProfile,
+      };
+
+      wrapper.vm.alternativeEmail = 'alt@example.com';
+
+      const updateUserSpy = vi
+        .spyOn(UserService.prototype, 'updateUser')
+        .mockResolvedValue({} as any);
+
+      await wrapper.vm.saveAlternativeEmail();
+
+      expect(updateUserSpy).toHaveBeenCalledWith(
+        { alternativeEmail: 'alt@example.com' },
+      );
+      expect(wrapper.vm.userProfile.alternativeEmail).toBe('alt@example.com');
+      expect(wrapper.vm.editedUserProfile.alternativeEmail).toBe('alt@example.com');
+      expect(wrapper.vm.altEmailSuccess).toBe(true);
+      expect(wrapper.vm.altEmailError).toBe(false);
+      expect(wrapper.vm.visible).toBe(false);
+    });
+
+    test('sets error flag when backend call for alternative email fails', async () => {
+      wrapper.vm.userProfile = {
+        id: '1',
+        firstName: 'First',
+        lastName: 'Last',
+        email: 'primary@example.com',
+        alternativeEmail: null,
+      } as any;
+
+      wrapper.vm.editedUserProfile = {
+        ...wrapper.vm.userProfile,
+      };
+
+      wrapper.vm.alternativeEmail = 'alt@example.com';
+
+      vi.spyOn(UserService.prototype, 'updateUser').mockRejectedValue(new Error('Boom'));
+
+      await wrapper.vm.saveAlternativeEmail();
+
+      expect(wrapper.vm.altEmailSuccess).toBe(false);
+      expect(wrapper.vm.altEmailError).toBe(true);
+    });
+
+    test('deleteAlternativeEmail clears alternative email and resets flags', async () => {
+      wrapper.vm.userProfile = {
+        id: '1',
+        firstName: 'First',
+        lastName: 'Last',
+        email: 'primary@example.com',
+        alternativeEmail: 'alt@example.com',
+      } as any;
+
+      wrapper.vm.editedUserProfile = {
+        ...wrapper.vm.userProfile,
+      };
+
+      wrapper.vm.altEmailSuccess = true;
+      wrapper.vm.altEmailError = false;
+      wrapper.vm.alternativeEmail = 'alt@example.com';
+
+      const updateUserSpy = vi
+        .spyOn(UserService.prototype, 'updateUser')
+        .mockResolvedValue({} as any);
+
+      await wrapper.vm.deleteAlternativeEmail();
+
+      expect(updateUserSpy).toHaveBeenCalledWith(
+        { alternativeEmail: '' },
+      );
+      expect(wrapper.vm.userProfile.alternativeEmail).toBeNull();
+      expect(wrapper.vm.editedUserProfile.alternativeEmail).toBeNull();
+      expect(wrapper.vm.alternativeEmail).toBe('');
+      expect(wrapper.vm.altEmailSuccess).toBe(false);
+      expect(wrapper.vm.altEmailError).toBe(false);
+   });
+ });
 });

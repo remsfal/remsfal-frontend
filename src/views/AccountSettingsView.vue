@@ -549,8 +549,8 @@ const deleteAlternativeEmail = async () => {
                 
                 <!-- Only show the alternative email field if one exists -->
                 <div 
-                v-if="userProfile?.alternativeEmail" 
-                class="flex items-center gap-1 mt-1 mb-5"
+                  v-if="userProfile?.alternativeEmail" 
+                  class="flex items-center gap-1 mt-1 mb-5"
                 >
                   <div class="alt-email-wrapper">
                     <InputText 
@@ -579,8 +579,9 @@ const deleteAlternativeEmail = async () => {
                   </div>
   
                   <!-- Trash icon deletes the existing alternative email -->
-                  <i class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
-                     @click="deleteAlternativeEmail"
+                  <i 
+                    class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
+                    @click="deleteAlternativeEmail"
                   />
                 </div>
               </div>
@@ -595,9 +596,11 @@ const deleteAlternativeEmail = async () => {
                 <div class="flex flex-col gap-1 mb-6">
                   <!-- Email input row -->
                   <div class="flex items-center gap-6">
-                  
-                    <label for="email"
-                          class="font-semibold w-29">E-Mail Adresse
+                    <label 
+                      for="email"
+                      class="font-semibold w-29"
+                    >
+                      E-Mail Adresse
                     </label>
   
                     <!-- Editable input inside dialog -->
@@ -615,7 +618,9 @@ const deleteAlternativeEmail = async () => {
                   <!-- Validation error message -->
                   <small
                     v-if="isEmailInvalid"
-                    class="text-red-500 mt-2 ml-36 text-sm">{{ emailErrorMessage }}
+                    class="text-red-500 mt-2 ml-36 text-sm"
+                  >
+                    {{ emailErrorMessage }}
                   </small>
                 </div>
 
@@ -638,7 +643,7 @@ const deleteAlternativeEmail = async () => {
                 </div>
               </Dialog>
 
-            <div class="input-container">
+              <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">Mobile Telefonnummer:</label>
                 <InputText
                   id="mobilePhoneNumber"
