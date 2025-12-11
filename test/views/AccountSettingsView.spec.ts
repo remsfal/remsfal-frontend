@@ -7,6 +7,14 @@ import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
 import UserService from '../../src/services/UserService';
 
+type UserProfileStub = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  alternativeEmail: string | null;
+};
+
 describe('AccountSettingsView', () => {
   let wrapper: VueWrapper;
 
@@ -191,7 +199,7 @@ describe('AccountSettingsView', () => {
         lastName: 'Last',
         email: 'primary@example.com',
         alternativeEmail: null,
-      } as any;
+      } as UserProfileStub;
 
       wrapper.vm.editedUserProfile = {...wrapper.vm.userProfile,};
 
@@ -199,7 +207,7 @@ describe('AccountSettingsView', () => {
 
       const updateUserSpy = vi
         .spyOn(UserService.prototype, 'updateUser')
-        .mockResolvedValue({} as any);
+        .mockResolvedValue({});
 
       await wrapper.vm.saveAlternativeEmail();
 
@@ -218,7 +226,7 @@ describe('AccountSettingsView', () => {
         lastName: 'Last',
         email: 'primary@example.com',
         alternativeEmail: null,
-      } as any;
+      } as UserProfileStub;
 
       wrapper.vm.editedUserProfile = {...wrapper.vm.userProfile,};
 
@@ -239,7 +247,7 @@ describe('AccountSettingsView', () => {
         lastName: 'Last',
         email: 'primary@example.com',
         alternativeEmail: 'alt@example.com',
-      } as any;
+      } as UserProfileStub;
 
       wrapper.vm.editedUserProfile = {...wrapper.vm.userProfile,};
 
@@ -249,7 +257,7 @@ describe('AccountSettingsView', () => {
 
       const updateUserSpy = vi
         .spyOn(UserService.prototype, 'updateUser')
-        .mockResolvedValue({} as any);
+        .mockResolvedValue({} as UserProfileStub);
 
       await wrapper.vm.deleteAlternativeEmail();
 
@@ -259,6 +267,17 @@ describe('AccountSettingsView', () => {
       expect(wrapper.vm.alternativeEmail).toBe('');
       expect(wrapper.vm.altEmailSuccess).toBe(false);
       expect(wrapper.vm.altEmailError).toBe(false);
+    });
+    test('resetForm clears dialog state', () => {
+      wrapper.vm.alternativeEmail = 'old@example.com';
+      wrapper.vm.isEmailInvalid = true;
+      wrapper.vm.emailErrorMessage = 'Fehler';
+
+      wrapper.vm.resetForm();
+
+      expect(wrapper.vm.alternativeEmail).toBe('');
+      expect(wrapper.vm.isEmailInvalid).toBe(false);
+      expect(wrapper.vm.emailErrorMessage).toBe('');
     });
   });
 });
