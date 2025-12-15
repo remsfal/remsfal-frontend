@@ -14,18 +14,18 @@ describe('AppLayout.vue', () => {
     const footer = wrapper.findComponent(AppFooter);
     expect(footer.exists()).toBe(true);
 
-    await wrapper.vm.$router.push('/customers');
+    await wrapper.vm.$router.push('/contractor/overview');
     await wrapper.vm.$nextTick();
 
     const routerViewContent = wrapper.html();
-    expect(routerViewContent).toContain('Übersicht aller Auftraggeber');
+    expect(routerViewContent).toContain('Auftragnehmer Dashboard');
   });
 
   it('should display correct content for the contractor route', async () => {
-    await wrapper.vm.$router.push('/customers');
+    await wrapper.vm.$router.push('/contractor/overview');
     await wrapper.vm.$nextTick();
 
     const routerViewContent = wrapper.html();
-    expect(routerViewContent).toContain('Übersicht aller Auftraggeber');
+    expect(routerViewContent).toContain('Auftragnehmer Dashboard');
   });
 });
