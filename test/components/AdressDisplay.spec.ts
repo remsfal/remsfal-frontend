@@ -61,7 +61,7 @@ describe('AdressDisplay', () => {
             await input.setValue('Valid Street 123');
             expect(wrapper.vm.editedAddress.street).toBe('Valid Street 123');
             await input.trigger('blur');
-            let errorMessage = wrapper.find('input#street ~ .error');
+            const errorMessage = wrapper.find('input#street ~ .error');
             expect(errorMessage.text()).toBe('');
         });
 
@@ -70,7 +70,7 @@ describe('AdressDisplay', () => {
             expect(input.exists()).toBe(true);
             await input.setValue('');
             await input.trigger('blur');
-            let errorMessage = wrapper.find('input#street ~ .error');
+            const errorMessage = wrapper.find('input#street ~ .error');
             expect(errorMessage.text()).toBe('Bitte eingeben!');
         });
 
@@ -79,7 +79,7 @@ describe('AdressDisplay', () => {
             expect(input.exists()).toBe(true);
             await input.setValue('Invalid Street');
             await input.trigger('blur');
-            let errorMessage = wrapper.find('input#street ~ .error');
+            const errorMessage = wrapper.find('input#street ~ .error');
             expect(errorMessage.text()).toBe('Eingabe bitte überprüfen!');
         });
     });
