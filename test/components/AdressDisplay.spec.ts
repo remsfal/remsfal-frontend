@@ -58,31 +58,28 @@ describe('AdressDisplay', () => {
         test('A valid input value is accepted', async () => {
             const input = wrapper.find('input#street');
             expect(input.exists()).toBe(true);
-            let errorMessage = wrapper.find('input#street ~ .error');
             await input.setValue('Valid Street 123');
             expect(wrapper.vm.editedAddress.street).toBe('Valid Street 123');
             await input.trigger('blur');
-            errorMessage = wrapper.find('input#street ~ .error');
+            let errorMessage = wrapper.find('input#street ~ .error');
             expect(errorMessage.text()).toBe('');
         });
 
         test('An emtpty input value shows an error message', async () => {
             const input = wrapper.find('input#street');
             expect(input.exists()).toBe(true);
-            let errorMessage = wrapper.find('input#street ~ .error');
             await input.setValue('');
             await input.trigger('blur');
-            errorMessage = wrapper.find('input#street ~ .error');
+            let errorMessage = wrapper.find('input#street ~ .error');
             expect(errorMessage.text()).toBe('Bitte eingeben!');
         });
 
         test('An invalid input value shows an error message', async () => {
             const input = wrapper.find('input#street');
             expect(input.exists()).toBe(true);
-            let errorMessage = wrapper.find('input#street ~ .error');
             await input.setValue('Invalid Street');
             await input.trigger('blur');
-            errorMessage = wrapper.find('input#street ~ .error');
+            let errorMessage = wrapper.find('input#street ~ .error');
             expect(errorMessage.text()).toBe('Eingabe bitte überprüfen!');
         });
     });

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AddressService from '@/services/adressService';
-import UserService from '@/services/UserService';
+import UserService, { type UserUpdateRequest } from '@/services/UserService';
 import type {paths} from '@/services/api/platform-schema';
 import { ref, computed, onMounted, watch } from 'vue';
 import Card from 'primevue/card';
@@ -120,7 +120,7 @@ async function saveAddress() {
         countryCode: getUpdatedAddressValue('countryCode'),
       } as Address;
 
-      await userService.updateUser({ address } as any);
+      await userService.updateUser({ address } as UserUpdateRequest);
       console.log('Adresse erfolgreich aktualisiert:', address);
       addressProfile.value = address;
       editedAddress.value = { ...address };
@@ -190,11 +190,11 @@ function updateCountryFromCode() {
     (country) => country.code === code,
   );
 
-  if (!matchingCountry) {
-    errorMessage.value.countryCode = 'Ungültiges Länderkürzel!';
-  } else {
+  if (matchingCountry) {
     editedAddress.value.countryCode = matchingCountry.code;
     errorMessage.value.countryCode = '';
+  } else {
+    errorMessage.value.countryCode = 'Ungültiges Länderkürzel!';
   }
 }
 
@@ -257,14 +257,14 @@ function compareObjects(obj1: Address, obj2: Address): boolean {
 
   if (keys1.length !== keys2.length) return false;
 
-    for (const key of keys1) {
-        if (
-            !keys2.includes(key) ||
-            !compareObjects(obj1[key] as Address, obj2[key] as Address)
-        ) {
-            return false;
-        }
-    }
+  for (const key of keys1) {
+      if (
+          !keys2.includes(key) ||
+          !compareObjects(obj1[key] as Address, obj2[key] as Address)
+      ) {
+          return false;
+      }
+  }
 
   return true;
 }
@@ -396,8 +396,12 @@ const isDisabled = computed(() => {
           @click="cancel()"
         />
       </div>
-      <Message v-if="saveSuccess" severity="success">Das Speichern der Adresse war erfolgreich!</Message>
-      <Message v-if="saveError" severity="error">Das Speichern der Adresse war leider nicht erfolgreich</Message>
+      <Message v-if="saveSuccess" severity="success">
+        Das Speichern der Adresse war erfolgreich!
+      </Message>
+      <Message v-if="saveError" severity="error">
+        Das Speichern der Adresse war leider nicht erfolgreich
+      </Message>
     </template>
   </Card>
 </template>

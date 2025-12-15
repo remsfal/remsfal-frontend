@@ -17,7 +17,6 @@ const { t } = useI18n();
 
 type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
 type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
-type User = UserGetResponse;
 
 const userProfile = ref<UserGetResponse | null>(null);
 const editedUserProfile = ref<Partial<UserPatchRequestBody>>({});
@@ -69,7 +68,7 @@ async function saveProfile(): Promise<void> {
   try {
     const userService = new UserService();
 
-    const user: Partial<User> = {
+    const user: Partial<UserGetResponse> = {
       id: userProfile.value?.id || '',
       firstName: getUpdatedValue('firstName'),
       businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
@@ -117,12 +116,12 @@ function cancel() {
 // Updates the appropriate error message if validation fails.
 // Also checks for any changes between the original and edited profiles to update `changes`.
 function validateField(
-  field: keyof User,
+  field: keyof UserGetResponse,
   type: 'name' | 'phone',
   errorKey: keyof typeof errorMessage.value,
 ) {
   // Get the value from editedUserProfile or editedAddress depending on field
-  const value = editedUserProfile.value?.[field as keyof User];
+  const value = editedUserProfile.value?.[field as keyof UserGetResponse];
 
   const regex = /^[A-Za-zÄÖÜäöüß\s]+$/;
 
@@ -149,7 +148,7 @@ function validateField(
   ) {
     changes.value = checkValues(
       userProfile.value,
-      editedUserProfile.value as User,
+      editedUserProfile.value as UserGetResponse,
     );
   } else {
     changes.value = false;
@@ -159,8 +158,8 @@ function validateField(
 // Determines if there are any changes between the original user and address profiles and their edited
 // versions. Returns `true` if differences are detected, otherwise `false`.
 function checkValues(
-  userProfile: User,
-  editedUserProfile: User,
+  userProfile: UserGetResponse,
+  editedUserProfile: UserGetResponse,
 ): boolean {
   if (
     compareObjects(userProfile || {}, editedUserProfile || {})
@@ -171,25 +170,25 @@ function checkValues(
   }
 }
 
-// Recursively compares two objects (User or Address) to check if they are identical.
+// Recursively compares two objects (UserGetResponse or Address) to check if they are identical.
 // - Returns `true` if the objects have the same structure and identical values for all keys.
 // - Returns `false` if the objects differ in keys or values.
-function compareObjects(obj1: User, obj2: User): boolean {
+function compareObjects(obj1: UserGetResponse, obj2: UserGetResponse): boolean {
   if (obj1 === obj2) return true;
 
   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
     return false;
   }
 
-  const keys1 = Object.keys(obj1) as Array<keyof User>;
-  const keys2 = Object.keys(obj2) as Array<keyof User>;
+  const keys1 = Object.keys(obj1) as Array<keyof UserGetResponse>;
+  const keys2 = Object.keys(obj2) as Array<keyof UserGetResponse>;
 
   if (keys1.length !== keys2.length) return false;
 
   for (const key of keys1) {
     if (
       !keys2.includes(key) ||
-      !compareObjects(obj1[key] as User, obj2[key] as User)
+      !compareObjects(obj1[key] as UserGetResponse, obj2[key] as UserGetResponse)
     ) {
       return false;
     }
