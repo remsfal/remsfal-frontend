@@ -3,6 +3,7 @@
   "accountSettings.userProfile.title": "Meine Daten",
   "accountSettings.userProfile.name": "Name",
   "accountSettings.userProfile.email": "E-Mail",
+  "accountSettings.userProfile.alternative-email": "Alternative E-Mail",
   "accountSettings.userProfile.privatePhone": "Private Telefonnummer",
   "accountSettings.userProfile.businessPhone": "Geschäftliche Telefonnummer",
   "accountSettings.userProfile.mobilePhone": "Handynummer",
