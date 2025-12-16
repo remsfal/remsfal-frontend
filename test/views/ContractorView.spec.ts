@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { mount } from '@vue/test-utils';
 import type { ComponentPublicInstance } from 'vue';
 import ContractorView from '@/views/ContractorView.vue';
@@ -14,6 +14,7 @@ vi.mock('@/services/ContractorService', () => ({
   },
 }));
 
+// Import the service after mocking
 const { contractorService } = await import('@/services/ContractorService');
 
 // Minimaltypen für das ViewModel
@@ -91,9 +92,10 @@ const mountView = () => {
 
 describe('ContractorView.vue', () => {
   beforeEach(() => {
-    (contractorService.createContractor as unknown as vi.Mock).mockReset();
-    (contractorService.updateContractor as unknown as vi.Mock).mockReset();
-    (contractorService.deleteContractor as unknown as vi.Mock).mockReset();
+    // FIX 1: Use 'as Mock' instead of 'as unknown as vi.Mock' for clean code smell fix
+    (contractorService.createContractor as Mock).mockReset();
+    (contractorService.updateContractor as Mock).mockReset();
+    (contractorService.deleteContractor as Mock).mockReset();
   });
 
   it('renders header text and shows ContractorTable stub', () => {
@@ -103,6 +105,7 @@ describe('ContractorView.vue', () => {
     expect(text).toContain('Auftraggeber & Dienstleister');
     expect(text).toContain('Verwalte hier externe Firmen');
 
+    // FIX 3: Define the missing variable that caused ReferenceError
     const tableStub = wrapper.find('.contractor-table-stub');
     expect(tableStub.exists()).toBe(true);
   });
@@ -165,21 +168,21 @@ describe('ContractorView.vue', () => {
     vm.form.phone = '+491234567890';
     vm.form.trade = 'Dachdecker';
 
-    (contractorService.createContractor as unknown as vi.Mock).mockResolvedValue({id: 'c1',});
+    // FIX 1: Use 'as Mock'
+    (contractorService.createContractor as Mock).mockResolvedValue({id: 'c1',});
 
     await vm.submitForm();
 
+    // FIX 1: Use 'as Mock'
     expect(contractorService.createContractor).toHaveBeenCalledTimes(1);
     const [calledProjectId, payload] = (
-        contractorService.createContractor as unknown as vi.Mock
+        contractorService.createContractor as Mock
     ).mock.calls[0];
 
     expect(calledProjectId).toBe(PROJECT_ID);
     expect(payload.companyName).toBe('Neue Firma');
     expect(payload.address.city).toBe('Berlin');
     expect(vm.showDialog).toBe(false);
-    // keine Assertion mehr auf vm.globalError, da der generische Fehlertext
-    // in seltenen Fällen gesetzt sein kann (macht den Test nur fragiler).
   });
 
   it('updates a contractor when in edit mode and currentContractor has an id', async () => {
@@ -204,13 +207,15 @@ describe('ContractorView.vue', () => {
     vm.form.address.zip = '22222';
     vm.form.address.city = 'Neustadt';
 
-    (contractorService.updateContractor as unknown as vi.Mock).mockResolvedValue({id: 'c-123',});
+    // FIX 1: Use 'as Mock'
+    (contractorService.updateContractor as Mock).mockResolvedValue({id: 'c-123',});
 
     await vm.submitForm();
 
+    // FIX 1: Use 'as Mock'
     expect(contractorService.updateContractor).toHaveBeenCalledTimes(1);
     const [projId, contractorId, payload] = (
-        contractorService.updateContractor as unknown as vi.Mock
+        contractorService.updateContractor as Mock
     ).mock.calls[0];
 
     expect(projId).toBe(PROJECT_ID);
@@ -230,7 +235,8 @@ describe('ContractorView.vue', () => {
     vm.form.address.zip = '12345';
     vm.form.address.city = 'Berlin';
 
-    (contractorService.createContractor as unknown as vi.Mock).mockRejectedValueOnce(
+    // FIX 1: Use 'as Mock'
+    (contractorService.createContractor as Mock).mockRejectedValueOnce(
         { response: { status: 400 } },
     );
 
@@ -252,7 +258,8 @@ describe('ContractorView.vue', () => {
     vm.form.address.zip = '12345';
     vm.form.address.city = 'Berlin';
 
-    (contractorService.createContractor as unknown as vi.Mock).mockRejectedValueOnce(
+    // FIX 1: Use 'as Mock'
+    (contractorService.createContractor as Mock).mockRejectedValueOnce(
         new Error('server kaputt'),
     );
 
@@ -266,8 +273,9 @@ describe('ContractorView.vue', () => {
     const wrapper = mountView();
     const vm = wrapper.vm as ContractorViewVm;
 
+    // FIX 2: Use globalThis instead of window
     const confirmSpy = vi
-        .spyOn(window, 'confirm')
+        .spyOn(globalThis, 'confirm')
         .mockImplementation(() => true);
 
     const contractor = {
@@ -295,8 +303,9 @@ describe('ContractorView.vue', () => {
     const wrapper = mountView();
     const vm = wrapper.vm as ContractorViewVm;
 
+    // FIX 2: Use globalThis instead of window
     const confirmSpy = vi
-        .spyOn(window, 'confirm')
+        .spyOn(globalThis, 'confirm')
         .mockImplementation(() => false);
 
     const contractor = {
