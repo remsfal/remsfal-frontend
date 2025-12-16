@@ -209,7 +209,7 @@ const submitForm = async () => {
       await contractorService.updateContractor(
           props.projectId,
           currentContractor.value.id,
-          payload,
+          payload
       );
     } else {
       await contractorService.createContractor(props.projectId, payload);
@@ -245,7 +245,7 @@ const deleteContractor = async (contractor: Contractor) => {
   const hasConfirm = typeof globalThis.confirm === 'function';
   const confirmed = hasConfirm
       ? globalThis.confirm(
-          `Auftragnehmer "${contractor.companyName}" wirklich löschen?`,
+          `Auftragnehmer "${contractor.companyName}" wirklich löschen?`
       )
       : false;
 
@@ -277,8 +277,8 @@ const deleteContractor = async (contractor: Contractor) => {
                   Auftraggeber &amp; Dienstleister
                 </div>
                 <div class="text-sm text-gray-500">
-                  Verwalte hier externe Firmen, die für dieses Projekt
-                  beauftragt werden können.
+                  Verwalte hier externe Firmen, die für dieses Projekt beauftragt
+                  werden können.
                 </div>
               </div>
               <Button
@@ -314,11 +314,7 @@ const deleteContractor = async (contractor: Contractor) => {
     <!-- Dialog Neu/Bearbeiten -->
     <Dialog
         v-model:visible="showDialog"
-        :header="
-        isEditMode
-          ? 'Auftragnehmer bearbeiten'
-          : 'Neuen Auftragnehmer anlegen'
-      "
+        :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
         modal
         :style="{ width: '42rem' }"
     >
@@ -374,8 +370,7 @@ const deleteContractor = async (contractor: Contractor) => {
 
           <div class="flex flex-col gap-1">
             <label class="font-medium" for="trade">
-              Gewerk
-              <span class="text-xs text-gray-500">(optional)</span>
+              Gewerk <span class="text-xs text-gray-500">(optional)</span>
             </label>
             <InputText
                 v-model="form.trade"
@@ -414,6 +409,7 @@ const deleteContractor = async (contractor: Contractor) => {
                   :class="{ 'p-invalid': showErrors && !isZipValid }"
               />
             </div>
+
             <div class="flex flex-col gap-1 md:col-span-2">
               <label class="font-medium" for="city">
                 Ort <span class="text-red-500">*</span>
@@ -437,6 +433,7 @@ const deleteContractor = async (contractor: Contractor) => {
                   inputId="province"
               />
             </div>
+
             <div class="flex flex-col gap-1">
               <label class="font-medium" for="countryCode">
                 Ländercode (z. B. DE)
@@ -456,9 +453,9 @@ const deleteContractor = async (contractor: Contractor) => {
       <template #footer>
         <div class="flex justify-between w-full">
           <span class="text-xs text-gray-500 self-center">
-            Pflichtfelder müssen ausgefüllt sein, bevor gespeichert werden
-            kann.
+            Pflichtfelder müssen ausgefüllt sein, bevor gespeichert werden kann.
           </span>
+
           <div class="flex gap-2">
             <Button
                 label="Abbrechen"
