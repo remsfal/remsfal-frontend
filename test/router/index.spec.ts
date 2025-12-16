@@ -31,9 +31,11 @@ vi.mock('@/layout/ContractorTopbar.vue', () => ({ default: {} }));
 vi.mock('@/layout/TenantMenu.vue', () => ({ default: {} }));
 vi.mock('@/layout/TenantTopbar.vue', () => ({ default: {} }));
 
-/* -------------------------------------------------------------------------- */
-/*                                   Imports                                  */
-/* -------------------------------------------------------------------------- */
+/**
+ * Wichtig für Coverage der Lazy-Import-Line:
+ * component: () => import('@/views/ContractorView.vue')
+ */
+vi.mock('@/views/ContractorView.vue', () => ({ default: {} }));
 
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -68,6 +70,18 @@ function makeLoadedRoute(
     } as RouteLocationNormalizedLoaded;
 }
 
+function findRouteByName(
+    routes: readonly RouteRecordRaw[],
+    name: string,
+): RouteRecordRaw | undefined {
+    return flattenRoutes(routes).find((r) => r.name === name);
+}
+
+async function pushAndReady(router: Router, name: string) {
+    await router.push({ name });
+    await router.isReady();
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   Tests                                    */
 /* -------------------------------------------------------------------------- */
@@ -95,22 +109,15 @@ describe('router/index.ts', () => {
         mockSearchSelectedProject.mockClear();
     });
 
-    /* ---------------------------------------------------------------------- */
-    /*                               Route export                              */
-    /* ---------------------------------------------------------------------- */
-
-    it('exportiert Routen inkl. LandingPage und ProjectDashboard', () => {
+    it('exportiert wichtige Routen-Namen', () => {
         const names = flattenRoutes(routes)
-            .map((route) => route.name)
+            .map((r) => r.name)
             .filter((n): n is string => typeof n === 'string');
 
         expect(names).toContain('LandingPage');
         expect(names).toContain('ProjectDashboard');
+        expect(names).toContain('ProjectContractors');
     });
-
-    /* ---------------------------------------------------------------------- */
-    /*                         Manager beforeEnter hook                        */
-    /* ---------------------------------------------------------------------- */
 
     it('ruft searchSelectedProject im beforeEnter-Hook auf', () => {
         const managerRoot = routes.find(
@@ -128,57 +135,26 @@ describe('router/index.ts', () => {
         expect(mockSearchSelectedProject).toHaveBeenCalledWith('p123');
     });
 
-    /* ---------------------------------------------------------------------- */
-    /*                       Role-based redirect (guard)                       */
-    /* ---------------------------------------------------------------------- */
+    it.each([
+        ['MANAGER', 'ProjectSelection'],
+        ['CONTRACTOR', 'ContractorView'],
+        ['TENANT', 'TenantView'],
+        ['UNKNOWN', 'ProjectSelection'],
+    ])(
+        'redirects %s from LandingPage to %s',
+        async (role: string, expected: string) => {
+            (useUserSessionStore as unknown as vi.Mock).mockReturnValue({user: { userRoles: [role] },});
 
-    it('redirects MANAGER from LandingPage to ProjectSelection', async () => {
-        (useUserSessionStore as unknown as vi.Mock).mockReturnValue({user: { userRoles: ['MANAGER'] },});
+            await pushAndReady(router, 'LandingPage');
 
-        await router.push({ name: 'LandingPage' });
-        await router.isReady();
-
-        expect(router.currentRoute.value.name).toBe(
-            'ProjectSelection',
-        );
-    });
-
-    it('redirects CONTRACTOR from LandingPage to ContractorView', async () => {
-        (useUserSessionStore as unknown as vi.Mock).mockReturnValue({user: { userRoles: ['CONTRACTOR'] },});
-
-        await router.push({ name: 'LandingPage' });
-        await router.isReady();
-
-        expect(router.currentRoute.value.name).toBe(
-            'ContractorView',
-        );
-    });
-
-    it('redirects TENANT from LandingPage to TenantView', async () => {
-        (useUserSessionStore as unknown as vi.Mock).mockReturnValue({user: { userRoles: ['TENANT'] },});
-
-        await router.push({ name: 'LandingPage' });
-        await router.isReady();
-
-        expect(router.currentRoute.value.name).toBe('TenantView');
-    });
-
-    it('falls back to ProjectSelection for unknown roles', async () => {
-        (useUserSessionStore as unknown as vi.Mock).mockReturnValue({user: { userRoles: ['UNKNOWN'] },});
-
-        await router.push({ name: 'LandingPage' });
-        await router.isReady();
-
-        expect(router.currentRoute.value.name).toBe(
-            'ProjectSelection',
-        );
-    });
+            expect(router.currentRoute.value.name).toBe(expected);
+        },
+    );
 
     it('does nothing when user is not logged in', async () => {
         (useUserSessionStore as unknown as vi.Mock).mockReturnValue({user: null,});
 
-        await router.push({ name: 'LandingPage' });
-        await router.isReady();
+        await pushAndReady(router, 'LandingPage');
 
         expect(router.currentRoute.value.name).toBe('LandingPage');
     });
@@ -186,24 +162,16 @@ describe('router/index.ts', () => {
     it('does nothing on non-LandingPage routes', async () => {
         (useUserSessionStore as unknown as vi.Mock).mockReturnValue({user: { userRoles: ['MANAGER'] },});
 
-        await router.push({ name: 'ProjectSelection' });
-        await router.isReady();
+        await pushAndReady(router, 'ProjectSelection');
 
-        expect(router.currentRoute.value.name).toBe(
-            'ProjectSelection',
-        );
+        expect(router.currentRoute.value.name).toBe('ProjectSelection');
     });
 
-    /* ---------------------------------------------------------------------- */
-    /*                        Props functions (coverage)                       */
-    /* ---------------------------------------------------------------------- */
-
     it('evaluates ProjectContractors props', () => {
-        const route = flattenRoutes(routes).find(
-            (r) => r.name === 'ProjectContractors',
-        );
+        const route = findRouteByName(routes, 'ProjectContractors');
+        expect(route).toBeTruthy();
 
-        const propsFn = route?.props as (
+        const propsFn = route!.props as (
             route: RouteLocationNormalizedLoaded,
         ) => unknown;
 
@@ -214,12 +182,25 @@ describe('router/index.ts', () => {
         ).toEqual({ projectId: 'p1' });
     });
 
-    it('evaluates PropertyView props', () => {
-        const route = flattenRoutes(routes).find(
-            (r) => r.name === 'PropertyView',
-        );
+    it('covers lazy import line for ProjectContractors component', async () => {
+        const route = findRouteByName(routes, 'ProjectContractors');
+        expect(route).toBeTruthy();
 
-        const propsFn = route?.props as (
+        const componentFn = route!.component as
+            | (() => Promise<unknown>)
+            | undefined;
+
+        expect(typeof componentFn).toBe('function');
+
+        const mod = await componentFn!();
+        expect(mod).toBeTruthy();
+    });
+
+    it('evaluates PropertyView props', () => {
+        const route = findRouteByName(routes, 'PropertyView');
+        expect(route).toBeTruthy();
+
+        const propsFn = route!.props as (
             route: RouteLocationNormalizedLoaded,
         ) => unknown;
 
