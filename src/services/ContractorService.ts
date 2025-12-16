@@ -22,10 +22,7 @@ export class ContractorService {
   /**
    * Einzelnen Auftragnehmer laden
    */
-  async getContractor(
-      projectId: string,
-      contractorId: string,
-  ): Promise<Contractor> {
+  async getContractor(projectId: string, contractorId: string): Promise<Contractor> {
     return apiClient.get(
         `/api/v1/projects/${projectId}/contractors/${contractorId}` as GetPath,
     ) as Promise<Contractor>;
@@ -40,7 +37,6 @@ export class ContractorService {
   ): Promise<Contractor> {
     return apiClient.post(
         `/api/v1/projects/${projectId}/contractors` as PostPath,
-        // Body-Typen des ApiClient ignorieren, aber ohne any
         payload as never,
     ) as Promise<Contractor>;
   }
@@ -62,13 +58,46 @@ export class ContractorService {
   /**
    * Auftragnehmer löschen
    */
-  async deleteContractor(
-      projectId: string,
-      contractorId: string,
-  ): Promise<void> {
+  async deleteContractor(projectId: string, contractorId: string): Promise<void> {
     await apiClient.delete(
         `/api/v1/projects/${projectId}/contractors/${contractorId}` as DeletePath,
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Backwards compatible wrappers (falls irgendwo noch alte Namen genutzt werden)
+  // ---------------------------------------------------------------------------
+
+  /** @deprecated Use getContractors(projectId) instead. */
+  async getIssues(projectId: string): Promise<ContractorList> {
+    return this.getContractors(projectId);
+  }
+
+  /** @deprecated Use getContractor(projectId, contractorId) instead. */
+  async getIssue(projectId: string, contractorId: string): Promise<Contractor> {
+    return this.getContractor(projectId, contractorId);
+  }
+
+  /** @deprecated Use createContractor(projectId, payload) instead. */
+  async createIssue(
+      projectId: string,
+      payload: Omit<Contractor, 'id' | 'projectId'>,
+  ): Promise<Contractor> {
+    return this.createContractor(projectId, payload);
+  }
+
+  /** @deprecated Use updateContractor(projectId, contractorId, payload) instead. */
+  async updateIssue(
+      projectId: string,
+      contractorId: string,
+      payload: Partial<Contractor>,
+  ): Promise<Contractor> {
+    return this.updateContractor(projectId, contractorId, payload);
+  }
+
+  /** @deprecated Use deleteContractor(projectId, contractorId) instead. */
+  async deleteIssue(projectId: string, contractorId: string): Promise<void> {
+    return this.deleteContractor(projectId, contractorId);
   }
 }
 
