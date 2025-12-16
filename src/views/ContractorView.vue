@@ -265,7 +265,6 @@ const deleteContractor = async (contractor: Contractor) => {
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <!-- Header-Card -->
       <div class="col-span-12">
         <Card class="w-full">
           <template #title>
@@ -291,7 +290,6 @@ const deleteContractor = async (contractor: Contractor) => {
         </Card>
       </div>
 
-      <!-- Tabelle -->
       <div class="col-span-12">
         <Card class="w-full">
           <template #title>
@@ -311,7 +309,6 @@ const deleteContractor = async (contractor: Contractor) => {
       </div>
     </div>
 
-    <!-- Dialog Neu/Bearbeiten -->
     <Dialog
         v-model:visible="showDialog"
         :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
@@ -327,7 +324,6 @@ const deleteContractor = async (contractor: Contractor) => {
           <span class="text-red-500">*</span> kennzeichnet Pflichtfelder.
         </p>
 
-        <!-- Stammdaten -->
         <div class="border-b pb-2">
           <h4 class="font-semibold text-sm text-gray-700">
             Stammdaten
@@ -379,7 +375,6 @@ const deleteContractor = async (contractor: Contractor) => {
           </div>
         </div>
 
-        <!-- Adresse -->
         <div class="border-b pt-2 pb-2">
           <h4 class="font-semibold text-sm text-gray-700">
             Adresse
