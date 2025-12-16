@@ -269,7 +269,7 @@ const deleteContractor = async (contractor: Contractor) => {
         <Card class="w-full">
           <template #title>
             <div
-                class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
+              class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
             >
               <div>
                 <div class="text-xl font-semibold">
@@ -281,9 +281,9 @@ const deleteContractor = async (contractor: Contractor) => {
                 </div>
               </div>
               <Button
-                  label="Neuen Auftragnehmer hinzufügen"
-                  icon="pi pi-plus"
-                  @click="openCreateDialog"
+                label="Neuen Auftragnehmer hinzufügen"
+                icon="pi pi-plus"
+                @click="openCreateDialog"
               />
             </div>
           </template>
@@ -299,10 +299,10 @@ const deleteContractor = async (contractor: Contractor) => {
           </template>
           <template #content>
             <ContractorTable
-                ref="contractorTableRef"
-                :projectId="props.projectId"
-                @edit="openEditDialog"
-                @delete="deleteContractor"
+              ref="contractorTableRef"
+              :projectId="props.projectId"
+              @edit="openEditDialog"
+              @delete="deleteContractor"
             />
           </template>
         </Card>
@@ -310,10 +310,10 @@ const deleteContractor = async (contractor: Contractor) => {
     </div>
 
     <Dialog
-        v-model:visible="showDialog"
-        :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
-        modal
-        :style="{ width: '42rem' }"
+      v-model:visible="showDialog"
+      :header="isEditMode ? 'Auftragnehmer bearbeiten' : 'Neuen Auftragnehmer anlegen'"
+      modal
+      :style="{ width: '42rem' }"
     >
       <div class="flex flex-col gap-4 mt-2">
         <p v-if="globalError" class="text-red-600 text-sm">
@@ -336,9 +336,9 @@ const deleteContractor = async (contractor: Contractor) => {
               Firma <span class="text-red-500">*</span>
             </label>
             <InputText
-                v-model="form.companyName"
-                inputId="companyName"
-                :class="{ 'p-invalid': showErrors && !isCompanyValid }"
+              v-model="form.companyName"
+              inputId="companyName"
+              :class="{ 'p-invalid': showErrors && !isCompanyValid }"
             />
           </div>
 
@@ -347,9 +347,9 @@ const deleteContractor = async (contractor: Contractor) => {
               E-Mail <span class="text-red-500">*</span>
             </label>
             <InputText
-                v-model="form.email"
-                inputId="email"
-                :class="{ 'p-invalid': showErrors && !isEmailValid }"
+              v-model="form.email"
+              inputId="email"
+              :class="{ 'p-invalid': showErrors && !isEmailValid }"
             />
           </div>
 
@@ -358,9 +358,9 @@ const deleteContractor = async (contractor: Contractor) => {
               Telefon <span class="text-xs text-gray-500">(optional)</span>
             </label>
             <InputText
-                v-model="form.phone"
-                inputId="phone"
-                :class="{ 'p-invalid': showErrors && !isPhoneValid }"
+              v-model="form.phone"
+              inputId="phone"
+              :class="{ 'p-invalid': showErrors && !isPhoneValid }"
             />
           </div>
 
@@ -369,8 +369,8 @@ const deleteContractor = async (contractor: Contractor) => {
               Gewerk <span class="text-xs text-gray-500">(optional)</span>
             </label>
             <InputText
-                v-model="form.trade"
-                inputId="trade"
+              v-model="form.trade"
+              inputId="trade"
             />
           </div>
         </div>
@@ -387,9 +387,9 @@ const deleteContractor = async (contractor: Contractor) => {
               Straße <span class="text-red-500">*</span>
             </label>
             <InputText
-                v-model="form.address.street"
-                inputId="street"
-                :class="{ 'p-invalid': showErrors && !isStreetValid }"
+              v-model="form.address.street"
+              inputId="street"
+              :class="{ 'p-invalid': showErrors && !isStreetValid }"
             />
           </div>
 
@@ -399,9 +399,9 @@ const deleteContractor = async (contractor: Contractor) => {
                 PLZ <span class="text-red-500">*</span>
               </label>
               <InputText
-                  v-model="form.address.zip"
-                  inputId="zip"
-                  :class="{ 'p-invalid': showErrors && !isZipValid }"
+                v-model="form.address.zip"
+                inputId="zip"
+                :class="{ 'p-invalid': showErrors && !isZipValid }"
               />
             </div>
 
@@ -410,9 +410,9 @@ const deleteContractor = async (contractor: Contractor) => {
                 Ort <span class="text-red-500">*</span>
               </label>
               <InputText
-                  v-model="form.address.city"
-                  inputId="city"
-                  :class="{ 'p-invalid': showErrors && !isCityValid }"
+                v-model="form.address.city"
+                inputId="city"
+                :class="{ 'p-invalid': showErrors && !isCityValid }"
               />
             </div>
           </div>
@@ -424,8 +424,8 @@ const deleteContractor = async (contractor: Contractor) => {
                 <span class="text-xs text-gray-500">(optional)</span>
               </label>
               <InputText
-                  v-model="form.address.province"
-                  inputId="province"
+                v-model="form.address.province"
+                inputId="province"
               />
             </div>
 
@@ -437,8 +437,8 @@ const deleteContractor = async (contractor: Contractor) => {
                 </span>
               </label>
               <InputText
-                  v-model="form.address.countryCode"
-                  inputId="countryCode"
+                v-model="form.address.countryCode"
+                inputId="countryCode"
               />
             </div>
           </div>
@@ -453,13 +453,13 @@ const deleteContractor = async (contractor: Contractor) => {
 
           <div class="flex gap-2">
             <Button
-                label="Abbrechen"
-                severity="secondary"
-                @click="closeDialog"
+              label="Abbrechen"
+              severity="secondary"
+              @click="closeDialog"
             />
             <Button
-                :label="isEditMode ? 'Speichern' : 'Anlegen'"
-                @click="submitForm"
+              :label="isEditMode ? 'Speichern' : 'Anlegen'"
+              @click="submitForm"
             />
           </div>
         </div>
