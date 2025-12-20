@@ -7,18 +7,18 @@ interface Snowflake {
 }
 
 const flakes = ref<Snowflake[]>([]);
-const flakeCount = 50; // Anzahl der Schneeflocken
+const flakeCount = 50;
 
 onMounted(() => {
-  // Erstellt Schneeflocken mit zufälligen Positionen und Geschwindigkeiten
+
   flakes.value = Array.from({ length: flakeCount }, (_, i) => ({
     id: i,
     style: {
       left: `${Math.random() * 100}vw`,
-      animationDuration: `${Math.random() * 3 + 2}s`, // Zwischen 2s und 5s Fallzeit
-      animationDelay: `${Math.random() * 5}s`, // Verzögerter Start
-      opacity: `${Math.random() * 0.5 + 0.3}`, // Zufällige Transparenz
-      fontSize: `${Math.random() * 10 + 10}px` // Größe zwischen 10px und 20px
+      animationDuration: `${Math.random() * 3 + 2}s`,
+      animationDelay: `${Math.random() * 5}s`,
+      opacity: `${Math.random() * 0.5 + 0.3}`,
+      fontSize: `${Math.random() * 10 + 10}px`
     }
   }));
 });
@@ -44,7 +44,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* WICHTIG: Klicks gehen durch den Schnee durch */
+  pointer-events: none;
   z-index: 50;
   overflow: hidden;
 }
@@ -52,7 +52,7 @@ onMounted(() => {
 .snowflake {
   position: absolute;
   top: -20px;
-  color: #87CEEB; /* Hellblau, damit es auf Weiß sichtbar ist */
+  color: #87CEEB;
   user-select: none;
   animation-name: fall;
   animation-timing-function: linear;
@@ -64,7 +64,7 @@ onMounted(() => {
     transform: translateY(-20px) translateX(0);
   }
   100% {
-    transform: translateY(100vh) translateX(20px); /* Leichte Seitwärtsbewegung */
+    transform: translateY(100vh) translateX(20px);
   }
 }
 </style>
