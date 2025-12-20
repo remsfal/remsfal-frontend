@@ -61,9 +61,7 @@ describe('IssueView', () => {
     });
 
     it('renders "Alle Mängel" when category is DEFECT and status is null', async () => {
-      await wrapper.setProps({
- owner: null, status: null, category: 'DEFECT' 
-});
+      await wrapper.setProps({ owner: null, status: null, category: 'DEFECT' });
       const header = wrapper.find('h1');
       expect(header.text()).toBe('Alle Mängel');
     });
