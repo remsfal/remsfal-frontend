@@ -140,8 +140,10 @@ function isActive(item: any) {
   left: 0;
   width: 100%;
   height: 60px;
-  background-color: white;
-  border-top: 1px solid #e0e0e0;
+
+  background-color: var(--surface-card);
+  border-top: 1px solid var(--surface-border);
+
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
@@ -160,7 +162,8 @@ function isActive(item: any) {
   justify-content: center;
   align-items: center;
   height: 100%;
-  color: #6c757d;
+  color: var(--text-color-secondary);
+
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -174,6 +177,7 @@ function isActive(item: any) {
   background: none;
   border: none;
   cursor: pointer;
+  color: var(--text-color-secondary);
 }
 
 .sr-only {
