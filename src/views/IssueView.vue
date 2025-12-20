@@ -151,7 +151,7 @@ watch(
             <span v-else-if="props.status">Offene Mängel</span>
             <span v-else>Alle Mängel</span>
           </span>
-          <span v-else> <span v-if="props.owner">Meine Aufgaben</span>
+          <span v-else><span v-if="props.owner">Meine Aufgaben</span>
             <span v-else-if="props.status">Offene Aufgaben</span>
             <span v-else>Alle Aufgaben</span>
           </span>
