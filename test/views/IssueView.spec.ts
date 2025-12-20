@@ -55,9 +55,7 @@ describe('IssueView', () => {
       expect(header.text()).toBe('Alle Aufgaben');
     });
     it('renders "Offene Mängel" when category is DEFECT', async () => {
-      await wrapper.setProps({
- owner: null, status: 'OPEN', category: 'DEFECT' 
-});
+      await wrapper.setProps({ owner: null, status: 'OPEN', category: 'DEFECT' });
       const header = wrapper.find('h1');
       expect(header.text()).toBe('Offene Mängel');
     });
