@@ -93,10 +93,7 @@ describe('MobileNavBar.vue', () => {
     const moreBtn = wrapper.find('.more-btn');
     expect(moreBtn.exists()).toBe(true);
 
-    try {
-      await moreBtn.trigger('click');
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) { /* empty */ }
+    await moreBtn.trigger('click');
 
     const menu = wrapper.findComponent(Menu);
     expect(menu.exists()).toBe(true);
