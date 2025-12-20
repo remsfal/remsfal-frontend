@@ -82,7 +82,7 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
 }
 
 
-@media (max-width: 991px) {
+@media (width <= 991px) {
 
 
   .layout-mobile-navbar {
