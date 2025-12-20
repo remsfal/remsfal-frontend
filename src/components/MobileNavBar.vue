@@ -96,6 +96,19 @@ const menu = ref();
 function toggleMoreMenu(event: Event) {
   menu.value.toggle(event);
 }
+function isActive(item: any) {
+  const target = item.to;
+  if (route.name !== target.name) return false;
+  // Check query parameters for strict matching (e.g. Tasks vs Defects)
+  if (target.query) {
+    const keys = Object.keys(target.query);
+    for (const key of keys) {
+      if (route.query[key] !== target.query[key]) return false;
+    }
+  }
+
+  return true;
+}
 </script>
 
 <template>
@@ -105,7 +118,7 @@ function toggleMoreMenu(event: Event) {
       :key="item.label"
       :to="item.to"
       class="nav-item"
-      activeClass="active"
+      :class="{ active: isActive(item) }"
     >
       <i class="pi" :class="[item.icon]" style="font-size: 1.2rem;" />
       <span class="sr-only">{{ item.label }}</span>
