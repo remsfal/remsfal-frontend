@@ -8,10 +8,8 @@ const { t } = useI18n();
 
 <template>
   <div class="min-h-screen flex flex-col font-sans text-surface-900 dark:text-surface-0 relative">
-
     <Snowfall />
-
-    <main class="flex-grow z-10 relative">
+    <main class="grow z-10 relative">
       <section class="relative pt-20 pb-20">
         <div class="container mx-auto px-6 relative z-10">
           <div class="max-w-6xl mx-auto">
@@ -110,28 +108,28 @@ const { t } = useI18n();
                   <li class="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon="fa-solid fa-check-circle"
-                      class="text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0"
+                      class="text-emerald-600 dark:text-emerald-400 mt-1 shrink-0"
                     />
                     <span>Asynchrone Bewertung und Klassifizierung zur Identifikation von Notfällen</span>
                   </li>
                   <li class="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon="fa-solid fa-check-circle"
-                      class="text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0"
+                      class="text-emerald-600 dark:text-emerald-400 mt-1 shrink-0"
                     />
                     <span>Transparente Koordination mit Auftragnehmern</span>
                   </li>
                   <li class="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon="fa-solid fa-check-circle"
-                      class="text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0"
+                      class="text-emerald-600 dark:text-emerald-400 mt-1 shrink-0"
                     />
                     <span>Einfache Stammdatenverwaltung und Dokumentation</span>
                   </li>
                   <li class="flex items-start gap-2">
                     <FontAwesomeIcon
                       icon="fa-solid fa-check-circle"
-                      class="text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0"
+                      class="text-emerald-600 dark:text-emerald-400 mt-1 shrink-0"
                     />
                     <span>Intelligente Auswertung von Schadensdaten zur optimierung von Instandhaltungskosten</span>
                   </li>
