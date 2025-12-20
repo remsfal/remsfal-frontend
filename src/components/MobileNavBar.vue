@@ -14,11 +14,15 @@ const navItems = computed(() => {
   if (!projectId.value) {
     return [
       {
- label: 'Projekte', to: { name: 'ProjectSelection' }, icon: 'pi-briefcase' 
-},
+        label: 'Projekte',
+        to: { name: 'ProjectSelection' },
+        icon: 'pi-briefcase'
+      },
       {
- label: 'Einstellungen', to: { name: 'AccountSettings' }, icon: 'pi-cog' 
-},
+        label: 'Einstellungen',
+        to: { name: 'AccountSettings' },
+        icon: 'pi-cog'
+      },
     ];
   }
 
