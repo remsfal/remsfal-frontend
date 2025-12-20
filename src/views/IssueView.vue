@@ -42,7 +42,7 @@ const createIssue = async () => {
       projectId: props.projectId,
       title: title.value,
       description: description.value,
-      type: ISSUE_TYPE_TASK,
+      type: props.category === 'DEFECT' ? 'DEFECT' : ISSUE_TYPE_TASK,
       // do NOT include ownerId, backend requires it to be null
     });
 
@@ -187,8 +187,11 @@ watch(
           </div>
 
           <!-- Create Button -->
-          <div v-if="props.owner || !props.status" class="flex justify-end basis-auto mt-6">
-            <Button label="Aufgabe erstellen" @click="openCreateIssueDialog" />
+          <div class="flex justify-end basis-auto mt-6">
+            <Button
+              :label="props.category === 'DEFECT' ? 'Mangel melden' : 'Aufgabe erstellen'"
+              @click="openCreateIssueDialog"
+            />
           </div>
         </div>
       </div>
