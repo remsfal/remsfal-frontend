@@ -6,7 +6,7 @@ import IssueDescriptionCard from '@/components/issue-details/cards/IssueDescript
 const issue = {
   id: 'ISSUE-123',
   title: 'Fix login bug on mobile devices',
-  status: 'OPEN',
+  status: 'OPEN' as const,
   description: 'Users are experiencing login failures on mobile devices when using the app.'
 };
 </script>
