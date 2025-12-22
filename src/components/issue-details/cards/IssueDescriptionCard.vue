@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
+
+defineProps<{
+  description: string;
+}>();
 </script>
 
 <template>
@@ -7,10 +11,7 @@ import Card from 'primevue/card';
     <template #title>Description</template>
     <template #content>
       <div>
-        <p>
-          Users are experiencing login failures on mobile devices when
-          using the app.
-        </p>
+        <p>{{ description }}</p>
       </div>
     </template>
   </Card>
