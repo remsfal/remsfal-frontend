@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import IssueOverviewCard from '@/components/issue-details/cards/IssueOverviewCard.vue';
 import IssueDescriptionCard from '@/components/issue-details/cards/IssueDescriptionCard.vue';
+import IssueMetadataCard from '@/components/issue-details/cards/IssueMetadataCard.vue';
 
 // Static issue data (no API integration)
 const issue = {
@@ -18,6 +19,9 @@ const issue = {
     </div>
     <div class="col-span-12">
       <IssueDescriptionCard :description="issue.description" />
+    </div>
+    <div class="col-span-12">
+      <IssueMetadataCard />
     </div>
   </main>
 </template>
