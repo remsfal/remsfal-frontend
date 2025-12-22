@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import Card from 'primevue/card';
+import Textarea from 'primevue/textarea';
 
-defineProps<{
+const props = defineProps<{
   description: string;
 }>();
+
+const localDescription = ref(props.description);
 </script>
 
 <template>
@@ -11,7 +15,13 @@ defineProps<{
     <template #title>Description</template>
     <template #content>
       <div>
-        <p>{{ description }}</p>
+        <Textarea
+          v-model="localDescription"
+          autoResize
+          rows="5"
+          class="w-full"
+          placeholder="Write markdown description here..."
+        />
       </div>
     </template>
   </Card>
