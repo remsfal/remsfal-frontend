@@ -10,7 +10,6 @@ import AppTopbar from '@/layout/AppTopbar.vue';
 import { computed } from 'vue';
 import { useInboxStore } from '@/stores/InboxStore';
 import TopbarUserActions from '@/components/TopbarUserActions.vue';
-import { useTopbarUserActions } from '../composables/useTopbarUserActions';
 
 const { t } = useI18n();
 
@@ -19,10 +18,6 @@ const projectStore = useProjectStore();
 const inboxStore = useInboxStore();
 
 const router = useRouter();
-
-// Use the composable for shared actions to avoid duplication
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { onAccountSettingsClick, logout, login, loginDev, showDevLoginButton } = useTopbarUserActions();
 
 const onProjectSelectionChange = (event: SelectChangeEvent) => {
   console.log('new project selected ', event.value.name);
