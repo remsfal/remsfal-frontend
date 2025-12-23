@@ -51,22 +51,14 @@ describe('ManagerTopbar.vue', () => {
             expect(wrapper.text()).toContain('user@example.com');
         });
 
-        it('should show home button (Projekte) when logged in', async () => {
+        it.each([
+            ['home button (Projekte)', 'Projekte'],
+            ['new project button', 'Neues Projekt'],
+            ['inbox button', 'Posteingang'],
+        ])('should show %s when logged in', async (_, expectedText) => {
             const { wrapper } = mountComponent(createMockUser());
             await flushPromises();
-            expect(wrapper.text()).toContain('Projekte');
-        });
-
-        it('should show new project button when logged in', async () => {
-            const { wrapper } = mountComponent(createMockUser());
-            await flushPromises();
-            expect(wrapper.text()).toContain('Neues Projekt');
-        });
-
-        it('should show inbox button when logged in', async () => {
-            const { wrapper } = mountComponent(createMockUser());
-            await flushPromises();
-            expect(wrapper.text()).toContain('Posteingang');
+            expect(wrapper.text()).toContain(expectedText);
         });
     });
 
