@@ -1,6 +1,6 @@
-import { mount, flushPromises } from '@vue/test-utils';
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
-import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { tenancyService } from '../../src/services/TenancyService';
 
 // ---- Mocks ----
@@ -12,6 +12,8 @@ vi.mock('vue-router', () => ({
 
 const toastSpy = vi.fn();
 vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: toastSpy }),}));
+
+
 
 // ---- Mock window.location.href ----
 Object.defineProperty(window, 'location', {
@@ -28,7 +30,7 @@ const mockTenancy = {
 };
 
 describe('ProjectTenanciesDetails', () => {
-  let wrapper: any;
+  let wrapper: VueWrapper<any>;
 
   beforeEach(async () => {
     // re-apply mocks here (so they're active after vi.clearAllMocks)
@@ -42,6 +44,9 @@ describe('ProjectTenanciesDetails', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    if (wrapper) {
+      wrapper.unmount();
+    }
   });
 
   it('opens confirmation dialog when delete is clicked', async () => {

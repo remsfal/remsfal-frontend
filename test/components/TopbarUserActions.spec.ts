@@ -2,19 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import TopbarUserActions from '@/components/TopbarUserActions.vue';
-import { useUserSessionStore } from '@/stores/UserSession';
+import { useUserSessionStore, type User } from '@/stores/UserSession';
 import PrimeVue from 'primevue/config';
 import { createI18n } from 'vue-i18n';
 
 // Mock vue-router
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({useRouter: () => ({ push: mockPush }),}));
+vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }), }));
 
 // Mock platform helper to NOT show dev login by default
-vi.mock('@/helper/platform', () => ({shouldShowDevLogin: vi.fn(() => false),}));
+vi.mock('@/helper/platform', () => ({ shouldShowDevLogin: vi.fn(() => false), }));
+
+// Mock AccountSettingsView to prevent loading it (and its side effects/imports)
+vi.mock('@/views/AccountSettingsView.vue', () => ({ default: { template: '<div>Mocked View</div>' } }));
 
 describe('TopbarUserActions.vue', () => {
-    let i18n: any;
+    let i18n: ReturnType<typeof createI18n>;
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -35,19 +38,19 @@ describe('TopbarUserActions.vue', () => {
         });
     });
 
-    const mountWrapper = (user?: any) => {
+    const mountWrapper = (user: User | null = null) => {
         const pinia = createTestingPinia({ stubActions: false });
         const store = useUserSessionStore(pinia);
         store.user = user ?? null;
 
         return {
-            wrapper: mount(TopbarUserActions, {global: {plugins: [pinia, PrimeVue, i18n],},}),
+            wrapper: mount(TopbarUserActions, { global: { plugins: [pinia, PrimeVue, i18n], }, }),
             store,
         };
     };
 
     it('shows logout when logged in', async () => {
-        const { wrapper } = mountWrapper({ email: 'test@example.com' });
+        const { wrapper } = mountWrapper({ email: 'test@example.com' } as User);
         await flushPromises();
 
         expect(wrapper.text()).toContain('Abmelden');
@@ -61,7 +64,7 @@ describe('TopbarUserActions.vue', () => {
     });
 
     it('calls logout when logout button clicked', async () => {
-        const { wrapper } = mountWrapper({ email: 'test@example.com' });
+        const { wrapper } = mountWrapper({ email: 'test@example.com' } as User);
         await flushPromises();
 
         const logoutButton = wrapper.findAllComponents({ name: 'Button' }).find(b => b.text().includes('Abmelden'));
@@ -74,7 +77,7 @@ describe('TopbarUserActions.vue', () => {
     });
 
     it('calls account settings when account clicked', async () => {
-        const { wrapper } = mountWrapper({ email: 'user@example.com' });
+        const { wrapper } = mountWrapper({ email: 'user@example.com' } as User);
         await flushPromises();
 
         const accountButton = wrapper.findAllComponents({ name: 'Button' }).find(b => b.text().includes('user@example.com'));
@@ -96,7 +99,7 @@ describe('TopbarUserActions.vue', () => {
     it('calls loginDev when dev login button clicked', async () => {
         // Need to mock shouldShowDevLogin to return true for this test
         const { shouldShowDevLogin } = await import('@/helper/platform');
-        (shouldShowDevLogin as any).mockReturnValue(true);
+        vi.mocked(shouldShowDevLogin).mockReturnValue(true);
 
         const { wrapper, store } = mountWrapper(null);
         store.loginDev = vi.fn().mockResolvedValue(true);

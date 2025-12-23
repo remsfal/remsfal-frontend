@@ -31,8 +31,10 @@ describe('ManagerTopbar.vue', () => {
         userStore.user = user;
         const wrapper = mount(ManagerTopbar, { global: { plugins: [pinia] } });
         return {
- wrapper, pinia, userStore 
-};
+            wrapper,
+            pinia,
+            userStore,
+        };
     };
 
     describe('Logged in user interface', () => {
@@ -105,11 +107,15 @@ describe('ManagerTopbar.vue', () => {
             userStore.user = createMockUser();
             projectStore.projects = [
                 {
- id: 'project-1', name: 'Test Project 1', memberRole: 'MANAGER' as const 
-} as ProjectItem,
+                    id: 'project-1',
+                    name: 'Test Project 1',
+                    memberRole: 'MANAGER' as const
+                } as ProjectItem,
                 {
- id: 'project-2', name: 'Test Project 2', memberRole: 'STAFF' as const 
-} as ProjectItem,
+                    id: 'project-2',
+                    name: 'Test Project 2',
+                    memberRole: 'STAFF' as const
+                } as ProjectItem,
             ];
 
             const wrapper = mount(ManagerTopbar, { global: { plugins: [pinia] } });

@@ -12,9 +12,9 @@ export const useUserSessionStore = defineStore('user-session', {
         const user = await apiClient.get('/api/v1/user');
         this.user = user;
         console.log('Active user session:', user);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.log('Invalid user session:', error);
-        if (error?.response?.status === 401) {
+        if (typeof error === 'object' && error !== null && 'response' in error && (error as any).response?.status === 401) {
           this.user = null;
         }
       }
@@ -65,7 +65,7 @@ export const useUserSessionStore = defineStore('user-session', {
         }
 
         await this.refreshSessionState();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Token-based login failed:', error);
         throw error;
       }
