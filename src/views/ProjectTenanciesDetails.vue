@@ -81,6 +81,11 @@ function handleTenancyDataChange(updatedTenancy: TenancyItem) {
   rentalStart.value = tenancy.value?.startOfRental || null;
   rentalEnd.value = tenancy.value?.endOfRental || null;
 }
+
+defineExpose({
+  confirmationDialogVisible,
+  confirmDeletion,
+});
 </script>
 
 <template>
