@@ -14,7 +14,12 @@ export const useUserSessionStore = defineStore('user-session', {
         console.log('Active user session:', user);
       } catch (error: unknown) {
         console.log('Invalid user session:', error);
-        if (typeof error === 'object' && error !== null && 'response' in error && (error as any).response?.status === 401) {
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'response' in error &&
+          (error as { response?: { status: number } }).response?.status === 401
+        ) {
           this.user = null;
         }
       }

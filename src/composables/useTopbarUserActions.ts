@@ -1,12 +1,12 @@
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { useUserSessionStore } from '@/stores/UserSession';
-import { shouldShowDevLogin } from '@/helper/platform';
+import {computed} from 'vue';
+import {useRouter} from 'vue-router';
+import {useI18n} from 'vue-i18n';
+import {useUserSessionStore} from '@/stores/UserSession';
+import {shouldShowDevLogin} from '@/helper/platform';
 
 export function useTopbarUserActions(): {
-    t: any;
-    sessionStore: any; // Using any to avoid complex type export issues for now, or use ReturnType<typeof useUserSessionStore>
+    t: ReturnType<typeof useI18n>['t'];
+    sessionStore: ReturnType<typeof useUserSessionStore>;
     onAccountSettingsClick: () => void;
     logout: () => void;
     login: (route: string) => void;
@@ -22,11 +22,11 @@ export function useTopbarUserActions(): {
     };
 
     const logout = () => {
-        window.location.pathname = '/api/v1/authentication/logout';
+        globalThis.location.pathname = '/api/v1/authentication/logout';
     };
 
     const login = (route: string) => {
-        window.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
+        globalThis.location.href = `/api/v1/authentication/login?route=${encodeURIComponent(route)}`;
     };
 
     const loginDev = async () => {
@@ -37,8 +37,7 @@ export function useTopbarUserActions(): {
     };
 
     const showDevLoginButton = computed(() => {
-        const show = sessionStore.user == null && shouldShowDevLogin();
-        return show;
+        return sessionStore.user == null && shouldShowDevLogin();
     });
 
     return {
