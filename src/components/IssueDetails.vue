@@ -76,7 +76,7 @@ const handleSave = () => {
         <div class="flex flex-col gap-4">
           <!-- Issue ID (read-only) -->
           <div class="flex flex-col gap-2">
-            <label for="issue-id" class="font-medium text-gray-700">Issue ID</label>
+            <label for="issue-id" class="text-sm text-gray-600">Issue ID</label>
             <InputText
               id="issue-id"
               v-model="issue.id"
@@ -86,7 +86,7 @@ const handleSave = () => {
 
           <!-- Title -->
           <div class="flex flex-col gap-2">
-            <label for="title" class="font-medium text-gray-700">Title</label>
+            <label for="title" class="text-sm text-gray-600">Title</label>
             <InputText
               id="title"
               v-model="issue.title"
@@ -98,7 +98,7 @@ const handleSave = () => {
           <div class="flex gap-4">
             <!-- Status -->
             <div class="flex flex-col gap-2 flex-1">
-              <label for="status" class="font-medium text-gray-700">Status</label>
+              <label for="status" class="text-sm text-gray-600">Status</label>
               <Select
                 id="status"
                 v-model="issue.status"
@@ -111,7 +111,7 @@ const handleSave = () => {
 
             <!-- Type -->
             <div class="flex flex-col gap-2 flex-1">
-              <label for="type" class="font-medium text-gray-700">Type</label>
+              <label for="type" class="text-sm text-gray-600">Type</label>
               <Select
                 id="type"
                 v-model="issue.type"
@@ -127,7 +127,7 @@ const handleSave = () => {
           <div class="flex gap-4">
             <!-- Reporter (read-only) -->
             <div class="flex flex-col gap-2 flex-1">
-              <label for="reporter" class="font-medium text-gray-700">Reporter</label>
+              <label for="reporter" class="text-sm text-gray-600">Reporter</label>
               <InputText
                 id="reporter"
                 v-model="issue.reporter"
@@ -137,7 +137,7 @@ const handleSave = () => {
 
             <!-- Owner/Assignee -->
             <div class="flex flex-col gap-2 flex-1">
-              <label for="owner" class="font-medium text-gray-700">Owner/Assignee</label>
+              <label for="owner" class="text-sm text-gray-600">Owner/Assignee</label>
               <InputText
                 id="owner"
                 v-model="issue.owner"
@@ -150,7 +150,7 @@ const handleSave = () => {
           <div class="flex gap-4">
             <!-- Project -->
             <div class="flex flex-col gap-2 flex-1">
-              <label for="project" class="font-medium text-gray-700">Project</label>
+              <label for="project" class="text-sm text-gray-600">Project</label>
               <InputText
                 id="project"
                 v-model="issue.project"
@@ -160,7 +160,7 @@ const handleSave = () => {
 
             <!-- Tenancy -->
             <div class="flex flex-col gap-2 flex-1">
-              <label for="tenancy" class="font-medium text-gray-700">Tenancy</label>
+              <label for="tenancy" class="text-sm text-gray-600">Tenancy</label>
               <InputText
                 id="tenancy"
                 v-model="issue.tenancy"
