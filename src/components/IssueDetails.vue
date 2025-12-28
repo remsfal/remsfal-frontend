@@ -64,123 +64,131 @@ const handleSave = () => {
 </script>
 
 <template>
-  <div class="p-4 space-y-4">
+  <div class="flex flex-col gap-4">
     <!-- Issue Overview and Metadata Card -->
-    <Card>
-      <template #title>Issue Details</template>
+    <Card class="flex flex-col gap-4 basis-full">
+      <template #title>
+        <div class="font-semibold text-xl">
+          Issue Details
+        </div>
+      </template>
       <template #content>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-4">
           <!-- Issue ID (read-only) -->
           <div class="flex flex-col gap-2">
-            <label for="issue-id" class="font-semibold">Issue ID</label>
+            <label for="issue-id" class="font-medium text-gray-700">Issue ID</label>
             <InputText
               id="issue-id"
               v-model="issue.id"
               disabled
-              class="w-full"
             />
           </div>
 
           <!-- Title -->
           <div class="flex flex-col gap-2">
-            <label for="title" class="font-semibold">Title</label>
+            <label for="title" class="font-medium text-gray-700">Title</label>
             <InputText
               id="title"
               v-model="issue.title"
-              class="w-full"
               placeholder="Enter issue title"
             />
           </div>
 
-          <!-- Status -->
-          <div class="flex flex-col gap-2">
-            <label for="status" class="font-semibold">Status</label>
-            <Select
-              id="status"
-              v-model="issue.status"
-              :options="statusOptions"
-              option-label="label"
-              option-value="value"
-              placeholder="Select status"
-              class="w-full"
-            />
+          <!-- Status and Type Row -->
+          <div class="flex gap-4">
+            <!-- Status -->
+            <div class="flex flex-col gap-2 flex-1">
+              <label for="status" class="font-medium text-gray-700">Status</label>
+              <Select
+                id="status"
+                v-model="issue.status"
+                :options="statusOptions"
+                option-label="label"
+                option-value="value"
+                placeholder="Select status"
+              />
+            </div>
+
+            <!-- Type -->
+            <div class="flex flex-col gap-2 flex-1">
+              <label for="type" class="font-medium text-gray-700">Type</label>
+              <Select
+                id="type"
+                v-model="issue.type"
+                :options="typeOptions"
+                option-label="label"
+                option-value="value"
+                placeholder="Select type"
+              />
+            </div>
           </div>
 
-          <!-- Type -->
-          <div class="flex flex-col gap-2">
-            <label for="type" class="font-semibold">Type</label>
-            <Select
-              id="type"
-              v-model="issue.type"
-              :options="typeOptions"
-              option-label="label"
-              option-value="value"
-              placeholder="Select type"
-              class="w-full"
-            />
+          <!-- Reporter and Owner Row -->
+          <div class="flex gap-4">
+            <!-- Reporter (read-only) -->
+            <div class="flex flex-col gap-2 flex-1">
+              <label for="reporter" class="font-medium text-gray-700">Reporter</label>
+              <InputText
+                id="reporter"
+                v-model="issue.reporter"
+                disabled
+              />
+            </div>
+
+            <!-- Owner/Assignee -->
+            <div class="flex flex-col gap-2 flex-1">
+              <label for="owner" class="font-medium text-gray-700">Owner/Assignee</label>
+              <InputText
+                id="owner"
+                v-model="issue.owner"
+                placeholder="Enter owner name"
+              />
+            </div>
           </div>
 
-          <!-- Reporter (read-only) -->
-          <div class="flex flex-col gap-2">
-            <label for="reporter" class="font-semibold">Reporter</label>
-            <InputText
-              id="reporter"
-              v-model="issue.reporter"
-              disabled
-              class="w-full"
-            />
+          <!-- Project and Tenancy Row -->
+          <div class="flex gap-4">
+            <!-- Project -->
+            <div class="flex flex-col gap-2 flex-1">
+              <label for="project" class="font-medium text-gray-700">Project</label>
+              <InputText
+                id="project"
+                v-model="issue.project"
+                placeholder="Enter project name"
+              />
+            </div>
+
+            <!-- Tenancy -->
+            <div class="flex flex-col gap-2 flex-1">
+              <label for="tenancy" class="font-medium text-gray-700">Tenancy</label>
+              <InputText
+                id="tenancy"
+                v-model="issue.tenancy"
+                placeholder="Enter tenancy"
+              />
+            </div>
           </div>
 
-          <!-- Owner/Assignee -->
-          <div class="flex flex-col gap-2">
-            <label for="owner" class="font-semibold">Owner/Assignee</label>
-            <InputText
-              id="owner"
-              v-model="issue.owner"
-              class="w-full"
-              placeholder="Enter owner name"
+          <!-- Save Button -->
+          <div class="flex justify-end">
+            <Button
+              label="Save"
+              icon="pi pi-save"
+              :disabled="!hasChanges"
+              @click="handleSave"
             />
           </div>
-
-          <!-- Project -->
-          <div class="flex flex-col gap-2">
-            <label for="project" class="font-semibold">Project</label>
-            <InputText
-              id="project"
-              v-model="issue.project"
-              class="w-full"
-              placeholder="Enter project name"
-            />
-          </div>
-
-          <!-- Tenancy -->
-          <div class="flex flex-col gap-2">
-            <label for="tenancy" class="font-semibold">Tenancy</label>
-            <InputText
-              id="tenancy"
-              v-model="issue.tenancy"
-              class="w-full"
-              placeholder="Enter tenancy"
-            />
-          </div>
-        </div>
-
-        <!-- Save Button -->
-        <div class="mt-4 flex justify-end">
-          <Button
-            label="Save"
-            icon="pi pi-save"
-            :disabled="!hasChanges"
-            @click="handleSave"
-            severity="success"
-          />
         </div>
       </template>
     </Card>
 
     <!-- Description Card -->
-    <Card>
-      <template #title>Description</template>
+    <Card class="flex flex-col gap-4 basis-full">
+      <template #title>
+        <div class="font-semibold text-xl">
+          Description
+        </div>
+      </template>
       <template #content>
         <IssueDescription :description="issue.description" />
       </template>
@@ -189,5 +197,8 @@ const handleSave = () => {
 </template>
 
 <style scoped>
-/* Component-specific styles if needed */
+:deep(.p-inputtext),
+:deep(.p-dropdown) {
+  border-radius: 0.5rem;
+}
 </style>
