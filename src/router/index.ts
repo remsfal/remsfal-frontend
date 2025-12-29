@@ -209,7 +209,7 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           issueId: route.params.issueId,
         }),
-        component: () => import('@/views/IssueDetailsView.vue'),
+        component: () => import('@/components/IssueDetails/IssueDetails.vue'),
       },
       {
         path: 'issueedit/:issueId',
