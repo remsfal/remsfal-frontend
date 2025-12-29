@@ -6,19 +6,8 @@
   import Button from 'primevue/button';
   import IssueDescription from './IssueDescription.vue';
   
-  interface Issue {
-    id: string;
-    title: string;
-    status: string;
-    reporter: string;
-    owner: string;
-    project: string;
-    type: string;
-    tenancy: string;
-    description: string;
-  }
-  
-  const initialIssue: Issue = {
+  /* Initial static data (replace later with API data) */
+  const initialData = {
     id: '#ISSUE-123',
     title: 'Fix login bug on mobile devices',
     status: 'OPEN',
@@ -30,8 +19,18 @@
     description: '## Issue Description\n\nUsers are experiencing login failures...',
   };
   
-  const issue = ref<Issue>({ ...initialIssue });
+  /* Reactive fields */
+  const issueId = ref(initialData.id);
+  const title = ref(initialData.title);
+  const status = ref(initialData.status);
+  const reporter = ref(initialData.reporter);
+  const owner = ref(initialData.owner);
+  const project = ref(initialData.project);
+  const type = ref(initialData.type);
+  const tenancy = ref(initialData.tenancy);
+  const description = ref(initialData.description);
   
+  /* Select options */
   const statusOptions = [
     { label: 'Pending', value: 'PENDING' },
     { label: 'Open', value: 'OPEN' },
@@ -47,23 +46,40 @@
     { label: 'Maintenance', value: 'MAINTENANCE' },
   ];
   
-  const canSave = computed(
-    () => JSON.stringify(issue.value) !== JSON.stringify(initialIssue),
+  /* Change detection */
+  const canSave = computed(() =>
+    title.value !== initialData.title ||
+    status.value !== initialData.status ||
+    owner.value !== initialData.owner ||
+    project.value !== initialData.project ||
+    type.value !== initialData.type ||
+    tenancy.value !== initialData.tenancy
   );
   
+  /* Save handler */
   const handleSave = () => {
-    console.log('Saving issue:', issue.value);
+    const payload = {
+      id: issueId.value,
+      title: title.value,
+      status: status.value,
+      reporter: reporter.value,
+      owner: owner.value,
+      project: project.value,
+      type: type.value,
+      tenancy: tenancy.value,
+      description: description.value,
+    };
+  
+    console.log('Saving issue:', payload);
   };
   </script>
   
   <template>
     <div class="flex flex-col gap-4">
-      <!-- Issue Settings -->
+      <!-- Issue Details -->
       <Card class="flex flex-col gap-4 basis-full">
         <template #title>
-          <div class="font-semibold text-xl">
-            Issue Details
-          </div>
+          <div class="font-semibold text-xl">Issue Details</div>
         </template>
   
         <template #content>
@@ -71,13 +87,13 @@
             <!-- Issue ID -->
             <div class="flex flex-col gap-1">
               <label class="font-medium text-gray-700">Issue ID</label>
-              <InputText v-model="issue.id" disabled />
+              <InputText v-model="issueId" disabled />
             </div>
   
             <!-- Title -->
             <div class="flex flex-col gap-1">
               <label class="font-medium text-gray-700">Title</label>
-              <InputText v-model="issue.title" placeholder="Enter issue title" />
+              <InputText v-model="title" placeholder="Enter issue title" />
             </div>
   
             <!-- Status & Type -->
@@ -85,7 +101,7 @@
               <div class="flex flex-col gap-1 flex-1">
                 <label class="font-medium text-gray-700">Status</label>
                 <Select
-                  v-model="issue.status"
+                  v-model="status"
                   :options="statusOptions"
                   option-label="label"
                   option-value="value"
@@ -96,7 +112,7 @@
               <div class="flex flex-col gap-1 flex-1">
                 <label class="font-medium text-gray-700">Type</label>
                 <Select
-                  v-model="issue.type"
+                  v-model="type"
                   :options="typeOptions"
                   option-label="label"
                   option-value="value"
@@ -109,12 +125,12 @@
             <div class="flex gap-3">
               <div class="flex flex-col gap-1 flex-1">
                 <label class="font-medium text-gray-700">Reporter</label>
-                <InputText v-model="issue.reporter" disabled />
+                <InputText v-model="reporter" disabled />
               </div>
   
               <div class="flex flex-col gap-1 flex-1">
                 <label class="font-medium text-gray-700">Owner / Assignee</label>
-                <InputText v-model="issue.owner" placeholder="Enter owner name" />
+                <InputText v-model="owner" placeholder="Enter owner name" />
               </div>
             </div>
   
@@ -122,12 +138,12 @@
             <div class="flex gap-3">
               <div class="flex flex-col gap-1 flex-1">
                 <label class="font-medium text-gray-700">Project</label>
-                <InputText v-model="issue.project" />
+                <InputText v-model="project" />
               </div>
   
               <div class="flex flex-col gap-1 flex-1">
                 <label class="font-medium text-gray-700">Tenancy</label>
-                <InputText v-model="issue.tenancy" />
+                <InputText v-model="tenancy" />
               </div>
             </div>
   
@@ -147,13 +163,11 @@
       <!-- Description -->
       <Card class="flex flex-col gap-4 basis-full">
         <template #title>
-          <div class="font-semibold text-xl">
-            Description
-          </div>
+          <div class="font-semibold text-xl">Description</div>
         </template>
   
         <template #content>
-          <IssueDescription :description="issue.description" />
+          <IssueDescription :description="description" />
         </template>
       </Card>
     </div>
@@ -161,8 +175,8 @@
   
   <style scoped>
   :deep(.p-inputtext),
-  :deep(.p-dropdown),
-  :deep(.p-select) {
+  :deep(.p-select),
+  :deep(.p-dropdown) {
     border-radius: 0.5rem;
   }
   </style>
