@@ -109,7 +109,7 @@ describe('InboxSidebar', () => {
     const inboxButton = buttons.find(btn => btn.text().includes('Inbox'));
     if (inboxButton) {
       await inboxButton.trigger('click');
-      expect(wrapper.emitted('clearFilters')).toBeTruthy();
+      expect(wrapper.emitted('clear-filters')).toBeTruthy();
     }
   });
 
@@ -120,8 +120,8 @@ describe('InboxSidebar', () => {
     expect(filterButton).toBeTruthy();
     if (filterButton) {
       await filterButton.trigger('click');
-      expect(wrapper.emitted('filterApplied')).toBeTruthy();
-      expect(wrapper.emitted('filterApplied')?.[0]).toEqual([mockCustomFilters[0]]);
+      expect(wrapper.emitted('filter-applied')).toBeTruthy();
+      expect(wrapper.emitted('filter-applied')?.[0]).toEqual([mockCustomFilters[0]]);
     }
   });
 
@@ -132,7 +132,7 @@ describe('InboxSidebar', () => {
     expect(filterButton).toBeTruthy();
     if (filterButton) {
       await filterButton.trigger('click');
-      expect(wrapper.emitted('clearFilters')).toBeTruthy();
+      expect(wrapper.emitted('clear-filters')).toBeTruthy();
     }
   });
 
@@ -142,8 +142,8 @@ describe('InboxSidebar', () => {
     const projectButton = buttons.find(btn => btn.text().includes('Project 1'));
     if (projectButton) {
       await projectButton.trigger('click');
-      expect(wrapper.emitted('projectFilterToggled')).toBeTruthy();
-      expect(wrapper.emitted('projectFilterToggled')?.[0]).toEqual(['proj-1']);
+      expect(wrapper.emitted('project-filter-toggled')).toBeTruthy();
+      expect(wrapper.emitted('project-filter-toggled')?.[0]).toEqual(['proj-1']);
     }
   });
 

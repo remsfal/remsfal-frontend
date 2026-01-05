@@ -164,9 +164,9 @@ const displayedMessages = computed(() => {
       :filterProject="filterProject"
       :messages="messages"
       @update:activeNavItem="activeNavItem = $event"
-      @filterApplied="applyFilter"
-      @projectFilterToggled="toggleProjectFilter"
-      @clearFilters="clearAllFilters"
+      @filter-applied="applyFilter"
+      @project-filter-toggled="toggleProjectFilter"
+      @clear-filters="clearAllFilters"
     />
 
     <!-- Main Content -->
@@ -180,8 +180,8 @@ const displayedMessages = computed(() => {
           @update:activeTab="handleActiveTabChange"
           @update:searchQuery="searchQuery = $event"
           @update:grouping="grouping = $event"
-          @markReadSelected="inbox.markReadSelected"
-          @deleteSelected="inbox.confirmDeleteSelected"
+          @mark-read-selected="inbox.markReadSelected"
+          @delete-selected="inbox.confirmDeleteSelected"
         />
 
         <InboxMessageList

@@ -184,7 +184,7 @@ describe('InboxToolbar', () => {
     
     if (markAsDoneButton) {
       await markAsDoneButton.trigger('click');
-      expect(wrapper.emitted('markReadSelected')).toBeTruthy();
+      expect(wrapper.emitted('mark-read-selected')).toBeTruthy();
     }
   });
 
@@ -203,7 +203,7 @@ describe('InboxToolbar', () => {
     
     if (deleteButton) {
       await deleteButton.trigger('click');
-      expect(wrapper.emitted('deleteSelected')).toBeTruthy();
+      expect(wrapper.emitted('delete-selected')).toBeTruthy();
     }
   });
 

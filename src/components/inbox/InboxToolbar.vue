@@ -20,8 +20,8 @@ const emit = defineEmits<{
   'update:activeTab': [value: 'all' | 'unread'];
   'update:searchQuery': [value: string];
   'update:grouping': [value: 'date' | 'project' | null];
-  markReadSelected: [];
-  deleteSelected: [];
+  'mark-read-selected': [];
+  'delete-selected': [];
 }>();
 
 const { t } = useI18n();
@@ -158,7 +158,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
         text 
         rounded 
         size="small" 
-        @click="emit('markReadSelected')" 
+        @click="emit('mark-read-selected')" 
       />
       <Button 
         v-tooltip.bottom="t('button.delete')" 
@@ -167,7 +167,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
         rounded 
         severity="danger" 
         size="small" 
-        @click="emit('deleteSelected')" 
+        @click="emit('delete-selected')" 
       />
     </div>
   </div>

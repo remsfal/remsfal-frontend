@@ -20,9 +20,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:activeNavItem': [value: 'inbox' | 'done'];
-  filterApplied: [filter: CustomFilter];
-  projectFilterToggled: [projectId: string];
-  clearFilters: [];
+  'filter-applied': [filter: CustomFilter];
+  'project-filter-toggled': [projectId: string];
+  'clear-filters': [];
 }>();
 
 const { t } = useI18n();
@@ -57,20 +57,20 @@ const getProjectCount = (projectId: string) => {
 
 const handleFilterClick = (filter: CustomFilter) => {
   if (props.activeFilterId === filter.id) {
-    emit('clearFilters');
+    emit('clear-filters');
   } else {
-    emit('filterApplied', filter);
+    emit('filter-applied', filter);
   }
 };
 
 const handleProjectClick = (projectId: string) => {
-  emit('projectFilterToggled', projectId);
+  emit('project-filter-toggled', projectId);
 };
 
 const handleNavClick = (navItem: 'inbox' | 'done') => {
   emit('update:activeNavItem', navItem);
   if (navItem === 'inbox') {
-    emit('clearFilters');
+    emit('clear-filters');
   }
 };
 
