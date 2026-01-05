@@ -61,20 +61,25 @@ type MenuItem = {
   separator?: boolean;
 };
 
+const getActiveMenuItemClass = (): string => {
+  return isDarkTheme.value ? 'bg-primary-900/20' : 'bg-primary-50';
+};
+
 const menuItems = computed<MenuItem[]>(() => {
-  const items: MenuItem[] = groupingOptions.value.map(option => ({
-    label: option.label,
-    command: () => {
-      if (props.grouping === option.value) {
-        emit('update:grouping', null);
-      } else {
-        emit('update:grouping', option.value);
-      }
-    },
-    class: props.grouping === option.value 
-      ? (isDarkTheme.value ? 'bg-primary-900/20' : 'bg-primary-50') 
-      : '',
-  }));
+  const items: MenuItem[] = groupingOptions.value.map(option => {
+    const isSelected = props.grouping === option.value;
+    return {
+      label: option.label,
+      command: () => {
+        if (props.grouping === option.value) {
+          emit('update:grouping', null);
+        } else {
+          emit('update:grouping', option.value);
+        }
+      },
+      class: isSelected ? getActiveMenuItemClass() : '',
+    };
+  });
 
   if (props.grouping) {
     items.push({
