@@ -1,14 +1,25 @@
 export function getRelativeTime(date: Date): string {
   if (!date) return '';
+
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.max(0, Math.round(diffMs / 60000));
   const diffHrs = Math.max(0, Math.round(diffMs / 3600000));
-  const diffDays = Math.max(0, Math.round(diffMs / 86400000));
-  if (diffMins < 60) return `${diffMins} minutes ago`;
-  if (diffHrs < 24) return `${diffHrs} hours ago`;
-  if (diffDays === 1) return 'yesterday';
-  return `${diffDays} days ago`;
+  const diffDays = Math.max(0, Math.floor(diffMs / 86400000));
+  
+  if (diffMins < 60) {
+    const minuteLabel = diffMins === 1 ? 'minute' : 'minutes';
+    return `${diffMins} ${minuteLabel} ago`;
+  }
+  if (diffHrs < 24) {
+    const hourLabel = diffHrs === 1 ? 'hour' : 'hours';
+    return `${diffHrs} ${hourLabel} ago`;
+  }
+  if (diffDays === 1) {
+    return 'yesterday';
+  }
+  const dayLabel = diffDays === 1 ? 'day' : 'days';
+  return `${diffDays} ${dayLabel} ago`;
 }
 
 export function getStatusColor(status: string): string {

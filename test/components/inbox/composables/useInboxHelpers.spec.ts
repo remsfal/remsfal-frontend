@@ -29,12 +29,12 @@ describe('useInboxHelpers', () => {
       expect(getRelativeTime(thirtyMinutesAgo)).toBe('30 minutes ago');
 
       const oneMinuteAgo = new Date('2025-01-15T11:59:00Z');
-      expect(getRelativeTime(oneMinuteAgo)).toBe('1 minutes ago');
+      expect(getRelativeTime(oneMinuteAgo)).toBe('1 minute ago');
     });
 
     it('should return "X hours ago" for times less than 24 hours', () => {
       const oneHourAgo = new Date('2025-01-15T11:00:00Z');
-      expect(getRelativeTime(oneHourAgo)).toBe('1 hours ago');
+      expect(getRelativeTime(oneHourAgo)).toBe('1 hour ago');
 
       const fiveHoursAgo = new Date('2025-01-15T07:00:00Z');
       expect(getRelativeTime(fiveHoursAgo)).toBe('5 hours ago');
