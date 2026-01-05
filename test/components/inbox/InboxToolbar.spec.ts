@@ -169,7 +169,7 @@ describe('InboxToolbar', () => {
     expect(bulkActions.text()).toContain('3');
   });
 
-  it('emits mark-read-selected when mark as done button is clicked', async () => {
+  it('emits markReadSelected when mark as done button is clicked', async () => {
     wrapper = mount(InboxToolbar, {
       props: {
         activeTab: 'all',
@@ -184,11 +184,11 @@ describe('InboxToolbar', () => {
     
     if (markAsDoneButton) {
       await markAsDoneButton.trigger('click');
-      expect(wrapper.emitted('mark-read-selected')).toBeTruthy();
+      expect(wrapper.emitted('markReadSelected')).toBeTruthy();
     }
   });
 
-  it('emits delete-selected when delete button is clicked', async () => {
+  it('emits deleteSelected when delete button is clicked', async () => {
     wrapper = mount(InboxToolbar, {
       props: {
         activeTab: 'all',
@@ -203,7 +203,7 @@ describe('InboxToolbar', () => {
     
     if (deleteButton) {
       await deleteButton.trigger('click');
-      expect(wrapper.emitted('delete-selected')).toBeTruthy();
+      expect(wrapper.emitted('deleteSelected')).toBeTruthy();
     }
   });
 

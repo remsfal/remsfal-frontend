@@ -10,8 +10,6 @@ import Tag from 'primevue/tag';
 import Menu from 'primevue/menu';
 import { useLayout } from '@/layout/composables/layout';
 
-const { isDarkTheme } = useLayout();
-
 const props = defineProps<{
   activeTab: 'all' | 'unread';
   searchQuery: string;
@@ -23,10 +21,11 @@ const emit = defineEmits<{
   'update:activeTab': [value: 'all' | 'unread'];
   'update:searchQuery': [value: string];
   'update:grouping': [value: 'date' | 'project' | null];
-  'mark-read-selected': [];
-  'delete-selected': [];
+  markReadSelected: [];
+  deleteSelected: [];
 }>();
 
+const { isDarkTheme } = useLayout();
 const { t } = useI18n();
 
 const tabOptions = computed(() => [
@@ -167,7 +166,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
         text 
         rounded 
         size="small" 
-        @click="emit('mark-read-selected')" 
+        @click="emit('markReadSelected')" 
       />
       <Button 
         v-tooltip.bottom="t('button.delete')" 
@@ -176,7 +175,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
         rounded 
         severity="danger" 
         size="small" 
-        @click="emit('delete-selected')" 
+        @click="emit('deleteSelected')" 
       />
     </div>
   </div>

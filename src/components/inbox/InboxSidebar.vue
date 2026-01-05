@@ -8,8 +8,6 @@ import ScrollPanel from 'primevue/scrollpanel';
 import type { InboxMessage } from '@/services/InboxService';
 import { useLayout } from '@/layout/composables/layout';
 
-const { isDarkTheme } = useLayout();
-
 const props = defineProps<{
   activeNavItem: 'inbox' | 'done';
   unreadCount: number;
@@ -23,11 +21,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:activeNavItem': [value: 'inbox' | 'done'];
-  'filter-applied': [filter: CustomFilter];
-  'project-filter-toggled': [projectId: string];
-  'clear-filters': [];
+  filterApplied: [filter: CustomFilter];
+  projectFilterToggled: [projectId: string];
+  clearFilters: [];
 }>();
 
+const { isDarkTheme } = useLayout();
 const { t } = useI18n();
 
 export interface CustomFilter {
@@ -60,20 +59,20 @@ const getProjectCount = (projectId: string) => {
 
 const handleFilterClick = (filter: CustomFilter) => {
   if (props.activeFilterId === filter.id) {
-    emit('clear-filters');
+    emit('clearFilters');
   } else {
-    emit('filter-applied', filter);
+    emit('filterApplied', filter);
   }
 };
 
 const handleProjectClick = (projectId: string) => {
-  emit('project-filter-toggled', projectId);
+  emit('projectFilterToggled', projectId);
 };
 
 const handleNavClick = (navItem: 'inbox' | 'done') => {
   emit('update:activeNavItem', navItem);
   if (navItem === 'inbox') {
-    emit('clear-filters');
+    emit('clearFilters');
   }
 };
 

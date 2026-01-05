@@ -8,8 +8,6 @@ import type { InboxMessage } from '@/services/InboxService';
 import { getRelativeTime, getStatusColor, getStatusIcon } from './composables/useInboxHelpers';
 import { useLayout } from '@/layout/composables/layout';
 
-const { isDarkTheme } = useLayout();
-
 const props = defineProps<{
   message: InboxMessage;
   isSelected: boolean;
@@ -24,6 +22,7 @@ const emit = defineEmits<{
   delete: [];
 }>();
 
+const { isDarkTheme } = useLayout();
 const { t } = useI18n();
 
 const statusIcon = computed(() => getStatusIcon(props.message.issueStatus));

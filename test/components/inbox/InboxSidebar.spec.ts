@@ -103,47 +103,47 @@ describe('InboxSidebar', () => {
     }
   });
 
-  it('emits clear-filters when switching to inbox', async () => {
+  it('emits clearFilters when switching to inbox', async () => {
     mountWithProps({ activeNavItem: 'done' });
     const buttons = wrapper.findAllComponents({ name: 'Button' });
     const inboxButton = buttons.find(btn => btn.text().includes('Inbox'));
     if (inboxButton) {
       await inboxButton.trigger('click');
-      expect(wrapper.emitted('clear-filters')).toBeTruthy();
+      expect(wrapper.emitted('clearFilters')).toBeTruthy();
     }
   });
 
-  it('emits filter-applied when custom filter is clicked', async () => {
+  it('emits filterApplied when custom filter is clicked', async () => {
     mountWithProps({});
     const buttons = wrapper.findAllComponents({ name: 'Button' });
     const filterButton = buttons.find(btn => btn.text().includes('Open Defects'));
     expect(filterButton).toBeTruthy();
     if (filterButton) {
       await filterButton.trigger('click');
-      expect(wrapper.emitted('filter-applied')).toBeTruthy();
-      expect(wrapper.emitted('filter-applied')?.[0]).toEqual([mockCustomFilters[0]]);
+      expect(wrapper.emitted('filterApplied')).toBeTruthy();
+      expect(wrapper.emitted('filterApplied')?.[0]).toEqual([mockCustomFilters[0]]);
     }
   });
 
-  it('emits clear-filters when active filter is clicked again', async () => {
+  it('emits clearFilters when active filter is clicked again', async () => {
     mountWithProps({ activeFilterId: 'smart-urgent' });
     const buttons = wrapper.findAllComponents({ name: 'Button' });
     const filterButton = buttons.find(btn => btn.text().includes('Open Defects'));
     expect(filterButton).toBeTruthy();
     if (filterButton) {
       await filterButton.trigger('click');
-      expect(wrapper.emitted('clear-filters')).toBeTruthy();
+      expect(wrapper.emitted('clearFilters')).toBeTruthy();
     }
   });
 
-  it('emits project-filter-toggled when project is clicked', async () => {
+  it('emits projectFilterToggled when project is clicked', async () => {
     mountWithProps({});
     const buttons = wrapper.findAllComponents({ name: 'Button' });
     const projectButton = buttons.find(btn => btn.text().includes('Project 1'));
     if (projectButton) {
       await projectButton.trigger('click');
-      expect(wrapper.emitted('project-filter-toggled')).toBeTruthy();
-      expect(wrapper.emitted('project-filter-toggled')?.[0]).toEqual(['proj-1']);
+      expect(wrapper.emitted('projectFilterToggled')).toBeTruthy();
+      expect(wrapper.emitted('projectFilterToggled')?.[0]).toEqual(['proj-1']);
     }
   });
 

@@ -8,8 +8,6 @@ import InboxMessageItem from './InboxMessageItem.vue';
 import InboxEmptyState from './InboxEmptyState.vue';
 import { useLayout } from '@/layout/composables/layout';
 
-const { isDarkTheme } = useLayout();
-
 const props = defineProps<{
   messages: InboxMessage[];
   selectedMessages: InboxMessage[];
@@ -18,13 +16,14 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'select-all': [];
-  'select-item': [message: InboxMessage];
+  selectAll: [];
+  selectItem: [message: InboxMessage];
   navigate: [message: InboxMessage];
-  'mark-read': [message: InboxMessage];
+  markRead: [message: InboxMessage];
   delete: [message: InboxMessage];
 }>();
 
+const { isDarkTheme } = useLayout();
 const { t, locale } = useI18n();
 
 const isAllSelected = computed(() => 
@@ -142,7 +141,7 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
         <Checkbox 
           :modelValue="isAllSelected" 
           binary 
-          @change="emit('select-all')" 
+          @change="emit('selectAll')" 
         />
         <span 
           class="text-sm font-medium"
@@ -162,9 +161,9 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
                 :isSelected="isSelected(msg)"
                 :index="Number(index)"
                 :isLast="Number(index) === items.length - 1"
-                @select="emit('select-item', msg)"
+                @select="emit('selectItem', msg)"
                 @navigate="emit('navigate', msg)"
-                @markRead="emit('mark-read', msg)"
+                @markRead="emit('markRead', msg)"
                 @delete="emit('delete', msg)"
               />
             </div>
@@ -199,9 +198,9 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
               :isSelected="isSelected(msg)"
               :index="index"
               :isLast="index === group.messages.length - 1 && groupIndex === groupedMessages.length - 1"
-              @select="emit('select-item', msg)"
+              @select="emit('selectItem', msg)"
               @navigate="emit('navigate', msg)"
-              @markRead="emit('mark-read', msg)"
+              @markRead="emit('markRead', msg)"
               @delete="emit('delete', msg)"
             />
           </template>

@@ -98,19 +98,19 @@ describe('InboxMessageList', () => {
     expect(checkbox.props('modelValue')).toBe(false);
   });
 
-  it('emits select-all event when select all checkbox is clicked', async () => {
+  it('emits selectAll event when select all checkbox is clicked', async () => {
     mountWithProps({});
     const checkbox = wrapper.findComponent({ name: 'Checkbox' });
     await checkbox.vm.$emit('change');
-    expect(wrapper.emitted('select-all')).toBeTruthy();
+    expect(wrapper.emitted('selectAll')).toBeTruthy();
   });
 
-  it('emits select-item event when message item checkbox is clicked', async () => {
+  it('emits selectItem event when message item checkbox is clicked', async () => {
     mountWithProps({});
     const firstItem = wrapper.findAllComponents(InboxMessageItem)[0];
     await firstItem.vm.$emit('select');
-    expect(wrapper.emitted('select-item')).toBeTruthy();
-    expect(wrapper.emitted('select-item')?.[0]).toEqual([mockMessages[0]]);
+    expect(wrapper.emitted('selectItem')).toBeTruthy();
+    expect(wrapper.emitted('selectItem')?.[0]).toEqual([mockMessages[0]]);
   });
 
   it('emits navigate event when message item is clicked', async () => {
@@ -121,12 +121,12 @@ describe('InboxMessageList', () => {
     expect(wrapper.emitted('navigate')?.[0]).toEqual([mockMessages[0]]);
   });
 
-  it('emits mark-read event when message item mark-read is triggered', async () => {
+  it('emits markRead event when message item markRead is triggered', async () => {
     mountWithProps({});
     const firstItem = wrapper.findAllComponents(InboxMessageItem)[0];
-    await firstItem.vm.$emit('mark-read');
-    expect(wrapper.emitted('mark-read')).toBeTruthy();
-    expect(wrapper.emitted('mark-read')?.[0]).toEqual([mockMessages[0]]);
+    await firstItem.vm.$emit('markRead');
+    expect(wrapper.emitted('markRead')).toBeTruthy();
+    expect(wrapper.emitted('markRead')?.[0]).toEqual([mockMessages[0]]);
   });
 
   it('emits delete event when message item delete is triggered', async () => {
