@@ -6,6 +6,9 @@ import Checkbox from 'primevue/checkbox';
 import Tag from 'primevue/tag';
 import type { InboxMessage } from '@/services/InboxService';
 import { getRelativeTime, getStatusColor, getStatusIcon } from './composables/useInboxHelpers';
+import { useLayout } from '@/layout/composables/layout';
+
+const { isDarkTheme } = useLayout();
 
 const props = defineProps<{
   message: InboxMessage;
@@ -30,11 +33,12 @@ const relativeTime = computed(() => getRelativeTime(props.message.receivedAt));
 
 <template>
   <div 
-    class="group flex items-start gap-4 px-4 py-4 hover:bg-surface-100 
-      dark:hover:bg-surface-800/50 cursor-pointer transition-all duration-150"
+    class="group flex items-start gap-4 px-4 py-4 cursor-pointer transition-all duration-150"
     :class="[
-      { 'border-b border-[#d1d5db] dark:border-surface-800': !isLast },
-      message.isRead ? 'bg-[#f7f8fa] dark:bg-surface-800/30' : 'bg-white dark:bg-surface-900'
+      !isLast ? (isDarkTheme ? 'border-b border-surface-800' : 'border-b border-surface-200') : '',
+      message.isRead 
+        ? (isDarkTheme ? 'bg-surface-800/30 hover:bg-surface-800/50' : 'bg-surface-50 hover:bg-surface-100') 
+        : (isDarkTheme ? 'bg-surface-900 hover:bg-surface-800/50' : 'bg-surface-0 hover:bg-surface-100')
     ]"
     @click="emit('navigate')"
   >
@@ -54,12 +58,18 @@ const relativeTime = computed(() => getRelativeTime(props.message.receivedAt));
     <!-- Content Block -->
     <div class="flex-1 min-w-0">
       <!-- Project + Issue ID -->
-      <div class="text-sm text-surface-600 dark:text-surface-400 mb-0.5">
+      <div 
+        class="text-sm mb-0.5"
+        :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+      >
         {{ message.projectName }} 
-        <span class="text-surface-400 dark:text-surface-500">#{{ message.issueId }}</span>
+        <span :class="isDarkTheme ? 'text-surface-500' : 'text-surface-400'">#{{ message.issueId }}</span>
       </div>
       <!-- Title -->
-      <div class="font-semibold text-surface-900 dark:text-surface-0">
+      <div 
+        class="font-semibold"
+        :class="isDarkTheme ? 'text-surface-0' : 'text-surface-900'"
+      >
         {{ message.issueTitle }}
       </div>
     </div>
@@ -71,7 +81,10 @@ const relativeTime = computed(() => getRelativeTime(props.message.receivedAt));
 
     <!-- Time  -->
     <div class="w-28 flex-shrink-0 text-left">
-      <span class="text-sm text-surface-400 dark:text-surface-500 whitespace-nowrap">
+      <span 
+        class="text-sm whitespace-nowrap"
+        :class="isDarkTheme ? 'text-surface-500' : 'text-surface-400'"
+      >
         {{ relativeTime }}
       </span>
     </div>

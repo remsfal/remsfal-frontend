@@ -6,6 +6,9 @@ import DataView from 'primevue/dataview';
 import type { InboxMessage } from '@/services/InboxService';
 import InboxMessageItem from './InboxMessageItem.vue';
 import InboxEmptyState from './InboxEmptyState.vue';
+import { useLayout } from '@/layout/composables/layout';
+
+const { isDarkTheme } = useLayout();
 
 const props = defineProps<{
   messages: InboxMessage[];
@@ -132,8 +135,8 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
     <template v-else>
       <!-- List Header -->
       <div 
-        class="flex items-center gap-4 px-4 py-2.5 border-b border-[#d1d5db] 
-          dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50"
+        class="flex items-center gap-4 px-4 py-2.5 border-b"
+        :class="isDarkTheme ? 'bg-surface-800/50 border-surface-800' : 'bg-surface-50 border-surface-200'"
       >
         <div class="w-2.5 flex-shrink-0" />
         <Checkbox 
@@ -141,7 +144,10 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
           binary 
           @change="emit('select-all')" 
         />
-        <span class="text-sm text-surface-600 dark:text-surface-400 font-medium">{{ t('inbox.actions.selectAll') }}</span>
+        <span 
+          class="text-sm font-medium"
+          :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+        >{{ t('inbox.actions.selectAll') }}</span>
       </div>
 
       <!-- Message List -->
@@ -154,8 +160,8 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
                 :key="msg.id"
                 :message="msg"
                 :isSelected="isSelected(msg)"
-                :index="index"
-                :isLast="index === items.length - 1"
+                :index="Number(index)"
+                :isLast="Number(index) === items.length - 1"
                 @select="emit('select-item', msg)"
                 @navigate="emit('navigate', msg)"
                 @markRead="emit('mark-read', msg)"
@@ -172,12 +178,15 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
           <template v-for="(group, groupIndex) in groupedMessages" :key="group.key">
             <!-- Group Header -->
             <div 
-              class="px-4 py-2 bg-surface-100 dark:bg-surface-800/50 border-b 
-                border-[#d1d5db] dark:border-surface-700 sticky top-0 z-10"
+              class="px-4 py-2 border-b sticky top-0 z-10"
+              :class="isDarkTheme ? 'bg-surface-800/50 border-surface-700' : 'bg-surface-100 border-surface-200'"
             >
-              <span class="text-sm font-semibold text-surface-700 dark:text-surface-300">
+              <span 
+                class="text-sm font-semibold"
+                :class="isDarkTheme ? 'text-surface-300' : 'text-surface-700'"
+              >
                 {{ group.label }}
-                <span class="text-surface-500 dark:text-surface-500 ml-2 font-normal">
+                <span class="text-surface-500 ml-2 font-normal">
                   ({{ group.messages.length }})
                 </span>
               </span>
@@ -201,4 +210,3 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
     </template>
   </div>
 </template>
-

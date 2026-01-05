@@ -6,6 +6,9 @@ import Badge from 'primevue/badge';
 import Divider from 'primevue/divider';
 import ScrollPanel from 'primevue/scrollpanel';
 import type { InboxMessage } from '@/services/InboxService';
+import { useLayout } from '@/layout/composables/layout';
+
+const { isDarkTheme } = useLayout();
 
 const props = defineProps<{
   activeNavItem: 'inbox' | 'done';
@@ -89,15 +92,21 @@ const typeFilters = computed(() =>
 </script>
 
 <template>
-  <aside class="w-72 bg-white dark:bg-surface-900 m-4 p-4 shadow-md rounded-xl">
+  <aside 
+    class="w-72 m-4 p-4 shadow-md rounded-xl"
+    :class="isDarkTheme ? 'bg-surface-900' : 'bg-surface-0'"
+  >
     <div class="flex flex-col h-full">
       <!-- Navigation Buttons -->
       <div class="space-y-1 mb-4">
         <Button 
           text
           severity="secondary"
-          class="w-full justify-start !text-surface-900 dark:!text-surface-0"
-          :style="activeNavItem === 'inbox' && !activeFilterId ? 'background-color: #e5e7eb' : ''"
+          class="w-full justify-start"
+          :class="isDarkTheme ? '!text-surface-0' : '!text-surface-900'"
+          :style="props.activeNavItem === 'inbox' 
+            ? { backgroundColor: isDarkTheme ? 'var(--p-surface-600)' : 'var(--p-surface-200)' } 
+            : {}"
           @click="handleNavClick('inbox')"
         >
           <template #default>
@@ -114,8 +123,11 @@ const typeFilters = computed(() =>
         <Button 
           text
           severity="secondary"
-          class="w-full justify-start !text-surface-900 dark:!text-surface-0"
-          :style="activeNavItem === 'done' ? 'background-color: #e5e7eb' : ''"
+          class="w-full justify-start"
+          :class="isDarkTheme ? '!text-surface-0' : '!text-surface-900'"
+          :style="props.activeNavItem === 'done' 
+            ? { backgroundColor: isDarkTheme ? 'var(--p-surface-600)' : 'var(--p-surface-200)' } 
+            : {}"
           @click="handleNavClick('done')"
         >
           <template #default>
@@ -143,7 +155,10 @@ const typeFilters = computed(() =>
             <div class="space-y-3 pb-6 pr-2">
               <!-- Smart Filters -->
               <div v-if="smartFilters.length > 0">
-                <div class="text-xs font-medium text-surface-600 dark:text-surface-400 mb-1 px-2">
+                <div 
+                  class="text-xs font-medium mb-1 px-2"
+                  :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+                >
                   {{ t('inbox.filter.smart') }}
                 </div>
                 <div class="space-y-0.5">
@@ -154,8 +169,8 @@ const typeFilters = computed(() =>
                     :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
                     class="w-full justify-start"
                     :class="activeFilterId === filter.id 
-                      ? '!bg-surface-200 dark:!bg-surface-700' 
-                      : '!text-surface-900 dark:!text-surface-0 hover:!bg-surface-100 dark:hover:!bg-surface-800'"
+                      ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
+                      : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
                     @click="handleFilterClick(filter)"
                   >
                     <template #default>
@@ -173,7 +188,10 @@ const typeFilters = computed(() =>
 
               <!-- Status Filters -->
               <div v-if="statusFilters.length > 0">
-                <div class="text-xs font-medium text-surface-600 dark:text-surface-400 mb-1 px-2">
+                <div 
+                  class="text-xs font-medium mb-1 px-2"
+                  :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+                >
                   {{ t('inbox.filter.status') }}
                 </div>
                 <div class="space-y-0.5">
@@ -184,8 +202,8 @@ const typeFilters = computed(() =>
                     :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
                     class="w-full justify-start"
                     :class="activeFilterId === filter.id 
-                      ? '!bg-surface-200 dark:!bg-surface-700' 
-                      : '!text-surface-900 dark:!text-surface-0 hover:!bg-surface-100 dark:hover:!bg-surface-800'"
+                      ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
+                      : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
                     @click="handleFilterClick(filter)"
                   >
                     <template #default>
@@ -203,7 +221,10 @@ const typeFilters = computed(() =>
 
               <!-- Type Filters -->
               <div v-if="typeFilters.length > 0">
-                <div class="text-xs font-medium text-surface-600 dark:text-surface-400 mb-1 px-2">
+                <div 
+                  class="text-xs font-medium mb-1 px-2"
+                  :class="isDarkTheme ? 'text-surface-400' : 'text-surface-600'"
+                >
                   {{ t('inbox.filter.type') }}
                 </div>
                 <div class="space-y-0.5">
@@ -214,8 +235,8 @@ const typeFilters = computed(() =>
                     :severity="activeFilterId === filter.id ? 'success' : 'secondary'"
                     class="w-full justify-start"
                     :class="activeFilterId === filter.id 
-                      ? '!bg-surface-200 dark:!bg-surface-700' 
-                      : '!text-surface-900 dark:!text-surface-0 hover:!bg-surface-100 dark:hover:!bg-surface-800'"
+                      ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
+                      : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
                     @click="handleFilterClick(filter)"
                   >
                     <template #default>
@@ -252,8 +273,8 @@ const typeFilters = computed(() =>
               size="small"
               class="w-full justify-start"
               :class="filterProject.includes(proj.value) 
-                ? '!bg-surface-200 dark:!bg-surface-700' 
-                : '!text-surface-900 dark:!text-surface-0 hover:!bg-surface-100 dark:hover:!bg-surface-800'"
+                ? (isDarkTheme ? '!bg-surface-700' : '!bg-surface-200')
+                : (isDarkTheme ? '!text-surface-0 hover:!bg-surface-800' : '!text-surface-900 hover:!bg-surface-100')"
               @click="handleProjectClick(proj.value)"
             >
               <template #default>

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 
+import { useLayout } from '@/layout/composables/layout';
 import { useInboxStore } from '@/stores/InboxStore';
 import type { InboxMessage } from '@/services/InboxService';
 import InboxSidebar, { type CustomFilter } from '@/components/inbox/InboxSidebar.vue';
@@ -13,6 +14,7 @@ import InboxMessageList from '@/components/inbox/InboxMessageList.vue';
 const { t } = useI18n();
 const router = useRouter();
 const inbox = useInboxStore();
+const { isDarkTheme } = useLayout();
 
 const {
   messages,
@@ -153,7 +155,10 @@ const displayedMessages = computed(() => {
 </script>
 
 <template>
-  <div class="flex h-[calc(100vh-4rem)] bg-surface-100 dark:bg-surface-950">
+  <div 
+    class="flex h-[calc(100vh-4rem)]"
+    :class="isDarkTheme ? 'bg-surface-950' : 'bg-surface-100'"
+  >
     <InboxSidebar
       :activeNavItem="activeNavItem"
       :unreadCount="unreadCount"
@@ -171,7 +176,10 @@ const displayedMessages = computed(() => {
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-w-0 py-4 pr-4">
-      <div class="bg-white dark:bg-surface-900 rounded-xl overflow-hidden shadow-md h-full flex flex-col">
+      <div 
+        class="rounded-xl overflow-hidden shadow-md h-full flex flex-col"
+        :class="isDarkTheme ? 'bg-surface-900' : 'bg-surface-0'"
+      >
         <InboxToolbar
           :activeTab="activeTab"
           :searchQuery="searchQuery"

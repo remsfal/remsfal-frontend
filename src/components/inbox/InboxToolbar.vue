@@ -8,6 +8,9 @@ import InputText from 'primevue/inputtext';
 import SelectButton from 'primevue/selectbutton';
 import Tag from 'primevue/tag';
 import Menu from 'primevue/menu';
+import { useLayout } from '@/layout/composables/layout';
+
+const { isDarkTheme } = useLayout();
 
 const props = defineProps<{
   activeTab: 'all' | 'unread';
@@ -69,7 +72,9 @@ const menuItems = computed<MenuItem[]>(() => {
         emit('update:grouping', option.value);
       }
     },
-    class: props.grouping === option.value ? 'bg-primary-50 dark:bg-primary-900/20' : '',
+    class: props.grouping === option.value 
+      ? (isDarkTheme.value ? 'bg-primary-900/20' : 'bg-primary-50') 
+      : '',
   }));
 
   if (props.grouping) {
@@ -103,7 +108,10 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
 </script>
 
 <template>
-  <div class="flex items-center gap-4 px-4 py-3 border-b border-[#d1d5db] dark:border-surface-800">
+  <div 
+    class="flex items-center gap-4 px-4 py-3 border-b"
+    :class="isDarkTheme ? 'border-surface-800' : 'border-surface-200'"
+  >
     <!-- All / Unread Toggle -->
     <SelectButton 
       :modelValue="activeTab" 
@@ -122,7 +130,8 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
         <InputText 
           :modelValue="searchQuery" 
           :placeholder="t('inbox.toolbar.searchPlaceholder')" 
-          class="w-full border-surface-300 dark:border-surface-600 rounded-lg"
+          class="w-full rounded-lg"
+          :class="isDarkTheme ? 'border-surface-600' : 'border-surface-300'"
           @update:modelValue="emit('update:searchQuery', $event || '')"
         />
       </IconField>
@@ -137,7 +146,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
         iconPos="right"
         outlined
         size="small"
-        class="grouping-button"
+        :class="isDarkTheme ? 'grouping-button-dark' : 'grouping-button-light'"
         @click="toggleGroupingMenu"
       />
       <Menu
@@ -174,25 +183,26 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
 </template>
 
 <style scoped>
-.grouping-button {
+.grouping-button-light {
   background-color: #f6f8fa;
   border-color: #d0d7de;
   color: #24292f;
   font-weight: 500;
 }
 
-.grouping-button:hover {
+.grouping-button-light:hover {
   background-color: #f3f4f6;
   border-color: #d0d7de;
 }
 
-.dark .grouping-button {
+.grouping-button-dark {
   background-color: #21262d;
   border-color: #30363d;
   color: #c9d1d9;
+  font-weight: 500;
 }
 
-.dark .grouping-button:hover {
+.grouping-button-dark:hover {
   background-color: #30363d;
   border-color: #30363d;
 }
