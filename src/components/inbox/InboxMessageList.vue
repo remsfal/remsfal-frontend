@@ -15,14 +15,14 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  selectAll: [];
-  selectItem: [message: InboxMessage];
+  'select-all': [];
+  'select-item': [message: InboxMessage];
   navigate: [message: InboxMessage];
-  markRead: [message: InboxMessage];
+  'mark-read': [message: InboxMessage];
   delete: [message: InboxMessage];
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const isAllSelected = computed(() => 
   props.selectedMessages.length > 0 && 
@@ -72,12 +72,12 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
         
         if (msgDate >= weekAgo) {
           key = `week-${msgDate.toISOString().split('T')[0]}`;
-          label = msgDate.toLocaleDateString('de-DE', {
- weekday: 'long', day: 'numeric', month: 'long' 
-});
+          label = msgDate.toLocaleDateString(locale.value, {
+            weekday: 'long', day: 'numeric', month: 'long' 
+          });
         } else {
           key = `month-${msgDate.getFullYear()}-${msgDate.getMonth()}`;
-          label = msgDate.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+          label = msgDate.toLocaleDateString(locale.value, { month: 'long', year: 'numeric' });
         }
       }
     } else if (props.grouping === 'project') {
@@ -139,7 +139,7 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
         <Checkbox 
           :modelValue="isAllSelected" 
           binary 
-          @change="emit('selectAll')" 
+          @change="emit('select-all')" 
         />
         <span class="text-sm text-surface-600 dark:text-surface-400 font-medium">{{ t('inbox.actions.selectAll') }}</span>
       </div>
@@ -156,9 +156,9 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
                 :isSelected="isSelected(msg)"
                 :index="index"
                 :isLast="index === items.length - 1"
-                @select="emit('selectItem', msg)"
+                @select="emit('select-item', msg)"
                 @navigate="emit('navigate', msg)"
-                @markRead="emit('markRead', msg)"
+                @markRead="emit('mark-read', msg)"
                 @delete="emit('delete', msg)"
               />
             </div>
@@ -190,9 +190,9 @@ const groupedMessages = computed<GroupedMessages | null>(() => {
               :isSelected="isSelected(msg)"
               :index="index"
               :isLast="index === group.messages.length - 1 && groupIndex === groupedMessages.length - 1"
-              @select="emit('selectItem', msg)"
+              @select="emit('select-item', msg)"
               @navigate="emit('navigate', msg)"
-              @markRead="emit('markRead', msg)"
+              @markRead="emit('mark-read', msg)"
               @delete="emit('delete', msg)"
             />
           </template>
