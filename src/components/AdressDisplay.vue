@@ -71,7 +71,13 @@ const errorMessage = ref<{
   city?: string;
   province?: string;
   countryCode?: string;
-}>({});
+}>({
+  street: '',
+  zip: '',
+  city: '',
+  province: '',
+  countryCode: ''
+});
 
 onMounted(async () => {
   if (!addressProfile.value) {
@@ -152,8 +158,8 @@ function validateField(field: keyof Address, errorKey: keyof typeof errorMessage
   const value = editedAddress.value?.[field as keyof Address];
 
   const regexMap = {
-    default: /^[A-Za-zÄÖÜäöüß\s]+$/,
-    street: /^(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/,
+    default: /^[A-Za-zÄÖÜäöüß\s-]+$/,
+    street: /^(?=.*[A-Za-zÄÖÜäöüß])(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/,
   };
 
   const regex = field === 'street' ? regexMap.street : regexMap.default;
@@ -221,6 +227,14 @@ async function getCity() {
       errorMessage.value.zip = '';
       errorMessage.value.city = '';
       errorMessage.value.province = '';
+      
+      // Update changes after automatic address update
+      if (addressProfile.value && editedAddress.value) {
+        changes.value = checkValues(
+          addressProfile.value,
+          editedAddress.value as Address,
+        );
+      }
     }
   } catch (error) {
     console.log(error);
