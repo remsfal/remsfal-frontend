@@ -159,7 +159,7 @@ const invoicesOverdue = ref([
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
       <div v-for="kpi in kpiCards" :key="kpi.title" class="kpi-card">
         <div class="kpi-icon" :class="kpi.color">
-          <i :class="'pi ' + kpi.icon">(</i>)
+          <i :class="'pi ' + kpi.icon"></i>
         </div>
         <div>
           <p class="kpi-title">
