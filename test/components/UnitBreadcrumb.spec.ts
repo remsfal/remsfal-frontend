@@ -12,8 +12,11 @@ vi.mock('../../src/services/PropertyService', () => ({
 }));
 
 const mockPush = vi.fn();
-// FIX: Alles in einer Zeile für den Linter
+// FIX: Router Mock in einer Zeile (Linter)
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
+
+// FIX: I18n Mock (notwendig, da Komponente jetzt t() benutzt)
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (k: string) => k }) }));
 
 const BreadcrumbStub = {
   name: 'BreadcrumbStub',
@@ -35,7 +38,6 @@ describe('UnitBreadcrumb.vue', () => {
   };
 
   it('renders correctly in Edit mode (Happy Path)', async () => {
-    // FIX: Use vi.mocked() instead of 'as any' for type safety
     vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue([
       {
         title: 'Property A',
@@ -93,7 +95,8 @@ describe('UnitBreadcrumb.vue', () => {
 
     expect(model).toHaveLength(2);
     expect(model[0].label).toBe('Property A');
-    expect(model[1].label).toBe('Neu anlegen');
+    // Erwartet den Übersetzungsschlüssel oder gemockten Wert
+    expect(model[1].label).toBe('breadcrumb.create');
   });
 
   it('handles contextParentId correctly (SiteView scenario)', async () => {
@@ -151,7 +154,7 @@ describe('UnitBreadcrumb.vue', () => {
     expect(model[0].label).toBe('My Unit');
   });
 
-  it('shows "Zur Übersicht" only if absolutely no info is available', async () => {
+  it('shows "Zur Übersicht" fallback only if absolutely no info is available', async () => {
     vi.mocked(propertyService.getBreadcrumbPath).mockRejectedValue(new Error('Backend down'));
 
     const wrapper = mount(UnitBreadcrumb, {
@@ -168,7 +171,7 @@ describe('UnitBreadcrumb.vue', () => {
     const model = breadcrumb.props('model');
 
     expect(model).toHaveLength(1);
-    expect(model[0].label).toBe('Zur Übersicht');
+    expect(model[0].label).toBe('breadcrumb.backToOverview');
   });
 
   it('uses direct getProperty fallback if tree path fails', async () => {
@@ -182,7 +185,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     vi.mocked(propertyService.getBreadcrumbPath).mockRejectedValue(new Error('Tree Error'));
     
-    // FIX: Alles in einer Zeile, da das Objekt klein ist
+    // FIX: Alles in einer Zeile (Linter)
     vi.mocked(propertyService.getProperty).mockResolvedValue({ title: 'Direct Property' });
 
     const wrapper = mount(UnitBreadcrumb, {
@@ -198,5 +201,87 @@ describe('UnitBreadcrumb.vue', () => {
     expect(model).toHaveLength(2);
     expect(model[0].label).toBe('Direct Property');
     expect(model[1].label).toBe('Außenanlage');
+  });
+
+  // --- NEUE TESTS FÜR SONARCLOUD COVERAGE (CATCH BLÖCKE) ---
+
+  it('returns early if context parent is already in the path', async () => {
+    const existingPath = [
+      { title: 'Property A', id: 'prop-1', type: 'PROPERTY' },
+      { title: 'My Unit', id: 'unit-1', type: 'APARTMENT' },
+    ];
+
+    // Typ muss hier explizit 'any' sein oder casten, da mockResolvedValue strikt ist
+    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue(existingPath as any);
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: {
+        projectId: 'proj-1',
+        unitId: 'unit-1',
+        contextParentId: 'prop-1',
+        mode: 'edit',
+      },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
+    const model = breadcrumb.props('model');
+    
+    expect(model).toHaveLength(2);
+    expect(model[0].label).toBe('Property A');
+  });
+
+  it('ignores context parent errors silently (Code Coverage)', async () => {
+    // 1. Hauptpfad lädt erfolgreich
+    vi.mocked(propertyService.getBreadcrumbPath).mockImplementation((pid, uid) => {
+      if (uid === 'unit-1') {
+        return Promise.resolve([{
+          title: 'My Unit',
+          id: 'unit-1',
+          type: 'APARTMENT',
+        } as any]);
+      }
+      // 2. Context Parent Pfad schlägt fehl
+      return Promise.reject(new Error('Path Error'));
+    });
+
+    // 3. Context Parent Direktabruf schlägt auch fehl
+    vi.mocked(propertyService.getProperty).mockRejectedValue(new Error('Direct Error'));
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: {
+        projectId: 'proj-1',
+        unitId: 'unit-1',
+        contextParentId: 'prop-99',
+        mode: 'edit',
+      },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
+    const model = breadcrumb.props('model');
+
+    expect(model).toHaveLength(1);
+    expect(model[0].label).toBe('My Unit');
+  });
+
+  it('uses default icon for unknown types', async () => {
+     vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue([
+      { title: 'Unknown Thing', id: 'u-1', type: 'ALIEN_SHIP' as any },
+    ]);
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: { projectId: 'p1', unitId: 'u-1' },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
+    
+    expect(model[0].icon).toBe('pi pi-folder');
   });
 });
