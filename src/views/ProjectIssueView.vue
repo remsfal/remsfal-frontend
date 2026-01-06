@@ -48,13 +48,15 @@
   
   /* Change detection */
   const canSave = computed(() =>
-    title.value !== initialData.title ||
-    status.value !== initialData.status ||
-    owner.value !== initialData.owner ||
-    project.value !== initialData.project ||
-    type.value !== initialData.type ||
-    tenancy.value !== initialData.tenancy
-  );
+  title.value !== initialData.title ||
+  status.value !== initialData.status ||
+  owner.value !== initialData.owner ||
+  project.value !== initialData.project ||
+  type.value !== initialData.type ||
+  tenancy.value !== initialData.tenancy ||
+  description.value !== initialData.description
+);
+
   
   /* Save handler */
   const handleSave = () => {
@@ -103,8 +105,8 @@
                 <Select
                   v-model="status"
                   :options="statusOptions"
-                  option-label="label"
-                  option-value="value"
+                  optionLabel="label"
+                  optionValue="value"
                   placeholder="Select status"
                 />
               </div>
@@ -114,8 +116,8 @@
                 <Select
                   v-model="type"
                   :options="typeOptions"
-                  option-label="label"
-                  option-value="value"
+                  optionLabel="label"
+                  optionValue="value"
                   placeholder="Select type"
                 />
               </div>
