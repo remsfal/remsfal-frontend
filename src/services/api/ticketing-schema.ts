@@ -1583,6 +1583,7 @@ export interface components {
             businessPhoneNumber?: string;
             privatePhoneNumber?: string;
             locale?: string;
+            additionalEmails?: string[];
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };

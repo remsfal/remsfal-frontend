@@ -863,6 +863,12 @@ components:
           pattern: "^\\+[1-9]\\d{4,14}$"
         locale:
           type: string
+          maxLength: 2
+        additionalEmails:
+          type: array
+          items:
+            type: string
+            maxLength: 255
         registeredDate:
           $ref: "#/components/schemas/LocalDate"
         lastLoginDate:
