@@ -310,6 +310,7 @@ const invoicesOverdue = ref([
   box-shadow: var(--shadow);
   transition: 0.2s ease;
 }
+
 .app-dark .card {
   background: var(--card-bg-dark);
   box-shadow: var(--shadow-dark);
