@@ -166,6 +166,8 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
+        /** @enum {string} */
+        EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
         /** @description Represents a message or invoice in the user's inbox */
         InboxMessage: {
             /** @description Unique identifier of the message */
@@ -259,6 +261,35 @@ export interface components {
          * @example 2022-03-10T12:15:50-04:00
          */
         OffsetDateTime: string;
+        /** @description Employee information in context of an organization */
+        OrganizationEmployeeJson: {
+            id?: components["schemas"]["UUID"];
+            name?: string;
+            email?: string;
+            active?: boolean;
+            employeeRole: components["schemas"]["EmployeeRole"];
+        };
+        /** @description A list of organization employees */
+        OrganizationEmployeeListJson: {
+            employees: components["schemas"]["OrganizationEmployeeJson"][];
+        };
+        /** @description An organization */
+        OrganizationJson: {
+            id?: components["schemas"]["UUID"];
+            name?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
+            address?: components["schemas"]["AddressJson"];
+        };
+        /** @description A list of organizations */
+        OrganizationListJson: {
+            organizations: components["schemas"]["OrganizationJson"][];
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int64 */
+            total?: number;
+        };
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
             id: components["schemas"]["UUID"];

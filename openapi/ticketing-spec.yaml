@@ -234,6 +234,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CountryItemJson"
+    EmployeeRole:
+      type: string
+      enum:
+      - OWNER
+      - MANAGER
+      - STAFF
     InboxMessage:
       description: Represents a message or invoice in the user's inbox
       type: object
@@ -375,6 +381,69 @@ components:
       format: date-time
       examples:
       - 2022-03-10T12:15:50-04:00
+    OrganizationEmployeeJson:
+      description: Employee information in context of an organization
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type: string
+        email:
+          type: string
+        active:
+          type: boolean
+        employeeRole:
+          $ref: "#/components/schemas/EmployeeRole"
+      required:
+      - employeeRole
+    OrganizationEmployeeListJson:
+      description: A list of organization employees
+      type: object
+      required:
+      - employees
+      properties:
+        employees:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganizationEmployeeJson"
+    OrganizationJson:
+      description: An organization
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type: string
+          maxLength: 255
+        phone:
+          type: string
+          pattern: "^\\+[1-9]\\d{4,14}$"
+          maxLength: 15
+        email:
+          type: string
+          maxLength: 255
+        trade:
+          type: string
+          maxLength: 255
+        address:
+          $ref: "#/components/schemas/AddressJson"
+    OrganizationListJson:
+      description: A list of organizations
+      type: object
+      required:
+      - organizations
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganizationJson"
+        offset:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int64
     ProjectItemJson:
       description: A project item with the user's member role only
       type: object
