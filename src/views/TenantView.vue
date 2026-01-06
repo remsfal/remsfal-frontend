@@ -42,8 +42,9 @@ const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
 const normalizeContracts = (
   data: TenantContractSummary[] | { contracts?: TenantContractSummary[] } | unknown,
 ): TenantContractSummary[] => {
-  if (Array.isArray((data as { contracts?: TenantContractSummary[] })?.contracts)) {
-    return (data as { contracts: TenantContractSummary[] }).contracts;
+    const contractsContainer = data as { contracts?: TenantContractSummary[] };
+    if (Array.isArray(contractsContainer?.contracts)) {
+      return contractsContainer.contracts!;
   }
   if (Array.isArray(data)) {
     return data;

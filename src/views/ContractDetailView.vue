@@ -107,8 +107,8 @@ onMounted(loadContract);
             </div>
           </div>
 
-          <div v-if="contract" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-            <h3 class="text-lg font-medium text-gray-900 mb-3">Zugehörige Dokumente</h3>
+            <div v-if="contract" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm space-y-3">
+            <h3 class="text-lg font-medium text-gray-900">Zugehörige Dokumente</h3>
             <ul class="space-y-2 text-sm">
               <li v-for="(doc, idx) in contract.documents" :key="idx">
                 <a
