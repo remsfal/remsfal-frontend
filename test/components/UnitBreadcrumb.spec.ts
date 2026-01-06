@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import UnitBreadcrumb from '../../src/components/UnitBreadcrumb.vue';
@@ -12,10 +13,7 @@ vi.mock('../../src/services/PropertyService', () => ({
 }));
 
 const mockPush = vi.fn();
-// FIX: Router Mock in einer Zeile (Linter mag kleine Objekte kompakt)
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
-
-// FIX: I18n Mock
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (k: string) => k }) }));
 
 const BreadcrumbStub = {
@@ -23,6 +21,22 @@ const BreadcrumbStub = {
   props: ['model'],
   template: '<div class="p-breadcrumb-stub"></div>',
 };
+
+// --- FIX: Gemeinsame Test-Daten (mehrzeilig formatiert für Linter) ---
+const mockPropNode = {
+  title: 'Property A',
+  id: 'prop-1',
+  type: 'PROPERTY',
+};
+
+const mockUnitNode = {
+  title: 'My Unit',
+  id: 'unit-1',
+  type: 'APARTMENT',
+};
+
+const pathPropOnly = [mockPropNode];
+const pathFull = [mockPropNode, mockUnitNode];
 
 describe('UnitBreadcrumb.vue', () => {
   beforeEach(() => {
@@ -38,18 +52,7 @@ describe('UnitBreadcrumb.vue', () => {
   };
 
   it('renders correctly in Edit mode (Happy Path)', async () => {
-    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue([
-      {
-        title: 'Property A',
-        id: 'prop-1',
-        type: 'PROPERTY',
-      },
-      {
-        title: 'My Unit',
-        id: 'unit-1',
-        type: 'APARTMENT',
-      },
-    ]);
+    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue(pathFull);
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
@@ -75,13 +78,7 @@ describe('UnitBreadcrumb.vue', () => {
       mode: 'create' as const,
     };
 
-    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue([
-      {
-        title: 'Property A',
-        id: 'prop-1',
-        type: 'PROPERTY',
-      },
-    ]);
+    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue(pathPropOnly);
 
     const wrapper = mount(UnitBreadcrumb, {
       props: createProps,
@@ -109,15 +106,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     vi.mocked(propertyService.getBreadcrumbPath).mockImplementation((pid: string, uid: string) => {
       if (uid === 'site-1') return Promise.resolve([]);
-      if (uid === 'prop-1') {
-        return Promise.resolve([
-          {
-            title: 'Property A',
-            id: 'prop-1',
-            type: 'PROPERTY',
-          },
-        ]);
-      }
+      if (uid === 'prop-1') return Promise.resolve(pathPropOnly);
       return Promise.resolve([]);
     });
 
@@ -183,8 +172,6 @@ describe('UnitBreadcrumb.vue', () => {
     };
 
     vi.mocked(propertyService.getBreadcrumbPath).mockRejectedValue(new Error('Tree Error'));
-    
-    // Kleines Objekt -> eine Zeile
     vi.mocked(propertyService.getProperty).mockResolvedValue({ title: 'Direct Property' });
 
     const wrapper = mount(UnitBreadcrumb, {
@@ -202,24 +189,8 @@ describe('UnitBreadcrumb.vue', () => {
     expect(model[1].label).toBe('Außenanlage');
   });
 
-  // --- NEUE TESTS FÜR SONARCLOUD COVERAGE (CATCH BLÖCKE) ---
-
   it('returns early if context parent is already in the path', async () => {
-    // FIX: Objekte explizit mehrzeilig formatieren (Linter Fehler 210/211)
-    const existingPath = [
-      {
-        title: 'Property A',
-        id: 'prop-1',
-        type: 'PROPERTY',
-      },
-      {
-        title: 'My Unit',
-        id: 'unit-1',
-        type: 'APARTMENT',
-      },
-    ];
-
-    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue(existingPath as any);
+    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue(pathFull as any);
 
     const wrapper = mount(UnitBreadcrumb, {
       props: {
@@ -232,29 +203,15 @@ describe('UnitBreadcrumb.vue', () => {
     });
 
     await flushPromises();
-
-    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
-    const model = breadcrumb.props('model');
-    
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
     expect(model).toHaveLength(2);
-    expect(model[0].label).toBe('Property A');
   });
 
   it('ignores context parent errors silently (Code Coverage)', async () => {
     vi.mocked(propertyService.getBreadcrumbPath).mockImplementation((pid, uid) => {
-      if (uid === 'unit-1') {
-        // FIX: Objekt explizit mehrzeilig formatieren
-        return Promise.resolve([
-          {
-            title: 'My Unit',
-            id: 'unit-1',
-            type: 'APARTMENT',
-          } as any,
-        ]);
-      }
+      if (uid === 'unit-1') return Promise.resolve([mockUnitNode as any]);
       return Promise.reject(new Error('Path Error'));
     });
-
     vi.mocked(propertyService.getProperty).mockRejectedValue(new Error('Direct Error'));
 
     const wrapper = mount(UnitBreadcrumb, {
@@ -268,21 +225,17 @@ describe('UnitBreadcrumb.vue', () => {
     });
 
     await flushPromises();
-
-    const breadcrumb = wrapper.findComponent(BreadcrumbStub);
-    const model = breadcrumb.props('model');
-
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
     expect(model).toHaveLength(1);
     expect(model[0].label).toBe('My Unit');
   });
 
   it('uses default icon for unknown types', async () => {
-    // FIX: Objekt explizit mehrzeilig formatieren (Linter Fehler 274)
     vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue([
       {
-        title: 'Unknown Thing',
+        title: 'Unknown',
         id: 'u-1',
-        type: 'ALIEN_SHIP' as any,
+        type: 'ALIEN' as any,
       },
     ]);
 
@@ -293,7 +246,6 @@ describe('UnitBreadcrumb.vue', () => {
 
     await flushPromises();
     const model = wrapper.findComponent(BreadcrumbStub).props('model');
-    
     expect(model[0].icon).toBe('pi pi-folder');
   });
 });

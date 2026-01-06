@@ -9,9 +9,7 @@ import { useUserSessionStore } from '@/stores/UserSession';
 import { useEventBus } from '@/stores/EventStore';
 import { useI18n } from 'vue-i18n';
 
-// --- INTERFACE ---
-// 'severity' ist hier string, damit es zum EventBus passt.
-// 'any' ist weg, damit SonarCloud zufrieden ist.
+// --- FIX: Interface gegen "Unexpected any" ---
 interface ToastEvent {
   severity: string;
   summary: string;
@@ -49,6 +47,7 @@ const bus = useEventBus();
    EVENT BUS HANDLER
 -------------------------------------------------------------------------- */
 
+// Hier nutzen wir das Interface -> SonarCloud ist glücklich
 const handleToastTranslate = ({ severity, summary, detail }: ToastEvent) => {
   bus.emit('toast:show', {
     severity: severity,
@@ -59,7 +58,7 @@ const handleToastTranslate = ({ severity, summary, detail }: ToastEvent) => {
 
 const handleToastShow = ({ severity, summary, detail }: ToastEvent) => {
   toast.add({
-    // Wir casten den String hier sicher auf den Typ, den PrimeVue erwartet
+    // Cast ist notwendig für PrimeVue, aber sicher
     severity: severity as 'success' | 'info' | 'warn' | 'error',
     summary: summary,
     detail: detail,
