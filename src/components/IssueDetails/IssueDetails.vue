@@ -4,7 +4,7 @@
   import InputText from 'primevue/inputtext';
   import Select from 'primevue/select';
   import Button from 'primevue/button';
-  import IssueDescription from './IssueDescription.vue';
+  import IssueDescription from '../IssueDetails/IssueDescription.vue';
   
   /* Initial static data (replace later with API data) */
   const initialData = {
