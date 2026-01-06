@@ -149,7 +149,9 @@ const invoicesOverdue = ref([
   <main class="p-6 lg:p-10">
     <!-- TITLE -->
     <h1
-        class="text-4xl font-bold mb-2">Auftragnehmer Dashboard
+      class="text-4xl font-bold mb-2"
+    >
+      Auftragnehmer Dashboard
     </h1>
     <p class="text-gray-500 dark:text-gray-400 mb-8">
       Übersicht über laufende Arbeiten, Dringlichkeiten & finanzielle Kennzahlen
@@ -159,7 +161,7 @@ const invoicesOverdue = ref([
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
       <div v-for="kpi in kpiCards" :key="kpi.title" class="kpi-card">
         <div class="kpi-icon" :class="kpi.color">
-          <i :class="'pi ' + kpi.icon"></i>
+          <i :class="'pi ' + kpi.icon" />
         </div>
         <div>
           <p class="kpi-title">
@@ -179,14 +181,18 @@ const invoicesOverdue = ref([
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       <div class="card p-6">
         <h2
-            class="card-title">Auftragsstatus nach Monaten
+          class="card-title"
+        >
+          Auftragsstatus nach Monaten
         </h2>
         <Chart type="bar" :data="monthlyData" :options="monthlyOptions" style="height: 330px;" />
       </div>
 
       <div class="card p-6">
         <h2
-            class="card-title">Dringlichkeit der Aufträge
+          class="card-title"
+        >
+          Dringlichkeit der Aufträge
         </h2>
         <Chart type="doughnut" :data="urgencyData" :options="urgencyOptions" style="height: 330px;" />
       </div>
@@ -195,7 +201,9 @@ const invoicesOverdue = ref([
     <!-- FINANCE SECTION -->
     <section class="finance-card mb-16">
       <h2
-          class="finance-title">Finanzentwicklung – Einnahmen & Ausgaben
+        class="finance-title"
+      >
+        Finanzentwicklung – Einnahmen & Ausgaben
       </h2>
 
       <div class="finance-legend">
@@ -215,7 +223,9 @@ const invoicesOverdue = ref([
       <!-- TASK LIST -->
       <div class="card p-6">
         <h2
-            class="card-title mb-4">Heute fällige Aufgaben
+          class="card-title mb-4"
+        >
+          Heute fällige Aufgaben
         </h2>
         <ul class="space-y-3">
           <li v-for="task in todayTasks" :key="task.title" class="flex justify-between border-b pb-2">
@@ -234,7 +244,9 @@ const invoicesOverdue = ref([
       <!-- CUSTOMER REQUESTS -->
       <div class="card p-6">
         <h2
-            class="card-title mb-4">Offene Kundenanfragen
+          class="card-title mb-4"
+        >
+          Offene Kundenanfragen
         </h2>
         <ul class="space-y-3">
           <li v-for="req in customerRequests" :key="req.title" class="flex justify-between border-b pb-2">
@@ -253,22 +265,26 @@ const invoicesOverdue = ref([
     <!-- FINANZÜBERSICHT -->
     <section class="card p-6 mb-16">
       <h2
-          class="card-title mb-6">Finanzübersicht
+        class="card-title mb-6"
+      >
+        Finanzübersicht
       </h2>
 
       <!-- Offene Rechnungen -->
       <h3
-          class="text-xl font-semibold mb-3">Offene Rechnungen
+        class="text-xl font-semibold mb-3"
+      >
+        Offene Rechnungen
       </h3>
       <table class="invoice-table">
         <thead>
-        <tr>
-          <th>Rechnung</th>
-          <th>Kunde</th>
-          <th>Fällig am</th>
-          <th>Betrag</th>
-          <th>Status</th>
-        </tr>
+          <tr>
+            <th>Rechnung</th>
+            <th>Kunde</th>
+            <th>Fällig am</th>
+            <th>Betrag</th>
+            <th>Status</th>
+          </tr>
         </thead>
         <tbody>
           <tr v-for="inv in invoicesOpen" :key="inv.id">
@@ -283,7 +299,9 @@ const invoicesOverdue = ref([
 
       <!-- Überfällige Rechnungen -->
       <h3
-          class="text-xl font-semibold mt-10 mb-3">Überfällige Rechnungen
+        class="text-xl font-semibold mt-10 mb-3"
+      >
+        Überfällige Rechnungen
       </h3>
       <table class="invoice-table">
         <thead>
@@ -342,21 +360,12 @@ const invoicesOverdue = ref([
 
 .card:hover {
   transform: translateY(-2px);
-}
-
-.card:hover {
   box-shadow: 0 8px 25px rgb(0 0 0 / 0.18);
 }
 
 .card-title {
   font-size: 1.25rem;
-}
-
-.card-title {
   font-weight: 600;
-}
-
-.card-title {
   margin-bottom: 1rem;
 }
 
@@ -365,29 +374,11 @@ const invoicesOverdue = ref([
  * ---------------------------------------------------- */
 .kpi-card {
   background: var(--card-bg);
-}
-
-.kpi-card {
   border-radius: 0.75rem;
-}
-
-.kpi-card {
   padding: 1.5rem;
-}
-
-.kpi-card {
   box-shadow: var(--shadow);
-}
-
-.kpi-card {
   display: flex;
-}
-
-.kpi-card {
   gap: 1.2rem;
-}
-
-.kpi-card {
   align-items: center;
 }
 
@@ -397,33 +388,12 @@ const invoicesOverdue = ref([
 
 .kpi-icon {
   width: 54px;
-}
-
-.kpi-icon {
   height: 54px;
-}
-
-.kpi-icon {
   border-radius: 14px;
-}
-
-.kpi-icon {
   display: flex;
-}
-
-.kpi-icon {
   align-items: center;
-}
-
-.kpi-icon {
   justify-content: center;
-}
-
-.kpi-icon {
   font-size: 26px;
-}
-
-.kpi-icon {
   color: white;
 }
 
@@ -444,30 +414,18 @@ const invoicesOverdue = ref([
 }
 
 .kpi-title {
-  font-size: .9rem;
-}
-
-.kpi-title {
+  font-size: 0.9rem;
   color: #6b7280;
-}
-
-.kpi-title {
-  margin-bottom: .25rem;
+  margin-bottom: 0.25rem;
 }
 
 .kpi-value {
   font-size: 2rem;
-}
-
-.kpi-value {
   font-weight: 700;
 }
 
 .kpi-sub {
-  font-size: .75rem;
-}
-
-.kpi-sub {
+  font-size: 0.75rem;
   color: #9ca3af;
 }
 
@@ -476,101 +434,53 @@ const invoicesOverdue = ref([
  * ---------------------------------------------------- */
 .invoice-table {
   width: 100%;
-}
-
-.invoice-table {
   border-collapse: separate;
-}
-
-.invoice-table {
   border-spacing: 0 8px;
 }
 
 .invoice-table th {
   text-align: left;
-}
-
-.invoice-table th {
   padding: 8px 10px;
-}
-
-.invoice-table th {
   font-size: 0.9rem;
-}
-
-.invoice-table th {
   color: #6b7280;
 }
 
 .invoice-table td {
   background: #f9fafb;
-}
-
-.invoice-table td {
   padding: 14px 10px;
-}
-
-.invoice-table td {
   border-radius: 8px;
-}
-
-.invoice-table td {
   font-size: 0.95rem;
 }
 
 .app-dark .invoice-table td {
   background: #374151;
-}
-
-.app-dark .invoice-table td {
   color: #e5e7eb;
 }
 
 .status-pill {
   padding: 4px 10px;
-}
-
-.status-pill {
   font-size: 0.75rem;
-}
-
-.status-pill {
   border-radius: 6px;
-}
-
-.status-pill {
   font-weight: 600;
 }
 
 .status-open {
   background: #dbeafe;
-}
-
-.status-open {
   color: #1e40af;
 }
 
 .status-overdue {
   background: #fee2e2;
-}
-
-.status-overdue {
   color: #991b1b;
 }
 
 .app-dark .status-open {
   background: #1e3a8a;
-}
-
-.app-dark .status-open {
   color: #bfdbfe;
 }
 
 .app-dark .status-overdue {
   background: #7f1d1d;
-}
-
-.app-dark .status-overdue {
   color: #fecaca;
 }
 
@@ -579,69 +489,33 @@ const invoicesOverdue = ref([
  * ---------------------------------------------------- */
 .finance-card {
   padding: 1.5rem;
-}
-
-.finance-card {
-  border-radius: .75rem;
-}
-
-.finance-card {
+  border-radius: 0.75rem;
   background: var(--card-bg);
-}
-
-.finance-card {
   box-shadow: var(--shadow);
 }
 
 .app-dark .finance-card {
   background: var(--card-bg-dark);
-}
-
-.app-dark .finance-card {
   box-shadow: var(--shadow-dark);
 }
 
 .finance-title {
   font-size: 1.3rem;
-}
-
-.finance-title {
   font-weight: 600;
-}
-
-.finance-title {
   margin-bottom: 1rem;
 }
 
 .finance-legend {
   display: flex;
-}
-
-.finance-legend {
   gap: 1.5rem;
-}
-
-.finance-legend {
   margin-bottom: 1rem;
-}
-
-.finance-legend {
   font-size: 0.9rem;
-}
-
-.finance-legend {
   align-items: center;
 }
 
 .finance-dot {
   width: 14px;
-}
-
-.finance-dot {
   height: 14px;
-}
-
-.finance-dot {
   border-radius: 4px;
 }
 
