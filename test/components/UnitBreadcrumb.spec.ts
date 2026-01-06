@@ -35,7 +35,8 @@ describe('UnitBreadcrumb.vue', () => {
   };
 
   it('renders correctly in Edit mode (Happy Path)', async () => {
-    (propertyService.getBreadcrumbPath as any).mockResolvedValue([
+    // FIX: Use vi.mocked() instead of 'as any' for type safety
+    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue([
       {
         title: 'Property A',
         id: 'prop-1',
@@ -72,7 +73,7 @@ describe('UnitBreadcrumb.vue', () => {
       mode: 'create' as const,
     };
 
-    (propertyService.getBreadcrumbPath as any).mockResolvedValue([
+    vi.mocked(propertyService.getBreadcrumbPath).mockResolvedValue([
       {
         title: 'Property A',
         id: 'prop-1',
@@ -104,7 +105,7 @@ describe('UnitBreadcrumb.vue', () => {
       mode: 'edit' as const,
     };
 
-    (propertyService.getBreadcrumbPath as any).mockImplementation((pid: string, uid: string) => {
+    vi.mocked(propertyService.getBreadcrumbPath).mockImplementation((pid: string, uid: string) => {
       if (uid === 'site-1') return Promise.resolve([]);
       if (uid === 'prop-1') {
         return Promise.resolve([
@@ -134,7 +135,7 @@ describe('UnitBreadcrumb.vue', () => {
   });
 
   it('shows fallback (current title) when backend fails', async () => {
-    (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Backend down'));
+    vi.mocked(propertyService.getBreadcrumbPath).mockRejectedValue(new Error('Backend down'));
 
     const wrapper = mount(UnitBreadcrumb, {
       props: defaultProps,
@@ -151,7 +152,7 @@ describe('UnitBreadcrumb.vue', () => {
   });
 
   it('shows "Zur Übersicht" only if absolutely no info is available', async () => {
-    (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Backend down'));
+    vi.mocked(propertyService.getBreadcrumbPath).mockRejectedValue(new Error('Backend down'));
 
     const wrapper = mount(UnitBreadcrumb, {
       props: {
@@ -179,10 +180,10 @@ describe('UnitBreadcrumb.vue', () => {
       currentTitle: 'Außenanlage',
     };
 
-    (propertyService.getBreadcrumbPath as any).mockRejectedValue(new Error('Tree Error'));
+    vi.mocked(propertyService.getBreadcrumbPath).mockRejectedValue(new Error('Tree Error'));
     
-    // FIX: Auch hier alles in eine Zeile, da das Objekt klein ist
-    (propertyService.getProperty as any).mockResolvedValue({ title: 'Direct Property' });
+    // FIX: Alles in einer Zeile, da das Objekt klein ist
+    vi.mocked(propertyService.getProperty).mockResolvedValue({ title: 'Direct Property' });
 
     const wrapper = mount(UnitBreadcrumb, {
       props: siteProps,

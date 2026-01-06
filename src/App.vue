@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, onBeforeUnmount } from 'vue'; // <--- Hooks importiert
 import { RouterView, useRoute } from 'vue-router';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import { useLayout } from '@/layout/composables/layout';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserSessionStore } from '@/stores/UserSession';
-import { useEventBus } from '@/stores/EventStore'; // '.ts' Endung ist in Imports meist optional/unerwünscht
+import { useEventBus } from '@/stores/EventStore';
 import { useI18n } from 'vue-i18n';
 
+// Options-API Block kann so bleiben, kümmert sich um Initialisierung
 defineOptions({
   created() {
     const sessionStore = useUserSessionStore();
@@ -36,21 +37,43 @@ const { t } = useI18n();
 const toast = useToast();
 const bus = useEventBus();
 
-bus.on('toast:translate', ({ severity, summary, detail }) => {
+/* --------------------------------------------------------------------------
+   EVENT BUS HANDLER (Ausgelagert in Variablen)
+   Damit bus.off() funktioniert, müssen wir exakt dieselbe Funktion übergeben.
+   Anonyme Funktionen (() => {}) können nicht sauber entfernt werden.
+-------------------------------------------------------------------------- */
+
+const handleToastTranslate = ({ severity, summary, detail }: any) => {
   bus.emit('toast:show', {
     severity: severity,
     summary: t(summary),
     detail: t(detail),
   });
-});
+};
 
-bus.on('toast:show', ({ severity, summary, detail }) => {
+const handleToastShow = ({ severity, summary, detail }: any) => {
   toast.add({
     severity: severity,
     summary: summary,
     detail: detail,
     life: 3000,
   });
+};
+
+/* --------------------------------------------------------------------------
+   LIFECYCLE HOOKS
+-------------------------------------------------------------------------- */
+
+onMounted(() => {
+  // Listener registrieren, sobald die App bereit ist
+  bus.on('toast:translate', handleToastTranslate);
+  bus.on('toast:show', handleToastShow);
+});
+
+onBeforeUnmount(() => {
+  // Listener entfernen, bevor die App zerstört wird (Cleanup)
+  bus.off('toast:translate', handleToastTranslate);
+  bus.off('toast:show', handleToastShow);
 });
 </script>
 

@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
+import { useI18n } from 'vue-i18n'; // <--- NEU: Import für Übersetzungen
 import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
 
 interface BreadcrumbNode {
@@ -29,6 +30,7 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+const { t } = useI18n(); // <--- NEU: Zugriff auf t() Funktion
 const items = ref<BreadcrumbItem[]>([]);
 
 const getIconForType = (type: string): string => {
@@ -60,9 +62,6 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
   const parentExists = currentNodes.some((node) => node.id === props.contextParentId);
   if (parentExists) return currentNodes;
 
-  // FIX: Getrennte Try-Catch Blöcke, damit der Fallback auch bei Fehler im ersten Block ausgeführt wird
-  
-  // Versuch 1: Über den Baum
   if (typeof propertyService.getBreadcrumbPath === 'function') {
     try {
       const parentPath = (await propertyService.getBreadcrumbPath(
@@ -74,22 +73,21 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
         return [...parentPath, ...currentNodes];
       }
     } catch {
-      // Ignorieren und weiter zum Fallback
+      // Ignorieren
     }
   }
     
-  // Versuch 2: Direkt laden (Fallback)
   if (typeof propertyService.getProperty === 'function') {
     try {
       const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
       const propertyNode: BreadcrumbNode = {
-        title: propertyData.title || 'Unbenanntes Grundstück',
+        title: propertyData.title || t('breadcrumb.unnamedProperty'), // <--- Auch hier sinnvoll (optional)
         id: props.contextParentId,
         type: 'PROPERTY' as UnitType,
       };
       return [propertyNode, ...currentNodes];
     } catch {
-      // Auch das fehlgeschlagen
+      // Ignorieren
     }
   }
   
@@ -115,7 +113,7 @@ const processLastItem = (list: BreadcrumbItem[]) => {
 
   if (props.mode === 'create') {
     newList.push({
-      label: 'Neu anlegen',
+      label: t('breadcrumb.create'), // <--- NEU: Übersetzungsschlüssel
       icon: 'pi pi-plus',
       disabled: true,
     });
@@ -126,10 +124,8 @@ const processLastItem = (list: BreadcrumbItem[]) => {
   const isSelfInList = lastItem && props.unitId && lastItem.id === props.unitId;
 
   if (!isSelfInList) {
-    // FIX: Wir hängen nur an, wenn wir auch wirklich etwas anzuzeigen haben (Titel oder ID).
-    // Wenn beides fehlt (wie im "Alles kaputt"-Test), lassen wir die Liste leer,
-    // damit der "Zur Übersicht"-Fallback greifen kann.
-    const fallbackLabel = props.currentTitle || (props.unitId ? 'Außenanlage' : null);
+    // FIX: Vereinfachte Logik + Übersetzung (wie im Review gewünscht)
+    const fallbackLabel = props.currentTitle ?? (props.unitId ? t('breadcrumb.outdoor') : null);
     
     if (fallbackLabel) {
       newList.push({
@@ -157,7 +153,7 @@ const loadBreadcrumbs = async () => {
 
   if (resultItems.length === 0) {
     resultItems.push({
-      label: 'Zur Übersicht',
+      label: t('breadcrumb.backToOverview'), // <--- NEU: Übersetzungsschlüssel
       icon: 'pi pi-arrow-left',
       command: () => router.push({ 
         name: 'RentableUnitsView', 
