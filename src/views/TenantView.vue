@@ -119,7 +119,8 @@ onMounted(loadContracts);
               v-for="contract in contracts"
               :key="contract.id"
               :to="`/tenancies/contract/${contract.id}`"
-              class="group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition
+                     hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               data-testid="contract-card"
             >
               <div class="flex items-start justify-between gap-2">
