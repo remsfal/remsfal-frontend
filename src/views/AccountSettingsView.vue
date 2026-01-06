@@ -459,7 +459,6 @@ const isDisabled = computed(() => {
                   {{ errorMessage.businessPhoneNumber }}
                 </Message>
               </div>
-
               <div class="input-container">
                 <label class="label" for="privatePhoneNumber">{{ t('accountSettings.userProfile.privatePhone') }}:</label>
                 <InputText
@@ -478,7 +477,6 @@ const isDisabled = computed(() => {
                   {{ errorMessage.privatePhoneNumber }}
                 </Message>
               </div>
-
               <div class="input-container">
                 <label class="label" for="locale">{{ t('accountSettings.userProfile.language') }}:</label>
                 
