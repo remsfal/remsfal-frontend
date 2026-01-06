@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import AdressDisplay from '../../src/components/AdressDisplay.vue';
+import AdressDisplay from '../../src/components/AddressDisplay.vue';
 import Card from 'primevue/card';
 import { createApp, nextTick } from 'vue';
 import { createPinia } from 'pinia';

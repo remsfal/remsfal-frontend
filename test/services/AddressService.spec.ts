@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import AddressService from '../../src/services/adressService';
+import AddressService from '../../src/services/AddressService';
 
 describe('AddressService with MSW', () => {
   const addressService = new AddressService();
