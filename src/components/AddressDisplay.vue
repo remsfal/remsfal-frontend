@@ -8,6 +8,8 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
+import { COUNTRIES } from '@/constants/countries';
 
 const { t } = useI18n();
 
@@ -16,46 +18,12 @@ type Address = AddressListResponse extends Array<infer U> ? U : never;
 
 const addressProfile = ref<Address | null>(null);
 const editedAddress = ref<Partial<Address>>({});
+const toast = useToast();
 
 const changes = ref(false);
 const saveSuccess = ref(false);
 const saveError = ref(false);
-const countries = ref([ // Alle Länder mit Kürzel
-  { name: 'Australia', code: 'AU' },
-  { name: 'Brazil', code: 'BR' },
-  { name: 'China', code: 'CN' },
-  { name: 'Egypt', code: 'EG' },
-  { name: 'France', code: 'FR' },
-  { name: 'Germany', code: 'DE' },
-  { name: 'India', code: 'IN' },
-  { name: 'Japan', code: 'JP' },
-  { name: 'Spain', code: 'ES' },
-  { name: 'United States', code: 'US' },
-  { name: 'Austria', code: 'AT' },
-  { name: 'Belgium', code: 'BE' },
-  { name: 'Bulgaria', code: 'BG' },
-  { name: 'Croatia', code: 'HR' },
-  { name: 'Cyprus', code: 'CY' },
-  { name: 'Czech Republic', code: 'CZ' },
-  { name: 'Denmark', code: 'DK' },
-  { name: 'Estonia', code: 'EE' },
-  { name: 'Finland', code: 'FI' },
-  { name: 'Greece', code: 'GR' },
-  { name: 'Hungary', code: 'HU' },
-  { name: 'Ireland', code: 'IE' },
-  { name: 'Italy', code: 'IT' },
-  { name: 'Latvia', code: 'LV' },
-  { name: 'Lithuania', code: 'LT' },
-  { name: 'Luxembourg', code: 'LU' },
-  { name: 'Malta', code: 'MT' },
-  { name: 'Netherlands', code: 'NL' },
-  { name: 'Poland', code: 'PL' },
-  { name: 'Portugal', code: 'PT' },
-  { name: 'Romania', code: 'RO' },
-  { name: 'Slovakia', code: 'SK' },
-  { name: 'Slovenia', code: 'SI' },
-  { name: 'Sweden', code: 'SE' },
-]);
+const countries = ref(COUNTRIES);
 
 const emptyAddress: Address = {
   street: '',
@@ -135,7 +103,12 @@ async function saveAddress() {
     }
   } catch (e) {
     console.error('Fehler beim Aktualisieren der Adresse:', e);
-    alert('Fehler beim Speichern der Adresse.');
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('error.savingAddress'),
+      life: 4000,
+    });
     saveError.value = true;
   }
 }
@@ -257,29 +230,45 @@ watch(changes, (val) => {
   }
 });
 
-
 // Vergleicht zwei Objekte rekursiv auf Gleichheit und gibt Wahrheitswert zurück
 function compareObjects(obj1: Address, obj2: Address): boolean {
-  if (obj1 === obj2) return true;
-
-  if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
-    return false;
+  // Schneller Vergleich auf Referenzgleichheit oder primitive Gleichheit
+  if (obj1 === obj2) {
+    return true;
   }
-
+  // Wenn einer der Werte null ist, ist nur Gleichheit bei beiden null erlaubt
+  if (obj1 === null || obj2 === null) {
+    return obj1 === obj2;
+  }
+  // Wenn einer der Werte kein Objekt ist, vergleiche direkt
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object') {
+    // Hier landen primitive Werte (string, number, boolean, etc.)
+    return obj1 === obj2;
+  }
   const keys1 = Object.keys(obj1) as Array<keyof Address>;
   const keys2 = Object.keys(obj2) as Array<keyof Address>;
-
-  if (keys1.length !== keys2.length) return false;
-
-  for (const key of keys1) {
-      if (
-          !keys2.includes(key) ||
-          !compareObjects(obj1[key] as Address, obj2[key] as Address)
-      ) {
-          return false;
-      }
+  if (keys1.length !== keys2.length) {
+    return false;
   }
-
+  for (const key of keys1) {
+    if (!keys2.includes(key)) {
+      return false;
+    }
+    const val1 = obj1[key] as unknown;
+    const val2 = obj2[key] as unknown;
+    const bothAreObjects =
+      typeof val1 === 'object' &&
+      val1 !== null &&
+      typeof val2 === 'object' &&
+      val2 !== null;
+    if (bothAreObjects) {
+      if (!compareObjects(val1 as Address, val2 as Address)) {
+        return false;
+      }
+    } else if (val1 !== val2) {
+      return false;
+    }
+  }
   return true;
 }
 

@@ -11,7 +11,7 @@ import Message from 'primevue/message';
 import type {paths} from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
 import { RouterLink } from 'vue-router'
-import AdressDisplay from '@/components/AdressDisplay.vue';
+import AdressDisplay from '@/components/AddressDisplay.vue';
 
 const { t } = useI18n();
 

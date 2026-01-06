@@ -14,7 +14,7 @@ describe('AdressDisplay', () => {
     const app = createApp(App);
     app.use(pinia);
 
-    wrapper = mount(AdressDisplay, {global: {components: { Card},}});
+    wrapper = mount(AdressDisplay, {global: {components: {Card}}});
 
     wrapper.vm.$options.fetchAddress = vi.fn().mockResolvedValue({
         street: 'street',
@@ -65,7 +65,7 @@ describe('AdressDisplay', () => {
             expect(errorMessage.text()).toBe('');
         });
 
-        test('An emtpty input value shows an error message', async () => {
+        test('An empty input value shows an error message', async () => {
             const input = wrapper.find('input#street');
             expect(input.exists()).toBe(true);
             await input.setValue('');
