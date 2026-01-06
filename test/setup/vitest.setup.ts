@@ -9,7 +9,9 @@ vi.mock('primevue/chart', () => ({
 }));
 
 vi.mock('chart.js', () => {
-  class FakeElement {}
+  class FakeElement {
+    // dummy for chart.js mocks
+  }
 
   return {
     // Chart.js expects static register():
