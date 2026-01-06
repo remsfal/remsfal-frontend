@@ -326,25 +326,13 @@ const invoicesOverdue = ref([
  * ---------------------------------------------------- */
 .card {
   background: var(--card-bg);
-}
-
-.card {
   border-radius: 0.75rem;
-}
-
-.card {
   box-shadow: var(--shadow);
-}
-
-.card {
   transition: 0.2s ease;
 }
 
 .app-dark .card {
   background: var(--card-bg-dark);
-}
-
-.app-dark .card {
   box-shadow: var(--shadow-dark);
 }
 
