@@ -13,8 +13,8 @@ import DialogService from 'primevue/dialogservice';
 import ConfirmationService from 'primevue/confirmationservice';
 
 beforeAll(() => {
-  i18n.global.locale.value = 'de'
-})
+  i18n.global.locale.value = 'de';
+});
 
 // Set up MSW server globally
 import '../mocks/setupTests';
