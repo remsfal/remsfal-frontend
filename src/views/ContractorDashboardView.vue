@@ -289,35 +289,15 @@ const invoicesOverdue = ref([
 /* ------------------------------------------------------
  *  Zentrale Farbvariablen
  * ---------------------------------------------------- */
+
 :root {
   --blue: #3b82f6;
-}
-
-:root {
   --green: #22c55e;
-}
-
-:root {
   --red: #ef4444;
-}
-
-:root {
   --amber: #f59e0b;
-}
-
-:root {
   --card-bg: white;
-}
-
-:root {
   --card-bg-dark: #1f2937;
-}
-
-:root {
   --shadow: 0 4px 12px rgb(0 0 0 / 0.08);
-}
-
-:root {
   --shadow-dark: 0 4px 12px rgb(0 0 0 / 0.35);
 }
 
@@ -326,25 +306,12 @@ const invoicesOverdue = ref([
  * ---------------------------------------------------- */
 .card {
   background: var(--card-bg);
-}
-
-.card {
   border-radius: 0.75rem;
-}
-
-.card {
   box-shadow: var(--shadow);
-}
-
-.card {
   transition: 0.2s ease;
 }
-
 .app-dark .card {
   background: var(--card-bg-dark);
-}
-
-.app-dark .card {
   box-shadow: var(--shadow-dark);
 }
 
