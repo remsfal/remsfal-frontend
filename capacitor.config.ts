@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.remsfal.app',
-  appName: 'Remsfal',
+  appId: 'de.remsfal.app',
+  appName: 'REMSFAL',
   webDir: 'dist',
   server: {
     url: 'http://localhost:5173',

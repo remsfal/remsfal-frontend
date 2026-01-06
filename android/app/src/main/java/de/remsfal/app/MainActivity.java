@@ -1,4 +1,4 @@
-package com.remsfal.app;
+package de.remsfal.app;
 
 import com.getcapacitor.BridgeActivity;
 

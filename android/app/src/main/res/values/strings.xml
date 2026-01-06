@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Remsfal</string>
-    <string name="title_activity_main">Remsfal</string>
-    <string name="package_name">com.remsfal.app</string>
-    <string name="custom_url_scheme">com.remsfal.app</string>
+    <string name="app_name">REMSFAL</string>
+    <string name="title_activity_main">REMSFAL</string>
+    <string name="package_name">de.remsfal.app</string>
+    <string name="custom_url_scheme">de.remsfal.app</string>
 </resources>
