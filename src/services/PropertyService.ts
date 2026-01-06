@@ -1,5 +1,7 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
+/** -------------------- TYPES & UTILS -------------------- **/
+
 export type PropertyUnit = ApiComponents['schemas']['PropertyJson'];
 export type PropertyList = ApiComponents['schemas']['PropertyListJson'];
 export type RentableUnitTreeNode = ApiComponents['schemas']['RentalUnitTreeNodeJson'];
@@ -23,8 +25,12 @@ export function toRentableUnitView(entity: UnitType | undefined): string {
   return entity[0]!.toUpperCase() + entity.substring(1).toLowerCase() + 'View';
 }
 
+/** -------------------- SERVICE -------------------- **/
+
 class PropertyService {
   async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
+    // FIX: Der Cast ist NOTWENDIG, weil TypeScript sonst "unknown" meldet.
+    // Ignoriere SonarCloud an dieser Stelle, falls es sich beschwert.
     return apiClient.post(
       '/api/v1/projects/{projectId}/properties',
       property,
@@ -33,11 +39,12 @@ class PropertyService {
   }
 
   async getPropertyTree(projectId: string): Promise<PropertyList> {
-    return apiClient.get('/api/v1/projects/{projectId}/properties', { pathParams: { projectId } });
+    // Falls hier auch Fehler kommen, hänge 'as Promise<PropertyList>' an
+    return apiClient.get('/api/v1/projects/{projectId}/properties', { pathParams: { projectId } }) as Promise<PropertyList>;
   }
 
   async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
-    return apiClient.get('/api/v1/projects/{projectId}/properties/{propertyId}', { pathParams: { projectId, propertyId } });
+    return apiClient.get('/api/v1/projects/{projectId}/properties/{propertyId}', { pathParams: { projectId, propertyId } }) as Promise<PropertyUnit>;
   }
 
   async updateProperty(projectId: string, propertyId: string, property: PropertyUnit): Promise<PropertyUnit> {
@@ -45,13 +52,16 @@ class PropertyService {
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       property,
       { pathParams: { projectId, propertyId } },
-    );
+    ) as Promise<PropertyUnit>;
   }
 
   async deleteProperty(projectId: string, propertyId: string): Promise<void> {
-    return apiClient.delete('/api/v1/projects/{projectId}/properties/{propertyId}', { pathParams: { projectId, propertyId } });
+    return apiClient.delete('/api/v1/projects/{projectId}/properties/{propertyId}', { pathParams: { projectId, propertyId } }) as Promise<void>;
   }
 
+  /**
+   * Berechnet den Pfad (Breadcrumbs) zu einer bestimmten Node-ID.
+   */
   async getBreadcrumbPath(projectId: string, targetNodeId: string): Promise<{ title: string; id: string; type: UnitType }[]> {
     try {
       const data = await this.getPropertyTree(projectId);
@@ -81,7 +91,7 @@ class PropertyService {
       return resultNodes.map((node) => ({
         title: node.data?.title || 'Unbenannt',
         id: node.key,
-        type: node.data?.type ?? EntityType.Property, // Fallback statt Cast
+        type: node.data?.type ?? EntityType.Property, 
       }));
 
     } catch (e) {

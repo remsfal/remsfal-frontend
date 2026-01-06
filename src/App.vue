@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount } from 'vue'; // <--- Hooks importiert
+import { computed, onMounted, onBeforeUnmount } from 'vue';
 import { RouterView, useRoute } from 'vue-router';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
@@ -9,7 +9,15 @@ import { useUserSessionStore } from '@/stores/UserSession';
 import { useEventBus } from '@/stores/EventStore';
 import { useI18n } from 'vue-i18n';
 
-// Options-API Block kann so bleiben, kümmert sich um Initialisierung
+// --- INTERFACE ---
+// 'severity' ist hier string, damit es zum EventBus passt.
+// 'any' ist weg, damit SonarCloud zufrieden ist.
+interface ToastEvent {
+  severity: string;
+  summary: string;
+  detail: string;
+}
+
 defineOptions({
   created() {
     const sessionStore = useUserSessionStore();
@@ -38,12 +46,10 @@ const toast = useToast();
 const bus = useEventBus();
 
 /* --------------------------------------------------------------------------
-   EVENT BUS HANDLER (Ausgelagert in Variablen)
-   Damit bus.off() funktioniert, müssen wir exakt dieselbe Funktion übergeben.
-   Anonyme Funktionen (() => {}) können nicht sauber entfernt werden.
+   EVENT BUS HANDLER
 -------------------------------------------------------------------------- */
 
-const handleToastTranslate = ({ severity, summary, detail }: any) => {
+const handleToastTranslate = ({ severity, summary, detail }: ToastEvent) => {
   bus.emit('toast:show', {
     severity: severity,
     summary: t(summary),
@@ -51,9 +57,10 @@ const handleToastTranslate = ({ severity, summary, detail }: any) => {
   });
 };
 
-const handleToastShow = ({ severity, summary, detail }: any) => {
+const handleToastShow = ({ severity, summary, detail }: ToastEvent) => {
   toast.add({
-    severity: severity,
+    // Wir casten den String hier sicher auf den Typ, den PrimeVue erwartet
+    severity: severity as 'success' | 'info' | 'warn' | 'error',
     summary: summary,
     detail: detail,
     life: 3000,
@@ -65,13 +72,11 @@ const handleToastShow = ({ severity, summary, detail }: any) => {
 -------------------------------------------------------------------------- */
 
 onMounted(() => {
-  // Listener registrieren, sobald die App bereit ist
   bus.on('toast:translate', handleToastTranslate);
   bus.on('toast:show', handleToastShow);
 });
 
 onBeforeUnmount(() => {
-  // Listener entfernen, bevor die App zerstört wird (Cleanup)
   bus.off('toast:translate', handleToastTranslate);
   bus.off('toast:show', handleToastShow);
 });
