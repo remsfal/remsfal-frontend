@@ -29,7 +29,6 @@ export function toRentableUnitView(entity: UnitType | undefined): string {
 
 class PropertyService {
   async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
-    // Cast ist notwendig für TypeScript
     return apiClient.post(
       '/api/v1/projects/{projectId}/properties',
       property,
@@ -41,15 +40,14 @@ class PropertyService {
     return apiClient.get(
       '/api/v1/projects/{projectId}/properties',
       { pathParams: { projectId } },
-    ) as Promise<PropertyList>;
+    );
   }
 
   async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
-    // FIX: Umbruch, um max-len (128 Zeichen) einzuhalten
     return apiClient.get(
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       { pathParams: { projectId, propertyId } },
-    ) as Promise<PropertyUnit>;
+    );
   }
 
   async updateProperty(projectId: string, propertyId: string, property: PropertyUnit): Promise<PropertyUnit> {
@@ -61,7 +59,6 @@ class PropertyService {
   }
 
   async deleteProperty(projectId: string, propertyId: string): Promise<void> {
-    // FIX: Umbruch, um max-len (128 Zeichen) einzuhalten
     return apiClient.delete(
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       { pathParams: { projectId, propertyId } },
