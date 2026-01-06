@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { propertyService, type PropertyUnit } from '@/services/PropertyService';
@@ -244,6 +245,14 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
 <template>
   <div class="p-6 w-full">
+    
+    <UnitBreadcrumb 
+      :projectId="props.projectId" 
+      :unitId="props.unitId" 
+      :currentTitle="title"
+      mode="edit"
+    />
+
     <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
       <h2 class="text-2xl font-semibold mb-6">
         Bearbeite Eigentum mit ID: {{ props.unitId }}
@@ -251,13 +260,11 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          <!-- Titel -->
           <div class="col-span-2">
             <label for="title" class="block text-gray-700 mb-1">Titel</label>
             <input id="title" v-model="title" type="text" class="form-input w-full">
           </div>
 
-          <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
             <textarea
@@ -268,7 +275,6 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             />
           </div>
 
-          <!-- Gemarkung -->
           <div>
             <label for="district" class="block text-gray-700 mb-1">Gemarkung</label>
             <input id="district" v-model="district" type="text" class="form-input w-full">
@@ -286,7 +292,6 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             <input id="corridor" v-model="corridor" type="text" class="form-input w-full">
           </div>
 
-          <!-- Flurstück -->
           <div>
             <label for="parcel" class="block text-gray-700 mb-1">Flurstück</label>
             <input id="parcel" v-model="parcel" type="text" class="form-input w-full">
@@ -315,7 +320,6 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             >
           </div>
 
-          <!-- Wirtschaftsart -->
           <div class="col-span-2">
             <label for="usageType" class="block text-gray-700 mb-1">Wirtschaftsart</label>
             <select id="usageType" v-model="usageType" class="form-input w-full">
@@ -332,7 +336,6 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             </select>
           </div>
 
-          <!-- Grundstücksfläche -->
           <div>
             <label for="plotArea" class="block text-gray-700 mb-1">Grundstücksfläche (m²)</label>
             <input
@@ -372,7 +375,6 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
             </ul>
           </div>
 
-          <!-- Buttons -->
           <div class="mt-6 flex justify-end space-x-4">
             <button
               type="submit"
