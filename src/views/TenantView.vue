@@ -88,10 +88,19 @@ onMounted(loadContracts);
         <div class="card">
           <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
             <div>
-              <p class="text-sm text-gray-500">Aktive und abgelaufene Verträge</p>
-              <p class="text-base text-gray-800">Direkt verknüpft mit deinem Account</p>
+              <p class="text-sm text-gray-500">
+                Aktive und abgelaufene Verträge
+              </p>
+              <p class="text-base text-gray-800">
+                Direkt verknüpft mit deinem Account
+              </p>
             </div>
-            <span v-if="loading" class="text-sm text-gray-500">Lade Verträge …</span>
+            <span
+              v-if="loading"
+              class="text-sm text-gray-500"
+            >
+              Lade Verträge …
+            </span>
           </div>
 
           <div
@@ -102,15 +111,15 @@ onMounted(loadContracts);
             {{ error }}
           </div>
 
-          <div v-if="contracts.length" class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div
+            v-if="contracts.length"
+            class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+          >
             <RouterLink
               v-for="contract in contracts"
               :key="contract.id"
               :to="`/tenancies/contract/${contract.id}`"
-              :class="[
-                'group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition',
-                'hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-              ]"
+              class="group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               data-testid="contract-card"
             >
               <div class="flex items-start justify-between gap-2">
@@ -127,16 +136,28 @@ onMounted(loadContracts);
 
               <dl class="mt-3 space-y-1 text-sm text-gray-600">
                 <div class="flex justify-between">
-                  <dt class="font-medium text-gray-500">Vertragsnummer</dt>
-                  <dd class="text-gray-900">{{ contract.id }}</dd>
+                  <dt class="font-medium text-gray-500">
+                    Vertragsnummer
+                  </dt>
+                  <dd class="text-gray-900">
+                    {{ contract.id }}
+                  </dd>
                 </div>
                 <div class="flex justify-between">
-                  <dt class="font-medium text-gray-500">Beginn</dt>
-                  <dd class="text-gray-900">{{ formatDate(contract.leaseStart) }}</dd>
+                  <dt class="font-medium text-gray-500">
+                    Beginn
+                  </dt>
+                  <dd class="text-gray-900">
+                    {{ formatDate(contract.leaseStart) }}
+                  </dd>
                 </div>
                 <div class="flex justify-between">
-                  <dt class="font-medium text-gray-500">Ende</dt>
-                  <dd class="text-gray-900">{{ formatDate(contract.leaseEnd) }}</dd>
+                  <dt class="font-medium text-gray-500">
+                    Ende
+                  </dt>
+                  <dd class="text-gray-900">
+                    {{ formatDate(contract.leaseEnd) }}
+                  </dd>
                 </div>
               </dl>
             </RouterLink>
