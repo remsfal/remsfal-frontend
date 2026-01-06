@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AddressService from '@/services/adressService';
+import AddressService from '@/services/AddressService';
 import UserService, { type UserUpdateRequest } from '@/services/UserService';
 import type {paths} from '@/services/api/platform-schema';
 import { ref, computed, onMounted, watch } from 'vue';
