@@ -148,7 +148,9 @@ const invoicesOverdue = ref([
 <template>
   <main class="p-6 lg:p-10">
     <!-- TITLE -->
-    <h1 class="text-4xl font-bold mb-2">Auftragnehmer Dashboard</h1>
+    <h1
+        class="text-4xl font-bold mb-2">Auftragnehmer Dashboard
+    </h1>
     <p class="text-gray-500 dark:text-gray-400 mb-8">
       Übersicht über laufende Arbeiten, Dringlichkeiten & finanzielle Kennzahlen
     </p>
@@ -157,12 +159,18 @@ const invoicesOverdue = ref([
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
       <div v-for="kpi in kpiCards" :key="kpi.title" class="kpi-card">
         <div class="kpi-icon" :class="kpi.color">
-          <i :class="'pi ' + kpi.icon"></i>
+          <i :class="'pi ' + kpi.icon">(</i>)
         </div>
         <div>
-          <p class="kpi-title">{{ kpi.title }}</p>
-          <p class="kpi-value">{{ kpi.value }}</p>
-          <p class="kpi-sub">{{ kpi.sub }}</p>
+          <p class="kpi-title">
+            {{ kpi.title }}
+          </p>
+          <p class="kpi-value">
+            {{ kpi.value }}
+          </p>
+          <p class="kpi-sub">
+            {{ kpi.sub }}
+          </p>
         </div>
       </div>
     </section>
@@ -170,19 +178,25 @@ const invoicesOverdue = ref([
     <!-- BAR + DOUGHNUT -->
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       <div class="card p-6">
-        <h2 class="card-title">Auftragsstatus nach Monaten</h2>
+        <h2
+            class="card-title">Auftragsstatus nach Monaten
+        </h2>
         <Chart type="bar" :data="monthlyData" :options="monthlyOptions" style="height: 330px;" />
       </div>
 
       <div class="card p-6">
-        <h2 class="card-title">Dringlichkeit der Aufträge</h2>
+        <h2
+            class="card-title">Dringlichkeit der Aufträge
+        </h2>
         <Chart type="doughnut" :data="urgencyData" :options="urgencyOptions" style="height: 330px;" />
       </div>
     </section>
 
     <!-- FINANCE SECTION -->
     <section class="finance-card mb-16">
-      <h2 class="finance-title">Finanzentwicklung – Einnahmen & Ausgaben</h2>
+      <h2
+          class="finance-title">Finanzentwicklung – Einnahmen & Ausgaben
+      </h2>
 
       <div class="finance-legend">
         <div class="finance-legend-item">
@@ -200,12 +214,14 @@ const invoicesOverdue = ref([
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       <!-- TASK LIST -->
       <div class="card p-6">
-        <h2 class="card-title mb-4">Heute fällige Aufgaben</h2>
+        <h2
+            class="card-title mb-4">Heute fällige Aufgaben
+        </h2>
         <ul class="space-y-3">
           <li v-for="task in todayTasks" :key="task.title" class="flex justify-between border-b pb-2">
             <span>{{ task.title }} — <span class="text-gray-400">{{ task.project }}</span></span>
             <span
-                :class="{
+              :class="{
                 'text-red-500': task.status === 'Offen',
                 'text-yellow-500': task.status === 'In Bearbeitung',
                 'text-green-500': task.status === 'Erledigt'
@@ -217,12 +233,14 @@ const invoicesOverdue = ref([
 
       <!-- CUSTOMER REQUESTS -->
       <div class="card p-6">
-        <h2 class="card-title mb-4">Offene Kundenanfragen</h2>
+        <h2
+            class="card-title mb-4">Offene Kundenanfragen
+        </h2>
         <ul class="space-y-3">
           <li v-for="req in customerRequests" :key="req.title" class="flex justify-between border-b pb-2">
             <span>{{ req.title }}</span>
             <span
-                :class="{
+              :class="{
                 'text-red-500': req.status === 'Offen',
                 'text-yellow-500': req.status === 'In Bearbeitung'
               }"
@@ -234,10 +252,14 @@ const invoicesOverdue = ref([
 
     <!-- FINANZÜBERSICHT -->
     <section class="card p-6 mb-16">
-      <h2 class="card-title mb-6">Finanzübersicht</h2>
+      <h2
+          class="card-title mb-6">Finanzübersicht
+      </h2>
 
       <!-- Offene Rechnungen -->
-      <h3 class="text-xl font-semibold mb-3">Offene Rechnungen</h3>
+      <h3
+          class="text-xl font-semibold mb-3">Offene Rechnungen
+      </h3>
       <table class="invoice-table">
         <thead>
         <tr>
@@ -249,36 +271,38 @@ const invoicesOverdue = ref([
         </tr>
         </thead>
         <tbody>
-        <tr v-for="inv in invoicesOpen" :key="inv.id">
-          <td>{{ inv.id }}</td>
-          <td>{{ inv.customer }}</td>
-          <td>{{ inv.due }}</td>
-          <td>{{ inv.amount }} €</td>
-          <td><span class="status-pill status-open">Offen</span></td>
-        </tr>
+          <tr v-for="inv in invoicesOpen" :key="inv.id">
+            <td>{{ inv.id }}</td>
+            <td>{{ inv.customer }}</td>
+            <td>{{ inv.due }}</td>
+            <td>{{ inv.amount }} €</td>
+            <td><span class="status-pill status-open">Offen</span></td>
+          </tr>
         </tbody>
       </table>
 
       <!-- Überfällige Rechnungen -->
-      <h3 class="text-xl font-semibold mt-10 mb-3">Überfällige Rechnungen</h3>
+      <h3
+          class="text-xl font-semibold mt-10 mb-3">Überfällige Rechnungen
+      </h3>
       <table class="invoice-table">
         <thead>
-        <tr>
-          <th>Rechnung</th>
-          <th>Kunde</th>
-          <th>Überfällig seit</th>
-          <th>Betrag</th>
-          <th>Status</th>
-        </tr>
+          <tr>
+            <th>Rechnung</th>
+            <th>Kunde</th>
+            <th>Überfällig seit</th>
+            <th>Betrag</th>
+            <th>Status</th>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="inv in invoicesOverdue" :key="inv.id">
-          <td>{{ inv.id }}</td>
-          <td>{{ inv.customer }}</td>
-          <td>{{ inv.due }}</td>
-          <td>{{ inv.amount }} €</td>
-          <td><span class="status-pill status-overdue">Überfällig</span></td>
-        </tr>
+          <tr v-for="inv in invoicesOverdue" :key="inv.id">
+            <td>{{ inv.id }}</td>
+            <td>{{ inv.customer }}</td>
+            <td>{{ inv.due }}</td>
+            <td>{{ inv.amount }} €</td>
+            <td><span class="status-pill status-overdue">Überfällig</span></td>
+          </tr>
         </tbody>
       </table>
     </section>
