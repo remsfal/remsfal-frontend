@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref, watch } from 'vue';
-  import Textarea from 'primevue/textarea';
+  import Textarea from 'primevue/textarea'; 
   
   interface Props {
     description: string;
@@ -13,14 +13,24 @@
   
   const localDescription = ref(props.description);
   
-  // Sync prop changes
   watch(() => props.description, (newValue) => {
     localDescription.value = newValue;
   });
   
-  // Emit changes to parent
   watch(localDescription, (newValue) => {
     emit('update:description', newValue);
   });
   </script>
+  
+  <template>
+    <div class="w-full">
+      <Textarea
+        v-model="localDescription"
+        auto-resize
+        rows="8"
+        class="w-full"
+        placeholder="Write markdown description here..."
+      />
+    </div>
+  </template>
   
