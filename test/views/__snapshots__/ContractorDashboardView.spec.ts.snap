@@ -3,7 +3,7 @@
 exports[`ContractorDashboardView > matches snapshot 1`] = `
 "<main class="p-6 lg:p-10">
   <!-- TITLE -->
-  <h1 class="text-4xl font-bold mb-2">Auftragnehmer Dashboard </h1>
+  <h1 class="text-4xl font-bold mb-2"> Auftragnehmer Dashboard </h1>
   <p class="text-gray-500 dark:text-gray-400 mb-8"> Übersicht über laufende Arbeiten, Dringlichkeiten &amp; finanzielle Kennzahlen </p><!-- KPI SECTION (dynamisch) -->
   <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
     <div class="kpi-card">
@@ -41,16 +41,16 @@ exports[`ContractorDashboardView > matches snapshot 1`] = `
   </section><!-- BAR + DOUGHNUT -->
   <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
     <div class="card p-6">
-      <h2 class="card-title">Auftragsstatus nach Monaten </h2>
+      <h2 class="card-title"> Auftragsstatus nach Monaten </h2>
       <div data-test="chart-stub" type="bar" data="[object Object]" options="[object Object]" style="height: 330px;"></div>
     </div>
     <div class="card p-6">
-      <h2 class="card-title">Dringlichkeit der Aufträge </h2>
+      <h2 class="card-title"> Dringlichkeit der Aufträge </h2>
       <div data-test="chart-stub" type="doughnut" data="[object Object]" options="[object Object]" style="height: 330px;"></div>
     </div>
   </section><!-- FINANCE SECTION -->
   <section class="finance-card mb-16">
-    <h2 class="finance-title">Finanzentwicklung – Einnahmen &amp; Ausgaben </h2>
+    <h2 class="finance-title"> Finanzentwicklung – Einnahmen &amp; Ausgaben </h2>
     <div class="finance-legend">
       <div class="finance-legend-item"><span class="finance-dot finance-dot-income"></span> Einnahmen (€) </div>
       <div class="finance-legend-item"><span class="finance-dot finance-dot-expense"></span> Ausgaben (€) </div>
@@ -60,7 +60,7 @@ exports[`ContractorDashboardView > matches snapshot 1`] = `
   <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
     <!-- TASK LIST -->
     <div class="card p-6">
-      <h2 class="card-title mb-4">Heute fällige Aufgaben </h2>
+      <h2 class="card-title mb-4"> Heute fällige Aufgaben </h2>
       <ul class="space-y-3">
         <li class="flex justify-between border-b pb-2"><span>Dokumentation aktualisieren — <span class="text-gray-400">Projekt A</span></span><span class="text-red-500">Offen</span></li>
         <li class="flex justify-between border-b pb-2"><span>Baustellenbegehung — <span class="text-gray-400">Projekt B</span></span><span class="text-yellow-500">In Bearbeitung</span></li>
@@ -68,7 +68,7 @@ exports[`ContractorDashboardView > matches snapshot 1`] = `
       </ul>
     </div><!-- CUSTOMER REQUESTS -->
     <div class="card p-6">
-      <h2 class="card-title mb-4">Offene Kundenanfragen </h2>
+      <h2 class="card-title mb-4"> Offene Kundenanfragen </h2>
       <ul class="space-y-3">
         <li class="flex justify-between border-b pb-2"><span>Klärung Materialbedarf</span><span class="text-red-500">Offen</span></li>
         <li class="flex justify-between border-b pb-2"><span>Terminabsprache</span><span class="text-yellow-500">In Bearbeitung</span></li>
@@ -76,8 +76,8 @@ exports[`ContractorDashboardView > matches snapshot 1`] = `
     </div>
   </section><!-- FINANZÜBERSICHT -->
   <section class="card p-6 mb-16">
-    <h2 class="card-title mb-6">Finanzübersicht </h2><!-- Offene Rechnungen -->
-    <h3 class="text-xl font-semibold mb-3">Offene Rechnungen </h3>
+    <h2 class="card-title mb-6"> Finanzübersicht </h2><!-- Offene Rechnungen -->
+    <h3 class="text-xl font-semibold mb-3"> Offene Rechnungen </h3>
     <table class="invoice-table">
       <thead>
         <tr>
@@ -105,7 +105,7 @@ exports[`ContractorDashboardView > matches snapshot 1`] = `
         </tr>
       </tbody>
     </table><!-- Überfällige Rechnungen -->
-    <h3 class="text-xl font-semibold mt-10 mb-3">Überfällige Rechnungen </h3>
+    <h3 class="text-xl font-semibold mt-10 mb-3"> Überfällige Rechnungen </h3>
     <table class="invoice-table">
       <thead>
         <tr>
