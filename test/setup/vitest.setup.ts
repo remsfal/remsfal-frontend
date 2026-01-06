@@ -10,7 +10,7 @@ vi.mock('primevue/chart', () => ({
 
 vi.mock('chart.js', () => {
   class FakeElement {
-    // dummy for chart.js mocks
+    _dummy = true;
   }
 
   return {
