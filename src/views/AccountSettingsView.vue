@@ -492,9 +492,9 @@ const isDisabled = computed(() => {
                   @update:modelValue="i18n.locale.value = $event"
                 />
 
-            </div>
+              </div>
 
-          </div>
+            </div>
             <Message class="required" size="small" severity="secondary" variant="simple">
               {{ t('accountSettings.userProfile.requiredFields') }}
             </Message>
