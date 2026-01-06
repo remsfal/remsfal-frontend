@@ -144,10 +144,8 @@ function isActive(item: any) {
   left: 0;
   width: 100%;
   height: 60px;
-
   background-color: var(--surface-card);
   border-top: 1px solid var(--surface-border);
-
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
@@ -167,7 +165,6 @@ function isActive(item: any) {
   align-items: center;
   height: 100%;
   color: var(--text-color-secondary);
-
   text-decoration: none;
   transition: color 0.2s;
 }
