@@ -113,10 +113,10 @@ describe("ContractorDashboardView", () => {
         const wrapper = mountView();
         expect(wrapper.html()).toMatchSnapshot();
     });
-});
-it("supports dark mode class rendering", () => {
-    document.body.classList.add("app-dark");
-    const wrapper = mountView();
-    expect(wrapper.find(".card").exists()).toBe(true);
-});
 
+    it("supports dark mode class rendering", () => {
+        document.body.classList.add("app-dark");
+        const wrapper = mountView();
+        expect(wrapper.find(".card").exists()).toBe(true);
+    });
+});
