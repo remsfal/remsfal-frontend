@@ -31,7 +31,7 @@
       <Textarea
         v-model="localDescription"
         :autoResize="true"
-        rows="8"
+        :rows="8"
         class="w-full"
         placeholder="Write markdown description here..."
       />
