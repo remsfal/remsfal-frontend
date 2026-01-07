@@ -12,7 +12,7 @@ import type {paths} from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
 import { RouterLink } from 'vue-router'
 import { locales, type Locale } from '@/i18n/i18n';
-import Dropdown from 'primevue/dropdown';
+import Select from 'primevue/select';
 
 const { t } = useI18n();
 const i18n = useI18n();
@@ -480,7 +480,7 @@ const isDisabled = computed(() => {
               <div class="input-container">
                 <label class="label" for="locale">{{ t('accountSettings.userProfile.language') }}:</label>
                 
-                <Dropdown
+                <Select
                   id="locale"
                   v-model="editedUserProfile.locale"
                   :options="[{ language: 'Deutsch', value: 'de' }, { language: 'English', value: 'en' }]"
