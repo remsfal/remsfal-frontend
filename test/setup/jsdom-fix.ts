@@ -46,3 +46,23 @@ Object.defineProperty(globalThis, 'localStorage', {
   writable: true,
   configurable: true,
 });
+
+// Mock ResizeObserver for PrimeVue components (e.g., Textarea with autoResize)
+// jsdom doesn't provide ResizeObserver, which causes test failures
+class ResizeObserverMock {
+  observe() {
+    // Mock implementation - do nothing
+  }
+  unobserve() {
+    // Mock implementation - do nothing
+  }
+  disconnect() {
+    // Mock implementation - do nothing
+  }
+}
+
+Object.defineProperty(globalThis, 'ResizeObserver', {
+  value: ResizeObserverMock,
+  writable: true,
+  configurable: true,
+});
