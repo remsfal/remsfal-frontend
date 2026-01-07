@@ -6,6 +6,7 @@
   "accountSettings.userProfile.privatePhone": "Private Phone Number",
   "accountSettings.userProfile.businessPhone": "Business Phone Number",
   "accountSettings.userProfile.mobilePhone": "Mobile Phone Number",
+  "accountSettings.userProfile.language": "Language",
   "accountSettings.userProfile.lastLogin": "Last Login",
   "accountSettings.userProfile.userSince": "Member Since",
   "accountSettings.userProfile.firstName": "First Name",
