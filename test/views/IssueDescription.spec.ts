@@ -1,5 +1,5 @@
 import { mount, VueWrapper } from "@vue/test-utils";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import Textarea from "primevue/textarea";
 import IssueDescription from "../../src/views/IssueDescription.vue";
 
