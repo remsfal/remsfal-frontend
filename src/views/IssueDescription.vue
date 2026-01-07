@@ -2,13 +2,9 @@
   import { ref, watch } from "vue";
   import Textarea from "primevue/textarea";
   
-  const props = defineProps<{
-    description: string;
-  }>();
+  const props = defineProps<{ description: string }>();
   
-  const emit = defineEmits<{
-    (e: "update:description", value: string): void;
-  }>();
+  const emit = defineEmits<{ (e: "update:description", value: string): void }>();
   
   const localDescription = ref(props.description);
   

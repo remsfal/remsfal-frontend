@@ -5,10 +5,8 @@ import IssueDescription from "../../src/views/IssueDescription.vue";
 
 describe("IssueDescription.vue", () => {
   let wrapper: VueWrapper;
-
-  const defaultProps = {
-    description: "## Test Description\n\nThis is a test description.",
-  };
+  
+  const defaultProps = { description: "## Test Description\n\nThis is a test description." };
 
   const createWrapper = (props = {}) => {
     return mount(IssueDescription, {
@@ -16,11 +14,7 @@ describe("IssueDescription.vue", () => {
         ...defaultProps,
         ...props,
       },
-      global: {
-        components: {
-          Textarea,
-        },
-      },
+      global: { components: { Textarea } },
     });
   };
 
