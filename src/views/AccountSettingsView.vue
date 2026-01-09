@@ -128,7 +128,7 @@ async function saveProfile(): Promise<void> {
   try {
     const userService = new UserService();
 
-    const user: Partial<User> = {
+    const user: Partial<UserPatchRequestBody> = {
       id: userProfile.value?.id || '',
       firstName: getUpdatedValue('firstName'),
       businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
@@ -367,7 +367,14 @@ function validateEmail(email: string) {
 // Dialog visibility + alternative email input model
 const visible = ref(false);
 const alternativeEmail = ref('');
-const savedAlternativeEmail = ref<string | null>(null); // UI display only
+
+const displayAlternativeEmail = computed<string | null>(() => {
+  return (
+    ((editedUserProfile.value as any).alternativeEmail ??
+      (userProfile.value as any)?.alternativeEmail) ??
+    null
+  );
+});
   
 // Validation + UI state for alternative email dialog
 const isEmailInvalid = ref(false);
@@ -375,51 +382,63 @@ const emailErrorMessage = ref('');
 const altEmailSuccess = ref(false);
 const altEmailError = ref(false);
 
+const applyAlternativeEmail = (value: string | null) => {
+  // update edited profile (this is what saveProfile uses)
+  editedUserProfile.value = {
+    ...editedUserProfile.value,
+    alternativeEmail: value,
+  } as any;
+
+  // update userProfile for immediate UI (optional but nice)
+  if (userProfile.value) {
+    (userProfile.value as any) = {
+      ...userProfile.value,
+      alternativeEmail: value,
+    };
+  }
+};
+
 const saveAlternativeEmail = () => {
   const enteredEmail = alternativeEmail.value.trim();
 
   const primaryEmail = (
     editedUserProfile.value.email || userProfile.value?.email || ''
-  ).trim().toLowerCase();
+  )
+    .trim()
+    .toLowerCase();
 
-  // 1. Check for empty value or invalid email format
+  // 1) empty or invalid
   if (!enteredEmail || !validateEmail(enteredEmail)) {
     isEmailInvalid.value = true;
     emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
     return;
   }
 
-  // 2. Alternative email must not match the primary email
+  // 2) must not equal primary
   if (enteredEmail.toLowerCase() === primaryEmail) {
     isEmailInvalid.value = true;
-    emailErrorMessage.value = t('accountSettings.userProfile.alternativeEmailNotEqualPrimary'); // i18n key
+    emailErrorMessage.value = t('accountSettings.userProfile.alternativeEmailNotEqualPrimary');
     return;
   }
 
-  // Reset validation once input is valid
+  // ok
   isEmailInvalid.value = false;
   emailErrorMessage.value = '';
 
-  // UI-only: store for display
-  savedAlternativeEmail.value = enteredEmail;
+  applyAlternativeEmail(enteredEmail);
 
-    // Show success indicator
-    altEmailSuccess.value = true;
-    altEmailError.value = false;
+  altEmailSuccess.value = true;
+  altEmailError.value = false;
 
-    // Close dialog
-    visible.value = false;
-
-    // reset input model
-    alternativeEmail.value = '';
+  visible.value = false;
+  alternativeEmail.value = '';
 };
 
 const deleteAlternativeEmail = () => {
-  // UI-only: clear displayed alternative email
-  savedAlternativeEmail.value = null;
+  applyAlternativeEmail(null);
 
-   altEmailSuccess.value = false;
-   altEmailError.value = false;
+  altEmailSuccess.value = false;
+  altEmailError.value = false;
 };
 </script>
 
@@ -491,21 +510,21 @@ const deleteAlternativeEmail = () => {
                     :label="t('accountSettings.userProfile.addAlternativeEmail')"
                     icon="pi pi-plus"
                     style="width: auto"
-                    :disabled="!!savedAlternativeEmail"
+                    :disabled="!!displayAlternativeEmail"
                     @click="visible = true"
                   />
                 </div>
                 
                 <!-- Only show the alternative email field if one exists -->
                 <div 
-                  v-if="savedAlternativeEmail" 
+                  v-if="displayAlternativeEmail" 
                   class="flex items-center gap-1 mt-1 mb-5"
                 >
                   <div class="alt-email-wrapper">
                     <InputText 
                       id="alternative-eMail"  
                       class="alt-email-input flex-grow" 
-                      :value="savedAlternativeEmail"
+                      :value="displayAlternativeEmail"
                       disabled 
                       required 
                     />

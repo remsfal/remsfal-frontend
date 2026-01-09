@@ -7,7 +7,7 @@ import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
 
 describe('AccountSettingsView', () => {
-  let wrapper: VueWrapper;
+  let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
     const pinia = createPinia();
@@ -159,19 +159,36 @@ describe('AccountSettingsView', () => {
       expect(wrapper.vm.isDisabled).toBe(false);
     });
   });
-  describe('Alternative email handling', () => {
-  test('marks email invalid if format is invalid', async () => {
+    
+    test('logout redirects to logout endpoint', () => {
+      delete window.location;
+     // @ts-expect-error required because fetchUserProfile is mocked
+      window.location = { pathname: '' };
+      wrapper.vm.logout();
+      expect(window.location.pathname).toBe('/api/v1/authentication/logout');
+    });
+    
+    test('updateCountryFromCode sets error for invalid country code', async () => {
+      wrapper.vm.editedAddress.countryCode = 'XX';
+      await wrapper.vm.updateCountryFromCode();
+      expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
+    });
+
+ 
+  // Alternative email handling
+  describe('Alternative email handling (UI only)', () => {
+  test('marks email invalid if empty or invalid', async () => {
     const vm = wrapper.vm as any;
 
     vm.visible = true;
     vm.editedUserProfile.email = 'primary@example.com';
     vm.alternativeEmail = 'not-an-email';
 
-    await vm.saveAlternativeEmail();
+    vm.saveAlternativeEmail();
 
     expect(vm.isEmailInvalid).toBe(true);
     expect(vm.emailErrorMessage).toBeTruthy();
-    expect(vm.visible).toBe(true); // dialog should stay open
+    expect(vm.visible).toBe(true); // dialog stays open
   });
 
   test('rejects alternative email equal to primary email', async () => {
@@ -181,7 +198,7 @@ describe('AccountSettingsView', () => {
     vm.editedUserProfile.email = 'same@example.com';
     vm.alternativeEmail = 'same@example.com';
 
-    await vm.saveAlternativeEmail();
+    vm.saveAlternativeEmail();
 
     expect(vm.isEmailInvalid).toBe(true);
     expect(vm.emailErrorMessage).toBeTruthy();
@@ -195,16 +212,11 @@ describe('AccountSettingsView', () => {
     vm.editedUserProfile.email = 'primary@example.com';
     vm.alternativeEmail = 'alt@example.com';
 
-    await vm.saveAlternativeEmail();
+    vm.saveAlternativeEmail();
 
-    // UI-only state
     expect(vm.savedAlternativeEmail).toBe('alt@example.com');
-
-    // flags (only if you kept them in component)
     expect(vm.altEmailSuccess).toBe(true);
     expect(vm.altEmailError).toBe(false);
-
-    // dialog closes and input resets
     expect(vm.visible).toBe(false);
     expect(vm.alternativeEmail).toBe('');
     expect(vm.isEmailInvalid).toBe(false);
@@ -218,7 +230,7 @@ describe('AccountSettingsView', () => {
     vm.altEmailSuccess = true;
     vm.altEmailError = true;
 
-    await vm.deleteAlternativeEmail();
+    vm.deleteAlternativeEmail();
 
     expect(vm.savedAlternativeEmail).toBeNull();
     expect(vm.altEmailSuccess).toBe(false);
@@ -237,7 +249,6 @@ describe('AccountSettingsView', () => {
     expect(vm.alternativeEmail).toBe('');
     expect(vm.isEmailInvalid).toBe(false);
     expect(vm.emailErrorMessage).toBe('');
-   });
+  });
  });
 });
-  
