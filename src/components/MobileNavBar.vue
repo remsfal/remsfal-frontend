@@ -122,9 +122,13 @@ function isActive(item: MobileNavItem) {
   }
 
   const target = item.to;
-  if (route.name !== target.name) return false;
-
-  if (target.query) {
+  
+  // Check if target involves a named route
+  if ('name' in target && target.name && route.name !== target.name) {
+    return false;
+  }
+  
+  if ('query' in target && target.query) {
     const keys = Object.keys(target.query);
     for (const key of keys) {
       if (route.query[key] !== target.query[key]) return false;
