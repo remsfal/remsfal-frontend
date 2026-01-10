@@ -1,16 +1,25 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
-import Menu from 'primevue/menu';
+import { useUserSessionStore } from '@/stores/UserSession';
+import ManagerMenu from '@/layout/ManagerMenu.vue';
+import ContractorMenu from '@/layout/ContractorMenu.vue';
+import TenantMenu from '@/layout/TenantMenu.vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+interface MobileNavItem {
+  label: string;
+  to: any;
+  icon: string | { type: 'pi' | 'fa'; name: string | string[] };
+}
 
 const route = useRoute();
-const router = useRouter();
+const sessionStore = useUserSessionStore();
 
 const projectId = computed(() => route.params.projectId);
+const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
 
-const navItems = computed(() => {
-
+const managerItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {
     return [
       {
@@ -22,10 +31,9 @@ const navItems = computed(() => {
         label: 'Einstellungen',
         to: { name: 'AccountSettings' },
         icon: 'pi-cog'
-      },
+      }
     ];
   }
-
 
   return [
     {
@@ -51,23 +59,7 @@ const navItems = computed(() => {
       },
       icon: 'pi-exclamation-circle'
     },
-    {
-      label: 'Mieter',
-      to: { name: 'ProjectTenancies', params: { projectId: projectId.value } },
-      icon: 'pi-users'
-    },
-
-    {
-      label: 'Objekte',
-      to: { name: 'RentableUnits', params: { projectId: projectId.value } },
-      icon: 'pi-building'
-    },
-    {
-      label: 'Einstellungen',
-      to: { name: 'ProjectSettings', params: { projectId: projectId.value } },
-      icon: 'pi-cog'
-    },
-    {
+     {
       label: 'Chat',
       to: { name: 'ProjectChatView', params: { projectId: projectId.value } },
       icon: 'pi-comments'
@@ -75,35 +67,62 @@ const navItems = computed(() => {
   ];
 });
 
+const contractorItems = computed<MobileNavItem[]>(() => [
+  {
+    label: 'Übersicht',
+    to: '/contractor', 
+    icon: 'pi-home'
+  },
+  {
+     label: 'Aufträge',
+     to: '/contractor',
+     icon: 'pi-id-card'
+  }
+]);
+
+const tenantItems = computed<MobileNavItem[]>(() => [
+  {
+    label: 'Überblick',
+    to: '/',
+    icon: 'pi-home'
+  },
+  {
+    label: 'Meldungen',
+    to: '/uikit/formlayout',
+    icon: 'pi-comment'
+  }
+]);
+
+const navItems = computed<MobileNavItem[]>(() => {
+  if (userRole.value === 'TENANT') {
+    return tenantItems.value;
+  } else if (userRole.value === 'CONTRACTOR') {
+    return contractorItems.value;
+  } else {
+    return managerItems.value;
+  }
+});
+
 
 const MAX_VISIBLE = 4;
 const visibleItems = computed(() => navItems.value.slice(0, MAX_VISIBLE));
 
+const sidebarVisible = ref(false);
 
-const moreItems = computed(() => {
-  return navItems.value.slice(MAX_VISIBLE).map(item => ({
-    label: item.label,
-    icon: item.icon,
-
-    command: () => {
-      router.push(item.to);
-    }
-  }));
-});
-
-const hasMoreItems = computed(() => navItems.value.length > MAX_VISIBLE);
-
-
-// eslint-disable-next-line vue/require-typed-ref
-const menu = ref();
-
-function toggleMoreMenu(event: Event) {
-  menu.value.toggle(event);
+function toggleSidebar() {
+  sidebarVisible.value = !sidebarVisible.value;
 }
-function isActive(item: any) {
+
+function isActive(item: MobileNavItem) {
+  if (!item.to) return false;
+
+  if (typeof item.to === 'string') {
+     return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
+  }
+
   const target = item.to;
   if (route.name !== target.name) return false;
-  // Check query parameters for strict matching (e.g. Tasks vs Defects)
+
   if (target.query) {
     const keys = Object.keys(target.query);
     for (const key of keys) {
@@ -112,6 +131,17 @@ function isActive(item: any) {
   }
 
   return true;
+}
+
+
+function getIconClass(item: MobileNavItem) {
+    if (typeof item.icon === 'string') {
+        return item.icon;
+    }
+    if (item.icon && item.icon.type === 'pi') {
+        return item.icon.name;
+    }
+    return '';
 }
 </script>
 
@@ -124,15 +154,33 @@ function isActive(item: any) {
       class="nav-item"
       :class="{ active: isActive(item) }"
     >
-      <i class="pi" :class="[item.icon]" style="font-size: 1.2rem;" />
+        <!-- Support both string icons and object icons -->
+      <i v-if="typeof item.icon === 'string' || item.icon?.type === 'pi'" 
+         class="pi" 
+         :class="getIconClass(item)" 
+         style="font-size: 1.2rem;" />
+         
+      <FontAwesomeIcon
+          v-else-if="item.icon?.type === 'fa'"
+          :icon="item.icon.name"
+          style="font-size: 1.2rem;"
+        />
+        
       <span class="sr-only">{{ item.label }}</span>
     </RouterLink>
 
-    <button v-if="hasMoreItems" type="button" class="nav-item more-btn" @click="toggleMoreMenu">
+    <!-- Always show More button to open the full sidebar -->
+    <button type="button" class="nav-item more-btn" @click="toggleSidebar">
       <i class="pi pi-ellipsis-h" style="font-size: 1.2rem;" />
     </button>
 
-    <Menu id="overlay_menu" ref="menu" :model="moreItems" popup />
+    <!-- Drawer for full menu -->
+    <Drawer v-model:visible="sidebarVisible" position="right" class="mobile-sidebar-drawer" style="width: 80vw; max-width: 300px;">
+        <!-- Dynamically render the correct menu based on role -->
+        <ManagerMenu v-if="!userRole || userRole === 'MANAGER'" />
+        <ContractorMenu v-else-if="userRole === 'CONTRACTOR'" />
+        <TenantMenu v-else-if="userRole === 'TENANT'" />
+    </Drawer>
   </div>
 </template>
 
@@ -170,8 +218,8 @@ function isActive(item: any) {
 }
 
 .nav-item.active {
-  color: #4CAF50;
-  border-top: 3px solid #4CAF50;
+  color: var(--p-primary-color, #4CAF50);
+  border-top: 3px solid var(--p-primary-color, #4CAF50);
 }
 
 .more-btn {
