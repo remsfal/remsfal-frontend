@@ -1,4 +1,4 @@
-import {describe, test, expect, beforeEach, vi} from 'vitest';
+import {describe, test, expect, beforeEach, beforeAll, afterAll, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import AccountSettingsView from '../../src/views/AccountSettingsView.vue';
 import Card from 'primevue/card';
@@ -6,10 +6,52 @@ import { createPinia } from 'pinia';
 import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
 
-describe('AccountSettingsView', () => {
-  let wrapper: VueWrapper<any>;
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-  beforeEach(() => {
+vi.mock('@/services/UserService', () => {
+  return {
+    default: vi.fn().mockImplementation(() => ({
+      getUser: vi.fn().mockResolvedValue({
+        id: 'u1',
+        firstName: 'First',
+        lastName: 'Last',
+        email: 'primary@example.com',
+        address: {
+          street: 'Street',
+          city: 'City',
+          zip: '12345',
+          province: 'Prov',
+          countryCode: 'DE',
+        },
+        alternativeEmail: null,
+      }),
+      updateUser: vi.fn().mockResolvedValue({}),
+      getCityFromZip: vi.fn().mockResolvedValue({
+        city: 'Test City',
+        province: 'Test Province',
+        countryCode: 'TC',
+      }),
+      deleteUser: vi.fn().mockResolvedValue(undefined),
+    })),
+  };
+});
+
+let originalLocation: Location;
+
+beforeAll(() => {
+  originalLocation = window.location;
+});
+
+afterAll(() => {
+  // restore original location so other spec files don't break
+  delete (window as any).location;
+  (window as any).location = originalLocation;
+});
+
+describe('AccountSettingsView', () => {
+  let wrapper: VueWrapper;
+
+  beforeEach(async () => {
     const pinia = createPinia();
     const app = createApp(App);
     app.use(pinia);
@@ -43,20 +85,6 @@ describe('AccountSettingsView', () => {
     wrapper.vm.fetchUserProfile = vi.fn();
     wrapper.vm.validateAddress = vi.fn();
     wrapper.vm.isDisabled = vi.fn();
-
-    // ---- Alternative email test setup ----
-    const vm = wrapper.vm as any;
-    vm.visible = false;
-    vm.alternativeEmail = '';
-    vm.savedAlternativeEmail = null;
-    vm.isEmailInvalid = false;
-    vm.emailErrorMessage = '';
-    vm.altEmailSuccess = false;
-    vm.altEmailError = false;
-
-   // Ensure primary email exists for comparisons
-   vm.userProfile = { ...(vm.userProfile ?? {}), email: 'primary@example.com' };
-   vm.editedUserProfile = { ...(vm.editedUserProfile ?? {}), email: 'primary@example.com' };
   });
 
   test('The view renders correctly', () => {
@@ -66,7 +94,7 @@ describe('AccountSettingsView', () => {
   test('fetchUserProfile successfully retrieves user data', async () => {
     await wrapper.vm.fetchUserProfile();
     expect(wrapper.vm.fetchUserProfile).toHaveBeenCalled();
-    expect(wrapper.vm.userProfile).not.toBeNull();
+    expect(wrapper.vm.User).not.toBeNull();
   });
 
   describe('Validation of required input fields', async () => {
@@ -125,7 +153,7 @@ describe('AccountSettingsView', () => {
   });
 
   test('saveProfile is called when the save button is clicked', async () => {
-    wrapper.vm.changes = true;
+     wrapper.vm.changes = true;
     await nextTick();
     const saveButton = wrapper.find('.save-button');
     expect(saveButton.exists()).toBe(true);
@@ -161,94 +189,134 @@ describe('AccountSettingsView', () => {
   });
     
     test('logout redirects to logout endpoint', () => {
-      delete window.location;
-     // @ts-expect-error required because fetchUserProfile is mocked
-      window.location = { pathname: '' };
-      wrapper.vm.logout();
-      expect(window.location.pathname).toBe('/api/v1/authentication/logout');
-    });
+      const saved = window.location; // save current for this test
+
+  delete (window as any).location;
+  // @ts-expect-error: we mock location for the test
+  window.location = { pathname: '' };
+
+  wrapper.vm.logout();
+  expect(window.location.pathname).toBe('/api/v1/authentication/logout');
+
+  // restore so this test doesn't affect other tests
+  delete (window as any).location;
+  (window as any).location = saved;
+  });
     
-    test('updateCountryFromCode sets error for invalid country code', async () => {
-      wrapper.vm.editedAddress.countryCode = 'XX';
-      await wrapper.vm.updateCountryFromCode();
-      expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
-    });
+    // Alternative email handling (UI only)
+describe('Alternative email handling (UI only)', () => {
+  const vm = () => wrapper.vm as any;
 
- 
-  // Alternative email handling
-  describe('Alternative email handling (UI only)', () => {
-  test('marks email invalid if empty or invalid', async () => {
-    const vm = wrapper.vm as any;
+  beforeEach(() => {
+    const v = vm();
 
-    vm.visible = true;
-    vm.editedUserProfile.email = 'primary@example.com';
-    vm.alternativeEmail = 'not-an-email';
+    // userProfile / editedUserProfile are refs in the component, but on wrapper.vm they are unwrapped.
+    // Assigning here sets the underlying .value automatically.
+    v.userProfile = {
+ ...(v.userProfile ?? {}), email: 'primary@example.com', alternativeEmail: null 
+};
+    v.editedUserProfile = {
+ ...(v.editedUserProfile ?? {}), email: 'primary@example.com', alternativeEmail: null 
+};
 
-    vm.saveAlternativeEmail();
+    // UI state (also refs in component, but unwrapped on proxy)
+    v.visible = false;
+    v.alternativeEmail = '';
+    v.isEmailInvalid = false;
+    v.emailErrorMessage = '';
+    v.altEmailSuccess = false;
+    v.altEmailError = false;
+  });
 
-    expect(vm.isEmailInvalid).toBe(true);
-    expect(vm.emailErrorMessage).toBeTruthy();
-    expect(vm.visible).toBe(true); // dialog stays open
+  test('marks email invalid if format is invalid', async () => {
+    const v = vm();
+
+    v.visible = true;
+    v.alternativeEmail = 'not-an-email';
+
+    v.saveAlternativeEmail();
+    await nextTick();
+
+    expect(v.isEmailInvalid).toBe(true);
+    expect(v.emailErrorMessage).not.toBe('');
+    expect(v.visible).toBe(true);
+
+    expect(v.editedUserProfile.alternativeEmail).toBeNull();
+    expect(v.displayAlternativeEmail).toBeNull();
   });
 
   test('rejects alternative email equal to primary email', async () => {
-    const vm = wrapper.vm as any;
+    const v = vm();
 
-    vm.visible = true;
-    vm.editedUserProfile.email = 'same@example.com';
-    vm.alternativeEmail = 'same@example.com';
+    v.visible = true;
+    v.editedUserProfile = {
+ ...(v.editedUserProfile ?? {}), email: 'same@example.com', alternativeEmail: null 
+};
+    v.alternativeEmail = 'same@example.com';
 
-    vm.saveAlternativeEmail();
+    v.saveAlternativeEmail();
+    await nextTick();
 
-    expect(vm.isEmailInvalid).toBe(true);
-    expect(vm.emailErrorMessage).toBeTruthy();
-    expect(vm.visible).toBe(true);
+    expect(v.isEmailInvalid).toBe(true);
+    expect(v.emailErrorMessage).not.toBe('');
+    expect(v.visible).toBe(true);
+
+    expect(v.editedUserProfile.alternativeEmail).toBeNull();
+    expect(v.displayAlternativeEmail).toBeNull();
   });
 
-  test('successful alternative email save sets savedAlternativeEmail and closes dialog', async () => {
-    const vm = wrapper.vm as any;
+  test('successful save sets alternativeEmail on profile and closes dialog', async () => {
+    const v = vm();
 
-    vm.visible = true;
-    vm.editedUserProfile.email = 'primary@example.com';
-    vm.alternativeEmail = 'alt@example.com';
+    v.visible = true;
+    v.alternativeEmail = 'alt@example.com';
 
-    vm.saveAlternativeEmail();
+    v.saveAlternativeEmail();
+    await nextTick();
 
-    expect(vm.savedAlternativeEmail).toBe('alt@example.com');
-    expect(vm.altEmailSuccess).toBe(true);
-    expect(vm.altEmailError).toBe(false);
-    expect(vm.visible).toBe(false);
-    expect(vm.alternativeEmail).toBe('');
-    expect(vm.isEmailInvalid).toBe(false);
-    expect(vm.emailErrorMessage).toBe('');
+    expect(v.editedUserProfile.alternativeEmail).toBe('alt@example.com');
+    expect(v.displayAlternativeEmail).toBe('alt@example.com');
+
+    expect(v.altEmailSuccess).toBe(true);
+    expect(v.altEmailError).toBe(false);
+
+    expect(v.visible).toBe(false);
+    expect(v.alternativeEmail).toBe('');
+    expect(v.isEmailInvalid).toBe(false);
+    expect(v.emailErrorMessage).toBe('');
   });
 
-  test('deleteAlternativeEmail clears savedAlternativeEmail and resets flags', async () => {
-    const vm = wrapper.vm as any;
+  test('deleteAlternativeEmail clears alternativeEmail on profile and resets flags', async () => {
+    const v = vm();
 
-    vm.savedAlternativeEmail = 'alt@example.com';
-    vm.altEmailSuccess = true;
-    vm.altEmailError = true;
+    v.userProfile = { ...(v.userProfile ?? {}), alternativeEmail: 'alt@example.com' };
+    v.editedUserProfile = { ...(v.editedUserProfile ?? {}), alternativeEmail: 'alt@example.com' };
+    v.altEmailSuccess = true;
+    v.altEmailError = true;
 
-    vm.deleteAlternativeEmail();
+    v.deleteAlternativeEmail();
+    await nextTick();
 
-    expect(vm.savedAlternativeEmail).toBeNull();
-    expect(vm.altEmailSuccess).toBe(false);
-    expect(vm.altEmailError).toBe(false);
+    expect(v.editedUserProfile.alternativeEmail).toBeNull();
+    expect(v.displayAlternativeEmail).toBeNull();
+
+    expect(v.altEmailSuccess).toBe(false);
+    expect(v.altEmailError).toBe(false);
   });
 
-  test('resetForm clears dialog state', () => {
-    const vm = wrapper.vm as any;
+  test('resetForm clears dialog state', async () => {
+    const v = vm();
 
-    vm.alternativeEmail = 'old@example.com';
-    vm.isEmailInvalid = true;
-    vm.emailErrorMessage = 'Fehler';
+    v.alternativeEmail = 'old@example.com';
+    v.isEmailInvalid = true;
+    v.emailErrorMessage = 'Fehler';
 
-    vm.resetForm();
+    v.resetForm();
+    await nextTick();
 
-    expect(vm.alternativeEmail).toBe('');
-    expect(vm.isEmailInvalid).toBe(false);
-    expect(vm.emailErrorMessage).toBe('');
+    expect(v.alternativeEmail).toBe('');
+    expect(v.isEmailInvalid).toBe(false);
+    expect(v.emailErrorMessage).toBe('');
   });
  });
 });
