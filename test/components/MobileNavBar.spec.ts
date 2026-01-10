@@ -3,7 +3,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import MobileNavBar from '../../src/components/MobileNavBar.vue';
 import PrimeVue from 'primevue/config';
 import Drawer from 'primevue/drawer';
-import { createPinia, setActivePinia } from 'pinia';
+import { createPinia, setActivePinia, type Pinia } from 'pinia';
 import { useUserSessionStore } from '../../src/stores/UserSession';
 
 // Mock specific components
@@ -55,7 +55,7 @@ vi.mock('@/layout/TenantMenu.vue', () => ({
 
 describe('MobileNavBar.vue', () => {
   let wrapper: VueWrapper;
-  let testPinia: any;
+  let testPinia: Pinia;
 
   beforeEach(() => {
     testPinia = createPinia();
@@ -80,10 +80,14 @@ describe('MobileNavBar.vue', () => {
     });
   };
 
-  it('renders exactly 4 visible navigation items for Manager by default', () => {
+  const setRole = (role: 'MANAGER' | 'CONTRACTOR' | 'TENANT') => {
     const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any; // Mock user role
+    // Use unknown cast to avoid mocking full User object for tests
+    store.user = { userRoles: [role] } as unknown as NonNullable<typeof store.user>;
+  };
 
+  it('renders exactly 4 visible navigation items for Manager by default', () => {
+    setRole('MANAGER');
     wrapper = createWrapper();
     const links = wrapper.findAllComponents({ name: 'RouterLink' });
     expect(links.length).toBe(4);
@@ -91,8 +95,7 @@ describe('MobileNavBar.vue', () => {
 
 
   it('sets "active" class correctly for Dashboard', async () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any;
+    setRole('MANAGER');
     mocks.route.name = 'ProjectDashboard';
     wrapper = createWrapper();
 
@@ -102,8 +105,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('highlights "Aufgaben" (Tasks) based on query params', async () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any;
+    setRole('MANAGER');
     mocks.route.name = 'IssueOverview';
     mocks.route.query = { status: 'OPEN', category: 'TASK' };
 
@@ -115,8 +117,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('highlights "Mängel" (Defects) based on query params', async () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any;
+    setRole('MANAGER');
 
     mocks.route.name = 'IssueOverview';
     mocks.route.query = { status: 'OPEN', category: 'DEFECT' };
@@ -129,8 +130,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('shows the "More" button, handles click and opens Drawer', async () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any;
+    setRole('MANAGER');
     wrapper = createWrapper();
 
     const moreBtn = wrapper.find('.more-btn');
@@ -146,8 +146,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('renders ManagerMenu inside Drawer when role is MANAGER', async () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any;
+    setRole('MANAGER');
     wrapper = createWrapper();
 
     // Open drawer to trigger rendering if v-if is used (though components often render but hidden)
@@ -160,8 +159,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('renders ContractorMenu inside Drawer when role is CONTRACTOR', async () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['CONTRACTOR'] } as any;
+    setRole('CONTRACTOR');
     wrapper = createWrapper();
 
     // Contractor items might be different, but we check the Drawer content
@@ -173,8 +171,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('generates correct link for "Mängel" with query params', () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any;
+    setRole('MANAGER');
     wrapper = createWrapper();
     const links = wrapper.findAllComponents({ name: 'RouterLink' });
     const defectLink = links[2];
@@ -187,8 +184,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('generates correct link for "Aufgaben" with query params', () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any;
+    setRole('MANAGER');
     wrapper = createWrapper();
     const links = wrapper.findAllComponents({ name: 'RouterLink' });
     const taskLink = links[1];
@@ -201,8 +197,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('renders correct items for Tenant role', () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['TENANT'] } as any;
+    setRole('TENANT');
     wrapper = createWrapper();
 
     // Tenant has 2 items: Overview, Messages. Plus "More" button (not a RouterLink)
@@ -220,8 +215,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('renders general menu items when no projectId is present', () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['MANAGER'] } as any;
+    setRole('MANAGER');
     mocks.route.params = {}; // No project ID
     wrapper = createWrapper();
 
@@ -231,8 +225,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('activates link based on string path for Contractor', async () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['CONTRACTOR'] } as any;
+    setRole('CONTRACTOR');
     mocks.route.path = '/contractor'; // Matches item.to
     wrapper = createWrapper();
 
@@ -243,8 +236,7 @@ describe('MobileNavBar.vue', () => {
   });
 
   it('renders correct icon class for string icons', () => {
-    const store = useUserSessionStore();
-    store.user = { userRoles: ['CONTRACTOR'] } as any;
+    setRole('CONTRACTOR');
     wrapper = createWrapper();
 
     // Contractor items use string icons like 'pi-home'
