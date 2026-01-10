@@ -1401,6 +1401,10 @@ export interface components {
         ProjectMemberListJson: {
             members: components["schemas"]["ProjectMemberJson"][];
         };
+        /** @description A list of tenancies for a project */
+        ProjectTenancyListJson: {
+            tenancies?: components["schemas"]["TenancyInfoJson"][];
+        };
         /** @description A property */
         PropertyJson: {
             type?: components["schemas"]["UnitType"];
@@ -1512,6 +1516,14 @@ export interface components {
             description?: string;
             id?: components["schemas"]["UUID"];
             title?: string;
+        };
+        /** @description A tenancy item with information from the manager's view */
+        TenancyInfoJson: {
+            active?: boolean;
+            id?: components["schemas"]["UUID"];
+            startOfRental?: components["schemas"]["LocalDate"];
+            endOfRental?: components["schemas"]["LocalDate"];
+            tenants?: components["schemas"]["UserJson"][];
         };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {

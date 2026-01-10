@@ -561,6 +561,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProjectMemberJson"
+    ProjectTenancyListJson:
+      description: A list of tenancies for a project
+      type: object
+      properties:
+        tenancies:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenancyInfoJson"
     PropertyJson:
       description: A property
       type: object
@@ -752,6 +760,22 @@ components:
         title:
           type: string
           maxLength: 255
+    TenancyInfoJson:
+      type: object
+      description: A tenancy item with information from the manager's view
+      properties:
+        active:
+          type: boolean
+        id:
+          $ref: "#/components/schemas/UUID"
+        startOfRental:
+          $ref: "#/components/schemas/LocalDate"
+        endOfRental:
+          $ref: "#/components/schemas/LocalDate"
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserJson"
     TenancyItemJson:
       description: A tenancy item with basic information from a tenant's perspective
       type: object
@@ -3262,6 +3286,106 @@ paths:
           description: The storage was deleted successfully
         "401":
           description: No user authentication provided via session cookie
+  /api/v1/projects/{projectId}/tenancies:
+    get:
+      summary: Retrieve information of all tenancies
+      parameters:
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: The requested tenancies were successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectTenancyListJson"
+        "401":
+          description: No user authentication provided via session cookie
+    post:
+      summary: Create a new tenancy
+      parameters:
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenancyInfoJson"
+        required: true
+      responses:
+        "201":
+          description: Tenancy created successfully
+        "400":
+          description: Invalid request message
+        "401":
+          description: No user authentication provided via session cookie
+  /api/v1/projects/{projectId}/tenancies/{tenancyId}:
+    patch:
+      summary: Update information of a tenancy
+      parameters:
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the tenancy
+        required: true
+        name: tenancyId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenancyInfoJson"
+        required: true
+      responses:
+        "200":
+          description: The tenancy was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyInfoJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: The tenancy does not exist
+    get:
+      summary: Retrieve Information of a tenancy.
+      parameters:
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the tenancy
+        required: true
+        name: tenancyId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: The requested tenancy was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenancyInfoJson"
+        "401":
+          description: No user authentication provided session cookie
+        "404":
+          description: The tenancy does not exist
   /api/v1/tenancies:
     get:
       summary: Retrieve information for all tenancies of a lessee.

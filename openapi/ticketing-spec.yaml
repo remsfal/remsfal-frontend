@@ -534,6 +534,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProjectMemberJson"
+    ProjectTenancyListJson:
+      description: A list of tenancies for a project
+      type: object
+      properties:
+        tenancies:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenancyInfoJson"
     PropertyJson:
       description: A property
       type: object
@@ -725,6 +733,22 @@ components:
         title:
           type: string
           maxLength: 255
+    TenancyInfoJson:
+      type: object
+      description: A tenancy item with information from the manager's view
+      properties:
+        active:
+          type: boolean
+        id:
+          $ref: "#/components/schemas/UUID"
+        startOfRental:
+          $ref: "#/components/schemas/LocalDate"
+        endOfRental:
+          $ref: "#/components/schemas/LocalDate"
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserJson"
     TenancyItemJson:
       description: A tenancy item with basic information from a tenant's perspective
       type: object
