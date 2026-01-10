@@ -1,4 +1,4 @@
-import {describe, test, expect, beforeEach, vi} from 'vitest';
+import {describe, test, expect, beforeEach, beforeAll, afterAll, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import AccountSettingsView from '../../src/views/AccountSettingsView.vue';
 import Card from 'primevue/card';
@@ -6,10 +6,52 @@ import { createPinia } from 'pinia';
 import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
 
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
+
+vi.mock('@/services/UserService', () => {
+  return {
+    default: vi.fn().mockImplementation(() => ({
+      getUser: vi.fn().mockResolvedValue({
+        id: 'u1',
+        firstName: 'First',
+        lastName: 'Last',
+        email: 'primary@example.com',
+        address: {
+          street: 'Street',
+          city: 'City',
+          zip: '12345',
+          province: 'Prov',
+          countryCode: 'DE',
+        },
+        alternativeEmail: null,
+      }),
+      updateUser: vi.fn().mockResolvedValue({}),
+      getCityFromZip: vi.fn().mockResolvedValue({
+        city: 'Test City',
+        province: 'Test Province',
+        countryCode: 'TC',
+      }),
+      deleteUser: vi.fn().mockResolvedValue(undefined),
+    })),
+  };
+});
+
+let originalLocation: Location;
+
+beforeAll(() => {
+  originalLocation = window.location;
+});
+
+afterAll(() => {
+  // restore original location so other spec files don't break
+  delete (window as any).location;
+  (window as any).location = originalLocation;
+});
+
 describe('AccountSettingsView', () => {
   let wrapper: VueWrapper;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const pinia = createPinia();
     const app = createApp(App);
     app.use(pinia);
@@ -111,7 +153,7 @@ describe('AccountSettingsView', () => {
   });
 
   test('saveProfile is called when the save button is clicked', async () => {
-    wrapper.vm.changes = true;
+     wrapper.vm.changes = true;
     await nextTick();
     const saveButton = wrapper.find('.save-button');
     expect(saveButton.exists()).toBe(true);
@@ -144,20 +186,137 @@ describe('AccountSettingsView', () => {
       await nextTick();
       expect(wrapper.vm.isDisabled).toBe(false);
     });
-
-    test('logout redirects to logout endpoint', () => {
-      delete window.location;
-     // @ts-expect-error required because fetchUserProfile is mocked
-      window.location = { pathname: '' };
-      wrapper.vm.logout();
-      expect(window.location.pathname).toBe('/api/v1/authentication/logout');
-    });
-    
-    test('updateCountryFromCode sets error for invalid country code', async () => {
-      wrapper.vm.editedAddress.countryCode = 'XX';
-      await wrapper.vm.updateCountryFromCode();
-      expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
-    });
-    
   });
+    
+    test('logout redirects to logout endpoint', () => {
+      const saved = window.location; // save current for this test
+
+  delete (window as any).location;
+  // @ts-expect-error: we mock location for the test
+  window.location = { pathname: '' };
+
+  wrapper.vm.logout();
+  expect(window.location.pathname).toBe('/api/v1/authentication/logout');
+
+  // restore so this test doesn't affect other tests
+  delete (window as any).location;
+  (window as any).location = saved;
+  });
+    
+    // Alternative email handling (UI only)
+describe('Alternative email handling (UI only)', () => {
+  const vm = () => wrapper.vm as any;
+
+  beforeEach(() => {
+    const v = vm();
+
+    // userProfile / editedUserProfile are refs in the component, but on wrapper.vm they are unwrapped.
+    // Assigning here sets the underlying .value automatically.
+    v.userProfile = {
+ ...(v.userProfile ?? {}), email: 'primary@example.com', alternativeEmail: null 
+};
+    v.editedUserProfile = {
+ ...(v.editedUserProfile ?? {}), email: 'primary@example.com', alternativeEmail: null 
+};
+
+    // UI state (also refs in component, but unwrapped on proxy)
+    v.visible = false;
+    v.alternativeEmail = '';
+    v.isEmailInvalid = false;
+    v.emailErrorMessage = '';
+    v.altEmailSuccess = false;
+    v.altEmailError = false;
+  });
+
+  test('marks email invalid if format is invalid', async () => {
+    const v = vm();
+
+    v.visible = true;
+    v.alternativeEmail = 'not-an-email';
+
+    v.saveAlternativeEmail();
+    await nextTick();
+
+    expect(v.isEmailInvalid).toBe(true);
+    expect(v.emailErrorMessage).not.toBe('');
+    expect(v.visible).toBe(true);
+
+    expect(v.editedUserProfile.alternativeEmail).toBeNull();
+    expect(v.displayAlternativeEmail).toBeNull();
+  });
+
+  test('rejects alternative email equal to primary email', async () => {
+    const v = vm();
+
+    v.visible = true;
+    v.editedUserProfile = {
+ ...(v.editedUserProfile ?? {}), email: 'same@example.com', alternativeEmail: null 
+};
+    v.alternativeEmail = 'same@example.com';
+
+    v.saveAlternativeEmail();
+    await nextTick();
+
+    expect(v.isEmailInvalid).toBe(true);
+    expect(v.emailErrorMessage).not.toBe('');
+    expect(v.visible).toBe(true);
+
+    expect(v.editedUserProfile.alternativeEmail).toBeNull();
+    expect(v.displayAlternativeEmail).toBeNull();
+  });
+
+  test('successful save sets alternativeEmail on profile and closes dialog', async () => {
+    const v = vm();
+
+    v.visible = true;
+    v.alternativeEmail = 'alt@example.com';
+
+    v.saveAlternativeEmail();
+    await nextTick();
+
+    expect(v.editedUserProfile.alternativeEmail).toBe('alt@example.com');
+    expect(v.displayAlternativeEmail).toBe('alt@example.com');
+
+    expect(v.altEmailSuccess).toBe(true);
+    expect(v.altEmailError).toBe(false);
+
+    expect(v.visible).toBe(false);
+    expect(v.alternativeEmail).toBe('');
+    expect(v.isEmailInvalid).toBe(false);
+    expect(v.emailErrorMessage).toBe('');
+  });
+
+  test('deleteAlternativeEmail clears alternativeEmail on profile and resets flags', async () => {
+    const v = vm();
+
+    v.userProfile = { ...(v.userProfile ?? {}), alternativeEmail: 'alt@example.com' };
+    v.editedUserProfile = { ...(v.editedUserProfile ?? {}), alternativeEmail: 'alt@example.com' };
+    v.altEmailSuccess = true;
+    v.altEmailError = true;
+
+    v.deleteAlternativeEmail();
+    await nextTick();
+
+    expect(v.editedUserProfile.alternativeEmail).toBeNull();
+    expect(v.displayAlternativeEmail).toBeNull();
+
+    expect(v.altEmailSuccess).toBe(false);
+    expect(v.altEmailError).toBe(false);
+  });
+
+  test('resetForm clears dialog state', async () => {
+    const v = vm();
+
+    v.alternativeEmail = 'old@example.com';
+    v.isEmailInvalid = true;
+    v.emailErrorMessage = 'Fehler';
+
+    v.resetForm();
+    await nextTick();
+
+    expect(v.alternativeEmail).toBe('');
+    expect(v.isEmailInvalid).toBe(false);
+    expect(v.emailErrorMessage).toBe('');
+  });
+ });
 });

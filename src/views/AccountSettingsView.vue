@@ -18,9 +18,9 @@ type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']
 type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
 type AddressListResponse = paths['/api/v1/address']['get']['responses'][200]['content']['application/json'];
 type Address = AddressListResponse extends (infer U)[] ? U : never;
-type User = UserGetResponse & { address?: Address };
+type User = UserGetResponse & { address?: Address;};
 
-const userProfile = ref<UserGetResponse | null>(null);
+const userProfile = ref<User | null>(null);
 const editedUserProfile = ref<Partial<UserPatchRequestBody>>({});
 
 const addressProfile = ref<Address | null>(null);
@@ -94,10 +94,11 @@ onMounted(() => {
 async function fetchUserProfile() {
   try {
     const userService = new UserService();
-    const profile = await userService.getUser();
+    const profile = (await userService.getUser()) as User;
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
+
       if (userProfile?.value?.address) {
         addressProfile.value = userProfile.value.address;
         editedAddress.value = { ...userProfile.value.address };
@@ -110,7 +111,7 @@ async function fetchUserProfile() {
 
 function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string {
   const value =
-    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
+    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof User];
   return typeof value === 'string' ? value : '';
 }
 
@@ -127,7 +128,7 @@ async function saveProfile(): Promise<void> {
   try {
     const userService = new UserService();
 
-    const user: Partial<User> = {
+    const user: Partial<UserPatchRequestBody> = {
       id: userProfile.value?.id || '',
       firstName: getUpdatedValue('firstName'),
       businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
@@ -348,6 +349,97 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
 const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
+
+// ===== Alternative Email handling =====
+// Resets all form and validation states when closing or reopening the dialog
+function resetForm() {
+  alternativeEmail.value = '';
+  isEmailInvalid.value = false;
+  emailErrorMessage.value = '';
+}
+
+// Basic frontend email format validation using regex
+function validateEmail(email: string) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+
+// Dialog visibility + alternative email input model
+const visible = ref(false);
+const alternativeEmail = ref('');
+
+const displayAlternativeEmail = computed<string | null>(() => {
+  return (
+    ((editedUserProfile.value as any).alternativeEmail ??
+      (userProfile.value as any)?.alternativeEmail) ??
+    null
+  );
+});
+  
+// Validation + UI state for alternative email dialog
+const isEmailInvalid = ref(false);
+const emailErrorMessage = ref('');
+const altEmailSuccess = ref(false);
+const altEmailError = ref(false);
+
+const applyAlternativeEmail = (value: string | null) => {
+  // update edited profile (this is what saveProfile uses)
+  editedUserProfile.value = {
+    ...editedUserProfile.value,
+    alternativeEmail: value,
+  } as any;
+
+  // update userProfile for immediate UI (optional but nice)
+  if (userProfile.value) {
+    (userProfile.value as any) = {
+      ...userProfile.value,
+      alternativeEmail: value,
+    };
+  }
+};
+
+const saveAlternativeEmail = () => {
+  const enteredEmail = alternativeEmail.value.trim();
+
+  const primaryEmail = (
+    editedUserProfile.value.email || userProfile.value?.email || ''
+  )
+    .trim()
+    .toLowerCase();
+
+  // 1) empty or invalid
+  if (!enteredEmail || !validateEmail(enteredEmail)) {
+    isEmailInvalid.value = true;
+    emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
+    return;
+  }
+
+  // 2) must not equal primary
+  if (enteredEmail.toLowerCase() === primaryEmail) {
+    isEmailInvalid.value = true;
+    emailErrorMessage.value = t('accountSettings.userProfile.alternativeEmailNotEqualPrimary');
+    return;
+  }
+
+  // ok
+  isEmailInvalid.value = false;
+  emailErrorMessage.value = '';
+
+  applyAlternativeEmail(enteredEmail);
+
+  altEmailSuccess.value = true;
+  altEmailError.value = false;
+
+  visible.value = false;
+  alternativeEmail.value = '';
+};
+
+const deleteAlternativeEmail = () => {
+  applyAlternativeEmail(null);
+
+  altEmailSuccess.value = false;
+  altEmailError.value = false;
+};
 </script>
 
 <template>
@@ -407,6 +499,118 @@ const isDisabled = computed(() => {
                 <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
                 <Message class="error" size="small" severity="error" variant="simple" />
               </div>
+
+              <div class="input-container">
+                <!-- Label for the alternative email section -->
+                <label class="label" for="alternative-eMail">{{ t('accountSettings.userProfile.alternativeEmail') }}:</label>
+                
+                <!-- Button to open dialog for adding alternative email -->
+                <div class="flex justify-front mt-3 mb-5">
+                  <Button
+                    :label="t('accountSettings.userProfile.addAlternativeEmail')"
+                    icon="pi pi-plus"
+                    style="width: auto"
+                    :disabled="!!displayAlternativeEmail"
+                    @click="visible = true"
+                  />
+                </div>
+                
+                <!-- Only show the alternative email field if one exists -->
+                <div 
+                  v-if="displayAlternativeEmail" 
+                  class="flex items-center gap-1 mt-1 mb-5"
+                >
+                  <div class="alt-email-wrapper">
+                    <InputText 
+                      id="alternative-eMail"  
+                      class="alt-email-input flex-grow" 
+                      :value="displayAlternativeEmail"
+                      disabled 
+                      required 
+                    />
+                
+                    <!-- SUCCESS CHECKMARK shown after successful save -->
+                    <span
+                      v-if="altEmailSuccess"
+                      class="alt-email-icon alt-email-icon-success"
+                    >
+                      ✔
+                    </span>
+
+                    <!-- ERROR ICON shown if backend returns an error -->
+                    <span
+                      v-if="altEmailError"
+                      class="alt-email-icon alt-email-icon-error"
+                    >
+                      ✗
+                    </span>
+                  </div>
+  
+                  <!-- Trash icon deletes the existing alternative email -->
+                  <i 
+                    class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
+                    @click="deleteAlternativeEmail"
+                  />
+                </div>
+              </div>
+
+              <!-- Dialog for entering the alternative email -->
+              <Dialog
+                v-model:visible="visible"
+                modal :style="{ width: '35rem' }"  
+                :header="t('accountSettings.userProfile.addAlternativeEmail')"
+                @hide="resetForm"
+              >
+                <div class="flex flex-col gap-1 mb-6">
+                  <!-- Email input row -->
+                  <div class="flex items-center gap-4">
+                    <label 
+                      for="email"
+                      class="font-semibold"
+                    >
+                      {{ t('accountSettings.userProfile.email') }}
+                    </label>
+  
+                    <!-- Editable input inside dialog -->
+                    <InputText
+                      id="email" 
+                      v-model="alternativeEmail"
+                      class="flex-grow"
+                      type="email"
+                      autocomplete="off"
+                      :invalid="isEmailInvalid"
+                      :placeholder="t('accountSettings.userProfile.alternativeEmail')" 
+                    />
+                  </div>
+
+                  <!-- Validation error message -->
+                  <small
+                    v-if="isEmailInvalid"
+                    class="text-red-500 mt-2 ml-36 text-sm"
+                  >
+                    {{ emailErrorMessage }}
+                  </small>
+                </div>
+
+                <!-- Dialog buttons -->
+                <div class="flex justify-end gap-2 mt-6">
+                  <!-- Cancel closes the dialog with no action -->
+                  <Button
+                    type="button"
+                    :label="t('button.cancel')"
+                    severity="secondary"
+                    @click="visible = false"
+                  />
+
+                  <!-- Save triggers frontend + backend validation -->
+                  <Button
+                    type="button"
+                    :label="t('button.add')"
+                    @click="saveAlternativeEmail"
+                  />
+                </div>
+              </Dialog>
+
               <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">{{ t('accountSettings.userProfile.mobilePhone') }}:</label>
                 <InputText
@@ -802,4 +1006,47 @@ input:focus {
   font-size: 10px;
   border: none;
 }
+
+.alt-email-wrapper {
+  position: relative;
+  width: 95%;
+}
+
+.alt-email-input {
+  width: 100%;
+  padding-right: 10px;
+}
+
+.alt-email-icon {
+  position: absolute;
+  right: 15px;           
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+}
+
+.alt-email-icon-success {
+  color: #16a34a;       
+}
+
+.alt-email-icon-error {
+  color: #dc2626;       
+}
+
+.alt-trash-icon {
+  padding: 11px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  align-items: center;
+  height: 100%;
+  margin-top: -5px;
+  margin-left: 7px
+}
+
+.alt-trash-icon:hover {
+  color: white !important;
+  background-color: #047857;
+  padding: 11px;
+}
+
 </style>
