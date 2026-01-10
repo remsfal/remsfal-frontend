@@ -159,18 +159,20 @@ function getIconClass(item: MobileNavItem) {
       class="nav-item"
       :class="{ active: isActive(item) }"
     >
-        <!-- Support both string icons and object icons -->
-      <i v-if="typeof item.icon === 'string' || item.icon?.type === 'pi'" 
-         class="pi" 
-         :class="getIconClass(item)" 
-         style="font-size: 1.2rem;" />
-         
+      <!-- Support both string icons and object icons -->
+      <i
+        v-if="typeof item.icon === 'string' || item.icon?.type === 'pi'"
+        class="pi"
+        :class="getIconClass(item)"
+        style="font-size: 1.2rem;"
+      />
+
       <FontAwesomeIcon
-          v-else-if="item.icon?.type === 'fa'"
-          :icon="item.icon.name"
-          style="font-size: 1.2rem;"
-        />
-        
+        v-else-if="item.icon?.type === 'fa'"
+        :icon="item.icon.name"
+        style="font-size: 1.2rem;"
+      />
+
       <span class="sr-only">{{ item.label }}</span>
     </RouterLink>
 
