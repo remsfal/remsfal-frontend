@@ -44,7 +44,7 @@ onUnmounted(() => {
       <div class="layout-topbar-logo-container">
         <Button
           v-if="!isFullscreen"
-          class="layout-menu-button layout-topbar-menu-button layout-topbar-action"
+          class="layout-menu-button layout-topbar-menu-button layout-topbar-action mobile-hidden"
           @click="toggleMenu"
         >
           <i class="pi pi-bars" />
@@ -91,5 +91,11 @@ onUnmounted(() => {
   border: 0;
   box-shadow: none;
   margin-left: -0.5rem;
+}
+
+@media (width <= 991px) {
+  .mobile-hidden {
+    display: none !important;
+  }
 }
 </style>
