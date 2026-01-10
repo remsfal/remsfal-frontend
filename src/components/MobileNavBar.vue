@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useRoute, useRouter, RouterLink } from 'vue-router';
+import { useRoute, RouterLink } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Drawer from 'primevue/drawer';
 
 interface MobileNavItem {
   label: string;
@@ -175,7 +176,12 @@ function getIconClass(item: MobileNavItem) {
     </button>
 
     <!-- Drawer for full menu -->
-    <Drawer v-model:visible="sidebarVisible" position="right" class="mobile-sidebar-drawer" style="width: 80vw; max-width: 300px;">
+    <Drawer 
+      v-model:visible="sidebarVisible" 
+      position="right" 
+      class="mobile-sidebar-drawer" 
+      style="width: 80vw; max-width: 300px;"
+    >
         <!-- Dynamically render the correct menu based on role -->
         <ManagerMenu v-if="!userRole || userRole === 'MANAGER'" />
         <ContractorMenu v-else-if="userRole === 'CONTRACTOR'" />

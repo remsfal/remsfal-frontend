@@ -35,13 +35,22 @@ vi.mock('vue-router', () => ({
 
 // Mock child menus using the same alias as the source code to ensure interception
 vi.mock('@/layout/ManagerMenu.vue', () => ({
-  default: { name: 'ManagerMenu', template: '<div data-test="manager-menu"></div>' }
+  default: {
+    name: 'ManagerMenu',
+    template: '<div data-test="manager-menu"></div>'
+  }
 }));
 vi.mock('@/layout/ContractorMenu.vue', () => ({
-  default: { name: 'ContractorMenu', template: '<div data-test="contractor-menu"></div>' }
+  default: {
+    name: 'ContractorMenu',
+    template: '<div data-test="contractor-menu"></div>'
+  }
 }));
 vi.mock('@/layout/TenantMenu.vue', () => ({
-  default: { name: 'TenantMenu', template: '<div data-test="tenant-menu"></div>' }
+  default: {
+    name: 'TenantMenu',
+    template: '<div data-test="tenant-menu"></div>'
+  }
 }));
 
 describe('MobileNavBar.vue', () => {
@@ -60,7 +69,9 @@ describe('MobileNavBar.vue', () => {
     return mount(MobileNavBar, {
       global: {
         plugins: [PrimeVue, testPinia],
-        components: { ManagerMenu, ContractorMenu, TenantMenu },
+        components: {
+          ManagerMenu, ContractorMenu, TenantMenu
+        },
         stubs: {
           RouterLink: true,
           FontAwesomeIcon: true,
