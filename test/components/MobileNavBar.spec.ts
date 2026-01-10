@@ -73,7 +73,6 @@ describe('MobileNavBar.vue', () => {
           ManagerMenu, ContractorMenu, TenantMenu
         },
         stubs: {
-          RouterLink: true,
           FontAwesomeIcon: true,
           Drawer: { template: '<div><slot /></div>', props: ['visible'] }
         }
@@ -199,5 +198,57 @@ describe('MobileNavBar.vue', () => {
       params: { projectId: 'test-project-id-123' },
       query: { status: 'OPEN', category: 'TASK' }
     });
+  });
+
+  it('renders correct items for Tenant role', () => {
+    const store = useUserSessionStore();
+    store.user = { userRoles: ['TENANT'] } as any;
+    wrapper = createWrapper();
+
+    // Tenant has 2 items: Overview, Messages. Plus "More" button (not a RouterLink)
+    const links = wrapper.findAllComponents({ name: 'RouterLink' });
+    expect(links.length).toBe(2);
+    // Since Drawer stub renders its slot, the menu IS present in DOM
+    expect(wrapper.find('[data-test="tenant-menu"]').exists()).toBe(true);
+
+    // Verify Drawer contains TenantMenu
+    const drawer = wrapper.findComponent(Drawer);
+    expect(drawer.exists()).toBe(true);
+    // Trigger render check
+    const tenantMenu = wrapper.find('[data-test="tenant-menu"]');
+    expect(tenantMenu.exists()).toBe(true);
+  });
+
+  it('renders general menu items when no projectId is present', () => {
+    const store = useUserSessionStore();
+    store.user = { userRoles: ['MANAGER'] } as any;
+    mocks.route.params = {}; // No project ID
+    wrapper = createWrapper();
+
+    const links = wrapper.findAllComponents({ name: 'RouterLink' });
+    expect(links.length).toBe(2); // "Projekte", "Einstellungen"
+    expect(links[0].props('to')).toEqual({ name: 'ProjectSelection' });
+  });
+
+  it('activates link based on string path for Contractor', async () => {
+    const store = useUserSessionStore();
+    store.user = { userRoles: ['CONTRACTOR'] } as any;
+    mocks.route.path = '/contractor'; // Matches item.to
+    wrapper = createWrapper();
+
+    const links = wrapper.findAllComponents({ name: 'RouterLink' });
+    expect(links.length).toBe(2);
+    // First item is /contractor
+    expect(links[0].classes()).toContain('active');
+  });
+
+  it('renders correct icon class for string icons', () => {
+    const store = useUserSessionStore();
+    store.user = { userRoles: ['CONTRACTOR'] } as any;
+    wrapper = createWrapper();
+
+    // Contractor items use string icons like 'pi-home'
+    const html = wrapper.html();
+    expect(html).toContain('pi-home');
   });
 });
