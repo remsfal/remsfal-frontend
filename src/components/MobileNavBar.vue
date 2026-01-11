@@ -137,7 +137,7 @@ const tenantMenuModel = ref<MenuItem[]>([
       },
       {
         label: 'Meldungen',
-        icon: { type: 'pi', name: 'pi pi-fw pi-comment' },
+        icon: { type: 'pi', name: 'pi pi-fw pi-inbox' },
         to: '/inbox',
         command: () => { sidebarVisible.value = false; }
       },
@@ -154,7 +154,7 @@ const tenantItems = computed<MobileNavItem[]>(() => [
   {
     label: 'Meldungen',
     to: { name: 'Inbox' },
-    icon: 'pi-comment'
+    icon: 'pi-inbox'
   }
 ]);
 
