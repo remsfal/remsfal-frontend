@@ -206,7 +206,7 @@ describe('MobileNavBar.vue', () => {
 
   it('renders general menu items when no projectId is present', () => {
     setRole('MANAGER');
-    mocks.route.params = {}; // No project ID
+    mocks.route.params = { projectId: '' }; // No project ID
     wrapper = createWrapper();
 
     const links = wrapper.findAllComponents({ name: 'RouterLink' });
@@ -256,8 +256,8 @@ describe('MobileNavBar.vue', () => {
     expect(wrapper.findComponent(Drawer).props('visible')).toBe(true);
 
     // Simulate resize
-    window.innerWidth = 1024;
-    window.dispatchEvent(new Event('resize'));
+    globalThis.innerWidth = 1024;
+    globalThis.dispatchEvent(new Event('resize'));
     await wrapper.vm.$nextTick();
 
     // Sidebar should be closed
@@ -269,7 +269,7 @@ describe('MobileNavBar.vue', () => {
     wrapper = createWrapper();
 
     // Simulate complex Route location objects
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as { isActive: (item: any) => boolean };
 
     // Mock current route
     mocks.route.name = 'TestRoute';
@@ -296,7 +296,7 @@ describe('MobileNavBar.vue', () => {
   it('local menu items have command to close sidebar', () => {
     setRole('CONTRACTOR');
     wrapper = createWrapper();
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as { sidebarVisible: boolean };
 
     // Access the internal model
     // Note: contractorMenuModel is local state in setup. 

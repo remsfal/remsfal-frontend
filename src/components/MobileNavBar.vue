@@ -20,7 +20,6 @@ const { layoutState } = useLayout();
 
 const projectId = computed(() => route.params.projectId);
 const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
-
 const managerItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {
     return [
@@ -197,15 +196,26 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkWindowSize);
 });
 
+// Helper type for route matching
+interface NamedRoute {
+  name: string;
+  query?: Record<string, string>;
+}
+
+function isNamedRoute(target: any): target is NamedRoute {
+  return typeof target === 'object' && target !== null && 'name' in target;
+}
+
 function isActive(item: MobileNavItem) {
   if (!item.to) return false;
   
+  const target = item.to;
+
   if (userRole.value === 'CONTRACTOR') {
-      const target = item.to;
-      if (typeof target === 'object' && target !== null && 'name' in target) {
-          if (route.name !== (target as any).name) return false;
+      if (isNamedRoute(target)) {
+          if (route.name !== target.name) return false;
           
-          const targetQuery = (target as any).query || {};
+          const targetQuery = target.query || {};
           const routeQuery = route.query || {};
           
           const targetKeys = Object.keys(targetQuery);
@@ -214,8 +224,8 @@ function isActive(item: MobileNavItem) {
                if (routeQuery[key] !== targetQuery[key]) return false;
              }
              return true;
-          } else {
-             if (Object.keys(routeQuery).length > 0) return false; 
+          } else if (Object.keys(routeQuery).length > 0) {
+             return false; 
           }
       }
   }
@@ -223,21 +233,18 @@ function isActive(item: MobileNavItem) {
   if (typeof item.to === 'string') {
      return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
   }
-
-  const target = item.to;
   
-  if (typeof target === 'object' && target !== null) {
-      // Safe access using casting or checking existence
-      const targetName = 'name' in target ? (target as any).name : undefined;
+  if (isNamedRoute(target)) {
+      const targetName = target.name;
       
       if (targetName && route.name !== targetName) {
         return false;
       }
       
-      if ('query' in target && (target as any).query) {
-        const keys = Object.keys((target as any).query);
+      if (target.query) {
+        const keys = Object.keys(target.query);
         for (const key of keys) {
-          if (route.query[key] !== (target as any).query[key]) return false;
+          if (route.query[key] !== target.query[key]) return false;
         }
       } else if (Object.keys(route.query).length > 0 && targetName && route.name === targetName) {
           return false;
@@ -302,19 +309,19 @@ function getIconClass(item: MobileNavItem) {
       
       <!-- Use local implementation for Contractor to fix broken links -->
       <div v-else-if="userRole === 'CONTRACTOR'" class="layout-sidebar">
-         <ul class="layout-menu">
-            <template v-for="(item, i) in contractorMenuModel" :key="item.label">
-                <AppMenuItem :item="item" :index="i" />
-            </template>
-         </ul>
+        <ul class="layout-menu">
+          <template v-for="(item, i) in contractorMenuModel" :key="item.label">
+            <AppMenuItem :item="item" :index="i" />
+          </template>
+        </ul>
       </div>
 
       <div v-else-if="userRole === 'TENANT'" class="layout-sidebar">
-         <ul class="layout-menu">
-            <template v-for="(item, i) in tenantMenuModel" :key="item.label">
-                <AppMenuItem :item="item" :index="i" />
-            </template>
-         </ul>
+        <ul class="layout-menu">
+          <template v-for="(item, i) in tenantMenuModel" :key="item.label">
+            <AppMenuItem :item="item" :index="i" />
+          </template>
+        </ul>
       </div>
     </Drawer>
   </div>
