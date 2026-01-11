@@ -206,49 +206,51 @@ function isNamedRoute(target: unknown): target is NamedRoute {
   return typeof target === 'object' && target !== null && 'name' in target;
 }
 
+// Helper to check query parameters
+function matchesQuery(
+  targetQuery: Record<string, string>, 
+  routeQuery: Record<string, string | null | (string | null)[]>, 
+  strict = false
+): boolean {
+  const targetKeys = Object.keys(targetQuery);
+  const routeKeys = Object.keys(routeQuery);
+  
+  if (targetKeys.length > 0) {
+    for (const key of targetKeys) {
+      if (routeQuery[key] !== targetQuery[key]) return false;
+    }
+    return true;
+  }
+  
+  // Strict mode: if target has no query, route must also have no query
+  if (strict && routeKeys.length > 0) {
+    return false;
+  }
+  
+  return true;
+}
+
 function isActive(item: MobileNavItem) {
   if (!item.to) return false;
   
   const target = item.to;
+  const currentRouteQuery = route.query as Record<string, string>; // Cast for helper compatibility
 
-  if (userRole.value === 'CONTRACTOR') {
-      if (isNamedRoute(target)) {
-          if (route.name !== target.name) return false;
-          
-          const targetQuery = target.query || {};
-          const routeQuery = route.query || {};
-          
-          const targetKeys = Object.keys(targetQuery);
-          if (targetKeys.length > 0) {
-             for (const key of targetKeys) {
-               if (routeQuery[key] !== targetQuery[key]) return false;
-             }
-             return true;
-          } else if (Object.keys(routeQuery).length > 0) {
-             return false; 
-          }
-      }
+  // Special Contractor Logic
+  if (userRole.value === 'CONTRACTOR' && isNamedRoute(target)) {
+     if (route.name !== target.name) return false;
+     return matchesQuery(target.query || {}, currentRouteQuery, true);
   }
 
+  // String Path matching
   if (typeof item.to === 'string') {
      return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
   }
   
+  // General Named Route matching
   if (isNamedRoute(target)) {
-      const targetName = target.name;
-      
-      if (targetName && route.name !== targetName) {
-        return false;
-      }
-      
-      if (target.query) {
-        const keys = Object.keys(target.query);
-        for (const key of keys) {
-          if (route.query[key] !== target.query[key]) return false;
-        }
-      } else if (Object.keys(route.query).length > 0 && targetName && route.name === targetName) {
-          return false;
-      }
+      if (target.name && route.name !== target.name) return false;
+      return matchesQuery(target.query || {}, currentRouteQuery, !target.query && route.name === target.name);
   }
 
   return true;
