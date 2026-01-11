@@ -125,7 +125,7 @@ const contractorMenuModel = ref<MenuItem[]>([
   },
 ]);
 
-// Local Tenant Menu Model (replacing TenantMenu.vue)
+
 const tenantMenuModel = ref<MenuItem[]>([
   {
     label: 'Mietverhältnis',
@@ -139,7 +139,7 @@ const tenantMenuModel = ref<MenuItem[]>([
       {
         label: 'Meldungen',
         icon: { type: 'pi', name: 'pi pi-fw pi-comment' },
-        to: { name: 'Inbox' },
+        to: '/inbox',
         command: () => { sidebarVisible.value = false; }
       },
     ],
@@ -200,10 +200,8 @@ onUnmounted(() => {
 function isActive(item: MobileNavItem) {
   if (!item.to) return false;
   
-  // Special check for Contractor bottom items to avoid duplicates
   if (userRole.value === 'CONTRACTOR') {
       const target = item.to;
-      // Use 'as any' to safely access properties that might not exist on all union members
       if (typeof target === 'object' && target !== null && 'name' in target) {
           if (route.name !== (target as any).name) return false;
           
