@@ -6,7 +6,7 @@ import { useLayout } from '@/layout/composables/layout';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
-import AppMenuItem from '@/layout/AppMenuItem.vue';
+import AppMenuItem, { type MenuItem } from '@/layout/AppMenuItem.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Drawer from 'primevue/drawer';
 
@@ -22,7 +22,6 @@ const { layoutState } = useLayout();
 
 const projectId = computed(() => route.params.projectId);
 const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
-//const userRole = computed(() => 'MANAGER'); // TODO: Revert this after testing!
 
 const managerItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {
@@ -85,7 +84,7 @@ const contractorItems = computed<MobileNavItem[]>(() => [
   }
 ]);
 
-const contractorMenuModel = ref([
+const contractorMenuModel = ref<MenuItem[]>([
   {
     label: 'consultantMenu.home',
     items: [
@@ -180,6 +179,28 @@ onUnmounted(() => {
 
 function isActive(item: MobileNavItem) {
   if (!item.to) return false;
+  
+  // Special check for Contractor bottom items to avoid duplicates
+  if (userRole.value === 'CONTRACTOR') {
+      const target = item.to;
+      // Use 'as any' to safely access properties that might not exist on all union members
+      if (typeof target === 'object' && target !== null && 'name' in target) {
+          if (route.name !== (target as any).name) return false;
+          
+          const targetQuery = (target as any).query || {};
+          const routeQuery = route.query || {};
+          
+          const targetKeys = Object.keys(targetQuery);
+          if (targetKeys.length > 0) {
+             for (const key of targetKeys) {
+               if (routeQuery[key] !== targetQuery[key]) return false;
+             }
+             return true;
+          } else {
+             if (Object.keys(routeQuery).length > 0) return false; 
+          }
+      }
+  }
 
   if (typeof item.to === 'string') {
      return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
@@ -187,20 +208,22 @@ function isActive(item: MobileNavItem) {
 
   const target = item.to;
   
-  // Check if target involves a named route
-  if ('name' in target && target.name && route.name !== target.name) {
-    return false;
-  }
-  
-  if ('query' in target && target.query) {
-    const keys = Object.keys(target.query);
-    for (const key of keys) {
-      if (route.query[key] !== target.query[key]) return false;
-    }
-  } else if (Object.keys(route.query).length > 0 && route.name === target.name) {
-      // If target has no query matching requirements, but route has query params, 
-      // treat as mismatch (prevent Overview from being active when on Orders)
-      return false;
+  if (typeof target === 'object' && target !== null) {
+      // Safe access using casting or checking existence
+      const targetName = 'name' in target ? (target as any).name : undefined;
+      
+      if (targetName && route.name !== targetName) {
+        return false;
+      }
+      
+      if ('query' in target && (target as any).query) {
+        const keys = Object.keys((target as any).query);
+        for (const key of keys) {
+          if (route.query[key] !== (target as any).query[key]) return false;
+        }
+      } else if (Object.keys(route.query).length > 0 && targetName && route.name === targetName) {
+          return false;
+      }
   }
 
   return true;
