@@ -202,7 +202,7 @@ interface NamedRoute {
   query?: Record<string, string>;
 }
 
-function isNamedRoute(target: any): target is NamedRoute {
+function isNamedRoute(target: unknown): target is NamedRoute {
   return typeof target === 'object' && target !== null && 'name' in target;
 }
 

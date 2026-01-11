@@ -269,7 +269,7 @@ describe('MobileNavBar.vue', () => {
     wrapper = createWrapper();
 
     // Simulate complex Route location objects
-    const vm = wrapper.vm as unknown as { isActive: (item: any) => boolean };
+    const vm = wrapper.vm as unknown as { isActive: (item: { to: unknown }) => boolean };
 
     // Mock current route
     mocks.route.name = 'TestRoute';
