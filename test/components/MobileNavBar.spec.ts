@@ -8,7 +8,6 @@ import { useUserSessionStore } from '../../src/stores/UserSession';
 
 // Mock specific components
 import ManagerMenu from '../../src/layout/ManagerMenu.vue';
-import ContractorMenu from '../../src/layout/ContractorMenu.vue';
 import TenantMenu from '../../src/layout/TenantMenu.vue';
 
 const mocks = vi.hoisted(() => {
@@ -38,12 +37,6 @@ vi.mock('@/layout/ManagerMenu.vue', () => ({
   default: {
     name: 'ManagerMenu',
     template: '<div data-test="manager-menu"></div>'
-  }
-}));
-vi.mock('@/layout/ContractorMenu.vue', () => ({
-  default: {
-    name: 'ContractorMenu',
-    template: '<div data-test="contractor-menu"></div>'
   }
 }));
 vi.mock('@/layout/AppMenuItem.vue', () => ({
@@ -77,9 +70,7 @@ describe('MobileNavBar.vue', () => {
     return mount(MobileNavBar, {
       global: {
         plugins: [PrimeVue, testPinia],
-        components: {
-          ManagerMenu, TenantMenu // ContractorMenu removed
-        },
+        components: { ManagerMenu, TenantMenu },
         stubs: {
           FontAwesomeIcon: true,
           Drawer: { template: '<div><slot /></div>', props: ['visible'] }

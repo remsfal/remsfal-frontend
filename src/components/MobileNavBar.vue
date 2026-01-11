@@ -4,7 +4,6 @@ import { useRoute, RouterLink, type RouteLocationRaw } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useLayout } from '@/layout/composables/layout';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
-import ContractorMenu from '@/layout/ContractorMenu.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
 import AppMenuItem, { type MenuItem } from '@/layout/AppMenuItem.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
