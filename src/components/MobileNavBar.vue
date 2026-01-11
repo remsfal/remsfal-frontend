@@ -19,8 +19,7 @@ const sessionStore = useUserSessionStore();
 const { layoutState } = useLayout();
 
 const projectId = computed(() => route.params.projectId);
-//const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
-const userRole = computed(() => 'TENANT'); // TODO: Revert this after testing!
+const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
 
 const managerItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {

@@ -247,4 +247,83 @@ describe('MobileNavBar.vue', () => {
     const html = wrapper.html();
     expect(html).toContain('pi-home');
   });
+
+  it('closes sidebar and resets layout state on window resize > 991px', async () => {
+    wrapper = createWrapper();
+    // Initially open sidebar
+    const moreBtn = wrapper.find('.more-btn');
+    await moreBtn.trigger('click');
+    expect(wrapper.findComponent(Drawer).props('visible')).toBe(true);
+
+    // Simulate resize
+    window.innerWidth = 1024;
+    window.dispatchEvent(new Event('resize'));
+    await wrapper.vm.$nextTick();
+
+    // Sidebar should be closed
+    expect(wrapper.findComponent(Drawer).props('visible')).toBe(false);
+  });
+
+  it('isActive correctly handles object targets with name checking', () => {
+    setRole('CONTRACTOR');
+    wrapper = createWrapper();
+
+    // Simulate complex Route location objects
+    const vm = wrapper.vm as any;
+
+    // Mock current route
+    mocks.route.name = 'TestRoute';
+    mocks.route.query = {};
+
+    // 1. Mismatch name
+    expect(vm.isActive({ to: { name: 'OtherRoute' } })).toBe(false);
+
+    // 2. Match name, no query
+    expect(vm.isActive({ to: { name: 'TestRoute' } })).toBe(true);
+
+    // 3. Match name, match query
+    mocks.route.query = { id: '1' };
+    expect(vm.isActive({ to: { name: 'TestRoute', query: { id: '1' } } })).toBe(true);
+
+    // 4. Match name, mismatch query value
+    expect(vm.isActive({ to: { name: 'TestRoute', query: { id: '2' } } })).toBe(false);
+
+    // 5. Match name, missing query key in route
+    mocks.route.query = {};
+    expect(vm.isActive({ to: { name: 'TestRoute', query: { id: '1' } } })).toBe(false);
+  });
+
+  it('local menu items have command to close sidebar', () => {
+    setRole('CONTRACTOR');
+    wrapper = createWrapper();
+    const vm = wrapper.vm as any;
+
+    // Access the internal model
+    // Note: contractorMenuModel is local state in setup. 
+    // We can access it if we returned it, but <script setup> makes it closed by default.
+    // However, we pass it to AppMenuItem props.
+    // Let's find the AppMenuItems and check their props.
+
+    const appMenuItems = wrapper.findAllComponents({ name: 'AppMenuItem' });
+    expect(appMenuItems.length).toBeGreaterThan(0);
+
+    const firstItem = appMenuItems[0].props('item'); // Top level item (category)
+    // The model is nested: Category -> Items.
+    // AppMenuItem implementation might be recursive or flat loop.
+    // In template: v-for="item in contractorMenuModel" => AppMenuItem :item="item"
+    // So the prop 'item' is the Category object.
+
+    expect(firstItem.items).toBeDefined();
+    expect(firstItem.items.length).toBeGreaterThan(0);
+
+    // Check the actual link item
+    const linkItem = firstItem.items[0];
+    expect(linkItem.command).toBeDefined();
+
+    // Execute command and verify sidebar closes
+    // We need to set sidebar visible first
+    vm.sidebarVisible = true;
+    linkItem.command();
+    expect(vm.sidebarVisible).toBe(false);
+  });
 });
