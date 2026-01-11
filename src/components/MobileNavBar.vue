@@ -6,6 +6,7 @@ import { useLayout } from '@/layout/composables/layout';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
+import AppMenuItem from '@/layout/AppMenuItem.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Drawer from 'primevue/drawer';
 
@@ -21,7 +22,7 @@ const { layoutState } = useLayout();
 
 const projectId = computed(() => route.params.projectId);
 const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
-//const userRole = computed(() => 'TENANT'); // TODO: Revert this after testing!
+//const userRole = computed(() => 'MANAGER'); // TODO: Revert this after testing!
 
 const managerItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {
@@ -74,14 +75,57 @@ const managerItems = computed<MobileNavItem[]>(() => {
 const contractorItems = computed<MobileNavItem[]>(() => [
   {
     label: 'Übersicht',
-    to: '/contractor', 
+    to: { name: 'ContractorView' }, 
     icon: 'pi-home'
   },
   {
-     label: 'Aufträge',
-     to: '/contractor',
-     icon: 'pi-id-card'
+    label: 'Aufträge',
+    to: { name: 'ContractorView', query: { tab: 'orders' } },
+    icon: 'pi-id-card'
   }
+]);
+
+const contractorMenuModel = ref([
+  {
+    label: 'consultantMenu.home',
+    items: [
+      {
+        label: 'consultantMenu.home.overview',
+        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+        to: '/customers',
+        command: () => { sidebarVisible.value = false; }
+      },
+      {
+        label: 'consultantMenu.home.client',
+        icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+        to: '/customers',
+        command: () => { sidebarVisible.value = false; }
+      },
+    ],
+  },
+  {
+    label: 'consultantMenu.clientManagement',
+    items: [
+      {
+        label: 'consultantMenu.clientManagement.open',
+        icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+        to: '/customers', 
+        command: () => { sidebarVisible.value = false; }
+      },
+      {
+        label: 'consultantMenu.clientManagement.ongoing',
+        icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
+        to: '/customers',
+        command: () => { sidebarVisible.value = false; }
+      },
+      {
+        label: 'consultantMenu.clientManagement.closed',
+        icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
+        to: '/customers',
+        command: () => { sidebarVisible.value = false; }
+      },
+    ],
+  },
 ]);
 
 const tenantItems = computed<MobileNavItem[]>(() => [
@@ -153,6 +197,10 @@ function isActive(item: MobileNavItem) {
     for (const key of keys) {
       if (route.query[key] !== target.query[key]) return false;
     }
+  } else if (Object.keys(route.query).length > 0 && route.name === target.name) {
+      // If target has no query matching requirements, but route has query params, 
+      // treat as mismatch (prevent Overview from being active when on Orders)
+      return false;
   }
 
   return true;
@@ -210,7 +258,16 @@ function getIconClass(item: MobileNavItem) {
     >
       <!-- Dynamically render the correct menu based on role -->
       <ManagerMenu v-if="!userRole || userRole === 'MANAGER'" />
-      <ContractorMenu v-else-if="userRole === 'CONTRACTOR'" />
+      
+      <!-- Use local implementation for Contractor to fix broken links -->
+      <div v-else-if="userRole === 'CONTRACTOR'" class="layout-sidebar">
+         <ul class="layout-menu">
+            <template v-for="(item, i) in contractorMenuModel" :key="item.label">
+                <AppMenuItem :item="item" :index="i" />
+            </template>
+         </ul>
+      </div>
+
       <TenantMenu v-else-if="userRole === 'TENANT'" />
     </Drawer>
   </div>

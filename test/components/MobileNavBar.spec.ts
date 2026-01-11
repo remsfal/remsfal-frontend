@@ -46,6 +46,14 @@ vi.mock('@/layout/ContractorMenu.vue', () => ({
     template: '<div data-test="contractor-menu"></div>'
   }
 }));
+vi.mock('@/layout/AppMenuItem.vue', () => ({
+  default: {
+    name: 'AppMenuItem',
+    template: '<div data-test="app-menu-item"></div>',
+    props: ['item']
+  }
+}));
+
 vi.mock('@/layout/TenantMenu.vue', () => ({
   default: {
     name: 'TenantMenu',
@@ -70,7 +78,7 @@ describe('MobileNavBar.vue', () => {
       global: {
         plugins: [PrimeVue, testPinia],
         components: {
-          ManagerMenu, ContractorMenu, TenantMenu
+          ManagerMenu, TenantMenu // ContractorMenu removed
         },
         stubs: {
           FontAwesomeIcon: true,
@@ -154,17 +162,18 @@ describe('MobileNavBar.vue', () => {
     const managerMenu = wrapper.find('[data-test="manager-menu"]');
     expect(managerMenu.exists()).toBe(true);
 
-    const contractorMenu = wrapper.find('[data-test="contractor-menu"]');
-    expect(contractorMenu.exists()).toBe(false);
+    // Should not render AppMenuItem loop for Contractor
+    const appMenuItems = wrapper.findAll('[data-test="app-menu-item"]');
+    expect(appMenuItems.length).toBe(0);
   });
 
-  it('renders ContractorMenu inside Drawer when role is CONTRACTOR', async () => {
+  it('renders local Contractor menu (AppMenuItems) inside Drawer when role is CONTRACTOR', async () => {
     setRole('CONTRACTOR');
     wrapper = createWrapper();
 
-    // Contractor items might be different, but we check the Drawer content
-    const contractorMenu = wrapper.find('[data-test="contractor-menu"]');
-    expect(contractorMenu.exists()).toBe(true);
+    // Check for AppMenuItems instead of ContractorMenu component
+    const appMenuItems = wrapper.findAll('[data-test="app-menu-item"]');
+    expect(appMenuItems.length).toBeGreaterThan(0);
 
     const managerMenu = wrapper.find('[data-test="manager-menu"]');
     expect(managerMenu.exists()).toBe(false);
@@ -224,15 +233,29 @@ describe('MobileNavBar.vue', () => {
     expect(links[0].props('to')).toEqual({ name: 'ProjectSelection' });
   });
 
-  it('activates link based on string path for Contractor', async () => {
+  it('activates Contractor links correctly using named routes and query params', async () => {
     setRole('CONTRACTOR');
-    mocks.route.path = '/contractor'; // Matches item.to
-    wrapper = createWrapper();
+    // Scenario 1: Overview (No Query)
+    mocks.route.name = 'ContractorView';
+    mocks.route.path = '/customers';
+    mocks.route.query = {};
 
-    const links = wrapper.findAllComponents({ name: 'RouterLink' });
+    wrapper = createWrapper();
+    let links = wrapper.findAllComponents({ name: 'RouterLink' });
+
     expect(links.length).toBe(2);
-    // First item is /contractor
-    expect(links[0].classes()).toContain('active');
+    expect(links[0].classes()).toContain('active'); // Overview (should be active)
+    expect(links[1].classes()).not.toContain('active'); // Orders (should be inactive)
+
+    // Scenario 2: Orders (With Query)
+    mocks.route.query = { tab: 'orders' };
+
+    // Remount to trigger computed properties with new mock state
+    wrapper = createWrapper();
+    links = wrapper.findAllComponents({ name: 'RouterLink' });
+
+    expect(links[0].classes()).not.toContain('active'); // Overview (should be inactive due to strict check)
+    expect(links[1].classes()).toContain('active'); // Orders (should be active)
   });
 
   it('renders correct icon class for string icons', () => {
