@@ -19,8 +19,8 @@ const sessionStore = useUserSessionStore();
 const { layoutState } = useLayout();
 
 const projectId = computed(() => route.params.projectId);
-const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
-
+//const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
+const userRole = computed(() => 'TENANT'); // TODO: Revert this after testing!
 
 const managerItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {
@@ -186,6 +186,7 @@ const checkWindowSize = () => {
     sidebarVisible.value = false;
     layoutState.staticMenuMobileActive = false;
     layoutState.overlayMenuActive = false;
+    layoutState.staticMenuDesktopInactive = false;
   }
 };
 
