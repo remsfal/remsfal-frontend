@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, RouterLink, type RouteLocationRaw } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
+import { useLayout } from '@/layout/composables/layout';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
@@ -16,9 +17,11 @@ interface MobileNavItem {
 
 const route = useRoute();
 const sessionStore = useUserSessionStore();
+const { layoutState } = useLayout();
 
 const projectId = computed(() => route.params.projectId);
 const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
+//const userRole = computed(() => 'TENANT'); // TODO: Revert this after testing!
 
 const managerItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {
@@ -89,7 +92,7 @@ const tenantItems = computed<MobileNavItem[]>(() => [
   },
   {
     label: 'Meldungen',
-    to: '/uikit/formlayout',
+    to: { name: 'Inbox' },
     icon: 'pi-comment'
   }
 ]);
@@ -113,6 +116,23 @@ const sidebarVisible = ref(false);
 function toggleSidebar() {
   sidebarVisible.value = !sidebarVisible.value;
 }
+
+// Close sidebar automatically when resizing to desktop view
+const checkWindowSize = () => {
+  if (window.innerWidth > 991) {
+    sidebarVisible.value = false;
+    layoutState.staticMenuMobileActive = false;
+    layoutState.overlayMenuActive = false;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', checkWindowSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkWindowSize);
+});
 
 function isActive(item: MobileNavItem) {
   if (!item.to) return false;
