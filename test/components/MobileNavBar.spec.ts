@@ -8,7 +8,6 @@ import { useUserSessionStore } from '../../src/stores/UserSession';
 
 // Mock specific components
 import ManagerMenu from '../../src/layout/ManagerMenu.vue';
-import TenantMenu from '../../src/layout/TenantMenu.vue';
 
 const mocks = vi.hoisted(() => {
   return {
@@ -47,13 +46,6 @@ vi.mock('@/layout/AppMenuItem.vue', () => ({
   }
 }));
 
-vi.mock('@/layout/TenantMenu.vue', () => ({
-  default: {
-    name: 'TenantMenu',
-    template: '<div data-test="tenant-menu"></div>'
-  }
-}));
-
 describe('MobileNavBar.vue', () => {
   let wrapper: VueWrapper;
   let testPinia: Pinia;
@@ -70,7 +62,7 @@ describe('MobileNavBar.vue', () => {
     return mount(MobileNavBar, {
       global: {
         plugins: [PrimeVue, testPinia],
-        components: { ManagerMenu, TenantMenu },
+        components: { ManagerMenu },
         stubs: {
           FontAwesomeIcon: true,
           Drawer: { template: '<div><slot /></div>', props: ['visible'] }
@@ -203,15 +195,13 @@ describe('MobileNavBar.vue', () => {
     // Tenant has 2 items: Overview, Messages. Plus "More" button (not a RouterLink)
     const links = wrapper.findAllComponents({ name: 'RouterLink' });
     expect(links.length).toBe(2);
-    // Since Drawer stub renders its slot, the menu IS present in DOM
-    expect(wrapper.find('[data-test="tenant-menu"]').exists()).toBe(true);
 
-    // Verify Drawer contains TenantMenu
-    const drawer = wrapper.findComponent(Drawer);
-    expect(drawer.exists()).toBe(true);
-    // Trigger render check
-    const tenantMenu = wrapper.find('[data-test="tenant-menu"]');
-    expect(tenantMenu.exists()).toBe(true);
+    // Verify Drawer contains local AppMenuItems for Tenant
+    const appMenuItems = wrapper.findAll('[data-test="app-menu-item"]');
+    expect(appMenuItems.length).toBeGreaterThan(0);
+
+    // Ensure ManagerMenu is not present
+    expect(wrapper.find('[data-test="manager-menu"]').exists()).toBe(false);
   });
 
   it('renders general menu items when no projectId is present', () => {

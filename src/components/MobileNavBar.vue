@@ -4,7 +4,6 @@ import { useRoute, RouterLink, type RouteLocationRaw } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useLayout } from '@/layout/composables/layout';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
-import TenantMenu from '@/layout/TenantMenu.vue';
 import AppMenuItem, { type MenuItem } from '@/layout/AppMenuItem.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Drawer from 'primevue/drawer';
@@ -21,6 +20,7 @@ const { layoutState } = useLayout();
 
 const projectId = computed(() => route.params.projectId);
 const userRole = computed(() => sessionStore.user?.userRoles?.[0]);
+
 
 const managerItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {
@@ -120,6 +120,27 @@ const contractorMenuModel = ref<MenuItem[]>([
         label: 'consultantMenu.clientManagement.closed',
         icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
         to: '/customers',
+        command: () => { sidebarVisible.value = false; }
+      },
+    ],
+  },
+]);
+
+// Local Tenant Menu Model (replacing TenantMenu.vue)
+const tenantMenuModel = ref<MenuItem[]>([
+  {
+    label: 'Mietverhältnis',
+    items: [
+      {
+        label: 'Überblick',
+        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+        to: '/',
+        command: () => { sidebarVisible.value = false; }
+      },
+      {
+        label: 'Meldungen',
+        icon: { type: 'pi', name: 'pi pi-fw pi-comment' },
+        to: { name: 'Inbox' },
         command: () => { sidebarVisible.value = false; }
       },
     ],
@@ -290,7 +311,13 @@ function getIconClass(item: MobileNavItem) {
          </ul>
       </div>
 
-      <TenantMenu v-else-if="userRole === 'TENANT'" />
+      <div v-else-if="userRole === 'TENANT'" class="layout-sidebar">
+         <ul class="layout-menu">
+            <template v-for="(item, i) in tenantMenuModel" :key="item.label">
+                <AppMenuItem :item="item" :index="i" />
+            </template>
+         </ul>
+      </div>
     </Drawer>
   </div>
 </template>
