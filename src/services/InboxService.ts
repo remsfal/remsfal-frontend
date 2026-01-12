@@ -1,7 +1,7 @@
-import { apiClient } from '@/services/ApiClient';
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
-export type IssueType = 'APPLICATION' | 'TASK' | 'DEFECT' | 'MAINTENANCE';
-export type IssueStatus = 'PENDING' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED' | 'REJECTED';
+export type IssueType = ApiComponents['schemas']['Type'];
+export type IssueStatus = ApiComponents['schemas']['Status'];
 
 export interface InboxMessage {
   id: string;
