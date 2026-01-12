@@ -116,3 +116,22 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Capacitor - Android Build Artifacts
+android/app/build/
+android/.gradle/
+android/gradle/
+android/local.properties
+android/captures/
+android/.externalNativeBuild/
+android/.cxx/
+android/app/release/
+
+# Capacitor - iOS Build Artifacts
+ios/App/build/
+ios/App/Pods/
+ios/App/Podfile.lock
+ios/App/.symlinks/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
