@@ -5128,9 +5128,12 @@ export interface components {
             status?: components["schemas"]["Status"];
             ownerId?: components["schemas"]["UUID"];
             description?: string;
-            blockedBy?: components["schemas"]["UUID"];
-            relatedTo?: components["schemas"]["UUID"];
-            duplicateOf?: components["schemas"]["UUID"];
+            blockedBy?: string[];
+            relatedTo?: string[];
+            duplicateOf?: string[];
+            blocks?: string[];
+            parentOf?: string[];
+            childOf?: string[];
         };
         /** @description A list of issues */
         IssueListJson: {
