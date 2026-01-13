@@ -95,17 +95,11 @@ function getIconClass(item: MobileNavItem) {
 
 <style scoped>
 .mobile-nav-bar {
-  display: flex; /* Always flex because parent container handles visibility via media queries */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
   height: 60px;
   background-color: var(--surface-card);
   border-top: 1px solid var(--surface-border);
   justify-content: space-around;
   align-items: center;
-  z-index: 1000;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
