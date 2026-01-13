@@ -15,7 +15,6 @@ describe('App.vue', () => {
       global: {
         plugins: [PrimeVue],
         stubs: {
-          MobileNavBar: true,
           Toast: true,
           ConfirmDialog: true,
           DynamicDialog: true
@@ -23,7 +22,7 @@ describe('App.vue', () => {
       }
     });
 
-    const mobileNav = wrapper.findComponent({ name: 'MobileNavBar' });
+    const mobileNav = wrapper.find('.layout-mobile-navbar');
     expect(mobileNav.exists()).toBe(true);
   });
 });
