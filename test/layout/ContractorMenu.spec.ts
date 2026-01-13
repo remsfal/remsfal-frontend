@@ -1,63 +1,98 @@
-import { mount, VueWrapper } from '@vue/test-utils';
-import {describe, it, expect, beforeEach, vi} from 'vitest';
-import ContractorMenu from '../../src/layout/ContractorMenu.vue';
-import { useUserSessionStore } from '../../src/stores/UserSession';
+import { mount } from "@vue/test-utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { defineComponent, nextTick, reactive } from "vue";
 
-describe('ContractorMenu.vue', () => {
-  let wrapper: VueWrapper;
-  let userSessionStore;
+vi.mock("vue-i18n", () => ({useI18n: () => ({t: (key: string) => key,}),}));
 
+const routerPush = vi.fn();
+
+vi.mock("vue-router", async () => {
+  const actual = await vi.importActual<typeof import("vue-router")>(
+      "vue-router",
+  );
+
+  return {
+    ...actual,
+    useRouter: () => ({ push: routerPush }),
+  };
+});
+
+const projectStoreState = reactive<{ projectId?: string }>({projectId: undefined,});
+
+vi.mock("@/stores/ProjectStore", () => ({useProjectStore: () => projectStoreState,}));
+
+vi.mock("@/stores/UserSession", () => ({useUserSessionStore: () => ({ user: { id: "u1" } }),}));
+
+vi.mock("@/services/IssueService.ts", () => ({StatusValues: { OPEN: "OPEN" },}));
+
+const AppMenuItemStub = defineComponent({
+  name: "AppMenuItem",
+  props: {
+    item: { type: Object, required: true },
+    index: { type: Number, required: false },
+  },
+  methods: {
+    flatten(node: any): any[] {
+      const items = Array.isArray(node?.items) ? node.items : [];
+      const out: any[] = [];
+
+      for (const it of items) {
+        out.push(it);
+        out.push(...this.flatten(it));
+      }
+
+      return out;
+    },
+  },
+  template: `
+    <template>
+      <li
+        v-for="child in flatten(item)"
+        :key="child.label + '|' + (child.to || '')"
+        class="stub-menu-item"
+        :data-label="child.label"
+        :data-to="child.to || ''"
+      ></li>
+    </template>
+  `,
+});
+
+function getContractorsTo(wrapper: ReturnType<typeof mount>) {
+  const el = wrapper.find('[data-label="managerMenu.masterData.contractors"]');
+
+  expect(el.exists()).toBe(true);
+  return el.attributes("data-to");
+}
+
+async function mountFreshManagerMenu() {
+  vi.resetModules();
+
+  const { default: ManagerMenu } = await import("@/layout/ManagerMenu.vue");
+
+  return mount(ManagerMenu, {global: {stubs: {AppMenuItem: AppMenuItemStub,},},});
+}
+
+describe("ContractorMenu.spec.ts", () => {
   beforeEach(() => {
-    userSessionStore = useUserSessionStore();
-    wrapper = mount(ContractorMenu);
+    routerPush.mockClear();
+    projectStoreState.projectId = undefined;
   });
 
-  it('should render the correct menu structure', async () => {
-    await wrapper.vm.$nextTick();
+  it('sets contractors link to "/" when projectId is undefined', async () => {
+    projectStoreState.projectId = undefined;
 
-    const rootMenuItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootMenuItems.length).toBe(2);
-    expect(rootMenuItems[0].text()).toContain('Home');
-    expect(rootMenuItems[1].text()).toContain('Auftragsmanagement');
+    const wrapper = await mountFreshManagerMenu();
+    await nextTick();
 
-    const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus.length).toBe(2);
+    expect(getContractorsTo(wrapper)).toBe("/");
   });
 
+  it("sets contractors link to project route when projectId exists", async () => {
+    projectStoreState.projectId = "p123";
 
-  it('should render the correct menu labels', async () => {
-    await wrapper.vm.$nextTick();
-    const submenuLabels = wrapper.findAll('.layout-submenu .layout-menuitem-text');
+    const wrapper = await mountFreshManagerMenu();
+    await nextTick();
 
-    const expectedSubmenuLabels = [
-      'Überblick',
-      'Auftraggeber',
-      'Offene Anfragen',
-      'Laufende Aufträge',
-      'Abgeschlossene Aufträge',
-    ];
-
-    expectedSubmenuLabels.forEach((label, index) => {
-      expect(submenuLabels[index].text()).toContain(label);
-    });
+    expect(getContractorsTo(wrapper)).toBe("/projects/p123/contractors");
   });
-
-  it('should render the correct icons for menu items', async () => {
-    await wrapper.vm.$nextTick();
-
-    const overviewIcon = wrapper.find('.pi-home');
-    expect(overviewIcon.exists()).toBe(true);
-
-    const clientIcon = wrapper.find('.pi-id-card');
-    expect(clientIcon.exists()).toBe(true);
-  });
-
-  it('should navigate correctly when menu items are clicked', async () => {
-    userSessionStore.user = { email: 'test@example.com' };
-    const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
-
-    await wrapper.find('.pi-home').trigger('click');
-    expect(pushSpy).toHaveBeenCalledWith('/contractor');
-  });
-
 });

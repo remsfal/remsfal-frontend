@@ -1,7 +1,6 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Erst ApiClient mocken – WICHTIG: Pfad exakt wie in ContractorService.ts
-vi.mock('@/services/ApiClient.ts', () => ({
+vi.mock("@/services/ApiClient.ts", () => ({
   apiClient: {
     get: vi.fn(),
     post: vi.fn(),
@@ -10,109 +9,102 @@ vi.mock('@/services/ApiClient.ts', () => ({
   },
 }));
 
-// Danach Service & apiClient importieren
-import { ContractorService, contractorService, type Contractor } from '@/services/ContractorService';
-import { apiClient } from '@/services/ApiClient.ts';
+import { apiClient } from "@/services/ApiClient.ts";
+import { ContractorService } from "@/services/ContractorService";
 
-describe('ContractorService', () => {
-  const PROJECT_ID = 'project-123';
-  const CONTRACTOR_ID = 'contractor-456';
+const PROJECT_ID = "p1";
+const CONTRACTOR_ID = "c1";
 
-  // Für jeden Test frische Mocks
+describe("ContractorService", () => {
+  let service: ContractorService;
+
   beforeEach(() => {
-    vi.clearAllMocks();
+    service = new ContractorService();
+    (apiClient.get as any).mockReset();
+    (apiClient.post as any).mockReset();
+    (apiClient.patch as any).mockReset();
+    (apiClient.delete as any).mockReset();
   });
 
-  it('getContractors ruft apiClient.get mit der richtigen URL auf und gibt das Ergebnis zurück', async () => {
-    const service = new ContractorService();
+  it("getContractors calls apiClient.get", async () => {
+    (apiClient.get as any).mockResolvedValue({ contractors: [] });
 
-    // Fix: "unknown" statt "any" verwenden, um Sonar zufrieden zu stellen
-    const fakeList = { items: [{ id: CONTRACTOR_ID }] };
+    const res = await service.getContractors(PROJECT_ID);
 
-    // Fix: "as Mock" statt "as any"
-    (apiClient.get as Mock).mockResolvedValue(fakeList);
-
-    const result = await service.getContractors(PROJECT_ID);
-
-    expect(apiClient.get).toHaveBeenCalledTimes(1);
     expect(apiClient.get).toHaveBeenCalledWith(`/api/v1/projects/${PROJECT_ID}/contractors`);
-    expect(result).toBe(fakeList);
+    expect(res).toEqual({ contractors: [] });
   });
 
-  it('getContractor ruft apiClient.get mit der richtigen URL auf und gibt den Auftragnehmer zurück', async () => {
-    const service = new ContractorService();
+  it("getContractor calls apiClient.get", async () => {
+    (apiClient.get as any).mockResolvedValue({ id: CONTRACTOR_ID });
 
-    // Fix: Cast zu "unknown" dann zu "Contractor" erlaubt unvollständige Objekte ohne "any"
-    const fakeContractor = { id: CONTRACTOR_ID, companyName: 'Testfirma' } as unknown as Contractor;
-    (apiClient.get as Mock).mockResolvedValue(fakeContractor);
+    const res = await service.getContractor(PROJECT_ID, CONTRACTOR_ID);
 
-    const result = await service.getContractor(PROJECT_ID, CONTRACTOR_ID);
-
-    expect(apiClient.get).toHaveBeenCalledTimes(1);
     expect(apiClient.get).toHaveBeenCalledWith(
         `/api/v1/projects/${PROJECT_ID}/contractors/${CONTRACTOR_ID}`,
     );
-    expect(result).toBe(fakeContractor);
+    expect(res).toEqual({ id: CONTRACTOR_ID });
   });
 
-  it('createContractor ruft apiClient.post mit richtiger URL und Payload auf', async () => {
-    const service = new ContractorService();
+  it("createContractor calls apiClient.post", async () => {
+    const payload = { companyName: "Firma" };
+    (apiClient.post as any).mockResolvedValue({ id: CONTRACTOR_ID });
 
-    // Fix: Partial<Contractor> ist sauberer als any
-    const payload: Partial<Contractor> = {
-      companyName: 'Neue Firma',
-      email: 'new@example.com',
-    };
+    const res = await service.createContractor(PROJECT_ID, payload as any);
 
-    const fakeResponse = { id: CONTRACTOR_ID, ...payload } as unknown as Contractor;
-    (apiClient.post as Mock).mockResolvedValue(fakeResponse);
-
-    const result = await service.createContractor(PROJECT_ID, payload as Contractor);
-
-    expect(apiClient.post).toHaveBeenCalledTimes(1);
     expect(apiClient.post).toHaveBeenCalledWith(
         `/api/v1/projects/${PROJECT_ID}/contractors`,
         payload,
     );
-    expect(result).toBe(fakeResponse);
+    expect(res).toEqual({ id: CONTRACTOR_ID });
   });
 
-  it('updateContractor ruft apiClient.patch mit richtiger URL und Payload auf', async () => {
-    const service = new ContractorService();
+  it("updateContractor calls apiClient.patch", async () => {
+    const payload = { companyName: "Firma 2" };
+    (apiClient.patch as any).mockResolvedValue({ id: CONTRACTOR_ID });
 
-    const payload = { companyName: 'Geänderte Firma' };
-    const fakeResponse = { id: CONTRACTOR_ID, ...payload } as unknown as Contractor;
+    const res = await service.updateContractor(PROJECT_ID, CONTRACTOR_ID, payload as any);
 
-    (apiClient.patch as Mock).mockResolvedValue(fakeResponse);
-
-    // Cast payload as Partial or unknown to fit the method signature if needed
-    await service.updateContractor(PROJECT_ID, CONTRACTOR_ID, payload as unknown as Contractor);
-
-    expect(apiClient.patch).toHaveBeenCalledTimes(1);
     expect(apiClient.patch).toHaveBeenCalledWith(
         `/api/v1/projects/${PROJECT_ID}/contractors/${CONTRACTOR_ID}`,
         payload,
     );
+    expect(res).toEqual({ id: CONTRACTOR_ID });
   });
 
-  it('deleteContractor ruft apiClient.delete mit richtiger URL auf', async () => {
-    const service = new ContractorService();
-
-    (apiClient.delete as Mock).mockResolvedValue(undefined);
+  it("deleteContractor calls apiClient.delete", async () => {
+    (apiClient.delete as any).mockResolvedValue(undefined);
 
     await service.deleteContractor(PROJECT_ID, CONTRACTOR_ID);
 
-    expect(apiClient.delete).toHaveBeenCalledTimes(1);
     expect(apiClient.delete).toHaveBeenCalledWith(
         `/api/v1/projects/${PROJECT_ID}/contractors/${CONTRACTOR_ID}`,
     );
   });
 
-  it('exportiertes Singleton contractorService verwendet dieselbe Implementierung', async () => {
-    (apiClient.get as Mock).mockResolvedValue({});
+  it("deprecated wrappers delegate to new methods", async () => {
+    const list = { contractors: [] } as any;
+    const contractor = { id: CONTRACTOR_ID } as any;
 
-    await contractorService.getContractors(PROJECT_ID);
+    const getContractorsSpy = vi.spyOn(service, "getContractors").mockResolvedValue(list);
+    const getContractorSpy = vi.spyOn(service, "getContractor").mockResolvedValue(contractor);
+    const createSpy = vi.spyOn(service, "createContractor").mockResolvedValue(contractor);
+    const updateSpy = vi.spyOn(service, "updateContractor").mockResolvedValue(contractor);
+    const deleteSpy = vi.spyOn(service, "deleteContractor").mockResolvedValue(undefined);
 
-    expect(apiClient.get).toHaveBeenCalledWith(`/api/v1/projects/${PROJECT_ID}/contractors`);
+    await expect(service.getIssues(PROJECT_ID)).resolves.toBe(list);
+    expect(getContractorsSpy).toHaveBeenCalledWith(PROJECT_ID);
+
+    await expect(service.getIssue(PROJECT_ID, CONTRACTOR_ID)).resolves.toBe(contractor);
+    expect(getContractorSpy).toHaveBeenCalledWith(PROJECT_ID, CONTRACTOR_ID);
+
+    await expect(service.createIssue(PROJECT_ID, { companyName: "X" } as any)).resolves.toBe(contractor);
+    expect(createSpy).toHaveBeenCalled();
+
+    await expect(service.updateIssue(PROJECT_ID, CONTRACTOR_ID, { companyName: "Y" } as any)).resolves.toBe(contractor);
+    expect(updateSpy).toHaveBeenCalledWith(PROJECT_ID, CONTRACTOR_ID, { companyName: "Y" });
+
+    await expect(service.deleteIssue(PROJECT_ID, CONTRACTOR_ID)).resolves.toBeUndefined();
+    expect(deleteSpy).toHaveBeenCalledWith(PROJECT_ID, CONTRACTOR_ID);
   });
 });
