@@ -88,6 +88,5 @@ const unreadCount = computed(() =>
     <!-- Use shared component for common user actions -->
     <TopbarUserActions />
 
-    <LocaleSwitch />
   </AppTopbar>
 </template>
