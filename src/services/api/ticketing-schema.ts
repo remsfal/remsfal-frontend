@@ -1107,6 +1107,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ticketing/v1/issues/{issueId}/relations/{type}/{relatedIssueId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an existing relation between two Issues */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the source Issue */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the related Issue */
+                    relatedIssueId: components["schemas"]["UUID"];
+                    /** @description Type of the relation (e.g. blocks, blocked_by, related_to) */
+                    type: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The relation was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1284,9 +1339,12 @@ export interface components {
             status?: components["schemas"]["Status"];
             ownerId?: components["schemas"]["UUID"];
             description?: string;
-            blockedBy?: components["schemas"]["UUID"];
-            relatedTo?: components["schemas"]["UUID"];
-            duplicateOf?: components["schemas"]["UUID"];
+            blockedBy?: string[];
+            relatedTo?: string[];
+            duplicateOf?: string[];
+            blocks?: string[];
+            parentOf?: string[];
+            childOf?: string[];
         };
         /** @description A list of issues */
         IssueListJson: {
