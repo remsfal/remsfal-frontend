@@ -118,10 +118,13 @@ async function fetchUserProfile() {
   }
 }
 
-function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string {
+function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string | undefined {
   const value =
     editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
-  return typeof value === 'string' ? value : '';
+  if (typeof value === 'string' && value.trim() === '') { 
+    return undefined; 
+  } 
+  return typeof value === 'string' ? value : undefined;
 }
 
 
@@ -639,7 +642,6 @@ const isDisabled = computed(() => {
             </RouterLink>
           </Button>
           <Button
-            v-if="changes"
             type="button"
             icon="pi pi-user-edit"
             class="save-button btn"
@@ -648,7 +650,6 @@ const isDisabled = computed(() => {
             @click="saveProfile"
           />
           <Button
-            v-if="changes"
             type="button"
             icon="pi pi-times"
             class="cancel-button btn"
