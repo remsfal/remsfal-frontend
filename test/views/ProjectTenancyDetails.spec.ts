@@ -1,6 +1,6 @@
-import { mount, flushPromises } from '@vue/test-utils';
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
-import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { tenancyService } from '../../src/services/TenancyService';
 
 // ---- Mocks ----
@@ -19,7 +19,9 @@ vi.mock('vue-router', () => ({
 }));
 
 const toastSpy = vi.fn();
-vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: toastSpy }),}));
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastSpy }), }));
+
+
 
 const mockTenancy = {
   id: 't1',
@@ -30,7 +32,12 @@ const mockTenancy = {
 };
 
 describe('ProjectTenanciesDetails', () => {
-  let wrapper: any;
+  interface ProjectTenanciesDetailsExposed {
+    confirmationDialogVisible: boolean;
+    confirmDeletion: () => void;
+  }
+
+  let wrapper: VueWrapper<InstanceType<typeof ProjectTenanciesDetails>>;
 
   const fetchMock = vi.fn().mockResolvedValue({
     ok: true,
@@ -67,8 +74,10 @@ describe('ProjectTenanciesDetails', () => {
 
     vi.unstubAllGlobals();
     vi.clearAllMocks();
-
     vi.useRealTimers();
+    if (wrapper) {
+      wrapper.unmount();
+    }
   });
 
   it('opens confirmation dialog when delete is clicked', async () => {
@@ -77,7 +86,7 @@ describe('ProjectTenanciesDetails', () => {
 
     await deleteBtn!.trigger('click');
     await flushPromises();
-    expect(wrapper.vm.confirmationDialogVisible).toBe(true);
+    expect((wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmationDialogVisible).toBe(true);
   });
 
   it('calls updateTenancy and shows toast', async () => {
@@ -95,8 +104,8 @@ describe('ProjectTenanciesDetails', () => {
   });
 
   it('deletes tenancy and redirects', async () => {
-    wrapper.vm.confirmationDialogVisible = true;
-    await wrapper.vm.confirmDeletion();
+    (wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmationDialogVisible = true;
+    await (wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmDeletion();
     await flushPromises();
 
     expect(tenancyService.deleteTenancy).toHaveBeenCalled();
