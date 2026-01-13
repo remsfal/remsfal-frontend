@@ -112,7 +112,7 @@ const loadMyIssues = async () => {
 
 // --- Handle row selection ---
 const onIssueSelect = (issue: IssueItem) => {
-  router.push({ name: 'IssueEdit', params: { issueId: issue.id } });
+  router.push({ name: 'IssueDetails', params: { issueId: issue.id } });
 };
 
 // --- Initialize on mount ---

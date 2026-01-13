@@ -100,7 +100,7 @@ const toggleProjectFilter = (projectId: string) => {
 
 const navigateToIssue = (msg: InboxMessage) => {
   router.push({ 
-    name: 'IssueEdit', 
+    name: 'IssueDetails', 
     params: { projectId: msg.projectId, issueId: msg.issueId } 
   });
   if (!msg.isRead) inbox.markAsRead(msg);
