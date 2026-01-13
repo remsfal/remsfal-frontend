@@ -52,6 +52,9 @@ describe('AccountSettingsView', () => {
   let wrapper: VueWrapper;
 
   beforeEach(async () => {
+    updateUserMock.mockReset();
+    updateUserMock.mockResolvedValue({});
+    
     const pinia = createPinia();
     const app = createApp(App);
     app.use(pinia);
@@ -213,11 +216,11 @@ describe('Alternative email handling (UI only)', () => {
     // userProfile / editedUserProfile are refs in the component, but on wrapper.vm they are unwrapped.
     // Assigning here sets the underlying .value automatically.
     v.userProfile = {
- ...(v.userProfile ?? {}), email: 'primary@example.com', alternativeEmail: null 
-};
+      ...(v.userProfile ?? {}), email: 'primary@example.com', alternativeEmail: null 
+    };
     v.editedUserProfile = {
- ...(v.editedUserProfile ?? {}), email: 'primary@example.com', alternativeEmail: null 
-};
+      ...(v.editedUserProfile ?? {}), email: 'primary@example.com', alternativeEmail: null 
+    };
 
     // UI state (also refs in component, but unwrapped on proxy)
     v.visible = false;
@@ -226,6 +229,9 @@ describe('Alternative email handling (UI only)', () => {
     v.emailErrorMessage = '';
     v.altEmailSuccess = false;
     v.altEmailError = false;
+
+    // ensure updateUser uses default resolve
+    updateUserMock.mockResolvedValue({});
   });
 
   test('marks email invalid if format is invalid', async () => {
@@ -250,8 +256,8 @@ describe('Alternative email handling (UI only)', () => {
 
     v.visible = true;
     v.editedUserProfile = {
- ...(v.editedUserProfile ?? {}), email: 'same@example.com', alternativeEmail: null 
-};
+      ...(v.editedUserProfile ?? {}), email: 'same@example.com', alternativeEmail: null 
+    };
     v.alternativeEmail = 'same@example.com';
 
     v.saveAlternativeEmail();
@@ -277,6 +283,7 @@ describe('Alternative email handling (UI only)', () => {
     expect(v.editedUserProfile.alternativeEmail).toBe('alt@example.com');
     expect(v.displayAlternativeEmail).toBe('alt@example.com');
 
+    // UI save does NOT set backend icons
     expect(v.altEmailSuccess).toBe(false);
     expect(v.altEmailError).toBe(false);
 
@@ -318,5 +325,72 @@ describe('Alternative email handling (UI only)', () => {
     expect(v.isEmailInvalid).toBe(false);
     expect(v.emailErrorMessage).toBe('');
   });
- });
+
+  // Coverage tests for saveProfile backend flags
+
+    test('saveProfile: when alternative email did NOT change, it does not set backend alt-email flags', async () => {
+      const v = vm();
+
+      // no change
+      v.userProfile = { ...(v.userProfile ?? {}), alternativeEmail: 'alt@example.com' };
+      v.editedUserProfile = { ...(v.editedUserProfile ?? {}), alternativeEmail: 'alt@example.com' };
+
+      // ensure icons start false
+      v.altEmailSuccess = false;
+      v.altEmailError = false;
+
+      await v.saveProfile();
+      await nextTick();
+
+      expect(updateUserMock).toHaveBeenCalled();
+      expect(v.altEmailSuccess).toBe(false);
+      expect(v.altEmailError).toBe(false);
+    });
+
+    test('saveProfile: when alternative email changed and backend succeeds, sets altEmailSuccess true and altEmailError false', async () => {
+      const v = vm();
+
+      // change alt email
+      v.userProfile = { ...(v.userProfile ?? {}), email: 'primary@example.com', alternativeEmail: null };
+      v.editedUserProfile = {
+        ...(v.editedUserProfile ?? {}),
+        email: 'primary@example.com',
+        alternativeEmail: 'alt@example.com',
+      };
+
+      v.altEmailSuccess = false;
+      v.altEmailError = true; // prove it resets
+
+      await v.saveProfile();
+      await nextTick();
+
+      expect(updateUserMock).toHaveBeenCalled();
+      expect(v.altEmailSuccess).toBe(true);
+      expect(v.altEmailError).toBe(false);
+    });
+
+    test('saveProfile: when alternative email changed and backend fails, sets altEmailError true and altEmailSuccess false', async () => {
+      const v = vm();
+
+      // change alt email
+      v.userProfile = { ...(v.userProfile ?? {}), email: 'primary@example.com', alternativeEmail: null };
+      v.editedUserProfile = {
+        ...(v.editedUserProfile ?? {}),
+        email: 'primary@example.com',
+        alternativeEmail: 'alt@example.com',
+      };
+
+      updateUserMock.mockRejectedValueOnce(new Error('backend failed'));
+
+      v.altEmailSuccess = true; // prove it flips
+      v.altEmailError = false;
+
+      await v.saveProfile();
+      await nextTick();
+
+      expect(updateUserMock).toHaveBeenCalled();
+      expect(v.altEmailSuccess).toBe(false);
+      expect(v.altEmailError).toBe(true);
+    });
+  });
 });
