@@ -11,13 +11,45 @@ import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
 import ConfirmationService from 'primevue/confirmationservice';
+// Set up MSW server globally
+import '../mocks/setupTests';
+
+vi.mock('primevue/chart', () => ({
+  default: {
+    name: 'Chart',
+    template: '<div data-test="chart-stub"></div>',
+  },
+}));
+
+vi.mock('chart.js', () => {
+  class FakeElement {
+    _dummy = true;
+  }
+
+  return {
+    // Chart.js expects static register():
+    Chart: {register: () => {},},
+
+    // Elements
+    ArcElement: FakeElement,
+    BarElement: FakeElement,
+    LineElement: FakeElement,
+    PointElement: FakeElement,
+
+    // Scales
+    CategoryScale: FakeElement,
+    LinearScale: FakeElement,
+    RadialLinearScale: FakeElement,
+
+    // Plugins
+    Tooltip: FakeElement,
+    Legend: FakeElement,
+  };
+});
 
 beforeAll(() => {
   i18n.global.locale.value = 'de';
 });
-
-// Set up MSW server globally
-import '../mocks/setupTests';
 
 // Suppress expected console errors and warnings in tests
 const originalConsoleError = console.error;
@@ -48,9 +80,9 @@ Object.defineProperty(window, 'matchMedia', {
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(), // für ältere APIs
+      addListener: vi.fn(), // for old APIs
       removeListener: vi.fn(),
-      addEventListener: vi.fn(), // moderne APIs
+      addEventListener: vi.fn(), // for modern APIs
       removeEventListener: vi.fn(),
       dispatchEvent: vi.fn(),
     };

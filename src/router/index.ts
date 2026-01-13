@@ -240,7 +240,7 @@ const tenantRoutes: RouteRecordRaw[] = [
 
 const contractorRoutes: RouteRecordRaw[] = [
   {
-    path: '/customers',
+    path: '/contractor',
     components: {
       default: AppLayout,
       topbar: ContractorTopbar,
@@ -249,7 +249,13 @@ const contractorRoutes: RouteRecordRaw[] = [
     props: {default: {fullscreen: false,},},
     children: [
       {
-        path: '',
+        path: 'overview',
+        name: 'ContractorDashboard',
+        props: true,
+        component: () => import('@/views/ContractorDashboardView.vue'),
+      },
+      {
+        path: 'issues',
         name: 'ContractorView',
         props: true,
         component: () => import('@/views/ContractorView.vue'),
