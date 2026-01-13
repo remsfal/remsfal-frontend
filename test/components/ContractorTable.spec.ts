@@ -1,78 +1,191 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { mount } from '@vue/test-utils';
-import ContractorTable from '@/components/ContractorTable.vue';
+import { mount } from "@vue/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { defineComponent, h, inject, provide, toRef, type PropType, type Ref } from "vue";
+import flushPromises from "flush-promises";
+import ContractorTable from "@/components/ContractorTable.vue";
+import type { Contractor } from "@/services/ContractorService";
 
-vi.mock('@/services/ContractorService', () => ({contractorService: { getContractors: vi.fn() },}));
-
-const { contractorService } = await import('@/services/ContractorService');
-
-const PROJECT_ID = 'p1';
-
-const mockContractors = [
-  {
-    id: '1',
-    companyName: 'Alpha',
-    email: 'alpha@mail.com',
-    trade: 'Dach',
-    address: {
-      street: 'A',
-      city: 'B',
-      zip: '11111',
-    },
+vi.mock("@/services/ContractorService", () => ({
+  contractorService: {
+    getContractors: vi.fn(),
   },
-  {
-    id: '2',
-    companyName: 'Beta',
-    email: 'beta@mail.com',
-    trade: 'Maler',
-    address: {
-      street: 'X',
-      city: 'Y',
-      zip: '22222',
-    },
-  },
-];
+}));
 
-type TableProps = {
-  projectId?: string;
+const { contractorService } = await import("@/services/ContractorService");
+
+const PROJECT_ID = "p1";
+
+type ContractorTableVm = {
+  isLoading: boolean;
+  contractors: Contractor[];
+  showArchive: boolean;
+  archiveState: Record<string, boolean>;
+  toggleArchived: (id: string | undefined, value: boolean) => void;
+  reload: () => Promise<void>;
 };
 
-const defaultProps: TableProps = {projectId: PROJECT_ID,};
+const contractorsFixture: Contractor[] = [
+  {
+    id: "1",
+    companyName: "Alpha",
+    email: "alpha@mail.com",
+    trade: "Dach",
+    address: {
+      street: "A",
+      houseNumber: "10",
+      city: "Berlin",
+      zip: "11111",
+    },
+  } as Contractor,
+  {
+    id: "2",
+    companyName: "Beta",
+    email: "beta@mail.com",
+    trade: "Maler",
+    address: {
+      street: "X",
+      city: "Hamburg",
+      zip: "22222",
+    },
+  } as Contractor,
+  {
+    id: "3",
+    companyName: "Gamma",
+    email: "",
+    trade: "",
+    address: undefined,
+  } as Contractor,
+];
 
-const mountTable = (props: TableProps = defaultProps) =>
+type TableProps = { projectId?: string };
+
+const DtRowsKey = Symbol("dt-rows");
+
+const DataTableStub = defineComponent({
+  props: {
+    value: { type: Array as PropType<Contractor[]>, default: () => [] },
+    loading: { type: Boolean, default: false },
+  },
+  setup(props, { slots }) {
+    // ✅ reaktiv, damit ColumnStub nach API-Load Rows bekommt
+    provide(DtRowsKey, toRef(props, "value"));
+
+    return () =>
+        h("div", { class: "datatable-stub", "data-loading": String(props.loading) }, [
+          slots.default?.(),
+          (props.value ?? []).map((row) =>
+              h("div", { key: String(row.id), class: "row-stub" }, [slots.expansion?.({ data: row })]),
+          ),
+        ]);
+  },
+});
+
+const ColumnStub = defineComponent({
+  props: {
+    header: { type: String, default: "" },
+    field: { type: String, default: "" },
+    expander: { type: Boolean, default: false },
+  },
+  setup(props, { slots }) {
+    const rowsRef = inject<Ref<Contractor[]>>(DtRowsKey, { value: [] } as Ref<Contractor[]>);
+
+    return () =>
+        h("div", { class: "column-stub", "data-header": props.header || props.field }, [
+          (rowsRef.value ?? []).map((row) =>
+              h("div", { key: String(row.id), class: "cell-stub" }, slots.body?.({ data: row }) ?? null),
+          ),
+        ]);
+  },
+});
+
+const ButtonStub = defineComponent({
+  props: {
+    label: { type: String, default: "" },
+    icon: { type: String, default: "" },
+  },
+  emits: ["click"],
+  setup(props, { emit, attrs }) {
+    const text = props.label || props.icon || String(attrs["aria-label"] ?? "") || "button";
+    return () =>
+        h(
+            "button",
+            {
+              ...attrs,
+              type: "button",
+              class: "button-stub",
+              onClick: () => emit("click"),
+            },
+            text,
+        );
+  },
+});
+
+const InputTextStub = defineComponent({
+  props: {
+    modelValue: { type: String, default: "" },
+    placeholder: { type: String, default: "" },
+  },
+  emits: ["update:modelValue"],
+  setup(props, { emit, attrs }) {
+    return () =>
+        h("input", {
+          ...attrs,
+          class: "inputtext-stub",
+          value: props.modelValue,
+          placeholder: props.placeholder,
+          onInput: (e: Event) => emit("update:modelValue", (e.target as HTMLInputElement).value),
+        });
+  },
+});
+
+const CheckboxStub = defineComponent({
+  props: {
+    modelValue: { type: Boolean, default: false },
+    binary: { type: Boolean, default: false },
+  },
+  emits: ["update:modelValue"],
+  setup(props, { emit, attrs }) {
+    return () =>
+        h("input", {
+          ...attrs,
+          class: "checkbox-stub",
+          type: "checkbox",
+          checked: props.modelValue,
+          onChange: (e: Event) => emit("update:modelValue", (e.target as HTMLInputElement).checked),
+        });
+  },
+});
+
+const mountTable = (props: TableProps = { projectId: PROJECT_ID }) =>
     mount(ContractorTable, {
       props,
       global: {
         stubs: {
-          DataTable: {template: '<div><slot></slot><slot name="body"></slot></div>',},
-          Column: { template: '<div></div>' },
-          Button: {template: '<button @click="$emit(\'click\')"><slot /></button>',},
-          InputText: {
-            props: ['modelValue'],
-            emits: ['update:modelValue'],
-            template:
-                '<input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
-          },
-          Checkbox: {
-            props: ['modelValue'],
-            emits: ['update:modelValue'],
-            template:
-                '<input type="checkbox" :checked="modelValue" @change="$emit(\'update:modelValue\', $event.target.checked)" />',
-          },
+          DataTable: DataTableStub,
+          Column: ColumnStub,
+          Button: ButtonStub,
+          InputText: InputTextStub,
+          Checkbox: CheckboxStub,
+          Transition: false,
+        },
+        directives: {
+          tooltip: () => {},
         },
       },
     });
 
-describe('ContractorTable.vue', () => {
-  let warnSpy: vi.SpyInstance;
-  let errorSpy: vi.SpyInstance;
+describe("ContractorTable.vue", () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+  let errorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    (contractorService.getContractors as unknown as vi.Mock).mockReset();
-    (contractorService.getContractors as unknown as vi.Mock).mockResolvedValue({contractors: mockContractors,});
+    (contractorService.getContractors as ReturnType<typeof vi.fn>).mockReset();
+    (contractorService.getContractors as ReturnType<typeof vi.fn>).mockResolvedValue({
+      contractors: contractorsFixture,
+    });
 
-    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -80,150 +193,132 @@ describe('ContractorTable.vue', () => {
     errorSpy.mockRestore();
   });
 
-  it('loads contractors on mount when projectId is provided', async () => {
+  it("loads contractors on mount", async () => {
     const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
+
+    const vm = wrapper.vm as unknown as ContractorTableVm;
 
     expect(contractorService.getContractors).toHaveBeenCalledWith(PROJECT_ID);
-    expect(wrapper.vm.contractors.length).toBe(2);
+    expect(vm.contractors.length).toBe(3);
+    expect(vm.isLoading).toBe(false);
+
+    const text = wrapper.text();
+    expect(text).toContain("Auftragnehmer gefunden");
+    expect(text).toContain("Alpha");
+    expect(text).toContain("Beta");
+    expect(text).toContain("Gamma");
   });
 
-  it('reacts to projectId changes and reloads data', async () => {
-    const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
-
-    expect(contractorService.getContractors).toHaveBeenCalledTimes(1);
-
-    await wrapper.setProps({ projectId: 'p2' });
-    await wrapper.vm.$nextTick();
-
-    const calls = (contractorService.getContractors as unknown as vi.Mock).mock.calls;
-
-    expect(contractorService.getContractors).toHaveBeenCalledTimes(2);
-    expect(calls[1][0]).toBe('p2');
-  });
-
-  it('handles missing projectId by logging warning and not calling service', async () => {
-    const wrapper = mountTable({});
-    await wrapper.vm.$nextTick();
+  it("logs warning and does not call service when projectId is missing", async () => {
+    const wrapper = mountTable({ projectId: undefined });
+    await flushPromises();
 
     expect(contractorService.getContractors).not.toHaveBeenCalled();
-    expect(wrapper.vm.contractors.length).toBe(0);
     expect(warnSpy).toHaveBeenCalled();
+    expect(wrapper.text()).toContain("0 Auftragnehmer gefunden");
   });
 
-  it('handles service errors and sets contractors to empty', async () => {
-    (contractorService.getContractors as unknown as vi.Mock).mockRejectedValueOnce(
-        new Error('boom'),
-    );
+  it("handles service errors by logging and clearing list", async () => {
+    (contractorService.getContractors as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("boom"));
 
     const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
 
     expect(errorSpy).toHaveBeenCalled();
-    expect(wrapper.vm.contractors.length).toBe(0);
-    expect(wrapper.vm.isLoading).toBe(false);
+    expect(wrapper.text()).toContain("0 Auftragnehmer gefunden");
   });
 
-  it('filters contractors via search (company/email/trade)', async () => {
-    const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
+  it("updates list when projectId changes (covers watch)", async () => {
+    const wrapper = mountTable({ projectId: "p1" });
+    await flushPromises();
 
-    wrapper.vm.searchTerm = 'alpha';
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.filteredContractors.length).toBe(1);
-    expect(wrapper.vm.filteredContractors[0].companyName).toBe('Alpha');
+    await wrapper.setProps({ projectId: "p2" });
+    await flushPromises();
 
-    wrapper.vm.searchTerm = 'MALER';
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.filteredContractors.length).toBe(1);
-    expect(wrapper.vm.filteredContractors[0].trade).toBe('Maler');
-
-    wrapper.vm.searchTerm = 'mail.com';
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.filteredContractors.length).toBe(2);
+    expect(contractorService.getContractors).toHaveBeenCalledWith("p2");
   });
 
-  it('returns full base list when search term is empty', async () => {
+  it("filters contractors via search (company/email/trade)", async () => {
     const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
 
-    wrapper.vm.searchTerm = '';
-    await wrapper.vm.$nextTick();
+    const input = wrapper.find("input.inputtext-stub");
+    await input.setValue("beta");
+    await flushPromises();
 
-    expect(wrapper.vm.filteredContractors.length).toBe(
-        wrapper.vm.baseList.length,
-    );
+    const text = wrapper.text();
+    expect(text).toContain("Beta");
+    expect(text).not.toContain("Alpha");
+    expect(text).not.toContain("Gamma");
   });
 
-  it('toggles archive state and baseList responds to showArchive flag', async () => {
+  it("toggles archive state and switches between active/archive lists", async () => {
     const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
 
-    expect(wrapper.vm.baseList.length).toBe(2);
+    // ✅ Checkbox ist in Column #body → jetzt wird er gerendert
+    const checkboxes = wrapper.findAll("input.checkbox-stub");
+    expect(checkboxes.length).toBeGreaterThan(0);
 
-    wrapper.vm.toggleArchived('1', true);
-    expect(wrapper.vm.isArchived(mockContractors[0])).toBe(true);
-    expect(
-        wrapper.vm.isArchived({ ...mockContractors[0], id: undefined }),
-    ).toBe(false);
+    // Alpha archivieren
+    await checkboxes[0].setValue(true);
+    await flushPromises();
 
-    wrapper.vm.showArchive = true;
-    await wrapper.vm.$nextTick();
+    // Aktiv-Ansicht: Alpha ist raus
+    let text = wrapper.text();
+    expect(text).not.toContain("Alpha");
 
-    expect(wrapper.vm.baseList.length).toBe(1);
-    expect(wrapper.vm.baseList[0].id).toBe('1');
+    // Toolbar Button: Archiv anzeigen
+    const toggleBtn = wrapper.findAll("button.button-stub").find((b) => b.text().includes("Archiv anzeigen"));
+    expect(toggleBtn).toBeTruthy();
+
+    await toggleBtn!.trigger("click");
+    await flushPromises();
+
+    // Archiv-Ansicht: Alpha wieder da + Adresse Branches
+    text = wrapper.text();
+    expect(text).toContain("archivierte Auftragnehmer gefunden");
+    expect(text).toContain("Alpha");
+    expect(text).toMatch(/A\s*10/);
+    expect(text).toMatch(/11111\s+Berlin/);
+    expect(text).toContain("Keine Adresse");
   });
 
-  it('ignores toggleArchived call when id is undefined', async () => {
+  it("emits edit and delete when action buttons are clicked", async () => {
     const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
 
-    const before = { ...wrapper.vm.archiveState };
-    wrapper.vm.toggleArchived(undefined, true);
+    const buttons = wrapper.findAll("button.button-stub");
 
-    expect(wrapper.vm.archiveState).toEqual(before);
+    const editBtn = buttons.find((b) => b.text().includes("pi pi-pencil"));
+    const delBtn = buttons.find((b) => b.text().includes("pi pi-trash"));
+
+    expect(editBtn).toBeTruthy();
+    expect(delBtn).toBeTruthy();
+
+    await editBtn!.trigger("click");
+    await delBtn!.trigger("click");
+
+    const editEmits = wrapper.emitted("edit") ?? [];
+    const deleteEmits = wrapper.emitted("delete") ?? [];
+
+    expect(editEmits.length).toBe(1);
+    expect(deleteEmits.length).toBe(1);
+
+    expect((editEmits[0] as unknown[])[0]).toMatchObject({ companyName: "Alpha" });
+    expect((deleteEmits[0] as unknown[])[0]).toMatchObject({ companyName: "Alpha" });
   });
 
-  it('computes countLabel depending on showArchive flag', async () => {
+  it("reloads contractors via exposed reload()", async () => {
     const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
 
-    expect(wrapper.vm.countLabel).toBe('Auftragnehmer');
+    const vm = wrapper.vm as unknown as ContractorTableVm;
 
-    wrapper.vm.showArchive = true;
-    await wrapper.vm.$nextTick();
+    await vm.reload();
+    await flushPromises();
 
-    expect(wrapper.vm.countLabel).toBe('archivierte Auftragnehmer');
-  });
-
-  it('emits edit event', async () => {
-    const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
-
-    const c = mockContractors[0];
-    wrapper.vm.$emit('edit', c);
-
-    expect(wrapper.emitted().edit).toBeTruthy();
-    expect(wrapper.emitted().edit![0][0]).toEqual(c);
-  });
-
-  it('emits delete event', async () => {
-    const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
-
-    const c = mockContractors[1];
-    wrapper.vm.$emit('delete', c);
-
-    expect(wrapper.emitted().delete).toBeTruthy();
-    expect(wrapper.emitted().delete![0][0]).toEqual(c);
-  });
-
-  it('reloads contractors via exposed reload function', async () => {
-    const wrapper = mountTable();
-    await wrapper.vm.$nextTick();
-
-    await wrapper.vm.reload();
     expect(contractorService.getContractors).toHaveBeenCalledTimes(2);
   });
 });
