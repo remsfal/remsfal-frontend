@@ -65,7 +65,9 @@ function eventToToast(ev: IssueEventJson) {
         }
     }
 
-    return { severity, summary, detail, link: ev.link };
+    return {
+ severity, summary, detail, link: ev.link 
+};
 }
 
 export function useIssueNotificationsSse() {
@@ -85,12 +87,18 @@ export function useIssueNotificationsSse() {
         // Wir kennen dein Store-Interface nicht exakt → best-effort checks
         // Wenn du einen klaren Flag hast (z.B. sessionStore.isAuthenticated), greift er automatisch.
         // Falls nicht, ist es auch okay: wir versuchen einfach zu verbinden.
-        // @ts-ignore
-        if (typeof sessionStore.isAuthenticated === 'boolean') return sessionStore.isAuthenticated;
-        // @ts-ignore
-        if (sessionStore.user) return true;
+
+        const s = sessionStore as unknown as {
+            isAuthenticated?: boolean;
+            user?: unknown;
+        };
+
+        if (typeof s.isAuthenticated === 'boolean') return s.isAuthenticated;
+        if (s.user) return true;
+
         return true; // fallback: try anyway
     }
+
 
     function scheduleRetry() {
         if (retryTimer != null) return;
@@ -148,11 +156,14 @@ export function useIssueNotificationsSse() {
                 // Close + retry (robuster als “EventSource macht schon” in Auth/Proxy Setups)
                 try {
                     es?.close();
-                } catch {}
+                } catch  {
+                    // ignore close errors
+                }
                 es = null;
 
                 scheduleRetry();
             };
+
         } catch (err) {
             connected.value = false;
             lastError.value = err;
@@ -166,14 +177,21 @@ export function useIssueNotificationsSse() {
             window.clearTimeout(retryTimer);
             retryTimer = null;
         }
+
         if (es) {
             try {
                 es.close();
-            } catch {}
+            } catch  {
+                // ignore close errors
+            }
             es = null;
         }
+
         connected.value = false;
     }
 
-    return { connected, lastError, connect, disconnect };
+
+    return {
+ connected, lastError, connect, disconnect 
+};
 }
