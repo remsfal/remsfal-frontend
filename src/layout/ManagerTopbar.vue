@@ -5,7 +5,6 @@ import { useProjectStore } from '@/stores/ProjectStore';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
-import LocaleSwitch from '@/components/LocaleSwitch.vue';
 import AppTopbar from '@/layout/AppTopbar.vue';
 import { computed } from 'vue';
 import { useInboxStore } from '@/stores/InboxStore';
@@ -88,7 +87,5 @@ const unreadCount = computed(() =>
 
     <!-- Use shared component for common user actions -->
     <TopbarUserActions />
-
-    <LocaleSwitch />
   </AppTopbar>
 </template>
