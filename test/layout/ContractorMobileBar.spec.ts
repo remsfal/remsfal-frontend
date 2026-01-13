@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ContractorMobileBar from '@/layout/ContractorMobileBar.vue';
 import PrimeVue from 'primevue/config';
@@ -18,15 +18,15 @@ const RouterLinkStub = {
 
 
 describe('ContractorMobileBar.vue', () => {
-    const mountComponent = (initialRoute = { name: 'ContractorView', query: {}, path: '/customers' }) => {
+    const mountComponent = (initialRoute = {
+        name: 'ContractorView', query: {}, path: '/customers'
+    }) => {
         const route = reactive(initialRoute);
 
         const wrapper = mount(ContractorMobileBar, {
             global: {
                 plugins: [PrimeVue],
-                provide: {
-                    [routeLocationKey as symbol]: route
-                },
+                provide: { [routeLocationKey as symbol]: route },
                 stubs: {
                     ContractorMenu: true,
                     Drawer: {
@@ -48,7 +48,9 @@ describe('ContractorMobileBar.vue', () => {
     });
 
     it('highlights Overview active state correctly', async () => {
-        const { wrapper } = mountComponent({ name: 'ContractorView', query: {}, path: '/customers' });
+        const { wrapper } = mountComponent({
+            name: 'ContractorView', query: {}, path: '/customers'
+        });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
@@ -57,7 +59,9 @@ describe('ContractorMobileBar.vue', () => {
     });
 
     it('highlights Orders active state correctly', async () => {
-        const { wrapper } = mountComponent({ name: 'ContractorView', query: { tab: 'orders' }, path: '/customers' });
+        const { wrapper } = mountComponent({
+            name: 'ContractorView', query: { tab: 'orders' }, path: '/customers'
+        });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');

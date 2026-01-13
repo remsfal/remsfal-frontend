@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import ManagerMobileBar from '@/layout/ManagerMobileBar.vue';
 import PrimeVue from 'primevue/config';
@@ -22,19 +22,17 @@ const RouterLinkStub = {
 };
 
 describe('ManagerMobileBar.vue', () => {
-    const mountComponent = (initialRoute = { path: '/', name: 'ProjectSelection', params: {}, query: {} }) => {
+    const mountComponent = (initialRoute = {
+        path: '/', name: 'ProjectSelection', params: {}, query: {}
+    }) => {
         const route = reactive(initialRoute);
 
         // Create base wrapper
         const wrapper = mount(ManagerMobileBar, {
             global: {
                 plugins: [PrimeVue],
-                provide: {
-                    [routeLocationKey as symbol]: route
-                },
-                components: {
-                    FontAwesomeIcon
-                },
+                provide: { [routeLocationKey as symbol]: route },
+                components: { FontAwesomeIcon },
                 stubs: {
                     ManagerMenu: true,
                     Drawer: {

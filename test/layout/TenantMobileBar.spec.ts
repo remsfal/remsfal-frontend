@@ -24,9 +24,7 @@ describe('TenantMobileBar.vue', () => {
         const wrapper = mount(TenantMobileBar, {
             global: {
                 plugins: [PrimeVue],
-                provide: {
-                    [routeLocationKey as symbol]: route
-                },
+                provide: {[routeLocationKey as symbol]: route},
                 stubs: {
                     TenantMenu: true,
                     Drawer: {
