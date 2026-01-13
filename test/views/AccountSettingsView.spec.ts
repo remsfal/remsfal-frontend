@@ -158,6 +158,24 @@ describe('AccountSettingsView', () => {
       await wrapper.vm.updateCountryFromCode();
       expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
     });
-    
+  });
+  
+  describe('getUpdatedValue', () => {
+    beforeEach(() => {
+      wrapper.vm.editedUserProfile = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      mobilePhoneNumber: '',
+      businessPhoneNumber: '',
+      privatePhoneNumber: '',
+      };
+    });
+
+    test('returns undefined if value in editedUserProfile is empty string', () => {
+      wrapper.vm.editedUserProfile.lastName = '';
+      const result = wrapper.vm.getUpdatedValue('lastName');
+      expect(result).toBeUndefined();
+    });
   });
 });

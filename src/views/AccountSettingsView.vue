@@ -118,14 +118,11 @@ function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string
 }
 
 
-function getUpdatedAddressValue(field: keyof Address): string | undefined{
+function getUpdatedAddressValue(field: keyof Address): string{
   const value =
     (editedAddress.value as Record<keyof Address, unknown>)?.[field] ??
     (addressProfile.value as Record<keyof Address, unknown>)?.[field];
-  if (typeof value === 'string' && value.trim() === '') { 
-    return undefined; 
-  } 
-  return typeof value === 'string' ? value : undefined;
+  return typeof value === 'string' ? value : '';
 }
 
 
