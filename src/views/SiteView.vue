@@ -16,7 +16,7 @@ const error = ref<string | null>(null);
 onMounted(async () => {
   if (!props.siteId) return;
   try {
-    const site = (await siteService.getSite(props.projectId, props.siteId)) as any;
+    const site = await siteService.getSite(props.projectId, props.siteId);
 
     initialValues.value.title = site.title;
     initialValues.value.description = site.description;
@@ -34,7 +34,7 @@ const handleSubmit = async (formValues: Partial<SiteUnit>) => {
   const siteUpdate: Partial<SiteUnit> = {
     title: formValues.title,
     description: formValues.description,
-    space: formValues.space !== undefined ? parseFloat(String(formValues.space)) : undefined,
+    space: formValues.space === undefined ? undefined : formValues.space,
     address: formValues.address,
   };
 
