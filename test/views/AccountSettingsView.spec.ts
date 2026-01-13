@@ -2,6 +2,7 @@ import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import AccountSettingsView from '../../src/views/AccountSettingsView.vue';
 import Card from 'primevue/card';
+import Select from 'primevue/select';
 import { createPinia } from 'pinia';
 import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
@@ -24,10 +25,12 @@ describe('AccountSettingsView', () => {
     wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({
       firstName: 'First Name',
       lastName: 'Last Name',
+      locale: 'de',
     });
     wrapper.vm.$options.saveProfile = vi.fn().mockResolvedValue({
       firstName: 'Updated First Name',
       lastName: 'Updated Last Name',
+      locale: 'de',
       address: {
         street: 'Updated Street',
         city: 'Updated City',
