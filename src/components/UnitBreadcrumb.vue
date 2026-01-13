@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
+import BaseCard from '@/components/BaseCard.vue';
 import { useI18n } from 'vue-i18n';
 import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
 
@@ -146,20 +147,19 @@ const loadBreadcrumbs = async () => {
 
   let pathNodes = await fetchPathNodes(targetId);
   pathNodes = await ensureContextParent(pathNodes);
-  
+
   let resultItems = mapNodesToItems(pathNodes);
   resultItems = processLastItem(resultItems);
 
-  if (resultItems.length === 0) {
-    resultItems.push({
-      label: t('breadcrumb.backToOverview'),
-      icon: 'pi pi-arrow-left',
-      command: () => router.push({ 
-        name: 'RentableUnitsView', 
-        params: { projectId: props.projectId } 
-      }),
-    });
-  }
+  // Always prepend "Übersicht" link as first breadcrumb item
+  resultItems.unshift({
+    label: t('breadcrumb.overview'),
+    icon: 'pi pi-th-large',
+    command: () => router.push({
+      name: 'RentableUnits',
+      params: { projectId: props.projectId }
+    }),
+  });
 
   items.value = resultItems;
 };
@@ -173,7 +173,11 @@ watch(
 </script>
 
 <template>
-  <Breadcrumb :model="items" class="custom-breadcrumb mb-4 pl-0" />
+  <BaseCard>
+    <template #content>
+      <Breadcrumb :model="items" class="custom-breadcrumb" />
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>

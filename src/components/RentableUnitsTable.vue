@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import Card from 'primevue/card';
+import BaseCard from '@/components/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import TreeTable, { type TreeTableExpandedKeys, type TreeTableSelectionKeys } from 'primevue/treetable';
@@ -62,11 +62,9 @@ function onDeleteNode(node: RentableUnitTreeNode) {
 </script>
 
 <template>
-  <Card class="flex flex-col gap-4 basis-full">
+  <BaseCard>
     <template #title>
-      <div class="font-semibold text-xl">
-        {{ t('rentableUnits.view.title') }}
-      </div>
+      {{ t('rentableUnits.view.title') }}
     </template>
 
     <template #content>
@@ -147,7 +145,7 @@ function onDeleteNode(node: RentableUnitTreeNode) {
         <NewPropertyButton :projectId="props.projectId" @newUnit="onNewRentableUnit" />
       </div>
     </template>
-  </Card>
+  </BaseCard>
 </template>
 
 <style scoped></style>
