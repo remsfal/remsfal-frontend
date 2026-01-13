@@ -15,7 +15,7 @@ const model = ref([
       {
         label: 'consultantMenu.home.client',
         icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
-        to: '/contractor/overview',
+        to: '/contractor/issues',
       },
     ],
   },
