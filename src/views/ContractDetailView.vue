@@ -2,6 +2,10 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { tenantContractService, type TenantContractDetail } from '@/services/TenantContractService.ts';
+import Card from 'primevue/card';
+import Message from 'primevue/message';
+import ProgressSpinner from 'primevue/progressspinner';
+import Panel from 'primevue/panel';
 
 const route = useRoute();
 
@@ -62,68 +66,74 @@ onMounted(loadContract);
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
-        <h1 class="text-2xl font-semibold text-gray-900">Vertragsdetails</h1>
-        <p class="text-gray-600">Alle Informationen zu deinem Mietvertrag.</p>
+        <h1 class="text-2xl font-semibold text-gray-900 mb-1">Vertragsdetails</h1>
+        <p class="text-gray-600 mb-4">Alle Informationen zu deinem Mietvertrag.</p>
       </div>
 
       <div class="col-span-12">
-        <div class="card space-y-6">
-          <div class="flex flex-col gap-1">
-            <p class="text-sm text-gray-500">Vertragsnummer {{ contract?.id ?? route.params.contractId }}</p>
-            <h2 class="text-xl font-semibold text-gray-900">
-              {{ contract?.address ?? 'Lade Adresse …' }}
-            </h2>
-            <p v-if="contract" class="text-sm text-gray-500">
-              Laufzeit: {{ leaseDuration }}
-            </p>
-          </div>
-
-          <div v-if="error" class="rounded-md bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-            {{ error }}
-          </div>
-
-          <div v-if="loading && !contract" class="text-sm text-gray-500">Lade Vertragsdetails …</div>
-
-          <div v-if="contract" class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <p class="text-sm font-medium text-gray-500">Monatliche Miete</p>
-              <p class="text-lg font-semibold text-gray-900">
-                {{ formatCurrency(contract.monthlyRent) }}
+        <Card>
+          <template #content>
+            <div class="flex flex-col gap-1 mb-6">
+              <p class="text-sm text-gray-500">
+                Vertragsnummer {{ contract?.id ?? route.params.contractId }}
+              </p>
+              <h2 class="text-xl font-semibold text-gray-900">
+                {{ contract?.address ?? 'Lade Adresse …' }}
+              </h2>
+              <p v-if="contract" class="text-sm text-gray-500">
+                Laufzeit: {{ leaseDuration }}
               </p>
             </div>
-            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <p class="text-sm font-medium text-gray-500">Kaution</p>
-              <p class="text-lg font-semibold text-gray-900">
-                {{ formatCurrency(contract.deposit) }}
-              </p>
-            </div>
-            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <p class="text-sm font-medium text-gray-500">Laufzeit</p>
-              <p class="text-lg font-semibold text-gray-900">{{ leaseDuration }}</p>
-            </div>
-            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <p class="text-sm font-medium text-gray-500">Vermieter / Verwaltung</p>
-              <p class="text-lg font-semibold text-gray-900">{{ contract.landlord }}</p>
-            </div>
-          </div>
 
-            <div v-if="contract" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm space-y-3">
-            <h3 class="text-lg font-medium text-gray-900">Zugehörige Dokumente</h3>
-            <ul class="space-y-2 text-sm">
-              <li v-for="(doc, idx) in contract.documents" :key="idx">
-                <a
-                  :href="doc.url"
-                  class="text-blue-600 hover:text-blue-800 underline underline-offset-2"
-                >
-                  {{ doc.label }}
-                </a>
-              </li>
-              <li v-if="!contract.documents || contract.documents.length === 0" class="text-gray-500">
-                Keine Dokumente vorhanden.
-              </li>
-            </ul>
-          </div>
-        </div>
+            <Message v-if="error" severity="warn" class="mb-4" :closable="false">
+              {{ error }}
+            </Message>
+
+            <div v-if="loading && !contract" class="flex items-center gap-2 text-gray-500">
+              <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="4" />
+              Lade Vertragsdetails …
+            </div>
+
+            <div v-if="contract" class="grid grid-cols-1 gap-4 md:grid-cols-2 mb-6">
+              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <p class="text-sm font-medium text-gray-500">Monatliche Miete</p>
+                <p class="text-lg font-semibold text-gray-900">
+                  {{ formatCurrency(contract.monthlyRent) }}
+                </p>
+              </div>
+              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <p class="text-sm font-medium text-gray-500">Kaution</p>
+                <p class="text-lg font-semibold text-gray-900">
+                  {{ formatCurrency(contract.deposit) }}
+                </p>
+              </div>
+              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <p class="text-sm font-medium text-gray-500">Laufzeit</p>
+                <p class="text-lg font-semibold text-gray-900">{{ leaseDuration }}</p>
+              </div>
+              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <p class="text-sm font-medium text-gray-500">Vermieter / Verwaltung</p>
+                <p class="text-lg font-semibold text-gray-900">{{ contract.landlord }}</p>
+              </div>
+            </div>
+
+            <Panel v-if="contract" header="Zugehörige Dokumente" toggleable>
+              <ul class="space-y-2 text-sm m-0 p-0 list-none">
+                <li v-for="(doc, idx) in contract.documents" :key="idx">
+                  <a
+                    :href="doc.url"
+                    class="text-blue-600 hover:text-blue-800 underline underline-offset-2"
+                  >
+                    {{ doc.label }}
+                  </a>
+                </li>
+                <li v-if="!contract.documents || contract.documents.length === 0" class="text-gray-500">
+                  Keine Dokumente vorhanden.
+                </li>
+              </ul>
+            </Panel>
+          </template>
+        </Card>
       </div>
     </div>
   </main>

@@ -3,6 +3,10 @@ import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { tenantContractService } from '@/services/TenantContractService.ts';
 import type { TenantContractStatus, TenantContractSummary } from '@/services/TenantContractService.ts';
+import Card from 'primevue/card';
+import Message from 'primevue/message';
+import ProgressSpinner from 'primevue/progressspinner';
+import Tag from 'primevue/tag';
 
 const fallbackContracts: TenantContractSummary[] = [
   {
@@ -32,10 +36,13 @@ const contracts = ref<TenantContractSummary[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-const statusClasses = (status: TenantContractStatus) =>
-  status === 'Active'
-    ? 'bg-green-100 text-green-800 border-green-200'
-    : 'bg-gray-100 text-gray-700 border-gray-200';
+const getSeverity = (status: TenantContractStatus) => {
+  return status === 'Active' ? 'success' : 'secondary';
+};
+
+const getStatusLabel = (status: TenantContractStatus) => {
+  return status === 'Active' ? 'Aktiv' : 'Abgelaufen';
+};
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
 
@@ -75,103 +82,97 @@ onMounted(loadContracts);
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
-      <div class="col-span-12 space-y-1">
-        <h1 class="text-2xl font-semibold text-gray-900">
+      <div class="col-span-12">
+        <h1 class="text-2xl font-semibold text-gray-900 mb-1">
           Meine Mietverträge
         </h1>
-        <p class="text-gray-600">
+        <p class="text-gray-600 mb-4">
           Übersicht deiner Mietverhältnisse. Tippe auf einen Vertrag, um Details zu sehen.
         </p>
       </div>
 
       <div class="col-span-12">
-        <div class="card">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
-            <div>
-              <p class="text-sm text-gray-500">
-                Aktive und abgelaufene Verträge
-              </p>
-              <p class="text-base text-gray-800">
-                Direkt verknüpft mit deinem Account
-              </p>
-            </div>
-            <span
-              v-if="loading"
-              class="text-sm text-gray-500"
-            >
-              Lade Verträge …
-            </span>
-          </div>
-
-          <div
-            v-if="error"
-            class="mt-4 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700"
-            role="alert"
-          >
-            {{ error }}
-          </div>
-
-          <div
-            v-if="contracts.length"
-            class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
-          >
-            <RouterLink
-              v-for="contract in contracts"
-              :key="contract.id"
-              :to="`/tenancies/contract/${contract.id}`"
-              class="group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition
-                     hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              data-testid="contract-card"
-            >
-              <div class="flex items-start justify-between gap-2">
-                <h2 class="text-lg font-medium text-gray-900 group-hover:text-blue-700">
-                  {{ contract.address }}
-                </h2>
-                <span
-                  class="ml-2 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold"
-                  :class="statusClasses(contract.status)"
-                >
-                  {{ contract.status === 'Active' ? 'Aktiv' : 'Abgelaufen' }}
-                </span>
+        <Card>
+          <template #title>
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
+              <div>
+                <span class="text-xl font-semibold">Aktive und abgelaufene Verträge</span>
+                <p class="text-base text-gray-500 font-normal mt-1">
+                  Direkt verknüpft mit deinem Account
+                </p>
               </div>
+              <div v-if="loading" class="flex items-center gap-2">
+                <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="4" />
+                <span class="text-sm text-gray-500">Lade Verträge …</span>
+              </div>
+            </div>
+          </template>
 
-              <dl class="mt-3 space-y-1 text-sm text-gray-600">
-                <div class="flex justify-between">
-                  <dt class="font-medium text-gray-500">
-                    Vertragsnummer
-                  </dt>
-                  <dd class="text-gray-900">
-                    {{ contract.id }}
-                  </dd>
-                </div>
-                <div class="flex justify-between">
-                  <dt class="font-medium text-gray-500">
-                    Beginn
-                  </dt>
-                  <dd class="text-gray-900">
-                    {{ formatDate(contract.leaseStart) }}
-                  </dd>
-                </div>
-                <div class="flex justify-between">
-                  <dt class="font-medium text-gray-500">
-                    Ende
-                  </dt>
-                  <dd class="text-gray-900">
-                    {{ formatDate(contract.leaseEnd) }}
-                  </dd>
-                </div>
-              </dl>
-            </RouterLink>
-          </div>
+          <template #content>
+            <Message v-if="error" severity="error" class="mb-4" :closable="false">
+              {{ error }}
+            </Message>
 
-          <div
-            v-else
-            class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-gray-500"
-            data-testid="empty-state"
-          >
-            Keine Verträge gefunden.
-          </div>
-        </div>
+            <div
+              v-if="contracts.length"
+              class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 mt-4"
+            >
+              <RouterLink
+                v-for="contract in contracts"
+                :key="contract.id"
+                :to="`/tenancies/contract/${contract.id}`"
+                class="no-underline"
+                data-testid="contract-card"
+              >
+                <Card class="h-full hover:shadow-md transition-shadow cursor-pointer border border-gray-200 shadow-none">
+                  <template #content>
+                    <div class="flex items-start justify-between gap-2 mb-3">
+                      <h2 class="text-lg font-medium text-gray-900">
+                        {{ contract.address }}
+                      </h2>
+                      <Tag :value="getStatusLabel(contract.status)" :severity="getSeverity(contract.status)" rounded />
+                    </div>
+
+                    <dl class="space-y-1 text-sm text-gray-600">
+                      <div class="flex justify-between">
+                        <dt class="font-medium text-gray-500">
+                          Vertragsnummer
+                        </dt>
+                        <dd class="text-gray-900">
+                          {{ contract.id }}
+                        </dd>
+                      </div>
+                      <div class="flex justify-between">
+                        <dt class="font-medium text-gray-500">
+                          Beginn
+                        </dt>
+                        <dd class="text-gray-900">
+                          {{ formatDate(contract.leaseStart) }}
+                        </dd>
+                      </div>
+                      <div class="flex justify-between">
+                        <dt class="font-medium text-gray-500">
+                          Ende
+                        </dt>
+                        <dd class="text-gray-900">
+                          {{ formatDate(contract.leaseEnd) }}
+                        </dd>
+                      </div>
+                    </dl>
+                  </template>
+                </Card>
+              </RouterLink>
+            </div>
+
+            <div
+              v-else-if="!loading"
+              class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-gray-500"
+              data-testid="empty-state"
+            >
+              Keine Verträge gefunden.
+            </div>
+          </template>
+        </Card>
       </div>
     </div>
   </main>
