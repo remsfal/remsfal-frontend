@@ -1,3 +1,5 @@
+/* eslint-disable vue/one-component-per-file */
+
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { mount } from "@vue/test-utils";
 import { defineComponent, h } from "vue";
@@ -68,17 +70,22 @@ const makeMount = (projectId = PROJECT_ID) => {
 
   const DialogStub = defineComponent({
     name: "DialogStub",
-    props: ["visible", "header"],
+    props: {
+      visible: {
+        type: Boolean,
+        required: false,
+      },
+      header: {
+        type: String,
+        required: false,
+      },
+    },
     emits: ["update:visible"],
     setup(props, { slots }) {
       return () =>
           props.visible
               ? h("div", { class: "dialog-stub" }, [
-                h(
-                    "div",
-                    { class: "dialog-header" },
-                    String(props.header ?? ""),
-                ),
+                h("div", { class: "dialog-header" }, props.header ?? ""),
                 slots.default?.(),
                 slots.footer?.(),
               ])
@@ -96,7 +103,7 @@ const makeMount = (projectId = PROJECT_ID) => {
         },
         Dialog: DialogStub,
         InputText: {
-          props: ["modelValue", "inputId"],
+          props: ["modelValue"],
           emits: ["update:modelValue"],
           template:
               '<input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
@@ -122,7 +129,7 @@ describe("ContractorView.vue", () => {
     (contractorService.deleteContractor as Mock).mockReset();
   });
 
-  it("opens create dialog and submits normalized payload", async () => {
+  it("creates contractor with normalized payload and reloads table", async () => {
     const { wrapper, reloadMock } = makeMount();
     const vm = wrapper.vm as ContractorViewVm;
 
@@ -194,6 +201,9 @@ describe("ContractorView.vue", () => {
 
     await vm.deleteContractor({ id: "x", companyName: "X" });
 
-    expect(contractorService.deleteContractor).toHaveBeenCalledWith(PROJECT_ID, "x");
+    expect(contractorService.deleteContractor).toHaveBeenCalledWith(
+        PROJECT_ID,
+        "x",
+    );
   });
 });

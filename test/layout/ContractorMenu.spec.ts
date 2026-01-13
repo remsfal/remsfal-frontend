@@ -1,15 +1,19 @@
 import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, nextTick, reactive } from "vue";
+import { defineComponent, h, nextTick, reactive, type PropType } from "vue";
+
+type MenuNode = {
+  label?: string;
+  to?: string;
+  items?: MenuNode[];
+};
 
 vi.mock("vue-i18n", () => ({useI18n: () => ({t: (key: string) => key,}),}));
 
 const routerPush = vi.fn();
 
 vi.mock("vue-router", async () => {
-  const actual = await vi.importActual<typeof import("vue-router")>(
-      "vue-router",
-  );
+  const actual = await vi.importActual<typeof import("vue-router")>("vue-router");
 
   return {
     ...actual,
@@ -17,7 +21,7 @@ vi.mock("vue-router", async () => {
   };
 });
 
-const projectStoreState = reactive<{ projectId?: string }>({projectId: undefined,});
+const projectStoreState = reactive<{ projectId?: string }>({ projectId: undefined });
 
 vi.mock("@/stores/ProjectStore", () => ({useProjectStore: () => projectStoreState,}));
 
@@ -25,36 +29,45 @@ vi.mock("@/stores/UserSession", () => ({useUserSessionStore: () => ({ user: { id
 
 vi.mock("@/services/IssueService.ts", () => ({StatusValues: { OPEN: "OPEN" },}));
 
+function flatten(node: MenuNode): MenuNode[] {
+  const children = Array.isArray(node.items) ? node.items : [];
+  const out: MenuNode[] = [];
+
+  for (const child of children) {
+    out.push(child, ...flatten(child));
+  }
+
+  return out;
+}
+
 const AppMenuItemStub = defineComponent({
-  name: "AppMenuItem",
+  name: "AppMenuItemStub",
   props: {
-    item: { type: Object, required: true },
-    index: { type: Number, required: false },
-  },
-  methods: {
-    flatten(node: any): any[] {
-      const items = Array.isArray(node?.items) ? node.items : [];
-      const out: any[] = [];
-
-      for (const it of items) {
-        out.push(it);
-        out.push(...this.flatten(it));
-      }
-
-      return out;
+    item: {
+      type: Object as PropType<MenuNode>,
+      required: true,
+    },
+    index: {
+      type: Number,
+      required: false,
+      default: 0,
     },
   },
-  template: `
-    <template>
-      <li
-        v-for="child in flatten(item)"
-        :key="child.label + '|' + (child.to || '')"
-        class="stub-menu-item"
-        :data-label="child.label"
-        :data-to="child.to || ''"
-      ></li>
-    </template>
-  `,
+  setup(props) {
+    return () =>
+        h(
+            "ul",
+            {},
+            flatten(props.item).map((child) =>
+                h("li", {
+                  key: `${child.label ?? ""}|${child.to ?? ""}`,
+                  class: "stub-menu-item",
+                  "data-label": child.label ?? "",
+                  "data-to": child.to ?? "",
+                }),
+            ),
+        );
+  },
 });
 
 function getContractorsTo(wrapper: ReturnType<typeof mount>) {
