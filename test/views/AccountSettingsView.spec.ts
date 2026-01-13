@@ -2,6 +2,7 @@ import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import AccountSettingsView from '../../src/views/AccountSettingsView.vue';
 import Card from 'primevue/card';
+import Select from 'primevue/select';
 import { createPinia } from 'pinia';
 import { createApp, nextTick } from 'vue';
 import App from '../../src/App.vue';
@@ -14,16 +15,18 @@ describe('AccountSettingsView', () => {
     const app = createApp(App);
     app.use(pinia);
 
-    wrapper = mount(AccountSettingsView, {global: {components: { Card },},});
+    wrapper = mount(AccountSettingsView, {global: {components: { Card, Select },},});
 
     // Mock methods
     wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({
       firstName: 'First Name',
       lastName: 'Last Name',
+      locale: 'de',
     });
     wrapper.vm.$options.saveProfile = vi.fn().mockResolvedValue({
       firstName: 'Updated First Name',
       lastName: 'Updated Last Name',
+      locale: 'de',
       address: {
         street: 'Updated Street',
         city: 'Updated City',
@@ -158,6 +161,105 @@ describe('AccountSettingsView', () => {
       await wrapper.vm.updateCountryFromCode();
       expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
     });
-    
+  });
+
+  describe('getUpdatedValue', () => {
+    beforeEach(() => {
+      wrapper.vm.editedUserProfile = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      mobilePhoneNumber: '',
+      businessPhoneNumber: '',
+      privatePhoneNumber: '',
+      };
+    });
+
+    test('returns undefined if value in editedUserProfile is empty string', () => {
+      wrapper.vm.editedUserProfile.lastName = '';
+      const result = wrapper.vm.getUpdatedValue('lastName');
+      expect(result).toBeUndefined();
+    });
+
+    test('returns value from editedUserProfile if it is non-empty string', () => {
+      wrapper.vm.editedUserProfile.firstName = 'John';
+      const result = wrapper.vm.getUpdatedValue('firstName');
+      expect(result).toBe('John');
+    });
+  });
+
+  describe('Locale handling', () => {
+    test('validateLocale falls back to "en" when locale is invalid', () => {
+      const result = wrapper.vm.validateLocale('fr');
+      expect(result).toBe('en');
+    });
+
+    test('fetchUserProfile sets editedUserProfile.locale and i18n.locale when backend returns de', async () => {
+
+      const result = await wrapper.vm.$options.fetchUserProfile();
+
+      wrapper.vm.userProfile = result;
+      wrapper.vm.editedUserProfile = { ...result };
+      wrapper.vm.i18n.locale.value = wrapper.vm.validateLocale(result.locale);
+
+      expect(wrapper.vm.editedUserProfile.locale).toBe('de');
+      expect(wrapper.vm.i18n.locale.value).toBe('de');
+    });
+
+    test('fetchUserProfile sets editedUserProfile.locale to i18n.locale.value when backend returns locale = null', async () => {
+      wrapper.vm.i18n.locale.value = 'de';
+
+      wrapper.vm.$options.fetchUserProfile = vi.fn().mockResolvedValue({
+        firstName: 'First Name',
+        lastName: 'Last Name',
+        locale: null,
+      });
+
+      const result = await wrapper.vm.$options.fetchUserProfile();
+
+      wrapper.vm.userProfile = result;
+      wrapper.vm.editedUserProfile = { ...result };
+
+      wrapper.vm.editedUserProfile.locale = wrapper.vm.i18n.locale.value;
+
+      expect(wrapper.vm.editedUserProfile.locale).toBe('de');
+      expect(wrapper.vm.i18n.locale.value).toBe('de');
+    });
+
+    test('changing the locale Dropdown updates editedUserProfile.locale and i18n.locale', async () => {
+      wrapper.vm.editedUserProfile.locale = 'de';
+      wrapper.vm.i18n.locale.value = 'de';
+
+      await nextTick();
+
+      const select = wrapper.findComponent({ name: 'Select' });
+      expect(select.exists()).toBe(true);
+
+      await select.vm.$emit('update:modelValue', 'en');
+      await nextTick();
+
+      expect(wrapper.vm.editedUserProfile.locale).toBe('en');
+      expect(wrapper.vm.i18n.locale.value).toBe('en');
+    });
+
+    test('i18n uses browser locale initially, then backend locale overwrites it after fetchUserProfile', async () => {
+      Object.defineProperty(globalThis.navigator, 'language', {
+        value: 'en',
+        configurable: true,
+      });
+
+      expect(wrapper.vm.i18n.locale.value).toBe('en');
+
+      const result = await wrapper.vm.$options.fetchUserProfile();
+
+      wrapper.vm.userProfile = result;
+      wrapper.vm.editedUserProfile = { ...result };
+      wrapper.vm.i18n.locale.value = wrapper.vm.validateLocale(result.locale);
+
+      await nextTick();
+
+      expect(wrapper.vm.i18n.locale.value).toBe('de');
+      expect(wrapper.vm.editedUserProfile.locale).toBe('de');
+    });
   });
 });
