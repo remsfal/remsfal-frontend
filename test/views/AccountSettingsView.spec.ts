@@ -265,7 +265,7 @@ describe('Alternative email handling (UI only)', () => {
     expect(v.displayAlternativeEmail).toBeNull();
   });
 
-  test('successful save sets alternativeEmail on profile and closes dialog', async () => {
+  test('UI save sets alternativeEmail on profile and closes dialog (no backend status yet)', async () => {
     const v = vm();
 
     v.visible = true;
@@ -277,7 +277,7 @@ describe('Alternative email handling (UI only)', () => {
     expect(v.editedUserProfile.alternativeEmail).toBe('alt@example.com');
     expect(v.displayAlternativeEmail).toBe('alt@example.com');
 
-    expect(v.altEmailSuccess).toBe(true);
+    expect(v.altEmailSuccess).toBe(false);
     expect(v.altEmailError).toBe(false);
 
     expect(v.visible).toBe(false);

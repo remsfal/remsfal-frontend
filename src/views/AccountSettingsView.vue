@@ -30,6 +30,9 @@ const deleteAcc = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
 const changes = ref(false);
 const saveSuccess = ref(false);
 const saveError = ref(false);
+// === Alternative Email state ===
+const altEmailSuccess = ref(false);
+const altEmailError = ref(false);
 const countries = ref([
   { name: 'Australia', code: 'AU' },
   { name: 'Brazil', code: 'BR' },
@@ -148,13 +151,62 @@ async function saveProfile(): Promise<void> {
       user.address = address;
     }
 
+    // ===== Alternative Email =====
+    const primaryEmail = (userProfile.value?.email || '').trim().toLowerCase();
+    let touchedAltEmail = false;
+
+    const currentAlt = 
+      ((userProfile.value as any)?.alternativeEmail ?? null) as string | null;
+
+    const editedAlt = 
+      ((editedUserProfile.value as any)?.alternativeEmail ?? null) as string | null;
+ 
+    const currentAltNorm = 
+      typeof currentAlt === 'string' ? currentAlt.trim() : null;
+    const editedAltNorm = 
+      typeof editedAlt === 'string' ? editedAlt.trim() : null;
+
+    if (currentAltNorm !== editedAltNorm) {
+      touchedAltEmail = true;
+
+      if (!editedAltNorm) {
+        (user as any).alternativeEmail = null;
+      } else {
+        if (!validateEmail(editedAltNorm)) {
+          altEmailSuccess.value = false;
+          altEmailError.value = true;
+          alert(t('projectSettings.newProjectMemberButton.invalidEmail'));
+          return;
+        }
+
+        if (editedAltNorm.toLowerCase() === primaryEmail) {
+          altEmailSuccess.value = false;
+          altEmailError.value = true;
+          alert(t('accountSettings.userProfile.alternativeEmailNotEqualPrimary'));
+          return;
+        }
+
+        (user as any).alternativeEmail = editedAltNorm;
+      }
+    }
     const updatedUser = await userService.updateUser(user);
     console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
     saveSuccess.value = true;
+
+    // Show success icon only after backend save (only if alt email was part of the change)
+    if (touchedAltEmail) {
+      altEmailSuccess.value = true;
+      altEmailError.value = false;
+    }
+
   } catch (e) {
     console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
     alert('Fehler beim Aktualisieren des Benutzerprofils!');
     saveError.value = true;
+
+    // Show error icon if backend save fails
+    altEmailSuccess.value = false;
+    altEmailError.value = true;
   }
 }
 
@@ -350,7 +402,7 @@ const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
 
-// ===== Alternative Email handling =====
+// ===== Alternative Email (UI-only state & validation) =====
 // Resets all form and validation states when closing or reopening the dialog
 function resetForm() {
   alternativeEmail.value = '';
@@ -379,23 +431,28 @@ const displayAlternativeEmail = computed<string | null>(() => {
 // Validation + UI state for alternative email dialog
 const isEmailInvalid = ref(false);
 const emailErrorMessage = ref('');
-const altEmailSuccess = ref(false);
-const altEmailError = ref(false);
 
 const applyAlternativeEmail = (value: string | null) => {
-  // update edited profile (this is what saveProfile uses)
+  // update edited profile 
   editedUserProfile.value = {
     ...editedUserProfile.value,
     alternativeEmail: value,
   } as any;
 
-  // update userProfile for immediate UI (optional but nice)
+  // update userProfile for immediate UI 
   if (userProfile.value) {
     (userProfile.value as any) = {
       ...userProfile.value,
       alternativeEmail: value,
     };
   }
+
+// ensure Save button appears after changing alternative email
+  changes.value = true;
+
+  // clear backend icons because change is not saved yet
+  altEmailSuccess.value = false;
+  altEmailError.value = false;
 };
 
 const saveAlternativeEmail = () => {
@@ -427,18 +484,12 @@ const saveAlternativeEmail = () => {
 
   applyAlternativeEmail(enteredEmail);
 
-  altEmailSuccess.value = true;
-  altEmailError.value = false;
-
   visible.value = false;
   alternativeEmail.value = '';
 };
 
 const deleteAlternativeEmail = () => {
   applyAlternativeEmail(null);
-
-  altEmailSuccess.value = false;
-  altEmailError.value = false;
 };
 </script>
 
@@ -507,6 +558,7 @@ const deleteAlternativeEmail = () => {
                 <!-- Button to open dialog for adding alternative email -->
                 <div class="flex justify-front mt-3 mb-5">
                   <Button
+                    type="button"
                     :label="t('accountSettings.userProfile.addAlternativeEmail')"
                     icon="pi pi-plus"
                     style="width: auto"
@@ -1040,7 +1092,7 @@ input:focus {
   align-items: center;
   height: 100%;
   margin-top: -5px;
-  margin-left: 7px
+  margin-left: 7px;
 }
 
 .alt-trash-icon:hover {
