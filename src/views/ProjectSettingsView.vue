@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Card from 'primevue/card';
+import BaseCard from '@/components/BaseCard.vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ProjectSettings from '@/components/ProjectSettings.vue';
@@ -52,11 +52,9 @@ const deleteProject = async () => {
   <ProjectMemberSettings :projectId="props.projectId" />
 
   <!-- Danger Zone Card -->
-  <Card class="flex flex-col gap-4 basis-full">
+  <BaseCard titleClass="text-red-600 font-semibold text-xl">
     <template #title>
-      <div class="text-red-600 font-semibold text-xl">
-        {{ t('projectSettings.dangerZone.title') }}
-      </div>
+      {{ t('projectSettings.dangerZone.title') }}
     </template>
     <template #content>
       <div class="flex flex-col gap-4">
@@ -73,7 +71,7 @@ const deleteProject = async () => {
         </div>
       </div>
     </template>
-  </Card>
+  </BaseCard>
 
   <!-- Delete Confirmation Dialog -->
   <Dialog

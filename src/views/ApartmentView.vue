@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { apartmentService } from '@/services/ApartmentService';
@@ -155,20 +156,20 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
 <template>
-  <div class="p-6 w-full">
-    <UnitBreadcrumb 
+    <UnitBreadcrumb
       :projectId="props.projectId" 
       :unitId="props.unitId" 
       :currentTitle="title"
       mode="edit" 
     />
 
-    <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">
+    <BaseCard>
+      <template #title>
         Bearbeite Apartment mit ID: {{ unitId }}
-      </h2>
+      </template>
 
-      <form @submit.prevent="save">
+      <template #content>
+        <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
             <label for="title" class="block text-gray-700 mb-1">Titel</label>
@@ -225,10 +226,10 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           >
             Abbrechen
           </button>
-        </div>
-      </form>
-    </div>
-  </div>
+          </div>
+        </form>
+      </template>
+    </BaseCard>
 </template>
 
 <style scoped>
