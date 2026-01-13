@@ -87,6 +87,5 @@ const unreadCount = computed(() =>
 
     <!-- Use shared component for common user actions -->
     <TopbarUserActions />
-
   </AppTopbar>
 </template>
