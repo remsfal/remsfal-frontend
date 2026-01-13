@@ -1,5 +1,5 @@
 import { config } from '@vue/test-utils';
-import { vi } from 'vitest';
+import { vi, beforeAll } from 'vitest';
 import PrimeVue from 'primevue/config';
 import router from '../../src/router';
 import i18n from '../../src/i18n/i18n';
@@ -11,6 +11,10 @@ import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
 import ConfirmationService from 'primevue/confirmationservice';
+
+beforeAll(() => {
+  i18n.global.locale.value = 'de';
+});
 
 // Set up MSW server globally
 import '../mocks/setupTests';
