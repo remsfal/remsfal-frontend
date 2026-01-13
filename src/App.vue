@@ -9,9 +9,7 @@ import { useUserSessionStore } from '@/stores/UserSession';
 import { useEventBus } from '@/stores/EventStore.ts';
 
 
-
 import { useI18n } from 'vue-i18n';
-
 
 defineOptions({
   created() {
@@ -81,10 +79,7 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
   display: block;
 }
 
-
 @media (width <= 991px) {
-
-
   .layout-mobile-navbar {
     display: flex !important;
     position: fixed;
@@ -94,11 +89,9 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
     z-index: 1100;
   }
 
-
   .layout-sidebar-wrapper {
     display: none !important;
   }
-
 
   .layout-main {
     padding-bottom: 80px !important;
