@@ -320,7 +320,7 @@ describe('AccountSettingsView', () => {
 
 
       expect(v.editedUserProfile?.alternativeEmail).toBe('alt@example.com');
-      
+ 
       expect(v.userProfile?.alternativeEmail).toBe('alt@example.com');
 
 
@@ -381,6 +381,70 @@ describe('AccountSettingsView', () => {
       expect(v.isEmailInvalid).toBe(false);
       expect(v.emailErrorMessage).toBe('');
     });
+
+    test('trims alternative email before validation (spaces are removed)', async () => {
+  const v = vm();
+
+  v.visible = true;
+  v.alternativeEmail = '   alt@example.com   ';
+
+  v.saveAlternativeEmail();
+  await nextTick();
+
+  expect(v.editedUserProfile?.alternativeEmail).toBe('alt@example.com');
+  expect(v.userProfile?.alternativeEmail).toBe('alt@example.com');
+  expect(v.visible).toBe(false);
+});
+
+test('saveAlternativeEmail with empty string keeps dialog open and sets invalid flag', async () => {
+  const v = vm();
+
+  v.visible = true;
+  v.alternativeEmail = '   '; // after trim -> empty
+
+  v.saveAlternativeEmail();
+  await nextTick();
+
+  expect(v.isEmailInvalid).toBe(true);
+  expect(v.emailErrorMessage).not.toBe('');
+  expect(v.visible).toBe(true);
+  expect(v.editedUserProfile?.alternativeEmail ?? null).toBeNull();
+});
+
+test('deleteAlternativeEmail when already null still marks changes and clears icons', async () => {
+  const v = vm();
+
+  v.userProfile = { email: 'primary@example.com', alternativeEmail: null };
+  v.editedUserProfile = { email: 'primary@example.com', alternativeEmail: null };
+
+  v.altEmailSuccess = true;
+  v.altEmailError = true;
+  v.changes = false;
+
+  v.deleteAlternativeEmail();
+  await nextTick();
+
+  expect(v.userProfile?.alternativeEmail ?? null).toBeNull();
+  expect(v.editedUserProfile?.alternativeEmail ?? null).toBeNull();
+  expect(v.altEmailSuccess).toBe(false);
+  expect(v.altEmailError).toBe(false);
+  expect(v.changes).toBe(true);
+});
+
+test('resetForm is idempotent (already clean state stays clean)', async () => {
+  const v = vm();
+
+  v.alternativeEmail = '';
+  v.isEmailInvalid = false;
+  v.emailErrorMessage = '';
+
+  v.resetForm();
+  await nextTick();
+
+  expect(v.alternativeEmail).toBe('');
+  expect(v.isEmailInvalid).toBe(false);
+  expect(v.emailErrorMessage).toBe('');
+});
   });
 });
 
