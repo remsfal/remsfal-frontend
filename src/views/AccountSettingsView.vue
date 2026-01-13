@@ -108,7 +108,7 @@ async function fetchUserProfile() {
   }
 }
 
-function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string | undefined{
+function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string | undefined {
   const value =
     editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
   if (typeof value === 'string' && value.trim() === '') { 
@@ -118,7 +118,7 @@ function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string
 }
 
 
-function getUpdatedAddressValue(field: keyof Address): string{
+function getUpdatedAddressValue(field: keyof Address): string {
   const value =
     (editedAddress.value as Record<keyof Address, unknown>)?.[field] ??
     (addressProfile.value as Record<keyof Address, unknown>)?.[field];
