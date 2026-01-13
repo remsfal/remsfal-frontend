@@ -5,7 +5,6 @@ import { apiClient, type ApiComponents } from '@/services/ApiClient';
 export type PropertyUnit = ApiComponents['schemas']['PropertyJson'];
 export type PropertyList = ApiComponents['schemas']['PropertyListJson'];
 export type RentableUnitTreeNode = ApiComponents['schemas']['RentalUnitTreeNodeJson'];
-export type RentalUnitNodeData = ApiComponents['schemas']['RentalUnitNodeDataJson'];
 export type UnitType = ApiComponents['schemas']['UnitType'];
 
 export enum EntityType {
@@ -62,7 +61,7 @@ class PropertyService {
     return apiClient.delete(
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       { pathParams: { projectId, propertyId } },
-    ) as Promise<void>;
+    );
   }
 
   /**
@@ -74,7 +73,7 @@ class PropertyService {
   ): Promise<{ title: string; id: string; type: UnitType }[]> {
     try {
       const data = await this.getPropertyTree(projectId);
-      const tree = (data.properties || []) as RentableUnitTreeNode[];
+      const tree = (data.properties ?? []) as RentableUnitTreeNode[];
 
       const findPath = (
         nodes: RentableUnitTreeNode[],
@@ -112,7 +111,7 @@ class PropertyService {
   async getParentId(projectId: string, childId: string): Promise<string | undefined> {
     try {
       const data = await this.getPropertyTree(projectId);
-      const tree = (data.properties || []) as RentableUnitTreeNode[];
+      const tree = (data.properties ?? []) as RentableUnitTreeNode[];
 
       const findParent = (
         nodes: RentableUnitTreeNode[],
