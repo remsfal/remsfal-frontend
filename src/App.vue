@@ -10,9 +10,9 @@ import { useEventBus } from '@/stores/EventStore.ts';
 import { useI18n } from 'vue-i18n';
 
 defineOptions({
-  created() {
+  async created() {
     const sessionStore = useUserSessionStore();
-    sessionStore.refreshSessionState();
+    await sessionStore.refreshSessionState();
     const projectStore = useProjectStore();
     projectStore.refreshProjectList();
     console.log('App created!');

@@ -102,3 +102,80 @@ export async function testErrorHandling(
   createErrorHandler(server, path, method, status);
   await expectToReject(serviceCall());
 }
+
+import type { InboxMessage } from '../../src/services/InboxService';
+
+/**
+ * Creates a mock InboxMessage object
+ */
+export function createMockInboxMessage(overrides?: Partial<InboxMessage>): InboxMessage {
+  return {
+    id: '1',
+    receivedAt: new Date('2025-01-10T10:00:00Z'),
+    isRead: false,
+    issueId: 'issue-101',
+    issueTitle: 'Test Issue 1',
+    issueType: 'DEFECT',
+    issueStatus: 'OPEN',
+    projectId: 'proj-1',
+    projectName: 'Project 1',
+    ...overrides,
+  };
+}
+
+/**
+ * Creates multiple mock InboxMessage objects
+ */
+export function createMockInboxMessages(
+  count: number,
+  baseOverrides?: Partial<InboxMessage>
+): InboxMessage[] {
+  return Array.from({ length: count }, (_, i) => createMockInboxMessage({
+    id: String(i + 1),
+    issueId: `issue-${101 + i}`,
+    issueTitle: `Test Issue ${i + 1}`,
+    ...baseOverrides,
+  }));
+}
+
+/**
+ * Creates mock messages for testing grouping scenarios
+ */
+export function createGroupingTestMessages(): InboxMessage[] {
+  const overrides: Partial<InboxMessage>[] = [
+    {
+      id: '1',
+      receivedAt: new Date('2025-01-10T10:00:00Z'),
+      isRead: false,
+      issueId: 'issue-101',
+      issueTitle: 'Test Issue 1',
+      issueType: 'DEFECT',
+      issueStatus: 'OPEN',
+      projectId: 'proj-1',
+      projectName: 'Project 1',
+    },
+    {
+      id: '2',
+      receivedAt: new Date('2025-01-11T10:00:00Z'),
+      isRead: true,
+      issueId: 'issue-102',
+      issueTitle: 'Test Issue 2',
+      issueType: 'TASK',
+      issueStatus: 'CLOSED',
+      projectId: 'proj-2',
+      projectName: 'Project 2',
+    },
+    {
+      id: '3',
+      receivedAt: new Date('2025-01-12T10:00:00Z'),
+      isRead: false,
+      issueId: 'issue-103',
+      issueTitle: 'Test Issue 3',
+      issueType: 'DEFECT',
+      issueStatus: 'OPEN',
+      projectId: 'proj-1',
+      projectName: 'Project 1',
+    },
+  ];
+  return overrides.map(override => createMockInboxMessage(override));
+}
