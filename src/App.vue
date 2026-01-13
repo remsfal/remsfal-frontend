@@ -17,9 +17,9 @@ interface ToastEvent {
 }
 
 defineOptions({
-  created() {
+  async created() {
     const sessionStore = useUserSessionStore();
-    sessionStore.refreshSessionState();
+    await sessionStore.refreshSessionState();
     const projectStore = useProjectStore();
     projectStore.refreshProjectList();
     console.log('App created!');
