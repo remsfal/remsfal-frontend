@@ -5,11 +5,7 @@ import flushPromises from "flush-promises";
 import ContractorTable from "@/components/ContractorTable.vue";
 import type { Contractor } from "@/services/ContractorService";
 
-vi.mock("@/services/ContractorService", () => ({
-  contractorService: {
-    getContractors: vi.fn(),
-  },
-}));
+vi.mock("@/services/ContractorService", () => ({contractorService: {getContractors: vi.fn(),},}));
 
 const { contractorService } = await import("@/services/ContractorService");
 
@@ -168,9 +164,7 @@ const mountTable = (props: TableProps = { projectId: PROJECT_ID }) =>
           Checkbox: CheckboxStub,
           Transition: false,
         },
-        directives: {
-          tooltip: () => {},
-        },
+        directives: {tooltip: () => {},},
       },
     });
 
@@ -180,9 +174,7 @@ describe("ContractorTable.vue", () => {
 
   beforeEach(() => {
     (contractorService.getContractors as ReturnType<typeof vi.fn>).mockReset();
-    (contractorService.getContractors as ReturnType<typeof vi.fn>).mockResolvedValue({
-      contractors: contractorsFixture,
-    });
+    (contractorService.getContractors as ReturnType<typeof vi.fn>).mockResolvedValue({contractors: contractorsFixture,});
 
     warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});

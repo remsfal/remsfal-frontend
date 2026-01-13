@@ -94,9 +94,15 @@ const makeMount = (projectId = PROJECT_ID) => {
     name: "InputTextStub",
     inheritAttrs: false,
     props: {
-      modelValue: { type: String, required: false, default: "" },
-      inputId: { type: String, required: false, default: "" },
-      class: { type: [String, Object, Array], required: false, default: "" },
+      modelValue: {
+ type: String, required: false, default: "" 
+},
+      inputId: {
+ type: String, required: false, default: "" 
+},
+      class: {
+ type: [String, Object, Array], required: false, default: "" 
+},
     },
     emits: ["update:modelValue"],
     setup(props, { emit }) {
@@ -211,7 +217,10 @@ describe("ContractorView", () => {
     expect(vm.globalError).toContain("Telefonnummer muss 10–14 Ziffern enthalten");
   });
 
-  it("creates contractor and normalizes payload (province->city, countryCode->DE, empty phone/trade -> undefined)", async () => {
+  it(
+      "creates contractor and normalizes payload " +
+      "(province->city, countryCode->DE, empty phone/trade -> undefined)",
+      async () => {
     const { wrapper, reloadMock } = makeMount();
     const vm = wrapper.vm as ContractorViewVm;
 
@@ -391,7 +400,9 @@ describe("ContractorView", () => {
       id: "c1",
       companyName: "Alt",
       email: "alt@test.de",
-      address: { street: "Alt", city: "Alt", zip: "11111" },
+      address: {
+ street: "Alt", city: "Alt", zip: "11111" 
+},
     };
     wrapper.findComponent({ name: "ContractorTableStub" }).vm.$emit("edit", contractor);
     await nextTick();
