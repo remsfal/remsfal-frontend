@@ -9,7 +9,7 @@ import { useUserSessionStore } from '@/stores/UserSession';
 import { useEventBus } from '@/stores/EventStore.ts';
 
 
-import MobileNavBar from '@/components/MobileNavBar.vue';
+
 import { useI18n } from 'vue-i18n';
 
 
@@ -64,7 +64,7 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
 
     <RouterView :key="route.fullPath" />
 
-    <MobileNavBar class="layout-mobile-navbar" />
+    <RouterView name="mobilebar" class="layout-mobile-navbar" />
 
     <div class="layout-mask animate-fadein" />
   </div>
