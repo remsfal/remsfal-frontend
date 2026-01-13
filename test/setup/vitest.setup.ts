@@ -1,5 +1,18 @@
 import { config } from '@vue/test-utils';
-import { vi } from 'vitest';
+import { vi, beforeAll } from 'vitest';
+import PrimeVue from 'primevue/config';
+import router from '../../src/router';
+import i18n from '../../src/i18n/i18n';
+import { createTestingPinia } from '@pinia/testing';
+import BadgeDirective from 'primevue/badgedirective';
+import Ripple from 'primevue/ripple';
+import StyleClass from 'primevue/styleclass';
+import Tooltip from 'primevue/tooltip';
+import ToastService from 'primevue/toastservice';
+import DialogService from 'primevue/dialogservice';
+import ConfirmationService from 'primevue/confirmationservice';
+// Set up MSW server globally
+import '../mocks/setupTests';
 
 vi.mock('primevue/chart', () => ({
   default: {
@@ -33,20 +46,10 @@ vi.mock('chart.js', () => {
     Legend: FakeElement,
   };
 });
-import PrimeVue from 'primevue/config';
-import router from '../../src/router';
-import i18n from '../../src/i18n/i18n';
-import { createTestingPinia } from '@pinia/testing';
-import BadgeDirective from 'primevue/badgedirective';
-import Ripple from 'primevue/ripple';
-import StyleClass from 'primevue/styleclass';
-import Tooltip from 'primevue/tooltip';
-import ToastService from 'primevue/toastservice';
-import DialogService from 'primevue/dialogservice';
-import ConfirmationService from 'primevue/confirmationservice';
 
-// Set up MSW server globally
-import '../mocks/setupTests';
+beforeAll(() => {
+  i18n.global.locale.value = 'de';
+});
 
 // Suppress expected console errors and warnings in tests
 const originalConsoleError = console.error;
@@ -77,9 +80,9 @@ Object.defineProperty(window, 'matchMedia', {
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(), // für ältere APIs
+      addListener: vi.fn(), // for old APIs
       removeListener: vi.fn(),
-      addEventListener: vi.fn(), // moderne APIs
+      addEventListener: vi.fn(), // for modern APIs
       removeEventListener: vi.fn(),
       dispatchEvent: vi.fn(),
     };
