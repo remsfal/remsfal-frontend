@@ -40,7 +40,7 @@ const handleSubmit = async (formValues: Partial<SiteUnit>) => {
 
   try {
     await siteService.updateSite(props.projectId, props.siteId, siteUpdate);
-    // Hier könnte man noch eine Erfolgsmeldung (Toast) anzeigen
+    // Here we could handle how to go back to the previous page
   } catch (err) {
     error.value = 'Fehler beim Speichern: ' + err;
   } finally {
@@ -49,8 +49,8 @@ const handleSubmit = async (formValues: Partial<SiteUnit>) => {
 };
 
 const handleCancel = () => {
-  // Hier Logik für Abbruch, z.B. router.back()
-  // alert('Abgebrochen'); 
+  // Here we could handle how to go back to the previous page
+  // alert('Canceled'); 
 };
 </script>
 
@@ -68,8 +68,12 @@ const handleCancel = () => {
       :initialValues="initialValues"
     />
     
-    <div v-if="loading" class="text-center mt-4">Senden...</div>
-    <div v-if="error" class="error-message text-center">{{ error }}</div>
+    <div v-if="loading" class="text-center mt-4">
+      Senden...
+    </div>
+    <div v-if="error" class="error-message text-center">
+      {{ error }}
+    </div>
   </div>
 </template>
 

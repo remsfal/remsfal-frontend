@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue'; // <--- WICHTIG: Das hier muss genutzt werden
+import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { apartmentService } from '@/services/ApartmentService';
@@ -156,7 +156,6 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
 <template>
   <div class="p-6 w-full">
-    
     <UnitBreadcrumb 
       :projectId="props.projectId" 
       :unitId="props.unitId" 

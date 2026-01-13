@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-// FIX: Imports aufgeteilt, um Linter-Regeln (max-len + line-break) zu erfüllen
 import { propertyService, type PropertyUnit, type PropertyList } from '@/services/PropertyService';
 import { toRentableUnitView, EntityType } from '@/services/PropertyService';
 import { testErrorHandling } from '../utils/testHelpers';
@@ -27,7 +26,6 @@ const mockPropertyTree: PropertyList = {
   properties: [
     {
       key: 'property-1',
-      // @ts-expect-error: Mock-Daten simulieren API-Antwort
       id: 'property-1',
       data: {
         title: 'Main Property',
@@ -59,7 +57,6 @@ const mockPropertyTree: PropertyList = {
 const handlers = [
   http.post('/api/v1/projects/:projectId/properties', async ({ request }) => {
     const body = (await request.json()) as PropertyUnit;
-    // FIX: Argumente umgebrochen für max-len, Objekte kompakt für line-break
     return HttpResponse.json(
       { ...body, id: 'new-property-id' },
       { status: 201 },

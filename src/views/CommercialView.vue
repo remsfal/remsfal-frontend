@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue'; // <--- IMPORTIEREN
+import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -154,7 +154,6 @@ defineExpose({ fetchCommercialDetails });
 
 <template>
   <div class="p-6 w-full">
-    
     <UnitBreadcrumb 
       :projectId="props.projectId" 
       :unitId="props.unitId" 

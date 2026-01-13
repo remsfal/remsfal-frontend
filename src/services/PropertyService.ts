@@ -64,8 +64,8 @@ class PropertyService {
     );
   }
 
-  /**
-   * Berechnet den Pfad (Breadcrumbs) zu einer bestimmten Node-ID.
+/**
+   * Calculates the breadcrumb path to a specific node ID.
    */
   async getBreadcrumbPath(
     projectId: string,

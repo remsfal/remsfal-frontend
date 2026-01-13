@@ -22,7 +22,6 @@ const BreadcrumbStub = {
   template: '<div class="p-breadcrumb-stub"></div>',
 };
 
-// --- FIX: Gemeinsame Test-Daten (mehrzeilig formatiert für Linter) ---
 const mockPropNode = {
   title: 'Property A',
   id: 'prop-1',

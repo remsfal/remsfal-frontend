@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
-import { useI18n } from 'vue-i18n'; // <--- NEU: Import für Übersetzungen
+import { useI18n } from 'vue-i18n';
 import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
 
 interface BreadcrumbNode {
@@ -30,7 +30,7 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
-const { t } = useI18n(); // <--- NEU: Zugriff auf t() Funktion
+const { t } = useI18n();
 const items = ref<BreadcrumbItem[]>([]);
 
 const getIconForType = (type: string): string => {
@@ -73,7 +73,7 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
         return [...parentPath, ...currentNodes];
       }
     } catch {
-      // Ignorieren
+      // Ignore
     }
   }
     
@@ -81,13 +81,13 @@ const ensureContextParent = async (currentNodes: BreadcrumbNode[]): Promise<Brea
     try {
       const propertyData = await propertyService.getProperty(props.projectId, props.contextParentId);
       const propertyNode: BreadcrumbNode = {
-        title: propertyData.title || t('breadcrumb.unnamedProperty'), // <--- Auch hier sinnvoll (optional)
+        title: propertyData.title || t('breadcrumb.unnamedProperty'), 
         id: props.contextParentId,
         type: 'PROPERTY' as UnitType,
       };
       return [propertyNode, ...currentNodes];
     } catch {
-      // Ignorieren
+      // Ignore
     }
   }
   
@@ -113,7 +113,7 @@ const processLastItem = (list: BreadcrumbItem[]) => {
 
   if (props.mode === 'create') {
     newList.push({
-      label: t('breadcrumb.create'), // <--- NEU: Übersetzungsschlüssel
+      label: t('breadcrumb.create'),
       icon: 'pi pi-plus',
       disabled: true,
     });
@@ -124,7 +124,6 @@ const processLastItem = (list: BreadcrumbItem[]) => {
   const isSelfInList = lastItem && props.unitId && lastItem.id === props.unitId;
 
   if (!isSelfInList) {
-    // FIX: Vereinfachte Logik + Übersetzung (wie im Review gewünscht)
     const fallbackLabel = props.currentTitle ?? (props.unitId ? t('breadcrumb.outdoor') : null);
     
     if (fallbackLabel) {
@@ -153,7 +152,7 @@ const loadBreadcrumbs = async () => {
 
   if (resultItems.length === 0) {
     resultItems.push({
-      label: t('breadcrumb.backToOverview'), // <--- NEU: Übersetzungsschlüssel
+      label: t('breadcrumb.backToOverview'),
       icon: 'pi pi-arrow-left',
       command: () => router.push({ 
         name: 'RentableUnitsView', 
