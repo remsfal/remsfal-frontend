@@ -1107,6 +1107,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ticketing/v1/issues/{issueId}/relations/{type}/{relatedIssueId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an existing relation between two Issues */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the source Issue */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the related Issue */
+                    relatedIssueId: components["schemas"]["UUID"];
+                    /** @description Type of the relation (e.g. blocks, blocked_by, related_to) */
+                    type: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The relation was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1231,6 +1286,8 @@ export interface components {
         CountryListJson: {
             countries?: components["schemas"]["CountryItemJson"][];
         };
+        /** @enum {string} */
+        EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
         /** @description Represents a message or invoice in the user's inbox */
         InboxMessage: {
             /** @description Unique identifier of the message */
@@ -1282,9 +1339,12 @@ export interface components {
             status?: components["schemas"]["Status"];
             ownerId?: components["schemas"]["UUID"];
             description?: string;
-            blockedBy?: components["schemas"]["UUID"];
-            relatedTo?: components["schemas"]["UUID"];
-            duplicateOf?: components["schemas"]["UUID"];
+            blockedBy?: string[];
+            relatedTo?: string[];
+            duplicateOf?: string[];
+            blocks?: string[];
+            parentOf?: string[];
+            childOf?: string[];
         };
         /** @description A list of issues */
         IssueListJson: {
@@ -1324,6 +1384,35 @@ export interface components {
          * @example 2022-03-10T12:15:50-04:00
          */
         OffsetDateTime: string;
+        /** @description Employee information in context of an organization */
+        OrganizationEmployeeJson: {
+            id?: components["schemas"]["UUID"];
+            name?: string;
+            email?: string;
+            active?: boolean;
+            employeeRole: components["schemas"]["EmployeeRole"];
+        };
+        /** @description A list of organization employees */
+        OrganizationEmployeeListJson: {
+            employees: components["schemas"]["OrganizationEmployeeJson"][];
+        };
+        /** @description An organization */
+        OrganizationJson: {
+            id?: components["schemas"]["UUID"];
+            name?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
+            address?: components["schemas"]["AddressJson"];
+        };
+        /** @description A list of organizations */
+        OrganizationListJson: {
+            organizations: components["schemas"]["OrganizationJson"][];
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int64 */
+            total?: number;
+        };
         /** @description A project item with the user's member role only */
         ProjectItemJson: {
             id: components["schemas"]["UUID"];
@@ -1369,6 +1458,10 @@ export interface components {
         /** @description A list of project members */
         ProjectMemberListJson: {
             members: components["schemas"]["ProjectMemberJson"][];
+        };
+        /** @description A list of tenancies for a project */
+        ProjectTenancyListJson: {
+            tenancies?: components["schemas"]["TenancyInfoJson"][];
         };
         /** @description A property */
         PropertyJson: {
@@ -1482,6 +1575,14 @@ export interface components {
             id?: components["schemas"]["UUID"];
             title?: string;
         };
+        /** @description A tenancy item with information from the manager's view */
+        TenancyInfoJson: {
+            active?: boolean;
+            id?: components["schemas"]["UUID"];
+            startOfRental?: components["schemas"]["LocalDate"];
+            endOfRental?: components["schemas"]["LocalDate"];
+            tenants?: components["schemas"]["UserJson"][];
+        };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {
             id?: string;
@@ -1552,6 +1653,7 @@ export interface components {
             businessPhoneNumber?: string;
             privatePhoneNumber?: string;
             locale?: string;
+            additionalEmails?: string[];
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
