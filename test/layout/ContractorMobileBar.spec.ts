@@ -1,4 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+// Mock capacitor core/utils
+vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => false } }));
+vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
+
+// Mock the Menu component to prevent it from importing dependencies that fail resolution
+vi.mock('@/layout/ContractorMenu.vue', () => ({ default: { name: 'ContractorMenu', template: '<div></div>' } }));
+
 import { mount } from '@vue/test-utils';
 import ContractorMobileBar from '@/layout/ContractorMobileBar.vue';
 import PrimeVue from 'primevue/config';
@@ -6,6 +14,9 @@ import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import { config } from '@vue/test-utils';
 import router from '@/router';
+
+
+
 
 // Remove global router plugin
 config.global.plugins = config.global.plugins.filter(p => p !== router);
@@ -68,6 +79,19 @@ describe('ContractorMobileBar.vue', () => {
 
         const navItems = wrapper.findAll('a.nav-item');
         // Logic: !currentQuery.tab. 'other' is not 'tab'. So should be active.
+        expect(navItems[0].classes()).toContain('active');
+    });
+
+
+
+    it('handles potentially missing query gracefully', async () => {
+        // Simulate route where query might be null/undefined logic
+        const { wrapper } = mountComponent({
+            name: 'ContractorView', query: undefined as any, path: '/customers'
+        });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
         expect(navItems[0].classes()).toContain('active');
     });
 
