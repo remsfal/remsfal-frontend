@@ -48,6 +48,7 @@ describe('ContractorMobileBar.vue', () => {
     });
 
     it('highlights Overview active state correctly', async () => {
+        // Overview matches when query.tab is undefined or not 'orders'
         const { wrapper } = mountComponent({
             name: 'ContractorView', query: {}, path: '/customers'
         });
@@ -56,6 +57,18 @@ describe('ContractorMobileBar.vue', () => {
         const navItems = wrapper.findAll('a.nav-item');
         expect(navItems[0].classes()).toContain('active');
         expect(navItems[1].classes()).not.toContain('active');
+    });
+
+    it('highlights Overview active state when tab is explicitly undefined/null if possible or just empty', async () => {
+        // Technically just empty query
+        const { wrapper } = mountComponent({
+            name: 'ContractorView', query: { other: 'param' }, path: '/customers'
+        });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        // Logic: !currentQuery.tab. 'other' is not 'tab'. So should be active.
+        expect(navItems[0].classes()).toContain('active');
     });
 
     it('highlights Orders active state correctly', async () => {
@@ -67,6 +80,30 @@ describe('ContractorMobileBar.vue', () => {
         const navItems = wrapper.findAll('a.nav-item');
         expect(navItems[0].classes()).not.toContain('active');
         expect(navItems[1].classes()).toContain('active');
+    });
+
+    it('does NOT highlight Overview or Orders when route name differs', async () => {
+        const { wrapper } = mountComponent({
+            name: 'AnotherView', query: {}, path: '/other'
+        });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        expect(navItems[0].classes()).not.toContain('active');
+        expect(navItems[1].classes()).not.toContain('active');
+    });
+
+    it('does NOT highlight Orders if tab is different', async () => {
+        const { wrapper } = mountComponent({
+            name: 'ContractorView', query: { tab: 'something-else' }, path: '/customers'
+        });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        // Overview logic: !currentQuery.tab. 'something-else' is truthy. So Overview inactive.
+        // Orders logic: tab === 'orders'. 'something-else' !== 'orders'. So Orders inactive.
+        expect(navItems[0].classes()).not.toContain('active');
+        expect(navItems[1].classes()).not.toContain('active');
     });
 
     it('toggles sidebar when more button is clicked', async () => {

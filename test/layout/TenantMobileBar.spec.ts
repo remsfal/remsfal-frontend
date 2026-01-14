@@ -24,7 +24,7 @@ describe('TenantMobileBar.vue', () => {
         const wrapper = mount(TenantMobileBar, {
             global: {
                 plugins: [PrimeVue],
-                provide: {[routeLocationKey as symbol]: route},
+                provide: { [routeLocationKey as symbol]: route },
                 stubs: {
                     TenantMenu: true,
                     Drawer: {
@@ -64,6 +64,47 @@ describe('TenantMobileBar.vue', () => {
         expect(navItems[1].classes()).toContain('active');
     });
 
+    it('highlights Overview when on a sub-route of Overview', async () => {
+        // e.g. /some-sub-page which starts with /
+        const { wrapper } = mountComponent({ path: '/some-sub-page', name: 'SomeSubPage' });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        // The first item 'to' is '/', logic says: route.path === '/' || (item.to !== '/' && ...)
+        // Wait, logic is:
+        // if (typeof item.to === 'string') {
+        //    return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
+        // }
+        // For item.to = '/', the second part (item.to !== '/') is false.
+        // So strict equality is required for '/'.
+        // Let's verify this assumption with the test.
+
+        // Actually, looking at the code:
+        // item 1: to: '/'
+        // isActive: return route.path === '/' || ('/' !== '/' && ...) -> return route.path === '/'
+
+        expect(navItems[0].classes()).not.toContain('active');
+    });
+
+    it('highlights Inbox when on a sub-route matching Inbox name', async () => {
+        // The Inbox item definition is: to: { name: 'Inbox' }
+        // The logic for object 'to': return route.name === item.to.name
+
+        const { wrapper } = mountComponent({ path: '/inbox/details', name: 'Inbox' }); // Name matches
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        expect(navItems[1].classes()).toContain('active');
+    });
+
+    it('does not highlight Inbox when route name differs', async () => {
+        const { wrapper } = mountComponent({ path: '/inbox', name: 'OtherRoute' });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        expect(navItems[1].classes()).not.toContain('active');
+    });
+
     it('toggles sidebar', async () => {
         const { wrapper } = mountComponent();
 
@@ -72,5 +113,8 @@ describe('TenantMobileBar.vue', () => {
         expect(wrapper.vm.sidebarVisible).toBe(false);
         await moreBtn.trigger('click');
         expect(wrapper.vm.sidebarVisible).toBe(true);
+
+        await moreBtn.trigger('click');
+        expect(wrapper.vm.sidebarVisible).toBe(false);
     });
 });

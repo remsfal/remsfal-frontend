@@ -84,14 +84,64 @@ describe('ManagerMobileBar.vue', () => {
         expect(navItems[2].classes()).not.toContain('active');
 
         // Switch to Defects
-        // Need to trigger reactivity. 
-        // ManagerMobileBar uses computed for navItems which depends on route props.
-        // route is reactive.
         Object.assign(route, { query: { status: 'OPEN', category: 'DEFECT' } });
+        // Force update if needed, but reactivity should handle it. 
+        // Note: ManagerMobileBar computes navItems based on route.params.projectId 
+        // AND isActive checks route.query. 
+        // We need to trigger a re-render or at least re-evaluation or just wait for next tick.
         await wrapper.vm.$nextTick();
 
         expect(navItems[1].classes()).not.toContain('active');
         expect(navItems[2].classes()).toContain('active');
+    });
+
+    it('highlights Dashboard correctly', async () => {
+        const { wrapper } = mountComponent({
+            path: '/projects/123/dashboard',
+            name: 'ProjectDashboard',
+            params: { projectId: '123' },
+            query: {}
+        });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        expect(navItems[0].classes()).toContain('active');
+    });
+
+    it('highlights Chat correctly', async () => {
+        const { wrapper } = mountComponent({
+            path: '/projects/123/chat',
+            name: 'ProjectChatView',
+            params: { projectId: '123' },
+            query: {}
+        });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        expect(navItems[3].classes()).toContain('active');
+    });
+
+    it('does not highlight items when route matches name but query mismatch in strict mode', async () => {
+        // IssueOverview defaults need strict checking if configured that way.
+        // In the component:
+        // const strict = !Object.keys(targetQuery).length && route.name === ((target as any).name);
+        // For Tasks item: targetQuery is {status: 'OPEN', category: 'TASK'}. not strict.
+        // It checks matchesQuery.
+
+        // Let's try to match Task item but with wrong query
+        const { wrapper } = mountComponent({
+            path: '/projects/123/issues',
+            name: 'IssueOverview',
+            params: { projectId: '123' },
+            query: { status: 'OPEN', category: 'SOMETHING_ELSE' }
+        });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        // Task Item (index 1) checks for category=TASK. Should fail.
+        // Defect Item (index 2) checks for category=DEFECT. Should fail.
+        expect(navItems[1].classes()).not.toContain('active');
+        expect(navItems[2].classes()).not.toContain('active');
     });
 
     it('toggles sidebar', async () => {
