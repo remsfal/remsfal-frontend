@@ -7,12 +7,11 @@ vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
 // Mock the Menu component to prevent it from importing dependencies that fail resolution
 vi.mock('@/layout/ManagerMenu.vue', () => ({ default: { name: 'ManagerMenu', template: '<div></div>' } }));
 
-import { mount } from '@vue/test-utils';
+import { mount, config } from '@vue/test-utils';
 import ManagerMobileBar from '@/layout/ManagerMobileBar.vue';
 import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
-import { config } from '@vue/test-utils';
 import router from '@/router';
 
 // Remove global router plugin - skipping this as strict equality with mock won't match real router anyway.
@@ -36,9 +35,10 @@ const RouterLinkStub = {
 };
 
 describe('ManagerMobileBar.vue', () => {
-    const mountComponent = (initialRoute = {
+    const defaultRoute = {
         path: '/', name: 'ProjectSelection', params: {}, query: {}
-    }) => {
+    };
+    const mountComponent = (initialRoute = defaultRoute) => {
         const route = reactive(initialRoute);
 
         // Create base wrapper

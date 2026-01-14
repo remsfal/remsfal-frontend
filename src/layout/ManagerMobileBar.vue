@@ -108,7 +108,8 @@ function isActive(item: MobileNavItem) {
   if (typeof target === 'object' && target !== null && 'name' in target) {
       if (target.name && route.name !== target.name) return false;
       
-      const targetQuery = (target as any).query || {};
+      // Cast safely instead of using any, assuming standard router object structure
+      const targetQuery = (target as { query?: Record<string, string> }).query || {};
       
       // Determine strictness: if target has no query, do we require route to have no query?
       // For tasks/defects (same route name, different query), we need rigorous checking.
@@ -116,7 +117,7 @@ function isActive(item: MobileNavItem) {
       // BUT if we navigate to base IssueOverview without query, we shouldn't highlight if we are on task view.
       
       // Original logic was: !target.query && route.name === target.name
-      const strict = !Object.keys(targetQuery).length && route.name === ((target as any).name);
+      const strict = !Object.keys(targetQuery).length && route.name === (target as { name?: string }).name;
       
       return matchesQuery(targetQuery, currentRouteQuery, strict);
   }
@@ -169,7 +170,7 @@ function getIconClass(item: MobileNavItem) {
       class="mobile-sidebar-drawer"
       style="width: 80vw; max-width: 300px;"
     >
-       <ManagerMenu />
+      <ManagerMenu />
     </Drawer>
   </div>
 </template>

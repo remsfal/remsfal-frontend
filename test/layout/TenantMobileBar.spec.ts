@@ -1,10 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, config } from '@vue/test-utils';
 import TenantMobileBar from '@/layout/TenantMobileBar.vue';
 import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
-import { config } from '@vue/test-utils';
 import router from '@/router';
 
 // Remove global router plugin for this test file
@@ -18,7 +17,8 @@ const RouterLinkStub = {
 };
 
 describe('TenantMobileBar.vue', () => {
-    const mountComponent = (initialRoute = { path: '/', name: 'TenantView' }) => {
+    const defaultRoute = { path: '/', name: 'TenantView' };
+    const mountComponent = (initialRoute = defaultRoute) => {
         const route = reactive(initialRoute);
 
         const wrapper = mount(TenantMobileBar, {

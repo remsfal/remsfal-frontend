@@ -1,3 +1,4 @@
+
 <script setup lang="ts">
 import { onBeforeMount, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -29,8 +30,8 @@ export interface MenuItem {
 }
 
 interface MenuItemProps {
-  item: MenuItem;
-  index: number;
+  item?: MenuItem;
+  index?: number;
   root?: boolean;
   parentItemKey?: string | undefined;
 }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, type RouteLocationRaw } from 'vue-router';
 import Drawer from 'primevue/drawer';
 import TenantMenu from '@/layout/TenantMenu.vue';
 
 interface MobileNavItem {
   label: string;
-  to: any;
+  to: RouteLocationRaw;
   icon: string;
 }
 
@@ -74,7 +74,7 @@ function isActive(item: MobileNavItem) {
       class="mobile-sidebar-drawer"
       style="width: 80vw; max-width: 300px;"
     >
-       <TenantMenu />
+      <TenantMenu />
     </Drawer>
   </div>
 </template>

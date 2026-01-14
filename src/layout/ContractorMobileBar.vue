@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useRoute, RouterLink } from 'vue-router';
+import { useRoute, RouterLink, type RouteLocationRaw } from 'vue-router';
 import Drawer from 'primevue/drawer';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
 
 interface MobileNavItem {
   label: string;
-  to: any;
+  to: RouteLocationRaw;
   icon: string | { type: 'pi' | 'fa'; name: string | string[] };
 }
 
@@ -88,7 +88,7 @@ function getIconClass(item: MobileNavItem) {
       class="mobile-sidebar-drawer"
       style="width: 80vw; max-width: 300px;"
     >
-       <ContractorMenu />
+      <ContractorMenu />
     </Drawer>
   </div>
 </template>

@@ -7,12 +7,11 @@ vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
 // Mock the Menu component to prevent it from importing dependencies that fail resolution
 vi.mock('@/layout/ContractorMenu.vue', () => ({ default: { name: 'ContractorMenu', template: '<div></div>' } }));
 
-import { mount } from '@vue/test-utils';
+import { mount, config } from '@vue/test-utils';
 import ContractorMobileBar from '@/layout/ContractorMobileBar.vue';
 import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
-import { config } from '@vue/test-utils';
 import router from '@/router';
 
 
@@ -29,9 +28,10 @@ const RouterLinkStub = {
 
 
 describe('ContractorMobileBar.vue', () => {
-    const mountComponent = (initialRoute = {
+    const defaultRoute = {
         name: 'ContractorView', query: {}, path: '/customers'
-    }) => {
+    };
+    const mountComponent = (initialRoute = defaultRoute) => {
         const route = reactive(initialRoute);
 
         const wrapper = mount(ContractorMobileBar, {
@@ -87,7 +87,8 @@ describe('ContractorMobileBar.vue', () => {
     it('handles potentially missing query gracefully', async () => {
         // Simulate route where query might be null/undefined logic
         const { wrapper } = mountComponent({
-            name: 'ContractorView', query: undefined as any, path: '/customers'
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            name: 'ContractorView', query: undefined as unknown as Record<string, any>, path: '/customers'
         });
         await wrapper.vm.$nextTick();
 
