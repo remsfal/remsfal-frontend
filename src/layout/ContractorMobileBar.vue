@@ -34,8 +34,15 @@ function isActive(item: MobileNavItem) {
   if (!item.to) return false;
   
   // Special logic for Contractor query params
-  if (route.name === 'ContractorView' && item.to.name === 'ContractorView') {
-      const targetQuery = item.to.query || {};
+  if (
+    typeof item.to === 'object' &&
+    item.to !== null &&
+    'name' in item.to &&
+    item.to.name === 'ContractorView' &&
+    route.name === 'ContractorView'
+  ) {
+      // Cast to assume query exists or is accessible, similar to standard Vue Router types
+      const targetQuery = (item.to as { query?: Record<string, string> }).query || {};
       const currentQuery = route.query || {};
       
       // If we are looking for the 'orders' tab
