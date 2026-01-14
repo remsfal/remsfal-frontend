@@ -319,6 +319,10 @@
           }
         }
       },
+      "EmployeeRole" : {
+        "type" : "string",
+        "enum" : [ "OWNER", "MANAGER", "STAFF" ]
+      },
       "InboxMessage" : {
         "description" : "Represents a message or invoice in the user's inbox",
         "type" : "object",
@@ -429,13 +433,58 @@
             "type" : "string"
           },
           "blockedBy" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           },
           "relatedTo" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           },
           "duplicateOf" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "blocks" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "parentOf" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "childOf" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           }
         }
       },
@@ -489,6 +538,91 @@
         "type" : "string",
         "format" : "date-time",
         "examples" : [ "2022-03-10T12:15:50-04:00" ]
+      },
+      "OrganizationEmployeeJson" : {
+        "description" : "Employee information in context of an organization",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "employeeRole" : {
+            "$ref" : "#/components/schemas/EmployeeRole"
+          }
+        },
+        "required" : [ "employeeRole" ]
+      },
+      "OrganizationEmployeeListJson" : {
+        "description" : "A list of organization employees",
+        "type" : "object",
+        "required" : [ "employees" ],
+        "properties" : {
+          "employees" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrganizationEmployeeJson"
+            }
+          }
+        }
+      },
+      "OrganizationJson" : {
+        "description" : "An organization",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "phone" : {
+            "type" : "string",
+            "pattern" : "^\\+[1-9]\\d{4,14}$",
+            "maxLength" : 15
+          },
+          "email" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "trade" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/AddressJson"
+          }
+        }
+      },
+      "OrganizationListJson" : {
+        "description" : "A list of organizations",
+        "type" : "object",
+        "required" : [ "organizations" ],
+        "properties" : {
+          "organizations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrganizationJson"
+            }
+          },
+          "offset" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
       },
       "ProjectItemJson" : {
         "description" : "A project item with the user's member role only",
@@ -595,6 +729,18 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ProjectMemberJson"
+            }
+          }
+        }
+      },
+      "ProjectTenancyListJson" : {
+        "description" : "A list of tenancies for a project",
+        "type" : "object",
+        "properties" : {
+          "tenancies" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TenancyInfoJson"
             }
           }
         }
@@ -837,6 +983,30 @@
           }
         }
       },
+      "TenancyInfoJson" : {
+        "type" : "object",
+        "description" : "A tenancy item with information from the manager's view",
+        "properties" : {
+          "active" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "startOfRental" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "endOfRental" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "tenants" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UserJson"
+            }
+          }
+        }
+      },
       "TenancyItemJson" : {
         "description" : "A tenancy item with basic information from a tenant's perspective",
         "type" : "object",
@@ -1002,7 +1172,15 @@
             "pattern" : "^\\+[1-9]\\d{4,14}$"
           },
           "locale" : {
-            "type" : "string"
+            "type" : "string",
+            "maxLength" : 2
+          },
+          "additionalEmails" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "maxLength" : 255
+            }
           },
           "registeredDate" : {
             "$ref" : "#/components/schemas/LocalDate"
@@ -1048,6 +1226,78 @@
           }
         },
         "summary" : "Send Test Emails",
+        "tags" : [ "Mailing Resource" ]
+      }
+    },
+    "/notification/test/issue-assigned" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "to",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          }
+        },
+        "summary" : "Test Issue Assigned",
+        "tags" : [ "Mailing Resource" ]
+      }
+    },
+    "/notification/test/issue-created" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "to",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          }
+        },
+        "summary" : "Test Issue Created",
+        "tags" : [ "Mailing Resource" ]
+      }
+    },
+    "/notification/test/issue-updated" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "to",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          }
+        },
+        "summary" : "Test Issue Updated",
         "tags" : [ "Mailing Resource" ]
       }
     }
