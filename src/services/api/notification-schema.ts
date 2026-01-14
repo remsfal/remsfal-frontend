@@ -282,31 +282,34 @@ export interface components {
         };
         /** @enum {string} */
         EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
-        /** @description Represents a message or invoice in the user's inbox */
+        /** @description Represents an enriched issue event stored in a user's inbox */
         InboxMessage: {
-            /** @description Unique identifier of the message */
+            /** @description Unique identifier of this inbox message */
             id?: string;
-            /**
-             * @description Type of message (Message | Invoice)
-             * @enum {string}
-             */
-            type?: "Message" | "Invoice";
-            /** @description Sender or contractor associated with the message */
-            contractor?: string;
-            /** @description Subject or title of the message */
-            subject?: string;
-            /** @description Property or building related to the message */
-            property?: string;
-            /** @description Tenant or person related to the message */
-            tenant?: string;
-            /** @description Date and time when the message was received */
-            receivedAt?: components["schemas"]["OffsetDateTime"];
+            /** @description User who received this notification */
+            userId?: string;
+            /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
+            eventType?: string;
+            /** @description Related issue ID */
+            issueId?: string;
+            /** @description Issue title */
+            title?: string;
+            /** @description Issue description */
+            description?: string;
+            /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
+            issueType?: string;
+            /** @description Current status of the issue */
+            status?: string;
+            /** @description Link to the frontend issue page */
+            link?: string;
             /** @description Whether the message has been read */
             read?: boolean;
-            /** @description ID of the user who owns the message */
-            userId?: string;
-            /** @description URL to the related GitHub issue or external resource */
-            issueLink?: string;
+            /** @description Timestamp when the notification was created */
+            createdAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Email of the actor who triggered the event */
+            actorEmail?: string;
+            /** @description Email of the owner assigned to the issue */
+            ownerEmail?: string;
         };
         /**
          * Format: date-time
