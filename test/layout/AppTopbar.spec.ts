@@ -4,10 +4,15 @@ import AppTopbar from '@/layout/AppTopbar.vue';
 import { useLayout } from '@/layout/composables/layout';
 
 // Mock the layout composable
-vi.mock('@/layout/composables/layout', () => ({useLayout: vi.fn(),}));
+vi.mock('@/layout/composables/layout', () => ({ useLayout: vi.fn(), }));
 
 describe('AppTopbar', () => {
-  let mockUseLayout: any;
+  let mockUseLayout: {
+    toggleMenu: ReturnType<typeof vi.fn>;
+    toggleDarkMode: ReturnType<typeof vi.fn>;
+    isDarkTheme: boolean;
+    isFullscreen: boolean
+  };
 
   beforeEach(() => {
     mockUseLayout = {
@@ -16,7 +21,7 @@ describe('AppTopbar', () => {
       isDarkTheme: false,
       isFullscreen: false,
     };
-    (useLayout as any).mockReturnValue(mockUseLayout);
+    (useLayout as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockUseLayout);
   });
 
   it('renders the burger menu button', () => {
@@ -35,7 +40,7 @@ describe('AppTopbar', () => {
   it('burger button has click event handler', async () => {
     const wrapper = mount(AppTopbar);
     const burgerButton = wrapper.find('.layout-topbar-menu-button');
-    
+
     // Should not throw error when clicked
     await burgerButton.trigger('click');
     expect(true).toBe(true); // If we get here, the click handler exists
