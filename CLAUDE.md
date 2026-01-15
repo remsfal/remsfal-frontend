@@ -153,6 +153,49 @@ Users have roles (MANAGER, CONTRACTOR, TENANT) that determine accessible views:
 - Use PrimeVue components when available instead of custom implementations
 - Toast/dialog/confirm services available globally
 
+**BaseCard Component** (`src/components/BaseCard.vue`):
+- Standardized wrapper around PrimeVue Card with consistent styling
+- Default classes: `flex flex-col gap-4 basis-full`
+- Default title styling: `font-semibold text-xl`
+- All PrimeVue Card slots are supported (title, subtitle, header, content, footer)
+
+Usage examples:
+```vue
+<!-- Basic usage with default styling -->
+<BaseCard>
+  <template #title>Card Title</template>
+  <template #content>Card content here</template>
+</BaseCard>
+
+<!-- Custom title styling (e.g., for danger zones) -->
+<BaseCard titleClass="text-red-600 font-semibold text-xl">
+  <template #title>Danger Zone</template>
+  <template #content>Dangerous actions here</template>
+</BaseCard>
+
+<!-- Custom card classes -->
+<BaseCard cardClass="mb-4">
+  <template #content>Custom card styling</template>
+</BaseCard>
+
+<!-- Disable default classes -->
+<BaseCard cardClass="">
+  <template #content>No default styling</template>
+</BaseCard>
+
+<!-- Unstyled title (no wrapper div) -->
+<BaseCard :unstyled="true">
+  <template #title>
+    <div class="custom-title-class">Custom Title</div>
+  </template>
+</BaseCard>
+```
+
+Props:
+- `cardClass` (string | null): Custom CSS classes for the card. Default: `'flex flex-col gap-4 basis-full'`
+- `titleClass` (string): CSS classes for the title wrapper div. Default: `'font-semibold text-xl'`
+- `unstyled` (boolean): Disable automatic title wrapper. Default: `false`
+
 ### Service Layer Pattern
 
 Services are classes with instance methods and singleton exports that wrap the type-safe `apiClient`:
@@ -345,6 +388,7 @@ async getMembers(projectId: string) {
 When helping with this codebase:
 - Suggest Vue 3 Composition API solutions with `<script setup>`
 - Recommend PrimeVue components when applicable
+- **Use BaseCard instead of PrimeVue Card** for consistent styling across the application
 - Ensure TypeScript type safety (avoid `any`)
 - Include proper error handling and loading states
 - Follow established project structure and patterns

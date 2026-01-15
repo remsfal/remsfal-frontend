@@ -64,10 +64,12 @@ describe('UnitBreadcrumb.vue', () => {
     expect(breadcrumb.exists()).toBe(true);
 
     const model = breadcrumb.props('model');
-    expect(model).toHaveLength(2);
-    expect(model[0].label).toBe('Property A');
-    expect(model[1].label).toBe('My Unit');
-    expect(model[1].disabled).toBe(true);
+    expect(model).toHaveLength(3);
+    expect(model[0].label).toBe('breadcrumb.overview');
+    expect(model[0].icon).toBe('pi pi-th-large');
+    expect(model[1].label).toBe('Property A');
+    expect(model[2].label).toBe('My Unit');
+    expect(model[2].disabled).toBe(true);
   });
 
   it('renders correctly in Create mode', async () => {
@@ -89,9 +91,10 @@ describe('UnitBreadcrumb.vue', () => {
     const breadcrumb = wrapper.findComponent(BreadcrumbStub);
     const model = breadcrumb.props('model');
 
-    expect(model).toHaveLength(2);
-    expect(model[0].label).toBe('Property A');
-    expect(model[1].label).toBe('breadcrumb.create');
+    expect(model).toHaveLength(3);
+    expect(model[0].label).toBe('breadcrumb.overview');
+    expect(model[1].label).toBe('Property A');
+    expect(model[2].label).toBe('breadcrumb.create');
   });
 
   it('handles contextParentId correctly (SiteView scenario)', async () => {
@@ -119,9 +122,10 @@ describe('UnitBreadcrumb.vue', () => {
     const breadcrumb = wrapper.findComponent(BreadcrumbStub);
     const model = breadcrumb.props('model');
 
-    expect(model).toHaveLength(2);
-    expect(model[0].label).toBe('Property A');
-    expect(model[1].label).toBe('My Site');
+    expect(model).toHaveLength(3);
+    expect(model[0].label).toBe('breadcrumb.overview');
+    expect(model[1].label).toBe('Property A');
+    expect(model[2].label).toBe('My Site');
   });
 
   it('shows fallback (current title) when backend fails', async () => {
@@ -137,11 +141,12 @@ describe('UnitBreadcrumb.vue', () => {
     const breadcrumb = wrapper.findComponent(BreadcrumbStub);
     const model = breadcrumb.props('model');
 
-    expect(model).toHaveLength(1);
-    expect(model[0].label).toBe('My Unit');
+    expect(model).toHaveLength(2);
+    expect(model[0].label).toBe('breadcrumb.overview');
+    expect(model[1].label).toBe('My Unit');
   });
 
-  it('shows "Zur Übersicht" fallback only if absolutely no info is available', async () => {
+  it('shows overview link when no other info is available', async () => {
     vi.mocked(propertyService.getBreadcrumbPath).mockRejectedValue(new Error('Backend down'));
 
     const wrapper = mount(UnitBreadcrumb, {
@@ -158,7 +163,7 @@ describe('UnitBreadcrumb.vue', () => {
     const model = breadcrumb.props('model');
 
     expect(model).toHaveLength(1);
-    expect(model[0].label).toBe('breadcrumb.backToOverview');
+    expect(model[0].label).toBe('breadcrumb.overview');
   });
 
   it('uses direct getProperty fallback if tree path fails', async () => {
@@ -183,9 +188,10 @@ describe('UnitBreadcrumb.vue', () => {
     const breadcrumb = wrapper.findComponent(BreadcrumbStub);
     const model = breadcrumb.props('model');
 
-    expect(model).toHaveLength(2);
-    expect(model[0].label).toBe('Direct Property');
-    expect(model[1].label).toBe('Außenanlage');
+    expect(model).toHaveLength(3);
+    expect(model[0].label).toBe('breadcrumb.overview');
+    expect(model[1].label).toBe('Direct Property');
+    expect(model[2].label).toBe('Außenanlage');
   });
 
   it('returns early if context parent is already in the path', async () => {
@@ -203,7 +209,7 @@ describe('UnitBreadcrumb.vue', () => {
 
     await flushPromises();
     const model = wrapper.findComponent(BreadcrumbStub).props('model');
-    expect(model).toHaveLength(2);
+    expect(model).toHaveLength(3);
   });
 
   it('ignores context parent errors silently (Code Coverage)', async () => {
@@ -225,8 +231,9 @@ describe('UnitBreadcrumb.vue', () => {
 
     await flushPromises();
     const model = wrapper.findComponent(BreadcrumbStub).props('model');
-    expect(model).toHaveLength(1);
-    expect(model[0].label).toBe('My Unit');
+    expect(model).toHaveLength(2);
+    expect(model[0].label).toBe('breadcrumb.overview');
+    expect(model[1].label).toBe('My Unit');
   });
 
   it('uses default icon for unknown types', async () => {
@@ -245,6 +252,6 @@ describe('UnitBreadcrumb.vue', () => {
 
     await flushPromises();
     const model = wrapper.findComponent(BreadcrumbStub).props('model');
-    expect(model[0].icon).toBe('pi pi-folder');
+    expect(model[1].icon).toBe('pi pi-folder');
   });
 });
