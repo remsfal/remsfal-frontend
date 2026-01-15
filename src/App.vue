@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { RouterView, useRoute } from "vue-router";
+import { RouterView, useRoute } from 'vue-router';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import { useLayout } from '@/layout/composables/layout';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useEventBus } from '@/stores/EventStore.ts';
-
-
 import { useI18n } from 'vue-i18n';
 
 defineOptions({

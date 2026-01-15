@@ -42,13 +42,6 @@ onUnmounted(() => {
   <header>
     <div class="layout-topbar">
       <div class="layout-topbar-logo-container">
-        <Button
-          v-if="!isFullscreen"
-          class="layout-menu-button layout-topbar-menu-button layout-topbar-action mobile-hidden"
-          @click="toggleMenu"
-        >
-          <i class="pi pi-bars" />
-        </Button>
         <RouterLink to="/" class="layout-topbar-logo">
           <img src="@/assets/logo.svg" alt="logo">
         </RouterLink>
@@ -91,11 +84,5 @@ onUnmounted(() => {
   border: 0;
   box-shadow: none;
   margin-left: -0.5rem;
-}
-
-@media (width <= 991px) {
-  .mobile-hidden {
-    display: none !important;
-  }
 }
 </style>
