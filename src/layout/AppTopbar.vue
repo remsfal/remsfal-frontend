@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 import { ref, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
 
-const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
+const { toggleDarkMode, isDarkTheme } = useLayout();
 
 const isMobileMenuOpen = ref(false);
 const menuButtonRef = ref<ComponentPublicInstance>();
