@@ -90,41 +90,54 @@ describe('ProjectIssueView.vue', () => {
       expect(wrapper.props('issueId')).toBe('issue-456');
     });
 
-    it('should initialize issueDetailsData ref', async () => {
+    it('should pass issueDetailsData to IssueDetailsCard', async () => {
       await wrapper.vm.$nextTick();
-      const vm = wrapper.vm as any;
-      expect(vm.issueDetailsData).toBeDefined();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      const initialData = detailsCard.props('initialData');
+      expect(initialData).toBeDefined();
+      expect(initialData.issueId).toBeTruthy();
     });
 
-    it('should initialize description ref', async () => {
+    it('should pass description to IssueDescriptionCard', async () => {
       await wrapper.vm.$nextTick();
-      const vm = wrapper.vm as any;
-      expect(vm.description).toBeDefined();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const descCard = wrapper.findComponent(IssueDescriptionCard);
+      const initialDescription = descCard.props('initialDescription');
+      expect(initialDescription).toBeDefined();
     });
   });
 
   describe('Data Fetching', () => {
-    it('should call fetchIssue on mount', async () => {
-      await wrapper.vm.$nextTick();
-      // Issue should be fetched via mock
-      const vm = wrapper.vm as any;
-      expect(vm.issueDetailsData.issueId).toBeTruthy();
-    });
-
-    it('should populate issueDetailsData from API response', async () => {
+    it('should fetch issue data on mount', async () => {
       await wrapper.vm.$nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      const vm = wrapper.vm as any;
-      expect(vm.issueDetailsData.title).toBe('Fix login bug on mobile devices');
+      const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      const initialData = detailsCard.props('initialData');
+      expect(initialData.issueId).toBeTruthy();
+    });
+
+    it('should populate issue details from API response', async () => {
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      const initialData = detailsCard.props('initialData');
+      expect(initialData.title).toBe('Fix login bug on mobile devices');
+      expect(initialData.status).toBe('OPEN');
+      expect(initialData.issueType).toBe('TASK');
     });
 
     it('should populate description from API response', async () => {
       await wrapper.vm.$nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      const vm = wrapper.vm as any;
-      expect(vm.description).toContain('Issue Description');
+      const descCard = wrapper.findComponent(IssueDescriptionCard);
+      const initialDescription = descCard.props('initialDescription');
+      expect(initialDescription).toContain('Issue Description');
     });
   });
 
