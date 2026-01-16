@@ -12,10 +12,6 @@ export const useUserSessionStore = defineStore('user-session', {
       try {
         const user = await apiClient.get('/api/v1/user');
         this.user = user;
-
-        // FOR REVIEW: Uncomment the following line to test TENANT view locally
-        // this.user = { ...user, userRoles: ['TENANT'] };
-
         console.log('Active user session:', user);
         if (user?.locale) {
           i18n.global.locale.value = user.locale;

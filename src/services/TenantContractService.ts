@@ -1,5 +1,6 @@
 export type TenantContractStatus = 'Active' | 'Expired';
 
+// TODO: Replace with actual API response types export type TenancyJson = ApiComponents['schemas']['TenancyJson'];
 export type TenantContractSummary = {
   id: string;
   address: string;
