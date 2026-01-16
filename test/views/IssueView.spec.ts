@@ -5,6 +5,7 @@ import { issueService, StatusValues, type IssueItem } from '../../src/services/I
 
 type IssueViewVm = InstanceType<typeof IssueView> & { visible: boolean };
 
+
 describe('IssueView', () => {
   let wrapper: VueWrapper;
 
@@ -52,6 +53,21 @@ describe('IssueView', () => {
       await wrapper.setProps({ owner: null, status: null });
       const header = wrapper.find('h1');
       expect(header.text()).toBe('Alle Aufgaben');
+    });
+    it('renders "Offene Mängel" when category is DEFECT', async () => {
+      await wrapper.setProps({
+        owner: null, status: 'OPEN', category: 'DEFECT'
+      });
+      const header = wrapper.find('h1');
+      expect(header.text()).toBe('Offene Mängel');
+    });
+
+    it('renders "Alle Mängel" when category is DEFECT and status is null', async () => {
+      await wrapper.setProps({
+        owner: null, status: null, category: 'DEFECT'
+      });
+      const header = wrapper.find('h1');
+      expect(header.text()).toBe('Alle Mängel');
     });
   });
 

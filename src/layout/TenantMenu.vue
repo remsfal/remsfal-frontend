@@ -14,8 +14,8 @@ const model = ref([
       },
       {
         label: 'Meldungen',
-        icon: { type: 'pi', name: 'pi pi-fw pi-comment' },
-        to: '/uikit/formlayout',
+        icon: { type: 'pi', name: 'pi pi-fw pi-inbox' },
+        to: '/inbox',
       },
     ],
   },

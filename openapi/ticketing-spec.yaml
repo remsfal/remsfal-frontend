@@ -241,43 +241,49 @@ components:
       - MANAGER
       - STAFF
     InboxMessage:
-      description: Represents a message or invoice in the user's inbox
+      description: Represents an enriched issue event stored in a user's inbox
       type: object
       properties:
         id:
           type: string
-          description: Unique identifier of the message
-        type:
+          description: Unique identifier of this inbox message
+        userId:
           type: string
-          description: Type of message (Message | Invoice)
-          enum:
-          - Message
-          - Invoice
-        contractor:
+          description: User who received this notification
+        eventType:
           type: string
-          description: Sender or contractor associated with the message
-        subject:
+          description: "Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED"
+        issueId:
           type: string
-          description: Subject or title of the message
-        property:
+          description: Related issue ID
+        title:
           type: string
-          description: Property or building related to the message
-        tenant:
+          description: Issue title
+        description:
           type: string
-          description: Tenant or person related to the message
-        receivedAt:
-          description: Date and time when the message was received
+          description: Issue description
+        issueType:
           type: string
-          $ref: "#/components/schemas/OffsetDateTime"
+          description: "Issue type: DEFECT, TASK, APPLICATION, ..."
+        status:
+          type: string
+          description: Current status of the issue
+        link:
+          type: string
+          description: Link to the frontend issue page
         read:
           type: boolean
           description: Whether the message has been read
-        userId:
+        createdAt:
+          description: Timestamp when the notification was created
           type: string
-          description: ID of the user who owns the message
-        issueLink:
+          $ref: "#/components/schemas/OffsetDateTime"
+        actorEmail:
           type: string
-          description: URL to the related GitHub issue or external resource
+          description: Email of the actor who triggered the event
+        ownerEmail:
+          type: string
+          description: Email of the owner assigned to the issue
     Instant:
       type: string
       format: date-time
@@ -946,6 +952,80 @@ components:
       bearerFormat: JWT
       description: Authentication
 paths:
+  /api/v1/inbox:
+    get:
+      summary: Retrieve inbox messages for the authenticated user
+      parameters:
+      - description: "Filter by read status (true = read, false = unread)"
+        name: read
+        in: query
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: List of inbox messages belonging to the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InboxMessage"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /api/v1/inbox/{messageId}:
+    delete:
+      summary: Delete an inbox message for the authenticated user
+      parameters:
+      - description: Message ID
+        required: true
+        name: messageId
+        in: path
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Message deleted
+        "404":
+          description: Message not found for this user
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /api/v1/inbox/{messageId}/status:
+    patch:
+      summary: Update the read/unread status of an inbox message
+      parameters:
+      - description: Message ID
+        required: true
+        name: messageId
+        in: path
+        schema:
+          type: string
+      - description: "New read flag: true = read, false = unread"
+        required: true
+        name: read
+        in: query
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: Message status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InboxMessage"
+        "404":
+          description: Message not found for this user
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
   /ticketing/v1/issues:
     get:
       summary: Retrieve information for all issues.

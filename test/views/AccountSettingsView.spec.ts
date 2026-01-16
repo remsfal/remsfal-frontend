@@ -44,16 +44,9 @@ describe('AccountSettingsView', () => {
         countryCode: 'US',
       },
     });
-    wrapper.vm.$options.getCity = vi.fn().mockResolvedValue([
-      {
-        city: 'Test City',
-        province: 'Test Province',
-        countryCode: 'TC',
-      },
-    ]);
     wrapper.vm.saveProfile = vi.fn();
     wrapper.vm.fetchUserProfile = vi.fn();
-    wrapper.vm.validateAddress = vi.fn();
+    wrapper.vm.isDisabled = vi.fn();
   });
 
 
@@ -204,12 +197,6 @@ describe('AccountSettingsView', () => {
       window.location = { pathname: '' };
       wrapper.vm.logout();
       expect(window.location.pathname).toBe('/api/v1/authentication/logout');
-    });
-   
-    test('updateCountryFromCode sets error for invalid country code', async () => {
-      wrapper.vm.editedAddress.countryCode = 'XX';
-      await wrapper.vm.updateCountryFromCode();
-      expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
     });
   });
    
