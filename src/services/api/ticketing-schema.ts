@@ -4,6 +4,180 @@
  */
 
 export interface paths {
+    "/api/v1/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve inbox messages for the authenticated user */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Filter by read status (true = read, false = unread) */
+                    read?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of inbox messages belonging to the authenticated user */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["InboxMessage"];
+                    };
+                };
+                /** @description Not Authorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inbox/{messageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an inbox message for the authenticated user */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Message ID */
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Message deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Authorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Message not found for this user */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inbox/{messageId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update the read/unread status of an inbox message */
+        patch: {
+            parameters: {
+                query: {
+                    /** @description New read flag: true = read, false = unread */
+                    read: boolean;
+                };
+                header?: never;
+                path: {
+                    /** @description Message ID */
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Message status updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["InboxMessage"];
+                    };
+                };
+                /** @description Not Authorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Message not found for this user */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/ticketing/v1/issues": {
         parameters: {
             query?: never;
@@ -1288,31 +1462,34 @@ export interface components {
         };
         /** @enum {string} */
         EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
-        /** @description Represents a message or invoice in the user's inbox */
+        /** @description Represents an enriched issue event stored in a user's inbox */
         InboxMessage: {
-            /** @description Unique identifier of the message */
+            /** @description Unique identifier of this inbox message */
             id?: string;
-            /**
-             * @description Type of message (Message | Invoice)
-             * @enum {string}
-             */
-            type?: "Message" | "Invoice";
-            /** @description Sender or contractor associated with the message */
-            contractor?: string;
-            /** @description Subject or title of the message */
-            subject?: string;
-            /** @description Property or building related to the message */
-            property?: string;
-            /** @description Tenant or person related to the message */
-            tenant?: string;
-            /** @description Date and time when the message was received */
-            receivedAt?: components["schemas"]["OffsetDateTime"];
+            /** @description User who received this notification */
+            userId?: string;
+            /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
+            eventType?: string;
+            /** @description Related issue ID */
+            issueId?: string;
+            /** @description Issue title */
+            title?: string;
+            /** @description Issue description */
+            description?: string;
+            /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
+            issueType?: string;
+            /** @description Current status of the issue */
+            status?: string;
+            /** @description Link to the frontend issue page */
+            link?: string;
             /** @description Whether the message has been read */
             read?: boolean;
-            /** @description ID of the user who owns the message */
-            userId?: string;
-            /** @description URL to the related GitHub issue or external resource */
-            issueLink?: string;
+            /** @description Timestamp when the notification was created */
+            createdAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Email of the actor who triggered the event */
+            actorEmail?: string;
+            /** @description Email of the owner assigned to the issue */
+            ownerEmail?: string;
         };
         /**
          * Format: date-time

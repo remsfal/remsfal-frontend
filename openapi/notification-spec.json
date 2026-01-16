@@ -324,50 +324,61 @@
         "enum" : [ "OWNER", "MANAGER", "STAFF" ]
       },
       "InboxMessage" : {
-        "description" : "Represents a message or invoice in the user's inbox",
+        "description" : "Represents an enriched issue event stored in a user's inbox",
         "type" : "object",
         "properties" : {
           "id" : {
             "type" : "string",
-            "description" : "Unique identifier of the message"
+            "description" : "Unique identifier of this inbox message"
           },
-          "type" : {
+          "userId" : {
             "type" : "string",
-            "description" : "Type of message (Message | Invoice)",
-            "enum" : [ "Message", "Invoice" ]
+            "description" : "User who received this notification"
           },
-          "contractor" : {
+          "eventType" : {
             "type" : "string",
-            "description" : "Sender or contractor associated with the message"
+            "description" : "Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED"
           },
-          "subject" : {
+          "issueId" : {
             "type" : "string",
-            "description" : "Subject or title of the message"
+            "description" : "Related issue ID"
           },
-          "property" : {
+          "title" : {
             "type" : "string",
-            "description" : "Property or building related to the message"
+            "description" : "Issue title"
           },
-          "tenant" : {
+          "description" : {
             "type" : "string",
-            "description" : "Tenant or person related to the message"
+            "description" : "Issue description"
           },
-          "receivedAt" : {
-            "description" : "Date and time when the message was received",
+          "issueType" : {
             "type" : "string",
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "description" : "Issue type: DEFECT, TASK, APPLICATION, ..."
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "Current status of the issue"
+          },
+          "link" : {
+            "type" : "string",
+            "description" : "Link to the frontend issue page"
           },
           "read" : {
             "type" : "boolean",
             "description" : "Whether the message has been read"
           },
-          "userId" : {
+          "createdAt" : {
+            "description" : "Timestamp when the notification was created",
             "type" : "string",
-            "description" : "ID of the user who owns the message"
+            "$ref" : "#/components/schemas/OffsetDateTime"
           },
-          "issueLink" : {
+          "actorEmail" : {
             "type" : "string",
-            "description" : "URL to the related GitHub issue or external resource"
+            "description" : "Email of the actor who triggered the event"
+          },
+          "ownerEmail" : {
+            "type" : "string",
+            "description" : "Email of the owner assigned to the issue"
           }
         }
       },
