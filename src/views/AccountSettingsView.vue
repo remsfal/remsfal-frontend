@@ -8,7 +8,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import type {paths} from '@/services/api/platform-schema';
-import UserService from '@/services/UserService';
+import { userService, type User } from '@/services/UserService';
 import { RouterLink } from 'vue-router'
 import AdressDisplay from '@/components/AddressDisplay.vue';
 import { locales, type Locale } from '@/i18n/i18n';
@@ -21,7 +21,7 @@ type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']
 type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
 
 const userProfile = ref<User | null>(null);
-const editedUserProfile = ref<Partial<UserPatchRequestBody>>({});
+const editedUserProfile = ref<Partial<User>>({});
 
 const deleteAcc = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
 const changes = ref(false);
@@ -49,7 +49,6 @@ onMounted(() => {
 
 async function fetchUserProfile() {
   try {
-    const userService = new UserService();
     const profile = (await userService.getUser()) as User;
     if (profile) {
       userProfile.value = profile;
@@ -66,17 +65,17 @@ async function fetchUserProfile() {
   }
 }
 
-function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string | undefined {
-  const value =
-    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof User];
-  return typeof value === 'string' ? value : '';
+function getUpdatedValue<K extends keyof User>(field: K): string | undefined {
+  const value = editedUserProfile.value[field] ?? userProfile.value?.[field as keyof User];
+  if (typeof value === 'string' && value.trim() === '') {
+    return undefined;
+  }
+  return typeof value === 'string' ? value : undefined;
 }
 
 async function saveProfile(): Promise<void> {
   try {
-    const userService = new UserService();
-
-    const user: Partial<UserPatchRequestBody> = {
+    const user: Partial<User> = {
       id: userProfile.value?.id || '',
       firstName: getUpdatedValue('firstName'),
       businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
@@ -90,11 +89,9 @@ async function saveProfile(): Promise<void> {
     const primaryEmail = (userProfile.value?.email || '').trim().toLowerCase();
     let touchedAltEmail = false;
 
-    const currentAlt = 
-      ((userProfile.value as any)?.alternativeEmail ?? null) as string | null;
+    const currentAlt = userProfile.value?.additionalEmails ?? undefined;
 
-    const editedAlt = 
-      ((editedUserProfile.value as any)?.alternativeEmail ?? null) as string | null;
+    const editedAlt = editedUserProfile.value?.additionalEmails ?? undefined;
  
     const currentAltNorm = 
       typeof currentAlt === 'string' ? currentAlt.trim() : null;
@@ -105,7 +102,7 @@ async function saveProfile(): Promise<void> {
       touchedAltEmail = true;
 
       if (!editedAltNorm) {
-        (user as any).alternativeEmail = null;
+        user.additionalEmails = undefined;
       } else {
         if (!validateEmail(editedAltNorm)) {
           altEmailSuccess.value = false;
@@ -121,7 +118,7 @@ async function saveProfile(): Promise<void> {
           return;
         }
 
-        (user as any).alternativeEmail = editedAltNorm;
+        user.additionalEmails = editedAltNorm;
       }
     }
     const updatedUser = await userService.updateUser(user);
@@ -154,7 +151,6 @@ function logout(): void {
 }
 
 function deleteAccount() {
-  const userService = new UserService();
   userService
     .deleteUser()
     .then(() => logout())
@@ -284,8 +280,8 @@ const alternativeEmail = ref('');
 
 const displayAlternativeEmail = computed<string | null>(() => {
   return (
-    ((editedUserProfile.value as any).alternativeEmail ??
-      (userProfile.value as any)?.alternativeEmail) ??
+    ((editedUserProfile.value as any).additionalEmails ??
+      (userProfile.value as any)?.additionalEmails) ??
     null
   );
 });
@@ -298,14 +294,14 @@ const applyAlternativeEmail = (value: string | null) => {
   // update edited profile 
   editedUserProfile.value = {
     ...editedUserProfile.value,
-    alternativeEmail: value,
+    additionalEmails: value,
   } as any;
 
   // update userProfile for immediate UI 
   if (userProfile.value) {
     (userProfile.value as any) = {
       ...userProfile.value,
-      alternativeEmail: value,
+      additionalEmails: value,
     };
   }
 
