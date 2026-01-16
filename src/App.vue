@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import { useLayout } from '@/layout/composables/layout';
@@ -19,6 +19,7 @@ defineOptions({
   },
 });
 
+const route = useRoute();
 const { layoutConfig, layoutState } = useLayout();
 
 const containerClass = computed(() => {
@@ -51,11 +52,47 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
 
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <!-- Sakai AppLayout used as Named Router View -->
     <RouterView name="topbar" />
-    <RouterView name="sidebar" />
-    <RouterView />
+
+    <div class="layout-sidebar-wrapper">
+      <RouterView name="sidebar" />
+    </div>
+
+    <RouterView :key="route.fullPath" />
+
+    <RouterView name="mobilebar" class="layout-mobile-navbar" />
+
     <div class="layout-mask animate-fadein" />
   </div>
   <Toast />
 </template>
+
+<style lang="scss">
+
+.layout-mobile-navbar {
+  display: none;
+}
+
+.layout-sidebar-wrapper {
+  display: block;
+}
+
+@media (width <= 991px) {
+  .layout-mobile-navbar {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1100;
+  }
+
+  .layout-sidebar-wrapper {
+    display: none !important;
+  }
+
+  .layout-main {
+    padding-bottom: 80px !important;
+  }
+}
+</style>

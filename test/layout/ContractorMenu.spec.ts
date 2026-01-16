@@ -57,7 +57,7 @@ describe('ContractorMenu.vue', () => {
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
 
     await wrapper.find('.pi-home').trigger('click');
-    expect(pushSpy).toHaveBeenCalledWith('/contractor');
+    expect(pushSpy).toHaveBeenCalledWith('/contractor/overview');
   });
 
 });

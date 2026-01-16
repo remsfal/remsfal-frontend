@@ -2,7 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import Card from 'primevue/card';
+import BaseCard from '@/components/BaseCard.vue';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import { projectService } from '@/services/ProjectService';
@@ -86,11 +86,9 @@ watch(
 </script>
 
 <template>
-  <Card class="flex flex-col gap-4 basis-full">
+  <BaseCard>
     <template #title>
-      <div class="font-semibold text-xl">
-        Liegenschaftseinstellungen
-      </div>
+      Liegenschaftseinstellungen
     </template>
 
     <template #content>
@@ -114,7 +112,7 @@ watch(
         </div>
       </div>
     </template>
-  </Card>
+  </BaseCard>
 </template>
 
 <style scoped>
