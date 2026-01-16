@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import Card from 'primevue/card';
@@ -7,6 +7,7 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
 import { issueService, type Issue } from '@/services/IssueService';
+import { projectService, type ProjectItem } from '@/services/ProjectService';
 
 const props = defineProps<{
   projectId: string;
@@ -48,6 +49,10 @@ const originalProject = ref(props.initialData.project);
 const originalIssueType = ref(props.initialData.issueType);
 const originalTenancy = ref(props.initialData.tenancy);
 
+/* Projects list for dropdown */
+const projects = ref<ProjectItem[]>([]);
+const loadingProjects = ref(false);
+
 /* Select options */
 const statusOptions = [
   { label: 'Pending', value: 'PENDING' },
@@ -64,6 +69,27 @@ const typeOptions = [
   { label: 'Maintenance', value: 'MAINTENANCE' },
 ];
 
+/* Computed project options for dropdown */
+const projectOptions = computed(() => 
+  projects.value.map(p => ({
+    label: p.title || p.id || 'Unknown Project',
+    value: p.id || '',
+  }))
+);
+
+/* Fetch projects list */
+const fetchProjects = async () => {
+  loadingProjects.value = true;
+  try {
+    const projectList = await projectService.getProjects(0, 100);
+    projects.value = projectList.projects || [];
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+  } finally {
+    loadingProjects.value = false;
+  }
+};
+
 /* Change detection */
 const canSave = computed(() =>
   title.value !== originalTitle.value ||
@@ -76,6 +102,11 @@ const canSave = computed(() =>
 
 /* Loading state */
 const loadingSave = ref(false);
+
+/* Fetch projects on mount */
+onMounted(() => {
+  fetchProjects();
+});
 
 /* Watch for prop changes and update local state */
 watch(() => props.initialData, (newData) => {
@@ -220,7 +251,14 @@ const handleSave = async () => {
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
             <label class="text-sm text-gray-600">Project</label>
-            <InputText v-model="project" />
+            <Select
+              v-model="project"
+              :options="projectOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select project"
+              :loading="loadingProjects"
+            />
           </div>
 
           <div class="flex flex-col gap-1 flex-1">

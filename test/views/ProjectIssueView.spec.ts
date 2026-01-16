@@ -22,6 +22,19 @@ vi.mock('@/services/IssueService', () => ({
   },
 }));
 
+// Mock the ProjectService
+vi.mock('@/services/ProjectService', () => ({
+  projectService: {
+    getProjects: vi.fn().mockResolvedValue({
+      projects: [
+        { id: 'project-1', title: 'Project Alpha' },
+        { id: 'project-2', title: 'Project Beta' },
+        { id: 'project-3', title: 'Project Gamma' },
+      ],
+    }),
+  },
+}));
+
 describe('ProjectIssueView.vue', () => {
   let wrapper: VueWrapper;
 
