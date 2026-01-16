@@ -24,18 +24,18 @@
   /* Reactive fields for current values */
   const title = ref('');
   const status = ref('');
-  const owner = ref('');
+  const ownerId = ref('');
   const project = ref('');
-  const type = ref('');
+  const issueType = ref('');
   const tenancy = ref('');
   const description = ref('');
   
   /* Reactive fields for original values (used for change detection) */
   const originalTitle = ref('');
   const originalStatus = ref('');
-  const originalOwner = ref('');
+  const originalOwnerId = ref('');
   const originalProject = ref('');
-  const originalType = ref('');
+  const originalIssueType = ref('');
   const originalTenancy = ref('');
   const originalDescription = ref('');
   
@@ -59,9 +59,9 @@
   const canSave = computed(() =>
     title.value !== originalTitle.value ||
     status.value !== originalStatus.value ||
-    owner.value !== originalOwner.value ||
+    ownerId.value !== originalOwnerId.value ||
     project.value !== originalProject.value ||
-    type.value !== originalType.value ||
+    issueType.value !== originalIssueType.value ||
     tenancy.value !== originalTenancy.value
   );
 
@@ -85,15 +85,15 @@
       issueId.value = issue.id || '';
       title.value = issue.title || '';
       status.value = issue.status || 'OPEN';
-      owner.value = issue.owner || '';
-      type.value = issue.type || 'TASK';
+      ownerId.value = issue.ownerId || '';
+      issueType.value = issue.type || 'TASK';
       description.value = issue.description || '';
       
       // Set original values for change detection
       originalTitle.value = title.value;
       originalStatus.value = status.value;
-      originalOwner.value = owner.value;
-      originalType.value = type.value;
+      originalOwnerId.value = ownerId.value;
+      originalIssueType.value = issueType.value;
       originalDescription.value = description.value;
     } catch (error) {
       console.error('Error fetching issue:', error);
@@ -118,17 +118,17 @@
       const changedFields: string[] = [];
       if (title.value !== originalTitle.value) changedFields.push(t('issueDetails.fields.title'));
       if (status.value !== originalStatus.value) changedFields.push(t('issueDetails.fields.status'));
-      if (owner.value !== originalOwner.value) changedFields.push(t('issueDetails.fields.owner'));
+      if (ownerId.value !== originalOwnerId.value) changedFields.push(t('issueDetails.fields.owner'));
       if (project.value !== originalProject.value) changedFields.push(t('issueDetails.fields.project'));
-      if (type.value !== originalType.value) changedFields.push(t('issueDetails.fields.type'));
+      if (issueType.value !== originalIssueType.value) changedFields.push(t('issueDetails.fields.type'));
       if (tenancy.value !== originalTenancy.value) changedFields.push(t('issueDetails.fields.tenancy'));
 
       // Build payload with only the fields that exist in the API
       const payload: Partial<Issue> = {};
       if (title.value !== originalTitle.value) payload.title = title.value;
-      if (status.value !== originalStatus.value) payload.status = status.value as any;
-      if (owner.value !== originalOwner.value) payload.owner = owner.value;
-      if (type.value !== originalType.value) payload.type = type.value;
+      if (status.value !== originalStatus.value) payload.status = status.value as Issue['status'];
+      if (ownerId.value !== originalOwnerId.value) payload.ownerId = ownerId.value;
+      if (issueType.value !== originalIssueType.value) payload.type = issueType.value as Issue['type'];
     
       console.log('Saving issue details:', payload);
       
@@ -138,9 +138,9 @@
       // Update reference state after save to disable the button
       originalTitle.value = title.value;
       originalStatus.value = status.value;
-      originalOwner.value = owner.value;
+      originalOwnerId.value = ownerId.value;
       originalProject.value = project.value;
-      originalType.value = type.value;
+      originalIssueType.value = issueType.value;
       originalTenancy.value = tenancy.value;
 
       // Create toast message with changed fields
@@ -249,7 +249,7 @@
               <div class="flex flex-col gap-1 flex-1">
                 <label class="text-sm text-gray-600">Type</label>
                 <Select
-                  v-model="type"
+                  v-model="issueType"
                   :options="typeOptions"
                   optionLabel="label"
                   optionValue="value"
@@ -267,7 +267,7 @@
   
               <div class="flex flex-col gap-1 flex-1">
                 <label class="text-sm text-gray-600">Owner / Assignee</label>
-                <InputText v-model="owner" placeholder="Enter owner name" />
+                <InputText v-model="ownerId" placeholder="Enter owner ID" />
               </div>
             </div>
   
