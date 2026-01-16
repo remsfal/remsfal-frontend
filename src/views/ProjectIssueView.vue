@@ -1,10 +1,15 @@
 <script setup lang="ts">
   import { ref, computed } from 'vue';
+  import { useToast } from 'primevue/usetoast';
+  import { useI18n } from 'vue-i18n';
   import Card from 'primevue/card';
   import InputText from 'primevue/inputtext';
   import Select from 'primevue/select';
   import Button from 'primevue/button';
   import IssueDescription from './IssueDescription.vue';
+
+  const toast = useToast();
+  const { t } = useI18n();
   
   /* Initial static data (replace later with API data) */
   const issueId = ref('#ISSUE-123');
@@ -59,42 +64,95 @@
     description.value !== originalDescription.value
   );
 
+  /* Loading states for save operations */
+  const loadingSave = ref(false);
+  const loadingSaveDescription = ref(false);
   
   /* Save handler for issue details */
-  const handleSave = () => {
-    const payload = {
-      id: issueId.value,
-      title: title.value,
-      status: status.value,
-      reporter: reporter.value,
-      owner: owner.value,
-      project: project.value,
-      type: type.value,
-      tenancy: tenancy.value,
-    };
-  
-    console.log('Saving issue details:', payload);
+  const handleSave = async () => {
+    if (!canSave.value || loadingSave.value) return;
+
+    loadingSave.value = true;
+    try {
+      const payload = {
+        id: issueId.value,
+        title: title.value,
+        status: status.value,
+        reporter: reporter.value,
+        owner: owner.value,
+        project: project.value,
+        type: type.value,
+        tenancy: tenancy.value,
+      };
     
-    // Update reference state after save to disable the button
-    originalTitle.value = title.value;
-    originalStatus.value = status.value;
-    originalOwner.value = owner.value;
-    originalProject.value = project.value;
-    originalType.value = type.value;
-    originalTenancy.value = tenancy.value;
+      console.log('Saving issue details:', payload);
+      
+      // Simulate API call (replace with actual API call later)
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Update reference state after save to disable the button
+      originalTitle.value = title.value;
+      originalStatus.value = status.value;
+      originalOwner.value = owner.value;
+      originalProject.value = project.value;
+      originalType.value = type.value;
+      originalTenancy.value = tenancy.value;
+
+      toast.add({
+        severity: 'success',
+        summary: t('success.saved'),
+        detail: t('issueDetails.saveSuccess'),
+        life: 3000,
+      });
+    } catch (error) {
+      console.error('Error saving issue details:', error);
+      toast.add({
+        severity: 'error',
+        summary: t('error.general'),
+        detail: t('issueDetails.saveError'),
+        life: 3000,
+      });
+    } finally {
+      loadingSave.value = false;
+    }
   };
 
   /* Save handler for description */
-  const handleSaveDescription = () => {
-    const payload = {
-      id: issueId.value,
-      description: description.value,
-    };
-  
-    console.log('Saving description:', payload);
+  const handleSaveDescription = async () => {
+    if (!canSaveDescription.value || loadingSaveDescription.value) return;
+
+    loadingSaveDescription.value = true;
+    try {
+      const payload = {
+        id: issueId.value,
+        description: description.value,
+      };
     
-    // Update reference state after save to disable the button
-    originalDescription.value = description.value;
+      console.log('Saving description:', payload);
+      
+      // Simulate API call (replace with actual API call later)
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Update reference state after save to disable the button
+      originalDescription.value = description.value;
+
+      toast.add({
+        severity: 'success',
+        summary: t('success.saved'),
+        detail: t('issueDetails.descriptionSaveSuccess'),
+        life: 3000,
+      });
+    } catch (error) {
+      console.error('Error saving description:', error);
+      toast.add({
+        severity: 'error',
+        summary: t('error.general'),
+        detail: t('issueDetails.descriptionSaveError'),
+        life: 3000,
+      });
+    } finally {
+      loadingSaveDescription.value = false;
+    }
   };
   </script>
   
@@ -176,7 +234,8 @@
               <Button
                 label="Save"
                 icon="pi pi-save"
-                :disabled="!canSave"
+                :disabled="!canSave || loadingSave"
+                :loading="loadingSave"
                 @click="handleSave"
               />
             </div>
@@ -199,7 +258,8 @@
               <Button
                 label="Save Description"
                 icon="pi pi-save"
-                :disabled="!canSaveDescription"
+                :disabled="!canSaveDescription || loadingSaveDescription"
+                :loading="loadingSaveDescription"
                 @click="handleSaveDescription"
               />
             </div>
