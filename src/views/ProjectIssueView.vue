@@ -76,6 +76,14 @@
     };
   
     console.log('Saving issue details:', payload);
+    
+    // Update reference state after save to disable the button
+    initialData.title = title.value;
+    initialData.status = status.value;
+    initialData.owner = owner.value;
+    initialData.project = project.value;
+    initialData.type = type.value;
+    initialData.tenancy = tenancy.value;
   };
 
   /* Save handler for description */
@@ -86,6 +94,9 @@
     };
   
     console.log('Saving description:', payload);
+    
+    // Update reference state after save to disable the button
+    initialData.description = description.value;
   };
   </script>
   
