@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted, watch } from 'vue';
   import { useToast } from 'primevue/usetoast';
   import { useI18n } from 'vue-i18n';
   import Card from 'primevue/card';
@@ -7,31 +7,37 @@
   import Select from 'primevue/select';
   import Button from 'primevue/button';
   import IssueDescription from './IssueDescription.vue';
+  import { issueService, type Issue } from '@/services/IssueService';
+
+  const props = defineProps<{
+    projectId: string;
+    issueId: string;
+  }>();
 
   const toast = useToast();
   const { t } = useI18n();
   
-  /* Initial static data (replace later with API data) */
-  const issueId = ref('#ISSUE-123');
-  const reporter = ref('John Doe');
+  /* Initial static data */
+  const issueId = ref('');
+  const reporter = ref('');
   
   /* Reactive fields for current values */
-  const title = ref('Fix login bug on mobile devices');
-  const status = ref('OPEN');
-  const owner = ref('Jane Smith');
-  const project = ref('Building A Renovation');
-  const type = ref('TASK');
-  const tenancy = ref('Apartment 3B');
-  const description = ref('## Issue Description\n\nUsers are experiencing login failures...');
+  const title = ref('');
+  const status = ref('');
+  const owner = ref('');
+  const project = ref('');
+  const type = ref('');
+  const tenancy = ref('');
+  const description = ref('');
   
   /* Reactive fields for original values (used for change detection) */
-  const originalTitle = ref('Fix login bug on mobile devices');
-  const originalStatus = ref('OPEN');
-  const originalOwner = ref('Jane Smith');
-  const originalProject = ref('Building A Renovation');
-  const originalType = ref('TASK');
-  const originalTenancy = ref('Apartment 3B');
-  const originalDescription = ref('## Issue Description\n\nUsers are experiencing login failures...');
+  const originalTitle = ref('');
+  const originalStatus = ref('');
+  const originalOwner = ref('');
+  const originalProject = ref('');
+  const originalType = ref('');
+  const originalTenancy = ref('');
+  const originalDescription = ref('');
   
   /* Select options */
   const statusOptions = [
@@ -67,6 +73,40 @@
   /* Loading states for save operations */
   const loadingSave = ref(false);
   const loadingSaveDescription = ref(false);
+  const loadingFetch = ref(false);
+
+  /* Fetch issue data from API */
+  const fetchIssue = async () => {
+    loadingFetch.value = true;
+    try {
+      const issue = await issueService.getIssue(props.projectId, props.issueId);
+      
+      // Populate fields from API response
+      issueId.value = issue.id || '';
+      title.value = issue.title || '';
+      status.value = issue.status || 'OPEN';
+      owner.value = issue.owner || '';
+      type.value = issue.type || 'TASK';
+      description.value = issue.description || '';
+      
+      // Set original values for change detection
+      originalTitle.value = title.value;
+      originalStatus.value = status.value;
+      originalOwner.value = owner.value;
+      originalType.value = type.value;
+      originalDescription.value = description.value;
+    } catch (error) {
+      console.error('Error fetching issue:', error);
+      toast.add({
+        severity: 'error',
+        summary: t('error.general'),
+        detail: t('issueDetails.fetchError'),
+        life: 3000,
+      });
+    } finally {
+      loadingFetch.value = false;
+    }
+  };
   
   /* Save handler for issue details */
   const handleSave = async () => {
@@ -83,21 +123,17 @@
       if (type.value !== originalType.value) changedFields.push(t('issueDetails.fields.type'));
       if (tenancy.value !== originalTenancy.value) changedFields.push(t('issueDetails.fields.tenancy'));
 
-      const payload = {
-        id: issueId.value,
-        title: title.value,
-        status: status.value,
-        reporter: reporter.value,
-        owner: owner.value,
-        project: project.value,
-        type: type.value,
-        tenancy: tenancy.value,
-      };
+      // Build payload with only the fields that exist in the API
+      const payload: Partial<Issue> = {};
+      if (title.value !== originalTitle.value) payload.title = title.value;
+      if (status.value !== originalStatus.value) payload.status = status.value as any;
+      if (owner.value !== originalOwner.value) payload.owner = owner.value;
+      if (type.value !== originalType.value) payload.type = type.value;
     
       console.log('Saving issue details:', payload);
       
-      // Simulate API call (replace with actual API call later)
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Call backend API
+      await issueService.modifyIssue(props.projectId, props.issueId, payload);
       
       // Update reference state after save to disable the button
       originalTitle.value = title.value;
@@ -136,15 +172,14 @@
 
     loadingSaveDescription.value = true;
     try {
-      const payload = {
-        id: issueId.value,
+      const payload: Partial<Issue> = {
         description: description.value,
       };
     
       console.log('Saving description:', payload);
       
-      // Simulate API call (replace with actual API call later)
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Call backend API
+      await issueService.modifyIssue(props.projectId, props.issueId, payload);
       
       // Update reference state after save to disable the button
       originalDescription.value = description.value;
@@ -167,6 +202,13 @@
       loadingSaveDescription.value = false;
     }
   };
+
+  /* Fetch issue on mount and when props change */
+  onMounted(() => fetchIssue());
+  
+  watch(() => [props.projectId, props.issueId], () => {
+    fetchIssue();
+  });
   </script>
   
   <template>

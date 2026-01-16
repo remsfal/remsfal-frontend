@@ -294,6 +294,7 @@
   "unitTypes.apartment": "Wohnung",
   "unitTypes.storage": "Nebennutzungsraum",
   "unitTypes.commercial": "Gewerbe",
+  "issueDetails.fetchError": "Fehler beim Laden der Aufgabendetails",
   "issueDetails.saveSuccess": "Aufgabendetails erfolgreich aktualisiert",
   "issueDetails.saveError": "Fehler beim Speichern der Aufgabendetails",
   "issueDetails.descriptionSaveSuccess": "Beschreibung erfolgreich aktualisiert",

@@ -289,6 +289,7 @@
   "unitTypes.apartment": "Apartment",
   "unitTypes.storage": "Storage",
   "unitTypes.commercial": "Commercial",
+  "issueDetails.fetchError": "Failed to load issue details",
   "issueDetails.saveSuccess": "Issue details updated successfully",
   "issueDetails.saveError": "Failed to save issue details",
   "issueDetails.descriptionSaveSuccess": "Description updated successfully",
