@@ -29,8 +29,8 @@ export interface MenuItem {
 }
 
 interface MenuItemProps {
-  item: MenuItem;
-  index: number;
+  item?: MenuItem;
+  index?: number;
   root?: boolean;
   parentItemKey?: string | undefined;
 }

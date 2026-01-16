@@ -12,6 +12,11 @@ const model = ref([
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
         to: '/',
       },
+      {
+        label: 'Meldungen',
+        icon: { type: 'pi', name: 'pi pi-fw pi-inbox' },
+        to: '/inbox',
+      },
     ],
   },
 ] as MenuItem[]);
