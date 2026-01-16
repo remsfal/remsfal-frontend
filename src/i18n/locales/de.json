@@ -293,5 +293,9 @@
   "unitTypes.building": "Gebäude",
   "unitTypes.apartment": "Wohnung",
   "unitTypes.storage": "Nebennutzungsraum",
-  "unitTypes.commercial": "Gewerbe"
+  "unitTypes.commercial": "Gewerbe",
+  "issueDetails.saveSuccess": "Aufgabendetails erfolgreich aktualisiert",
+  "issueDetails.saveError": "Fehler beim Speichern der Aufgabendetails",
+  "issueDetails.descriptionSaveSuccess": "Beschreibung erfolgreich aktualisiert",
+  "issueDetails.descriptionSaveError": "Fehler beim Speichern der Beschreibung"
 }

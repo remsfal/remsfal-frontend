@@ -288,5 +288,9 @@
   "unitTypes.building": "Building",
   "unitTypes.apartment": "Apartment",
   "unitTypes.storage": "Storage",
-  "unitTypes.commercial": "Commercial"
+  "unitTypes.commercial": "Commercial",
+  "issueDetails.saveSuccess": "Issue details updated successfully",
+  "issueDetails.saveError": "Failed to save issue details",
+  "issueDetails.descriptionSaveSuccess": "Description updated successfully",
+  "issueDetails.descriptionSaveError": "Failed to save description"
 }
