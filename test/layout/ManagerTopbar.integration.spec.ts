@@ -14,12 +14,12 @@ it('updates unread count in topbar when messages change in inbox', async () => {
   const inboxStore = useInboxStore(pinia)
   const userStore = useUserSessionStore(pinia)
 
-  userStore.user = { email: 'test@example.com' } as any // Mock login
+  userStore.user = { email: 'test@example.com' } as unknown as typeof userStore.user // Mock login
 
   inboxStore.messages = [
     { id: '1', isRead: false },
     { id: '2', isRead: false },
-  ] as any
+  ] as unknown as typeof inboxStore.messages
 
   const topbar = mount(ManagerTopbar, { global: { plugins: [pinia] } })
 

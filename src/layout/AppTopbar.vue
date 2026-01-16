@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 import { ref, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
 
-const { toggleMenu, toggleDarkMode, isDarkTheme, isFullscreen } = useLayout();
+const { toggleDarkMode, isDarkTheme } = useLayout();
 
 const isMobileMenuOpen = ref(false);
 const menuButtonRef = ref<ComponentPublicInstance>();
@@ -42,13 +42,6 @@ onUnmounted(() => {
   <header>
     <div class="layout-topbar">
       <div class="layout-topbar-logo-container">
-        <Button
-          v-if="!isFullscreen"
-          class="layout-menu-button layout-topbar-menu-button layout-topbar-action"
-          @click="toggleMenu"
-        >
-          <i class="pi pi-bars" />
-        </Button>
         <RouterLink to="/" class="layout-topbar-logo">
           <img src="@/assets/logo.svg" alt="logo">
         </RouterLink>
