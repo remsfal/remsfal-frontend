@@ -18,7 +18,6 @@ const { t } = useI18n();
 const i18n = useI18n();
 
 type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
-type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
 
 const userProfile = ref<User | null>(null);
 const editedUserProfile = ref<Partial<User>>({});
@@ -76,7 +75,6 @@ function getUpdatedValue<K extends keyof User>(field: K): string | undefined {
 async function saveProfile(): Promise<void> {
   try {
     const user: Partial<User> = {
-      id: userProfile.value?.id || '',
       firstName: getUpdatedValue('firstName'),
       businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
       lastName: getUpdatedValue('lastName'),
@@ -89,20 +87,23 @@ async function saveProfile(): Promise<void> {
     const primaryEmail = (userProfile.value?.email || '').trim().toLowerCase();
     let touchedAltEmail = false;
 
-    const currentAlt = userProfile.value?.additionalEmails ?? undefined;
+    // Get the first element from additionalEmails arrays (or undefined/null)
+    const currentAltArray = userProfile.value?.additionalEmails;
+    const editedAltArray = editedUserProfile.value?.additionalEmails;
 
-    const editedAlt = editedUserProfile.value?.additionalEmails ?? undefined;
- 
-    const currentAltNorm = 
-      typeof currentAlt === 'string' ? currentAlt.trim() : null;
-    const editedAltNorm = 
-      typeof editedAlt === 'string' ? editedAlt.trim() : null;
+    const currentAltNorm = (Array.isArray(currentAltArray) && currentAltArray.length > 0)
+      ? currentAltArray[0]?.trim()
+      : null;
+    const editedAltNorm = (Array.isArray(editedAltArray) && editedAltArray.length > 0)
+      ? editedAltArray[0]?.trim()
+      : null;
 
     if (currentAltNorm !== editedAltNorm) {
       touchedAltEmail = true;
 
       if (!editedAltNorm) {
-        user.additionalEmails = undefined;
+        // User deleted the alternative email - send empty array
+        user.additionalEmails = [];
       } else {
         if (!validateEmail(editedAltNorm)) {
           altEmailSuccess.value = false;
@@ -118,12 +119,19 @@ async function saveProfile(): Promise<void> {
           return;
         }
 
-        user.additionalEmails = editedAltNorm;
+        // Save as array with single element
+        user.additionalEmails = [editedAltNorm];
       }
     }
     const updatedUser = await userService.updateUser(user);
     console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
+
+    // Update userProfile with the backend response to keep it in sync
+    userProfile.value = updatedUser;
+    editedUserProfile.value = { ...updatedUser };
+
     saveSuccess.value = true;
+    changes.value = false;
 
     // Show success icon only after backend save (only if alt email was part of the change)
     if (touchedAltEmail) {
@@ -132,8 +140,7 @@ async function saveProfile(): Promise<void> {
     }
 
   } catch (e) {
-    console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
-    alert('Fehler beim Aktualisieren des Benutzerprofils!');
+    console.error('The user profile can not be updated!', e);
     saveError.value = true;
 
     // Show error icon if backend save fails
@@ -278,34 +285,33 @@ function validateEmail(email: string) {
 const visible = ref(false);
 const alternativeEmail = ref('');
 
+// Success/Error state for alternative email backend save
+const altEmailSuccess = ref(false);
+const altEmailError = ref(false);
+
 const displayAlternativeEmail = computed<string | null>(() => {
-  return (
-    ((editedUserProfile.value as any).additionalEmails ??
-      (userProfile.value as any)?.additionalEmails) ??
-    null
-  );
+  const emails = (editedUserProfile.value as any).additionalEmails ??
+    (userProfile.value as any)?.additionalEmails;
+
+  // Return the first element if the array exists and has items
+  return (Array.isArray(emails) && emails.length > 0) ? emails[0] : null;
 });
-  
+
 // Validation + UI state for alternative email dialog
 const isEmailInvalid = ref(false);
 const emailErrorMessage = ref('');
 
 const applyAlternativeEmail = (value: string | null) => {
-  // update edited profile 
+  // Convert to array format: [email] or [] based on value
+  const emailArray = value ? [value] : [];
+
+  // update edited profile only (keep userProfile unchanged for comparison)
   editedUserProfile.value = {
     ...editedUserProfile.value,
-    additionalEmails: value,
-  } as any;
+    additionalEmails: emailArray,
+  };
 
-  // update userProfile for immediate UI 
-  if (userProfile.value) {
-    (userProfile.value as any) = {
-      ...userProfile.value,
-      additionalEmails: value,
-    };
-  }
-
-// ensure Save button appears after changing alternative email
+  // ensure Save button appears after changing alternative email
   changes.value = true;
 
   // clear backend icons because change is not saved yet
@@ -731,35 +737,11 @@ p {
   width: 150px;
 }
 
-input,
-.select-country {
-  padding: 6px;
-  font-size: 16px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.select-country:focus,
-input:focus {
-  border-color: #80bdff;
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 0.25);
-}
-
 .buttons-container {
   display: grid;
   grid-template-columns: repeat(2, auto);
   justify-content: center;
   gap: 20px;
-}
-
-.select-country {
-  box-sizing: border-box;
-  appearance: none;
-  background: url('data:image/svg+xml;utf8, <svg fill="%23999" height="24" viewBox="0 0 24 24" \
-    width="24" xmlns="http://www.w3.org/2000/svg"> <path d="M7 10l5 5 5-5z"/> </svg>') no-repeat right 10px center;
-  background-size: 12px 12px;
 }
 
 .centered-buttons {

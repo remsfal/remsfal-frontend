@@ -203,8 +203,8 @@ describe('AccountSettingsView', () => {
     // Alternative email handling (UI only)
   describe('Alternative email handling (UI only)', () => {
     type AccountSettingsVm = {
-      userProfile: { email?: string; alternativeEmail?: string | null } | null;
-      editedUserProfile: { email?: string; alternativeEmail?: string | null } | null;
+      userProfile: { email?: string; additionalEmails?: string[] } | null;
+      editedUserProfile: { email?: string; additionalEmails?: string[] } | null;
 
 
       visible: boolean;
@@ -233,8 +233,8 @@ describe('AccountSettingsView', () => {
       const v = vm();
 
 
-      v.userProfile = { email: 'primary@example.com', alternativeEmail: null };
-      v.editedUserProfile = { email: 'primary@example.com', alternativeEmail: null };
+      v.userProfile = { email: 'primary@example.com', additionalEmails: [] };
+      v.editedUserProfile = { email: 'primary@example.com', additionalEmails: [] };
 
 
       v.visible = false;
@@ -268,7 +268,7 @@ describe('AccountSettingsView', () => {
       expect(v.visible).toBe(true);
 
 
-      expect(v.editedUserProfile?.alternativeEmail ?? null).toBeNull();
+      expect(v.editedUserProfile?.additionalEmails ?? []).toEqual([]);
     });
 
 
@@ -277,7 +277,7 @@ describe('AccountSettingsView', () => {
 
 
       v.visible = true;
-      v.editedUserProfile = { email: 'same@example.com', alternativeEmail: null };
+      v.editedUserProfile = { email: 'same@example.com', additionalEmails: [] };
       v.alternativeEmail = 'same@example.com';
 
 
@@ -290,11 +290,11 @@ describe('AccountSettingsView', () => {
       expect(v.visible).toBe(true);
 
 
-      expect(v.editedUserProfile?.alternativeEmail ?? null).toBeNull();
+      expect(v.editedUserProfile?.additionalEmails ?? []).toEqual([]);
     });
 
 
-    test('successful UI save sets alternativeEmail and closes dialog (no backend icons)', async () => {
+    test('successful UI save sets additionalEmails and closes dialog (no backend icons)', async () => {
       const v = vm();
 
 
@@ -306,9 +306,10 @@ describe('AccountSettingsView', () => {
       await nextTick();
 
 
-      expect(v.editedUserProfile?.alternativeEmail).toBe('alt@example.com');
- 
-      expect(v.userProfile?.alternativeEmail).toBe('alt@example.com');
+      expect(v.editedUserProfile?.additionalEmails).toEqual(['alt@example.com']);
+
+      // userProfile should NOT be updated (only editedUserProfile is changed)
+      expect(v.userProfile?.additionalEmails ?? []).toEqual([]);
 
 
       expect(v.changes).toBe(true);
@@ -325,12 +326,12 @@ describe('AccountSettingsView', () => {
     });
 
 
-    test('deleteAlternativeEmail clears alternativeEmail and resets backend icons', async () => {
+    test('deleteAlternativeEmail clears additionalEmails and resets backend icons', async () => {
       const v = vm();
 
 
-      v.userProfile = { email: 'primary@example.com', alternativeEmail: 'alt@example.com' };
-      v.editedUserProfile = { email: 'primary@example.com', alternativeEmail: 'alt@example.com' };
+      v.userProfile = { email: 'primary@example.com', additionalEmails: ['alt@example.com'] };
+      v.editedUserProfile = { email: 'primary@example.com', additionalEmails: ['alt@example.com'] };
 
 
       v.altEmailSuccess = true;
@@ -341,8 +342,9 @@ describe('AccountSettingsView', () => {
       await nextTick();
 
 
-      expect(v.editedUserProfile?.alternativeEmail ?? null).toBeNull();
-      expect(v.userProfile?.alternativeEmail ?? null).toBeNull();
+      expect(v.editedUserProfile?.additionalEmails ?? []).toEqual([]);
+      // userProfile should NOT be updated (only editedUserProfile is changed)
+      expect(v.userProfile?.additionalEmails ?? []).toEqual(['alt@example.com']);
 
 
       expect(v.altEmailSuccess).toBe(false);
@@ -378,8 +380,9 @@ describe('AccountSettingsView', () => {
   v.saveAlternativeEmail();
   await nextTick();
 
-  expect(v.editedUserProfile?.alternativeEmail).toBe('alt@example.com');
-  expect(v.userProfile?.alternativeEmail).toBe('alt@example.com');
+  expect(v.editedUserProfile?.additionalEmails).toEqual(['alt@example.com']);
+  // userProfile should NOT be updated (only editedUserProfile is changed)
+  expect(v.userProfile?.additionalEmails ?? []).toEqual([]);
   expect(v.visible).toBe(false);
 });
 
@@ -395,14 +398,14 @@ test('saveAlternativeEmail with empty string keeps dialog open and sets invalid 
   expect(v.isEmailInvalid).toBe(true);
   expect(v.emailErrorMessage).not.toBe('');
   expect(v.visible).toBe(true);
-  expect(v.editedUserProfile?.alternativeEmail ?? null).toBeNull();
+  expect(v.editedUserProfile?.additionalEmails ?? []).toEqual([]);
 });
 
-test('deleteAlternativeEmail when already null still marks changes and clears icons', async () => {
+test('deleteAlternativeEmail when already empty still marks changes and clears icons', async () => {
   const v = vm();
 
-  v.userProfile = { email: 'primary@example.com', alternativeEmail: null };
-  v.editedUserProfile = { email: 'primary@example.com', alternativeEmail: null };
+  v.userProfile = { email: 'primary@example.com', additionalEmails: [] };
+  v.editedUserProfile = { email: 'primary@example.com', additionalEmails: [] };
 
   v.altEmailSuccess = true;
   v.altEmailError = true;
@@ -411,8 +414,8 @@ test('deleteAlternativeEmail when already null still marks changes and clears ic
   v.deleteAlternativeEmail();
   await nextTick();
 
-  expect(v.userProfile?.alternativeEmail ?? null).toBeNull();
-  expect(v.editedUserProfile?.alternativeEmail ?? null).toBeNull();
+  expect(v.userProfile?.additionalEmails ?? []).toEqual([]);
+  expect(v.editedUserProfile?.additionalEmails ?? []).toEqual([]);
   expect(v.altEmailSuccess).toBe(false);
   expect(v.altEmailError).toBe(false);
   expect(v.changes).toBe(true);
