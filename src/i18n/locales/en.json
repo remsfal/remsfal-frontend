@@ -292,5 +292,12 @@
   "issueDetails.saveSuccess": "Issue details updated successfully",
   "issueDetails.saveError": "Failed to save issue details",
   "issueDetails.descriptionSaveSuccess": "Description updated successfully",
-  "issueDetails.descriptionSaveError": "Failed to save description"
+  "issueDetails.descriptionSaveError": "Failed to save description",
+  "issueDetails.fieldsUpdated": "{fields} updated successfully",
+  "issueDetails.fields.title": "Title",
+  "issueDetails.fields.status": "Status",
+  "issueDetails.fields.owner": "Owner",
+  "issueDetails.fields.project": "Project",
+  "issueDetails.fields.type": "Type",
+  "issueDetails.fields.tenancy": "Tenancy"
 }

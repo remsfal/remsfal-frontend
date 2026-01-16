@@ -297,5 +297,12 @@
   "issueDetails.saveSuccess": "Aufgabendetails erfolgreich aktualisiert",
   "issueDetails.saveError": "Fehler beim Speichern der Aufgabendetails",
   "issueDetails.descriptionSaveSuccess": "Beschreibung erfolgreich aktualisiert",
-  "issueDetails.descriptionSaveError": "Fehler beim Speichern der Beschreibung"
+  "issueDetails.descriptionSaveError": "Fehler beim Speichern der Beschreibung",
+  "issueDetails.fieldsUpdated": "{fields} erfolgreich aktualisiert",
+  "issueDetails.fields.title": "Titel",
+  "issueDetails.fields.status": "Status",
+  "issueDetails.fields.owner": "Eigentümer",
+  "issueDetails.fields.project": "Projekt",
+  "issueDetails.fields.type": "Typ",
+  "issueDetails.fields.tenancy": "Mietverhältnis"
 }

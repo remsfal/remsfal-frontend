@@ -74,6 +74,15 @@
 
     loadingSave.value = true;
     try {
+      // Detect which fields changed
+      const changedFields: string[] = [];
+      if (title.value !== originalTitle.value) changedFields.push(t('issueDetails.fields.title'));
+      if (status.value !== originalStatus.value) changedFields.push(t('issueDetails.fields.status'));
+      if (owner.value !== originalOwner.value) changedFields.push(t('issueDetails.fields.owner'));
+      if (project.value !== originalProject.value) changedFields.push(t('issueDetails.fields.project'));
+      if (type.value !== originalType.value) changedFields.push(t('issueDetails.fields.type'));
+      if (tenancy.value !== originalTenancy.value) changedFields.push(t('issueDetails.fields.tenancy'));
+
       const payload = {
         id: issueId.value,
         title: title.value,
@@ -98,10 +107,14 @@
       originalType.value = type.value;
       originalTenancy.value = tenancy.value;
 
+      // Create toast message with changed fields
+      const fieldsList = changedFields.join(', ');
+      const detailMessage = t('issueDetails.fieldsUpdated', { fields: fieldsList });
+
       toast.add({
         severity: 'success',
         summary: t('success.saved'),
-        detail: t('issueDetails.saveSuccess'),
+        detail: detailMessage,
         life: 3000,
       });
     } catch (error) {
