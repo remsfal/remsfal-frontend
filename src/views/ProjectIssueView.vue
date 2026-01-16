@@ -46,19 +46,23 @@
     { label: 'Maintenance', value: 'MAINTENANCE' },
   ];
   
-  /* Change detection */
+  /* Change detection for issue details (excluding description) */
   const canSave = computed(() =>
   title.value !== initialData.title ||
   status.value !== initialData.status ||
   owner.value !== initialData.owner ||
   project.value !== initialData.project ||
   type.value !== initialData.type ||
-  tenancy.value !== initialData.tenancy ||
-  description.value !== initialData.description
+  tenancy.value !== initialData.tenancy
 );
 
+  /* Change detection for description only */
+  const canSaveDescription = computed(() =>
+    description.value !== initialData.description
+  );
+
   
-  /* Save handler */
+  /* Save handler for issue details */
   const handleSave = () => {
     const payload = {
       id: issueId.value,
@@ -69,10 +73,19 @@
       project: project.value,
       type: type.value,
       tenancy: tenancy.value,
+    };
+  
+    console.log('Saving issue details:', payload);
+  };
+
+  /* Save handler for description */
+  const handleSaveDescription = () => {
+    const payload = {
+      id: issueId.value,
       description: description.value,
     };
   
-    console.log('Saving issue:', payload);
+    console.log('Saving description:', payload);
   };
   </script>
   
@@ -88,20 +101,20 @@
           <div class="flex flex-col gap-4">
             <!-- Issue ID -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium text-gray-700">Issue ID</label>
+              <label class="text-sm text-gray-600">Issue ID</label>
               <InputText v-model="issueId" disabled />
             </div>
   
             <!-- Title -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium text-gray-700">Title</label>
+              <label class="text-sm text-gray-600">Title</label>
               <InputText v-model="title" placeholder="Enter issue title" />
             </div>
   
             <!-- Status & Type -->
             <div class="flex gap-3">
               <div class="flex flex-col gap-1 flex-1">
-                <label class="font-medium text-gray-700">Status</label>
+                <label class="text-sm text-gray-600">Status</label>
                 <Select
                   v-model="status"
                   :options="statusOptions"
@@ -112,7 +125,7 @@
               </div>
   
               <div class="flex flex-col gap-1 flex-1">
-                <label class="font-medium text-gray-700">Type</label>
+                <label class="text-sm text-gray-600">Type</label>
                 <Select
                   v-model="type"
                   :options="typeOptions"
@@ -126,12 +139,12 @@
             <!-- Reporter & Owner -->
             <div class="flex gap-3">
               <div class="flex flex-col gap-1 flex-1">
-                <label class="font-medium text-gray-700">Reporter</label>
+                <label class="text-sm text-gray-600">Reporter</label>
                 <InputText v-model="reporter" disabled />
               </div>
   
               <div class="flex flex-col gap-1 flex-1">
-                <label class="font-medium text-gray-700">Owner / Assignee</label>
+                <label class="text-sm text-gray-600">Owner / Assignee</label>
                 <InputText v-model="owner" placeholder="Enter owner name" />
               </div>
             </div>
@@ -139,12 +152,12 @@
             <!-- Project & Tenancy -->
             <div class="flex gap-3">
               <div class="flex flex-col gap-1 flex-1">
-                <label class="font-medium text-gray-700">Project</label>
+                <label class="text-sm text-gray-600">Project</label>
                 <InputText v-model="project" />
               </div>
   
               <div class="flex flex-col gap-1 flex-1">
-                <label class="font-medium text-gray-700">Tenancy</label>
+                <label class="text-sm text-gray-600">Tenancy</label>
                 <InputText v-model="tenancy" />
               </div>
             </div>
@@ -169,7 +182,19 @@
         </template>
   
         <template #content>
-          <IssueDescription :description="description" />
+          <div class="flex flex-col gap-4">
+            <IssueDescription v-model:description="description" />
+            
+            <!-- Save Description Button -->
+            <div class="flex justify-end">
+              <Button
+                label="Save Description"
+                icon="pi pi-save"
+                :disabled="!canSaveDescription"
+                @click="handleSaveDescription"
+              />
+            </div>
+          </div>
         </template>
       </Card>
     </div>
