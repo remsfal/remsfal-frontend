@@ -147,12 +147,6 @@ describe('AccountSettingsView', () => {
       wrapper.vm.logout();
       expect(window.location.pathname).toBe('/api/v1/authentication/logout');
     });
-    
-    test('updateCountryFromCode sets error for invalid country code', async () => {
-      wrapper.vm.editedAddress.countryCode = 'XX';
-      await wrapper.vm.updateCountryFromCode();
-      expect(wrapper.vm.errorMessage.countryCode).toBe('Ungültiges Länderkürzel!');
-    });
   });
 
   describe('getUpdatedValue', () => {

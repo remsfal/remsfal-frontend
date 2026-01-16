@@ -99,6 +99,10 @@ async function saveProfile(): Promise<void> {
   }
 }
 
+function validateLocale(locale: string): Locale {
+  return locales.includes(locale as Locale) ? (locale as Locale) : 'en';
+}
+
 function logout(): void {
   window.location.pathname = '/api/v1/authentication/logout';
 }

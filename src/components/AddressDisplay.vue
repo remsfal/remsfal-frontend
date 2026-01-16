@@ -385,7 +385,7 @@ const isDisabled = computed(() => {
         <Button
           v-if="changes"
           label="Speichern"
-          icon="pi pi-user-edit"
+          icon="pi pi-save"
           class="save-button"
           :disabled="isDisabled"
           @click="saveAddress()"
