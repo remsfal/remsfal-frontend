@@ -359,6 +359,10 @@
           }
         }
       },
+      "EmployeeRole" : {
+        "type" : "string",
+        "enum" : [ "OWNER", "MANAGER", "STAFF" ]
+      },
       "InboxMessage" : {
         "description" : "Represents a message or invoice in the user's inbox",
         "type" : "object",
@@ -469,13 +473,58 @@
             "type" : "string"
           },
           "blockedBy" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           },
           "relatedTo" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           },
           "duplicateOf" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "blocks" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "parentOf" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "childOf" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           }
         }
       },
@@ -529,6 +578,91 @@
         "type" : "string",
         "format" : "date-time",
         "examples" : [ "2022-03-10T12:15:50-04:00" ]
+      },
+      "OrganizationEmployeeJson" : {
+        "description" : "Employee information in context of an organization",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "employeeRole" : {
+            "$ref" : "#/components/schemas/EmployeeRole"
+          }
+        },
+        "required" : [ "employeeRole" ]
+      },
+      "OrganizationEmployeeListJson" : {
+        "description" : "A list of organization employees",
+        "type" : "object",
+        "required" : [ "employees" ],
+        "properties" : {
+          "employees" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrganizationEmployeeJson"
+            }
+          }
+        }
+      },
+      "OrganizationJson" : {
+        "description" : "An organization",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "phone" : {
+            "type" : "string",
+            "pattern" : "^\\+[1-9]\\d{4,14}$",
+            "maxLength" : 15
+          },
+          "email" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "trade" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/AddressJson"
+          }
+        }
+      },
+      "OrganizationListJson" : {
+        "description" : "A list of organizations",
+        "type" : "object",
+        "required" : [ "organizations" ],
+        "properties" : {
+          "organizations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrganizationJson"
+            }
+          },
+          "offset" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
       },
       "ProjectItemJson" : {
         "description" : "A project item with the user's member role only",
@@ -635,6 +769,18 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ProjectMemberJson"
+            }
+          }
+        }
+      },
+      "ProjectTenancyListJson" : {
+        "description" : "A list of tenancies for a project",
+        "type" : "object",
+        "properties" : {
+          "tenancies" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TenancyInfoJson"
             }
           }
         }
@@ -877,6 +1023,30 @@
           }
         }
       },
+      "TenancyInfoJson" : {
+        "type" : "object",
+        "description" : "A tenancy item with information from the manager's view",
+        "properties" : {
+          "active" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "startOfRental" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "endOfRental" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "tenants" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UserJson"
+            }
+          }
+        }
+      },
       "TenancyItemJson" : {
         "description" : "A tenancy item with basic information from a tenant's perspective",
         "type" : "object",
@@ -1042,7 +1212,15 @@
             "pattern" : "^\\+[1-9]\\d{4,14}$"
           },
           "locale" : {
-            "type" : "string"
+            "type" : "string",
+            "maxLength" : 2
+          },
+          "additionalEmails" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "maxLength" : 255
+            }
           },
           "registeredDate" : {
             "$ref" : "#/components/schemas/LocalDate"
@@ -1259,6 +1437,449 @@
             "description" : "Unauthorized - Invalid token"
           }
         }
+      }
+    },
+    "/api/v1/organization" : {
+      "get" : {
+        "description" : "Retrieve a list of all organizations",
+        "parameters" : [ {
+          "description" : "Maximum number of contractors to return",
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 100,
+            "exclusiveMinimum" : 0,
+            "default" : "10"
+          },
+          "required" : true
+        }, {
+          "description" : "Offset of the first contractor to return",
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "minimum" : 0,
+            "default" : "0"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of all organizations was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The organization with the requested id doesn't exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "description" : "Creates a new organization",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrganizationJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "organization was created successfully",
+            "headers" : {
+              "Location" : {
+                "description" : "URL of the new organization"
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/organization/employments" : {
+      "get" : {
+        "description" : "Retrieve a list of all organizations where the user is an employee",
+        "responses" : {
+          "200" : {
+            "description" : "An organization was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "List of organizations with the requested id doesn't exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/organization/{organizationId}" : {
+      "patch" : {
+        "summary" : "Update information of a specific organization.",
+        "parameters" : [ {
+          "description" : "id of the organization",
+          "name" : "organizationId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrganizationJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "An existing organization was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The organization does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "get" : {
+        "description" : "Retrieve information of an organization by id",
+        "parameters" : [ {
+          "description" : "Id of the organization",
+          "required" : true,
+          "name" : "organizationId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "An organization was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The organization with the requested id doesn't exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "delete" : {
+        "summary" : "Delete an existing organization.",
+        "parameters" : [ {
+          "description" : "ID of the organization",
+          "name" : "organizationId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The organization was deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The organization does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/organization/{organizationId}/employees" : {
+      "get" : {
+        "parameters" : [ {
+          "description" : "Id of the organization",
+          "required" : true,
+          "name" : "organizationId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of all existing employees was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationEmployeeListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The organization does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "add an employee to an organization",
+        "parameters" : [ {
+          "description" : "Id of the organization",
+          "required" : true,
+          "name" : "organizationId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrganizationEmployeeJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "A new employee was successfully added",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationEmployeeJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request message"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/api/v1/organization/{organizationId}/employees/{employeeId}" : {
+      "patch" : {
+        "summary" : "Update role of an employee.",
+        "parameters" : [ {
+          "description" : "employeeId",
+          "required" : true,
+          "name" : "employeeId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "Id of the organization",
+          "required" : true,
+          "name" : "organizationId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrganizationEmployeeJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "An existing employee was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationEmployeeJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The organization or the employee does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "get" : {
+        "parameters" : [ {
+          "description" : "Id of the employee",
+          "required" : true,
+          "name" : "employeeId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "Id of the organization",
+          "required" : true,
+          "name" : "organizationId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The employee was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationEmployeeJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "The user is not an employee of this organization"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "delete" : {
+        "summary" : "Delete an existing employee.",
+        "parameters" : [ {
+          "description" : "Id of the employee",
+          "name" : "employeeId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "Id of the organization",
+          "name" : "organizationId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The employee was deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The organization or the employee does not exist"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
       }
     },
     "/api/v1/projects" : {
@@ -4122,6 +4743,340 @@
         "responses" : {
           "204" : {
             "description" : "The storage was deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/tenancies" : {
+      "get" : {
+        "summary" : "Retrieve information of all tenancies",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The requested tenancies were successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectTenancyListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Create a new tenancy",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TenancyInfoJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Tenancy created successfully"
+          },
+          "400" : {
+            "description" : "Invalid request message"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/tenancies/{tenancyId}" : {
+      "patch" : {
+        "summary" : "Update information of a tenancy",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenancy",
+          "required" : true,
+          "name" : "tenancyId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TenancyInfoJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "The tenancy was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenancyInfoJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The tenancy does not exist"
+          }
+        }
+      },
+      "get" : {
+        "summary" : "Retrieve Information of a tenancy.",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenancy",
+          "required" : true,
+          "name" : "tenancyId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The requested tenancy was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenancyInfoJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided session cookie"
+          },
+          "404" : {
+            "description" : "The tenancy does not exist"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/tenants" : {
+      "get" : {
+        "summary" : "Retrieve information for all tenants",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of tenants was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UserJson"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "The tenant does not exist"
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Create a new tenant",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "A new tenant was successfully created",
+            "headers" : {
+              "Location" : {
+                "description" : "URL of the new tenant"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/tenants/{tenantId}" : {
+      "patch" : {
+        "summary" : "Update information on an tenant",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenant",
+          "required" : true,
+          "name" : "tenantId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "An existing tenant was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The tenant does not exist"
+          }
+        }
+      },
+      "get" : {
+        "summary" : "Retrieve information of a specific tenant",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenant",
+          "required" : true,
+          "name" : "tenantId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The specific tenant was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserJson"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "The tenant you are looking for does not exist"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete an existing tenant",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenant",
+          "required" : true,
+          "name" : "tenantId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The tenant was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"

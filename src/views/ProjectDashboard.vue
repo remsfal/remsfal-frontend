@@ -10,7 +10,7 @@ import { useRoute } from 'vue-router';
 import Chart from 'primevue/chart';
 import Card from 'primevue/card';
 import StatCard from '@/components/StatCard.vue';
-
+const chartPlugins = [ChartDataLabels];
 const { t } = useI18n();
 const route = useRoute();
 const projectId = route.params.projectId as string;
@@ -336,7 +336,7 @@ const recentActivities = [
           type="doughnut"
           :data="defectChartData"
           :options="defectChartOptions"
-          :plugins="[ChartDataLabels]"
+          :plugins="chartPlugins"
           style="max-height: 300px; max-width: 400px; margin: auto;"
         />
       </template>

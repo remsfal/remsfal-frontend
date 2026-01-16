@@ -1,4 +1,3 @@
-<!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -12,8 +11,11 @@ import type {paths} from '@/services/api/platform-schema';
 import UserService from '@/services/UserService';
 import { RouterLink } from 'vue-router'
 import AdressDisplay from '@/components/AddressDisplay.vue';
+import { locales, type Locale } from '@/i18n/i18n';
+import Select from 'primevue/select';
 
 const { t } = useI18n();
+const i18n = useI18n();
 
 type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
 type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
@@ -52,16 +54,25 @@ async function fetchUserProfile() {
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
+      if (userProfile?.value?.locale) {
+        editedUserProfile.value.locale = userProfile.value.locale;
+        i18n.locale.value = validateLocale(userProfile.value.locale);
+      } else {
+        editedUserProfile.value.locale = i18n.locale.value;
+      }
     }
   } catch (error) {
     console.error('Das Benutzerprofil konnte nicht gefunden werden', error);
   }
 }
 
-function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string {
+function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string | undefined {
   const value =
     editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
-  return typeof value === 'string' ? value : '';
+  if (typeof value === 'string' && value.trim() === '') { 
+    return undefined; 
+  } 
+  return typeof value === 'string' ? value : undefined;
 }
 
 async function saveProfile(): Promise<void> {
@@ -75,6 +86,7 @@ async function saveProfile(): Promise<void> {
       lastName: getUpdatedValue('lastName'),
       mobilePhoneNumber: getUpdatedValue('mobilePhoneNumber'),
       privatePhoneNumber: getUpdatedValue('privatePhoneNumber'),
+      locale: getUpdatedValue('locale'),
     };
 
     const updatedUser = await userService.updateUser(user);
@@ -201,6 +213,7 @@ function compareObjects(obj1: UserGetResponse, obj2: UserGetResponse): boolean {
 const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
+
 </script>
 
 <template>
@@ -296,7 +309,6 @@ const isDisabled = computed(() => {
                   {{ errorMessage.businessPhoneNumber }}
                 </Message>
               </div>
-
               <div class="input-container">
                 <label class="label" for="privatePhoneNumber">{{ t('accountSettings.userProfile.privatePhone') }}:</label>
                 <InputText
@@ -314,6 +326,19 @@ const isDisabled = computed(() => {
                 >
                   {{ errorMessage.privatePhoneNumber }}
                 </Message>
+              </div>
+              <div class="input-container">
+                <label class="label" for="locale">{{ t('accountSettings.userProfile.language') }}:</label>
+                
+                <Select
+                  id="locale"
+                  v-model="editedUserProfile.locale"
+                  :options="[{ language: 'Deutsch', value: 'de' }, { language: 'English', value: 'en' }]"
+                  optionLabel="language"
+                  optionValue="value"
+                  placeholder="Select language"
+                  @update:modelValue="i18n.locale.value = $event"
+                />
               </div>
             </div>
             <Message class="required" size="small" severity="secondary" variant="simple">
@@ -338,12 +363,11 @@ const isDisabled = computed(() => {
             </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/customers">
+            <RouterLink to="/contractor/overview">
               Zur Auftragnehmer Ansicht
             </RouterLink>
           </Button>
           <Button
-            v-if="changes"
             type="button"
             icon="pi pi-user-edit"
             class="save-button btn"
@@ -352,7 +376,6 @@ const isDisabled = computed(() => {
             @click="saveProfile"
           />
           <Button
-            v-if="changes"
             type="button"
             icon="pi pi-times"
             class="cancel-button btn"
