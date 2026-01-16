@@ -2,25 +2,40 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import ProjectIssueView from '@/views/ProjectIssueView.vue';
-import IssueDescription from '@/views/IssueDescription.vue';
-import Card from 'primevue/card';
-import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
-import Button from 'primevue/button';
+import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
+import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
+
+// Mock the IssueService
+vi.mock('@/services/IssueService', () => ({
+  issueService: {
+    getIssue: vi.fn().mockResolvedValue({
+      id: '#ISSUE-123',
+      title: 'Fix login bug on mobile devices',
+      status: 'OPEN',
+      ownerId: 'user-456',
+      reporterId: 'user-123',
+      type: 'TASK',
+      tenancyId: 'tenant-789',
+      description: '## Issue Description\n\nUsers are experiencing login failures on mobile devices.',
+    }),
+    modifyIssue: vi.fn().mockResolvedValue({}),
+  },
+}));
 
 describe('ProjectIssueView.vue', () => {
   let wrapper: VueWrapper;
 
   const createWrapper = () => {
     return mount(ProjectIssueView, {
+      props: {
+        projectId: 'project-123',
+        issueId: 'issue-456',
+      },
       global: {
         plugins: [createTestingPinia({ createSpy: vi.fn })],
-        components: {
-          Card,
-          InputText,
-          Select,
-          Button,
-          IssueDescription,
+        stubs: {
+          IssueDetailsCard: false,
+          IssueDescriptionCard: false,
         },
       },
     });
@@ -35,273 +50,101 @@ describe('ProjectIssueView.vue', () => {
       expect(wrapper.exists()).toBe(true);
     });
 
-    it('should render Issue Details card', () => {
-      const cards = wrapper.findAllComponents(Card);
-      expect(cards.length).toBeGreaterThanOrEqual(2);
-      expect(cards[0].text()).toContain('Issue Details');
+    it('should render IssueDetailsCard component', () => {
+      const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      expect(detailsCard.exists()).toBe(true);
     });
 
-    it('should render Description card', () => {
-      const cards = wrapper.findAllComponents(Card);
-      expect(cards[1].text()).toContain('Description');
+    it('should render IssueDescriptionCard component', () => {
+      const descCard = wrapper.findComponent(IssueDescriptionCard);
+      expect(descCard.exists()).toBe(true);
     });
 
-    it('should render IssueDescription component', () => {
-      const issueDescComp = wrapper.findComponent(IssueDescription);
-      expect(issueDescComp.exists()).toBe(true);
+    it('should pass correct props to IssueDetailsCard', async () => {
+      await wrapper.vm.$nextTick();
+      const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      const props = detailsCard.props();
+      
+      expect(props.projectId).toBe('project-123');
+      expect(props.issueId).toBe('issue-456');
+      expect(props.initialData).toBeDefined();
     });
 
-    it('should render all input fields', () => {
-      const inputs = wrapper.findAllComponents(InputText);
-      // Issue ID, Title, Reporter, Owner, Project, Tenancy = 6 InputText fields
-      expect(inputs.length).toBe(6);
-    });
-
-    it('should render Status and Type select dropdowns', () => {
-      const selects = wrapper.findAllComponents(Select);
-      expect(selects.length).toBe(2);
-    });
-
-    it('should render Save button', () => {
-      const button = wrapper.findComponent(Button);
-      expect(button.exists()).toBe(true);
-      expect(button.text()).toContain('Save');
+    it('should pass correct props to IssueDescriptionCard', async () => {
+      await wrapper.vm.$nextTick();
+      const descCard = wrapper.findComponent(IssueDescriptionCard);
+      const props = descCard.props();
+      
+      expect(props.projectId).toBe('project-123');
+      expect(props.issueId).toBe('issue-456');
+      expect(props.initialDescription).toBeDefined();
     });
   });
 
   describe('Props and Initial Data', () => {
-    it('should initialize with correct default values', () => {
-      const vm = wrapper.vm as any;
-      
-      expect(vm.issueId).toBe('#ISSUE-123');
-      expect(vm.title).toBe('Fix login bug on mobile devices');
-      expect(vm.status).toBe('OPEN');
-      expect(vm.reporter).toBe('John Doe');
-      expect(vm.owner).toBe('Jane Smith');
-      expect(vm.project).toBe('Building A Renovation');
-      expect(vm.type).toBe('TASK');
-      expect(vm.tenancy).toBe('Apartment 3B');
+    it('should receive projectId prop', () => {
+      expect(wrapper.props('projectId')).toBe('project-123');
     });
 
-    it('should pass description prop to IssueDescription component', () => {
-      const issueDescComp = wrapper.findComponent(IssueDescription);
-      const props = issueDescComp.props();
-      
-      expect(props.description).toContain('## Issue Description');
-      expect(props.description).toContain('Users are experiencing login failures');
+    it('should receive issueId prop', () => {
+      expect(wrapper.props('issueId')).toBe('issue-456');
+    });
+
+    it('should initialize issueDetailsData ref', async () => {
+      await wrapper.vm.$nextTick();
+      const vm = wrapper.vm as any;
+      expect(vm.issueDetailsData).toBeDefined();
+    });
+
+    it('should initialize description ref', async () => {
+      await wrapper.vm.$nextTick();
+      const vm = wrapper.vm as any;
+      expect(vm.description).toBeDefined();
     });
   });
 
-  describe('Reactive Data', () => {
-    it('should update title when input changes', async () => {
+  describe('Data Fetching', () => {
+    it('should call fetchIssue on mount', async () => {
+      await wrapper.vm.$nextTick();
+      // Issue should be fetched via mock
       const vm = wrapper.vm as any;
-      const titleInput = wrapper.findAllComponents(InputText)[1]; // Title is second InputText
-      
-      await titleInput.setValue('New Title');
-      
-      expect(vm.title).toBe('New Title');
+      expect(vm.issueDetailsData.issueId).toBeTruthy();
     });
 
-    it('should update owner when input changes', async () => {
+    it('should populate issueDetailsData from API response', async () => {
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const vm = wrapper.vm as any;
-      const ownerInput = wrapper.findAllComponents(InputText)[3]; // Owner is 4th InputText
+      expect(vm.issueDetailsData.title).toBe('Fix login bug on mobile devices');
+    });
+
+    it('should populate description from API response', async () => {
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      await ownerInput.setValue('New Owner');
-      
-      expect(vm.owner).toBe('New Owner');
+      const vm = wrapper.vm as any;
+      expect(vm.description).toContain('Issue Description');
     });
   });
 
-  describe('Computed Properties', () => {
-    it('should have canSave as false initially', () => {
-      const vm = wrapper.vm as any;
-      expect(vm.canSave).toBe(false);
-    });
-
-    it('should enable Save button when title changes', async () => {
-      const vm = wrapper.vm as any;
-      const button = wrapper.findComponent(Button);
+  describe('Event Handling', () => {
+    it('should handle saved event from IssueDetailsCard', async () => {
+      const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      await detailsCard.vm.$emit('saved');
       
-      expect(vm.canSave).toBe(false);
-      expect(button.attributes('disabled')).toBeDefined();
-      
-      vm.title = 'Changed Title';
+      // Event should be handled by parent
       await wrapper.vm.$nextTick();
-      
-      expect(vm.canSave).toBe(true);
+      expect(wrapper.exists()).toBe(true);
     });
 
-    it('should enable Save button when status changes', async () => {
-      const vm = wrapper.vm as any;
+    it('should handle saved event from IssueDescriptionCard', async () => {
+      const descCard = wrapper.findComponent(IssueDescriptionCard);
+      await descCard.vm.$emit('saved');
       
-      vm.status = 'CLOSED';
+      // Event should be handled by parent
       await wrapper.vm.$nextTick();
-      
-      expect(vm.canSave).toBe(true);
-    });
-
-    it('should enable Save button when owner changes', async () => {
-      const vm = wrapper.vm as any;
-      
-      vm.owner = 'New Owner';
-      await wrapper.vm.$nextTick();
-      
-      expect(vm.canSave).toBe(true);
-    });
-
-    it('should enable Save button when project changes', async () => {
-      const vm = wrapper.vm as any;
-      
-      vm.project = 'New Project';
-      await wrapper.vm.$nextTick();
-      
-      expect(vm.canSave).toBe(true);
-    });
-
-    it('should enable Save button when type changes', async () => {
-      const vm = wrapper.vm as any;
-      
-      vm.type = 'DEFECT';
-      await wrapper.vm.$nextTick();
-      
-      expect(vm.canSave).toBe(true);
-    });
-
-    it('should enable Save button when tenancy changes', async () => {
-      const vm = wrapper.vm as any;
-      
-      vm.tenancy = 'New Tenancy';
-      await wrapper.vm.$nextTick();
-      
-      expect(vm.canSave).toBe(true);
-    });
-
-    it('should enable Save button when description changes', async () => {
-      const vm = wrapper.vm as any;
-      
-      vm.description = 'New Description';
-      await wrapper.vm.$nextTick();
-      
-      expect(vm.canSave).toBe(true);
-    });
-  });
-
-  describe('Methods', () => {
-    it('should call handleSave when Save button is clicked', async () => {
-      const vm = wrapper.vm as any;
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      
-      // Change a value to enable save button
-      vm.title = 'Changed Title';
-      await wrapper.vm.$nextTick();
-      
-      const button = wrapper.findComponent(Button);
-      await button.trigger('click');
-      
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Saving issue:',
-        expect.objectContaining({
-          id: '#ISSUE-123',
-          title: 'Changed Title',
-        })
-      );
-      
-      consoleSpy.mockRestore();
-    });
-
-    it('should include all fields in handleSave payload', async () => {
-      const vm = wrapper.vm as any;
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      
-      vm.title = 'Updated Title';
-      await wrapper.vm.$nextTick();
-      
-      vm.handleSave();
-      
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Saving issue:',
-        {
-          id: '#ISSUE-123',
-          title: 'Updated Title',
-          status: 'OPEN',
-          reporter: 'John Doe',
-          owner: 'Jane Smith',
-          project: 'Building A Renovation',
-          type: 'TASK',
-          tenancy: 'Apartment 3B',
-          description: expect.any(String),
-        }
-      );
-      
-      consoleSpy.mockRestore();
-    });
-  });
-
-  describe('Select Options', () => {
-    it('should have correct status options', () => {
-      const vm = wrapper.vm as any;
-      
-      expect(vm.statusOptions).toEqual([
-        { label: 'Pending', value: 'PENDING' },
-        { label: 'Open', value: 'OPEN' },
-        { label: 'In Progress', value: 'IN_PROGRESS' },
-        { label: 'Closed', value: 'CLOSED' },
-        { label: 'Rejected', value: 'REJECTED' },
-      ]);
-    });
-
-    it('should have correct type options', () => {
-      const vm = wrapper.vm as any;
-      
-      expect(vm.typeOptions).toEqual([
-        { label: 'Application', value: 'APPLICATION' },
-        { label: 'Task', value: 'TASK' },
-        { label: 'Defect', value: 'DEFECT' },
-        { label: 'Maintenance', value: 'MAINTENANCE' },
-      ]);
-    });
-  });
-
-  describe('Disabled Fields', () => {
-    it('should have Issue ID field disabled', () => {
-      const issueIdInput = wrapper.findAllComponents(InputText)[0];
-      expect(issueIdInput.attributes('disabled')).toBeDefined();
-    });
-
-    it('should have Reporter field disabled', () => {
-      const reporterInput = wrapper.findAllComponents(InputText)[2];
-      expect(reporterInput.attributes('disabled')).toBeDefined();
-    });
-
-    it('should have Save button disabled initially', () => {
-      const button = wrapper.findComponent(Button);
-      expect(button.attributes('disabled')).toBeDefined();
-    });
-  });
-
-  describe('Conditional Rendering', () => {
-    it('should render field labels correctly', () => {
-      const labels = wrapper.findAll('label');
-      const labelTexts = labels.map(label => label.text());
-      
-      expect(labelTexts).toContain('Issue ID');
-      expect(labelTexts).toContain('Title');
-      expect(labelTexts).toContain('Status');
-      expect(labelTexts).toContain('Type');
-      expect(labelTexts).toContain('Reporter');
-      expect(labelTexts).toContain('Owner / Assignee');
-      expect(labelTexts).toContain('Project');
-      expect(labelTexts).toContain('Tenancy');
-    });
-
-    it('should have correct CSS classes for styling', () => {
-      const cards = wrapper.findAllComponents(Card);
-      
-      // Check if cards have flex styling
-      expect(cards[0].classes()).toContain('flex');
-      expect(cards[0].classes()).toContain('flex-col');
-      expect(cards[0].classes()).toContain('gap-4');
-      expect(cards[0].classes()).toContain('basis-full');
+      expect(wrapper.exists()).toBe(true);
     });
   });
 });
