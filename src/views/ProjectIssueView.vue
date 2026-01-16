@@ -7,28 +7,26 @@
   import IssueDescription from './IssueDescription.vue';
   
   /* Initial static data (replace later with API data) */
-  const initialData = {
-    id: '#ISSUE-123',
-    title: 'Fix login bug on mobile devices',
-    status: 'OPEN',
-    reporter: 'John Doe',
-    owner: 'Jane Smith',
-    project: 'Building A Renovation',
-    type: 'TASK',
-    tenancy: 'Apartment 3B',
-    description: '## Issue Description\n\nUsers are experiencing login failures...',
-  };
+  const issueId = ref('#ISSUE-123');
+  const reporter = ref('John Doe');
   
-  /* Reactive fields */
-  const issueId = ref(initialData.id);
-  const title = ref(initialData.title);
-  const status = ref(initialData.status);
-  const reporter = ref(initialData.reporter);
-  const owner = ref(initialData.owner);
-  const project = ref(initialData.project);
-  const type = ref(initialData.type);
-  const tenancy = ref(initialData.tenancy);
-  const description = ref(initialData.description);
+  /* Reactive fields for current values */
+  const title = ref('Fix login bug on mobile devices');
+  const status = ref('OPEN');
+  const owner = ref('Jane Smith');
+  const project = ref('Building A Renovation');
+  const type = ref('TASK');
+  const tenancy = ref('Apartment 3B');
+  const description = ref('## Issue Description\n\nUsers are experiencing login failures...');
+  
+  /* Reactive fields for original values (used for change detection) */
+  const originalTitle = ref('Fix login bug on mobile devices');
+  const originalStatus = ref('OPEN');
+  const originalOwner = ref('Jane Smith');
+  const originalProject = ref('Building A Renovation');
+  const originalType = ref('TASK');
+  const originalTenancy = ref('Apartment 3B');
+  const originalDescription = ref('## Issue Description\n\nUsers are experiencing login failures...');
   
   /* Select options */
   const statusOptions = [
@@ -48,17 +46,17 @@
   
   /* Change detection for issue details (excluding description) */
   const canSave = computed(() =>
-  title.value !== initialData.title ||
-  status.value !== initialData.status ||
-  owner.value !== initialData.owner ||
-  project.value !== initialData.project ||
-  type.value !== initialData.type ||
-  tenancy.value !== initialData.tenancy
-);
+    title.value !== originalTitle.value ||
+    status.value !== originalStatus.value ||
+    owner.value !== originalOwner.value ||
+    project.value !== originalProject.value ||
+    type.value !== originalType.value ||
+    tenancy.value !== originalTenancy.value
+  );
 
   /* Change detection for description only */
   const canSaveDescription = computed(() =>
-    description.value !== initialData.description
+    description.value !== originalDescription.value
   );
 
   
@@ -78,12 +76,12 @@
     console.log('Saving issue details:', payload);
     
     // Update reference state after save to disable the button
-    initialData.title = title.value;
-    initialData.status = status.value;
-    initialData.owner = owner.value;
-    initialData.project = project.value;
-    initialData.type = type.value;
-    initialData.tenancy = tenancy.value;
+    originalTitle.value = title.value;
+    originalStatus.value = status.value;
+    originalOwner.value = owner.value;
+    originalProject.value = project.value;
+    originalType.value = type.value;
+    originalTenancy.value = tenancy.value;
   };
 
   /* Save handler for description */
@@ -96,7 +94,7 @@
     console.log('Saving description:', payload);
     
     // Update reference state after save to disable the button
-    initialData.description = description.value;
+    originalDescription.value = description.value;
   };
   </script>
   
