@@ -241,6 +241,12 @@ const tenantRoutes: RouteRecordRaw[] = [
         props: true,
         component: () => import('@/views/TenantView.vue'),
       },
+      {
+        path: 'contract/:contractId',
+        name: 'TenantContractDetail',
+        props: true,
+        component: () => import('@/views/ContractDetailView.vue'),
+      },
     ],
   },
 ];
