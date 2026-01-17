@@ -209,10 +209,13 @@ const managerRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/IssueView.vue'),
       },
       {
-        path: 'issueedit/:issueId',
-        name: 'IssueEdit',
-        props: true,
-        component: () => import('@/views/IssueEdit.vue'),
+        path: 'issues/:issueId',
+        name: 'IssueDetails',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          issueId: route.params.issueId,
+        }),
+        component: () => import('@/views/ProjectIssueView.vue'),
       },
       {
         path: 'chat',
