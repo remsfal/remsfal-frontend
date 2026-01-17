@@ -66,13 +66,13 @@ const fetchIssue = async () => {
 
 /* Handle save events from child components */
 const handleDetailsSaved = () => {
-  // Optionally re-fetch or perform other actions
-  console.log('Issue details saved');
+  // Re-fetch issue data to ensure UI shows latest persisted values
+  fetchIssue();
 };
 
 const handleDescriptionSaved = () => {
-  // Optionally re-fetch or perform other actions
-  console.log('Description saved');
+  // Re-fetch issue data to ensure UI shows latest persisted values
+  fetchIssue();
 };
 
 /* Fetch issue on mount and when props change */

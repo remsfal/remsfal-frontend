@@ -72,10 +72,16 @@ const typeOptions = [
 /* Computed project options for dropdown */
 const projectOptions = computed(() => 
   projects.value.map(p => ({
-    label: p.title || p.id || 'Unknown Project',
+    label: p.title || p.name || p.id || 'Unknown Project',
     value: p.id || '',
   }))
 );
+
+/* Get project name for display */
+const getProjectName = computed(() => {
+  const currentProject = projects.value.find(p => p.id === project.value);
+  return currentProject?.title || currentProject?.name || project.value;
+});
 
 /* Fetch projects list */
 const fetchProjects = async () => {
