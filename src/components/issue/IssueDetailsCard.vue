@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { useToast } from "primevue/usetoast";
-import Card from "primevue/card";
-import InputText from "primevue/inputtext";
-import Button from "primevue/button";
-import { issueService, type Issue } from "@/services/IssueService";
-import { useProjectStore } from "@/stores/ProjectStore";
-import {ISSUE_TYPE_TASK,
-  ISSUE_TYPE_APPLICATION,
-  ISSUE_TYPE_DEFECT,
-  ISSUE_TYPE_MAINTENANCE,} from "@/services/IssueService";
-import Select from "primevue/select";
-
+import { ref, computed, watch } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import Card from 'primevue/card';
+import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
+import Button from 'primevue/button';
+import { issueService, type Issue } from '@/services/IssueService';
+import { useProjectStore } from '@/stores/ProjectStore';
+import { ISSUE_TYPE_TASK, ISSUE_TYPE_APPLICATION, ISSUE_TYPE_DEFECT, ISSUE_TYPE_MAINTENANCE } from '@/services/IssueService';
 
 
 /* =========================
@@ -32,9 +28,7 @@ const props = defineProps<{
   };
 }>();
 
-const emit = defineEmits<{
-  saved: [];
-}>();
+const emit = defineEmits<{ saved: [] }>();
 
 /* =========================
      Services & Store
@@ -67,12 +61,11 @@ const originalTenancy = ref(tenancy.value);
      Change Detection
   ========================= */
 
-const canSave = computed(
-  () =>
-    title.value !== originalTitle.value ||
-    status.value !== originalStatus.value ||
-    ownerId.value !== originalOwnerId.value ||
-    issueType.value !== originalIssueType.value ||
+const canSave = computed(() =>
+  title.value !== originalTitle.value ||
+  status.value !== originalStatus.value ||
+  ownerId.value !== originalOwnerId.value ||
+  issueType.value !== originalIssueType.value ||
     tenancy.value !== originalTenancy.value
 );
 console.log("Initial ownerId:", props.initialData.ownerId);
@@ -80,18 +73,18 @@ console.log("Initial ownerId:", props.initialData.ownerId);
      Dropdown Options
   ========================= */
 const statusOptions = [
-  { label: "Open", value: "OPEN" },
-  { label: "Pending", value: "PENDING" },
-  { label: "In Progress", value: "IN_PROGRESS" },
-  { label: "Closed", value: "CLOSED" },
-  { label: "Rejected", value: "REJECTED" },
+  { label: 'Open', value: 'OPEN' },
+  { label: 'Pending', value: 'PENDING' },
+  { label: 'In Progress', value: 'IN_PROGRESS' },
+  { label: 'Closed', value: 'CLOSED' },
+  { label: 'Rejected', value: 'REJECTED' },
 ];
 
 const typeOptions = [
-  { label: "Task", value: ISSUE_TYPE_TASK },
-  { label: "Application", value: ISSUE_TYPE_APPLICATION },
-  { label: "Defect", value: ISSUE_TYPE_DEFECT },
-  { label: "Maintenance", value: ISSUE_TYPE_MAINTENANCE },
+  { label: 'Task', value: ISSUE_TYPE_TASK },
+  { label: 'Application', value: ISSUE_TYPE_APPLICATION },
+  { label: 'Defect', value: ISSUE_TYPE_DEFECT },
+  { label: 'Maintenance', value: ISSUE_TYPE_MAINTENANCE },
 ];
 
 
@@ -160,12 +153,7 @@ console.log("#######",issueType.value)
     emit("saved");
   } catch (err) {
     console.error(err);
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Failed to save issue details",
-      life: 3000,
-    });
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save issue details', life: 3000 });
   } finally {
     loadingSave.value = false;
   }
