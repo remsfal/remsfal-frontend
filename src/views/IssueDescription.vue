@@ -22,15 +22,15 @@
   });
   </script>
   
-  <template>
-    <div class="w-full">
-      <Textarea
-        v-model="localDescription"
-        :autoResize="true"
-        :rows="8"
-        class="w-full"
-        placeholder="Write markdown description here..."
-      />
-    </div>
-  </template>
+<template>
+  <div class="w-full">
+    <Textarea
+      v-model="localDescription"
+      :autoResize="true"
+      :rows="8"
+      class="w-full"
+      placeholder="Write markdown description here..."
+    />
+  </div>
+</template>
   

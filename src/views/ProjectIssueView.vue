@@ -90,24 +90,24 @@ watch(
 
 <template>
   <div v-if="loadingFetch" class="flex justify-center items-center p-8">
-    <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
+    <i class="pi pi-spin pi-spinner text-4xl text-primary" />
   </div>
 
   <div v-else class="flex flex-col gap-4">
     <!-- Issue Details Card -->
     <IssueDetailsCard
       v-if="issueDetailsData"
-      :project-id="projectId"
-      :issue-id="issueId"
-      :initial-data="issueDetailsData"
+      :projectId="projectId"
+      :issueId="issueId"
+      :initialData="issueDetailsData"
       @saved="handleDetailsSaved"
     />
 
     <!-- Issue Description Card -->
     <IssueDescriptionCard
-      :project-id="projectId"
-      :issue-id="issueId"
-      :initial-description="description"
+      :projectId="projectId"
+      :issueId="issueId"
+      :initialDescription="description"
       @saved="handleDescriptionSaved"
     />
   </div>

@@ -5,20 +5,9 @@
     import Dialog from 'primevue/dialog';
     import InputText from 'primevue/inputtext';
     import IssueTable from '@/components/IssueTable.vue';
-    import {
-      IssueService,
-      ISSUE_TYPE_TASK,
-      StatusValues,
-      type Status,
-      type IssueItem,
-    } from '@/services/IssueService';
+    import { IssueService, ISSUE_TYPE_TASK,StatusValues,type Status,type IssueItem} from '@/services/IssueService';
     
-    const props = defineProps<{
-      projectId: string;
-      owner?: string;
-      status?: Status;
-      category?: string;
-    }>();
+    const props = defineProps<{ projectId: string;owner?: string;status?: Status;category?: string; }>();
     
     const issueService = new IssueService();
     const router = useRouter();
@@ -149,72 +138,72 @@
     );
     </script>
     
-    <template>
-      <main>
-        <div class="grid grid-cols-12 gap-4">
-          <div class="col-span-12">
-            <h1 class="w-full">
-              <span v-if="props.category === 'DEFECT'">
-                <span v-if="props.owner">Meine Mängel</span>
-                <span v-else-if="props.status">Offene Mängel</span>
-                <span v-else>Alle Mängel</span>
-              </span>
-              <span v-else>
-                <span v-if="props.owner">Meine Aufgaben</span>
-                <span v-else-if="props.status">Offene Aufgaben</span>
-                <span v-else>Alle Aufgaben</span>
-              </span>
-            </h1>
+<template>
+  <main>
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12">
+        <h1 class="w-full">
+          <span v-if="props.category === 'DEFECT'">
+            <span v-if="props.owner">Meine Mängel</span>
+            <span v-else-if="props.status">Offene Mängel</span>
+            <span v-else>Alle Mängel</span>
+          </span>
+          <span v-else>
+            <span v-if="props.owner">Meine Aufgaben</span>
+            <span v-else-if="props.status">Offene Aufgaben</span>
+            <span v-else>Alle Aufgaben</span>
+          </span>
+        </h1>
+      </div>
+    
+      <div class="col-span-12">
+        <div class="card">
+          <!-- Create Issue Dialog -->
+          <Dialog
+            v-model:visible="visible"
+            modal
+            header="Aufgabe erstellen"
+            :style="{ width: '50rem' }"
+          >
+            <div class="flex items-center gap-6 mb-6">
+              <label for="title" class="font-semibold w-24">Titel</label>
+              <InputText id="title" v-model="title" class="flex-auto" />
+            </div>
+    
+            <div class="flex items-center gap-6 mb-20">
+              <label for="description" class="font-semibold w-24">Beschreibung</label>
+              <InputText id="description" v-model="description" class="flex-auto" />
+            </div>
+    
+            <div class="flex justify-end gap-2">
+              <Button label="Abbrechen" severity="secondary" @click="visible = false" />
+              <Button label="Erstellen" @click="createIssue" />
+            </div>
+          </Dialog>
+    
+          <!-- Issues Table -->
+          <div v-if="props.owner">
+            <IssueTable :issues="myIssues" @rowSelect="onIssueSelect" />
           </div>
     
-          <div class="col-span-12">
-            <div class="card">
-              <!-- Create Issue Dialog -->
-              <Dialog
-                v-model:visible="visible"
-                modal
-                header="Aufgabe erstellen"
-                :style="{ width: '50rem' }"
-              >
-                <div class="flex items-center gap-6 mb-6">
-                  <label for="title" class="font-semibold w-24">Titel</label>
-                  <InputText id="title" v-model="title" class="flex-auto" />
-                </div>
+          <div v-else-if="props.status">
+            <IssueTable :issues="issuesByStatusOpen" @rowSelect="onIssueSelect" />
+          </div>
     
-                <div class="flex items-center gap-6 mb-20">
-                  <label for="description" class="font-semibold w-24">Beschreibung</label>
-                  <InputText id="description" v-model="description" class="flex-auto" />
-                </div>
+          <div v-else>
+            <IssueTable :issues="issues" @rowSelect="onIssueSelect" />
+          </div>
     
-                <div class="flex justify-end gap-2">
-                  <Button label="Abbrechen" severity="secondary" @click="visible = false" />
-                  <Button label="Erstellen" @click="createIssue" />
-                </div>
-              </Dialog>
-    
-              <!-- Issues Table -->
-              <div v-if="props.owner">
-                <IssueTable :issues="myIssues" @rowSelect="onIssueSelect" />
-              </div>
-    
-              <div v-else-if="props.status">
-                <IssueTable :issues="issuesByStatusOpen" @rowSelect="onIssueSelect" />
-              </div>
-    
-              <div v-else>
-                <IssueTable :issues="issues" @rowSelect="onIssueSelect" />
-              </div>
-    
-              <!-- Create Button -->
-              <div class="flex justify-end mt-6">
-                <Button
-                  :label="props.category === 'DEFECT' ? 'Mangel melden' : 'Aufgabe erstellen'"
-                  @click="openCreateIssueDialog"
-                />
-              </div>
-            </div>
+          <!-- Create Button -->
+          <div class="flex justify-end mt-6">
+            <Button
+              :label="props.category === 'DEFECT' ? 'Mangel melden' : 'Aufgabe erstellen'"
+              @click="openCreateIssueDialog"
+            />
           </div>
         </div>
-      </main>
-    </template>
+      </div>
+    </div>
+  </main>
+</template>
     

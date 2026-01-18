@@ -44,11 +44,7 @@ const handleSave = async () => {
 
   loadingSave.value = true;
   try {
-    const payload: Partial<Issue> = {
-      description: description.value,
-    };
-  
-    console.log('Saving description:', payload);
+    const payload: Partial<Issue> = { description: description.value };
     
     // Call backend API
     await issueService.modifyIssue(props.projectId, props.issueId, payload);
@@ -82,7 +78,9 @@ const handleSave = async () => {
 <template>
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
-      <div class="font-semibold text-xl">Description</div>
+      <div class="font-semibold text-xl">
+        Description
+      </div>
     </template>
 
     <template #content>

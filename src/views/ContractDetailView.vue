@@ -66,8 +66,12 @@ onMounted(loadContract);
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
-        <h1 class="text-2xl font-semibold text-gray-900 mb-1">Vertragsdetails</h1>
-        <p class="text-gray-600 mb-4">Alle Informationen zu deinem Mietvertrag.</p>
+        <h1 class="text-2xl font-semibold text-gray-900 mb-1">
+          Vertragsdetails
+        </h1>
+        <p class="text-gray-600 mb-4">
+          Alle Informationen zu deinem Mietvertrag.
+        </p>
       </div>
 
       <div class="col-span-12">
@@ -96,24 +100,36 @@ onMounted(loadContract);
 
             <div v-if="contract" class="grid grid-cols-1 gap-4 md:grid-cols-2 mb-6">
               <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <p class="text-sm font-medium text-gray-500">Monatliche Miete</p>
+                <p class="text-sm font-medium text-gray-500">
+                  Monatliche Miete
+                </p>
                 <p class="text-lg font-semibold text-gray-900">
                   {{ formatCurrency(contract.monthlyRent) }}
                 </p>
               </div>
               <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <p class="text-sm font-medium text-gray-500">Kaution</p>
+                <p class="text-sm font-medium text-gray-500">
+                  Kaution
+                </p>
                 <p class="text-lg font-semibold text-gray-900">
                   {{ formatCurrency(contract.deposit) }}
                 </p>
               </div>
               <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <p class="text-sm font-medium text-gray-500">Laufzeit</p>
-                <p class="text-lg font-semibold text-gray-900">{{ leaseDuration }}</p>
+                <p class="text-sm font-medium text-gray-500">
+                  Laufzeit
+                </p>
+                <p class="text-lg font-semibold text-gray-900">
+                  {{ leaseDuration }}
+                </p>
               </div>
               <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <p class="text-sm font-medium text-gray-500">Vermieter / Verwaltung</p>
-                <p class="text-lg font-semibold text-gray-900">{{ contract.landlord }}</p>
+                <p class="text-sm font-medium text-gray-500">
+                  Vermieter / Verwaltung
+                </p>
+                <p class="text-lg font-semibold text-gray-900">
+                  {{ contract.landlord }}
+                </p>
               </div>
             </div>
 

@@ -3,16 +3,15 @@ import { ref, computed, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
-import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import { issueService, type Issue } from "@/services/IssueService";
 import { useProjectStore } from "@/stores/ProjectStore";
-import {
-  ISSUE_TYPE_TASK,
+import {ISSUE_TYPE_TASK,
   ISSUE_TYPE_APPLICATION,
   ISSUE_TYPE_DEFECT,
-  ISSUE_TYPE_MAINTENANCE,
-} from "@/services/IssueService";
+  ISSUE_TYPE_MAINTENANCE,} from "@/services/IssueService";
+import Select from "primevue/select";
+
 
 
 /* =========================
@@ -53,7 +52,6 @@ const ownerId = ref(props.initialData.ownerId);
 const reporter = ref(props.initialData.reporter);
 const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
-// const issueType = ref<Issue["type"]>(props.initialData.issueType as Issue["type"]);
 const tenancy = ref(props.initialData.tenancy);
 
 /* =========================
@@ -66,11 +64,8 @@ const originalIssueType = ref(issueType.value);
 const originalTenancy = ref(tenancy.value);
 
 /* =========================
-     Computed
+     Change Detection
   ========================= */
-const projectName = computed(() => {
-  return projectStore.selectedProject?.name ?? project.value;
-});
 
 const canSave = computed(
   () =>
@@ -136,7 +131,6 @@ const handleSave = async () => {
 
   try {
     const payload: Partial<Issue> = {};
-
     if (title.value !== originalTitle.value) payload.title = title.value;
     if (status.value !== originalStatus.value)
       payload.status = status.value as Issue["status"];
@@ -181,7 +175,9 @@ console.log("#######",issueType.value)
 <template>
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
-      <div class="font-semibold text-xl">Issue Details</div>
+      <div class="font-semibold text-xl">
+        Issue Details
+      </div>
     </template>
 
     <template #content>

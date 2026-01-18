@@ -137,21 +137,21 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
 <template>
-    <UnitBreadcrumb
-      :projectId="props.projectId" 
-      :unitId="props.unitId" 
-      :currentTitle="title"
-      mode="edit" 
-    />
+  <UnitBreadcrumb
+    :projectId="props.projectId" 
+    :unitId="props.unitId" 
+    :currentTitle="title"
+    mode="edit" 
+  />
 
-    <BaseCard>
-      <template #title>
-        Bearbeite Storage mit ID: {{ unitId }}
-      </template>
+  <BaseCard>
+    <template #title>
+      Bearbeite Storage mit ID: {{ unitId }}
+    </template>
 
-      <template #content>
-        <form @submit.prevent="save">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+    <template #content>
+      <form @submit.prevent="save">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
             <label for="title" class="block text-gray-700 mb-1">Titel</label>
             <input id="title" v-model="title" type="text" class="form-input w-full">
@@ -206,10 +206,10 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           >
             Abbrechen
           </button>
-          </div>
-        </form>
-      </template>
-    </BaseCard>
+        </div>
+      </form>
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>
