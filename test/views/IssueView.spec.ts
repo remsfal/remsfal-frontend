@@ -2,14 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import IssueView from '@/views/IssueView.vue';
 import { useRouter } from 'vue-router';
-import { IssueService, StatusValues, type IssueItem } from '@/services/IssueService';
+import {StatusValues, type IssueItem } from '@/services/IssueService';
 
 // Mock PrimeVue components
 vi.mock('primevue/button', () => ({ default: { template: '<button><slot /></button>' } }));
 vi.mock('primevue/dialog', () => ({ default: { template: '<div><slot /></div>' } }));
 vi.mock('primevue/inputtext', () => ({ default: { template: '<input />' } }));
 vi.mock('@/components/IssueTable.vue', () => ({
-  default: { template: '<div data-test="issue-table" />', props: ['issues'], emits: ['rowSelect'] },
+default: {
+ template: '<div data-test="issue-table" />', props: ['issues'], emits: ['rowSelect'] 
+},
 }));
 
 // Mock router
@@ -42,7 +44,11 @@ describe('IssueView.vue', () => {
   });
 
   it('renders title correctly based on props', async () => {
-    const wrapper = mount(IssueView, { props: { projectId: '123', category: 'DEFECT', owner: 'Alice' } });
+    const wrapper = mount(IssueView, {
+ props: {
+ projectId: '123', category: 'DEFECT', owner: 'Alice' 
+} 
+});
     expect(wrapper.html()).toContain('Meine Mängel');
 
     await wrapper.setProps({ owner: undefined, status: 'OPEN' });
@@ -83,7 +89,9 @@ describe('IssueView.vue', () => {
   it('calls router.push when an issue is selected', async () => {
     const wrapper = mount(IssueView, { props: { projectId: '123' } });
 
-    const issue: IssueItem = { id: '1', title: 'Issue 1', description: '', status: 'OPEN', type: 'TASK' };
+    const issue: IssueItem = {
+ id: '1', title: 'Issue 1', description: '', status: 'OPEN', type: 'TASK' 
+};
     wrapper.vm.onIssueSelect(issue);
 
     expect(routerPushMock).toHaveBeenCalledWith({ name: 'IssueDetails', params: { issueId: '1' } });
