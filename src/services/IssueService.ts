@@ -16,8 +16,9 @@ export const StatusValues = {
 
 // Issue type constants
 export const ISSUE_TYPE_TASK = 'TASK';
-export const ISSUE_STATUS_OPEN = 'OPEN';
-export const ISSUE_STATUS_CLOSED = 'CLOSED';
+export const ISSUE_TYPE_APPLICATION = 'APPLICATION';
+export const ISSUE_TYPE_DEFECT = 'DEFECT';
+export const ISSUE_TYPE_MAINTENANCE = 'MAINTENANCE';
 
 export class IssueService {
   /**

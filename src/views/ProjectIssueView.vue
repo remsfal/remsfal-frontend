@@ -1,62 +1,68 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useI18n } from 'vue-i18n';
-import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
-import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
-import { issueService } from '@/services/IssueService';
+import { ref, onMounted, watch } from "vue";
+import { useToast } from "primevue/usetoast";
+import { useI18n } from "vue-i18n";
+import IssueDetailsCard from "@/components/issue/IssueDetailsCard.vue";
+import IssueDescriptionCard from "@/components/issue/IssueDescriptionCard.vue";
+import { issueService, type Issue } from "@/services/IssueService";
 
+/* Props */
 const props = defineProps<{
   projectId: string;
   issueId: string;
 }>();
 
+/* Toast & i18n */
 const toast = useToast();
 const { t } = useI18n();
 
-/* Data state for child components */
-const issueDetailsData = ref({
-  issueId: '',
-  title: '',
-  status: 'OPEN',
-  ownerId: '',
-  reporter: '',
-  project: '',
-  issueType: 'TASK',
-  tenancy: '',
-});
+/* UI-friendly Issue type */
+type IssueUI = {
+  issueId: string;
+  title: string;
+  ownerId: string;
+  reporter: string;
+  project: string;
+  tenancy: string;
+  status: Issue["status"];
+  issueType: Issue["type"];
+};
 
-const description = ref('');
-
-/* Loading state */
+/* State */
 const loadingFetch = ref(false);
+const issueDetailsData = ref<IssueUI | null>(null);
+const description = ref("");
 
-/* Fetch issue data from API */
+/* Fetch issue from API and map to UI type */
 const fetchIssue = async () => {
   loadingFetch.value = true;
   try {
-    const issue = await issueService.getIssue(props.projectId, props.issueId);
-    
-    // Populate issue details data
+    const issue: Issue = await issueService.getIssue(
+      props.projectId,
+      props.issueId
+    );
+    console.log("#######", issue);
+
+    // Map API response to UI-friendly format
     issueDetailsData.value = {
-      issueId: issue.id || '',
-      title: issue.title || '',
-      status: issue.status || 'OPEN',
-      ownerId: issue.ownerId || '',
-      reporter: issue.reporterId || '',
+      issueId: issue.id ?? "",
+      title: issue.title ?? "",
+      status: issue.status ?? "OPEN",
+      ownerId: issue.ownerId ?? "",
+      reporter: issue.reporterId ?? "",
       project: props.projectId,
-      issueType: issue.type || 'TASK',
-      tenancy: issue.tenancyId || '',
+      issueType: issue.type,
+      tenancy: issue.tenancyId ?? "",
     };
-    
-    // Populate description
-    description.value = issue.description || '';
+    console.log("Fetched ownerId:", issue);
+
+    description.value = issue.description ?? "";
   } catch (error) {
-    console.error('Error fetching issue:', error);
+    console.error("Error fetching issue:", error);
     toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.fetchError'),
+      severity: "error",
+      summary: t("error.general"),
+      detail: t("issueDetails.fetchError"),
       life: 3000,
     });
   } finally {
@@ -66,38 +72,38 @@ const fetchIssue = async () => {
 
 /* Handle save events from child components */
 const handleDetailsSaved = () => {
-  // Re-fetch issue data to ensure UI shows latest persisted values
-  fetchIssue();
+  fetchIssue(); // refresh after saving details
 };
 
 const handleDescriptionSaved = () => {
-  // Re-fetch issue data to ensure UI shows latest persisted values
-  fetchIssue();
+  fetchIssue(); // refresh after saving description
 };
 
 /* Fetch issue on mount and when props change */
 onMounted(() => fetchIssue());
 
-watch(() => [props.projectId, props.issueId], () => {
-  fetchIssue();
-});
+watch(
+  () => [props.projectId, props.issueId],
+  () => fetchIssue()
+);
 </script>
-  
+
 <template>
   <div v-if="loadingFetch" class="flex justify-center items-center p-8">
     <i class="pi pi-spin pi-spinner text-4xl text-primary"></i>
   </div>
-  
+
   <div v-else class="flex flex-col gap-4">
-    <!-- Issue Details Card Component -->
+    <!-- Issue Details Card -->
     <IssueDetailsCard
+      v-if="issueDetailsData"
       :project-id="projectId"
       :issue-id="issueId"
       :initial-data="issueDetailsData"
       @saved="handleDetailsSaved"
     />
 
-    <!-- Description Card Component -->
+    <!-- Issue Description Card -->
     <IssueDescriptionCard
       :project-id="projectId"
       :issue-id="issueId"
@@ -106,4 +112,3 @@ watch(() => [props.projectId, props.issueId], () => {
     />
   </div>
 </template>
-  

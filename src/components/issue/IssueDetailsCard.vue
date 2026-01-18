@@ -1,37 +1,51 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useI18n } from 'vue-i18n';
-import Card from 'primevue/card';
-import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
-import Button from 'primevue/button';
-import { issueService, type Issue } from '@/services/IssueService';
-import { projectService, type ProjectItem } from '@/services/ProjectService';
+import { ref, computed, watch } from "vue";
+import { useToast } from "primevue/usetoast";
+import Card from "primevue/card";
+import InputText from "primevue/inputtext";
+import Dropdown from "primevue/dropdown";
+import Button from "primevue/button";
+import { issueService, type Issue } from "@/services/IssueService";
+import { useProjectStore } from "@/stores/ProjectStore";
+import {
+  ISSUE_TYPE_TASK,
+  ISSUE_TYPE_APPLICATION,
+  ISSUE_TYPE_DEFECT,
+  ISSUE_TYPE_MAINTENANCE,
+} from "@/services/IssueService";
 
+
+/* =========================
+     Props & Emits
+  ========================= */
 const props = defineProps<{
   projectId: string;
   issueId: string;
   initialData: {
     issueId: string;
     title: string;
-    status: string;
+    status: Issue["status"];
     ownerId: string;
     reporter: string;
     project: string;
-    issueType: string;
+    issueType: Issue["type"];
     tenancy: string;
   };
 }>();
 
 const emit = defineEmits<{
-  saved: []
+  saved: [];
 }>();
 
+/* =========================
+     Services & Store
+  ========================= */
 const toast = useToast();
-const { t } = useI18n();
+const projectStore = useProjectStore();
 
-/* Local reactive state */
+/* =========================
+     Local State
+  ========================= */
 const issueId = ref(props.initialData.issueId);
 const title = ref(props.initialData.title);
 const status = ref(props.initialData.status);
@@ -39,154 +53,123 @@ const ownerId = ref(props.initialData.ownerId);
 const reporter = ref(props.initialData.reporter);
 const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
+// const issueType = ref<Issue["type"]>(props.initialData.issueType as Issue["type"]);
 const tenancy = ref(props.initialData.tenancy);
 
-/* Track original values for change detection */
-const originalTitle = ref(props.initialData.title);
-const originalStatus = ref(props.initialData.status);
-const originalOwnerId = ref(props.initialData.ownerId);
-const originalProject = ref(props.initialData.project);
-const originalIssueType = ref(props.initialData.issueType);
-const originalTenancy = ref(props.initialData.tenancy);
+/* =========================
+     Original Values (change detection)
+  ========================= */
+const originalTitle = ref(title.value);
+const originalStatus = ref(status.value);
+const originalOwnerId = ref(ownerId.value);
+const originalIssueType = ref(issueType.value);
+const originalTenancy = ref(tenancy.value);
 
-/* Projects list for dropdown */
-const projects = ref<ProjectItem[]>([]);
-const loadingProjects = ref(false);
+/* =========================
+     Computed
+  ========================= */
+const projectName = computed(() => {
+  return projectStore.selectedProject?.name ?? project.value;
+});
 
-/* Select options */
+const canSave = computed(
+  () =>
+    title.value !== originalTitle.value ||
+    status.value !== originalStatus.value ||
+    ownerId.value !== originalOwnerId.value ||
+    issueType.value !== originalIssueType.value ||
+    tenancy.value !== originalTenancy.value
+);
+console.log("Initial ownerId:", props.initialData.ownerId);
+/* =========================
+     Dropdown Options
+  ========================= */
 const statusOptions = [
-  { label: 'Pending', value: 'PENDING' },
-  { label: 'Open', value: 'OPEN' },
-  { label: 'In Progress', value: 'IN_PROGRESS' },
-  { label: 'Closed', value: 'CLOSED' },
-  { label: 'Rejected', value: 'REJECTED' },
+  { label: "Open", value: "OPEN" },
+  { label: "Pending", value: "PENDING" },
+  { label: "In Progress", value: "IN_PROGRESS" },
+  { label: "Closed", value: "CLOSED" },
+  { label: "Rejected", value: "REJECTED" },
 ];
 
 const typeOptions = [
-  { label: 'Application', value: 'APPLICATION' },
-  { label: 'Task', value: 'TASK' },
-  { label: 'Defect', value: 'DEFECT' },
-  { label: 'Maintenance', value: 'MAINTENANCE' },
+  { label: "Task", value: ISSUE_TYPE_TASK },
+  { label: "Application", value: ISSUE_TYPE_APPLICATION },
+  { label: "Defect", value: ISSUE_TYPE_DEFECT },
+  { label: "Maintenance", value: ISSUE_TYPE_MAINTENANCE },
 ];
 
-/* Computed project options for dropdown */
-const projectOptions = computed(() => 
-  projects.value.map(p => ({
-    label: p.title || p.name || p.id || 'Unknown Project',
-    value: p.id || '',
-  }))
+
+/* =========================
+     Watch props updates
+  ========================= */
+watch(
+  () => props.initialData,
+  (newData) => {
+    issueId.value = newData.issueId;
+    title.value = newData.title;
+    status.value = newData.status;
+    ownerId.value = newData.ownerId;
+    reporter.value = newData.reporter;
+    project.value = newData.project;
+    issueType.value = newData.issueType;
+    tenancy.value = newData.tenancy;
+
+    originalTitle.value = newData.title;
+    originalStatus.value = newData.status;
+    originalOwnerId.value = newData.ownerId;
+    originalIssueType.value = newData.issueType;
+    originalTenancy.value = newData.tenancy;
+  },
+  { deep: true }
 );
 
-/* Get project name for display */
-const getProjectName = computed(() => {
-  const currentProject = projects.value.find(p => p.id === project.value);
-  return currentProject?.title || currentProject?.name || project.value;
-});
-
-/* Fetch projects list */
-const fetchProjects = async () => {
-  loadingProjects.value = true;
-  try {
-    const projectList = await projectService.getProjects(0, 100);
-    projects.value = projectList.projects || [];
-  } catch (error) {
-    console.error('Error fetching projects:', error);
-  } finally {
-    loadingProjects.value = false;
-  }
-};
-
-/* Change detection */
-const canSave = computed(() =>
-  title.value !== originalTitle.value ||
-  status.value !== originalStatus.value ||
-  ownerId.value !== originalOwnerId.value ||
-  project.value !== originalProject.value ||
-  issueType.value !== originalIssueType.value ||
-  tenancy.value !== originalTenancy.value
-);
-
-/* Loading state */
+/* =========================
+     Save Handler
+  ========================= */
 const loadingSave = ref(false);
 
-/* Fetch projects on mount */
-onMounted(() => {
-  fetchProjects();
-});
-
-/* Watch for prop changes and update local state */
-watch(() => props.initialData, (newData) => {
-  issueId.value = newData.issueId;
-  title.value = newData.title;
-  status.value = newData.status;
-  ownerId.value = newData.ownerId;
-  reporter.value = newData.reporter;
-  project.value = newData.project;
-  issueType.value = newData.issueType;
-  tenancy.value = newData.tenancy;
-
-  originalTitle.value = newData.title;
-  originalStatus.value = newData.status;
-  originalOwnerId.value = newData.ownerId;
-  originalProject.value = newData.project;
-  originalIssueType.value = newData.issueType;
-  originalTenancy.value = newData.tenancy;
-}, { deep: true });
-
-/* Save handler */
 const handleSave = async () => {
   if (!canSave.value || loadingSave.value) return;
 
   loadingSave.value = true;
-  try {
-    // Detect which fields changed
-    const changedFields: string[] = [];
-    if (title.value !== originalTitle.value) changedFields.push(t('issueDetails.fields.title'));
-    if (status.value !== originalStatus.value) changedFields.push(t('issueDetails.fields.status'));
-    if (ownerId.value !== originalOwnerId.value) changedFields.push(t('issueDetails.fields.owner'));
-    if (project.value !== originalProject.value) changedFields.push(t('issueDetails.fields.project'));
-    if (issueType.value !== originalIssueType.value) changedFields.push(t('issueDetails.fields.type'));
-    if (tenancy.value !== originalTenancy.value) changedFields.push(t('issueDetails.fields.tenancy'));
 
-    // Build payload with only changed fields
+  try {
     const payload: Partial<Issue> = {};
+
     if (title.value !== originalTitle.value) payload.title = title.value;
-    if (status.value !== originalStatus.value) payload.status = status.value as Issue['status'];
-    if (ownerId.value !== originalOwnerId.value) payload.ownerId = ownerId.value;
-    if (issueType.value !== originalIssueType.value) payload.type = issueType.value as Issue['type'];
-  
-    console.log('Saving issue details:', payload);
-    
-    // Call backend API
+    if (status.value !== originalStatus.value)
+      payload.status = status.value as Issue["status"];
+    if (ownerId.value !== originalOwnerId.value)
+      payload.ownerId = ownerId.value;
+    if (issueType.value !== originalIssueType.value)
+      payload.type = issueType.value as Issue["type"];
+
+console.log("#######",issueType.value,originalIssueType.value)
+
     await issueService.modifyIssue(props.projectId, props.issueId, payload);
-    
-    // Update reference state after successful save
+
     originalTitle.value = title.value;
     originalStatus.value = status.value;
     originalOwnerId.value = ownerId.value;
-    originalProject.value = project.value;
     originalIssueType.value = issueType.value;
     originalTenancy.value = tenancy.value;
 
-    // Create toast message with changed fields
-    const fieldsList = changedFields.join(', ');
-    const detailMessage = t('issueDetails.fieldsUpdated', { fields: fieldsList });
-
+console.log("#######",issueType.value)
     toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: detailMessage,
+      severity: "success",
+      summary: "Saved",
+      detail: "Issue details updated successfully",
       life: 3000,
     });
 
-    // Emit saved event to parent
-    emit('saved');
-  } catch (error) {
-    console.error('Error saving issue details:', error);
+    emit("saved");
+  } catch (err) {
+    console.error(err);
     toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.saveError'),
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to save issue details",
       life: 3000,
     });
   } finally {
@@ -257,13 +240,8 @@ const handleSave = async () => {
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
             <label class="text-sm text-gray-600">Project</label>
-            <Select
-              v-model="project"
-              :options="projectOptions"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Select project"
-              :loading="loadingProjects"
+            <InputText
+              :modelValue="projectStore.selectedProject?.name ?? ''"
             />
           </div>
 
