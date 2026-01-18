@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import ProjectIssueView from '@/views/ProjectIssueView.vue';
 import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
@@ -63,19 +63,25 @@ describe('ProjectIssueView.vue', () => {
       expect(wrapper.exists()).toBe(true);
     });
 
-    it('should render IssueDetailsCard component', () => {
+    it('should render IssueDetailsCard component', async () => {
+      await flushPromises();
+      await wrapper.vm.$nextTick();
       const detailsCard = wrapper.findComponent(IssueDetailsCard);
       expect(detailsCard.exists()).toBe(true);
     });
 
-    it('should render IssueDescriptionCard component', () => {
+    it('should render IssueDescriptionCard component', async () => {
+      await flushPromises();
+      await wrapper.vm.$nextTick();
       const descCard = wrapper.findComponent(IssueDescriptionCard);
       expect(descCard.exists()).toBe(true);
     });
 
     it('should pass correct props to IssueDetailsCard', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
       const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      expect(detailsCard.exists()).toBe(true);
       const props = detailsCard.props();
       
       expect(props.projectId).toBe('project-123');
@@ -84,8 +90,10 @@ describe('ProjectIssueView.vue', () => {
     });
 
     it('should pass correct props to IssueDescriptionCard', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
       const descCard = wrapper.findComponent(IssueDescriptionCard);
+      expect(descCard.exists()).toBe(true);
       const props = descCard.props();
       
       expect(props.projectId).toBe('project-123');
@@ -104,20 +112,22 @@ describe('ProjectIssueView.vue', () => {
     });
 
     it('should pass issueDetailsData to IssueDetailsCard', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      expect(detailsCard.exists()).toBe(true);
       const initialData = detailsCard.props('initialData');
       expect(initialData).toBeDefined();
       expect(initialData.issueId).toBeTruthy();
     });
 
     it('should pass description to IssueDescriptionCard', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       const descCard = wrapper.findComponent(IssueDescriptionCard);
+      expect(descCard.exists()).toBe(true);
       const initialDescription = descCard.props('initialDescription');
       expect(initialDescription).toBeDefined();
     });
@@ -125,19 +135,21 @@ describe('ProjectIssueView.vue', () => {
 
   describe('Data Fetching', () => {
     it('should fetch issue data on mount', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      expect(detailsCard.exists()).toBe(true);
       const initialData = detailsCard.props('initialData');
       expect(initialData.issueId).toBeTruthy();
     });
 
     it('should populate issue details from API response', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      expect(detailsCard.exists()).toBe(true);
       const initialData = detailsCard.props('initialData');
       expect(initialData.title).toBe('Fix login bug on mobile devices');
       expect(initialData.status).toBe('OPEN');
@@ -145,10 +157,11 @@ describe('ProjectIssueView.vue', () => {
     });
 
     it('should populate description from API response', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       const descCard = wrapper.findComponent(IssueDescriptionCard);
+      expect(descCard.exists()).toBe(true);
       const initialDescription = descCard.props('initialDescription');
       expect(initialDescription).toContain('Issue Description');
     });
@@ -156,7 +169,10 @@ describe('ProjectIssueView.vue', () => {
 
   describe('Event Handling', () => {
     it('should handle saved event from IssueDetailsCard', async () => {
+      await flushPromises();
+      await wrapper.vm.$nextTick();
       const detailsCard = wrapper.findComponent(IssueDetailsCard);
+      expect(detailsCard.exists()).toBe(true);
       await detailsCard.vm.$emit('saved');
       
       // Event should be handled by parent
@@ -165,7 +181,10 @@ describe('ProjectIssueView.vue', () => {
     });
 
     it('should handle saved event from IssueDescriptionCard', async () => {
+      await flushPromises();
+      await wrapper.vm.$nextTick();
       const descCard = wrapper.findComponent(IssueDescriptionCard);
+      expect(descCard.exists()).toBe(true);
       await descCard.vm.$emit('saved');
       
       // Event should be handled by parent

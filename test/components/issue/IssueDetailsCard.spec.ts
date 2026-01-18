@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
 import PrimeVue from 'primevue/config';
@@ -132,8 +132,8 @@ describe('IssueDetailsCard.vue', () => {
     });
 
     it('should compute projectOptions from projects list', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100)); // Wait for projects to load
       
       expect(wrapper.vm.projectOptions).toBeDefined();
       expect(wrapper.vm.projectOptions.length).toBeGreaterThan(0);
@@ -171,13 +171,14 @@ describe('IssueDetailsCard.vue', () => {
 
   describe('Projects Loading', () => {
     it('should fetch projects on mount', async () => {
+      await flushPromises();
       const { projectService } = await import('@/services/ProjectService');
       expect(projectService.getProjects).toHaveBeenCalled();
     });
 
     it('should populate projects after loading', async () => {
+      await flushPromises();
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       expect(wrapper.vm.projects).toBeDefined();
       expect(wrapper.vm.projects.length).toBeGreaterThan(0);
