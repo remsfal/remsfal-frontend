@@ -6,20 +6,14 @@ import { issueService } from '@/services/IssueService';
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
 const addMock = vi.fn();
 
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({
-    add: addMock,
-  }),
-}));
+vi.mock('primevue/usetoast', () => ({useToast: () => ({add: addMock,}),}));
 
 // ─── Service Mock ────────────────────────────────────────────────────────────
 vi.mock('@/services/IssueService', async () => {
   const actual = await vi.importActual<any>('@/services/IssueService');
   return {
     ...actual,
-    issueService: {
-      modifyIssue: vi.fn(),
-    },
+    issueService: {modifyIssue: vi.fn(),},
   };
 });
 
@@ -46,9 +40,7 @@ describe('IssueDetailsCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    wrapper = mount(IssueDetailsCard, {
-      props: baseProps,
-    });
+    wrapper = mount(IssueDetailsCard, {props: baseProps,});
   });
 
   // ───────────────────────────────────────────────────────────────────────────

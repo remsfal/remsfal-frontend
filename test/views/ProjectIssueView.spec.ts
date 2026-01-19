@@ -7,23 +7,11 @@ import { issueService } from "@/services/IssueService";
 // ---- Mocks ----
 const toastAddMock = vi.fn();
 
-vi.mock("@/services/IssueService", () => ({
-  issueService: {
-    getIssue: vi.fn(),
-  },
-}));
+vi.mock("@/services/IssueService", () => ({issueService: {getIssue: vi.fn(),},}));
 
-vi.mock("primevue/usetoast", () => ({
-  useToast: () => ({
-    add: toastAddMock,
-  }),
-}));
+vi.mock("primevue/usetoast", () => ({useToast: () => ({add: toastAddMock,}),}));
 
-vi.mock("vue-i18n", () => ({
-  useI18n: () => ({
-    t: (key: string) => key,
-  }),
-}));
+vi.mock("vue-i18n", () => ({useI18n: () => ({t: (key: string) => key,}),}));
 
 // ---- Test Data ----
 const mockIssue = {
@@ -53,9 +41,7 @@ describe("ProjectIssueView.vue", () => {
       },
       global: {
         stubs: {
-          IssueDetailsCard: {
-            template: '<div data-test="details" @click="$emit(\'saved\')" />',
-          },
+          IssueDetailsCard: {template: '<div data-test="details" @click="$emit(\'saved\')" />',},
           IssueDescriptionCard: {
             template:
               '<div data-test="description" @click="$emit(\'saved\')" />',
@@ -79,32 +65,19 @@ describe("ProjectIssueView.vue", () => {
 
   // ---- Loader Tests ----
   test("sets loading state while fetching issue", () => {
-    let resolveFn!: (value: any) => void;
-
+    // no need for resolveFn if we don’t use it
     vi.spyOn(issueService, "getIssue").mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolveFn = resolve;
-        }) as any
+      () => new Promise(() => {}) // promise never resolves
     );
-
+  
     mount(ProjectIssueView, {
-      props: {
-        projectId: "PROJ-1",
-        issueId: "ISSUE-1",
-      },
-      global: {
-        stubs: {
-          IssueDetailsCard: true,
-          IssueDescriptionCard: true,
-        },
-      },
+      props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
+      global: { stubs: { IssueDetailsCard: true, IssueDescriptionCard: true } },
     });
-
-    // API call started but not resolved
+  
     expect(issueService.getIssue).toHaveBeenCalled();
   });
-
+  
   // ---- Error Handling Tests ----
   test("shows error toast when API call fails", () => {
     vi.spyOn(issueService, "getIssue").mockImplementation(() => {

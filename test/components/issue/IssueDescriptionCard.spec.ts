@@ -4,9 +4,7 @@ import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
 import { issueService, type Issue } from '@/services/IssueService';
 
 // ---- Mock issueService ----
-vi.mock('@/services/IssueService', () => ({
-  issueService: { modifyIssue: vi.fn() },
-}));
+vi.mock('@/services/IssueService', () => ({issueService: { modifyIssue: vi.fn() },}));
 
 // ---- Stub PrimeVue components ----
 const stubs = {

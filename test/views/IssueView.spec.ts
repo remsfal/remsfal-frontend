@@ -3,9 +3,7 @@ import { mount, VueWrapper } from "@vue/test-utils";
 
 // ---- MOCK ROUTER ----
 const pushMock = vi.fn();
-vi.mock("vue-router", () => ({
-  useRouter: () => ({ push: pushMock }),
-}));
+vi.mock("vue-router", () => ({useRouter: () => ({ push: pushMock }),}));
 
 // ---- MOCK IssueService MODULE ----
 vi.mock("@/services/IssueService", () => {
@@ -51,7 +49,9 @@ describe("IssueView.vue", () => {
     vi.clearAllMocks();
 
     wrapper = mount(IssueView, {
-      props: { projectId: "proj-1", owner: "user1", category: ISSUE_TYPE_TASK },
+      props: {
+ projectId: "proj-1", owner: "user1", category: ISSUE_TYPE_TASK 
+},
       global: {
         stubs: {
           IssueTable: true,
@@ -91,7 +91,9 @@ describe("IssueView.vue", () => {
   });
 
   test("navigates to issue details on row select", () => {
-    const issue = { id: "123", title: "Sample", status: StatusValues.OPEN };
+    const issue = {
+ id: "123", title: "Sample", status: StatusValues.OPEN 
+};
     wrapper.vm.onIssueSelect(issue);
 
     expect(pushMock).toHaveBeenCalledWith({
