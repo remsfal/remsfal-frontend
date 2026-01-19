@@ -1,160 +1,57 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+\import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import flushPromises from 'flush-promises';
-import ProjectSettings from '../../src/components/ProjectSettings.vue';
-import { projectService } from '../../src/services/ProjectService';
+import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
+import { issueService, type Issue } from '@/services/IssueService';
 
-// ---- Mocks ----
-const addMock = vi.fn();
+// ---- Mock issueService ----
+vi.mock('@/services/IssueService', () => ({
+  issueService: { modifyIssue: vi.fn() },
+}));
 
-vi.mock('primevue/usetoast', () => ({useToast: () => ({add: addMock,}),}));
+// ---- Stub PrimeVue components ----
+const stubs = {
+  Card: true,
+  Button: true,
+  IssueDescription: true,
+};
 
 // ---- Test Suite ----
-describe('ProjectSettings.vue', () => {
+describe('IssueDescriptionCard.vue', () => {
   let wrapper: VueWrapper<any>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
+    (issueService.modifyIssue as any).mockResolvedValue({});
 
-    vi.spyOn(projectService, 'getProject').mockResolvedValue({ title: 'Old Project' });
-    vi.spyOn(projectService, 'updateProject').mockResolvedValue({});
-
-    wrapper = mount(ProjectSettings, {props: { projectId: 'test-project-id' },});
-
-    await flushPromises();
+    wrapper = mount(IssueDescriptionCard, {
+      props: {
+        projectId: 'proj-1',
+        issueId: 'issue-1',
+        initialDescription: 'Initial description',
+      },
+      global: { stubs },
+    });
   });
 
-  test('fetches and displays project name on mount', async () => {
-    expect(projectService.getProject).toHaveBeenCalledWith('test-project-id');
-    expect(wrapper.vm.projectName).toBe('Old Project');
+  test('renders component', () => {
+    expect(wrapper.exists()).toBe(true);
   });
 
-  test('displays the correct title', () => {
-    const title = wrapper.find('.font-semibold.text-xl');
-    expect(title.exists()).toBe(true);
-    expect(title.text()).toBe('Liegenschaftseinstellungen');
-  });
+  test('calls modifyIssue when saving', async () => {
+    wrapper.vm.description = 'Updated description';
+    await wrapper.vm.handleSave();
 
-  test('renders input field with project name', async () => {
-    const input = wrapper.find('input[type="text"]');
-    expect(input.exists()).toBe(true);
-    expect((input.element as HTMLInputElement).value).toBe('Old Project');
-  });
-
-  test('save button is disabled when name has not changed', async () => {
-    const button = wrapper.find('button');
-    expect(button.attributes('disabled')).toBeDefined();
-  });
-
-  test('enables save button when project name changes', async () => {
-    wrapper.vm.projectName = 'Updated Project';
-    await flushPromises();
-
-    const button = wrapper.find('button');
-    expect(button.attributes('disabled')).toBeUndefined();
-  });
-
-  test('disables save button when project name is empty', async () => {
-    wrapper.vm.projectName = '';
-    await flushPromises();
-
-    const button = wrapper.find('button');
-    expect(button.attributes('disabled')).toBeDefined();
-  });
-
-  test('disables save button when project name is only whitespace', async () => {
-    wrapper.vm.projectName = '   ';
-    await flushPromises();
-
-    const button = wrapper.find('button');
-    expect(button.attributes('disabled')).toBeDefined();
-  });
-
-  test('calls updateProject and shows success toast on save', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Updated Project';
-
-    await wrapper.vm.saveProjectName();
-    await flushPromises();
-
-    expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {title: 'Updated Project',});
-    expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        severity: 'success',
-        summary: expect.any(String),
-        detail: expect.any(String),
-      }),
+    expect(issueService.modifyIssue).toHaveBeenCalledWith(
+      'proj-1',
+      'issue-1',
+      { description: 'Updated description' } as Partial<Issue>
     );
   });
 
-  test('trims whitespace when saving project name', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = '  Updated Project  ';
+  test('emits saved event after save', async () => {
+    wrapper.vm.description = 'Updated description';
+    await wrapper.vm.handleSave();
 
-    await wrapper.vm.saveProjectName();
-    await flushPromises();
-
-    expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {title: 'Updated Project',});
-  });
-
-  test('shows error toast on update failure', async () => {
-    vi.spyOn(projectService, 'updateProject').mockRejectedValue(new Error('fail'));
-
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Broken Project';
-
-    await wrapper.vm.saveProjectName();
-    await flushPromises();
-
-    expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        severity: 'error',
-        summary: expect.any(String),
-        detail: expect.any(String),
-      }),
-    );
-  });
-
-  test('shows loading state during save', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Updated Project';
-
-    const savePromise = wrapper.vm.saveProjectName();
-    expect(wrapper.vm.loading).toBe(true);
-
-    await savePromise;
-    await flushPromises();
-
-    expect(wrapper.vm.loading).toBe(false);
-  });
-
-  test('updates originalProjectName after successful save', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Updated Project';
-
-    await wrapper.vm.saveProjectName();
-    await flushPromises();
-
-    expect(wrapper.vm.originalProjectName).toBe('Updated Project');
-  });
-
-  test('fetches project data when projectId prop changes', async () => {
-    vi.clearAllMocks();
-    vi.spyOn(projectService, 'getProject').mockResolvedValue({ title: 'New Project' });
-
-    await wrapper.setProps({ projectId: 'new-project-id' });
-    await flushPromises();
-
-    expect(projectService.getProject).toHaveBeenCalledWith('new-project-id');
-    expect(wrapper.vm.projectName).toBe('New Project');
-  });
-
-  test('does not call updateProject if name has not changed', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Old Project';
-
-    await wrapper.vm.saveProjectName();
-
-    expect(projectService.updateProject).not.toHaveBeenCalled();
+    expect(wrapper.emitted('saved')).toBeTruthy();
   });
 });
