@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
 import { issueService, type Issue } from '@/services/IssueService';
@@ -12,16 +12,17 @@ vi.mock('@/services/IssueService', () => ({
 const stubs = {
   Card: true,
   Button: true,
-  IssueDescription: true, // stub child component
+  IssueDescription: true,
 };
 
-// ---- Test suite ----
+// ---- Test Suite ----
 describe('IssueDescriptionCard.vue', () => {
   let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (issueService.modifyIssue as Mock).mockResolvedValue({});
+    (issueService.modifyIssue as vi.Mock).mockResolvedValue({});
+
     wrapper = mount(IssueDescriptionCard, {
       props: {
         projectId: 'proj-1',
@@ -32,13 +33,14 @@ describe('IssueDescriptionCard.vue', () => {
     });
   });
 
-  it('renders component', () => {
+  test('renders component', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('calls modifyIssue when saving', async () => {
+  test('calls modifyIssue when saving', async () => {
     wrapper.vm.description = 'Updated description';
     await wrapper.vm.handleSave();
+
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
       'proj-1',
       'issue-1',
@@ -46,9 +48,10 @@ describe('IssueDescriptionCard.vue', () => {
     );
   });
 
-  it('emits saved event after save', async () => {
+  test('emits saved event after save', async () => {
     wrapper.vm.description = 'Updated description';
     await wrapper.vm.handleSave();
-    expect(wrapper.emitted('saved')).toBeTruthy();
+
+    expect(wrapper.emitted()).toHaveProperty('saved');
   });
 });
