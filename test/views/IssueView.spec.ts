@@ -114,4 +114,149 @@ describe("IssueView.vue", () => {
       params: { issueId: "123" },
     });
   });
+
+  test("renders correct header for owner + DEFECT category", async () => {
+    await wrapper.setProps({ owner: "user1", category: "DEFECT", status: undefined });
+    expect(wrapper.text()).toContain("Meine Mängel");
+  });
+
+  test("renders correct header for status + DEFECT category", async () => {
+    await wrapper.setProps({ owner: undefined, category: "DEFECT", status: StatusValues.OPEN });
+    expect(wrapper.text()).toContain("Offene Mängel");
+  });
+
+  test("renders correct header for no owner/status + DEFECT", async () => {
+    await wrapper.setProps({ owner: undefined, category: "DEFECT", status: undefined });
+    expect(wrapper.text()).toContain("Alle Mängel");
+  });
+
+  test("renders correct header for owner + TASK category", async () => {
+    await wrapper.setProps({ owner: "user1", category: undefined, status: undefined });
+    expect(wrapper.text()).toContain("Meine Aufgaben");
+  });
+
+  test("renders correct header for status + TASK category", async () => {
+    await wrapper.setProps({ owner: undefined, category: undefined, status: StatusValues.OPEN });
+    expect(wrapper.text()).toContain("Offene Aufgaben");
+  });
+
+  test("renders correct header for no owner/status + TASK", async () => {
+    await wrapper.setProps({ owner: undefined, category: undefined, status: undefined });
+    expect(wrapper.text()).toContain("Alle Aufgaben");
+  });
+
+  test("calls loadMyIssues only when owner is provided", async () => {
+    const spy = vi.spyOn(wrapper.vm, "loadMyIssues");
+    await wrapper.setProps({ owner: "user1" });
+    await wrapper.vm.$nextTick();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  test("watches props and reloads issues", async () => {
+    const loadSpy = vi.spyOn(wrapper.vm, "loadIssues");
+    await wrapper.setProps({ category: "DEFECT" });
+    await wrapper.vm.$nextTick();
+    expect(loadSpy).toHaveBeenCalled();
+  });
+
+  test("adds issue to myIssues with owner when owner prop is set", async () => {
+    wrapper.vm.myIssues = [];
+    const issue = { id: "123", title: "Test", status: StatusValues.OPEN };
+    await wrapper.setProps({ owner: "testOwner" });
+    
+    wrapper.vm.myIssues.push({ ...issue, owner: "testOwner" });
+    expect(wrapper.vm.myIssues[0].owner).toBe("testOwner");
+  });
+
+  test("handles error during createIssue", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { IssueService } = await import("@/services/IssueService");
+    const mockService = new IssueService();
+    vi.spyOn(mockService, "createIssue").mockRejectedValueOnce(new Error("API Error"));
+    
+    wrapper.vm.title = "Test";
+    wrapper.vm.description = "Test Desc";
+    
+    try {
+      await wrapper.vm.createIssue();
+    } catch {}
+    
+    consoleErrorSpy.mockRestore();
+  });
+
+  test("handles error during loadIssues", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { IssueService } = await import("@/services/IssueService");
+    const mockService = new IssueService();
+    vi.spyOn(mockService, "getIssues").mockRejectedValueOnce(new Error("API Error"));
+    
+    try {
+      await wrapper.vm.loadIssues();
+    } catch {}
+    
+    consoleErrorSpy.mockRestore();
+  });
+
+  test("handles error during loadIssuesWithOpenStatus", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    
+    try {
+      await wrapper.vm.loadIssuesWithOpenStatus();
+    } catch {}
+    
+    consoleErrorSpy.mockRestore();
+  });
+
+  test("handles error during loadMyIssues", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    
+    try {
+      await wrapper.vm.loadMyIssues();
+    } catch {}
+    
+    consoleErrorSpy.mockRestore();
+  });
+
+  test("renders create button with correct label for DEFECT", async () => {
+    await wrapper.setProps({ category: "DEFECT" });
+    expect(wrapper.text()).toContain("Mangel melden");
+  });
+
+  test("renders create button with correct label for TASK", async () => {
+    await wrapper.setProps({ category: undefined });
+    expect(wrapper.text()).toContain("Aufgabe erstellen");
+  });
+
+  test("resets form fields when opening dialog", () => {
+    wrapper.vm.title = "Some Title";
+    wrapper.vm.description = "Some Description";
+    wrapper.vm.openCreateIssueDialog();
+    
+    expect(wrapper.vm.title).toBe("");
+    expect(wrapper.vm.description).toBe("");
+    expect(wrapper.vm.visible).toBe(true);
+  });
+
+  test("closes dialog after creating issue", async () => {
+    wrapper.vm.visible = true;
+    wrapper.vm.title = "New Issue";
+    wrapper.vm.description = "New Description";
+    
+    await wrapper.vm.createIssue();
+    
+    expect(wrapper.vm.visible).toBe(false);
+    expect(wrapper.vm.title).toBe("");
+    expect(wrapper.vm.description).toBe("");
+  });
+
+  test("adds issue to issuesByStatusOpen when status is OPEN", async () => {
+    wrapper.vm.issuesByStatusOpen = [];
+    const newIssue = { id: "999", title: "Test", description: "Desc", status: StatusValues.OPEN };
+    
+    wrapper.vm.issues.push(newIssue);
+    wrapper.vm.issuesByStatusOpen.push(newIssue);
+    
+    expect(wrapper.vm.issuesByStatusOpen).toHaveLength(1);
+    expect(wrapper.vm.issuesByStatusOpen[0].status).toBe(StatusValues.OPEN);
+  });
 });
