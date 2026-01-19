@@ -90,6 +90,19 @@ describe("IssueView.vue", () => {
     expect(wrapper.vm.myIssues.length).toBe(1);
   });
 
+  test("opens create issue dialog", () => {
+    wrapper.vm.openCreateIssueDialog();
+    expect(wrapper.vm.visible).toBe(true);
+    expect(wrapper.vm.title).toBe("");
+    expect(wrapper.vm.description).toBe("");
+  });
+  
+  test("renders correct IssueTable based on props", async () => {
+    await wrapper.setProps({ owner: undefined, status: StatusValues.OPEN });
+    expect(wrapper.findComponent({ name: "IssueTable" }).exists()).toBe(true);
+  });
+  
+
   test("navigates to issue details on row select", () => {
     const issue = {
  id: "123", title: "Sample", status: StatusValues.OPEN 
