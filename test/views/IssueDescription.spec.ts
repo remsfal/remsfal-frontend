@@ -33,13 +33,15 @@ describe('IssueDescription.vue', () => {
       expect(wrapper.find('textarea').exists()).toBe(true);
     });
 
-    it('takes snapshot', () => {
+    it('renders description correctly', () => {
       const wrapper = mount(IssueDescription, {
         props: { description: 'Test description' },
       });
-
-      expect(wrapper.html()).toMatchSnapshot();
+    
+      const textarea = wrapper.find('textarea');
+      expect(textarea.element.value).toBe('Test description');
     });
+    
 
     it('renders with empty description', () => {
       const wrapper = mount(IssueDescription, {
