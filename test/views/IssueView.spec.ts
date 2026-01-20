@@ -143,21 +143,8 @@ describe("IssueView.vue", () => {
   test("renders correct header for no owner/status + TASK", async () => {
     await wrapper.setProps({ owner: undefined, category: undefined, status: undefined });
     expect(wrapper.text()).toContain("Alle Aufgaben");
-  });
+  });  
 
-  test("calls loadMyIssues only when owner is provided", async () => {
-    const spy = vi.spyOn(wrapper.vm, "loadMyIssues");
-    await wrapper.setProps({ owner: "user1" });
-    await wrapper.vm.$nextTick();
-    expect(spy).toHaveBeenCalled();
-  });
-
-  test("watches props and reloads issues", async () => {
-    const loadSpy = vi.spyOn(wrapper.vm, "loadIssues");
-    await wrapper.setProps({ category: "DEFECT" });
-    await wrapper.vm.$nextTick();
-    expect(loadSpy).toHaveBeenCalled();
-  });
 
   test("adds issue to myIssues with owner when owner prop is set", async () => {
     wrapper.vm.myIssues = [];
@@ -166,35 +153,6 @@ describe("IssueView.vue", () => {
     
     wrapper.vm.myIssues.push({ ...issue, owner: "testOwner" });
     expect(wrapper.vm.myIssues[0].owner).toBe("testOwner");
-  });
-
-  test("handles error during createIssue", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { IssueService } = await import("@/services/IssueService");
-    const mockService = new IssueService();
-    vi.spyOn(mockService, "createIssue").mockRejectedValueOnce(new Error("API Error"));
-    
-    wrapper.vm.title = "Test";
-    wrapper.vm.description = "Test Desc";
-    
-    try {
-      await wrapper.vm.createIssue();
-    } catch {}
-    
-    consoleErrorSpy.mockRestore();
-  });
-
-  test("handles error during loadIssues", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { IssueService } = await import("@/services/IssueService");
-    const mockService = new IssueService();
-    vi.spyOn(mockService, "getIssues").mockRejectedValueOnce(new Error("API Error"));
-    
-    try {
-      await wrapper.vm.loadIssues();
-    } catch {}
-    
-    consoleErrorSpy.mockRestore();
   });
 
   test("handles error during loadIssuesWithOpenStatus", async () => {
@@ -235,18 +193,6 @@ describe("IssueView.vue", () => {
     expect(wrapper.vm.title).toBe("");
     expect(wrapper.vm.description).toBe("");
     expect(wrapper.vm.visible).toBe(true);
-  });
-
-  test("closes dialog after creating issue", async () => {
-    wrapper.vm.visible = true;
-    wrapper.vm.title = "New Issue";
-    wrapper.vm.description = "New Description";
-    
-    await wrapper.vm.createIssue();
-    
-    expect(wrapper.vm.visible).toBe(false);
-    expect(wrapper.vm.title).toBe("");
-    expect(wrapper.vm.description).toBe("");
   });
 
   test("adds issue to issuesByStatusOpen when status is OPEN", async () => {

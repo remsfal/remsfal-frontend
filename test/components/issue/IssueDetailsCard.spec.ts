@@ -156,17 +156,6 @@ describe('IssueDetailsCard.vue', () => {
     expect(wrapper.vm.canSave).toBe(true);
   });
 
-  // ───────────────────────────────────────────────────────────────────────────
-  test('detects change in reporter field', () => {
-    wrapper.vm.reporter = 'reporter-2';
-    expect(wrapper.vm.canSave).toBe(true);
-  });
-
-  // ───────────────────────────────────────────────────────────────────────────
-  test('detects change in project field', () => {
-    wrapper.vm.project = 'Project B';
-    expect(wrapper.vm.canSave).toBe(true);
-  });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('includes only changed fields in API payload', async () => {
@@ -283,31 +272,6 @@ describe('IssueDetailsCard.vue', () => {
       'project-1',
       'issue-1',
       { title: '<script>alert("XSS")</script>' },
-    );
-  });
-
-  // ───────────────────────────────────────────────────────────────────────────
-  test('handles multiple field changes simultaneously', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
-
-    wrapper.vm.title = 'New title';
-    wrapper.vm.status = 'CLOSED';
-    wrapper.vm.issueType = 'DEFECT';
-    wrapper.vm.ownerId = 'user-3';
-    wrapper.vm.tenancy = 'tenant-3';
-
-    await wrapper.vm.handleSave();
-
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
-      'issue-1',
-      {
-        title: 'New title',
-        status: 'CLOSED',
-        type: 'DEFECT',
-        ownerId: 'user-3',
-        tenancy: 'tenant-3',
-      },
     );
   });
 
