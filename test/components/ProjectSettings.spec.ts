@@ -3,32 +3,35 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
 import { issueService, type Issue } from '@/services/IssueService';
 
-// ---- Mock issueService ----
-vi.mock('@/services/IssueService', () => ({issueService: { modifyIssue: vi.fn() },}));
+vi.mock('@/services/IssueService', () => ({
+  issueService: { modifyIssue: vi.fn() },
+}));
 
-// ---- Stub PrimeVue components ----
 const stubs = {
   Card: true,
   Button: true,
   IssueDescription: true,
 };
 
-// ---- Test Suite ----
+const defaultProps = {
+  projectId: 'proj-1',
+  issueId: 'issue-1',
+  initialDescription: 'Initial description',
+};
+
+const mountComponent = () =>
+  mount(IssueDescriptionCard, {
+    props: defaultProps,
+    global: { stubs },
+  });
+
 describe('IssueDescriptionCard.vue', () => {
   let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     (issueService.modifyIssue as any).mockResolvedValue({});
-
-    wrapper = mount(IssueDescriptionCard, {
-      props: {
-        projectId: 'proj-1',
-        issueId: 'issue-1',
-        initialDescription: 'Initial description',
-      },
-      global: { stubs },
-    });
+    wrapper = mountComponent();
   });
 
   test('renders component', () => {
