@@ -3,9 +3,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
 import { issueService, type Issue } from '@/services/IssueService';
 
-vi.mock('@/services/IssueService', () => ({
-  issueService: { modifyIssue: vi.fn() },
-}));
+vi.mock('@/services/IssueService', () => ({issueService: { modifyIssue: vi.fn() },}));
 
 const stubs = {
   Card: true,
