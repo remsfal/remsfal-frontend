@@ -744,6 +744,34 @@
           }
         }
       },
+      "ProjectOrganizationJson" : {
+        "description" : "Organization assignment to a project",
+        "type" : "object",
+        "properties" : {
+          "organizationId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "organizationName" : {
+            "type" : "string"
+          },
+          "role" : {
+            "$ref" : "#/components/schemas/MemberRole"
+          }
+        },
+        "required" : [ "role" ]
+      },
+      "ProjectOrganizationListJson" : {
+        "description" : "List of organizations assigned to a project",
+        "type" : "object",
+        "properties" : {
+          "organizations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProjectOrganizationJson"
+            }
+          }
+        }
+      },
       "ProjectTenancyListJson" : {
         "description" : "A list of tenancies for a project",
         "type" : "object",

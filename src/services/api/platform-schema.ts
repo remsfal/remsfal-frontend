@@ -413,7 +413,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description organization was created successfully */
+                /** @description Organization was created successfully */
                 201: {
                     headers: {
                         /** @description URL of the new organization */
@@ -606,7 +606,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description id of the organization */
+                    /** @description Id of the organization */
                     organizationId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -703,7 +703,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** add an employee to an organization */
+        /** Add an employee to an organization */
         post: {
             parameters: {
                 query?: never;
@@ -859,7 +859,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description employeeId */
+                    /** @description Id of the employee */
                     employeeId: components["schemas"]["UUID"];
                     /** @description Id of the organization */
                     organizationId: components["schemas"]["UUID"];
@@ -2623,6 +2623,217 @@ export interface paths {
                     content?: never;
                 };
                 /** @description The project or the member does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of all organizations assigned to the project */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of all assigned organizations was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectOrganizationListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Assign an organization to the project */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOrganizationJson"];
+                };
+            };
+            responses: {
+                /** @description The organization was successfully assigned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectOrganizationJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/organizations/{organizationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove an organization from the project */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The organization was removed successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or organization assignment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update role of an organization in the project */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOrganizationJson"];
+                };
+            };
+            responses: {
+                /** @description The organization role was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectOrganizationJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or organization assignment does not exist */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -5250,6 +5461,16 @@ export interface components {
         /** @description A list of project members */
         ProjectMemberListJson: {
             members: components["schemas"]["ProjectMemberJson"][];
+        };
+        /** @description Organization assignment to a project */
+        ProjectOrganizationJson: {
+            organizationId?: components["schemas"]["UUID"];
+            organizationName?: string;
+            role: components["schemas"]["MemberRole"];
+        };
+        /** @description List of organizations assigned to a project */
+        ProjectOrganizationListJson: {
+            organizations?: components["schemas"]["ProjectOrganizationJson"][];
         };
         /** @description A list of tenancies for a project */
         ProjectTenancyListJson: {
