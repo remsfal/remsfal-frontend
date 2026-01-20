@@ -603,6 +603,26 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProjectMemberJson"
+    ProjectOrganizationJson:
+      description: Organization assignment to a project
+      type: object
+      properties:
+        organizationId:
+          $ref: "#/components/schemas/UUID"
+        organizationName:
+          type: string
+        role:
+          $ref: "#/components/schemas/MemberRole"
+      required:
+      - role
+    ProjectOrganizationListJson:
+      description: List of organizations assigned to a project
+      type: object
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectOrganizationJson"
     ProjectTenancyListJson:
       description: A list of tenancies for a project
       type: object
@@ -1153,7 +1173,7 @@ paths:
         required: true
       responses:
         "201":
-          description: organization was created successfully
+          description: Organization was created successfully
           headers:
             Location:
               description: URL of the new organization
@@ -1185,7 +1205,7 @@ paths:
     patch:
       summary: Update information of a specific organization.
       parameters:
-      - description: id of the organization
+      - description: Id of the organization
         name: organizationId
         in: path
         required: true
@@ -1281,7 +1301,7 @@ paths:
       security:
       - SecurityScheme: []
     post:
-      summary: add an employee to an organization
+      summary: Add an employee to an organization
       parameters:
       - description: Id of the organization
         required: true
@@ -1314,7 +1334,7 @@ paths:
     patch:
       summary: Update role of an employee.
       parameters:
-      - description: employeeId
+      - description: Id of the employee
         required: true
         name: employeeId
         in: path
@@ -2435,6 +2455,114 @@ paths:
           description: No user authentication provided via session cookie
         "404":
           description: The project or the member does not exist
+  /api/v1/projects/{projectId}/organizations:
+    get:
+      summary: Retrieve information of all organizations assigned to the project
+      parameters:
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: A list of all assigned organizations was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectOrganizationListJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: The project does not exist
+    post:
+      summary: Assign an organization to the project
+      parameters:
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectOrganizationJson"
+        required: true
+      responses:
+        "200":
+          description: The organization was successfully assigned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectOrganizationJson"
+        "400":
+          description: Invalid request message
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: Insufficient permissions
+  /api/v1/projects/{projectId}/organizations/{organizationId}:
+    patch:
+      summary: Update role of an organization in the project
+      parameters:
+      - description: ID of the organization
+        required: true
+        name: organizationId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectOrganizationJson"
+        required: true
+      responses:
+        "200":
+          description: The organization role was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectOrganizationJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: Insufficient permissions
+        "404":
+          description: The project or organization assignment does not exist
+    delete:
+      summary: Remove an organization from the project
+      parameters:
+      - description: ID of the organization
+        required: true
+        name: organizationId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: The organization was removed successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: Insufficient permissions
+        "404":
+          description: The project or organization assignment does not exist
   /api/v1/projects/{projectId}/properties:
     get:
       summary: Retrieve information for all properties
