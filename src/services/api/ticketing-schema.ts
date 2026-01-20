@@ -30,7 +30,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["InboxMessage"];
+                        "application/json": components["schemas"]["InboxMessage"][];
                     };
                 };
                 /** @description Not Authorized */
@@ -1635,6 +1635,16 @@ export interface components {
         /** @description A list of project members */
         ProjectMemberListJson: {
             members: components["schemas"]["ProjectMemberJson"][];
+        };
+        /** @description Organization assignment to a project */
+        ProjectOrganizationJson: {
+            organizationId?: components["schemas"]["UUID"];
+            organizationName?: string;
+            role: components["schemas"]["MemberRole"];
+        };
+        /** @description List of organizations assigned to a project */
+        ProjectOrganizationListJson: {
+            organizations?: components["schemas"]["ProjectOrganizationJson"][];
         };
         /** @description A list of tenancies for a project */
         ProjectTenancyListJson: {
