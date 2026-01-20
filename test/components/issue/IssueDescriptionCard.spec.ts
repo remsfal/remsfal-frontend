@@ -2,46 +2,46 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
 import { issueService, type Issue } from '@/services/IssueService';
+import {
+  primeVueStubs,
+  defaultIssueDescriptionProps,
+  edgeCaseTestData,
+  expectModifyIssueCalled,
+  expectEventEmitted,
+} from '../../setup/issueTestHelpers';
 
 // ---- Mock issueService ----
 vi.mock('@/services/IssueService', () => ({issueService: { modifyIssue: vi.fn() },}));
-
-// ---- Stub PrimeVue components ----
-const stubs = {
-  Card: true,
-  Button: true,
-  IssueDescription: true,
-};
 
 // ---- Test Suite ----
 describe('IssueDescriptionCard.vue', () => {
   let wrapper: VueWrapper<any>;
 
+  const mountComponent = (props = {}) =>
+    mount(IssueDescriptionCard, {
+      props: { ...defaultIssueDescriptionProps, ...props },
+      global: { stubs: primeVueStubs },
+    });
+
   beforeEach(() => {
     vi.clearAllMocks();
     (issueService.modifyIssue as vi.Mock).mockResolvedValue({});
-
-    wrapper = mount(IssueDescriptionCard, {
-      props: {
-        projectId: 'proj-1',
-        issueId: 'issue-1',
-        initialDescription: 'Initial description',
-      },
-      global: { stubs },
-    });
+    wrapper = mountComponent();
   });
 
   test('renders component', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
+
   test('calls modifyIssue when saving', async () => {
     wrapper.vm.description = 'Updated description';
     await wrapper.vm.handleSave();
 
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'proj-1',
-      'issue-1',
+    expectModifyIssueCalled(
+      issueService.modifyIssue,
+      defaultIssueDescriptionProps.projectId,
+      defaultIssueDescriptionProps.issueId,
       { description: 'Updated description' } as Partial<Issue>
     );
   });
@@ -50,7 +50,7 @@ describe('IssueDescriptionCard.vue', () => {
     wrapper.vm.description = 'Updated description';
     await wrapper.vm.handleSave();
 
-    expect(wrapper.emitted()).toHaveProperty('saved');
+    expectEventEmitted(wrapper, 'saved');
   });
 
   test('does not call modifyIssue if canSave is false', async () => {
@@ -113,39 +113,38 @@ describe('IssueDescriptionCard.vue', () => {
     expect(wrapper.vm.loadingSave).toBe(false);
   });
 
+
   test('does not save when description is empty but different', async () => {
-    wrapper.vm.description = '';
+    wrapper.vm.description = edgeCaseTestData.emptyString;
     await wrapper.vm.handleSave();
     
     // Should still save empty string if it's different
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'proj-1',
-      'issue-1',
-      { description: '' }
+      defaultIssueDescriptionProps.projectId,
+      defaultIssueDescriptionProps.issueId,
+      { description: edgeCaseTestData.emptyString }
     );
   });
 
   test('handles very long description text', async () => {
-    const longDescription = 'A'.repeat(10000);
-    wrapper.vm.description = longDescription;
+    wrapper.vm.description = edgeCaseTestData.longText;
     await wrapper.vm.handleSave();
     
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'proj-1',
-      'issue-1',
-      { description: longDescription }
+      defaultIssueDescriptionProps.projectId,
+      defaultIssueDescriptionProps.issueId,
+      { description: edgeCaseTestData.longText }
     );
   });
 
   test('handles special characters in description', async () => {
-    const specialChars = '<script>alert("XSS")</script>\n\r\t\u0000';
-    wrapper.vm.description = specialChars;
+    wrapper.vm.description = edgeCaseTestData.specialChars;
     await wrapper.vm.handleSave();
     
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'proj-1',
-      'issue-1',
-      { description: specialChars }
+      defaultIssueDescriptionProps.projectId,
+      defaultIssueDescriptionProps.issueId,
+      { description: edgeCaseTestData.specialChars }
     );
   });
 
@@ -182,26 +181,24 @@ describe('IssueDescriptionCard.vue', () => {
   });
 
   test('handles markdown content in description', async () => {
-    const markdown = '# Header\n\n## Subheader\n\n- Item 1\n- Item 2\n\n```js\nconsole.log("test");\n```';
-    wrapper.vm.description = markdown;
+    wrapper.vm.description = edgeCaseTestData.markdown;
     await wrapper.vm.handleSave();
     
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'proj-1',
-      'issue-1',
-      { description: markdown }
+      defaultIssueDescriptionProps.projectId,
+      defaultIssueDescriptionProps.issueId,
+      { description: edgeCaseTestData.markdown }
     );
   });
 
   test('handles unicode and emoji in description', async () => {
-    const unicode = 'Test with emojis 😀🎉 and unicode: ñ, ü, 中文, 日本語';
-    wrapper.vm.description = unicode;
+    wrapper.vm.description = edgeCaseTestData.unicode;
     await wrapper.vm.handleSave();
     
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'proj-1',
-      'issue-1',
-      { description: unicode }
+      defaultIssueDescriptionProps.projectId,
+      defaultIssueDescriptionProps.issueId,
+      { description: edgeCaseTestData.unicode }
     );
   });
   

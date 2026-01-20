@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import router from '@/router/index';
+import { generateIdTestCases } from '../setup/issueTestHelpers';
 
 describe('Router - Issue Details Route', () => {
+  const testIds = generateIdTestCases();
+  
   beforeEach(async () => {
     await router.push('/');
     await router.isReady();
@@ -45,12 +48,7 @@ describe('Router - Issue Details Route', () => {
     });
 
     it('should handle different projectId formats', () => {
-      const testCases = [
-        { projectId: 'simple-id', issueId: 'issue-1' },
-        { projectId: '123-numeric', issueId: 'issue-2' },
-        { projectId: 'uuid-123e4567-e89b-12d3', issueId: 'issue-3' },
-      ];
-      testCases.forEach(({ projectId, issueId }) => {
+      testIds.forEach(({ projectId, issueId }) => {
         const route = router.resolve({ name: 'IssueDetails', params: { projectId, issueId } });
         expect(route.params.projectId).toBe(projectId);
         expect(route.params.issueId).toBe(issueId);
@@ -145,10 +143,9 @@ describe('Router - Issue Details Route', () => {
 
   describe('Edge Cases', () => {
     it('should handle special characters in params', async () => {
-      const specialChars = [
-        { projectId: 'proj-with-dash', issueId: 'issue-with-dash' },
-        { projectId: 'proj_underscore', issueId: 'issue_underscore' },
-      ];
+      const specialChars = testIds.filter(tc => 
+        tc.projectId.includes('-') || tc.projectId.includes('_')
+      );
       for (const { projectId, issueId } of specialChars) {
         const route = router.resolve({ name: 'IssueDetails', params: { projectId, issueId } });
         expect(route.params.projectId).toBe(projectId);
