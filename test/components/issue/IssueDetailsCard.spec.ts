@@ -299,9 +299,7 @@ describe('IssueDetailsCard.vue', () => {
     await wrapper.vm.handleSave();
 
     expect(addMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        severity: 'success',
-      }),
+      expect.objectContaining({severity: 'success',}),
     );
   });
 });

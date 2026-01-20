@@ -116,39 +116,53 @@ describe("IssueView.vue", () => {
   });
 
   test("renders correct header for owner + DEFECT category", async () => {
-    await wrapper.setProps({ owner: "user1", category: "DEFECT", status: undefined });
+    await wrapper.setProps({
+ owner: "user1", category: "DEFECT", status: undefined 
+});
     expect(wrapper.text()).toContain("Meine Mängel");
   });
 
   test("renders correct header for status + DEFECT category", async () => {
-    await wrapper.setProps({ owner: undefined, category: "DEFECT", status: StatusValues.OPEN });
+    await wrapper.setProps({
+ owner: undefined, category: "DEFECT", status: StatusValues.OPEN 
+});
     expect(wrapper.text()).toContain("Offene Mängel");
   });
 
   test("renders correct header for no owner/status + DEFECT", async () => {
-    await wrapper.setProps({ owner: undefined, category: "DEFECT", status: undefined });
+    await wrapper.setProps({
+ owner: undefined, category: "DEFECT", status: undefined 
+});
     expect(wrapper.text()).toContain("Alle Mängel");
   });
 
   test("renders correct header for owner + TASK category", async () => {
-    await wrapper.setProps({ owner: "user1", category: undefined, status: undefined });
+    await wrapper.setProps({
+ owner: "user1", category: undefined, status: undefined 
+});
     expect(wrapper.text()).toContain("Meine Aufgaben");
   });
 
   test("renders correct header for status + TASK category", async () => {
-    await wrapper.setProps({ owner: undefined, category: undefined, status: StatusValues.OPEN });
+    await wrapper.setProps({
+ owner: undefined, category: undefined, status: StatusValues.OPEN 
+});
     expect(wrapper.text()).toContain("Offene Aufgaben");
   });
 
   test("renders correct header for no owner/status + TASK", async () => {
-    await wrapper.setProps({ owner: undefined, category: undefined, status: undefined });
+    await wrapper.setProps({
+ owner: undefined, category: undefined, status: undefined 
+});
     expect(wrapper.text()).toContain("Alle Aufgaben");
   });  
 
 
   test("adds issue to myIssues with owner when owner prop is set", async () => {
     wrapper.vm.myIssues = [];
-    const issue = { id: "123", title: "Test", status: StatusValues.OPEN };
+    const issue = {
+ id: "123", title: "Test", status: StatusValues.OPEN 
+};
     await wrapper.setProps({ owner: "testOwner" });
     
     wrapper.vm.myIssues.push({ ...issue, owner: "testOwner" });
@@ -157,23 +171,23 @@ describe("IssueView.vue", () => {
 
   test("handles error during loadIssuesWithOpenStatus", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
-    try {
-      await wrapper.vm.loadIssuesWithOpenStatus();
-    } catch {}
-    
+  
+    await expect(wrapper.vm.loadIssuesWithOpenStatus()).resolves.not.toThrow();
+  
+    expect(consoleErrorSpy).toHaveBeenCalled();
+  
     consoleErrorSpy.mockRestore();
   });
-
+  
   test("handles error during loadMyIssues", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
-    try {
-      await wrapper.vm.loadMyIssues();
-    } catch {}
-    
+  
+    await expect(wrapper.vm.loadMyIssues()).resolves.not.toThrow();
+  
+    expect(consoleErrorSpy).toHaveBeenCalled();
+  
     consoleErrorSpy.mockRestore();
-  });
+  });  
 
   test("renders create button with correct label for DEFECT", async () => {
     await wrapper.setProps({ category: "DEFECT" });
@@ -197,7 +211,9 @@ describe("IssueView.vue", () => {
 
   test("adds issue to issuesByStatusOpen when status is OPEN", async () => {
     wrapper.vm.issuesByStatusOpen = [];
-    const newIssue = { id: "999", title: "Test", description: "Desc", status: StatusValues.OPEN };
+    const newIssue = {
+ id: "999", title: "Test", description: "Desc", status: StatusValues.OPEN 
+};
     
     wrapper.vm.issues.push(newIssue);
     wrapper.vm.issuesByStatusOpen.push(newIssue);
