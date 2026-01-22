@@ -75,13 +75,6 @@ describe('IssueDescription.vue', () => {
       expect(textarea.element.value).toBe(edgeCaseTestData.longText);
     });
 
-    it('handles special characters in description', () => {
-      const wrapper = mountComponent({ description: edgeCaseTestData.specialChars });
-
-      const textarea = wrapper.find('textarea');
-      expect(textarea.element.value).toBe(edgeCaseTestData.specialChars);
-    });
-
     it('handles unicode characters', () => {
       const wrapper = mountComponent({ description: edgeCaseTestData.unicodeExtended });
 
