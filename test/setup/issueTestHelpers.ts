@@ -49,9 +49,7 @@ export const defaultIssueDescriptionProps = {
 /**
  * Default props for IssueDescription
  */
-export const defaultIssueDescriptionViewProps = {
-  description: 'Initial description',
-};
+export const defaultIssueDescriptionViewProps = {description: 'Initial description',};
 
 /**
  * Common PrimeVue component stubs

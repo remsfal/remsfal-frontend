@@ -2,13 +2,11 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
 import { issueService, type Issue } from '@/services/IssueService';
-import {
-  primeVueStubs,
+import {primeVueStubs,
   defaultIssueDescriptionProps,
   edgeCaseTestData,
   expectModifyIssueCalled,
-  expectEventEmitted,
-} from '../../setup/issueTestHelpers';
+  expectEventEmitted,} from '../../setup/issueTestHelpers';
 
 // ---- Mock issueService ----
 vi.mock('@/services/IssueService', () => ({issueService: { modifyIssue: vi.fn() },}));

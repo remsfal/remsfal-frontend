@@ -5,16 +5,12 @@ setupResizeObserverMock();
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import IssueDescription from '@/views/IssueDescription.vue';
-import {
-  edgeCaseTestData,
-  expectEventEmitted,
-} from '../setup/issueTestHelpers';
+import {edgeCaseTestData,
+  expectEventEmitted,} from '../setup/issueTestHelpers';
 
 describe('IssueDescription.vue', () => {
   const mountComponent = (props = {}) =>
-    mount(IssueDescription, {
-      props: { description: '', ...props },
-    });
+    mount(IssueDescription, {props: { description: '', ...props },});
 
   beforeEach(() => {
     // Reset any global state if needed
