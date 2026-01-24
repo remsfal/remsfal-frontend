@@ -456,6 +456,16 @@ export interface components {
         ProjectMemberListJson: {
             members: components["schemas"]["ProjectMemberJson"][];
         };
+        /** @description Organization assignment to a project */
+        ProjectOrganizationJson: {
+            organizationId?: components["schemas"]["UUID"];
+            organizationName?: string;
+            role: components["schemas"]["MemberRole"];
+        };
+        /** @description List of organizations assigned to a project */
+        ProjectOrganizationListJson: {
+            organizations?: components["schemas"]["ProjectOrganizationJson"][];
+        };
         /** @description A list of tenancies for a project */
         ProjectTenancyListJson: {
             tenancies?: components["schemas"]["TenancyInfoJson"][];
