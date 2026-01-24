@@ -44,9 +44,9 @@
   },
   "dependencies": {
     "@capacitor/android": "^8.0.1",
-    "@capacitor/camera": "^7.0.2",
-    "@capacitor/core": "^7.4.4",
-    "@capacitor/ios": "^7.4.4",
+    "@capacitor/camera": "^8.0.0",
+    "@capacitor/core": "^8.0.1",
+    "@capacitor/ios": "^8.0.1",
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-regular-svg-icons": "^7.1.0",
@@ -68,7 +68,7 @@
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.4.4",
+    "@capacitor/cli": "^8.0.1",
     "@cypress/code-coverage": "^3.14.7",
     "@intlify/eslint-plugin-vue-i18n": "^4.1.0",
     "@pinia/testing": "^1.0.2",
