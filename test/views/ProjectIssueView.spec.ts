@@ -1,6 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
-import { mount, VueWrapper } from "@vue/test-utils";
-import flushPromises from "flush-promises";
+import { mount, flushPromises, VueWrapper } from "@vue/test-utils";
 import ProjectIssueView from "@/views/ProjectIssueView.vue";
 import { issueService } from "@/services/IssueService";
 
