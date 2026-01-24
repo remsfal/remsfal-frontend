@@ -1,26 +1,25 @@
-/* global global */
 import { vi } from 'vitest';
 
 // Store event listeners for tests
-global.eventListeners = {};
+globalThis.eventListeners = {};
 
 // setupMocks.js
-global.importScripts = vi.fn().mockImplementation((...urls) => {
+globalThis.importScripts = vi.fn().mockImplementation((...urls) => {
   console.log(`Mock importScripts called for: ${urls.join(', ')}`);
 });
 
-global.self = {
+globalThis.self = {
   addEventListener: vi.fn().mockImplementation((event, handler) => {
-    if (!global.eventListeners[event]) {
-      global.eventListeners[event] = [];
+    if (!globalThis.eventListeners[event]) {
+      globalThis.eventListeners[event] = [];
     }
-    global.eventListeners[event].push(handler);
+    globalThis.eventListeners[event].push(handler);
   }),
   skipWaiting: vi.fn(),
   clients: { claim: vi.fn() },
 };
 
-global.caches = {
+globalThis.caches = {
   open: vi.fn().mockResolvedValue({
     addAll: vi.fn().mockResolvedValue(true),
     put: vi.fn().mockResolvedValue(),
