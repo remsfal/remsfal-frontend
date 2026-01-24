@@ -1,23 +1,30 @@
-/* global global */
-import sinon from 'sinon';
+import { vi } from 'vitest';
+
+// Store event listeners for tests
+globalThis.eventListeners = {};
 
 // setupMocks.js
-global.importScripts = sinon.stub().callsFake((...urls) => {
+globalThis.importScripts = vi.fn().mockImplementation((...urls) => {
   console.log(`Mock importScripts called for: ${urls.join(', ')}`);
 });
 
-global.self = {
-  addEventListener: sinon.stub(),
-  skipWaiting: sinon.stub(),
-  clients: { claim: sinon.stub() },
+globalThis.self = {
+  addEventListener: vi.fn().mockImplementation((event, handler) => {
+    if (!globalThis.eventListeners[event]) {
+      globalThis.eventListeners[event] = [];
+    }
+    globalThis.eventListeners[event].push(handler);
+  }),
+  skipWaiting: vi.fn(),
+  clients: { claim: vi.fn() },
 };
 
-global.caches = {
-  open: sinon.stub().resolves({
-    addAll: sinon.stub().resolves(true),
-    put: sinon.stub().resolves(),
-    match: sinon.stub().resolves(null),
+globalThis.caches = {
+  open: vi.fn().mockResolvedValue({
+    addAll: vi.fn().mockResolvedValue(true),
+    put: vi.fn().mockResolvedValue(),
+    match: vi.fn().mockResolvedValue(null),
   }),
-  keys: sinon.stub().resolves([]),
-  delete: sinon.stub().resolves(true),
+  keys: vi.fn().mockResolvedValue([]),
+  delete: vi.fn().mockResolvedValue(true),
 };
