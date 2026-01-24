@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import flushPromises from 'flush-promises';
+import { mount, flushPromises } from '@vue/test-utils';
 import { tenantContractService, type TenantContractSummary } from '@/services/TenantContractService.ts';
 
 vi.mock('@/services/TenantContractService.ts', async () => {

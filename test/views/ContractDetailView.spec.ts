@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import flushPromises from 'flush-promises';
+import { mount, flushPromises } from '@vue/test-utils';
 import ContractDetailView from '../../src/views/ContractDetailView.vue';
 import { tenantContractService, type TenantContractDetail } from '../../src/services/TenantContractService';
 
