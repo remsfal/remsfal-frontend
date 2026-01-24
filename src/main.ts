@@ -1,7 +1,5 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
 import App from '@/App.vue';
 import router from '@/router';
 
@@ -140,9 +138,6 @@ app.use(ConfirmationService);
 
 // Install Internationalization
 app.use(i18n);
-
-// Install Axios for RESTful Webservice calls
-app.use(VueAxios, axios);
 
 // Add primevue directives
 app.directive('badge', BadgeDirective);
