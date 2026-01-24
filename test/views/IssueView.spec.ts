@@ -7,22 +7,11 @@ vi.mock("vue-router", () => ({useRouter: () => ({ push: pushMock }),}));
 
 // ---- MOCK IssueService MODULE ----
 vi.mock("@/services/IssueService", () => {
-  // define everything inside the factory
-  const mockStatusValues = {
-    OPEN: "OPEN",
-    PENDING: "PENDING",
-    IN_PROGRESS: "IN_PROGRESS",
-    CLOSED: "CLOSED",
-    REJECTED: "REJECTED",
-  };
-
-  const mockIssueTypeTask = "TASK";
-
   const createIssueMock = vi.fn().mockResolvedValue({
     id: "1",
     title: "Test Issue",
     description: "Test Description",
-    status: mockStatusValues.OPEN,
+    status: "OPEN",
   });
 
   const getIssuesMock = vi.fn().mockResolvedValue({ issues: [] });
@@ -32,14 +21,12 @@ vi.mock("@/services/IssueService", () => {
       createIssue: createIssueMock,
       getIssues: getIssuesMock,
     })),
-    StatusValues: mockStatusValues,
-    ISSUE_TYPE_TASK: mockIssueTypeTask,
   };
 });
 
 // ---- IMPORT COMPONENT AFTER MOCKS ----
 import IssueView from "@/views/IssueView.vue";
-import { StatusValues, ISSUE_TYPE_TASK } from "@/services/IssueService";
+import type { Status, Type } from "@/services/IssueService";
 
 // ---- TESTS ----
 describe("IssueView.vue", () => {
@@ -50,7 +37,7 @@ describe("IssueView.vue", () => {
 
     wrapper = mount(IssueView, {
       props: {
- projectId: "proj-1", owner: "user1", category: ISSUE_TYPE_TASK 
+ projectId: "proj-1", owner: "user1", category: 'TASK' as Type 
 },
       global: {
         stubs: {
@@ -74,8 +61,8 @@ describe("IssueView.vue", () => {
       id: "1",
       title: "New Issue",
       description: "Description",
-      status: StatusValues.OPEN,
-      type: ISSUE_TYPE_TASK,
+      status: 'OPEN' as Status,
+      type: 'TASK' as Type,
     };
 
     wrapper.vm.issues.push(newIssue);
@@ -98,14 +85,14 @@ describe("IssueView.vue", () => {
   });
   
   test("renders correct IssueTable based on props", async () => {
-    await wrapper.setProps({ owner: undefined, status: StatusValues.OPEN });
+    await wrapper.setProps({ owner: undefined, status: 'OPEN' as Status });
     expect(wrapper.findComponent({ name: "IssueTable" }).exists()).toBe(true);
   });
   
 
   test("navigates to issue details on row select", () => {
     const issue = {
- id: "123", title: "Sample", status: StatusValues.OPEN 
+ id: "123", title: "Sample", status: 'OPEN' as Status 
 };
     wrapper.vm.onIssueSelect(issue);
 
@@ -124,7 +111,7 @@ describe("IssueView.vue", () => {
 
   test("renders correct header for status + DEFECT category", async () => {
     await wrapper.setProps({
- owner: undefined, category: "DEFECT", status: StatusValues.OPEN 
+ owner: undefined, category: "DEFECT", status: 'OPEN' as Status 
 });
     expect(wrapper.text()).toContain("Offene Mängel");
   });
@@ -145,7 +132,7 @@ describe("IssueView.vue", () => {
 
   test("renders correct header for status + TASK category", async () => {
     await wrapper.setProps({
- owner: undefined, category: undefined, status: StatusValues.OPEN 
+ owner: undefined, category: undefined, status: 'OPEN' as Status 
 });
     expect(wrapper.text()).toContain("Offene Aufgaben");
   });
@@ -161,7 +148,7 @@ describe("IssueView.vue", () => {
   test("adds issue to myIssues with owner when owner prop is set", async () => {
     wrapper.vm.myIssues = [];
     const issue = {
- id: "123", title: "Test", status: StatusValues.OPEN 
+ id: "123", title: "Test", status: 'OPEN' as Status 
 };
     await wrapper.setProps({ owner: "testOwner" });
     
@@ -212,13 +199,13 @@ describe("IssueView.vue", () => {
   test("adds issue to issuesByStatusOpen when status is OPEN", async () => {
     wrapper.vm.issuesByStatusOpen = [];
     const newIssue = {
- id: "999", title: "Test", description: "Desc", status: StatusValues.OPEN 
+ id: "999", title: "Test", description: "Desc", status: 'OPEN' as Status 
 };
     
     wrapper.vm.issues.push(newIssue);
     wrapper.vm.issuesByStatusOpen.push(newIssue);
     
     expect(wrapper.vm.issuesByStatusOpen).toHaveLength(1);
-    expect(wrapper.vm.issuesByStatusOpen[0].status).toBe(StatusValues.OPEN);
+    expect(wrapper.vm.issuesByStatusOpen[0].status).toBe('OPEN' as Status);
   });
 });

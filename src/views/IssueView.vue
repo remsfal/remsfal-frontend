@@ -5,7 +5,7 @@
     import Dialog from 'primevue/dialog';
     import InputText from 'primevue/inputtext';
     import IssueTable from '@/components/IssueTable.vue';
-    import { IssueService, ISSUE_TYPE_TASK,StatusValues,type Status,type IssueItem} from '@/services/IssueService';
+    import { IssueService, type Status, type Type, type IssueItem } from '@/services/IssueService';
     
     const props = defineProps<{ projectId: string;owner?: string;status?: Status;category?: string; }>();
     
@@ -34,7 +34,7 @@
           projectId: props.projectId,
           title: title.value,
           description: description.value,
-          type: props.category === 'DEFECT' ? 'DEFECT' : ISSUE_TYPE_TASK,
+          type: (props.category === 'DEFECT' ? 'DEFECT' : 'TASK') as Type,
           // ownerId intentionally omitted (backend requires null)
         });
     
@@ -47,7 +47,7 @@
         issues.value = [...issues.value, newIssue];
     
         // Open issues table
-        if (newIssue.status === StatusValues.OPEN) {
+        if (newIssue.status === ('OPEN' as Status)) {
           issuesByStatusOpen.value = [...issuesByStatusOpen.value, newIssue];
         }
     
@@ -86,7 +86,7 @@
       try {
         const issueList = await issueService.getIssues(
           props.projectId,
-          StatusValues.OPEN,
+          'OPEN' as Status,
           props.category
         );
         issuesByStatusOpen.value = issueList?.issues ?? [];

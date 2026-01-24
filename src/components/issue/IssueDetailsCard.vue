@@ -5,9 +5,8 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
-import { issueService, type Issue } from '@/services/IssueService';
+import { issueService, type Issue, type Type } from '@/services/IssueService';
 import { useProjectStore } from '@/stores/ProjectStore';
-import { ISSUE_TYPE_TASK, ISSUE_TYPE_APPLICATION, ISSUE_TYPE_DEFECT, ISSUE_TYPE_MAINTENANCE } from '@/services/IssueService';
 
 
 /* =========================
@@ -81,10 +80,10 @@ const statusOptions = [
 ];
 
 const typeOptions = [
-  { label: 'Task', value: ISSUE_TYPE_TASK },
-  { label: 'Application', value: ISSUE_TYPE_APPLICATION },
-  { label: 'Defect', value: ISSUE_TYPE_DEFECT },
-  { label: 'Maintenance', value: ISSUE_TYPE_MAINTENANCE },
+  { label: 'Task', value: 'TASK' as Type },
+  { label: 'Application', value: 'APPLICATION' as Type },
+  { label: 'Defect', value: 'DEFECT' as Type },
+  { label: 'Maintenance', value: 'MAINTENANCE' as Type },
 ];
 
 

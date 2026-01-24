@@ -1,24 +1,10 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
 export type Status = ApiComponents['schemas']['Status'];
+export type Type = ApiComponents['schemas']['Type'];
 export type Issue = ApiComponents['schemas']['IssueJson'];
 export type IssueList = ApiComponents['schemas']['IssueListJson'];
 export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
-
-// Status constants
-export const StatusValues = {
-  PENDING: 'PENDING',
-  OPEN: 'OPEN',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CLOSED: 'CLOSED',
-  REJECTED: 'REJECTED',
-} as const;
-
-// Issue type constants
-export const ISSUE_TYPE_TASK = 'TASK';
-export const ISSUE_TYPE_APPLICATION = 'APPLICATION';
-export const ISSUE_TYPE_DEFECT = 'DEFECT';
-export const ISSUE_TYPE_MAINTENANCE = 'MAINTENANCE';
 
 export class IssueService {
   /**

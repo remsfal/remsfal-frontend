@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { issueService, StatusValues } from '../../src/services/IssueService';
+import { issueService, type Issue, type Status } from '../../src/services/IssueService';
 
 const projectId = 'test-project';
 const issueId = 'test-issue';
@@ -26,13 +26,13 @@ describe('IssueService with MSW (http)', () => {
     const newIssue: Partial<Issue> = {
       title: 'New Issue',
       description: 'New Description',
-      status: StatusValues.OPEN,
+      status: 'OPEN' as Status,
       owner: 'owner1',
     };
     const createdIssue = await issueService.createIssue(projectId, newIssue);
     expect(createdIssue.id).toBeDefined();
     expect(createdIssue.title).toBe('New Issue');
-    expect(createdIssue.status).toBe(StatusValues.OPEN);
+    expect(createdIssue.status).toBe('OPEN' as Status);
   });
 
   test('modifyIssue returns the updated issue', async () => {
