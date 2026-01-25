@@ -441,12 +441,15 @@
             "type" : "string"
           },
           "type" : {
-            "$ref" : "#/components/schemas/Type"
+            "$ref" : "#/components/schemas/IssueType"
           },
           "status" : {
-            "$ref" : "#/components/schemas/Status"
+            "$ref" : "#/components/schemas/IssueStatus"
           },
-          "owner" : {
+          "priority" : {
+            "$ref" : "#/components/schemas/IssuePriority"
+          },
+          "assigneeId" : {
             "$ref" : "#/components/schemas/UUID"
           }
         }
@@ -455,12 +458,6 @@
         "description" : "An issue",
         "type" : "object",
         "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "tenancyId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -472,18 +469,30 @@
             "maxLength" : 255
           },
           "type" : {
-            "$ref" : "#/components/schemas/Type"
+            "$ref" : "#/components/schemas/IssueType"
           },
           "status" : {
-            "$ref" : "#/components/schemas/Status"
+            "$ref" : "#/components/schemas/IssueStatus"
           },
-          "ownerId" : {
+          "priority" : {
+            "$ref" : "#/components/schemas/IssuePriority"
+          },
+          "reporterId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "tenancyId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "assigneeId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "description" : {
             "type" : "string"
           },
-          "blockedBy" : {
+          "parentIssue" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "childrenIssues" : {
             "type" : "array",
             "uniqueItems" : true,
             "items" : {
@@ -510,25 +519,16 @@
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           },
+          "blockedBy" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
           "blocks" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string",
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            }
-          },
-          "parentOf" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string",
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            }
-          },
-          "childOf" : {
             "type" : "array",
             "uniqueItems" : true,
             "items" : {
@@ -570,6 +570,18 @@
             }
           }
         }
+      },
+      "IssuePriority" : {
+        "type" : "string",
+        "enum" : [ "URGENT", "HIGH", "MEDIUM", "LOW", "UNCLASSIFIED" ]
+      },
+      "IssueStatus" : {
+        "type" : "string",
+        "enum" : [ "PENDING", "OPEN", "IN_PROGRESS", "CLOSED", "REJECTED" ]
+      },
+      "IssueType" : {
+        "type" : "string",
+        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "LocalDate" : {
         "type" : "string",
@@ -1022,10 +1034,6 @@
           }
         }
       },
-      "Status" : {
-        "type" : "string",
-        "enum" : [ "PENDING", "OPEN", "IN_PROGRESS", "CLOSED", "REJECTED" ]
-      },
       "StorageJson" : {
         "description" : "A storage inside a building but with living space according to WoFIV",
         "type" : "object",
@@ -1190,10 +1198,6 @@
             }
           }
         }
-      },
-      "Type" : {
-        "type" : "string",
-        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "UUID" : {
         "type" : "string",
