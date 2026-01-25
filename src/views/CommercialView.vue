@@ -154,20 +154,20 @@ defineExpose({ fetchCommercialDetails });
 </script>
 
 <template>
-    <UnitBreadcrumb
-      :projectId="props.projectId" 
-      :unitId="props.unitId" 
-      :currentTitle="title"
-      mode="edit" 
-    />
+  <UnitBreadcrumb
+    :projectId="props.projectId" 
+    :unitId="props.unitId" 
+    :currentTitle="title"
+    mode="edit" 
+  />
 
-    <BaseCard>
-      <template #title>
-        {{ t('commercialUnit.editTitle', { id: unitId }) }}
-      </template>
+  <BaseCard>
+    <template #title>
+      {{ t('commercialUnit.editTitle', { id: unitId }) }}
+    </template>
 
-      <template #content>
-        <form @submit.prevent="save">
+    <template #content>
+      <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
             <label for="title" class="block text-gray-700 mb-1">{{
@@ -244,10 +244,10 @@ defineExpose({ fetchCommercialDetails });
           >
             {{ t('button.cancel') }}
           </button>
-          </div>
-        </form>
-      </template>
-    </BaseCard>
+        </div>
+      </form>
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>

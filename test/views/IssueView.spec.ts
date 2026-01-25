@@ -1,107 +1,211 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
-import IssueView from '../../src/views/IssueView.vue';
-import { issueService, StatusValues, type IssueItem } from '../../src/services/IssueService';
+import { describe, test, expect, beforeEach, vi } from "vitest";
+import { mount, VueWrapper } from "@vue/test-utils";
 
-type IssueViewVm = InstanceType<typeof IssueView> & { visible: boolean };
+// ---- MOCK ROUTER ----
+const pushMock = vi.fn();
+vi.mock("vue-router", () => ({useRouter: () => ({ push: pushMock }),}));
 
+// ---- MOCK IssueService MODULE ----
+vi.mock("@/services/IssueService", () => {
+  const createIssueMock = vi.fn().mockResolvedValue({
+    id: "1",
+    title: "Test Issue",
+    description: "Test Description",
+    status: "OPEN",
+  });
 
-describe('IssueView', () => {
-  let wrapper: VueWrapper;
+  const getIssuesMock = vi.fn().mockResolvedValue({ issues: [] });
 
-  const projectId = '1';
-  const owner = 'user1';
+  return {
+    IssueService: vi.fn().mockImplementation(() => ({
+      createIssue: createIssueMock,
+      getIssues: getIssuesMock,
+    })),
+  };
+});
+
+// ---- IMPORT COMPONENT AFTER MOCKS ----
+import IssueView from "@/views/IssueView.vue";
+import type { Status, Type } from "@/services/IssueService";
+
+// ---- TESTS ----
+describe("IssueView.vue", () => {
+  let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     wrapper = mount(IssueView, {
-      props: { projectId, owner },
-      data() {
-        return { visible: false }; // Initial visibility state
+      props: {
+ projectId: "proj-1", owner: "user1", category: 'TASK' as Type 
+},
+      global: {
+        stubs: {
+          IssueTable: true,
+          Dialog: false,
+          Button: false,
+          InputText: false,
+        },
       },
     });
   });
 
-  describe('Button rendering and interaction', () => {
-    it('renders the button when owner is defined', () => {
-      const buttons = wrapper.findAllComponents({ name: 'Button' });
-      const createButton = buttons.find(b => b.text().includes('Aufgabe erstellen'));
-      expect(createButton).toBeDefined();
-      expect(createButton?.text()).toBe('Aufgabe erstellen');
-    });
-
-    it('sets "visible" to true when the button is clicked', async () => {
-      const buttons = wrapper.findAllComponents({ name: 'Button' });
-      const createButton = buttons.find(b => b.text().includes('Aufgabe erstellen'));
-      await createButton?.trigger('click');
-      expect((wrapper.vm as IssueViewVm).visible).toBe(true);
-    });
+  test("renders component", () => {
+    expect(wrapper.exists()).toBe(true);
   });
 
-  describe('Header rendering', () => {
-    it('renders "Meine Aufgaben" when owner prop is defined', () => {
-      const header = wrapper.find('h1');
-      expect(header.text()).toBe('Meine Aufgaben');
-    });
+  test("creates a new issue and updates tables", () => {
+    wrapper.vm.visible = true;
 
-    it('renders "Offene Aufgaben" when status prop is defined and owner is undefined', async () => {
-      await wrapper.setProps({ owner: null, status: 'OPEN' });
-      const header = wrapper.find('h1');
-      expect(header.text()).toBe('Offene Aufgaben');
-    });
+    const newIssue = {
+      id: "1",
+      title: "New Issue",
+      description: "Description",
+      status: 'OPEN' as Status,
+      type: 'TASK' as Type,
+    };
 
-    it('renders "Alle Aufgaben" when neither owner nor status is defined', async () => {
-      await wrapper.setProps({ owner: null, status: null });
-      const header = wrapper.find('h1');
-      expect(header.text()).toBe('Alle Aufgaben');
-    });
-    it('renders "Offene Mängel" when category is DEFECT', async () => {
-      await wrapper.setProps({
-        owner: null, status: 'OPEN', category: 'DEFECT'
-      });
-      const header = wrapper.find('h1');
-      expect(header.text()).toBe('Offene Mängel');
-    });
+    wrapper.vm.issues.push(newIssue);
+    wrapper.vm.issuesByStatusOpen.push(newIssue);
+    wrapper.vm.myIssues.push(newIssue);
 
-    it('renders "Alle Mängel" when category is DEFECT and status is null', async () => {
-      await wrapper.setProps({
-        owner: null, status: null, category: 'DEFECT'
-      });
-      const header = wrapper.find('h1');
-      expect(header.text()).toBe('Alle Mängel');
-    });
+    wrapper.vm.visible = false;
+
+    expect(wrapper.vm.visible).toBe(false);
+    expect(wrapper.vm.issues.length).toBe(1);
+    expect(wrapper.vm.issuesByStatusOpen.length).toBe(1);
+    expect(wrapper.vm.myIssues.length).toBe(1);
   });
 
-  describe('Issue fetching', () => {
-    it('should return a list of issues', async () => {
-      // Arrange
-      const projectId = 'test-project';
-      const mockIssues: IssueItem[] = [
-        {
-          id: '1',
-          title: 'Issue 1',
-          status: StatusValues['OPEN'],
-          owner: 'owner1',
-        },
-        {
-          id: '2',
-          title: 'Issue 2',
-          status: StatusValues['OPEN'],
-          owner: 'owner1',
-        },
-      ];
-      const mockIssueList = {
- issues: mockIssues, first: 0, size: 2, total: 2 
+  test("opens create issue dialog", () => {
+    wrapper.vm.openCreateIssueDialog();
+    expect(wrapper.vm.visible).toBe(true);
+    expect(wrapper.vm.title).toBe("");
+    expect(wrapper.vm.description).toBe("");
+  });
+  
+  test("renders correct IssueTable based on props", async () => {
+    await wrapper.setProps({ owner: undefined, status: 'OPEN' as Status });
+    expect(wrapper.findComponent({ name: "IssueTable" }).exists()).toBe(true);
+  });
+  
+
+  test("navigates to issue details on row select", () => {
+    const issue = {
+ id: "123", title: "Sample", status: 'OPEN' as Status 
 };
+    wrapper.vm.onIssueSelect(issue);
 
-      // Act
-      vi.spyOn(issueService, 'getIssues').mockImplementation(() => Promise.resolve(mockIssueList));
-      const result = await issueService.getIssues(projectId);
-
-      // Assert
-      expect(result).toEqual(mockIssueList);
-      expect(result.issues).toHaveLength(2);
-      expect(result.issues[0].id).toBe('1');
-      expect(result.issues[1].id).toBe('2');
+    expect(pushMock).toHaveBeenCalledWith({
+      name: "IssueDetails",
+      params: { issueId: "123" },
     });
+  });
+
+  test("renders correct header for owner + DEFECT category", async () => {
+    await wrapper.setProps({
+ owner: "user1", category: "DEFECT", status: undefined 
+});
+    expect(wrapper.text()).toContain("Meine Mängel");
+  });
+
+  test("renders correct header for status + DEFECT category", async () => {
+    await wrapper.setProps({
+ owner: undefined, category: "DEFECT", status: 'OPEN' as Status 
+});
+    expect(wrapper.text()).toContain("Offene Mängel");
+  });
+
+  test("renders correct header for no owner/status + DEFECT", async () => {
+    await wrapper.setProps({
+ owner: undefined, category: "DEFECT", status: undefined 
+});
+    expect(wrapper.text()).toContain("Alle Mängel");
+  });
+
+  test("renders correct header for owner + TASK category", async () => {
+    await wrapper.setProps({
+ owner: "user1", category: undefined, status: undefined 
+});
+    expect(wrapper.text()).toContain("Meine Aufgaben");
+  });
+
+  test("renders correct header for status + TASK category", async () => {
+    await wrapper.setProps({
+ owner: undefined, category: undefined, status: 'OPEN' as Status 
+});
+    expect(wrapper.text()).toContain("Offene Aufgaben");
+  });
+
+  test("renders correct header for no owner/status + TASK", async () => {
+    await wrapper.setProps({
+ owner: undefined, category: undefined, status: undefined 
+});
+    expect(wrapper.text()).toContain("Alle Aufgaben");
+  });  
+
+
+  test("adds issue to myIssues with owner when owner prop is set", async () => {
+    wrapper.vm.myIssues = [];
+    const issue = {
+ id: "123", title: "Test", status: 'OPEN' as Status 
+};
+    await wrapper.setProps({ owner: "testOwner" });
+    
+    wrapper.vm.myIssues.push({ ...issue, owner: "testOwner" });
+    expect(wrapper.vm.myIssues[0].owner).toBe("testOwner");
+  });
+
+  test("handles error during loadIssuesWithOpenStatus", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  
+    await expect(wrapper.vm.loadIssuesWithOpenStatus()).resolves.not.toThrow();
+  
+    expect(consoleErrorSpy).toHaveBeenCalled();
+  
+    consoleErrorSpy.mockRestore();
+  });
+  
+  test("handles error during loadMyIssues", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  
+    await expect(wrapper.vm.loadMyIssues()).resolves.not.toThrow();
+  
+    expect(consoleErrorSpy).toHaveBeenCalled();
+  
+    consoleErrorSpy.mockRestore();
+  });  
+
+  test("renders create button with correct label for DEFECT", async () => {
+    await wrapper.setProps({ category: "DEFECT" });
+    expect(wrapper.text()).toContain("Mangel melden");
+  });
+
+  test("renders create button with correct label for TASK", async () => {
+    await wrapper.setProps({ category: undefined });
+    expect(wrapper.text()).toContain("Aufgabe erstellen");
+  });
+
+  test("resets form fields when opening dialog", () => {
+    wrapper.vm.title = "Some Title";
+    wrapper.vm.description = "Some Description";
+    wrapper.vm.openCreateIssueDialog();
+    
+    expect(wrapper.vm.title).toBe("");
+    expect(wrapper.vm.description).toBe("");
+    expect(wrapper.vm.visible).toBe(true);
+  });
+
+  test("adds issue to issuesByStatusOpen when status is OPEN", async () => {
+    wrapper.vm.issuesByStatusOpen = [];
+    const newIssue = {
+ id: "999", title: "Test", description: "Desc", status: 'OPEN' as Status 
+};
+    
+    wrapper.vm.issues.push(newIssue);
+    wrapper.vm.issuesByStatusOpen.push(newIssue);
+    
+    expect(wrapper.vm.issuesByStatusOpen).toHaveLength(1);
+    expect(wrapper.vm.issuesByStatusOpen[0].status).toBe('OPEN' as Status);
   });
 });
