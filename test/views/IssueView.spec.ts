@@ -37,7 +37,7 @@ describe("IssueView.vue", () => {
 
     wrapper = mount(IssueView, {
       props: {
- projectId: "proj-1", owner: "user1", category: 'TASK' as Type 
+ projectId: "proj-1", assigneeId: "user1", category: 'TASK' as Type
 },
       global: {
         stubs: {
@@ -85,7 +85,7 @@ describe("IssueView.vue", () => {
   });
   
   test("renders correct IssueTable based on props", async () => {
-    await wrapper.setProps({ owner: undefined, status: 'OPEN' as Status });
+    await wrapper.setProps({ assigneeId: undefined, status: 'OPEN' as Status });
     expect(wrapper.findComponent({ name: "IssueTable" }).exists()).toBe(true);
   });
   
@@ -102,58 +102,58 @@ describe("IssueView.vue", () => {
     });
   });
 
-  test("renders correct header for owner + DEFECT category", async () => {
+  test("renders correct header for assignee + DEFECT category", async () => {
     await wrapper.setProps({
- owner: "user1", category: "DEFECT", status: undefined 
+      assigneeId: "user1", category: "DEFECT", status: undefined
 });
     expect(wrapper.text()).toContain("Meine Mängel");
   });
 
   test("renders correct header for status + DEFECT category", async () => {
     await wrapper.setProps({
- owner: undefined, category: "DEFECT", status: 'OPEN' as Status 
+      assigneeId: undefined, category: "DEFECT", status: 'OPEN' as Status
 });
     expect(wrapper.text()).toContain("Offene Mängel");
   });
 
-  test("renders correct header for no owner/status + DEFECT", async () => {
+  test("renders correct header for no assignee/status + DEFECT", async () => {
     await wrapper.setProps({
- owner: undefined, category: "DEFECT", status: undefined 
+      assigneeId: undefined, category: "DEFECT", status: undefined
 });
     expect(wrapper.text()).toContain("Alle Mängel");
   });
 
-  test("renders correct header for owner + TASK category", async () => {
+  test("renders correct header for assignee + TASK category", async () => {
     await wrapper.setProps({
- owner: "user1", category: undefined, status: undefined 
+      assigneeId: "user1", category: undefined, status: undefined
 });
     expect(wrapper.text()).toContain("Meine Aufgaben");
   });
 
   test("renders correct header for status + TASK category", async () => {
     await wrapper.setProps({
- owner: undefined, category: undefined, status: 'OPEN' as Status 
+      assigneeId: undefined, category: undefined, status: 'OPEN' as Status
 });
     expect(wrapper.text()).toContain("Offene Aufgaben");
   });
 
-  test("renders correct header for no owner/status + TASK", async () => {
+  test("renders correct header for no assignee/status + TASK", async () => {
     await wrapper.setProps({
- owner: undefined, category: undefined, status: undefined 
+      assigneeId: undefined, category: undefined, status: undefined
 });
     expect(wrapper.text()).toContain("Alle Aufgaben");
   });  
 
 
-  test("adds issue to myIssues with owner when owner prop is set", async () => {
+  test("adds issue to myIssues with assignee when assignee prop is set", async () => {
     wrapper.vm.myIssues = [];
     const issue = {
  id: "123", title: "Test", status: 'OPEN' as Status 
 };
-    await wrapper.setProps({ owner: "testOwner" });
+    await wrapper.setProps({ assignee: "testOwner" });
     
-    wrapper.vm.myIssues.push({ ...issue, owner: "testOwner" });
-    expect(wrapper.vm.myIssues[0].owner).toBe("testOwner");
+    wrapper.vm.myIssues.push({ ...issue, assignee: "testOwner" });
+    expect(wrapper.vm.myIssues[0].assignee).toBe("testOwner");
   });
 
   test("handles error during loadIssuesWithOpenStatus", async () => {

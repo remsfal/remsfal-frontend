@@ -321,27 +321,29 @@ export interface components {
             id?: components["schemas"]["UUID"];
             name?: string;
             title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            owner?: components["schemas"]["UUID"];
+            type?: components["schemas"]["IssueType"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            assigneeId?: components["schemas"]["UUID"];
         };
         /** @description An issue */
         IssueJson: {
-            reporterId?: components["schemas"]["UUID"];
-            tenancyId?: components["schemas"]["UUID"];
             id?: components["schemas"]["UUID"];
             projectId?: components["schemas"]["UUID"];
             title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            ownerId?: components["schemas"]["UUID"];
+            type?: components["schemas"]["IssueType"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            reporterId?: components["schemas"]["UUID"];
+            tenancyId?: components["schemas"]["UUID"];
+            assigneeId?: components["schemas"]["UUID"];
             description?: string;
-            blockedBy?: string[];
+            parentIssue?: components["schemas"]["UUID"];
+            childrenIssues?: string[];
             relatedTo?: string[];
             duplicateOf?: string[];
+            blockedBy?: string[];
             blocks?: string[];
-            parentOf?: string[];
-            childOf?: string[];
         };
         /** @description A list of issues */
         IssueListJson: {
@@ -364,6 +366,12 @@ export interface components {
             total: number;
             issues?: components["schemas"]["IssueItemJson"][];
         };
+        /** @enum {string} */
+        IssuePriority: "URGENT" | "HIGH" | "MEDIUM" | "LOW" | "UNCLASSIFIED";
+        /** @enum {string} */
+        IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
+        /** @enum {string} */
+        IssueType: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
         /**
          * Format: date
          * @example 2022-03-10
@@ -566,8 +574,6 @@ export interface components {
             title?: string;
             address?: components["schemas"]["AddressJson"];
         };
-        /** @enum {string} */
-        Status: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
         /** @description A storage inside a building but with living space according to WoFIV */
         StorageJson: {
             type?: components["schemas"]["UnitType"];
@@ -641,8 +647,6 @@ export interface components {
         TenancyListJson: {
             tenancies?: components["schemas"]["TenancyItemJson"][];
         };
-        /** @enum {string} */
-        Type: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
         /** Format: uuid */
         UUID: string;
         /** @enum {string} */
