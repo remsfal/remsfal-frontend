@@ -1,9 +1,5 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
-
-export type Status = ApiComponents['schemas']['Status'];
-export type Issue = ApiComponents['schemas']['IssueJson'];
-export type IssueList = ApiComponents['schemas']['IssueListJson'];
-export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
+import { apiClient } from '@/services/ApiClient.ts';
+import type { Issue, IssueList, Status } from '@/services/IssueService';
 
 export class ContractorService {
   /**
@@ -27,4 +23,5 @@ export class ContractorService {
     return apiClient.get('/ticketing/v1/issues/{issueId}', {pathParams: { issueId },}) as Promise<Issue>;
   }
 }
+
 export const contractorService = new ContractorService();

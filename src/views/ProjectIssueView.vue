@@ -17,7 +17,7 @@ const { t } = useI18n();
 type IssueUI = {
   issueId: string;
   title: string;
-  ownerId: string;
+  assigneeId: string;
   reporter: string;
   project: string;
   tenancy: string;
@@ -42,13 +42,13 @@ const fetchIssue = async () => {
       issueId: issue.id ?? '',
       title: issue.title ?? '',
       status: issue.status ?? 'OPEN',
-      ownerId: issue.ownerId ?? '',
+      assigneeId: issue.assigneeId ?? '',
       reporter: issue.reporterId ?? '',
       project: props.projectId,
       issueType: issue.type,
       tenancy: issue.tenancyId ?? '',
     };
-    console.log('Fetched ownerId:', issue);
+    console.log('Fetched assigneeId:', issue);
 
     description.value = issue.description ?? '';
   } catch (error) {

@@ -401,12 +401,15 @@
             "type" : "string"
           },
           "type" : {
-            "$ref" : "#/components/schemas/Type"
+            "$ref" : "#/components/schemas/IssueType"
           },
           "status" : {
-            "$ref" : "#/components/schemas/Status"
+            "$ref" : "#/components/schemas/IssueStatus"
           },
-          "owner" : {
+          "priority" : {
+            "$ref" : "#/components/schemas/IssuePriority"
+          },
+          "assigneeId" : {
             "$ref" : "#/components/schemas/UUID"
           }
         }
@@ -415,12 +418,6 @@
         "description" : "An issue",
         "type" : "object",
         "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "tenancyId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -432,18 +429,30 @@
             "maxLength" : 255
           },
           "type" : {
-            "$ref" : "#/components/schemas/Type"
+            "$ref" : "#/components/schemas/IssueType"
           },
           "status" : {
-            "$ref" : "#/components/schemas/Status"
+            "$ref" : "#/components/schemas/IssueStatus"
           },
-          "ownerId" : {
+          "priority" : {
+            "$ref" : "#/components/schemas/IssuePriority"
+          },
+          "reporterId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "tenancyId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "assigneeId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "description" : {
             "type" : "string"
           },
-          "blockedBy" : {
+          "parentIssue" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "childrenIssues" : {
             "type" : "array",
             "uniqueItems" : true,
             "items" : {
@@ -470,25 +479,16 @@
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           },
+          "blockedBy" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
           "blocks" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string",
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            }
-          },
-          "parentOf" : {
-            "type" : "array",
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string",
-              "format" : "uuid",
-              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-            }
-          },
-          "childOf" : {
             "type" : "array",
             "uniqueItems" : true,
             "items" : {
@@ -530,6 +530,18 @@
             }
           }
         }
+      },
+      "IssuePriority" : {
+        "type" : "string",
+        "enum" : [ "URGENT", "HIGH", "MEDIUM", "LOW", "UNCLASSIFIED" ]
+      },
+      "IssueStatus" : {
+        "type" : "string",
+        "enum" : [ "PENDING", "OPEN", "IN_PROGRESS", "CLOSED", "REJECTED" ]
+      },
+      "IssueType" : {
+        "type" : "string",
+        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "LocalDate" : {
         "type" : "string",
@@ -982,10 +994,6 @@
           }
         }
       },
-      "Status" : {
-        "type" : "string",
-        "enum" : [ "PENDING", "OPEN", "IN_PROGRESS", "CLOSED", "REJECTED" ]
-      },
       "StorageJson" : {
         "description" : "A storage inside a building but with living space according to WoFIV",
         "type" : "object",
@@ -1150,10 +1158,6 @@
             }
           }
         }
-      },
-      "Type" : {
-        "type" : "string",
-        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "UUID" : {
         "type" : "string",
@@ -1417,7 +1421,7 @@
           "name" : "status",
           "in" : "query",
           "schema" : {
-            "$ref" : "#/components/schemas/Status"
+            "$ref" : "#/components/schemas/IssueStatus"
           }
         }, {
           "description" : "Filter to return only issuesfor a specific tenancy",
@@ -2263,9 +2267,52 @@
         } ]
       }
     },
-    "/ticketing/v1/issues/{issueId}/relations/{type}/{relatedIssueId}" : {
+    "/ticketing/v1/issues/{issueId}/parent/{parentIssueId}" : {
+      "put" : {
+        "summary" : "Set another issue as parent issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the parent issue",
+          "required" : true,
+          "name" : "parentIssueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully updated issue",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/issues/{issueId}/{relationType}/{relatedIssueId}" : {
       "delete" : {
-        "summary" : "Delete an existing relation between two Issues",
+        "summary" : "Delete an existing relation between two issues",
         "parameters" : [ {
           "description" : "ID of the source Issue",
           "name" : "issueId",
@@ -2283,17 +2330,70 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "Type of the relation (e.g. blocks, blocked_by, related_to)",
-          "name" : "type",
+          "description" : "Type of the relation",
+          "examples" : { },
+          "name" : "relationType",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "parent|children|blocks|blocked-by|related-to|duplicate-of"
           }
         } ],
         "responses" : {
           "204" : {
             "description" : "The relation was deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a relation between two issues.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the related issue",
+          "required" : true,
+          "name" : "relatedIssueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "Type of the relation",
+          "examples" : { },
+          "name" : "relationType",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "pattern" : "children|blocks|blocked-by|related-to|duplicate-of"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully updated issue",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
