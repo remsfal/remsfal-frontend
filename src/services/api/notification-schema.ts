@@ -42,6 +42,120 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/notification/test/issue-assigned": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Test Issue Assigned */
+        get: {
+            parameters: {
+                query: {
+                    to: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notification/test/issue-created": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Test Issue Created */
+        get: {
+            parameters: {
+                query: {
+                    to: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notification/test/issue-updated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Test Issue Updated */
+        get: {
+            parameters: {
+                query: {
+                    to: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -168,31 +282,34 @@ export interface components {
         };
         /** @enum {string} */
         EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
-        /** @description Represents a message or invoice in the user's inbox */
+        /** @description Represents an enriched issue event stored in a user's inbox */
         InboxMessage: {
-            /** @description Unique identifier of the message */
+            /** @description Unique identifier of this inbox message */
             id?: string;
-            /**
-             * @description Type of message (Message | Invoice)
-             * @enum {string}
-             */
-            type?: "Message" | "Invoice";
-            /** @description Sender or contractor associated with the message */
-            contractor?: string;
-            /** @description Subject or title of the message */
-            subject?: string;
-            /** @description Property or building related to the message */
-            property?: string;
-            /** @description Tenant or person related to the message */
-            tenant?: string;
-            /** @description Date and time when the message was received */
-            receivedAt?: components["schemas"]["OffsetDateTime"];
+            /** @description User who received this notification */
+            userId?: string;
+            /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
+            eventType?: string;
+            /** @description Related issue ID */
+            issueId?: string;
+            /** @description Issue title */
+            title?: string;
+            /** @description Issue description */
+            description?: string;
+            /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
+            issueType?: string;
+            /** @description Current status of the issue */
+            status?: string;
+            /** @description Link to the frontend issue page */
+            link?: string;
             /** @description Whether the message has been read */
             read?: boolean;
-            /** @description ID of the user who owns the message */
-            userId?: string;
-            /** @description URL to the related GitHub issue or external resource */
-            issueLink?: string;
+            /** @description Timestamp when the notification was created */
+            createdAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Email of the actor who triggered the event */
+            actorEmail?: string;
+            /** @description Email of the owner assigned to the issue */
+            ownerEmail?: string;
         };
         /**
          * Format: date-time
@@ -204,24 +321,29 @@ export interface components {
             id?: components["schemas"]["UUID"];
             name?: string;
             title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            owner?: components["schemas"]["UUID"];
+            type?: components["schemas"]["IssueType"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            assigneeId?: components["schemas"]["UUID"];
         };
         /** @description An issue */
         IssueJson: {
-            reporterId?: components["schemas"]["UUID"];
-            tenancyId?: components["schemas"]["UUID"];
             id?: components["schemas"]["UUID"];
             projectId?: components["schemas"]["UUID"];
             title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            ownerId?: components["schemas"]["UUID"];
+            type?: components["schemas"]["IssueType"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            reporterId?: components["schemas"]["UUID"];
+            tenancyId?: components["schemas"]["UUID"];
+            assigneeId?: components["schemas"]["UUID"];
             description?: string;
-            blockedBy?: components["schemas"]["UUID"];
-            relatedTo?: components["schemas"]["UUID"];
-            duplicateOf?: components["schemas"]["UUID"];
+            parentIssue?: components["schemas"]["UUID"];
+            childrenIssues?: string[];
+            relatedTo?: string[];
+            duplicateOf?: string[];
+            blockedBy?: string[];
+            blocks?: string[];
         };
         /** @description A list of issues */
         IssueListJson: {
@@ -244,6 +366,12 @@ export interface components {
             total: number;
             issues?: components["schemas"]["IssueItemJson"][];
         };
+        /** @enum {string} */
+        IssuePriority: "URGENT" | "HIGH" | "MEDIUM" | "LOW" | "UNCLASSIFIED";
+        /** @enum {string} */
+        IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
+        /** @enum {string} */
+        IssueType: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
         /**
          * Format: date
          * @example 2022-03-10
@@ -335,6 +463,20 @@ export interface components {
         /** @description A list of project members */
         ProjectMemberListJson: {
             members: components["schemas"]["ProjectMemberJson"][];
+        };
+        /** @description Organization assignment to a project */
+        ProjectOrganizationJson: {
+            organizationId?: components["schemas"]["UUID"];
+            organizationName?: string;
+            role: components["schemas"]["MemberRole"];
+        };
+        /** @description List of organizations assigned to a project */
+        ProjectOrganizationListJson: {
+            organizations?: components["schemas"]["ProjectOrganizationJson"][];
+        };
+        /** @description A list of tenancies for a project */
+        ProjectTenancyListJson: {
+            tenancies?: components["schemas"]["TenancyInfoJson"][];
         };
         /** @description A property */
         PropertyJson: {
@@ -432,8 +574,6 @@ export interface components {
             title?: string;
             address?: components["schemas"]["AddressJson"];
         };
-        /** @enum {string} */
-        Status: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
         /** @description A storage inside a building but with living space according to WoFIV */
         StorageJson: {
             type?: components["schemas"]["UnitType"];
@@ -447,6 +587,14 @@ export interface components {
             description?: string;
             id?: components["schemas"]["UUID"];
             title?: string;
+        };
+        /** @description A tenancy item with information from the manager's view */
+        TenancyInfoJson: {
+            active?: boolean;
+            id?: components["schemas"]["UUID"];
+            startOfRental?: components["schemas"]["LocalDate"];
+            endOfRental?: components["schemas"]["LocalDate"];
+            tenants?: components["schemas"]["UserJson"][];
         };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {
@@ -499,8 +647,6 @@ export interface components {
         TenancyListJson: {
             tenancies?: components["schemas"]["TenancyItemJson"][];
         };
-        /** @enum {string} */
-        Type: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
         /** Format: uuid */
         UUID: string;
         /** @enum {string} */

@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import NewProjectMemberButton from '@/components/NewProjectMemberButton.vue';
-import Card from 'primevue/card';
+import BaseCard from '@/components/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
@@ -87,11 +87,9 @@ function onNewMember(email: string) {
 </script>
 
 <template>
-  <Card class="flex flex-col gap-4 basis-full">
+  <BaseCard>
     <template #title>
-      <div class="font-semibold text-xl">
-        {{ t('projectSettings.projectMemberTable.title') }}
-      </div>
+      {{ t('projectSettings.projectMemberTable.title') }}
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
@@ -118,7 +116,7 @@ function onNewMember(email: string) {
         <NewProjectMemberButton :projectId="projectId" @newMember="onNewMember" />
       </div>
     </template>
-  </Card>
+  </BaseCard>
 </template>
 
 <style scoped></style>

@@ -241,43 +241,49 @@ components:
       - MANAGER
       - STAFF
     InboxMessage:
-      description: Represents a message or invoice in the user's inbox
+      description: Represents an enriched issue event stored in a user's inbox
       type: object
       properties:
         id:
           type: string
-          description: Unique identifier of the message
-        type:
+          description: Unique identifier of this inbox message
+        userId:
           type: string
-          description: Type of message (Message | Invoice)
-          enum:
-          - Message
-          - Invoice
-        contractor:
+          description: User who received this notification
+        eventType:
           type: string
-          description: Sender or contractor associated with the message
-        subject:
+          description: "Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED"
+        issueId:
           type: string
-          description: Subject or title of the message
-        property:
+          description: Related issue ID
+        title:
           type: string
-          description: Property or building related to the message
-        tenant:
+          description: Issue title
+        description:
           type: string
-          description: Tenant or person related to the message
-        receivedAt:
-          description: Date and time when the message was received
+          description: Issue description
+        issueType:
           type: string
-          $ref: "#/components/schemas/OffsetDateTime"
+          description: "Issue type: DEFECT, TASK, APPLICATION, ..."
+        status:
+          type: string
+          description: Current status of the issue
+        link:
+          type: string
+          description: Link to the frontend issue page
         read:
           type: boolean
           description: Whether the message has been read
-        userId:
+        createdAt:
+          description: Timestamp when the notification was created
           type: string
-          description: ID of the user who owns the message
-        issueLink:
+          $ref: "#/components/schemas/OffsetDateTime"
+        actorEmail:
           type: string
-          description: URL to the related GitHub issue or external resource
+          description: Email of the actor who triggered the event
+        ownerEmail:
+          type: string
+          description: Email of the owner assigned to the issue
     Instant:
       type: string
       format: date-time
@@ -294,19 +300,17 @@ components:
         title:
           type: string
         type:
-          $ref: "#/components/schemas/Type"
+          $ref: "#/components/schemas/IssueType"
         status:
-          $ref: "#/components/schemas/Status"
-        owner:
+          $ref: "#/components/schemas/IssueStatus"
+        priority:
+          $ref: "#/components/schemas/IssuePriority"
+        assigneeId:
           $ref: "#/components/schemas/UUID"
     IssueJson:
       description: An issue
       type: object
       properties:
-        reporterId:
-          $ref: "#/components/schemas/UUID"
-        tenancyId:
-          $ref: "#/components/schemas/UUID"
         id:
           $ref: "#/components/schemas/UUID"
         projectId:
@@ -315,19 +319,56 @@ components:
           type: string
           maxLength: 255
         type:
-          $ref: "#/components/schemas/Type"
+          $ref: "#/components/schemas/IssueType"
         status:
-          $ref: "#/components/schemas/Status"
-        ownerId:
+          $ref: "#/components/schemas/IssueStatus"
+        priority:
+          $ref: "#/components/schemas/IssuePriority"
+        reporterId:
+          $ref: "#/components/schemas/UUID"
+        tenancyId:
+          $ref: "#/components/schemas/UUID"
+        assigneeId:
           $ref: "#/components/schemas/UUID"
         description:
           type: string
-        blockedBy:
+        parentIssue:
           $ref: "#/components/schemas/UUID"
+        childrenIssues:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
         relatedTo:
-          $ref: "#/components/schemas/UUID"
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
         duplicateOf:
-          $ref: "#/components/schemas/UUID"
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        blockedBy:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        blocks:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
     IssueListJson:
       description: A list of issues
       type: object
@@ -358,6 +399,29 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/IssueItemJson"
+    IssuePriority:
+      type: string
+      enum:
+      - URGENT
+      - HIGH
+      - MEDIUM
+      - LOW
+      - UNCLASSIFIED
+    IssueStatus:
+      type: string
+      enum:
+      - PENDING
+      - OPEN
+      - IN_PROGRESS
+      - CLOSED
+      - REJECTED
+    IssueType:
+      type: string
+      enum:
+      - APPLICATION
+      - TASK
+      - DEFECT
+      - MAINTENANCE
     LocalDate:
       type: string
       format: date
@@ -534,6 +598,34 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProjectMemberJson"
+    ProjectOrganizationJson:
+      description: Organization assignment to a project
+      type: object
+      properties:
+        organizationId:
+          $ref: "#/components/schemas/UUID"
+        organizationName:
+          type: string
+        role:
+          $ref: "#/components/schemas/MemberRole"
+      required:
+      - role
+    ProjectOrganizationListJson:
+      description: List of organizations assigned to a project
+      type: object
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectOrganizationJson"
+    ProjectTenancyListJson:
+      description: A list of tenancies for a project
+      type: object
+      properties:
+        tenancies:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenancyInfoJson"
     PropertyJson:
       description: A property
       type: object
@@ -690,14 +782,6 @@ components:
           maxLength: 255
         address:
           $ref: "#/components/schemas/AddressJson"
-    Status:
-      type: string
-      enum:
-      - PENDING
-      - OPEN
-      - IN_PROGRESS
-      - CLOSED
-      - REJECTED
     StorageJson:
       description: A storage inside a building but with living space according to
         WoFIV
@@ -725,6 +809,22 @@ components:
         title:
           type: string
           maxLength: 255
+    TenancyInfoJson:
+      type: object
+      description: A tenancy item with information from the manager's view
+      properties:
+        active:
+          type: boolean
+        id:
+          $ref: "#/components/schemas/UUID"
+        startOfRental:
+          $ref: "#/components/schemas/LocalDate"
+        endOfRental:
+          $ref: "#/components/schemas/LocalDate"
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserJson"
     TenancyItemJson:
       description: A tenancy item with basic information from a tenant's perspective
       type: object
@@ -806,13 +906,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenancyItemJson"
-    Type:
-      type: string
-      enum:
-      - APPLICATION
-      - TASK
-      - DEFECT
-      - MAINTENANCE
     UUID:
       type: string
       format: uuid
@@ -901,6 +994,57 @@ paths:
             application/json:
               schema: {}
       summary: Send Test Emails
+      tags:
+      - Mailing Resource
+  /notification/test/issue-assigned:
+    get:
+      parameters:
+      - name: to
+        in: query
+        schema:
+          type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Test Issue Assigned
+      tags:
+      - Mailing Resource
+  /notification/test/issue-created:
+    get:
+      parameters:
+      - name: to
+        in: query
+        schema:
+          type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Test Issue Created
+      tags:
+      - Mailing Resource
+  /notification/test/issue-updated:
+    get:
+      parameters:
+      - name: to
+        in: query
+        schema:
+          type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: {}
+      summary: Test Issue Updated
       tags:
       - Mailing Resource
 info:

@@ -1,322 +1,209 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import MultiSelect from 'primevue/multiselect';
-import DatePicker from 'primevue/datepicker';
-import Dialog from 'primevue/dialog';
-
+import { useLayout } from '@/layout/composables/layout';
 import { useInboxStore } from '@/stores/InboxStore';
 import type { InboxMessage } from '@/services/InboxService';
+import InboxSidebar, { type CustomFilter } from '@/components/inbox/InboxSidebar.vue';
+import InboxToolbar from '@/components/inbox/InboxToolbar.vue';
+import InboxMessageList from '@/components/inbox/InboxMessageList.vue';
 
 const { t } = useI18n();
 const router = useRouter();
 const inbox = useInboxStore();
+const { isDarkTheme } = useLayout();
 
 const {
-  // state
-  isLoading,
+  messages,
   selectedMessages,
-  isDeleteDialogVisible,
-
-  // filters
-  filterType,
-  filterContractor,
+  activeTab,
+  searchQuery,
   filterProject,
-  filterUnit,
-  filterTenant,
-  filterOwner,
-  filterStatus,
-  filterDateRange,
-
-  // getters
+  filterIssueType,
+  filterIssueStatus,
   filteredMessages,
-  typeOptions,
-  contractorOptions,
   projectOptions,
-  unitOptions,
-  tenantOptions,
-  ownerOptions,
+  unreadCount,
+  grouping,
 } = storeToRefs(inbox);
+
+const customFilters = computed<CustomFilter[]>(() => {
+  const filterData = [
+    ['smart-urgent', 'inbox.filters.smart.urgent', 'pi-exclamation-circle', 'status:OPEN type:DEFECT'],
+    ['smart-myTasks', 'inbox.filters.myTasks', 'pi-check-square', 'status:OPEN type:TASK'],
+    ['smart-pendingApps', 'inbox.filters.smart.pendingApplications', 'pi-hourglass', 'status:PENDING type:APPLICATION'],
+    ['smart-activeMaintenance', 'inbox.filters.smart.activeMaintenance', 'pi-cog', 'status:IN_PROGRESS type:MAINTENANCE'],
+    ['status-pending', 'inbox.filters.status.pending', 'pi-clock', 'status:PENDING'],
+    ['status-open', 'inbox.filters.status.open', 'pi-circle', 'status:OPEN'],
+    ['status-inProgress', 'inbox.filters.status.inProgress', 'pi-sync', 'status:IN_PROGRESS'],
+    ['status-closed', 'inbox.filters.status.closed', 'pi-check-circle', 'status:CLOSED'],
+    ['status-rejected', 'inbox.filters.status.rejected', 'pi-times-circle', 'status:REJECTED'],
+    ['type-application', 'inbox.filters.type.application', 'pi-file-edit', 'type:APPLICATION'],
+    ['type-task', 'inbox.filters.type.task', 'pi-list', 'type:TASK'],
+    ['type-defect', 'inbox.filters.type.defect', 'pi-exclamation-triangle', 'type:DEFECT'],
+    ['type-maintenance', 'inbox.filters.type.maintenance', 'pi-wrench', 'type:MAINTENANCE'],
+  ];
+  return filterData.map(([id, nameKey, icon, query]) => ({
+    id: id as string,
+    name: t(nameKey as string),
+    icon: icon as string,
+    query: query as string,
+  }));
+});
+
+const activeFilterId = ref<string | null>(null);
+const activeNavItem = ref<'inbox' | 'done'>('inbox');
 
 onMounted(async () => {
   await inbox.fetchInbox();
 });
 
-const statusOptions = [
-  { label: t('inbox.filter.statusOptions.read'),   value: 'read' },
-  { label: t('inbox.filter.statusOptions.unread'), value: 'unread' }
-];
-
-const onRowClick = (e: { originalEvent: MouseEvent; data: InboxMessage }) => {
-  router.push({ name: 'InboxDetail', params: { id: e.data.id } });
+const applyFilter = (filter: CustomFilter) => {
+  if (activeFilterId.value === filter.id) {
+    clearAllFilters();
+    return;
+  }
+  
+  activeFilterId.value = filter.id;
+  inbox.clearFilters();
+  const parts = filter.query.split(' ');
+  parts.forEach(part => {
+    const [key, val] = part.split(':');
+    if (key === 'status' && val) filterIssueStatus.value = [val];
+    if (key === 'type' && val) filterIssueType.value = [val];
+  });
 };
+
+const clearAllFilters = () => {
+  activeFilterId.value = null;
+  inbox.clearFilters();
+};
+
+const handleActiveTabChange = (value: 'all' | 'unread') => {
+  // Ensure a valid tab is always selected
+  if (value === 'all' || value === 'unread') {
+    activeTab.value = value;
+  }
+};
+
+const toggleProjectFilter = (projectId: string) => {
+  if (filterProject.value.includes(projectId)) {
+    filterProject.value = [];
+  } else {
+    inbox.clearFilters();
+    filterProject.value = [projectId];
+  }
+};
+
+const navigateToIssue = (msg: InboxMessage) => {
+  router.push({ 
+    name: 'IssueDetails', 
+    params: { projectId: msg.projectId, issueId: msg.issueId } 
+  });
+  if (!msg.isRead) inbox.markAsRead(msg);
+};
+
+const toggleSelection = (msg: InboxMessage) => {
+  const idx = selectedMessages.value.findIndex(m => m.id === msg.id);
+  if (idx >= 0) selectedMessages.value.splice(idx, 1);
+  else selectedMessages.value.push(msg);
+};
+
+const selectAll = () => {
+  if (selectedMessages.value.length === displayedMessages.value.length) {
+    selectedMessages.value = [];
+  } else {
+    selectedMessages.value = [...displayedMessages.value];
+  }
+};
+
+const handleMessageSelect = (msg: InboxMessage) => {
+  toggleSelection(msg);
+};
+
+const handleMessageNavigate = (msg: InboxMessage) => {
+  navigateToIssue(msg);
+};
+
+const handleMessageMarkRead = (msg: InboxMessage) => {
+  inbox.markAsRead(msg);
+};
+
+const handleMessageDelete = (msg: InboxMessage) => {
+  selectedMessages.value = [msg];
+  inbox.confirmDeleteSelected();
+};
+
+const doneCount = computed(() => messages.value.filter(m => m.isRead).length);
+
+const displayedMessages = computed(() => {
+  let msgs = filteredMessages.value;
+  
+  if (activeNavItem.value === 'done') {
+    return msgs.filter(m => m.isRead);
+  }
+  
+  return [...msgs].sort((a, b) => {
+    if (!a.isRead && b.isRead) return -1;
+    if (a.isRead && !b.isRead) return 1;
+    return new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime();
+  });
+});
 </script>
 
 <template>
-  <main class="w-full px-6 py-8">
-    <h1 class="text-2xl font-semibold mb-4">
-      {{ t('inbox.title') }}
-    </h1>
-    <div class="card p-4 flex gap-6 -mx-6" :aria-busy="isLoading">
-      <!-- Sidebar -->
-      <aside class="w-72 flex-shrink-0 space-y-4 pr-4">
-        <h2 class="text-lg font-semibold">
-          {{ t('inbox.filter.title') }}
-        </h2>
+  <div 
+    class="flex h-[calc(100vh-4rem)]"
+    :class="isDarkTheme ? 'bg-surface-950' : 'bg-surface-100'"
+  >
+    <InboxSidebar
+      :activeNavItem="activeNavItem"
+      :unreadCount="unreadCount"
+      :doneCount="doneCount"
+      :activeFilterId="activeFilterId"
+      :customFilters="customFilters"
+      :projectOptions="projectOptions"
+      :filterProject="filterProject"
+      :messages="messages"
+      @update:activeNavItem="activeNavItem = $event"
+      @filterApplied="applyFilter"
+      @projectFilterToggled="toggleProjectFilter"
+      @clearFilters="clearAllFilters"
+    />
 
-        <!-- Filter Type -->
-        <div class="relative inline-block w-full">
-          <MultiSelect
-            v-model="filterType"
-            :options="typeOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('inbox.filter.type')"
-            class="w-full border pr-14"
-            :style="{ borderColor: filterType.length ? '#22c55e' : '#d1d5db' }"
-          />
-          <i
-            v-if="filterType.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
-            @click="filterType = []"
-          />
-        </div>
-
-        <!-- Filter Contractor -->
-        <div class="relative inline-block w-full">
-          <MultiSelect
-            v-model="filterContractor"
-            :options="contractorOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('inbox.filter.contractor')"
-            class="w-full border pr-14"
-            :style="{ borderColor: filterContractor.length ? '#22c55e' : '#d1d5db' }"
-          />
-          <i
-            v-if="filterContractor.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
-            @click="filterContractor = []"
-          />
-        </div>
-
-        <!-- Filter Project-->
-        <div class="relative inline-block w-full">
-          <MultiSelect
-            v-model="filterProject"
-            :options="projectOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('inbox.filter.project')"
-            class="w-full border pr-14"
-            :style="{ borderColor: filterProject.length ? '#22c55e' : '#d1d5db' }"
-          />
-          <i
-            v-if="filterProject.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
-            @click="filterProject = []"
-          />
-        </div>
-
-        <!-- Filter Unit -->
-        <div class="relative inline-block w-full">
-          <MultiSelect
-            v-model="filterUnit"
-            :options="unitOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('inbox.filter.unit')"
-            class="w-full border pr-14"
-            :style="{ borderColor: filterUnit.length ? '#22c55e' : '#d1d5db' }"
-          />
-          <i
-            v-if="filterUnit.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
-            @click="filterUnit = []"
-          />
-        </div>
-
-        <!-- Filter Tenant -->
-        <div class="relative inline-block w-full">
-          <MultiSelect
-            v-model="filterTenant"
-            :options="tenantOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('inbox.filter.tenant')"
-            class="w-full border pr-14"
-            :style="{ borderColor: filterTenant.length ? '#22c55e' : '#d1d5db' }"
-          />
-          <i
-            v-if="filterTenant.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
-            @click="filterTenant = []"
-          />
-        </div>
-
-        <!-- Filter Owner -->
-        <div class="relative inline-block w-full">
-          <MultiSelect
-            v-model="filterOwner"
-            :options="ownerOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('inbox.filter.owner')"
-            class="w-full border pr-14"
-            :style="{ borderColor: filterOwner.length ? '#22c55e' : '#d1d5db' }"
-          />
-          <i
-            v-if="filterOwner.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
-            @click="filterOwner = []"
-          />
-        </div>
-
-        <!-- Filter Status -->
-        <div class="relative inline-block w-full">
-          <MultiSelect
-            v-model="filterStatus"
-            :options="statusOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('inbox.filter.status')"
-            class="w-full border pr-14"
-            :style="{ borderColor: filterStatus.length ? '#22c55e' : '#d1d5db' }"
-          />
-          <i
-            v-if="filterStatus.length"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
-            @click="filterStatus = []"
-          />
-        </div>
-
-        <!-- Filter Date -->
-        <div class="relative inline-block w-full">
-          <DatePicker
-            v-model="filterDateRange"
-            selectionMode="range"
-            showIcon
-            dateFormat="dd.mm.yy"
-            :placeholder="t('inbox.filter.date')"
-            class="w-full border pr-14"
-            :style="{ borderColor: filterDateRange?.length === 2 ? '#22c55e' : '#d1d5db' }"
-          />
-          <i
-            v-if="filterDateRange?.length === 2"
-            class="pi pi-times text-green-500 cursor-pointer
-                   absolute right-9 top-1/2 -translate-y-1/2"
-            @click="filterDateRange = null"
-          />
-        </div>
-
-        <Button
-          icon="pi pi-filter-slash"
-          :label="t('inbox.actions.clearFilters')"
-          class="w-full"
-          @click="inbox.clearFilters"
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col min-w-0 py-4 pr-4">
+      <div 
+        class="rounded-xl overflow-hidden shadow-md h-full flex flex-col"
+        :class="isDarkTheme ? 'bg-surface-900' : 'bg-surface-0'"
+      >
+        <InboxToolbar
+          :activeTab="activeTab"
+          :searchQuery="searchQuery"
+          :selectedCount="selectedMessages.length"
+          :grouping="grouping"
+          @update:activeTab="handleActiveTabChange"
+          @update:searchQuery="searchQuery = $event"
+          @update:grouping="grouping = $event"
+          @markReadSelected="inbox.markReadSelected"
+          @deleteSelected="inbox.confirmDeleteSelected"
         />
-      </aside>
 
-      <!-- Main Area -->
-      <section class="flex-1 space-y-4">
-        <div class="flex flex-wrap gap-3">
-          <Button
-            icon="pi pi-inbox"
-            :label="t('inbox.actions.markReadSelected')"
-            :disabled="!selectedMessages.length"
-            @click="inbox.markReadSelected"
-          />
-          <Button
-            icon="pi pi-envelope"
-            :label="t('inbox.actions.markUnreadSelected')"
-            :disabled="!selectedMessages.length"
-            @click="inbox.markUnreadSelected"
-          />
-          <Button
-            icon="pi pi-trash"
-            severity="danger"
-            :label="t('inbox.actions.deleteSelected')"
-            :disabled="!selectedMessages.length"
-            @click="inbox.requestDeleteSelected"
-          />
-        </div>
-
-        <div class="overflow-x-auto">
-          <DataTable
-            v-model:selection="selectedMessages"
-            :value="filteredMessages"
-            :rows="10"
-            dataKey="id"
-            :emptyMessage="t('inbox.empty')"
-            :rowClass="inbox.rowClass"
-            class="min-w-full"
-            rowHover
-            @rowClick="onRowClick"
-          >
-            <Column selectionMode="multiple" headerStyle="width:3rem" />
-            <Column
-              frozen alignFrozen="left"
-              headerStyle="width:4rem" :header="t('inbox.column.status')"
-            >
-              <template #body="slot">
-                <div class="flex justify-center">
-                  <Button
-                    v-if="!slot.data.isRead"
-                    icon="pi pi-envelope"
-                    text rounded
-                    title="Als gelesen markieren"
-                    class="h-8 w-8"
-                    @click.stop="inbox.markAsRead(slot.data)"
-                  />
-                  <Button
-                    v-else text
-                    rounded title="Als ungelesen markieren"
-                    class="h-8 w-8 text-gray-400"
-                    @click.stop="inbox.markAsUnread(slot.data)"
-                  />
-                </div>
-              </template>
-            </Column>
-
-            <Column field="contractor" :header="t('inbox.column.contractor')" sortable />
-            <Column field="type" :header="t('inbox.column.type')" sortable />
-            <Column field="subject" :header="t('inbox.column.subject')" sortable />
-            <Column field="project" :header="t('inbox.column.project')" sortable />
-            <Column field="unit" :header="t('inbox.column.unit')" sortable />
-            <Column field="tenant" :header="t('inbox.column.tenant')" sortable />
-            <Column field="owner" :header="t('inbox.column.owner')" sortable />
-            <Column field="receivedAt" :header="t('inbox.column.receivedAt')" sortable />
-          </DataTable>
-        </div>
-
-        <Dialog
-          v-model:visible="isDeleteDialogVisible"
-          :header="t('inbox.confirmDeleteTitle')"
-          modal :closable="false"
-          class="w-11/12 md:w-6/12 lg:w-4/12"
-        >
-          <p class="p-2">
-            {{ t('inbox.confirmDeleteMessage', [selectedMessages.length]) }}
-          </p>
-          <template #footer>
-            <Button :label="t('inbox.actions.cancel')" text class="p-button-text" @click="inbox.cancelDelete()" />
-            <Button :label="t('inbox.actions.confirm')" severity="danger" @click="inbox.confirmDeleteSelected()" />
-          </template>
-        </Dialog>
-      </section>
+        <InboxMessageList
+          :messages="displayedMessages"
+          :selectedMessages="selectedMessages"
+          :searchQuery="searchQuery"
+          :grouping="grouping"
+          @selectAll="selectAll"
+          @selectItem="handleMessageSelect"
+          @navigate="handleMessageNavigate"
+          @markRead="handleMessageMarkRead"
+          @delete="handleMessageDelete"
+        />
+      </div>
     </div>
-  </main>
+  </div>
 </template>

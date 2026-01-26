@@ -1,4 +1,3 @@
-<!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -9,63 +8,24 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import type {paths} from '@/services/api/platform-schema';
-import UserService from '@/services/UserService';
+import { userService, type User } from '@/services/UserService';
 import { RouterLink } from 'vue-router'
+import AdressDisplay from '@/components/AddressDisplay.vue';
+import { locales, type Locale } from '@/i18n/i18n';
+import Select from 'primevue/select';
 
 const { t } = useI18n();
+const i18n = useI18n();
 
 type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
-type UserPatchRequestBody = paths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
-type AddressListResponse = paths['/api/v1/address']['get']['responses'][200]['content']['application/json'];
-type Address = AddressListResponse extends (infer U)[] ? U : never;
-type User = UserGetResponse & { address?: Address };
 
-const userProfile = ref<UserGetResponse | null>(null);
-const editedUserProfile = ref<Partial<UserPatchRequestBody>>({});
-
-const addressProfile = ref<Address | null>(null);
-const editedAddress = ref<Partial<Address>>({});
+const userProfile = ref<User | null>(null);
+const editedUserProfile = ref<Partial<User>>({});
 
 const deleteAcc = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
 const changes = ref(false);
 const saveSuccess = ref(false);
 const saveError = ref(false);
-const countries = ref([
-  { name: 'Australia', code: 'AU' },
-  { name: 'Brazil', code: 'BR' },
-  { name: 'China', code: 'CN' },
-  { name: 'Egypt', code: 'EG' },
-  { name: 'France', code: 'FR' },
-  { name: 'Germany', code: 'DE' },
-  { name: 'India', code: 'IN' },
-  { name: 'Japan', code: 'JP' },
-  { name: 'Spain', code: 'ES' },
-  { name: 'United States', code: 'US' },
-  { name: 'Austria', code: 'AT' },
-  { name: 'Belgium', code: 'BE' },
-  { name: 'Bulgaria', code: 'BG' },
-  { name: 'Croatia', code: 'HR' },
-  { name: 'Cyprus', code: 'CY' },
-  { name: 'Czech Republic', code: 'CZ' },
-  { name: 'Denmark', code: 'DK' },
-  { name: 'Estonia', code: 'EE' },
-  { name: 'Finland', code: 'FI' },
-  { name: 'Greece', code: 'GR' },
-  { name: 'Hungary', code: 'HU' },
-  { name: 'Ireland', code: 'IE' },
-  { name: 'Italy', code: 'IT' },
-  { name: 'Latvia', code: 'LV' },
-  { name: 'Lithuania', code: 'LT' },
-  { name: 'Luxembourg', code: 'LU' },
-  { name: 'Malta', code: 'MT' },
-  { name: 'Netherlands', code: 'NL' },
-  { name: 'Poland', code: 'PL' },
-  { name: 'Portugal', code: 'PT' },
-  { name: 'Romania', code: 'RO' },
-  { name: 'Slovakia', code: 'SK' },
-  { name: 'Slovenia', code: 'SI' },
-  { name: 'Sweden', code: 'SE' },
-]);
 
 const errorMessage = ref({
   firstname: '',
@@ -73,11 +33,6 @@ const errorMessage = ref({
   mobilePhoneNumber: '',
   businessPhoneNumber: '',
   privatePhoneNumber: '',
-  street: '',
-  zip: '',
-  city: '',
-  province: '',
-  countryCode: '',
 });
 
 onMounted(() => {
@@ -93,14 +48,15 @@ onMounted(() => {
 
 async function fetchUserProfile() {
   try {
-    const userService = new UserService();
-    const profile = await userService.getUser();
+    const profile = (await userService.getUser()) as User;
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
-      if (userProfile?.value?.address) {
-        addressProfile.value = userProfile.value.address;
-        editedAddress.value = { ...userProfile.value.address };
+      if (userProfile?.value?.locale) {
+        editedUserProfile.value.locale = userProfile.value.locale;
+        i18n.locale.value = validateLocale(userProfile.value.locale);
+      } else {
+        editedUserProfile.value.locale = i18n.locale.value;
       }
     }
   } catch (error) {
@@ -108,59 +64,93 @@ async function fetchUserProfile() {
   }
 }
 
-function getUpdatedValue<K extends keyof UserPatchRequestBody>(field: K): string {
-  const value =
-    editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserGetResponse];
-  return typeof value === 'string' ? value : '';
+function getUpdatedValue<K extends keyof User>(field: K): string | undefined {
+  const value = editedUserProfile.value[field] ?? userProfile.value?.[field as keyof User];
+  if (typeof value === 'string' && value.trim() === '') {
+    return undefined;
+  }
+  return typeof value === 'string' ? value : undefined;
 }
-
-
-function getUpdatedAddressValue(field: keyof Address): string {
-  const value =
-    (editedAddress.value as Record<keyof Address, unknown>)?.[field] ??
-    (addressProfile.value as Record<keyof Address, unknown>)?.[field];
-  return typeof value === 'string' ? value : '';
-}
-
 
 async function saveProfile(): Promise<void> {
   try {
-    const userService = new UserService();
-
     const user: Partial<User> = {
-      id: userProfile.value?.id || '',
       firstName: getUpdatedValue('firstName'),
       businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
       lastName: getUpdatedValue('lastName'),
       mobilePhoneNumber: getUpdatedValue('mobilePhoneNumber'),
       privatePhoneNumber: getUpdatedValue('privatePhoneNumber'),
+      locale: getUpdatedValue('locale'),
     };
 
-    if (editedAddress.value && validateAddress(editedAddress.value)) {
-      const address: Address = {
-        street: getUpdatedAddressValue('street'),
-        city: getUpdatedAddressValue('city'),
-        zip: getUpdatedAddressValue('zip'),
-        province: getUpdatedAddressValue('province'),
-        countryCode: getUpdatedAddressValue('countryCode'),
-      };
-      user.address = address;
-    }
+    // ===== Alternative Email =====
+    const primaryEmail = (userProfile.value?.email || '').trim().toLowerCase();
+    let touchedAltEmail = false;
 
+    // Get the first element from additionalEmails arrays (or undefined/null)
+    const currentAltArray = userProfile.value?.additionalEmails;
+    const editedAltArray = editedUserProfile.value?.additionalEmails;
+
+    const currentAltNorm = (Array.isArray(currentAltArray) && currentAltArray.length > 0)
+      ? currentAltArray[0]?.trim()
+      : null;
+    const editedAltNorm = (Array.isArray(editedAltArray) && editedAltArray.length > 0)
+      ? editedAltArray[0]?.trim()
+      : null;
+
+    if (currentAltNorm !== editedAltNorm) {
+      touchedAltEmail = true;
+
+      if (!editedAltNorm) {
+        // User deleted the alternative email - send empty array
+        user.additionalEmails = [];
+      } else {
+        if (!validateEmail(editedAltNorm)) {
+          altEmailSuccess.value = false;
+          altEmailError.value = true;
+          alert(t('projectSettings.newProjectMemberButton.invalidEmail'));
+          return;
+        }
+
+        if (editedAltNorm.toLowerCase() === primaryEmail) {
+          altEmailSuccess.value = false;
+          altEmailError.value = true;
+          alert(t('accountSettings.userProfile.alternativeEmailNotEqualPrimary'));
+          return;
+        }
+
+        // Save as array with single element
+        user.additionalEmails = [editedAltNorm];
+      }
+    }
     const updatedUser = await userService.updateUser(user);
     console.log('Benutzer erfolgreich aktualisiert:', updatedUser);
+
+    // Update userProfile with the backend response to keep it in sync
+    userProfile.value = updatedUser;
+    editedUserProfile.value = { ...updatedUser };
+
     saveSuccess.value = true;
+    changes.value = false;
+
+    // Show success icon only after backend save (only if alt email was part of the change)
+    if (touchedAltEmail) {
+      altEmailSuccess.value = true;
+      altEmailError.value = false;
+    }
+
   } catch (e) {
-    console.error('Das Benutzerprofil konnte nicht geupdated werden!', e);
-    alert('Fehler beim Aktualisieren des Benutzerprofils!');
+    console.error('The user profile can not be updated!', e);
     saveError.value = true;
+
+    // Show error icon if backend save fails
+    altEmailSuccess.value = false;
+    altEmailError.value = true;
   }
 }
 
-function validateAddress(address: Partial<Address>): boolean {
-  return Object.values(address)
-    .filter((value): value is string => typeof value === 'string')
-    .every((value) => value.trim().length > 0);
+function validateLocale(locale: string): Locale {
+  return locales.includes(locale as Locale) ? (locale as Locale) : 'en';
 }
 
 function logout(): void {
@@ -168,7 +158,6 @@ function logout(): void {
 }
 
 function deleteAccount() {
-  const userService = new UserService();
   userService
     .deleteUser()
     .then(() => logout())
@@ -178,7 +167,6 @@ function deleteAccount() {
 // Reverts all changes made to the user and address profiles
 function cancel() {
   editedUserProfile.value = { ...userProfile.value };
-  editedAddress.value = { ...addressProfile.value };
   changes.value = false;
   Object.keys(errorMessage.value).forEach((key) => {
     errorMessage.value[key as keyof typeof errorMessage.value] = '';
@@ -193,24 +181,16 @@ function cancel() {
 // Updates the appropriate error message if validation fails.
 // Also checks for any changes between the original and edited profiles to update `changes`.
 function validateField(
-  field: keyof User | keyof Address,
-  type: 'name' | 'phone' | 'address',
+  field: keyof UserGetResponse,
+  type: 'name' | 'phone',
   errorKey: keyof typeof errorMessage.value,
 ) {
   // Get the value from editedUserProfile or editedAddress depending on field
-  const value =
-    field in (editedUserProfile.value ?? {})
-      ? editedUserProfile.value?.[field as keyof User]
-      : editedAddress.value?.[field as keyof Address];
+  const value = editedUserProfile.value?.[field as keyof UserGetResponse];
 
-  const regexMap = {
-    default: /^[A-Za-zÄÖÜäöüß\s]+$/,
-    street: /^(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/,
-  };
+  const regex = /^[A-Za-zÄÖÜäöüß\s]+$/;
 
-  const regex = field === 'street' ? regexMap.street : regexMap.default;
-
-  if ((type === 'name' || type === 'address') && typeof value === 'string') {
+  if ((type === 'name') && typeof value === 'string') {
     if (!value || value.length === 0) {
       errorMessage.value[errorKey] = 'Bitte eingeben!';
     } else if (!regex.test(value)) {
@@ -229,87 +209,25 @@ function validateField(
   // Only call checkValues if all profiles exist and are non-null
   if (
     userProfile.value &&
-    editedUserProfile.value &&
-    addressProfile.value &&
-    editedAddress.value
+    editedUserProfile.value
   ) {
     changes.value = checkValues(
       userProfile.value,
-      editedUserProfile.value as User,
-      addressProfile.value,
-      editedAddress.value as Address,
+      editedUserProfile.value as UserGetResponse,
     );
   } else {
     changes.value = false;
   }
 }
 
-
-// Validates the entered country code by checking if it matches a known country.
-// If no match is found an error indicating the country code is invalid will be displayed.
-function updateCountryFromCode() {
-  const code = editedAddress.value?.countryCode?.toUpperCase();
-
-  if (!code) {
-    errorMessage.value.countryCode = 'Ungültiges Länderkürzel!';
-    return;
-  }
-
-  const matchingCountry = countries.value.find(
-    (country) => country.code === code,
-  );
-
-  if (!matchingCountry) {
-    errorMessage.value.countryCode = 'Ungültiges Länderkürzel!';
-  } else {
-    editedAddress.value.countryCode = matchingCountry.code;
-    errorMessage.value.countryCode = '';
-  }
-}
-
-
-// Fetches city, province, and country code based on the entered zip code.
-// Displays an error message if the zip code is invalid or the service call fails.
-async function getCity() {
-  const userService = new UserService();
-
-  const zip = editedAddress.value.zip;
-  if (!zip) {
-    errorMessage.value.zip = 'Bitte geben Sie eine Postleitzahl ein!';
-    return;
-  }
-
-  try {
-    errorMessage.value.zip = 'Bitte eingeben!';
-
-    const address = await userService.getCityFromZip(zip);
-
-    if (address && address.city) {
-      editedAddress.value.city = address.city;
-      editedAddress.value.province = address.province;
-      editedAddress.value.countryCode = address.countryCode;
-      errorMessage.value.zip = '';
-      errorMessage.value.city = '';
-      errorMessage.value.province = '';
-    }
-  } catch (error) {
-    console.log(error);
-    errorMessage.value.zip = 'Postleitzahl bitte überprüfen!';
-  }
-}
-
-
 // Determines if there are any changes between the original user and address profiles and their edited
 // versions. Returns `true` if differences are detected, otherwise `false`.
 function checkValues(
-  userProfile: User,
-  editedUserProfile: User,
-  addressProfile: Address,
-  editedAddress: Address,
+  userProfile: UserGetResponse,
+  editedUserProfile: UserGetResponse,
 ): boolean {
   if (
-    compareObjects(userProfile || {}, editedUserProfile || {}) &&
-    compareObjects(addressProfile || {}, editedAddress || {})
+    compareObjects(userProfile || {}, editedUserProfile || {})
   ) {
     return false;
   } else {
@@ -317,25 +235,25 @@ function checkValues(
   }
 }
 
-// Recursively compares two objects (User or Address) to check if they are identical.
+// Recursively compares two objects (UserGetResponse or Address) to check if they are identical.
 // - Returns `true` if the objects have the same structure and identical values for all keys.
 // - Returns `false` if the objects differ in keys or values.
-function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
+function compareObjects(obj1: UserGetResponse, obj2: UserGetResponse): boolean {
   if (obj1 === obj2) return true;
 
   if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
     return false;
   }
 
-  const keys1 = Object.keys(obj1) as Array<keyof (User & Address)>;
-  const keys2 = Object.keys(obj2) as Array<keyof (User & Address)>;
+  const keys1 = Object.keys(obj1) as Array<keyof UserGetResponse>;
+  const keys2 = Object.keys(obj2) as Array<keyof UserGetResponse>;
 
   if (keys1.length !== keys2.length) return false;
 
   for (const key of keys1) {
     if (
       !keys2.includes(key) ||
-      !compareObjects(obj1[key as keyof typeof obj1], obj2[key as keyof typeof obj2])
+      !compareObjects(obj1[key] as UserGetResponse, obj2[key] as UserGetResponse)
     ) {
       return false;
     }
@@ -348,6 +266,95 @@ function compareObjects(obj1: User | Address, obj2: User | Address): boolean {
 const isDisabled = computed(() => {
   return Object.values(errorMessage.value).some((message) => message !== '');
 });
+
+// ===== Alternative Email (UI-only state & validation) =====
+// Resets all form and validation states when closing or reopening the dialog
+function resetForm() {
+  alternativeEmail.value = '';
+  isEmailInvalid.value = false;
+  emailErrorMessage.value = '';
+}
+
+// Basic frontend email format validation using regex
+function validateEmail(email: string) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+
+// Dialog visibility + alternative email input model
+const visible = ref(false);
+const alternativeEmail = ref('');
+
+// Success/Error state for alternative email backend save
+const altEmailSuccess = ref(false);
+const altEmailError = ref(false);
+
+const displayAlternativeEmail = computed<string | null>(() => {
+  const emails = (editedUserProfile.value as any).additionalEmails ??
+    (userProfile.value as any)?.additionalEmails;
+
+  // Return the first element if the array exists and has items
+  return (Array.isArray(emails) && emails.length > 0) ? emails[0] : null;
+});
+
+// Validation + UI state for alternative email dialog
+const isEmailInvalid = ref(false);
+const emailErrorMessage = ref('');
+
+const applyAlternativeEmail = (value: string | null) => {
+  // Convert to array format: [email] or [] based on value
+  const emailArray = value ? [value] : [];
+
+  // update edited profile only (keep userProfile unchanged for comparison)
+  editedUserProfile.value = {
+    ...editedUserProfile.value,
+    additionalEmails: emailArray,
+  };
+
+  // ensure Save button appears after changing alternative email
+  changes.value = true;
+
+  // clear backend icons because change is not saved yet
+  altEmailSuccess.value = false;
+  altEmailError.value = false;
+};
+
+const saveAlternativeEmail = () => {
+  const enteredEmail = alternativeEmail.value.trim();
+
+  const primaryEmail = (
+    editedUserProfile.value.email || userProfile.value?.email || ''
+  )
+    .trim()
+    .toLowerCase();
+
+  // 1) empty or invalid
+  if (!enteredEmail || !validateEmail(enteredEmail)) {
+    isEmailInvalid.value = true;
+    emailErrorMessage.value = t('projectSettings.newProjectMemberButton.invalidEmail');
+    return;
+  }
+
+  // 2) must not equal primary
+  if (enteredEmail.toLowerCase() === primaryEmail) {
+    isEmailInvalid.value = true;
+    emailErrorMessage.value = t('accountSettings.userProfile.alternativeEmailNotEqualPrimary');
+    return;
+  }
+
+  // ok
+  isEmailInvalid.value = false;
+  emailErrorMessage.value = '';
+
+  applyAlternativeEmail(enteredEmail);
+
+  visible.value = false;
+  alternativeEmail.value = '';
+};
+
+const deleteAlternativeEmail = () => {
+  applyAlternativeEmail(null);
+};
 </script>
 
 <template>
@@ -407,6 +414,119 @@ const isDisabled = computed(() => {
                 <InputText id="eMail" v-model="editedUserProfile.email" disabled required />
                 <Message class="error" size="small" severity="error" variant="simple" />
               </div>
+
+              <div class="input-container">
+                <!-- Label for the alternative email section -->
+                <label class="label" for="alternative-eMail">{{ t('accountSettings.userProfile.alternativeEmail') }}:</label>
+                
+                <!-- Button to open dialog for adding alternative email -->
+                <div class="flex justify-front mt-3 mb-5">
+                  <Button
+                    type="button"
+                    :label="t('accountSettings.userProfile.addAlternativeEmail')"
+                    icon="pi pi-plus"
+                    style="width: auto"
+                    :disabled="!!displayAlternativeEmail"
+                    @click="visible = true"
+                  />
+                </div>
+                
+                <!-- Only show the alternative email field if one exists -->
+                <div 
+                  v-if="displayAlternativeEmail" 
+                  class="flex items-center gap-1 mt-1 mb-5"
+                >
+                  <div class="alt-email-wrapper">
+                    <InputText 
+                      id="alternative-eMail"  
+                      class="alt-email-input flex-grow" 
+                      :value="displayAlternativeEmail"
+                      disabled 
+                      required 
+                    />
+                
+                    <!-- SUCCESS CHECKMARK shown after successful save -->
+                    <span
+                      v-if="altEmailSuccess"
+                      class="alt-email-icon alt-email-icon-success"
+                    >
+                      ✔
+                    </span>
+
+                    <!-- ERROR ICON shown if backend returns an error -->
+                    <span
+                      v-if="altEmailError"
+                      class="alt-email-icon alt-email-icon-error"
+                    >
+                      ✗
+                    </span>
+                  </div>
+  
+                  <!-- Trash icon deletes the existing alternative email -->
+                  <i 
+                    class="pi pi-trash alt-trash-icon cursor-pointer text-lg"
+                    @click="deleteAlternativeEmail"
+                  />
+                </div>
+              </div>
+
+              <!-- Dialog for entering the alternative email -->
+              <Dialog
+                v-model:visible="visible"
+                modal :style="{ width: '35rem' }"  
+                :header="t('accountSettings.userProfile.addAlternativeEmail')"
+                @hide="resetForm"
+              >
+                <div class="flex flex-col gap-1 mb-6">
+                  <!-- Email input row -->
+                  <div class="flex items-center gap-4">
+                    <label 
+                      for="email"
+                      class="font-semibold"
+                    >
+                      {{ t('accountSettings.userProfile.email') }}
+                    </label>
+  
+                    <!-- Editable input inside dialog -->
+                    <InputText
+                      id="email" 
+                      v-model="alternativeEmail"
+                      class="flex-grow"
+                      type="email"
+                      autocomplete="off"
+                      :invalid="isEmailInvalid"
+                      :placeholder="t('accountSettings.userProfile.alternativeEmail')" 
+                    />
+                  </div>
+
+                  <!-- Validation error message -->
+                  <small
+                    v-if="isEmailInvalid"
+                    class="text-red-500 mt-2 ml-36 text-sm"
+                  >
+                    {{ emailErrorMessage }}
+                  </small>
+                </div>
+
+                <!-- Dialog buttons -->
+                <div class="flex justify-end gap-2 mt-6">
+                  <!-- Cancel closes the dialog with no action -->
+                  <Button
+                    type="button"
+                    :label="t('button.cancel')"
+                    severity="secondary"
+                    @click="visible = false"
+                  />
+
+                  <!-- Save triggers frontend + backend validation -->
+                  <Button
+                    type="button"
+                    :label="t('button.add')"
+                    @click="saveAlternativeEmail"
+                  />
+                </div>
+              </Dialog>
+
               <div class="input-container">
                 <label class="label" for="mobilePhoneNumber">{{ t('accountSettings.userProfile.mobilePhone') }}:</label>
                 <InputText
@@ -443,7 +563,6 @@ const isDisabled = computed(() => {
                   {{ errorMessage.businessPhoneNumber }}
                 </Message>
               </div>
-
               <div class="input-container">
                 <label class="label" for="privatePhoneNumber">{{ t('accountSettings.userProfile.privatePhone') }}:</label>
                 <InputText
@@ -462,134 +581,26 @@ const isDisabled = computed(() => {
                   {{ errorMessage.privatePhoneNumber }}
                 </Message>
               </div>
+              <div class="input-container">
+                <label class="label" for="locale">{{ t('accountSettings.userProfile.language') }}:</label>
+                
+                <Select
+                  id="locale"
+                  v-model="editedUserProfile.locale"
+                  :options="[{ language: 'Deutsch', value: 'de' }, { language: 'English', value: 'en' }]"
+                  optionLabel="language"
+                  optionValue="value"
+                  placeholder="Select language"
+                  @update:modelValue="i18n.locale.value = $event"
+                />
+              </div>
             </div>
             <Message class="required" size="small" severity="secondary" variant="simple">
               {{ t('accountSettings.userProfile.requiredFields') }}
             </Message>
           </template>
         </Card>
-        <Card>
-          <template #title>
-            <h4>{{ t('accountSettings.address.title') }}</h4>
-          </template>
-          <template #content>
-            <div>
-              <div class="input-container">
-                <label class="label" for="street">{{ t('accountSettings.address.street') }}*:</label>
-                <InputText
-                  id="street"
-                  v-model="editedAddress.street"
-                  :invalid="errorMessage.street !== ''"
-                  @blur="validateField('street', 'address', 'street')"
-                />
-                <Message
-                  class="error"
-                  :class="{ active: errorMessage.street }"
-                  size="small"
-                  severity="error"
-                  variant="simple"
-                >
-                  {{ errorMessage.street }}
-                </Message>
-              </div>
-              <div class="input-container">
-                <label class="label" for="zip">{{ t('accountSettings.address.zip') }}*:</label>
-                <InputText
-                  id="zip"
-                  v-model="editedAddress.zip"
-                  :invalid="errorMessage.zip !== ''"
-                  @blur="getCity()"
-                />
-                <Message
-                  class="error"
-                  :class="{ active: errorMessage.zip }"
-                  size="small"
-                  severity="error"
-                  variant="simple"
-                >
-                  {{ errorMessage.zip }}
-                </Message>
-              </div>
-              <div class="input-container">
-                <label class="label" for="city">{{ t('accountSettings.address.city') }}*:</label>
-                <InputText
-                  id="city"
-                  v-model="editedAddress.city"
-                  :invalid="errorMessage.city !== ''"
-                  @blur="validateField('city', 'address', 'city')"
-                />
-                <Message
-                  class="error"
-                  :class="{ active: errorMessage.city }"
-                  size="small"
-                  severity="error"
-                  variant="simple"
-                >
-                  {{ errorMessage.city }}
-                </Message>
-              </div>
-              <div class="input-container">
-                <label class="label" for="province">{{ t('accountSettings.address.province') }}*:</label>
-                <InputText
-                  id="province"
-                  v-model="editedAddress.province"
-                  :invalid="errorMessage.province !== ''"
-                  @blur="validateField('province', 'address', 'province')"
-                />
-                <Message
-                  class="error"
-                  :class="{ active: errorMessage.province }"
-                  size="small"
-                  severity="error"
-                  variant="simple"
-                >
-                  {{ errorMessage.province }}
-                </Message>
-              </div>
-              <div class="input-container">
-                <label for="country" class="label">{{ t('accountSettings.address.country') }}*:</label>
-                <select
-                  id="country"
-                  v-model="editedAddress.countryCode"
-                  class="select-country"
-                  @change="updateCountryFromCode"
-                >
-                  <option disabled value="">
-                    Land auswählen*
-                  </option>
-                  <option v-for="country in countries" :key="country.code" :value="country.code">
-                    {{ country.name }}
-                  </option>
-                </select>
-                <Message class="error" size="small" severity="error" variant="simple" />
-              </div>
-
-              <div class="input-container">
-                <label for="countryCode" class="label">{{ t('accountSettings.address.countryCode') }}*:</label>
-                <InputText
-                  id="countryCode"
-                  v-model="editedAddress.countryCode"
-                  required
-                  style="text-transform: uppercase"
-                  :invalid="errorMessage.countryCode !== ''"
-                  @input="updateCountryFromCode"
-                />
-                <Message
-                  class="error"
-                  :class="{ active: errorMessage.countryCode }"
-                  size="small"
-                  severity="error"
-                  variant="simple"
-                >
-                  {{ errorMessage.countryCode }}
-                </Message>
-              </div>
-            </div>
-            <Message class="required" size="small" variant="simple">
-              {{ t('accountSettings.userProfile.requiredFields') }}
-            </Message>
-          </template>
-        </Card>
+        <AdressDisplay />
       </div>
     </form>
     <div>
@@ -606,12 +617,11 @@ const isDisabled = computed(() => {
             </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/customers">
+            <RouterLink to="/contractor/overview">
               Zur Auftragnehmer Ansicht
             </RouterLink>
           </Button>
           <Button
-            v-if="changes"
             type="button"
             icon="pi pi-user-edit"
             class="save-button btn"
@@ -620,7 +630,6 @@ const isDisabled = computed(() => {
             @click="saveProfile"
           />
           <Button
-            v-if="changes"
             type="button"
             icon="pi pi-times"
             class="cancel-button btn"
@@ -728,35 +737,11 @@ p {
   width: 150px;
 }
 
-input,
-.select-country {
-  padding: 6px;
-  font-size: 16px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.select-country:focus,
-input:focus {
-  border-color: #80bdff;
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 0.25);
-}
-
 .buttons-container {
   display: grid;
   grid-template-columns: repeat(2, auto);
   justify-content: center;
   gap: 20px;
-}
-
-.select-country {
-  box-sizing: border-box;
-  appearance: none;
-  background: url('data:image/svg+xml;utf8, <svg fill="%23999" height="24" viewBox="0 0 24 24" \
-    width="24" xmlns="http://www.w3.org/2000/svg"> <path d="M7 10l5 5 5-5z"/> </svg>') no-repeat right 10px center;
-  background-size: 12px 12px;
 }
 
 .centered-buttons {
@@ -802,4 +787,47 @@ input:focus {
   font-size: 10px;
   border: none;
 }
+
+.alt-email-wrapper {
+  position: relative;
+  width: 95%;
+}
+
+.alt-email-input {
+  width: 100%;
+  padding-right: 10px;
+}
+
+.alt-email-icon {
+  position: absolute;
+  right: 15px;           
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+}
+
+.alt-email-icon-success {
+  color: #16a34a;       
+}
+
+.alt-email-icon-error {
+  color: #dc2626;       
+}
+
+.alt-trash-icon {
+  padding: 11px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  align-items: center;
+  height: 100%;
+  margin-top: -5px;
+  margin-left: 7px;
+}
+
+.alt-trash-icon:hover {
+  color: white !important;
+  background-color: #047857;
+  padding: 11px;
+}
+
 </style>

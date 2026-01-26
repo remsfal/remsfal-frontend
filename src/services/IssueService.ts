@@ -1,32 +1,20 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type Status = ApiComponents['schemas']['Status'];
+export type Status = ApiComponents['schemas']['IssueStatus'];
+export type Type = ApiComponents['schemas']['IssueType'];
 export type Issue = ApiComponents['schemas']['IssueJson'];
-export type IssueList = ApiComponents['schemas']['IssueListJson'];
 export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
-
-// Status constants
-export const StatusValues = {
-  PENDING: 'PENDING',
-  OPEN: 'OPEN',
-  IN_PROGRESS: 'IN_PROGRESS',
-  CLOSED: 'CLOSED',
-  REJECTED: 'REJECTED',
-} as const;
-
-// Issue type constants
-export const ISSUE_TYPE_TASK = 'TASK';
-export const ISSUE_STATUS_OPEN = 'OPEN';
-export const ISSUE_STATUS_CLOSED = 'CLOSED';
+export type IssueList = ApiComponents['schemas']['IssueListJson'];
 
 export class IssueService {
   /**
-   * Get all issues for a project, optionally filtered by status or owner.
+   * Get all issues for a project, optionally filtered by status or assigneeId.
    */
   async getIssues(
     projectId: string,
     status?: Status,
-    ownerId?: string,
+    category?: string,
+    assigneeId?: string,
     limit = 100,
     offset = 0,
   ): Promise<IssueList> {
@@ -36,7 +24,8 @@ export class IssueService {
         limit,
         offset,
         ...(status ? { status } : {}),
-        ...(ownerId ? { owner: ownerId } : {}),
+        ...(category ? { category } : {}),
+        ...(assigneeId ? { assigneeId: assigneeId } : {}),
       },
     }) as IssueList;
 
@@ -44,7 +33,7 @@ export class IssueService {
       first: data.first ?? 0,
       size: data.size ?? 0,
       total: data.total ?? 0,
-      issues: data.issues ?? [], // ✅ Always return an array
+      issues: data.issues ?? [],
     };
   }
 

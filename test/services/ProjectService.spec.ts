@@ -1,17 +1,16 @@
+/* eslint-disable object-curly-newline */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { projectService, type Project, type ProjectList } from '@/services/ProjectService';
 import { server } from '../mocks/server';
 import { testErrorHandling } from '../utils/testHelpers';
 
+// --- MOCK DATA ---
+
 const mockProjects: ProjectList = {
   projects: [
-    {
- id: 'project-1', title: 'Project 1', memberRole: 'MANAGER' 
-},
-    {
- id: 'project-2', title: 'Project 2', memberRole: 'CONTRACTOR' 
-},
+    { id: 'project-1', title: 'Project 1', memberRole: 'MANAGER' },
+    { id: 'project-2', title: 'Project 2', memberRole: 'CONTRACTOR' },
   ],
   offset: 0,
   limit: 10,
@@ -25,6 +24,8 @@ const mockProject: Project = {
   memberRole: 'MANAGER',
 };
 
+// --- HANDLERS ---
+
 const handlers = [
   http.get('/api/v1/projects', ({ request }) => {
     const url = new URL(request.url);
@@ -36,6 +37,7 @@ const handlers = [
       limit: parseInt(limit),
     });
   }),
+
   http.get('/api/v1/projects/:projectId', ({ params }) => {
     if (params.projectId === 'not-found') {
       return HttpResponse.json({ message: 'Project not found' }, { status: 404 });
@@ -45,6 +47,7 @@ const handlers = [
       id: params.projectId,
     });
   }),
+
   http.post('/api/v1/projects', async ({ request }) => {
     const body = (await request.json()) as { title: string };
     return HttpResponse.json(
@@ -56,6 +59,7 @@ const handlers = [
       { status: 201 },
     );
   }),
+
   http.patch('/api/v1/projects/:projectId', async ({ request, params }) => {
     const body = (await request.json()) as Partial<Project>;
     return HttpResponse.json({
@@ -64,6 +68,7 @@ const handlers = [
       id: params.projectId,
     });
   }),
+
   http.delete('/api/v1/projects/:projectId', () => {
     return HttpResponse.json({}, { status: 204 });
   }),
@@ -105,9 +110,7 @@ describe('ProjectService', () => {
     it('should handle empty projects array', async () => {
       server.use(
         http.get('/api/v1/projects', () => {
-          return HttpResponse.json({
- projects: [], offset: 0, limit: 100, total: 0 
-});
+          return HttpResponse.json({ projects: [], offset: 0, limit: 100, total: 0 });
         }),
       );
 

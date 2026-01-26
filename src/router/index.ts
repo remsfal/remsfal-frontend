@@ -12,6 +12,9 @@ import ContractorMenu from '@/layout/ContractorMenu.vue';
 import ContractorTopbar from '@/layout/ContractorTopbar.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
 import TenantTopbar from '@/layout/TenantTopbar.vue';
+import ManagerMobileBar from '@/layout/ManagerMobileBar.vue';
+import ContractorMobileBar from '@/layout/ContractorMobileBar.vue';
+import TenantMobileBar from '@/layout/TenantMobileBar.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const fullscreenRoutes: RouteRecordRaw[] = [
@@ -20,8 +23,9 @@ const fullscreenRoutes: RouteRecordRaw[] = [
     components: {
       default: AppLayout,
       topbar: ManagerTopbar,
+      mobilebar: ManagerMobileBar,
     },
-    props: {default: {fullscreen: true,},},
+    props: { default: { fullscreen: true, }, },
     children: [
       {
         path: '/',
@@ -75,8 +79,9 @@ const managerRoutes: RouteRecordRaw[] = [
       default: AppLayout,
       topbar: ManagerTopbar,
       sidebar: ManagerMenu,
+      mobilebar: ManagerMobileBar,
     },
-    props: {default: {fullscreen: false,},},
+    props: { default: { fullscreen: false, }, },
     beforeEnter: (to: RouteLocationNormalized) => {
       const projectStore = useProjectStore();
       projectStore.searchSelectedProject(<string>to.params.projectId);
@@ -181,7 +186,7 @@ const managerRoutes: RouteRecordRaw[] = [
       {
         path: 'tenancies/new-tenancy',
         name: 'ProjectNewTenancy',
-        props: (route: RouteLocationNormalizedLoaded) => ({projectId: route.params.projectId,}),
+        props: (route: RouteLocationNormalizedLoaded) => ({ projectId: route.params.projectId, }),
         component: () => import('@/views/ProjectNewTenancy.vue'),
       },
       /* --------------------------------------------------------------------
@@ -199,14 +204,18 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           owner: route.query.owner,
           status: route.query.status,
+          category: route.query.category,
         }),
         component: () => import('@/views/IssueView.vue'),
       },
       {
-        path: 'issueedit/:issueId',
-        name: 'IssueEdit',
-        props: true,
-        component: () => import('@/views/IssueEdit.vue'),
+        path: 'issues/:issueId',
+        name: 'IssueDetails',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          issueId: route.params.issueId,
+        }),
+        component: () => import('@/views/ProjectIssueView.vue'),
       },
       {
         path: 'chat',
@@ -225,8 +234,9 @@ const tenantRoutes: RouteRecordRaw[] = [
       default: AppLayout,
       topbar: TenantTopbar,
       sidebar: TenantMenu,
+      mobilebar: TenantMobileBar,
     },
-    props: {default: {fullscreen: false,},},
+    props: { default: { fullscreen: false, }, },
     children: [
       {
         path: '',
@@ -234,22 +244,35 @@ const tenantRoutes: RouteRecordRaw[] = [
         props: true,
         component: () => import('@/views/TenantView.vue'),
       },
+      {
+        path: 'contract/:contractId',
+        name: 'TenantContractDetail',
+        props: true,
+        component: () => import('@/views/ContractDetailView.vue'),
+      },
     ],
   },
 ];
 
 const contractorRoutes: RouteRecordRaw[] = [
   {
-    path: '/customers',
+    path: '/contractor',
     components: {
       default: AppLayout,
       topbar: ContractorTopbar,
       sidebar: ContractorMenu,
+      mobilebar: ContractorMobileBar,
     },
-    props: {default: {fullscreen: false,},},
+    props: { default: { fullscreen: false, }, },
     children: [
       {
-        path: '',
+        path: 'overview',
+        name: 'ContractorDashboard',
+        props: true,
+        component: () => import('@/views/ContractorDashboardView.vue'),
+      },
+      {
+        path: 'issues',
         name: 'ContractorView',
         props: true,
         component: () => import('@/views/ContractorView.vue'),

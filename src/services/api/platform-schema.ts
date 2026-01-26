@@ -413,7 +413,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description organization was created successfully */
+                /** @description Organization was created successfully */
                 201: {
                     headers: {
                         /** @description URL of the new organization */
@@ -606,7 +606,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description id of the organization */
+                    /** @description Id of the organization */
                     organizationId: components["schemas"]["UUID"];
                 };
                 cookie?: never;
@@ -703,7 +703,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** add an employee to an organization */
+        /** Add an employee to an organization */
         post: {
             parameters: {
                 query?: never;
@@ -859,7 +859,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description employeeId */
+                    /** @description Id of the employee */
                     employeeId: components["schemas"]["UUID"];
                     /** @description Id of the organization */
                     organizationId: components["schemas"]["UUID"];
@@ -2633,6 +2633,217 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/v1/projects/{projectId}/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of all organizations assigned to the project */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of all assigned organizations was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectOrganizationListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Assign an organization to the project */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOrganizationJson"];
+                };
+            };
+            responses: {
+                /** @description The organization was successfully assigned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectOrganizationJson"];
+                    };
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/organizations/{organizationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove an organization from the project */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The organization was removed successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or organization assignment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update role of an organization in the project */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the organization */
+                    organizationId: components["schemas"]["UUID"];
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectOrganizationJson"];
+                };
+            };
+            responses: {
+                /** @description The organization role was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectOrganizationJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Insufficient permissions */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The project or organization assignment does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/v1/projects/{projectId}/properties": {
         parameters: {
             query?: never;
@@ -4071,6 +4282,385 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/v1/projects/{projectId}/tenancies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of all tenancies */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The requested tenancies were successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjectTenancyListJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new tenancy */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TenancyInfoJson"];
+                };
+            };
+            responses: {
+                /** @description Tenancy created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid request message */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/tenancies/{tenancyId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve Information of a tenancy. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the tenancy */
+                    tenancyId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The requested tenancy was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyInfoJson"];
+                    };
+                };
+                /** @description No user authentication provided session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The tenancy does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update information of a tenancy */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the tenancy */
+                    tenancyId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TenancyInfoJson"];
+                };
+            };
+            responses: {
+                /** @description The tenancy was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TenancyInfoJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The tenancy does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information for all tenants */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A list of tenants was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserJson"][];
+                    };
+                };
+                /** @description The tenant does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Create a new tenant */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserJson"];
+                };
+            };
+            responses: {
+                /** @description A new tenant was successfully created */
+                201: {
+                    headers: {
+                        /** @description URL of the new tenant */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserJson"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/tenants/{tenantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of a specific tenant */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the tenant */
+                    tenantId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The specific tenant was successfully returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserJson"];
+                    };
+                };
+                /** @description The tenant you are looking for does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing tenant */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the tenant */
+                    tenantId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The tenant was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information on an tenant */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the project */
+                    projectId: components["schemas"]["UUID"];
+                    /** @description ID of the tenant */
+                    tenantId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserJson"];
+                };
+            };
+            responses: {
+                /** @description An existing tenant was successfully updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The tenant does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/api/v1/tenancies": {
         parameters: {
             query?: never;
@@ -4698,31 +5288,34 @@ export interface components {
         };
         /** @enum {string} */
         EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
-        /** @description Represents a message or invoice in the user's inbox */
+        /** @description Represents an enriched issue event stored in a user's inbox */
         InboxMessage: {
-            /** @description Unique identifier of the message */
+            /** @description Unique identifier of this inbox message */
             id?: string;
-            /**
-             * @description Type of message (Message | Invoice)
-             * @enum {string}
-             */
-            type?: "Message" | "Invoice";
-            /** @description Sender or contractor associated with the message */
-            contractor?: string;
-            /** @description Subject or title of the message */
-            subject?: string;
-            /** @description Property or building related to the message */
-            property?: string;
-            /** @description Tenant or person related to the message */
-            tenant?: string;
-            /** @description Date and time when the message was received */
-            receivedAt?: components["schemas"]["OffsetDateTime"];
+            /** @description User who received this notification */
+            userId?: string;
+            /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
+            eventType?: string;
+            /** @description Related issue ID */
+            issueId?: string;
+            /** @description Issue title */
+            title?: string;
+            /** @description Issue description */
+            description?: string;
+            /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
+            issueType?: string;
+            /** @description Current status of the issue */
+            status?: string;
+            /** @description Link to the frontend issue page */
+            link?: string;
             /** @description Whether the message has been read */
             read?: boolean;
-            /** @description ID of the user who owns the message */
-            userId?: string;
-            /** @description URL to the related GitHub issue or external resource */
-            issueLink?: string;
+            /** @description Timestamp when the notification was created */
+            createdAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Email of the actor who triggered the event */
+            actorEmail?: string;
+            /** @description Email of the owner assigned to the issue */
+            ownerEmail?: string;
         };
         /**
          * Format: date-time
@@ -4734,24 +5327,29 @@ export interface components {
             id?: components["schemas"]["UUID"];
             name?: string;
             title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            owner?: components["schemas"]["UUID"];
+            type?: components["schemas"]["IssueType"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            assigneeId?: components["schemas"]["UUID"];
         };
         /** @description An issue */
         IssueJson: {
-            reporterId?: components["schemas"]["UUID"];
-            tenancyId?: components["schemas"]["UUID"];
             id?: components["schemas"]["UUID"];
             projectId?: components["schemas"]["UUID"];
             title?: string;
-            type?: components["schemas"]["Type"];
-            status?: components["schemas"]["Status"];
-            ownerId?: components["schemas"]["UUID"];
+            type?: components["schemas"]["IssueType"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            reporterId?: components["schemas"]["UUID"];
+            tenancyId?: components["schemas"]["UUID"];
+            assigneeId?: components["schemas"]["UUID"];
             description?: string;
-            blockedBy?: components["schemas"]["UUID"];
-            relatedTo?: components["schemas"]["UUID"];
-            duplicateOf?: components["schemas"]["UUID"];
+            parentIssue?: components["schemas"]["UUID"];
+            childrenIssues?: string[];
+            relatedTo?: string[];
+            duplicateOf?: string[];
+            blockedBy?: string[];
+            blocks?: string[];
         };
         /** @description A list of issues */
         IssueListJson: {
@@ -4774,6 +5372,12 @@ export interface components {
             total: number;
             issues?: components["schemas"]["IssueItemJson"][];
         };
+        /** @enum {string} */
+        IssuePriority: "URGENT" | "HIGH" | "MEDIUM" | "LOW" | "UNCLASSIFIED";
+        /** @enum {string} */
+        IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
+        /** @enum {string} */
+        IssueType: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
         /**
          * Format: date
          * @example 2022-03-10
@@ -4865,6 +5469,20 @@ export interface components {
         /** @description A list of project members */
         ProjectMemberListJson: {
             members: components["schemas"]["ProjectMemberJson"][];
+        };
+        /** @description Organization assignment to a project */
+        ProjectOrganizationJson: {
+            organizationId?: components["schemas"]["UUID"];
+            organizationName?: string;
+            role: components["schemas"]["MemberRole"];
+        };
+        /** @description List of organizations assigned to a project */
+        ProjectOrganizationListJson: {
+            organizations?: components["schemas"]["ProjectOrganizationJson"][];
+        };
+        /** @description A list of tenancies for a project */
+        ProjectTenancyListJson: {
+            tenancies?: components["schemas"]["TenancyInfoJson"][];
         };
         /** @description A property */
         PropertyJson: {
@@ -4962,8 +5580,6 @@ export interface components {
             title?: string;
             address?: components["schemas"]["AddressJson"];
         };
-        /** @enum {string} */
-        Status: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
         /** @description A storage inside a building but with living space according to WoFIV */
         StorageJson: {
             type?: components["schemas"]["UnitType"];
@@ -4977,6 +5593,14 @@ export interface components {
             description?: string;
             id?: components["schemas"]["UUID"];
             title?: string;
+        };
+        /** @description A tenancy item with information from the manager's view */
+        TenancyInfoJson: {
+            active?: boolean;
+            id?: components["schemas"]["UUID"];
+            startOfRental?: components["schemas"]["LocalDate"];
+            endOfRental?: components["schemas"]["LocalDate"];
+            tenants?: components["schemas"]["UserJson"][];
         };
         /** @description A tenancy item with basic information from a tenant's perspective */
         TenancyItemJson: {
@@ -5029,8 +5653,6 @@ export interface components {
         TenancyListJson: {
             tenancies?: components["schemas"]["TenancyItemJson"][];
         };
-        /** @enum {string} */
-        Type: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
         /** Format: uuid */
         UUID: string;
         /** @enum {string} */

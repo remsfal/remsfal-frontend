@@ -6,13 +6,12 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-permissions:
-  contents: read
-
 jobs:
   run-tests:
     name: Node.js ${{ matrix.node-version }} Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -29,7 +28,7 @@ jobs:
       - name: Run Unit Test with Vitest (test)
         run: npm run coverage:unit
       - name: Run E2E Test with Cypress (test)
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           # we have already installed all dependencies above
           install: false

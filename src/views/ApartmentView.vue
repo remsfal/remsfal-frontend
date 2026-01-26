@@ -1,4 +1,6 @@
-\<script setup lang="ts">
+<script setup lang="ts">
+import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { apartmentService } from '@/services/ApartmentService';
@@ -82,7 +84,6 @@ const fetchApartment = async () => {
       description?: string;
     };
 
-    // assign to reactive refs
     title.value = data.title || '';
     location.value = data.location || '';
     heatingSpace.value = data.heatingSpace ?? null;
@@ -90,7 +91,6 @@ const fetchApartment = async () => {
     usableSpace.value = data.usableSpace ?? null;
     description.value = data.description || '';
 
-    // normalize data for originalValues
     originalValues.value = {
       title: data.title || '',
       location: data.location || '',
@@ -122,7 +122,6 @@ onMounted(() => {
   }
 });
 
-// Save
 const save = async () => {
   if (!isValid.value) {
     showValidationErrorToast(toast, validationErrors.value);
@@ -153,32 +152,35 @@ const save = async () => {
   }
 };
 
-// Cancel
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
 </script>
 
 <template>
-  <div class="p-6 w-full">
-    <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">
-        Bearbeite Apartment mit ID: {{ unitId }}
-      </h2>
+  <UnitBreadcrumb
+    :projectId="props.projectId" 
+    :unitId="props.unitId" 
+    :currentTitle="title"
+    mode="edit" 
+  />
 
+  <BaseCard>
+    <template #title>
+      Bearbeite Apartment mit ID: {{ unitId }}
+    </template>
+
+    <template #content>
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          <!-- Titel -->
           <div class="col-span-2">
             <label for="title" class="block text-gray-700 mb-1">Titel</label>
             <input id="title" v-model="title" type="text" class="form-input w-full">
           </div>
 
-          <!-- Beschreibung -->
           <div class="col-span-2">
             <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
             <textarea id="description" v-model="description" rows="3" class="form-textarea w-full" />
           </div>
 
-          <!-- Standort -->
           <div class="col-span-2">
             <label for="location" class="block text-gray-700 mb-1">Standort</label>
             <input id="location" v-model="location" type="text" class="form-input w-full">
@@ -200,7 +202,6 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           </div>
         </div>
 
-        <!-- Validierungsfehler -->
         <div v-if="validationErrors.length" class="text-red-600 mt-4">
           <ul>
             <li v-for="(error, i) in validationErrors" :key="i">
@@ -209,7 +210,6 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           </ul>
         </div>
 
-        <!-- Buttons -->
         <div class="mt-6 flex justify-end space-x-4">
           <button
             type="submit"
@@ -228,8 +228,8 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
           </button>
         </div>
       </form>
-    </div>
-  </div>
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>

@@ -364,50 +364,61 @@
         "enum" : [ "OWNER", "MANAGER", "STAFF" ]
       },
       "InboxMessage" : {
-        "description" : "Represents a message or invoice in the user's inbox",
+        "description" : "Represents an enriched issue event stored in a user's inbox",
         "type" : "object",
         "properties" : {
           "id" : {
             "type" : "string",
-            "description" : "Unique identifier of the message"
+            "description" : "Unique identifier of this inbox message"
           },
-          "type" : {
+          "userId" : {
             "type" : "string",
-            "description" : "Type of message (Message | Invoice)",
-            "enum" : [ "Message", "Invoice" ]
+            "description" : "User who received this notification"
           },
-          "contractor" : {
+          "eventType" : {
             "type" : "string",
-            "description" : "Sender or contractor associated with the message"
+            "description" : "Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED"
           },
-          "subject" : {
+          "issueId" : {
             "type" : "string",
-            "description" : "Subject or title of the message"
+            "description" : "Related issue ID"
           },
-          "property" : {
+          "title" : {
             "type" : "string",
-            "description" : "Property or building related to the message"
+            "description" : "Issue title"
           },
-          "tenant" : {
+          "description" : {
             "type" : "string",
-            "description" : "Tenant or person related to the message"
+            "description" : "Issue description"
           },
-          "receivedAt" : {
-            "description" : "Date and time when the message was received",
+          "issueType" : {
             "type" : "string",
-            "$ref" : "#/components/schemas/OffsetDateTime"
+            "description" : "Issue type: DEFECT, TASK, APPLICATION, ..."
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "Current status of the issue"
+          },
+          "link" : {
+            "type" : "string",
+            "description" : "Link to the frontend issue page"
           },
           "read" : {
             "type" : "boolean",
             "description" : "Whether the message has been read"
           },
-          "userId" : {
+          "createdAt" : {
+            "description" : "Timestamp when the notification was created",
             "type" : "string",
-            "description" : "ID of the user who owns the message"
+            "$ref" : "#/components/schemas/OffsetDateTime"
           },
-          "issueLink" : {
+          "actorEmail" : {
             "type" : "string",
-            "description" : "URL to the related GitHub issue or external resource"
+            "description" : "Email of the actor who triggered the event"
+          },
+          "ownerEmail" : {
+            "type" : "string",
+            "description" : "Email of the owner assigned to the issue"
           }
         }
       },
@@ -430,12 +441,15 @@
             "type" : "string"
           },
           "type" : {
-            "$ref" : "#/components/schemas/Type"
+            "$ref" : "#/components/schemas/IssueType"
           },
           "status" : {
-            "$ref" : "#/components/schemas/Status"
+            "$ref" : "#/components/schemas/IssueStatus"
           },
-          "owner" : {
+          "priority" : {
+            "$ref" : "#/components/schemas/IssuePriority"
+          },
+          "assigneeId" : {
             "$ref" : "#/components/schemas/UUID"
           }
         }
@@ -444,12 +458,6 @@
         "description" : "An issue",
         "type" : "object",
         "properties" : {
-          "reporterId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "tenancyId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -461,25 +469,73 @@
             "maxLength" : 255
           },
           "type" : {
-            "$ref" : "#/components/schemas/Type"
+            "$ref" : "#/components/schemas/IssueType"
           },
           "status" : {
-            "$ref" : "#/components/schemas/Status"
+            "$ref" : "#/components/schemas/IssueStatus"
           },
-          "ownerId" : {
+          "priority" : {
+            "$ref" : "#/components/schemas/IssuePriority"
+          },
+          "reporterId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "tenancyId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "assigneeId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "description" : {
             "type" : "string"
           },
-          "blockedBy" : {
+          "parentIssue" : {
             "$ref" : "#/components/schemas/UUID"
+          },
+          "childrenIssues" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           },
           "relatedTo" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           },
           "duplicateOf" : {
-            "$ref" : "#/components/schemas/UUID"
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "blockedBy" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
+          },
+          "blocks" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string",
+              "format" : "uuid",
+              "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+            }
           }
         }
       },
@@ -514,6 +570,18 @@
             }
           }
         }
+      },
+      "IssuePriority" : {
+        "type" : "string",
+        "enum" : [ "URGENT", "HIGH", "MEDIUM", "LOW", "UNCLASSIFIED" ]
+      },
+      "IssueStatus" : {
+        "type" : "string",
+        "enum" : [ "PENDING", "OPEN", "IN_PROGRESS", "CLOSED", "REJECTED" ]
+      },
+      "IssueType" : {
+        "type" : "string",
+        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "LocalDate" : {
         "type" : "string",
@@ -728,6 +796,46 @@
           }
         }
       },
+      "ProjectOrganizationJson" : {
+        "description" : "Organization assignment to a project",
+        "type" : "object",
+        "properties" : {
+          "organizationId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "organizationName" : {
+            "type" : "string"
+          },
+          "role" : {
+            "$ref" : "#/components/schemas/MemberRole"
+          }
+        },
+        "required" : [ "role" ]
+      },
+      "ProjectOrganizationListJson" : {
+        "description" : "List of organizations assigned to a project",
+        "type" : "object",
+        "properties" : {
+          "organizations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ProjectOrganizationJson"
+            }
+          }
+        }
+      },
+      "ProjectTenancyListJson" : {
+        "description" : "A list of tenancies for a project",
+        "type" : "object",
+        "properties" : {
+          "tenancies" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TenancyInfoJson"
+            }
+          }
+        }
+      },
       "PropertyJson" : {
         "description" : "A property",
         "type" : "object",
@@ -926,10 +1034,6 @@
           }
         }
       },
-      "Status" : {
-        "type" : "string",
-        "enum" : [ "PENDING", "OPEN", "IN_PROGRESS", "CLOSED", "REJECTED" ]
-      },
       "StorageJson" : {
         "description" : "A storage inside a building but with living space according to WoFIV",
         "type" : "object",
@@ -963,6 +1067,30 @@
           "title" : {
             "type" : "string",
             "maxLength" : 255
+          }
+        }
+      },
+      "TenancyInfoJson" : {
+        "type" : "object",
+        "description" : "A tenancy item with information from the manager's view",
+        "properties" : {
+          "active" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "startOfRental" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "endOfRental" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "tenants" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UserJson"
+            }
           }
         }
       },
@@ -1070,10 +1198,6 @@
             }
           }
         }
-      },
-      "Type" : {
-        "type" : "string",
-        "enum" : [ "APPLICATION", "TASK", "DEFECT", "MAINTENANCE" ]
       },
       "UUID" : {
         "type" : "string",
@@ -1424,7 +1548,7 @@
         },
         "responses" : {
           "201" : {
-            "description" : "organization was created successfully",
+            "description" : "Organization was created successfully",
             "headers" : {
               "Location" : {
                 "description" : "URL of the new organization"
@@ -1476,7 +1600,7 @@
       "patch" : {
         "summary" : "Update information of a specific organization.",
         "parameters" : [ {
-          "description" : "id of the organization",
+          "description" : "Id of the organization",
           "name" : "organizationId",
           "in" : "path",
           "required" : true,
@@ -1622,7 +1746,7 @@
         } ]
       },
       "post" : {
-        "summary" : "add an employee to an organization",
+        "summary" : "Add an employee to an organization",
         "parameters" : [ {
           "description" : "Id of the organization",
           "required" : true,
@@ -1672,7 +1796,7 @@
       "patch" : {
         "summary" : "Update role of an employee.",
         "parameters" : [ {
-          "description" : "employeeId",
+          "description" : "Id of the employee",
           "required" : true,
           "name" : "employeeId",
           "in" : "path",
@@ -3340,6 +3464,168 @@
         }
       }
     },
+    "/api/v1/projects/{projectId}/organizations" : {
+      "get" : {
+        "summary" : "Retrieve information of all organizations assigned to the project",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of all assigned organizations was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectOrganizationListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The project does not exist"
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Assign an organization to the project",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProjectOrganizationJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "The organization was successfully assigned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectOrganizationJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request message"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Insufficient permissions"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/organizations/{organizationId}" : {
+      "patch" : {
+        "summary" : "Update role of an organization in the project",
+        "parameters" : [ {
+          "description" : "ID of the organization",
+          "required" : true,
+          "name" : "organizationId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProjectOrganizationJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "The organization role was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectOrganizationJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Insufficient permissions"
+          },
+          "404" : {
+            "description" : "The project or organization assignment does not exist"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Remove an organization from the project",
+        "parameters" : [ {
+          "description" : "ID of the organization",
+          "required" : true,
+          "name" : "organizationId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The organization was removed successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Insufficient permissions"
+          },
+          "404" : {
+            "description" : "The project or organization assignment does not exist"
+          }
+        }
+      }
+    },
     "/api/v1/projects/{projectId}/properties" : {
       "get" : {
         "summary" : "Retrieve information for all properties",
@@ -4662,6 +4948,340 @@
         "responses" : {
           "204" : {
             "description" : "The storage was deleted successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/tenancies" : {
+      "get" : {
+        "summary" : "Retrieve information of all tenancies",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The requested tenancies were successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProjectTenancyListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Create a new tenancy",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TenancyInfoJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Tenancy created successfully"
+          },
+          "400" : {
+            "description" : "Invalid request message"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/tenancies/{tenancyId}" : {
+      "patch" : {
+        "summary" : "Update information of a tenancy",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenancy",
+          "required" : true,
+          "name" : "tenancyId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TenancyInfoJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "The tenancy was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenancyInfoJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The tenancy does not exist"
+          }
+        }
+      },
+      "get" : {
+        "summary" : "Retrieve Information of a tenancy.",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenancy",
+          "required" : true,
+          "name" : "tenancyId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The requested tenancy was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenancyInfoJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided session cookie"
+          },
+          "404" : {
+            "description" : "The tenancy does not exist"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/tenants" : {
+      "get" : {
+        "summary" : "Retrieve information for all tenants",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of tenants was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UserJson"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "The tenant does not exist"
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Create a new tenant",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "A new tenant was successfully created",
+            "headers" : {
+              "Location" : {
+                "description" : "URL of the new tenant"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserJson"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/tenants/{tenantId}" : {
+      "patch" : {
+        "summary" : "Update information on an tenant",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenant",
+          "required" : true,
+          "name" : "tenantId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "An existing tenant was successfully updated",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The tenant does not exist"
+          }
+        }
+      },
+      "get" : {
+        "summary" : "Retrieve information of a specific tenant",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenant",
+          "required" : true,
+          "name" : "tenantId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The specific tenant was successfully returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserJson"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "The tenant you are looking for does not exist"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete an existing tenant",
+        "parameters" : [ {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenant",
+          "required" : true,
+          "name" : "tenantId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The tenant was deleted successfully"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"

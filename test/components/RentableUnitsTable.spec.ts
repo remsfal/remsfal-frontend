@@ -1,6 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
-import flushPromises from 'flush-promises';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import RentableUnitsTable from '../../src/components/RentableUnitsTable.vue';
 import type { RentableUnitTreeNode } from '../../src/services/PropertyService';
 

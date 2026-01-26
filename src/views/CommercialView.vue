@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -82,8 +84,8 @@ async function fetchCommercialDetails() {
 
     title.value = data.title || '';
     description.value = data.description || '';
-    commercialSpace.value = data.netFloorArea ?? null; // <-- map netFloorArea
-    heatingSpace.value = data.technicalServicesArea ?? null; // <-- map technicalServicesArea
+    commercialSpace.value = data.netFloorArea ?? null;
+    heatingSpace.value = data.technicalServicesArea ?? null;
     location.value = data.location || '';
 
     originalValues.value = {
@@ -148,17 +150,23 @@ const save = async () => {
 
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
-// This is the crucial line to expose the fetchCommercialDetails method externally
 defineExpose({ fetchCommercialDetails });
 </script>
 
 <template>
-  <div class="p-6 w-full">
-    <div class="bg-white rounded-lg shadow-md p-10 max-w-screen-2xl mx-auto">
-      <h2 class="text-2xl font-semibold mb-6">
-        {{ t('commercialUnit.editTitle', { id: unitId }) }}
-      </h2>
+  <UnitBreadcrumb
+    :projectId="props.projectId" 
+    :unitId="props.unitId" 
+    :currentTitle="title"
+    mode="edit" 
+  />
 
+  <BaseCard>
+    <template #title>
+      {{ t('commercialUnit.editTitle', { id: unitId }) }}
+    </template>
+
+    <template #content>
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
@@ -238,8 +246,8 @@ defineExpose({ fetchCommercialDetails });
           </button>
         </div>
       </form>
-    </div>
-  </div>
+    </template>
+  </BaseCard>
 </template>
 
 <style scoped>
