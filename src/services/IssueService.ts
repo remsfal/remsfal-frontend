@@ -1,7 +1,7 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type Status = ApiComponents['schemas']['Status'];
-export type Type = ApiComponents['schemas']['Type'];
+export type Status = ApiComponents['schemas']['IssueStatus'];
+export type Type = ApiComponents['schemas']['IssueType'];
 export type Issue = ApiComponents['schemas']['IssueJson'];
 export type IssueList = ApiComponents['schemas']['IssueListJson'];
 export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
