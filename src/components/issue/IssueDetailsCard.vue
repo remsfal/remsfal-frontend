@@ -8,7 +8,6 @@ import Button from 'primevue/button';
 import { issueService, type Issue, type Type } from '@/services/IssueService';
 import { useProjectStore } from '@/stores/ProjectStore';
 
-
 /* =========================
      Props & Emits
   ========================= */
@@ -19,7 +18,7 @@ const props = defineProps<{
     issueId: string;
     title: string;
     status: Issue["status"];
-    ownerId: string;
+    assigneeId: string;
     reporter: string;
     project: string;
     issueType: Issue["type"];
@@ -41,7 +40,7 @@ const projectStore = useProjectStore();
 const issueId = ref(props.initialData.issueId);
 const title = ref(props.initialData.title);
 const status = ref(props.initialData.status);
-const ownerId = ref(props.initialData.ownerId);
+const assigneeId = ref(props.initialData.assigneeId);
 const reporter = ref(props.initialData.reporter);
 const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
@@ -52,7 +51,7 @@ const tenancy = ref(props.initialData.tenancy);
   ========================= */
 const originalTitle = ref(title.value);
 const originalStatus = ref(status.value);
-const originalOwnerId = ref(ownerId.value);
+const originalAssigneeId = ref(assigneeId.value);
 const originalIssueType = ref(issueType.value);
 const originalTenancy = ref(tenancy.value);
 
@@ -63,11 +62,11 @@ const originalTenancy = ref(tenancy.value);
 const canSave = computed(() =>
   title.value !== originalTitle.value ||
   status.value !== originalStatus.value ||
-  ownerId.value !== originalOwnerId.value ||
+  assigneeId.value !== originalAssigneeId.value ||
   issueType.value !== originalIssueType.value ||
-    tenancy.value !== originalTenancy.value
+  tenancy.value !== originalTenancy.value
 );
-console.log("Initial ownerId:", props.initialData.ownerId);
+console.log("Initial assigneeId:", props.initialData.assigneeId);
 /* =========================
      Dropdown Options
   ========================= */
@@ -96,7 +95,7 @@ watch(
     issueId.value = newData.issueId;
     title.value = newData.title;
     status.value = newData.status;
-    ownerId.value = newData.ownerId;
+    assigneeId.value = newData.assigneeId;
     reporter.value = newData.reporter;
     project.value = newData.project;
     issueType.value = newData.issueType;
@@ -104,7 +103,7 @@ watch(
 
     originalTitle.value = newData.title;
     originalStatus.value = newData.status;
-    originalOwnerId.value = newData.ownerId;
+    originalAssigneeId.value = newData.assigneeId;
     originalIssueType.value = newData.issueType;
     originalTenancy.value = newData.tenancy;
   },
@@ -126,8 +125,8 @@ const handleSave = async () => {
     if (title.value !== originalTitle.value) payload.title = title.value;
     if (status.value !== originalStatus.value)
       payload.status = status.value as Issue["status"];
-    if (ownerId.value !== originalOwnerId.value)
-      payload.ownerId = ownerId.value;
+    if (assigneeId.value !== originalAssigneeId.value)
+      payload.assigneeId = assigneeId.value;
     if (issueType.value !== originalIssueType.value)
       payload.type = issueType.value as Issue["type"];
 
@@ -137,7 +136,7 @@ console.log("#######",issueType.value,originalIssueType.value)
 
     originalTitle.value = title.value;
     originalStatus.value = status.value;
-    originalOwnerId.value = ownerId.value;
+    originalAssigneeId.value = assigneeId.value;
     originalIssueType.value = issueType.value;
     originalTenancy.value = tenancy.value;
 
@@ -217,7 +216,7 @@ console.log("#######",issueType.value)
 
           <div class="flex flex-col gap-1 flex-1">
             <label class="text-sm text-gray-600">Owner / Assignee</label>
-            <InputText v-model="ownerId" placeholder="Enter owner ID" />
+            <InputText v-model="assigneeId" placeholder="Enter owner ID" />
           </div>
         </div>
 

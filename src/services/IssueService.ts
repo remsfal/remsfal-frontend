@@ -3,18 +3,18 @@ import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 export type Status = ApiComponents['schemas']['IssueStatus'];
 export type Type = ApiComponents['schemas']['IssueType'];
 export type Issue = ApiComponents['schemas']['IssueJson'];
-export type IssueList = ApiComponents['schemas']['IssueListJson'];
 export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
+export type IssueList = ApiComponents['schemas']['IssueListJson'];
 
 export class IssueService {
   /**
-   * Get all issues for a project, optionally filtered by status or owner.
+   * Get all issues for a project, optionally filtered by status or assigneeId.
    */
   async getIssues(
     projectId: string,
     status?: Status,
     category?: string,
-    ownerId?: string,
+    assigneeId?: string,
     limit = 100,
     offset = 0,
   ): Promise<IssueList> {
@@ -25,7 +25,7 @@ export class IssueService {
         offset,
         ...(status ? { status } : {}),
         ...(category ? { category } : {}),
-        ...(ownerId ? { owner: ownerId } : {}),
+        ...(assigneeId ? { assigneeId: assigneeId } : {}),
       },
     }) as IssueList;
 

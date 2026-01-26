@@ -25,7 +25,7 @@ const baseProps = {
     issueId: 'issue-1',
     title: 'Old title',
     status: 'OPEN',
-    ownerId: 'user-1',
+    assigneeId: 'user-1',
     reporter: 'reporter-1',
     project: 'Project A',
     issueType: 'TASK',
@@ -139,8 +139,8 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('detects change in ownerId field', () => {
-    wrapper.vm.ownerId = 'user-2';
+  test('detects change in assigneeId field', () => {
+    wrapper.vm.assigneeId = 'user-2';
     expect(wrapper.vm.canSave).toBe(true);
   });
 
