@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Breadcrumb from 'primevue/breadcrumb';
-import BaseCard from '@/components/BaseCard.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 import { useI18n } from 'vue-i18n';
 import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
 

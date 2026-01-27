@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import BaseCard from '@/components/BaseCard.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import TreeTable, { type TreeTableExpandedKeys, type TreeTableSelectionKeys } from 'primevue/treetable';

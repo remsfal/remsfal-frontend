@@ -226,3 +226,89 @@ The application follows a strict **resource-per-service** pattern:
 2. Views and components NEVER call `apiClient` directly
 3. When working with different resource types (e.g., in a tree view with properties, buildings, apartments), import and use ALL relevant services
 4. Use type-safe methods: `service.get()`, `service.post()`, `service.patch()`, `service.delete()`
+
+## Form Validation Pattern
+
+**Standard:** All forms use **PrimeVue Forms + Zod Resolver** with **PrimeVue Message** component for validation.
+
+### Implementation Pattern
+
+```typescript
+import { Form } from '@primevue/forms';
+import type { FormSubmitEvent } from '@primevue/forms';
+import { zodResolver } from '@primevue/forms/resolvers/zod';
+import { z } from 'zod';
+import Message from 'primevue/message';
+
+// Define Zod schema with trim() for string inputs
+const schema = z.object({
+  fieldName: z
+    .string()
+    .trim()
+    .min(3, { message: t('validation.minLength', { min: 3 }) })
+    .max(100, { message: t('validation.maxLength', { max: 100 }) })
+});
+
+const resolver = zodResolver(schema);
+const initialValues = ref({ fieldName: '' });
+
+const onSubmit = (event: FormSubmitEvent) => {
+  const formState = event.states;
+  const fieldValue = formState.fieldName?.value?.trim() || '';
+
+  if (!event.valid || !fieldValue) return;
+
+  // API call with fieldValue
+};
+```
+
+### Template Pattern
+
+```vue
+<Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
+  <div class="flex flex-col gap-4">
+    <label for="fieldName" class="font-semibold">
+      {{ t('form.label') }}
+    </label>
+
+    <InputText
+      name="fieldName"
+      type="text"
+      :placeholder="t('form.placeholder')"
+      :class="{ 'p-invalid': $form.fieldName?.invalid && $form.fieldName?.touched }"
+      autofocus
+      fluid
+    />
+
+    <Message v-if="$form.fieldName?.invalid" severity="error" size="small" variant="simple">
+      {{ $form.fieldName.error.message }}
+    </Message>
+  </div>
+
+  <div class="flex justify-end gap-3 mt-6">
+    <Button type="button" :label="t('button.cancel')" severity="secondary" @click="onCancel" />
+    <Button
+      type="submit"
+      :label="t('button.submit')"
+      icon="pi pi-check"
+      :disabled="!$form.fieldName?.valid || !$form.fieldName?.dirty"
+    />
+  </div>
+</Form>
+```
+
+### Key Rules
+
+1. **Use `name` attribute** on inputs - no v-model needed
+2. **Error display**: Use `<Message>` component with `v-if="$form.fieldName?.invalid"`
+3. **Button state**: Disable submit with `:disabled="!$form.fieldName?.valid || !$form.fieldName?.dirty"`
+4. **Touch state**: Show errors only after blur: `$form.fieldName?.touched`
+5. **p-invalid class**: Apply when invalid AND touched
+6. **Zod schema**: Use `z.string().trim()` for automatic trimming
+7. **Workaround**: Extract values from `event.states.[fieldName].value` (not `event.values`)
+
+### Dependencies
+
+- `zod` - Schema validation library
+- `@primevue/forms` - PrimeVue form validation
+- `primevue/message` - Error message component

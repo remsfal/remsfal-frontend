@@ -4,6 +4,9 @@ import NewProjectForm from '../../src/components/NewProjectForm.vue';
 import { projectService } from '../../src/services/ProjectService';
 import { useProjectStore } from '../../src/stores/ProjectStore';
 import { useRouter } from 'vue-router';
+import { Form } from '@primevue/forms';
+import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 
 vi.mock('@/services/ProjectService', { spy: true });
 vi.mock('@/stores/ProjectStore', () => ({useProjectStore: vi.fn(),}));
@@ -12,12 +15,10 @@ vi.mock('vue-router', () => ({useRouter: vi.fn(),}));
 describe('NewProjectForm.vue', () => {
   let wrapper: VueWrapper<any>;
   let pushMock: ReturnType<typeof vi.fn>;
-  let storeMock: { 
+  let storeMock: {
     addProjectToList: ReturnType<typeof vi.fn>;
     setSelectedProject: ReturnType<typeof vi.fn>;
   };
-
-  const maxLengthError = 'Der Name der Liegenschaft darf nicht mehr als 100 Zeichen lang sein';
 
   beforeEach(() => {
     vi.spyOn(projectService, 'createProject').mockResolvedValue({
@@ -38,33 +39,68 @@ describe('NewProjectForm.vue', () => {
       global: {
         stubs: {
           Dialog: { template: '<div><slot /></div>' },
-          Button: { template: '<button @click="$emit(\'click\')"><slot /></button>' },
-          InputText: {
-            template: `<input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />`,
-            props: ['modelValue'],
-          },
+          Button: { template: '<button type="button" @click="$emit(\'click\')"><slot /></button>' },
+        },
+        components: {
+          Form,
+          InputText,
+          Message,
         },
       },
     });
   });
 
-  it('shows error message if projectTitle exceeds maxLength', async () => {
-    const input = wrapper.find('#projectTitle');
+  it('shows error message if projectTitle is too short', async () => {
+    const input = wrapper.find('input[name="projectTitle"]');
     expect(input.exists()).toBe(true);
-    await input.setValue('a'.repeat(101));
-    expect(wrapper.find('.p-error').text()).toContain(maxLengthError);
+
+    // Set value with less than 3 characters and blur
+    await input.setValue('AB');
+    await input.trigger('blur');
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await wrapper.vm.$nextTick();
+
+    // Error should be shown in Message component
+    const errorMessage = wrapper.findComponent(Message);
+    expect(errorMessage.exists()).toBe(true);
   });
 
-  it('calls createProject and navigates on valid submit', async () => {
-    const input = wrapper.find('#projectTitle');
-    await input.setValue('Valid Project');
+  it('shows error message if projectTitle exceeds maxLength', async () => {
+    const input = wrapper.find('input[name="projectTitle"]');
+    expect(input.exists()).toBe(true);
 
-    // Find the "create" button by its index (second button) or label
-    const buttons = wrapper.findAll('button');
-    const createButton = buttons[1]; // assuming the second button is "Create"
-    await createButton.trigger('click');
+    // Set value and blur to trigger validation (touched state)
+    await input.setValue('a'.repeat(101));
+    await input.trigger('blur');
 
-    expect(projectService.createProject).toHaveBeenCalledWith('Valid Project');
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await wrapper.vm.$nextTick();
+
+    // Error should be shown in Message component
+    const errorMessage = wrapper.findComponent(Message);
+    expect(errorMessage.exists()).toBe(true);
+    expect(errorMessage.text()).toContain('100'); // Should contain max length
+  });
+
+  it('disables submit button initially', async () => {
+    // Button should be disabled initially (empty form, not dirty)
+    const submitButton = wrapper.findAll('button').find(b => b.attributes('type') === 'submit');
+    expect(submitButton?.attributes('disabled')).toBeDefined();
+  });
+
+  it('calls createProject with trimmed value and navigates on valid submit', async () => {
+    const input = wrapper.find('input[name="projectTitle"]');
+    await input.setValue('  Valid Project  '); // Test trim functionality
+
+    const form = wrapper.findComponent(Form);
+    await form.trigger('submit');
+
+    // Wait for validation and async operations to complete
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await wrapper.vm.$nextTick();
+
+    expect(projectService.createProject).toHaveBeenCalledWith('Valid Project'); // Should be trimmed
     expect(storeMock.addProjectToList).toHaveBeenCalledWith({
       id: '1',
       name: 'Valid Project',

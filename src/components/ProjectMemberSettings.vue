@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import NewProjectMemberButton from '@/components/NewProjectMemberButton.vue';
-import BaseCard from '@/components/BaseCard.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';

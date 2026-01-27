@@ -2,7 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import BaseCard from '@/components/BaseCard.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import { projectService } from '@/services/ProjectService';

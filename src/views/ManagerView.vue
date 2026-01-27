@@ -4,7 +4,6 @@ import { ref } from 'vue';
 import NewProjectForm from '@/components/NewProjectForm.vue';
 import ProjectSelectionTable from '@/components/ProjectSelectionTable.vue';
 import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 
 const { t } = useI18n();
 
@@ -34,17 +33,9 @@ const close = () => {
         style="width: auto"
         @click="open"
       />
-      <Dialog
-        v-model:visible="display"
-        :header="t('projectSelection.add')"
-        :breakpoints="{ '960px': '75vw' }"
-        :style="{ width: '30vw' }"
-        :modal="true"
-      >
-        <div style="margin-top: 1.2em">
-          <NewProjectForm @abort="close" @submit="close" />
-        </div>
-      </Dialog>
+      <div v-if="display">
+        <NewProjectForm @abort="close" @submit="close" />
+      </div>
     </div>
   </div>
 </template>

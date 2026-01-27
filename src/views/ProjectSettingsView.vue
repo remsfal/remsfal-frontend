@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import BaseCard from '@/components/BaseCard.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ProjectSettings from '@/components/ProjectSettings.vue';
