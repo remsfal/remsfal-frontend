@@ -43,8 +43,7 @@ const validationSchema = z.object({
     .email({ message: t('projectSettings.newProjectMemberButton.invalidEmail') }),
   role: z
     .string()
-    .min(1, { message: t('projectSettings.newProjectMemberButton.invalidRole') })
-    .refine((val) => val !== null && val !== '', {message: t('projectSettings.newProjectMemberButton.invalidRole')})
+    .min(1, { message: t('projectSettings.newProjectMemberButton.invalidRole') }),
 });
 
 const resolver = zodResolver(validationSchema);
