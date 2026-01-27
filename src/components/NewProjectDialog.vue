@@ -134,6 +134,7 @@ function abort() {
         </label>
 
         <InputText
+          id="projectTitle"
           name="projectTitle"
           type="text"
           :placeholder="t('newProjectForm.input.exampleAddress')"
