@@ -1,6 +1,6 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewProjectForm from '../../src/components/NewProjectForm.vue';
+import NewProjectDialog from '../../src/components/NewProjectDialog.vue';
 import { projectService } from '../../src/services/ProjectService';
 import { useProjectStore } from '../../src/stores/ProjectStore';
 import { useRouter } from 'vue-router';
@@ -12,7 +12,7 @@ vi.mock('@/services/ProjectService', { spy: true });
 vi.mock('@/stores/ProjectStore', () => ({useProjectStore: vi.fn(),}));
 vi.mock('vue-router', () => ({useRouter: vi.fn(),}));
 
-describe('NewProjectForm.vue', () => {
+describe('NewProjectDialog.vue', () => {
   let wrapper: VueWrapper<any>;
   let pushMock: ReturnType<typeof vi.fn>;
   let storeMock: {
@@ -35,7 +35,8 @@ describe('NewProjectForm.vue', () => {
     pushMock = vi.fn();
     (useRouter as unknown as () => { push: typeof pushMock }) = () => ({ push: pushMock });
 
-    wrapper = mount(NewProjectForm, {
+    wrapper = mount(NewProjectDialog, {
+      props: {visible: true,},
       global: {
         stubs: {
           Dialog: { template: '<div><slot /></div>' },

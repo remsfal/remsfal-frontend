@@ -15,11 +15,16 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { saveProject } from '@/helper/indexeddb';
 
-const emit = defineEmits<{ abort: [] }>();
+defineProps<{
+  visible: boolean;
+}>();
+
+const emit = defineEmits<{
+  'update:visible': [value: boolean];
+}>();
+
 const { t } = useI18n();
 const toast = useToast();
-
-const visible = ref(true);
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -58,7 +63,7 @@ async function createProject(title: string) {
         detail: t('newProjectForm.offlineSaved'),
         life: 4000,
       });
-      visible.value = false;
+      emit('update:visible', false);
       return;
     }
 
@@ -72,7 +77,7 @@ async function createProject(title: string) {
         detail: t('newProjectForm.offlineSaved'),
         life: 4000,
       });
-      visible.value = false;
+      emit('update:visible', false);
       return;
     }
 
@@ -92,7 +97,7 @@ async function createProject(title: string) {
       detail: t('newProjectForm.successCreated'),
       life: 4000,
     });
-    visible.value = false;
+    emit('update:visible', false);
   } catch (error) {
     console.error('Failed to create project online:', error);
     await saveProject(title);
@@ -102,24 +107,24 @@ async function createProject(title: string) {
       detail: t('newProjectForm.offlineSaved'),
       life: 4000,
     });
-    visible.value = false;
+    emit('update:visible', false);
   }
 }
 
 function abort() {
   router.push({ name: 'ProjectSelection' });
-  emit('abort');
-  visible.value = false;
+  emit('update:visible', false);
 }
 </script>
 
 <template>
   <Dialog
-    v-model:visible="visible"
+    :visible="visible"
     modal
     :header="t('projectSelection.add')"
     class="w-full max-w-md sm:max-w-lg md:max-w-xl"
     closable
+    @update:visible="emit('update:visible', $event)"
     @hide="abort"
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">

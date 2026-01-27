@@ -1,6 +1,6 @@
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewProjectForm from '../../src/components/NewProjectForm.vue';
+import NewProjectDialog from '../../src/components/NewProjectDialog.vue';
 import router from '../../src/router';
 import { saveProject } from '../../src/helper/indexeddb';
 import { projectService } from '../../src/services/ProjectService';
@@ -23,7 +23,7 @@ vi.mock('@/stores/ProjectStore', () => ({
   })),
 }));
 
-describe('NewProjectForm.vue', () => {
+describe('NewProjectDialog.vue', () => {
   let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
@@ -35,7 +35,8 @@ describe('NewProjectForm.vue', () => {
       value: true,
     });
 
-    wrapper = mount(NewProjectForm, {
+    wrapper = mount(NewProjectDialog, {
+      props: {visible: true,},
       global: {
         stubs: {
           Dialog: { template: '<div><slot /></div>' },

@@ -1,21 +1,13 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
-import NewProjectForm from '@/components/NewProjectForm.vue';
+import NewProjectDialog from '@/components/NewProjectDialog.vue';
 import ProjectSelectionTable from '@/components/ProjectSelectionTable.vue';
 import Button from 'primevue/button';
 
 const { t } = useI18n();
 
-const display = ref(false);
-
-const open = () => {
-  display.value = true;
-};
-
-const close = () => {
-  display.value = false;
-};
+const showDialog = ref(false);
 </script>
 
 <template>
@@ -31,11 +23,10 @@ const close = () => {
         :label="t('projectSelection.add')"
         icon="pi pi-plus"
         style="width: auto"
-        @click="open"
+        @click="showDialog = true"
       />
-      <div v-if="display">
-        <NewProjectForm @abort="close" @submit="close" />
-      </div>
     </div>
   </div>
+
+  <NewProjectDialog v-model:visible="showDialog" />
 </template>
