@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
-import BaseCard from '@/components/BaseCard.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { storageService, type Storage } from '@/services/StorageService';

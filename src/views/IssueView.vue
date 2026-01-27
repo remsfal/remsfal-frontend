@@ -167,31 +167,31 @@ watch(
           >
             <div class="flex items-center gap-6 mb-6">
               <label class="font-semibold w-24" for="title">Titel</label>
-              <InputText id="title" v-model="title" class="flex-auto"/>
+              <InputText id="title" v-model="title" class="flex-auto" />
             </div>
 
             <div class="flex items-center gap-6 mb-20">
               <label class="font-semibold w-24" for="description">Beschreibung</label>
-              <InputText id="description" v-model="description" class="flex-auto"/>
+              <InputText id="description" v-model="description" class="flex-auto" />
             </div>
 
             <div class="flex justify-end gap-2">
-              <Button label="Abbrechen" severity="secondary" @click="visible = false"/>
-              <Button label="Erstellen" @click="createIssue"/>
+              <Button label="Abbrechen" severity="secondary" @click="visible = false" />
+              <Button label="Erstellen" @click="createIssue" />
             </div>
           </Dialog>
 
           <!-- Issues Table -->
           <div v-if="props.assigneeId">
-            <IssueTable :issues="myIssues" @rowSelect="onIssueSelect"/>
+            <IssueTable :issues="myIssues" @rowSelect="onIssueSelect" />
           </div>
 
           <div v-else-if="props.status">
-            <IssueTable :issues="issuesByStatusOpen" @rowSelect="onIssueSelect"/>
+            <IssueTable :issues="issuesByStatusOpen" @rowSelect="onIssueSelect" />
           </div>
 
           <div v-else>
-            <IssueTable :issues="issues" @rowSelect="onIssueSelect"/>
+            <IssueTable :issues="issues" @rowSelect="onIssueSelect" />
           </div>
 
           <!-- Create Button -->

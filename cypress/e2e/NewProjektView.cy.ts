@@ -45,42 +45,33 @@ describe('NewProjectView E2E Tests', () => {
   });
 
   it('should show error when project title exceeds max length', () => {
+    // Type the long title and trigger blur to validate
+    cy.get('#projectTitle').clear().invoke('val', longTitle).trigger('input').trigger('blur');
 
-    // Type the long title character by character to trigger the watch
-    cy.get('#projectTitle').clear().invoke('val', longTitle).trigger('input');
-    
-    // Wait for Vue's watch to trigger by checking the error appears
-    cy.get('.p-error').should(($error) => {
-      const text = $error.text().trim();
-      expect(text).to.not.equal('');
-      expect(text).to.not.match(/^\s*$/);
-    });
-    
-    // Input should have invalid class
+    // Wait for validation to trigger - Message component should appear
+    cy.get('.p-message-error').should('be.visible');
+    cy.get('.p-message-error').should('contain.text', '100');
+
+    // Input should have invalid class after blur
     cy.get('#projectTitle').should('have.class', 'p-invalid');
-    
-    // Try to create project - should not proceed due to length validation
-    cy.contains('button', /create|erstellen/i).click();
-    
-    // Should still be on the same page (dialog still visible)
-    cy.get('[role="dialog"]').should('be.visible');
+
+    // Button should be disabled due to validation error
+    cy.contains('button', /create|erstellen/i).should('be.disabled');
   });
 
-  it('should show error when trying to create project with empty title', () => {
-    // Click create button without entering a title
-    cy.contains('button', /create|erstellen/i).click();
-    
-    // Check if error message is displayed
-    cy.get('.p-error').should('be.visible').and('not.be.empty');
+  it('should disable create button when form is empty', () => {
+    // Button should be disabled without entering a title (form not dirty and not valid)
+    cy.contains('button', /create|erstellen/i).should('be.disabled');
   });
 
   it('should show error when trying to create project with whitespace only', () => {
-    cy.get('#projectTitle').type('     ');
-    
-    cy.contains('button', /create|erstellen/i).click();
-    
-    // Check if error message is displayed
-    cy.get('.p-error').should('be.visible').and('not.be.empty');
+    cy.get('#projectTitle').type('     ').trigger('blur');
+
+    // After blur, validation should trigger and show min length error (trimmed = empty = less than 3)
+    cy.get('.p-message-error').should('be.visible');
+
+    // Button should be disabled
+    cy.contains('button', /create|erstellen/i).should('be.disabled');
   });
 
   it('should cancel and redirect to project selection', () => {
@@ -101,35 +92,36 @@ describe('NewProjectView E2E Tests', () => {
   });
 
   it('should clear error message when fixing title length', () => {
+    // Type long title and blur to trigger validation error
+    cy.get('#projectTitle').clear().invoke('val', longTitle).trigger('input').trigger('blur');
 
-    // Type long title to trigger error
-    cy.get('#projectTitle').clear().invoke('val', longTitle).trigger('input');
-    
-    // Wait for error to appear
-    cy.get('.p-error').should(($error) => {
-      const text = $error.text().trim();
-      expect(text).to.not.equal('');
-    });
-    
-    // Clear and type valid title
-    cy.get('#projectTitle').clear().invoke('val', 'Valid Title').trigger('input');
-    
-    // Error should be cleared (will be a space ' ' to maintain layout)
-    cy.get('.p-error').should(($error) => {
-      const text = $error.text().trim();
-      expect(text).to.equal('');
-    });
+    // Wait for error message to appear
+    cy.get('.p-message-error').should('be.visible');
+
+    // Clear and type valid title and blur
+    cy.get('#projectTitle').clear().type('Valid Title').trigger('blur');
+
+    // Error message should not be visible anymore
+    cy.get('.p-message-error').should('not.exist');
+
+    // Input should not have invalid class
+    cy.get('#projectTitle').should('not.have.class', 'p-invalid');
+
+    // Button should be enabled now
+    cy.contains('button', /create|erstellen/i).should('not.be.disabled');
   });
 
   it('should trim whitespace from project title before creating', () => {
     const projectName = '  Trimmed Project  ';
-    
+
     // Ensure dialog is visible
     cy.get('[role="dialog"]').should('be.visible');
     cy.get('#projectTitle').clear().type(projectName);
-    
+
+    // Button should be enabled with valid input
+    cy.contains('button', /create|erstellen/i).should('not.be.disabled');
     cy.contains('button', /create|erstellen/i).click();
-    
+
     cy.wait('@createProject').its('request.body').should('deep.include', {
       title: 'Trimmed Project',
     });

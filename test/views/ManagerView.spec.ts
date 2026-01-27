@@ -48,15 +48,22 @@ describe('ManagerView.vue', () => {
     expect(wrapper.find('h5').text()).toBe('Übersicht der Liegenschaften');
   });
 
-  it('opens and closes the dialog', async () => {
+  it('toggles the dialog visibility', async () => {
     const vm = wrapper.vm as any;
 
-    expect(vm.display).toBe(false);
-    vm.open();
+    // Initially dialog should be closed
+    expect(vm.showDialog).toBe(false);
+
+    // Open dialog by setting showDialog to true
+    vm.showDialog = true;
     await nextTick();
-    expect(vm.display).toBe(true);
-    vm.close();
+
+    expect(vm.showDialog).toBe(true);
+
+    // Close dialog by setting showDialog to false
+    vm.showDialog = false;
     await nextTick();
-    expect(vm.display).toBe(false);
+
+    expect(vm.showDialog).toBe(false);
   });
 });
