@@ -11,7 +11,7 @@ import Message from 'primevue/message';
 vi.mock('@/services/IssueService', { spy: true });
 
 describe('NewIssueDialog.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof NewIssueDialog>>;
 
   beforeEach(() => {
     vi.spyOn(issueService, 'createIssue').mockResolvedValue({
@@ -75,8 +75,10 @@ describe('NewIssueDialog.vue', () => {
   });
 
   it('defaults type to TASK when no category prop', async () => {
-    const vm = wrapper.vm as any;
-    expect(vm.initialValues.issueType).toBe('TASK');
+    const selects = wrapper.findAllComponents(Select);
+    const issueTypeSelect = selects[0];
+    const selectButton = issueTypeSelect.find('span.p-select-label');
+    expect(selectButton.text()).toContain('Aufgaben');
   });
 
   it('defaults type to DEFECT when category="DEFECT"', async () => {
@@ -96,9 +98,10 @@ describe('NewIssueDialog.vue', () => {
         },
       },
     });
-
-    const vm = wrapperDefect.vm as any;
-    expect(vm.initialValues.issueType).toBe('DEFECT');
+    const selects = wrapperDefect.findAllComponents(Select);
+    const issueTypeSelect = selects[0];
+    const selectButton = issueTypeSelect.find('span.p-select-label');
+    expect(selectButton.text()).toContain('Mängel');
   });
 
   it('calls createIssue with correct data and emits events', async () => {

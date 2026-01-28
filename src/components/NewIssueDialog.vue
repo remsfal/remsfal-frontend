@@ -176,7 +176,7 @@ function abort() {
     :visible="visible"
     modal
     :header="dialogHeader"
-    class="w-full max-w-2xl"
+    class="w-full max-w-md sm:max-w-lg md:max-w-xl"
     closable
     @update:visible="emit('update:visible', $event)"
     @hide="abort"
