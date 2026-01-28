@@ -651,11 +651,13 @@ export interface components {
         UUID: string;
         /** @enum {string} */
         UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "STORAGE" | "COMMERCIAL";
+        /** @enum {string} */
+        UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
         /** @description User information globally */
         UserJson: {
             active?: boolean;
             id?: components["schemas"]["UUID"];
-            userRoles?: components["schemas"]["UserRole"][];
+            userContexts?: components["schemas"]["UserContext"][];
             email?: string;
             firstName?: string;
             lastName?: string;
@@ -668,8 +670,6 @@ export interface components {
             registeredDate?: components["schemas"]["LocalDate"];
             lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
-        /** @enum {string} */
-        UserRole: "MANAGER" | "TENANT" | "CONTRACTOR";
     };
     responses: never;
     parameters: never;
