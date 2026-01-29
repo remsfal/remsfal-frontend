@@ -5,12 +5,16 @@ import Select from 'primevue/select';
 import { useI18n } from 'vue-i18n';
 import type { MemberRole } from '@/services/ProjectMemberService';
 
-const props = defineProps<{
-  modelValue: MemberRole | null;
-  class?: string;
-  invalid?: boolean;
-}>();
-const emit = defineEmits<(e: 'update:modelValue', value: MemberRole | null) => void>();
+const props = withDefaults(
+  defineProps<{
+    modelValue?: MemberRole | null;
+    class?: string;
+    invalid?: boolean;
+    name?: string;
+  }>(),
+  { modelValue: null },
+);
+const emit = defineEmits<{ 'update:modelValue': [value: MemberRole | null] }>();
 
 const { t } = useI18n();
 
@@ -33,6 +37,7 @@ const translatedRoles = computed(() =>
 <template>
   <Select
     inputId="role"
+    :name="props.name"
     :placeholder="t('roles.select')"
     :options="translatedRoles"
     optionLabel="label"

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
 import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
+import ProjectMemberRoleSelect from '@/components/ProjectMemberRoleSelect.vue';
 import { type ProjectMember, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
 
 const props = defineProps<{ projectId: string }>();
@@ -18,22 +18,6 @@ const emit = defineEmits<(e: 'newMember', email: string) => void>();
 const { t } = useI18n();
 
 const visible = ref(false);
-
-// Define member roles with translations
-const memberRolesList: { label: string; value: MemberRole }[] = [
-  { label: 'PROPRIETOR', value: 'PROPRIETOR' },
-  { label: 'MANAGER', value: 'MANAGER' },
-  { label: 'LESSOR', value: 'LESSOR' },
-  { label: 'STAFF', value: 'STAFF' },
-  { label: 'COLLABORATOR', value: 'COLLABORATOR' },
-];
-
-const memberRoles = computed(() =>
-  memberRolesList.map((role) => ({
-    value: role.value,
-    label: t(`roles.${role.value.toLowerCase()}`),
-  })),
-);
 
 // Zod validation schema
 const validationSchema = z.object({
@@ -131,16 +115,10 @@ const addMember = async (email: string, role: MemberRole) => {
       <div class="flex flex-col gap-1 mb-2">
         <div class="flex items-center gap-6">
           <label for="role" class="font-semibold w-24">{{ t('projectSettings.newProjectMemberButton.roleLabel') }}</label>
-          <Select
-            inputId="role"
+          <ProjectMemberRoleSelect
             name="role"
-            :placeholder="t('roles.select')"
-            :options="memberRoles"
-            optionLabel="label"
-            optionValue="value"
-            :class="{ 'p-invalid': $form.role?.invalid && $form.role?.touched }"
+            :invalid="$form.role?.invalid && $form.role?.touched"
             class="w-full"
-            fluid
           />
         </div>
         <Message
