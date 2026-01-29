@@ -1,27 +1,85 @@
 <script setup lang="ts">
+import { ref, onMounted, watch, computed } from 'vue';
 import Card from 'primevue/card';
 import Panel from 'primevue/panel';
 import Chip from 'primevue/chip';
+import { issueService, type Issue } from '@/services/IssueService';
 
 /* =========================
      Props
   ========================= */
-defineProps<{
+const props = defineProps<{
   issueId?: string;
+  projectId?: string;
 }>();
 
 /* =========================
-     Placeholder Data
+     State
   ========================= */
-// Placeholder counts for each relationship type
-const relationshipCounts = {
-  parent: 0,
-  children: 0,
-  blockedBy: 0,
-  blocks: 0,
-  relatedTo: 0,
-  duplicateOf: 0,
+const issueData = ref<Issue | null>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
+
+/* =========================
+     Computed Relationship Counts
+  ========================= */
+const relationshipCounts = computed(() => {
+  if (!issueData.value) {
+    return {
+      parent: 0,
+      children: 0,
+      blockedBy: 0,
+      blocks: 0,
+      relatedTo: 0,
+      duplicateOf: 0,
+    };
+  }
+
+  return {
+    parent: issueData.value.parentIssue ? 1 : 0,
+    children: issueData.value.childrenIssues?.length ?? 0,
+    blockedBy: issueData.value.blockedBy?.length ?? 0,
+    blocks: issueData.value.blocks?.length ?? 0,
+    relatedTo: issueData.value.relatedTo?.length ?? 0,
+    duplicateOf: issueData.value.duplicateOf?.length ?? 0,
+  };
+});
+
+/* =========================
+     Data Fetching
+  ========================= */
+const fetchIssueData = async () => {
+  if (!props.issueId || !props.projectId) {
+    return;
+  }
+
+  loading.value = true;
+  error.value = null;
+
+  try {
+    issueData.value = await issueService.getIssue(props.projectId, props.issueId);
+  } catch (err) {
+    console.error('Failed to fetch issue relationships:', err);
+    error.value = 'Failed to load issue relationships';
+    issueData.value = null;
+  } finally {
+    loading.value = false;
+  }
 };
+
+/* =========================
+     Lifecycle Hooks
+  ========================= */
+onMounted(() => {
+  fetchIssueData();
+});
+
+watch(
+  () => [props.issueId, props.projectId],
+  () => {
+    fetchIssueData();
+  }
+);
 </script>
 
 <template>
