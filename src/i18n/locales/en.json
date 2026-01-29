@@ -333,5 +333,13 @@
   "issueDetails.fields.owner": "Owner",
   "issueDetails.fields.project": "Project",
   "issueDetails.fields.type": "Type",
-  "issueDetails.fields.tenancy": "Tenancy"
+  "issueDetails.fields.tenancy": "Tenancy",
+  "issueDetails.fields.reporter": "Reporter",
+  "issueDetails.fields.assignee": "Assignee",
+  "issueDetails.fields.noReporter": "No reporter",
+  "issueDetails.fields.selectAssignee": "Select assignee",
+  "issueDetails.membersFetchError": "Failed to load project members",
+  "memberAutoComplete.noResults": "No members found",
+  "memberAutoComplete.loading": "Loading members...",
+  "memberAutoComplete.searchPlaceholder": "Type to search members"
 }

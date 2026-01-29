@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { useI18n } from 'vue-i18n';
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
+import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import { issueService, type Issue, type Type } from '@/services/IssueService';
+import { projectMemberService, type ProjectMember } from '@/services/ProjectMemberService';
 import { useProjectStore } from '@/stores/ProjectStore';
 
 /* =========================
@@ -33,6 +36,7 @@ const emit = defineEmits<{ saved: [] }>();
   ========================= */
 const toast = useToast();
 const projectStore = useProjectStore();
+const { t } = useI18n();
 
 /* =========================
      Local State
@@ -45,6 +49,10 @@ const reporter = ref(props.initialData.reporter);
 const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
 const tenancy = ref(props.initialData.tenancy);
+
+// Member data for name resolution
+const members = ref<ProjectMember[]>([]);
+const loadingMembers = ref(false);
 
 /* =========================
      Original Values (change detection)
@@ -66,7 +74,13 @@ const canSave = computed(() =>
   issueType.value !== originalIssueType.value ||
   tenancy.value !== originalTenancy.value
 );
-console.log("Initial assigneeId:", props.initialData.assigneeId);
+
+// Resolve reporter name from ID
+const reporterName = computed(() => {
+  if (!reporter.value) return t('issueDetails.fields.noReporter');
+  const member = members.value.find(m => m.id === reporter.value);
+  return member ? member.name : reporter.value; // Fallback to ID if not found
+});
 /* =========================
      Dropdown Options
   ========================= */
@@ -85,6 +99,33 @@ const typeOptions = [
   { label: 'Maintenance', value: 'MAINTENANCE' as Type },
 ];
 
+/* =========================
+     Fetch Members
+  ========================= */
+// Fetch project members for name resolution
+const fetchMembers = async () => {
+  loadingMembers.value = true;
+  try {
+    const memberList = await projectMemberService.getMembers(props.projectId);
+    // TEMP FIX: Handle nested response structure
+    members.value = (memberList as { members: ProjectMember[] }).members || [];
+  } catch (error) {
+    console.error('Failed to fetch members:', error);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('issueDetails.membersFetchError'),
+      life: 3000,
+    });
+  } finally {
+    loadingMembers.value = false;
+  }
+};
+
+// Load members on mount
+onMounted(() => {
+  fetchMembers();
+});
 
 /* =========================
      Watch props updates
@@ -130,8 +171,6 @@ const handleSave = async () => {
     if (issueType.value !== originalIssueType.value)
       payload.type = issueType.value as Issue["type"];
 
-console.log("#######",issueType.value,originalIssueType.value)
-
     await issueService.modifyIssue(props.projectId, props.issueId, payload);
 
     originalTitle.value = title.value;
@@ -139,8 +178,6 @@ console.log("#######",issueType.value,originalIssueType.value)
     originalAssigneeId.value = assigneeId.value;
     originalIssueType.value = issueType.value;
     originalTenancy.value = tenancy.value;
-
-console.log("#######",issueType.value)
     toast.add({
       severity: "success",
       summary: "Saved",
@@ -210,13 +247,22 @@ console.log("#######",issueType.value)
         <!-- Reporter & Owner -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">Reporter</label>
-            <InputText v-model="reporter" disabled />
+            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.reporter') }}</label>
+            <InputText
+              :modelValue="reporterName"
+              disabled
+              :placeholder="t('issueDetails.fields.noReporter')"
+            />
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">Owner / Assignee</label>
-            <InputText v-model="assigneeId" placeholder="Enter owner ID" />
+            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.assignee') }}</label>
+            <MemberAutoComplete
+              v-model="assigneeId"
+              :projectId="projectId"
+              :placeholder="t('issueDetails.fields.selectAssignee')"
+              :disabled="loadingMembers"
+            />
           </div>
         </div>
 

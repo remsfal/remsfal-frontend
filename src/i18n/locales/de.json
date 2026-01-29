@@ -338,5 +338,13 @@
   "issueDetails.fields.owner": "Eigentümer",
   "issueDetails.fields.project": "Projekt",
   "issueDetails.fields.type": "Typ",
-  "issueDetails.fields.tenancy": "Mietverhältnis"
+  "issueDetails.fields.tenancy": "Mietverhältnis",
+  "issueDetails.fields.reporter": "Melder",
+  "issueDetails.fields.assignee": "Bearbeiter",
+  "issueDetails.fields.noReporter": "Kein Melder",
+  "issueDetails.fields.selectAssignee": "Bearbeiter auswählen",
+  "issueDetails.membersFetchError": "Fehler beim Laden der Projektmitglieder",
+  "memberAutoComplete.noResults": "Keine Mitglieder gefunden",
+  "memberAutoComplete.loading": "Lade Mitglieder...",
+  "memberAutoComplete.searchPlaceholder": "Tippen um Mitglieder zu suchen"
 }

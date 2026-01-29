@@ -299,7 +299,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const sessionStore = useUserSessionStore();
   const isLoggedIn = !!sessionStore.user;
-  const roles = sessionStore.user?.userRoles || [];
+  const roles = sessionStore.user?.userContexts || [];
 
   // If trying to access LandingPage while logged in, redirect to appropriate view
   if (to.name === 'LandingPage' && isLoggedIn) {

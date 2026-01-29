@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
 import { issueService } from '@/services/IssueService';
+import { projectMemberService } from '@/services/ProjectMemberService';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
 const addMock = vi.fn();
@@ -14,6 +15,25 @@ vi.mock('@/services/IssueService', async () => {
   return {
     ...actual,
     issueService: {modifyIssue: vi.fn(),},
+  };
+});
+
+vi.mock('@/services/ProjectMemberService', async () => {
+  const actual = await vi.importActual<any>('@/services/ProjectMemberService');
+  return {
+    ...actual,
+    projectMemberService: {
+      getMembers: vi.fn().mockResolvedValue({
+        members: [
+          {
+            id: 'user-1', name: 'John Doe', email: 'john@example.com', role: 'MANAGER',
+          },
+          {
+            id: 'reporter-1', name: 'Jane Smith', email: 'jane@example.com', role: 'STAFF',
+          },
+        ],
+      }),
+    },
   };
 });
 
@@ -40,6 +60,18 @@ describe('IssueDetailsCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    // Re-mock projectMemberService for each test
+    vi.spyOn(projectMemberService, 'getMembers').mockResolvedValue({
+      members: [
+        {
+          id: 'user-1', name: 'John Doe', email: 'john@example.com', role: 'MANAGER',
+        },
+        {
+          id: 'reporter-1', name: 'Jane Smith', email: 'jane@example.com', role: 'STAFF',
+        },
+      ],
+    } as any);
+
     wrapper = mount(IssueDetailsCard, {props: baseProps,});
   });
 
@@ -49,9 +81,11 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('save button is disabled when no changes are made', () => {
-    const button = wrapper.find('button');
-    expect(button.attributes('disabled')).toBeDefined();
+  test('save button is disabled when no changes are made', async () => {
+    await wrapper.vm.$nextTick();
+    const buttons = wrapper.findAll('button');
+    const saveButton = buttons.find(b => b.text().includes('Save'));
+    expect(saveButton?.attributes('disabled')).toBeDefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -301,5 +335,36 @@ describe('IssueDetailsCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(
       expect.objectContaining({severity: 'success',}),
     );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('resolves reporter name from member ID', async () => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    expect(wrapper.vm.reporterName).toBe('Jane Smith');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('shows UUID fallback if member not found', async () => {
+    const wrapperWithDeletedMember = mount(IssueDetailsCard, {
+      props: {
+        ...baseProps,
+        initialData: {
+          ...baseProps.initialData,
+          reporter: 'deleted-user-999',
+        },
+      },
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    expect(wrapperWithDeletedMember.vm.reporterName).toBe('deleted-user-999');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('loads members on mount', async () => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    expect(projectMemberService.getMembers).toHaveBeenCalledWith('project-1');
   });
 });
