@@ -2,10 +2,9 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
 import IssueTable from '@/components/IssueTable.vue';
-import { type IssueItem, IssueService, type Status, type Type } from '@/services/IssueService';
+import NewIssueDialog from '@/components/NewIssueDialog.vue';
+import { type IssueItem, IssueService, type Status } from '@/services/IssueService';
 
 const props = defineProps<{ projectId: string; assigneeId?: string; status?: Status; category?: string; }>();
 
@@ -13,56 +12,28 @@ const issueService = new IssueService();
 const router = useRouter();
 
 // Reactive state
-const title = ref('');
-const description = ref('');
-const visible = ref(false);
+const showNewIssueDialog = ref(false);
 const issues = ref<IssueItem[]>([]);
 const issuesByStatusOpen = ref<IssueItem[]>([]);
 const myIssues = ref<IssueItem[]>([]);
 
-// --- Dialog ---
-const openCreateIssueDialog = () => {
-  title.value = '';
-  description.value = '';
-  visible.value = true;
-};
+// --- Handle issue created from dialog ---
+const handleIssueCreated = (newIssue: IssueItem) => {
+  // Update local state reactively
+  issues.value = [...issues.value, newIssue];
 
-// --- Create a new issue ---
-const createIssue = async () => {
-  try {
-    const newIssue = await issueService.createIssue(props.projectId, {
-      projectId: props.projectId,
-      title: title.value,
-      description: description.value,
-      type: (props.category === 'DEFECT' ? 'DEFECT' : 'TASK') as Type,
-      // ownerId intentionally omitted (backend requires null)
-    });
+  if (newIssue.status === 'OPEN') {
+    issuesByStatusOpen.value = [...issuesByStatusOpen.value, newIssue];
+  }
 
-    // Close dialog and reset fields
-    visible.value = false;
-    title.value = '';
-    description.value = '';
-
-    // --- Update tables reactively ---
-    issues.value = [...issues.value, newIssue];
-
-    // Open issues table
-    if (newIssue.status === ('OPEN' as Status)) {
-      issuesByStatusOpen.value = [...issuesByStatusOpen.value, newIssue];
-    }
-
-    // My issues table (assign assigneeId locally)
-    if (props.assigneeId) {
-      myIssues.value = [
-        ...myIssues.value,
-        {
-          ...newIssue,
-          assigneeId: props.assigneeId, // frontend-only field
-        },
-      ];
-    }
-  } catch (error) {
-    console.error('Error creating issue:', error);
+  if (props.assigneeId) {
+    myIssues.value = [
+      ...myIssues.value,
+      {
+        ...newIssue,
+        assigneeId: props.assigneeId,
+      },
+    ];
   }
 };
 
@@ -159,27 +130,12 @@ watch(
       <div class="col-span-12">
         <div class="card">
           <!-- Create Issue Dialog -->
-          <Dialog
-            v-model:visible="visible"
-            :style="{ width: '50rem' }"
-            header="Aufgabe erstellen"
-            modal
-          >
-            <div class="flex items-center gap-6 mb-6">
-              <label class="font-semibold w-24" for="title">Titel</label>
-              <InputText id="title" v-model="title" class="flex-auto" />
-            </div>
-
-            <div class="flex items-center gap-6 mb-20">
-              <label class="font-semibold w-24" for="description">Beschreibung</label>
-              <InputText id="description" v-model="description" class="flex-auto" />
-            </div>
-
-            <div class="flex justify-end gap-2">
-              <Button label="Abbrechen" severity="secondary" @click="visible = false" />
-              <Button label="Erstellen" @click="createIssue" />
-            </div>
-          </Dialog>
+          <NewIssueDialog
+            v-model:visible="showNewIssueDialog"
+            :projectId="props.projectId"
+            :category="props.category"
+            @issueCreated="handleIssueCreated"
+          />
 
           <!-- Issues Table -->
           <div v-if="props.assigneeId">
@@ -198,7 +154,8 @@ watch(
           <div class="flex justify-end mt-6">
             <Button
               :label="props.category === 'DEFECT' ? 'Mangel melden' : 'Aufgabe erstellen'"
-              @click="openCreateIssueDialog"
+              icon="pi pi-plus"
+              @click="showNewIssueDialog = true"
             />
           </div>
         </div>

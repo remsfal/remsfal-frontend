@@ -42,9 +42,8 @@ describe("IssueView.vue", () => {
       global: {
         stubs: {
           IssueTable: true,
-          Dialog: false,
+          NewIssueDialog: true,
           Button: false,
-          InputText: false,
         },
       },
     });
@@ -55,8 +54,6 @@ describe("IssueView.vue", () => {
   });
 
   test("creates a new issue and updates tables", () => {
-    wrapper.vm.visible = true;
-
     const newIssue = {
       id: "1",
       title: "New Issue",
@@ -69,19 +66,14 @@ describe("IssueView.vue", () => {
     wrapper.vm.issuesByStatusOpen.push(newIssue);
     wrapper.vm.myIssues.push(newIssue);
 
-    wrapper.vm.visible = false;
-
-    expect(wrapper.vm.visible).toBe(false);
     expect(wrapper.vm.issues.length).toBe(1);
     expect(wrapper.vm.issuesByStatusOpen.length).toBe(1);
     expect(wrapper.vm.myIssues.length).toBe(1);
   });
 
   test("opens create issue dialog", () => {
-    wrapper.vm.openCreateIssueDialog();
-    expect(wrapper.vm.visible).toBe(true);
-    expect(wrapper.vm.title).toBe("");
-    expect(wrapper.vm.description).toBe("");
+    wrapper.vm.showNewIssueDialog = true;
+    expect(wrapper.vm.showNewIssueDialog).toBe(true);
   });
   
   test("renders correct IssueTable based on props", async () => {
@@ -186,14 +178,25 @@ describe("IssueView.vue", () => {
     expect(wrapper.text()).toContain("Aufgabe erstellen");
   });
 
-  test("resets form fields when opening dialog", () => {
-    wrapper.vm.title = "Some Title";
-    wrapper.vm.description = "Some Description";
-    wrapper.vm.openCreateIssueDialog();
-    
-    expect(wrapper.vm.title).toBe("");
-    expect(wrapper.vm.description).toBe("");
-    expect(wrapper.vm.visible).toBe(true);
+  test("handleIssueCreated updates all issue arrays correctly", () => {
+    const newIssue = {
+      id: "new-123",
+      title: "New Issue",
+      description: "New Description",
+      status: 'OPEN' as Status,
+      type: 'TASK' as Type,
+    };
+
+    wrapper.vm.handleIssueCreated(newIssue);
+
+    expect(wrapper.vm.issues).toContainEqual(newIssue);
+    expect(wrapper.vm.issuesByStatusOpen).toContainEqual(newIssue);
+    expect(wrapper.vm.myIssues).toContainEqual(
+      expect.objectContaining({
+        id: "new-123",
+        assigneeId: "user1",
+      })
+    );
   });
 
   test("adds issue to issuesByStatusOpen when status is OPEN", async () => {
