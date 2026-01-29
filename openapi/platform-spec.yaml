@@ -959,14 +959,19 @@ components:
         active:
           type: boolean
         id:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         userContexts:
           type: array
           uniqueItems: true
           items:
             $ref: "#/components/schemas/UserContext"
+          readOnly: true
         email:
           type: string
+          examples:
+          - user@example.com
           maxLength: 255
         firstName:
           type: string
@@ -995,9 +1000,16 @@ components:
           items:
             type: string
             maxLength: 255
+          examples:
+          - - test@example.com
+            - info@example.com
         registeredDate:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/LocalDate"
         lastLoginDate:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/LocalDateTime"
   securitySchemes:
     SecurityScheme:

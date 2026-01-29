@@ -5662,8 +5662,9 @@ export interface components {
         /** @description User information globally */
         UserJson: {
             active?: boolean;
-            id?: components["schemas"]["UUID"];
-            userContexts?: components["schemas"]["UserContext"][];
+            readonly id?: components["schemas"]["UUID"];
+            readonly userContexts?: components["schemas"]["UserContext"][];
+            /** @example user@example.com */
             email?: string;
             firstName?: string;
             lastName?: string;
@@ -5672,9 +5673,15 @@ export interface components {
             businessPhoneNumber?: string;
             privatePhoneNumber?: string;
             locale?: string;
+            /**
+             * @example [
+             *       "test@example.com",
+             *       "info@example.com"
+             *     ]
+             */
             additionalEmails?: string[];
-            registeredDate?: components["schemas"]["LocalDate"];
-            lastLoginDate?: components["schemas"]["LocalDateTime"];
+            readonly registeredDate?: components["schemas"]["LocalDate"];
+            readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
         };
     };
     responses: never;
