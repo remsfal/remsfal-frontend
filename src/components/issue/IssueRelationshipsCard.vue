@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import Card from 'primevue/card';
 import Panel from 'primevue/panel';
 import Chip from 'primevue/chip';
@@ -12,6 +13,11 @@ const props = defineProps<{
   issueId?: string;
   projectId?: string;
 }>();
+
+/* =========================
+     Router
+  ========================= */
+const router = useRouter();
 
 /* =========================
      State
@@ -68,6 +74,13 @@ const fetchIssueData = async () => {
 };
 
 /* =========================
+     Navigation
+  ========================= */
+const navigateToIssue = (issueId: string) => {
+  router.push({ name: 'IssueDetails', params: { issueId } });
+};
+
+/* =========================
      Lifecycle Hooks
   ========================= */
 onMounted(() => {
@@ -105,7 +118,15 @@ watch(
               />
             </div>
           </template>
-          <div class="text-gray-500 text-sm p-2">
+          <div v-if="issueData?.parentIssue" class="p-2">
+            <div
+              class="issue-link"
+              @click="navigateToIssue(issueData.parentIssue)"
+            >
+              {{ issueData.parentIssue }}
+            </div>
+          </div>
+          <div v-else class="text-gray-500 text-sm p-2">
             No parent issue assigned
           </div>
         </Panel>
@@ -123,7 +144,17 @@ watch(
               />
             </div>
           </template>
-          <div class="text-gray-500 text-sm p-2">
+          <div v-if="issueData?.childrenIssues?.length" class="p-2 flex flex-col gap-2">
+            <div
+              v-for="childId in issueData.childrenIssues"
+              :key="childId"
+              class="issue-link"
+              @click="navigateToIssue(childId)"
+            >
+              {{ childId }}
+            </div>
+          </div>
+          <div v-else class="text-gray-500 text-sm p-2">
             No children issues
           </div>
         </Panel>
@@ -141,7 +172,17 @@ watch(
               />
             </div>
           </template>
-          <div class="text-gray-500 text-sm p-2">
+          <div v-if="issueData?.blockedBy?.length" class="p-2 flex flex-col gap-2">
+            <div
+              v-for="blockedById in issueData.blockedBy"
+              :key="blockedById"
+              class="issue-link"
+              @click="navigateToIssue(blockedById)"
+            >
+              {{ blockedById }}
+            </div>
+          </div>
+          <div v-else class="text-gray-500 text-sm p-2">
             Not blocked by any issues
           </div>
         </Panel>
@@ -159,7 +200,17 @@ watch(
               />
             </div>
           </template>
-          <div class="text-gray-500 text-sm p-2">
+          <div v-if="issueData?.blocks?.length" class="p-2 flex flex-col gap-2">
+            <div
+              v-for="blocksId in issueData.blocks"
+              :key="blocksId"
+              class="issue-link"
+              @click="navigateToIssue(blocksId)"
+            >
+              {{ blocksId }}
+            </div>
+          </div>
+          <div v-else class="text-gray-500 text-sm p-2">
             Not blocking any issues
           </div>
         </Panel>
@@ -177,7 +228,17 @@ watch(
               />
             </div>
           </template>
-          <div class="text-gray-500 text-sm p-2">
+          <div v-if="issueData?.relatedTo?.length" class="p-2 flex flex-col gap-2">
+            <div
+              v-for="relatedId in issueData.relatedTo"
+              :key="relatedId"
+              class="issue-link"
+              @click="navigateToIssue(relatedId)"
+            >
+              {{ relatedId }}
+            </div>
+          </div>
+          <div v-else class="text-gray-500 text-sm p-2">
             No related issues
           </div>
         </Panel>
@@ -195,7 +256,17 @@ watch(
               />
             </div>
           </template>
-          <div class="text-gray-500 text-sm p-2">
+          <div v-if="issueData?.duplicateOf?.length" class="p-2 flex flex-col gap-2">
+            <div
+              v-for="duplicateId in issueData.duplicateOf"
+              :key="duplicateId"
+              class="issue-link"
+              @click="navigateToIssue(duplicateId)"
+            >
+              {{ duplicateId }}
+            </div>
+          </div>
+          <div v-else class="text-gray-500 text-sm p-2">
             Not a duplicate
           </div>
         </Panel>
@@ -218,5 +289,20 @@ watch(
   color: #374151;
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
+}
+
+.issue-link {
+  color: #3b82f6;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.15s ease-in-out;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.issue-link:hover {
+  background-color: #f3f4f6;
+  text-decoration: underline;
 }
 </style>
