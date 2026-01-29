@@ -1168,6 +1168,10 @@
         "type" : "string",
         "enum" : [ "PROPERTY", "SITE", "BUILDING", "APARTMENT", "STORAGE", "COMMERCIAL" ]
       },
+      "UserContext" : {
+        "type" : "string",
+        "enum" : [ "MANAGER", "TENANT", "CONTRACTOR" ]
+      },
       "UserJson" : {
         "description" : "User information globally",
         "type" : "object",
@@ -1178,11 +1182,11 @@
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "userRoles" : {
+          "userContexts" : {
             "type" : "array",
             "uniqueItems" : true,
             "items" : {
-              "$ref" : "#/components/schemas/UserRole"
+              "$ref" : "#/components/schemas/UserContext"
             }
           },
           "email" : {
@@ -1232,10 +1236,6 @@
             "$ref" : "#/components/schemas/LocalDateTime"
           }
         }
-      },
-      "UserRole" : {
-        "type" : "string",
-        "enum" : [ "MANAGER", "TENANT", "CONTRACTOR" ]
       }
     },
     "securitySchemes" : {
