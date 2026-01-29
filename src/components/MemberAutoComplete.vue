@@ -89,20 +89,20 @@ watch(() => props.projectId, () => {
 <template>
   <AutoComplete
     :modelValue="selectedMember"
-    @update:modelValue="onMemberChange"
     :suggestions="filteredMembers"
-    @complete="searchMembers"
-    optionLabel="label"
+    :invalid="invalid"
+    :virtualScrollerOptions="{ itemSize: 38 }"
     dataKey="id"
+    optionLabel="label"
     :placeholder="placeholder || t('memberAutoComplete.searchPlaceholder')"
     :disabled="disabled || loadingMembers"
-    :invalid="invalid"
     :loading="loadingMembers"
-    :virtualScrollerOptions="{ itemSize: 38 }"
     :emptySearchMessage="t('memberAutoComplete.noResults')"
     :class="customClass"
     fluid
     dropdown
+    @update:modelValue="onMemberChange"
+    @complete="searchMembers"
   >
     <template #option="slotProps">
       <div class="flex flex-col">

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import MemberAutoComplete from '../../src/components/MemberAutoComplete.vue';
-import { projectMemberService } from '../../src/services/ProjectMemberService';
+import { type ProjectMemberList, projectMemberService } from '../../src/services/ProjectMemberService';
 import AutoComplete from 'primevue/autocomplete';
 
 vi.mock('@/services/ProjectMemberService', { spy: true });
@@ -17,7 +17,7 @@ describe('MemberAutoComplete.vue', () => {
           id: 'user-2', name: 'Jane Smith', email: 'jane@example.com', role: 'STAFF',
         },
       ],
-    } as any);
+    } as ProjectMemberList);
   });
 
   it('loads members on mount', async () => {
@@ -78,7 +78,7 @@ describe('MemberAutoComplete.vue', () => {
       resolvePromise = resolve;
     });
 
-    vi.spyOn(projectMemberService, 'getMembers').mockReturnValue(delayedPromise as any);
+    vi.spyOn(projectMemberService, 'getMembers').mockReturnValue(delayedPromise as Promise<ProjectMemberList>);
 
     const wrapper = mount(MemberAutoComplete, {
       props: {
