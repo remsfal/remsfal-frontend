@@ -9,13 +9,14 @@ export type IssueList = ApiComponents['schemas']['IssueListJson'];
 
 export class IssueService {
   /**
-   * Get all issues for a project, optionally filtered by status or assigneeId.
+   * Get all issues for a project, optionally filtered by status, category, assigneeId, or tenancyId.
    */
   async getIssues(
     projectId: string,
     status?: Status,
     category?: string,
     assigneeId?: string,
+    tenancyId?: string,
     limit = 100,
     offset = 0,
   ): Promise<IssueList> {
@@ -27,6 +28,7 @@ export class IssueService {
         ...(status ? { status } : {}),
         ...(category ? { category } : {}),
         ...(assigneeId ? { assigneeId: assigneeId } : {}),
+        ...(tenancyId ? { tenancyId: tenancyId } : {}),
       },
     }) as IssueList;
 
