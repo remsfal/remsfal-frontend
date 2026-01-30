@@ -250,6 +250,11 @@ const tenantRoutes: RouteRecordRaw[] = [
         props: true,
         component: () => import('@/views/ContractDetailView.vue'),
       },
+      {
+        path: 'issues',
+        name: 'TenantIssues',
+        component: () => import('@/views/TenantIssuesView.vue'),
+      },
     ],
   },
 ];

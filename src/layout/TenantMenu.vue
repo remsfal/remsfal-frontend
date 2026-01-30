@@ -5,17 +5,42 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 
 const model = ref([
   {
-    label: 'Mietverhältnis',
+    label: 'Mietverhältnisse',
     items: [
       {
         label: 'Überblick',
-        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
-        to: '/',
+        icon: { type: 'pi', name: 'pi pi-fw pi-info-circle' },
+        to: '/tenancies',
       },
       {
         label: 'Meldungen',
-        icon: { type: 'pi', name: 'pi pi-fw pi-inbox' },
-        to: '/inbox',
+        icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+        to: '/tenancies/issues',
+      },
+    ],
+  },
+  {
+    label: 'Einstellungen',
+    items: [
+      {
+        label: 'Persönliche Daten',
+        icon: { type: 'pi', name: 'pi pi-fw pi-user' },
+        to: '/account-settings',
+      },
+    ],
+  },
+  {
+    label: 'Weitere Leistungen',
+    items: [
+      {
+        label: 'Meine Immobilien',
+        icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+        to: '/projects',
+      },
+      {
+        label: 'Meine Aufträge',
+        icon: { type: 'pi', name: 'pi pi-fw pi-wrench' },
+        to: '/contractor',
       },
     ],
   },

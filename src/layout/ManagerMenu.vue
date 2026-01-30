@@ -36,7 +36,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
       items: [
         {
           label: 'managerMenu.masterData.properties',
-          icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-building' },
           to: currentProjectId ? `/projects/${currentProjectId}/units` : '/',
         },
         {
