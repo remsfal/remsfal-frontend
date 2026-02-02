@@ -90,7 +90,7 @@
     "eslint-plugin-vue": "^10.5.1",
     "globals": "^16.4.0",
     "jsdom": "^27.4.0",
-    "msw": "^2.12.3",
+    "msw": "^2.12.7",
     "npm-run-all2": "^8.0.4",
     "nyc": "^17.1.0",
     "openapi-typescript": "^7.10.1",
