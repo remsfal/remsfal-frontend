@@ -67,7 +67,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
   isSubmitting.value = true;
 
   try {
-    const newIssue = await issueService.createIssue(props.projectId, {
+    const newIssue = await issueService.createIssue({
       title,
       type,
       projectId: props.projectId,

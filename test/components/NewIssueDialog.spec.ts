@@ -115,11 +115,11 @@ describe('NewIssueDialog.vue', () => {
     await wrapper.vm.$nextTick();
 
     expect(issueService.createIssue).toHaveBeenCalledWith(
-      'project-123',
       expect.objectContaining({
         title: 'Valid Issue Title',
         type: 'TASK',
         priority: 'UNCLASSIFIED',
+        projectId: 'project-123',
       }),
     );
   });

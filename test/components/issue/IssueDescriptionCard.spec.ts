@@ -38,7 +38,6 @@ describe('IssueDescriptionCard.vue', () => {
 
     expectModifyIssueCalled(
       issueService.modifyIssue,
-      defaultIssueDescriptionProps.projectId,
       defaultIssueDescriptionProps.issueId,
       { description: 'Updated description' } as Partial<Issue>
     );
@@ -118,7 +117,6 @@ describe('IssueDescriptionCard.vue', () => {
     
     // Should still save empty string if it's different
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.emptyString }
     );
@@ -129,7 +127,6 @@ describe('IssueDescriptionCard.vue', () => {
     await wrapper.vm.handleSave();
     
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.longText }
     );
@@ -140,7 +137,6 @@ describe('IssueDescriptionCard.vue', () => {
     await wrapper.vm.handleSave();
     
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.specialChars }
     );
@@ -183,7 +179,6 @@ describe('IssueDescriptionCard.vue', () => {
     await wrapper.vm.handleSave();
     
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.markdown }
     );
@@ -194,7 +189,6 @@ describe('IssueDescriptionCard.vue', () => {
     await wrapper.vm.handleSave();
     
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.unicode }
     );

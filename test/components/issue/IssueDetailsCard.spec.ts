@@ -103,7 +103,6 @@ describe('IssueDetailsCard.vue', () => {
     await wrapper.vm.handleSave();
 
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
       'issue-1',
       { title: 'Updated title' },
     );
@@ -201,7 +200,6 @@ describe('IssueDetailsCard.vue', () => {
     await wrapper.vm.handleSave();
 
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
       'issue-1',
       { title: 'New title', status: 'IN_PROGRESS' },
     );
@@ -288,7 +286,6 @@ describe('IssueDetailsCard.vue', () => {
     await wrapper.vm.handleSave();
 
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
       'issue-1',
       { title: longTitle },
     );
@@ -303,7 +300,6 @@ describe('IssueDetailsCard.vue', () => {
     await wrapper.vm.handleSave();
 
     expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
       'issue-1',
       { title: '<script>alert("XSS")</script>' },
     );

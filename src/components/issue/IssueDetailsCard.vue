@@ -171,7 +171,7 @@ const handleSave = async () => {
     if (issueType.value !== originalIssueType.value)
       payload.type = issueType.value as Issue["type"];
 
-    await issueService.modifyIssue(props.projectId, props.issueId, payload);
+    await issueService.modifyIssue(props.issueId, payload);
 
     originalTitle.value = title.value;
     originalStatus.value = status.value;

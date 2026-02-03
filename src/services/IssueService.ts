@@ -6,11 +6,9 @@ export type IssuePriority = ApiComponents['schemas']['IssuePriority'];
 export type Issue = ApiComponents['schemas']['IssueJson'];
 export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
 export type IssueList = ApiComponents['schemas']['IssueListJson'];
+export type IssueAttachment = ApiComponents['schemas']['IssueAttachmentJson'];
 
-export class IssueService {
-  /**
-   * Get all issues for a project, optionally filtered by status, category, assigneeId, or tenancyId.
-   */
+class IssueService {
   async getIssues(
     projectId: string,
     status?: Status,
@@ -27,8 +25,8 @@ export class IssueService {
         offset,
         ...(status ? { status } : {}),
         ...(category ? { category } : {}),
-        ...(assigneeId ? { assigneeId: assigneeId } : {}),
-        ...(tenancyId ? { tenancyId: tenancyId } : {}),
+        ...(assigneeId ? { assigneeId } : {}),
+        ...(tenancyId ? { tenancyId } : {}),
       },
     }) as IssueList;
 
@@ -40,35 +38,35 @@ export class IssueService {
     };
   }
 
-  /**
-   * Get a single issue by its ID.
-   */
-  async getIssue(projectId: string, issueId: string): Promise<Issue> {
-    return apiClient.get('/ticketing/v1/issues/{issueId}', {
-      pathParams: { issueId },
-      params: { projectId } as any,
+  async getIssue(issueId: string): Promise<Issue> {
+    return apiClient.get('/ticketing/v1/issues/{issueId}', { pathParams: { issueId } }) as Promise<Issue>;
+  }
+
+  async createIssue(body: Partial<Issue>): Promise<Issue> {
+    return apiClient.post('/ticketing/v1/issues', body) as Promise<Issue>;
+  }
+
+  async createIssueWithAttachment(body: Partial<Issue>, files: File[]): Promise<Issue> {
+    const formData = new FormData();
+    formData.append('issue', JSON.stringify(body));
+
+    files.forEach((file, index) => {
+      formData.append(`attachment${index}`, file);
+    });
+
+    return apiClient.post('/ticketing/v1/issues', formData as any, {
+      config: { headers: { 'Content-Type': 'multipart/form-data' } },
     }) as Promise<Issue>;
   }
 
-  /**
-   * Create a new issue in a project.
-   */
-  async createIssue(projectId: string, body: Partial<Issue>): Promise<Issue> {
-    return apiClient.post('/ticketing/v1/issues', body as any, {params: { projectId } as any,}) as Promise<Issue>;
+  async modifyIssue(issueId: string, body: Partial<Issue>): Promise<Issue> {
+    return apiClient.patch('/ticketing/v1/issues/{issueId}', body, { pathParams: { issueId } }) as Promise<Issue>;
   }
 
-  /**
-   * Modify an existing issue.
-   */
-  async modifyIssue(
-    projectId: string,
-    issueId: string,
-    body: Partial<Issue>,
-  ): Promise<Issue> {
-    return apiClient.patch('/ticketing/v1/issues/{issueId}', body as any, {
-      pathParams: { issueId },
-      params: { projectId } as any,
-    }) as Promise<Issue>;
+  async deleteAttachment(issueId: string, attachmentId: string): Promise<void> {
+    return apiClient.delete('/ticketing/v1/issues/{issueId}/attachments/{attachmentId}', {
+      pathParams: { issueId, attachmentId },
+    }) as Promise<void>;
   }
 }
 

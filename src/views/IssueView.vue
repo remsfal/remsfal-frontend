@@ -4,11 +4,9 @@ import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import IssueTable from '@/components/IssueTable.vue';
 import NewIssueDialog from '@/components/NewIssueDialog.vue';
-import { type IssueItem, IssueService, type Status } from '@/services/IssueService';
+import { issueService, type IssueItem, type Status } from '@/services/IssueService';
 
 const props = defineProps<{ projectId: string; assigneeId?: string; status?: Status; category?: string; }>();
-
-const issueService = new IssueService();
 const router = useRouter();
 
 // Reactive state
@@ -76,7 +74,7 @@ const loadMyIssues = async () => {
     );
 
     myIssues.value =
-        issueList?.issues?.map(issue => ({
+        issueList?.issues?.map((issue: IssueItem) => ({
           ...issue,
           assigneeId: props.assigneeId,
         })) ?? [];

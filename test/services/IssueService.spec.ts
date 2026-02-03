@@ -16,7 +16,7 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('getIssue returns a single issue', async () => {
-    const issue = await issueService.getIssue(projectId, issueId);
+    const issue = await issueService.getIssue(issueId);
     expect(issue.id).toBe(issueId);
     expect(issue.title).toBeDefined();
     expect(issue.status).toBeDefined();
@@ -29,7 +29,7 @@ describe('IssueService with MSW (http)', () => {
       status: 'OPEN' as Status,
       owner: 'owner1',
     };
-    const createdIssue = await issueService.createIssue(projectId, newIssue);
+    const createdIssue = await issueService.createIssue(newIssue);
     expect(createdIssue.id).toBeDefined();
     expect(createdIssue.title).toBe('New Issue');
     expect(createdIssue.status).toBe('OPEN' as Status);
@@ -40,7 +40,7 @@ describe('IssueService with MSW (http)', () => {
       title: 'Updated Issue',
       description: 'Updated Description',
     };
-    const modifiedIssue = await issueService.modifyIssue(projectId, issueId, updates);
+    const modifiedIssue = await issueService.modifyIssue(issueId, updates);
     expect(modifiedIssue.id).toBe(issueId);
     expect(modifiedIssue.title).toBe('Updated Issue');
     expect(modifiedIssue.description).toBe('Updated Description');
@@ -56,7 +56,7 @@ describe('IssueService with MSW (http)', () => {
   });
   
   test('getIssue handles non-existing issue (404)', async () => {
-    await expect(issueService.getIssue(projectId, 'non-existing-id')).rejects.toThrow();
+    await expect(issueService.getIssue('non-existing-id')).rejects.toThrow();
   });
   
   test('getIssues fallback values are applied when data is missing', async () => {
