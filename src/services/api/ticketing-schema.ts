@@ -229,7 +229,11 @@ export interface paths {
             };
         };
         put?: never;
-        /** Create a new issue. */
+        /**
+         * Create a new issue.
+         * @description Creates a new issue based on the provided issue information.
+         * This method is intended solely for the creation of issues by a property manager.
+         */
         post: {
             parameters: {
                 query?: never;
@@ -239,6 +243,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
+                    "multipart/form-data": Record<string, never>;
                     "application/json": components["schemas"]["IssueJson"];
                 };
             };
@@ -248,6 +253,13 @@ export interface paths {
                     headers: {
                         /** @description URL of the new issue */
                         Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid input or unsupported file type */
+                400: {
+                    headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
@@ -397,6 +409,130 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/ticketing/v1/issues/{issueId}/attachments/{attachmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an issue attachment */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the attachment */
+                    attachmentId: components["schemas"]["UUID"];
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attachment deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to delete this attachment */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Attachment not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ticketing/v1/issues/{issueId}/attachments/{attachmentId}/{filename}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download an issue attachment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the attachment */
+                    attachmentId: components["schemas"]["UUID"];
+                    /** @description Filename of the attachment */
+                    filename: string;
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attachment downloaded successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": unknown;
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to access this attachment */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Attachment not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/ticketing/v1/issues/{issueId}/chats": {
@@ -1592,6 +1728,16 @@ export interface components {
          * @example 2022-03-10T16:15:50Z
          */
         Instant: string;
+        /** @description An issue attachment */
+        IssueAttachmentJson: {
+            issueId?: components["schemas"]["UUID"];
+            attachmentId?: components["schemas"]["UUID"];
+            fileName?: string;
+            contentType?: string;
+            objectName?: string;
+            uploadedBy?: components["schemas"]["UUID"];
+            createdAt?: components["schemas"]["Instant"];
+        };
         /** @description An issue item with basic information */
         IssueItemJson: {
             id?: components["schemas"]["UUID"];
@@ -1620,6 +1766,7 @@ export interface components {
             duplicateOf?: string[];
             blockedBy?: string[];
             blocks?: string[];
+            attachments?: components["schemas"]["IssueAttachmentJson"][];
         };
         /** @description A list of issues */
         IssueListJson: {
@@ -1702,9 +1849,11 @@ export interface components {
         };
         /** @description A project */
         ProjectJson: {
-            id?: components["schemas"]["UUID"];
+            /** @description Unique identifier of the project (generated by server) */
+            readonly id?: components["schemas"]["UUID"];
             title: string;
-            members?: components["schemas"]["ProjectMemberJson"][];
+            /** @description Project members (managed separately via members endpoint) */
+            readonly members?: components["schemas"]["ProjectMemberJson"][];
         };
         /** @description A list of projects */
         ProjectListJson: {
@@ -1730,10 +1879,13 @@ export interface components {
         /** @description Project member information in context of a project */
         ProjectMemberJson: {
             privileged?: boolean;
-            id?: components["schemas"]["UUID"];
-            name?: string;
+            /** @description Unique identifier of the project member (generated by server) */
+            readonly id?: components["schemas"]["UUID"];
+            /** @description Full name of the project member (retrieved from user profile) */
+            readonly name?: string;
             email?: string;
-            active?: boolean;
+            /** @description Active status of the project member (managed by server) */
+            readonly active?: boolean;
             role: components["schemas"]["MemberRole"];
         };
         /** @description A list of project members */
@@ -1886,6 +2038,11 @@ export interface components {
              * @example Main Building
              */
             rentalTitle?: string;
+            /**
+             * @description Location of the node (address or custom)
+             * @example Berliner Str. 123, 12345 Berlin
+             */
+            location?: string;
             active?: boolean;
         };
         /** @description A tenancy of a rentable unit */
