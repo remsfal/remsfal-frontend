@@ -77,7 +77,17 @@ const fetchIssueData = async () => {
      Navigation
   ========================= */
 const navigateToIssue = (issueId: string) => {
-  router.push({ name: 'IssueDetails', params: { issueId } });
+  if (!props.projectId) {
+    console.error('Cannot navigate to issue: projectId is required');
+    return;
+  }
+  router.push({ 
+    name: 'IssueDetails', 
+    params: { 
+      projectId: props.projectId,
+      issueId 
+    } 
+  });
 };
 
 /* =========================
