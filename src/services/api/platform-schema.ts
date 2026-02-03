@@ -5322,6 +5322,16 @@ export interface components {
          * @example 2022-03-10T16:15:50Z
          */
         Instant: string;
+        /** @description An issue attachment */
+        IssueAttachmentJson: {
+            issueId?: components["schemas"]["UUID"];
+            attachmentId?: components["schemas"]["UUID"];
+            fileName?: string;
+            contentType?: string;
+            objectName?: string;
+            uploadedBy?: components["schemas"]["UUID"];
+            createdAt?: components["schemas"]["Instant"];
+        };
         /** @description An issue item with basic information */
         IssueItemJson: {
             id?: components["schemas"]["UUID"];
@@ -5350,6 +5360,7 @@ export interface components {
             duplicateOf?: string[];
             blockedBy?: string[];
             blocks?: string[];
+            attachments?: components["schemas"]["IssueAttachmentJson"][];
         };
         /** @description A list of issues */
         IssueListJson: {

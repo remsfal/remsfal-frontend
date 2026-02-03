@@ -289,6 +289,24 @@ components:
       format: date-time
       examples:
       - 2022-03-10T16:15:50Z
+    IssueAttachmentJson:
+      description: An issue attachment
+      type: object
+      properties:
+        issueId:
+          $ref: "#/components/schemas/UUID"
+        attachmentId:
+          $ref: "#/components/schemas/UUID"
+        fileName:
+          type: string
+        contentType:
+          type: string
+        objectName:
+          type: string
+        uploadedBy:
+          $ref: "#/components/schemas/UUID"
+        createdAt:
+          $ref: "#/components/schemas/Instant"
     IssueItemJson:
       description: An issue item with basic information
       type: object
@@ -369,6 +387,10 @@ components:
             type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueAttachmentJson"
     IssueListJson:
       description: A list of issues
       type: object

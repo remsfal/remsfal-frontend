@@ -289,6 +289,24 @@ components:
       format: date-time
       examples:
       - 2022-03-10T16:15:50Z
+    IssueAttachmentJson:
+      description: An issue attachment
+      type: object
+      properties:
+        issueId:
+          $ref: "#/components/schemas/UUID"
+        attachmentId:
+          $ref: "#/components/schemas/UUID"
+        fileName:
+          type: string
+        contentType:
+          type: string
+        objectName:
+          type: string
+        uploadedBy:
+          $ref: "#/components/schemas/UUID"
+        createdAt:
+          $ref: "#/components/schemas/Instant"
     IssueItemJson:
       description: An issue item with basic information
       type: object
@@ -369,6 +387,10 @@ components:
             type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueAttachmentJson"
     IssueListJson:
       description: A list of issues
       type: object
@@ -1146,8 +1168,13 @@ paths:
       - SecurityScheme: []
     post:
       summary: Create a new issue.
+      description: Creates a new issue based on the provided issue information. This
+        method is intended solely for the creation of issues by a property manager.
       requestBody:
         content:
+          multipart/form-data:
+            schema:
+              type: object
           application/json:
             schema:
               $ref: "#/components/schemas/IssueJson"
@@ -1158,6 +1185,8 @@ paths:
           headers:
             Location:
               description: URL of the new issue
+        "400":
+          description: Invalid input or unsupported file type
         "401":
           description: No user authentication provided via session cookie
         "403":
@@ -1223,6 +1252,68 @@ paths:
           description: No user authentication provided via session cookie
         "403":
           description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/attachments/{attachmentId}:
+    delete:
+      summary: Delete an issue attachment
+      parameters:
+      - description: ID of the attachment
+        required: true
+        name: attachmentId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: Attachment deleted successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to delete this attachment
+        "404":
+          description: Attachment not found
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/attachments/{attachmentId}/{filename}:
+    get:
+      summary: Download an issue attachment
+      parameters:
+      - description: ID of the attachment
+        required: true
+        name: attachmentId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filename of the attachment
+        required: true
+        name: filename
+        in: path
+        schema:
+          type: string
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Attachment downloaded successfully
+          content:
+            application/octet-stream: {}
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this attachment
+        "404":
+          description: Attachment not found
       security:
       - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/chats:
