@@ -231,7 +231,8 @@ export interface paths {
         put?: never;
         /**
          * Create a new issue.
-         * @description Creates a new issue based on the provided issue information. This method is intended solely for the creation of issues by a property manager.
+         * @description Creates a new issue based on the provided issue information.
+         * This method is intended solely for the creation of issues by a property manager.
          */
         post: {
             parameters: {
