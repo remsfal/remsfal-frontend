@@ -59,7 +59,7 @@ class IssueService {
     }) as Promise<Issue>;
   }
 
-  async modifyIssue(issueId: string, body: Partial<Issue>): Promise<Issue> {
+  async updateIssue(issueId: string, body: Partial<Issue>): Promise<Issue> {
     return apiClient.patch('/ticketing/v1/issues/{issueId}', body, { pathParams: { issueId } }) as Promise<Issue>;
   }
 

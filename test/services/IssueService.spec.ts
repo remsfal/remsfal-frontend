@@ -35,12 +35,12 @@ describe('IssueService with MSW (http)', () => {
     expect(createdIssue.status).toBe('OPEN' as Status);
   });
 
-  test('modifyIssue returns the updated issue', async () => {
+  test('updateIssue returns the updated issue', async () => {
     const updates: Partial<Issue> = {
       title: 'Updated Issue',
       description: 'Updated Description',
     };
-    const modifiedIssue = await issueService.modifyIssue(issueId, updates);
+    const modifiedIssue = await issueService.updateIssue(issueId, updates);
     expect(modifiedIssue.id).toBe(issueId);
     expect(modifiedIssue.title).toBe('Updated Issue');
     expect(modifiedIssue.description).toBe('Updated Description');

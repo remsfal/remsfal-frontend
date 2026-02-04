@@ -128,6 +128,7 @@
   "managerMenu.home.settings": "Settings",
   "managerMenu.masterData": "Master Data",
   "managerMenu.masterData.properties": "Rentable Units",
+  "managerMenu.masterData.tenancies": "Rental Agreements",
   "managerMenu.masterData.tenants": "Tenants",
   "managerMenu.masterData.contractors": "Contractors",
   "managerMenu.issueManagement": "Issue Management",

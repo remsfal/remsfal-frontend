@@ -43,7 +43,7 @@ const handleSave = async () => {
     const payload: Partial<Issue> = { description: description.value };
           
     // Call backend API
-    await issueService.modifyIssue(props.issueId, payload);
+    await issueService.updateIssue(props.issueId, payload);
     
     // Update reference state after successful save
     originalDescription.value = description.value;

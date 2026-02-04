@@ -40,13 +40,18 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
           to: currentProjectId ? `/projects/${currentProjectId}/units` : '/',
         },
         {
+          label: 'managerMenu.masterData.tenancies',
+          icon: { type: 'pi', name: 'pi pi-fw pi-receipt' },
+          to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
+        },
+        {
           label: 'managerMenu.masterData.tenants',
-          icon: { type: 'pi', name: 'pi pi-fw pi-users' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-address-book' },
           to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
         },
         {
           label: 'managerMenu.masterData.contractors',
-          icon: { type: 'pi', name: 'pi pi-fw pi-users' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
           to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
         },
       ],
