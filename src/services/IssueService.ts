@@ -54,9 +54,8 @@ class IssueService {
       formData.append(`attachment${index}`, file);
     });
 
-    return apiClient.post('/ticketing/v1/issues', formData as any, {
-      config: { headers: { 'Content-Type': 'multipart/form-data' } },
-    }) as Promise<Issue>;
+    return apiClient.post('/ticketing/v1/issues', formData as any,
+      {config: { headers: { 'Content-Type': 'multipart/form-data' } },}) as Promise<Issue>;
   }
 
   async updateIssue(issueId: string, body: Partial<Issue>): Promise<Issue> {
@@ -64,9 +63,8 @@ class IssueService {
   }
 
   async deleteAttachment(issueId: string, attachmentId: string): Promise<void> {
-    return apiClient.delete('/ticketing/v1/issues/{issueId}/attachments/{attachmentId}', {
-      pathParams: { issueId, attachmentId },
-    }) as Promise<void>;
+    return apiClient.delete('/ticketing/v1/issues/{issueId}/attachments/{attachmentId}',
+      {pathParams: { issueId, attachmentId },});
   }
 }
 
