@@ -14,9 +14,7 @@ const toastSpy = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastSpy }), }));
 
 // ---- Mock ProjectStore ----
-vi.mock('@/stores/ProjectStore', () => ({
-  useProjectStore: () => ({ projectId: 'proj-1' }),
-}));
+vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
 
 // ---- Mock window.location.href ----
 Object.defineProperty(window, 'location', {

@@ -13,9 +13,8 @@ export default class RentalAgreementService {
    * Fetch all rental agreements for a project
    */
   async fetchRentalAgreements(projectId: string): Promise<RentalAgreement[]> {
-    const result = await apiClient.get('/api/v1/projects/{projectId}/rental-agreements', {
-      pathParams: { projectId },
-    });
+    const result = await apiClient.get('/api/v1/projects/{projectId}/rental-agreements',
+      {pathParams: { projectId },});
     return result.rentalAgreements || [];
   }
 
@@ -23,9 +22,8 @@ export default class RentalAgreementService {
    * Load a single rental agreement by ID
    */
   async loadRentalAgreement(projectId: string, agreementId: string): Promise<RentalAgreement> {
-    return apiClient.get('/api/v1/projects/{projectId}/rental-agreements/{agreementId}', {
-      pathParams: { projectId, agreementId },
-    });
+    return apiClient.get('/api/v1/projects/{projectId}/rental-agreements/{agreementId}',
+      {pathParams: { projectId, agreementId },});
   }
 
   /**
@@ -58,9 +56,8 @@ export default class RentalAgreementService {
    * Delete a rental agreement
    */
   async deleteRentalAgreement(projectId: string, agreementId: string): Promise<void> {
-    await apiClient.delete('/api/v1/projects/{projectId}/rental-agreements/{agreementId}', {
-      pathParams: { projectId, agreementId },
-    });
+    await apiClient.delete('/api/v1/projects/{projectId}/rental-agreements/{agreementId}',
+      {pathParams: { projectId, agreementId },});
   }
 
   /**

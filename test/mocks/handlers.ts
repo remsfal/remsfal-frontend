@@ -359,11 +359,19 @@ export const handlers = [
           endOfRental: new Date('2025-01-01').toISOString(),
           active: true,
           tenants: [
-            { id: 'tenant-1', firstName: 'Max', lastName: 'Mustermann', email: 'max@example.com' },
-            { id: 'tenant-2', firstName: 'Julia', lastName: 'Schmidt', email: 'julia@example.com' }
+            {
+ id: 'tenant-1', firstName: 'Max', lastName: 'Mustermann', email: 'max@example.com' 
+},
+            {
+ id: 'tenant-2', firstName: 'Julia', lastName: 'Schmidt', email: 'julia@example.com' 
+}
           ],
           apartmentRents: [
-            { id: 'rent-1', rentalUnit: { id: 'unit-1', title: 'Apartment 1A', type: 'APARTMENT' } }
+            {
+ id: 'rent-1', rentalUnit: {
+ id: 'unit-1', title: 'Apartment 1A', type: 'APARTMENT' 
+} 
+}
           ],
           propertyRents: [],
           siteRents: [],
@@ -377,11 +385,17 @@ export const handlers = [
           endOfRental: new Date('2025-06-01').toISOString(),
           active: true,
           tenants: [
-            { id: 'tenant-3', firstName: 'Bob', lastName: 'Smith', email: 'bob@example.com' }
+            {
+ id: 'tenant-3', firstName: 'Bob', lastName: 'Smith', email: 'bob@example.com' 
+}
           ],
           apartmentRents: [],
           propertyRents: [
-            { id: 'rent-2', rentalUnit: { id: 'unit-2', title: 'Property A', type: 'PROPERTY' } }
+            {
+ id: 'rent-2', rentalUnit: {
+ id: 'unit-2', title: 'Property A', type: 'PROPERTY' 
+} 
+}
           ],
           siteRents: [],
           buildingRents: [],
@@ -403,10 +417,16 @@ export const handlers = [
       endOfRental: new Date('2025-01-01').toISOString(),
       active: true,
       tenants: [
-        { id: 'tenant-1', firstName: 'Max', lastName: 'Mustermann', email: 'max@example.com' }
+        {
+ id: 'tenant-1', firstName: 'Max', lastName: 'Mustermann', email: 'max@example.com' 
+}
       ],
       apartmentRents: [
-        { id: 'rent-1', rentalUnit: { id: 'unit-1', title: 'Apartment 1A', type: 'APARTMENT' } }
+        {
+ id: 'rent-1', rentalUnit: {
+ id: 'unit-1', title: 'Apartment 1A', type: 'APARTMENT' 
+} 
+}
       ],
       propertyRents: [],
       siteRents: [],
