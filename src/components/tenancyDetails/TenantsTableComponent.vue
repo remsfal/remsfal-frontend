@@ -8,21 +8,19 @@ import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { computed, onMounted, ref, watch } from 'vue';
 
-// Support both TenantJson (manager context) and UserJson (tenant context)
+// Use TenantJson for manager context
 type TenantJson = components['schemas']['TenantJson'];
-type UserJson = components['schemas']['UserJson'];
-type TenantOrUser = TenantJson | UserJson;
 
 const props = defineProps<{
-    tenants: TenantOrUser[];
+    tenants: TenantJson[];
     isDeleteButtonEnabled: boolean;
 }>();
 
 const emit = defineEmits<{
-    (e: 'onChange', tenants: TenantOrUser[]): void;
+    (e: 'onChange', tenants: TenantJson[]): void;
 }>();
 
-const localTenants = ref<TenantOrUser[]>([]);
+const localTenants = ref<TenantJson[]>([]);
 
 watch(
     () => props.tenants,
@@ -40,7 +38,7 @@ const emptyRowTemplate: TenantJson = {
 
 
 const addNewRow = () => {
-    const newRow: TenantOrUser = { ...emptyRowTemplate };
+    const newRow: TenantJson = { ...emptyRowTemplate };
     localTenants.value.push(newRow);
 };
 

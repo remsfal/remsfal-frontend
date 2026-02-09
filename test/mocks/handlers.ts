@@ -310,21 +310,25 @@ export const handlers = [
         tenancies: [
           {
             id: 't1',
-            rentalStart: new Date().toISOString(),
-            rentalEnd: new Date().toISOString(),
-            tenants: [{
- id: 'u1', name: 'Max Mustermann', email: 'max@example.com'
-}],
-            listOfUnits: [{ id: 'unit1', title: 'Unit 1' }],
+            rentalType: 'APARTMENT',
+            rentalTitle: 'Apartment 101',
+            startOfRental: new Date().toISOString(),
+            endOfRental: new Date().toISOString(),
             active: true,
+            basicRent: 1000,
+            operatingCostsPrepayment: 200,
+            heatingCostsPrepayment: 150
           },
           {
             id: 't2',
-            rentalStart: new Date().toISOString(),
-            rentalEnd: new Date().toISOString(),
-            tenants: [],
-            listOfUnits: [],
+            rentalType: 'PROPERTY',
+            rentalTitle: 'Property A',
+            startOfRental: new Date().toISOString(),
+            endOfRental: new Date().toISOString(),
             active: true,
+            basicRent: 2000,
+            operatingCostsPrepayment: 400,
+            heatingCostsPrepayment: 300
           },
         ],
       },
@@ -421,8 +425,8 @@ export const handlers = [
     }, { status: 201 });
   }),
 
-  // PUT update rental agreement
-  http.put(`${API_BASE}/projects/:projectId/rental-agreements/:agreementId`, async ({ request, params }) => {
+  // PATCH update rental agreement
+  http.patch(`${API_BASE}/projects/:projectId/rental-agreements/:agreementId`, async ({ request, params }) => {
     const body = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json({
       id: params.agreementId,

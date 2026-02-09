@@ -32,7 +32,7 @@ export default class RentalAgreementService {
    * Create a new rental agreement
    */
   async createRentalAgreement(projectId: string, agreement: RentalAgreement): Promise<void> {
-    return apiClient.post(
+    await apiClient.post(
       '/api/v1/projects/{projectId}/rental-agreements',
       agreement,
       { pathParams: { projectId } }
@@ -46,8 +46,8 @@ export default class RentalAgreementService {
     projectId: string,
     agreementId: string,
     agreement: RentalAgreement
-  ): Promise<RentalAgreement> {
-    return apiClient.put(
+  ): Promise<void> {
+    await apiClient.patch(
       '/api/v1/projects/{projectId}/rental-agreements/{agreementId}',
       agreement,
       { pathParams: { projectId, agreementId } }
@@ -58,7 +58,7 @@ export default class RentalAgreementService {
    * Delete a rental agreement
    */
   async deleteRentalAgreement(projectId: string, agreementId: string): Promise<void> {
-    return apiClient.delete('/api/v1/projects/{projectId}/rental-agreements/{agreementId}', {
+    await apiClient.delete('/api/v1/projects/{projectId}/rental-agreements/{agreementId}', {
       pathParams: { projectId, agreementId },
     });
   }

@@ -36,13 +36,13 @@ const listOfUnits = computed(() => {
     ...(rentalAgreement.value.commercialRents || [])
   ];
 
+  // Note: RentJson only has unitId, not full rentalUnit object
+  // We map to TenancyItemJson structure for compatibility with UnitsTableComponent
   return allRents.map(rent => ({
-    id: rent.rentalUnit?.id,
-    title: rent.rentalUnit?.title,
-    type: rent.rentalUnit?.type,
-    location: rent.rentalUnit?.location,
-    description: rent.rentalUnit?.description,
-    space: rent.rentalUnit?.space
+    id: rent.unitId,
+    rentalType: 'APARTMENT' as const, // We don't have type info, using default
+    rentalTitle: rent.unitId, // Using unitId as title since we don't have full unit data
+    active: true
   }));
 });
 

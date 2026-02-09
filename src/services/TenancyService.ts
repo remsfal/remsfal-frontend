@@ -13,8 +13,9 @@ export default class TenancyService {
   }
 
   async fetchTenantData(): Promise<TenancyTenantItem[]> {
-    const tenancies = await this.fetchTenancyData();
-    return tenancies.flatMap(t => t.tenants ?? []);
+    // Note: TenancyJson (tenant context) doesn't have a tenants array
+    // This method is a placeholder for future implementation
+    return [];
   }
 
   async loadTenancyData(id: string): Promise<TenancyJson | null> {

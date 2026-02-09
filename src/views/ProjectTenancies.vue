@@ -104,10 +104,10 @@ onMounted(async () => {
                     ...(slotProps.data.storageRents || []),
                     ...(slotProps.data.commercialRents || [])
                   ]"
-                  :key="`${rent.id}-${index}`"
+                  :key="`${rent.unitId}-${index}`"
                   class="border-b last:border-none py-2"
                 >
-                  {{ rent.rentalUnit?.title || 'N/A' }}
+                  {{ rent.unitId || 'N/A' }}
                 </div>
               </div>
             </template>

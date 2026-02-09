@@ -37,7 +37,7 @@ describe('ProjectTenancies.vue', () => {
       endOfRental: '2024-01-01',
       tenants: mockTenants,
       apartmentRents: [
-        { id: 'rent-1', rentalUnit: { id: 'u1', title: 'Building A - Unit 101', type: 'APARTMENT' } }
+        { unitId: 'unit-101', basicRent: 1000 }
       ],
       propertyRents: [],
       siteRents: [],
@@ -141,7 +141,7 @@ describe('ProjectTenancies.vue', () => {
 
   it('renders unit information in the table', () => {
     const html = wrapper.html();
-    expect(html).toContain('Building A - Unit 101');
+    expect(html).toContain('unit-101');
   });
 
   it('closes dialog when cancel button is clicked', async () => {
