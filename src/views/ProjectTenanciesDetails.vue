@@ -2,84 +2,110 @@
 import TenancyDataComponent from '@/components/tenancyDetails/TenancyDataComponent.vue';
 import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableComponent.vue';
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
-import { tenancyService } from '@/services/TenancyService';
+import { rentalAgreementService, type RentalAgreement } from '@/services/RentalAgreementService';
 import type { components } from '@/services/api/platform-schema';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
-// Use TenancyJson as the type
-type TenancyItem = components['schemas']['TenancyJson'];
-type TenancyUnitItem = components['schemas']['TenancyItemJson']; // for UnitsTableComponent
+type RentJson = components['schemas']['RentJson'];
 
 const router = useRouter();
 const toast = useToast();
 const projectStore = useProjectStore();
 
 const confirmationDialogVisible = ref(false);
-const tenancy = ref<TenancyItem | null>(null);
-
-// Separate units ref
-const listOfUnits = ref<TenancyUnitItem[]>([]);
+const rentalAgreement = ref<RentalAgreement | null>(null);
 
 const rentalStart = ref<string | null>(null);
 const rentalEnd = ref<string | null>(null);
 
+// Compute all units from all rent types
+const listOfUnits = computed(() => {
+  if (!rentalAgreement.value) return [];
+
+  const allRents: RentJson[] = [
+    ...(rentalAgreement.value.propertyRents || []),
+    ...(rentalAgreement.value.siteRents || []),
+    ...(rentalAgreement.value.buildingRents || []),
+    ...(rentalAgreement.value.apartmentRents || []),
+    ...(rentalAgreement.value.storageRents || []),
+    ...(rentalAgreement.value.commercialRents || [])
+  ];
+
+  // Note: RentJson only has unitId, not full rentalUnit object
+  // We map to TenancyItemJson structure for compatibility with UnitsTableComponent
+  return allRents.map(rent => ({
+    id: rent.unitId,
+    rentalType: 'APARTMENT' as const, // We don't have type info, using default
+    rentalTitle: rent.unitId, // Using unitId as title since we don't have full unit data
+    active: true
+  }));
+});
+
 onMounted(async () => {
-  const tenancyId = window.location.href.split('/').pop();
-  if (!tenancyId) {
-    console.error('Tenancy ID not found in URL');
+  const agreementId = window.location.href.split('/').pop();
+  if (!agreementId || !projectStore.projectId) {
+    console.error('Agreement ID or Project ID not found');
     return;
   }
 
-  tenancy.value = await tenancyService.loadTenancyData(tenancyId);
-  rentalStart.value = tenancy.value?.startOfRental || null;
-  rentalEnd.value = tenancy.value?.endOfRental || null;
-
-  // If you have an API for units, you can fetch them here:
-  // listOfUnits.value = await tenancyService.fetchUnitsForTenancy(tenancyId);
+  rentalAgreement.value = await rentalAgreementService.loadRentalAgreement(
+    projectStore.projectId,
+    agreementId
+  );
+  rentalStart.value = rentalAgreement.value?.startOfRental || null;
+  rentalEnd.value = rentalAgreement.value?.endOfRental || null;
 });
 
 function confirmDeletion() {
-  const tenancyId = tenancy.value?.id;
-  if (!tenancyId) {
-    console.error('Tenancy ID is missing');
+  const agreementId = rentalAgreement.value?.id;
+  if (!agreementId || !projectStore.projectId) {
+    console.error('Agreement ID or Project ID is missing');
     confirmationDialogVisible.value = false;
     return;
   }
 
-  deleteTenancy(tenancyId);
+  deleteRentalAgreement(agreementId);
   confirmationDialogVisible.value = false;
 }
 
-function deleteTenancy(tenancyId: string) {
-  tenancyService
-    .deleteTenancy(tenancyId)
+function deleteRentalAgreement(agreementId: string) {
+  if (!projectStore.projectId) return;
+
+  rentalAgreementService
+    .deleteRentalAgreement(projectStore.projectId, agreementId)
     .then(() => redirectToTenanciesList())
-    .catch((error) => console.error('Error deleting tenancy:', error));
+    .catch((error) => console.error('Error deleting rental agreement:', error));
 }
 
 function redirectToTenanciesList() {
   router.push('/project/' + projectStore.projectId + '/tenancies/');
 }
 
-function updateTenancy(tenancy: TenancyItem | null) {
-  tenancyService.updateTenancy(tenancy);
+function updateRentalAgreement(agreement: RentalAgreement | null) {
+  if (!agreement?.id || !projectStore.projectId) return;
+
+  rentalAgreementService.updateRentalAgreement(
+    projectStore.projectId,
+    agreement.id,
+    agreement
+  );
   toast.add({
     severity: 'success',
     summary: 'Speichern erfolgreich',
-    detail: `Der Mietvertrag mit der ID ${tenancy?.id} wurde erfolgreich aktualisiert.`,
+    detail: `Der Mietvertrag mit der ID ${agreement?.id} wurde erfolgreich aktualisiert.`,
     life: 3000,
   });
 }
 
-function handleTenancyDataChange(updatedTenancy: TenancyItem) {
-  tenancy.value = updatedTenancy;
-  rentalStart.value = tenancy.value?.startOfRental || null;
-  rentalEnd.value = tenancy.value?.endOfRental || null;
+function handleTenancyDataChange(updatedAgreement: RentalAgreement) {
+  rentalAgreement.value = updatedAgreement;
+  rentalStart.value = rentalAgreement.value?.startOfRental || null;
+  rentalEnd.value = rentalAgreement.value?.endOfRental || null;
 }
 
 defineExpose({
@@ -90,21 +116,21 @@ defineExpose({
 
 <template>
   <div class="p-4">
-    <!-- Tenancy data form -->
+    <!-- Rental Agreement data form -->
     <TenancyDataComponent
-      v-if="tenancy"
-      :tenancy="tenancy"
+      v-if="rentalAgreement"
+      :tenancy="rentalAgreement"
       @onChange="handleTenancyDataChange"
     />
 
     <div class="grid grid-cols-1 gap-6">
       <!-- Tenants Table -->
       <TenantsTableComponent
-        :tenants="tenancy?.tenants || []"
+        :tenants="rentalAgreement?.tenants || []"
         :isDeleteButtonEnabled="false"
       />
 
-      <!-- Units Table (stubbed, can fetch units separately) -->
+      <!-- Units Table -->
       <UnitsTableComponent
         :listOfUnits="listOfUnits"
         :isDeleteButtonEnabled="false"
@@ -119,7 +145,7 @@ defineExpose({
           raised
           rounded
           class="mb-2 mr-2 hover:bg-blue-600 transition-colors"
-          @click="updateTenancy(tenancy)"
+          @click="updateRentalAgreement(rentalAgreement)"
         />
         <Button
           icon="pi pi-trash"
@@ -138,7 +164,7 @@ defineExpose({
   <!-- Delete confirmation dialog -->
   <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
     <div class="p-fluid">
-      <p>Sind Sie sicher, dass Sie den Mietvertrag mit der ID {{ tenancy?.id }} löschen möchten?</p>
+      <p>Sind Sie sicher, dass Sie den Mietvertrag mit der ID {{ rentalAgreement?.id }} löschen möchten?</p>
     </div>
     <template #footer>
       <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
