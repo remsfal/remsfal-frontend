@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { tenancyService, type TenancyTenantItem } from '@/services/TenancyService';
+import type { components } from '@/services/api/platform-schema';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Column from 'primevue/column';
@@ -8,18 +8,19 @@ import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { computed, onMounted, ref, watch } from 'vue';
 
-
+// Use TenantJson for manager context
+type TenantJson = components['schemas']['TenantJson'];
 
 const props = defineProps<{
-    tenants: TenancyTenantItem[];
+    tenants: TenantJson[];
     isDeleteButtonEnabled: boolean;
 }>();
 
 const emit = defineEmits<{
-    (e: 'onChange', tenants: TenancyTenantItem[]): void;
+    (e: 'onChange', tenants: TenantJson[]): void;
 }>();
 
-const localTenants = ref<TenancyTenantItem[]>([]);
+const localTenants = ref<TenantJson[]>([]);
 
 watch(
     () => props.tenants,
@@ -29,8 +30,7 @@ watch(
     { immediate: true, deep: true }
 );
 
-const emptyRowTemplate = {
-    id: new Date().toISOString(),
+const emptyRowTemplate: TenantJson = {
     firstName: '',
     lastName: '',
     email: '',
@@ -38,7 +38,7 @@ const emptyRowTemplate = {
 
 
 const addNewRow = () => {
-    const newRow: TenancyTenantItem = { ...emptyRowTemplate };
+    const newRow: TenantJson = { ...emptyRowTemplate };
     localTenants.value.push(newRow);
 };
 
@@ -51,10 +51,6 @@ const columns = ref([
 const onCellEditComplete = (event: any) => {
     let { newData, index } = event;
     localTenants.value[index] = newData;
-    const tenant = localTenants.value[index];
-    if (tenant) {
-        tenancyService.updateTenancyTenantItem(tenant);
-    }
     emit('onChange', localTenants.value);
 };
 

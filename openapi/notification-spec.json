@@ -50,18 +50,18 @@
             "type" : "number",
             "format" : "float"
           },
-          "location" : {
-            "type" : "string"
-          },
-          "description" : {
-            "type" : "string"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "location" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
           }
         }
       },
@@ -110,18 +110,18 @@
             "type" : "number",
             "format" : "float"
           },
-          "location" : {
-            "type" : "string"
-          },
-          "description" : {
-            "type" : "string"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "location" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
           },
           "address" : {
             "$ref" : "#/components/schemas/AddressJson"
@@ -245,18 +245,18 @@
             "type" : "number",
             "format" : "float"
           },
-          "location" : {
-            "type" : "string"
-          },
-          "description" : {
-            "type" : "string"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "location" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
           }
         }
       },
@@ -446,6 +446,8 @@
         "type" : "object",
         "properties" : {
           "id" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "projectId" : {
@@ -467,7 +469,7 @@
           "reporterId" : {
             "$ref" : "#/components/schemas/UUID"
           },
-          "tenancyId" : {
+          "agreementId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "assigneeId" : {
@@ -541,6 +543,7 @@
             "type" : "integer",
             "format" : "int32",
             "description" : "Index of the first element in list of total available entries, starting at 1",
+            "readOnly" : true,
             "examples" : [ 1 ]
           },
           "size" : {
@@ -549,6 +552,7 @@
             "maximum" : 100,
             "minimum" : 1,
             "description" : "Number of elements in list",
+            "readOnly" : true,
             "default" : 10
           },
           "total" : {
@@ -600,6 +604,8 @@
         "type" : "object",
         "properties" : {
           "id" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
@@ -686,6 +692,8 @@
         "required" : [ "id", "name", "memberRole" ],
         "properties" : {
           "id" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "name" : {
@@ -733,6 +741,7 @@
             "type" : "integer",
             "format" : "int32",
             "description" : "Index of the first element in projects list of total available entries, starting at 1",
+            "readOnly" : true,
             "examples" : [ 1 ]
           },
           "size" : {
@@ -741,12 +750,14 @@
             "maximum" : 100,
             "minimum" : 1,
             "description" : "Number of elements in projects list",
+            "readOnly" : true,
             "default" : 10
           },
           "total" : {
             "type" : "integer",
             "format" : "int64",
-            "description" : "Total number of available projects"
+            "description" : "Total number of available projects",
+            "readOnly" : true
           },
           "projects" : {
             "type" : "array",
@@ -829,18 +840,6 @@
           }
         }
       },
-      "ProjectTenancyListJson" : {
-        "description" : "A list of tenancies for a project",
-        "type" : "object",
-        "properties" : {
-          "tenancies" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TenancyInfoJson"
-            }
-          }
-        }
-      },
       "PropertyJson" : {
         "description" : "A property",
         "type" : "object",
@@ -883,15 +882,15 @@
             "type" : "number",
             "format" : "float"
           },
-          "description" : {
-            "type" : "string"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "description" : {
+            "type" : "string"
           }
         }
       },
@@ -903,15 +902,19 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/RentalUnitTreeNodeJson"
-            }
+            },
+            "readOnly" : true
           }
         }
       },
       "RentJson" : {
-        "description" : "A rent of a tenancy",
+        "description" : "Rent information for a rentable unit",
         "type" : "object",
-        "required" : [ "billingCycle", "firstPaymentDate" ],
+        "required" : [ "unitId" ],
         "properties" : {
+          "unitId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
           "billingCycle" : {
             "$ref" : "#/components/schemas/BillingCycle"
           },
@@ -935,6 +938,114 @@
             "type" : "number",
             "format" : "float",
             "minimum" : 0
+          }
+        }
+      },
+      "RentalAgreementJson" : {
+        "description" : "A rental agreement for rentable units",
+        "type" : "object",
+        "properties" : {
+          "active" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "tenants" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TenantJson"
+            }
+          },
+          "startOfRental" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "endOfRental" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "propertyRents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentJson"
+            },
+            "description" : "List of property rents"
+          },
+          "siteRents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentJson"
+            },
+            "description" : "List of site rents"
+          },
+          "buildingRents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentJson"
+            },
+            "description" : "List of building rents"
+          },
+          "apartmentRents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentJson"
+            },
+            "description" : "List of apartment rents"
+          },
+          "storageRents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentJson"
+            },
+            "description" : "List of storage rents"
+          },
+          "commercialRents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentJson"
+            },
+            "description" : "List of commercial rents"
+          }
+        }
+      },
+      "RentalAgreementListJson" : {
+        "description" : "A list of rental agreements for a project",
+        "type" : "object",
+        "properties" : {
+          "rentalAgreements" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentalAgreementJson"
+            }
+          }
+        }
+      },
+      "RentalUnitJson" : {
+        "description" : "A general rental unit",
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/UnitType"
+          },
+          "location" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "space" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "id" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "title" : {
+            "type" : "string",
+            "maxLength" : 255
           }
         }
       },
@@ -1021,18 +1132,18 @@
             "type" : "number",
             "format" : "float"
           },
-          "location" : {
-            "type" : "string"
-          },
-          "description" : {
-            "type" : "string"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "location" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
           },
           "address" : {
             "$ref" : "#/components/schemas/AddressJson"
@@ -1060,47 +1171,23 @@
             "type" : "number",
             "format" : "float"
           },
-          "location" : {
-            "type" : "string"
-          },
-          "description" : {
-            "type" : "string"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "title" : {
             "type" : "string",
             "maxLength" : 255
-          }
-        }
-      },
-      "TenancyInfoJson" : {
-        "type" : "object",
-        "description" : "A tenancy item with information from the manager's view",
-        "properties" : {
-          "active" : {
-            "type" : "boolean"
           },
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
+          "location" : {
+            "type" : "string"
           },
-          "startOfRental" : {
-            "$ref" : "#/components/schemas/LocalDate"
-          },
-          "endOfRental" : {
-            "$ref" : "#/components/schemas/LocalDate"
-          },
-          "tenants" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/UserJson"
-            }
+          "description" : {
+            "type" : "string"
           }
         }
       },
       "TenancyItemJson" : {
-        "description" : "A tenancy item with basic information from a tenant's perspective",
+        "description" : "A rental agreement item with basic information from a tenant's perspective",
         "type" : "object",
         "properties" : {
           "id" : {
@@ -1132,31 +1219,7 @@
         "required" : [ "rentalType" ]
       },
       "TenancyJson" : {
-        "description" : "A tenancy of a rentable unit",
-        "type" : "object",
-        "properties" : {
-          "active" : {
-            "type" : "boolean"
-          },
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "tenants" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/UserJson"
-            }
-          },
-          "startOfRental" : {
-            "$ref" : "#/components/schemas/LocalDate"
-          },
-          "endOfRental" : {
-            "$ref" : "#/components/schemas/LocalDate"
-          }
-        }
-      },
-      "TenancyJson1" : {
-        "description" : "A read-only tenancy of a rentable unit from a tenant's perspective",
+        "description" : "A read-only rental agreement of a rentable unit from a tenant's perspective",
         "type" : "object",
         "properties" : {
           "id" : {
@@ -1198,16 +1261,78 @@
         "required" : [ "rentalType" ]
       },
       "TenancyListJson" : {
-        "description" : "A list of tenancies from a tenant's perspective",
+        "description" : "A list of rental agreements from a tenant's perspective",
         "type" : "object",
         "properties" : {
-          "tenancies" : {
+          "agreements" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/TenancyItemJson"
             }
           }
         }
+      },
+      "TenantJson" : {
+        "type" : "object",
+        "description" : "Tenant information in a rental agreement",
+        "properties" : {
+          "id" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "firstName" : {
+            "type" : "string",
+            "examples" : [ "Max" ],
+            "minLength" : 1,
+            "maxLength" : 255
+          },
+          "lastName" : {
+            "type" : "string",
+            "examples" : [ "Mustermann" ],
+            "minLength" : 1,
+            "maxLength" : 255
+          },
+          "email" : {
+            "type" : "string",
+            "examples" : [ "tenant@example.com" ],
+            "maxLength" : 255
+          },
+          "mobilePhoneNumber" : {
+            "type" : "string",
+            "examples" : [ "+491234567890" ],
+            "pattern" : "^\\+[1-9]\\d{4,14}$"
+          },
+          "businessPhoneNumber" : {
+            "type" : "string",
+            "examples" : [ "+491234567890" ],
+            "pattern" : "^\\+[1-9]\\d{4,14}$"
+          },
+          "privatePhoneNumber" : {
+            "type" : "string",
+            "examples" : [ "+491234567890" ],
+            "pattern" : "^\\+[1-9]\\d{4,14}$"
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/AddressJson"
+          },
+          "placeOfBirth" : {
+            "type" : "string",
+            "examples" : [ "Berlin" ],
+            "maxLength" : 255
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "examples" : [ "1990-01-01" ],
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "userId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          }
+        },
+        "required" : [ "firstName", "lastName" ]
       },
       "UUID" : {
         "type" : "string",
@@ -1406,7 +1531,7 @@
   },
   "info" : {
     "title" : "remsfal-notification API",
-    "version" : "1.0.11-SNAPSHOT"
+    "version" : "1.0.12-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8082",

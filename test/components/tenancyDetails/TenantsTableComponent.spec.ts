@@ -1,12 +1,9 @@
 import { mount } from '@vue/test-utils';
 import TenantsTableComponent from '../../../src/components/tenancyDetails/TenantsTableComponent.vue';
-import { tenancyService } from '../../../src/services/TenancyService';
-
-vi.mock('@/services/TenancyService', () => ({tenancyService: {updateTenancyTenantItem: vi.fn(),},}));
 
 describe('TenantsTableComponent', () => {
   const tenantsMock = [{
- id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@test.de' 
+ id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@test.de'
 }];
 
   it('renders tenant data in table', () => {
@@ -25,7 +22,6 @@ describe('TenantsTableComponent', () => {
 
     expect(wrapper.emitted('onChange')).toBeTruthy();
     expect(wrapper.emitted('onChange')![0][0][0].firstName).toBe('Moritz');
-    expect(tenancyService.updateTenancyTenantItem).toHaveBeenCalled();
   });
 
   it('adds a new row when button is clicked', async () => {

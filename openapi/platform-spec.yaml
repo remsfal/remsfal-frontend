@@ -38,15 +38,15 @@ components:
         space:
           type: number
           format: float
-        location:
-          type: string
-        description:
-          type: string
         id:
           $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
+        location:
+          type: string
+        description:
+          type: string
     BillingCycle:
       type: string
       enum:
@@ -85,15 +85,15 @@ components:
         space:
           type: number
           format: float
-        location:
-          type: string
-        description:
-          type: string
         id:
           $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
+        location:
+          type: string
+        description:
+          type: string
         address:
           $ref: "#/components/schemas/AddressJson"
     ChatMessageJson:
@@ -181,15 +181,15 @@ components:
         space:
           type: number
           format: float
-        location:
-          type: string
-        description:
-          type: string
         id:
           $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
+        location:
+          type: string
+        description:
+          type: string
     ContractorJson:
       description: A contractor
       type: object
@@ -357,6 +357,8 @@ components:
       type: object
       properties:
         id:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         projectId:
           $ref: "#/components/schemas/UUID"
@@ -371,7 +373,7 @@ components:
           $ref: "#/components/schemas/IssuePriority"
         reporterId:
           $ref: "#/components/schemas/UUID"
-        tenancyId:
+        agreementId:
           $ref: "#/components/schemas/UUID"
         assigneeId:
           $ref: "#/components/schemas/UUID"
@@ -431,6 +433,7 @@ components:
           format: int32
           description: "Index of the first element in list of total available entries,\
             \ starting at 1"
+          readOnly: true
           examples:
           - 1
         size:
@@ -439,6 +442,7 @@ components:
           maximum: 100
           minimum: 1
           description: Number of elements in list
+          readOnly: true
           default: 10
         total:
           type: integer
@@ -499,6 +503,8 @@ components:
       type: object
       properties:
         id:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         name:
           type: string
@@ -566,6 +572,8 @@ components:
       - memberRole
       properties:
         id:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         name:
           type: string
@@ -607,6 +615,7 @@ components:
           format: int32
           description: "Index of the first element in projects list of total available\
             \ entries, starting at 1"
+          readOnly: true
           examples:
           - 1
         size:
@@ -615,11 +624,13 @@ components:
           maximum: 100
           minimum: 1
           description: Number of elements in projects list
+          readOnly: true
           default: 10
         total:
           type: integer
           format: int64
           description: Total number of available projects
+          readOnly: true
         projects:
           type: array
           items:
@@ -679,14 +690,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProjectOrganizationJson"
-    ProjectTenancyListJson:
-      description: A list of tenancies for a project
-      type: object
-      properties:
-        tenancies:
-          type: array
-          items:
-            $ref: "#/components/schemas/TenancyInfoJson"
     PropertyJson:
       description: A property
       type: object
@@ -718,13 +721,13 @@ components:
         space:
           type: number
           format: float
-        description:
-          type: string
         id:
           $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
+        description:
+          type: string
     PropertyListJson:
       description: A list of properties
       type: object
@@ -733,13 +736,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RentalUnitTreeNodeJson"
+          readOnly: true
     RentJson:
-      description: A rent of a tenancy
+      description: Rent information for a rentable unit
       type: object
       required:
-      - billingCycle
-      - firstPaymentDate
+      - unitId
       properties:
+        unitId:
+          $ref: "#/components/schemas/UUID"
         billingCycle:
           $ref: "#/components/schemas/BillingCycle"
         firstPaymentDate:
@@ -758,6 +763,82 @@ components:
           type: number
           format: float
           minimum: 0
+    RentalAgreementJson:
+      description: A rental agreement for rentable units
+      type: object
+      properties:
+        active:
+          type: boolean
+        id:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantJson"
+        startOfRental:
+          $ref: "#/components/schemas/LocalDate"
+        endOfRental:
+          $ref: "#/components/schemas/LocalDate"
+        propertyRents:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentJson"
+          description: List of property rents
+        siteRents:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentJson"
+          description: List of site rents
+        buildingRents:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentJson"
+          description: List of building rents
+        apartmentRents:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentJson"
+          description: List of apartment rents
+        storageRents:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentJson"
+          description: List of storage rents
+        commercialRents:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentJson"
+          description: List of commercial rents
+    RentalAgreementListJson:
+      description: A list of rental agreements for a project
+      type: object
+      properties:
+        rentalAgreements:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentalAgreementJson"
+    RentalUnitJson:
+      description: A general rental unit
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/UnitType"
+        location:
+          type: string
+        description:
+          type: string
+        space:
+          type: number
+          format: float
+        id:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        title:
+          type: string
+          maxLength: 255
     RentalUnitNodeDataJson:
       type: object
       description: Encapsulated data of a project tree node
@@ -832,15 +913,15 @@ components:
         space:
           type: number
           format: float
-        location:
-          type: string
-        description:
-          type: string
         id:
           $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
+        location:
+          type: string
+        description:
+          type: string
         address:
           $ref: "#/components/schemas/AddressJson"
     StorageJson:
@@ -861,33 +942,18 @@ components:
         space:
           type: number
           format: float
-        location:
-          type: string
-        description:
-          type: string
         id:
           $ref: "#/components/schemas/UUID"
         title:
           type: string
           maxLength: 255
-    TenancyInfoJson:
-      type: object
-      description: A tenancy item with information from the manager's view
-      properties:
-        active:
-          type: boolean
-        id:
-          $ref: "#/components/schemas/UUID"
-        startOfRental:
-          $ref: "#/components/schemas/LocalDate"
-        endOfRental:
-          $ref: "#/components/schemas/LocalDate"
-        tenants:
-          type: array
-          items:
-            $ref: "#/components/schemas/UserJson"
+        location:
+          type: string
+        description:
+          type: string
     TenancyItemJson:
-      description: A tenancy item with basic information from a tenant's perspective
+      description: A rental agreement item with basic information from a tenant's
+        perspective
       type: object
       properties:
         id:
@@ -915,23 +981,8 @@ components:
       required:
       - rentalType
     TenancyJson:
-      description: A tenancy of a rentable unit
-      type: object
-      properties:
-        active:
-          type: boolean
-        id:
-          $ref: "#/components/schemas/UUID"
-        tenants:
-          type: array
-          items:
-            $ref: "#/components/schemas/UserJson"
-        startOfRental:
-          $ref: "#/components/schemas/LocalDate"
-        endOfRental:
-          $ref: "#/components/schemas/LocalDate"
-    TenancyJson1:
-      description: A read-only tenancy of a rentable unit from a tenant's perspective
+      description: A read-only rental agreement of a rentable unit from a tenant's
+        perspective
       type: object
       properties:
         id:
@@ -965,13 +1016,72 @@ components:
       required:
       - rentalType
     TenancyListJson:
-      description: A list of tenancies from a tenant's perspective
+      description: A list of rental agreements from a tenant's perspective
       type: object
       properties:
-        tenancies:
+        agreements:
           type: array
           items:
             $ref: "#/components/schemas/TenancyItemJson"
+    TenantJson:
+      type: object
+      description: Tenant information in a rental agreement
+      properties:
+        id:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        firstName:
+          type: string
+          examples:
+          - Max
+          minLength: 1
+          maxLength: 255
+        lastName:
+          type: string
+          examples:
+          - Mustermann
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          examples:
+          - tenant@example.com
+          maxLength: 255
+        mobilePhoneNumber:
+          type: string
+          examples:
+          - "+491234567890"
+          pattern: "^\\+[1-9]\\d{4,14}$"
+        businessPhoneNumber:
+          type: string
+          examples:
+          - "+491234567890"
+          pattern: "^\\+[1-9]\\d{4,14}$"
+        privatePhoneNumber:
+          type: string
+          examples:
+          - "+491234567890"
+          pattern: "^\\+[1-9]\\d{4,14}$"
+        address:
+          $ref: "#/components/schemas/AddressJson"
+        placeOfBirth:
+          type: string
+          examples:
+          - Berlin
+          maxLength: 255
+        dateOfBirth:
+          type: string
+          examples:
+          - 1990-01-01
+          $ref: "#/components/schemas/LocalDate"
+        userId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+      required:
+      - firstName
+      - lastName
     UUID:
       type: string
       format: uuid
@@ -3304,6 +3414,106 @@ paths:
           description: The site was deleted successfully
         "401":
           description: No user authentication provided via session cookie
+  /api/v1/projects/{projectId}/rental-agreements:
+    get:
+      summary: Retrieve information of all tenancies
+      parameters:
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: The requested tenancies were successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentalAgreementListJson"
+        "401":
+          description: No user authentication provided via session cookie
+    post:
+      summary: Create a new tenancy
+      parameters:
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RentalAgreementJson"
+        required: true
+      responses:
+        "201":
+          description: Tenancy created successfully
+        "400":
+          description: Invalid request message
+        "401":
+          description: No user authentication provided via session cookie
+  /api/v1/projects/{projectId}/rental-agreements/{agreementId}:
+    patch:
+      summary: Update information of a tenancy
+      parameters:
+      - description: ID of the tenancy
+        required: true
+        name: agreementId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RentalAgreementJson"
+        required: true
+      responses:
+        "200":
+          description: The rental agreement was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentalAgreementJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: The rental agreement does not exist
+    get:
+      summary: Retrieve Information of a tenancy.
+      parameters:
+      - description: ID of the tenancy
+        required: true
+        name: agreementId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: The requested rental agreement was successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentalAgreementJson"
+        "401":
+          description: No user authentication provided session cookie
+        "404":
+          description: The rental agreement does not exist
   /api/v1/projects/{projectId}/sites:
     post:
       summary: Create a new site
@@ -3514,106 +3724,6 @@ paths:
           description: The storage was deleted successfully
         "401":
           description: No user authentication provided via session cookie
-  /api/v1/projects/{projectId}/tenancies:
-    get:
-      summary: Retrieve information of all tenancies
-      parameters:
-      - description: ID of the project
-        required: true
-        name: projectId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: The requested tenancies were successfully returned
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProjectTenancyListJson"
-        "401":
-          description: No user authentication provided via session cookie
-    post:
-      summary: Create a new tenancy
-      parameters:
-      - description: ID of the project
-        required: true
-        name: projectId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TenancyInfoJson"
-        required: true
-      responses:
-        "201":
-          description: Tenancy created successfully
-        "400":
-          description: Invalid request message
-        "401":
-          description: No user authentication provided via session cookie
-  /api/v1/projects/{projectId}/tenancies/{tenancyId}:
-    patch:
-      summary: Update information of a tenancy
-      parameters:
-      - description: ID of the project
-        required: true
-        name: projectId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the tenancy
-        required: true
-        name: tenancyId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TenancyInfoJson"
-        required: true
-      responses:
-        "200":
-          description: The tenancy was successfully updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TenancyInfoJson"
-        "401":
-          description: No user authentication provided via session cookie
-        "404":
-          description: The tenancy does not exist
-    get:
-      summary: Retrieve Information of a tenancy.
-      parameters:
-      - description: ID of the project
-        required: true
-        name: projectId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the tenancy
-        required: true
-        name: tenancyId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: The requested tenancy was successfully returned
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TenancyInfoJson"
-        "401":
-          description: No user authentication provided session cookie
-        "404":
-          description: The tenancy does not exist
   /api/v1/projects/{projectId}/tenants:
     get:
       summary: Retrieve information for all tenants
@@ -3632,7 +3742,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserJson"
+                  $ref: "#/components/schemas/TenantJson"
         "404":
           description: The tenant does not exist
     post:
@@ -3648,7 +3758,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserJson"
+              $ref: "#/components/schemas/TenantJson"
         required: true
       responses:
         "201":
@@ -3659,7 +3769,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserJson"
+                $ref: "#/components/schemas/TenantJson"
   /api/v1/projects/{projectId}/tenants/{tenantId}:
     patch:
       summary: Update information on an tenant
@@ -3680,7 +3790,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserJson"
+              $ref: "#/components/schemas/TenantJson"
         required: true
       responses:
         "200":
@@ -3688,7 +3798,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserJson"
+                $ref: "#/components/schemas/TenantJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3714,7 +3824,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserJson"
+                $ref: "#/components/schemas/TenantJson"
         "404":
           description: The tenant you are looking for does not exist
     delete:
@@ -3769,7 +3879,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TenancyJson1"
+                $ref: "#/components/schemas/TenancyJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3796,7 +3906,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TenancyJson1"
+                $ref: "#/components/schemas/TenancyJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3823,7 +3933,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TenancyJson1"
+                $ref: "#/components/schemas/TenancyJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3850,7 +3960,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TenancyJson1"
+                $ref: "#/components/schemas/TenancyJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3877,7 +3987,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TenancyJson1"
+                $ref: "#/components/schemas/TenancyJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3904,7 +4014,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TenancyJson1"
+                $ref: "#/components/schemas/TenancyJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3959,7 +4069,7 @@ paths:
       - SecurityScheme: []
 info:
   title: remsfal-platform API
-  version: 1.0.11-SNAPSHOT
+  version: 1.0.12-SNAPSHOT
 servers:
 - url: http://localhost:8080
   description: Auto generated value
