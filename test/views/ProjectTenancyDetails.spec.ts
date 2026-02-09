@@ -1,32 +1,41 @@
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { tenancyService } from '../../src/services/TenancyService';
+import { rentalAgreementService } from '../../src/services/RentalAgreementService';
 
 // ---- Mocks ----
 const push = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
-  useRoute: () => ({ params: { tenancyId: 't1' } }),
+  useRoute: () => ({ params: { agreementId: 'agreement-1' } }),
 }));
 
 const toastSpy = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastSpy }), }));
 
-
+// ---- Mock ProjectStore ----
+vi.mock('@/stores/ProjectStore', () => ({
+  useProjectStore: () => ({ projectId: 'proj-1' }),
+}));
 
 // ---- Mock window.location.href ----
 Object.defineProperty(window, 'location', {
-  value: { href: 'http://localhost/project/1/tenancies/t1' },
+  value: { href: 'http://localhost/project/proj-1/tenancies/agreement-1' },
   writable: true,
 });
 
-const mockTenancy = {
-  id: 't1',
+const mockRentalAgreement = {
+  id: 'agreement-1',
   active: true,
   tenants: [],
   startOfRental: '2025-01-01',
   endOfRental: '2025-12-31',
+  apartmentRents: [],
+  propertyRents: [],
+  siteRents: [],
+  buildingRents: [],
+  storageRents: [],
+  commercialRents: []
 };
 
 describe('ProjectTenanciesDetails', () => {
@@ -39,9 +48,9 @@ describe('ProjectTenanciesDetails', () => {
 
   beforeEach(async () => {
     // re-apply mocks here (so they're active after vi.clearAllMocks)
-    vi.spyOn(tenancyService, 'loadTenancyData').mockResolvedValue(mockTenancy);
-    vi.spyOn(tenancyService, 'updateTenancy').mockResolvedValue(undefined);
-    vi.spyOn(tenancyService, 'deleteTenancy').mockResolvedValue(undefined);
+    vi.spyOn(rentalAgreementService, 'loadRentalAgreement').mockResolvedValue(mockRentalAgreement);
+    vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockResolvedValue(mockRentalAgreement);
+    vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockResolvedValue(undefined);
 
     wrapper = mount(ProjectTenanciesDetails);
     await flushPromises();
@@ -62,23 +71,23 @@ describe('ProjectTenanciesDetails', () => {
     expect((wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmationDialogVisible).toBe(true);
   });
 
-  it('calls updateTenancy and shows toast', async () => {
+  it('calls updateRentalAgreement and shows toast', async () => {
     const saveBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Speichern'));
     expect(saveBtn).toBeTruthy();
 
     await saveBtn!.trigger('click');
     await flushPromises();
 
-    expect(tenancyService.updateTenancy).toHaveBeenCalledWith(mockTenancy);
+    expect(rentalAgreementService.updateRentalAgreement).toHaveBeenCalledWith('proj-1', 'agreement-1', mockRentalAgreement);
     expect(toastSpy).toHaveBeenCalled();
   });
 
-  it('deletes tenancy and redirects', async () => {
+  it('deletes rental agreement and redirects', async () => {
     (wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmationDialogVisible = true;
     await (wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmDeletion();
     await flushPromises();
 
-    expect(tenancyService.deleteTenancy).toHaveBeenCalledWith('t1');
+    expect(rentalAgreementService.deleteRentalAgreement).toHaveBeenCalledWith('proj-1', 'agreement-1');
     expect(push).toHaveBeenCalledWith(expect.stringContaining('/tenancies/'));
   });
 });

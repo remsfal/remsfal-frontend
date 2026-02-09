@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { tenancyService } from '@/services/TenancyService';
-import type { components } from '@/services/api/platform-schema';
-
-type TenantItem = components['schemas']['UserJson'];
-type TenancyItem = components['schemas']['TenancyJson'];
+import { rentalAgreementService, type RentalAgreement, type TenantItem } from '@/services/RentalAgreementService';
 
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -14,7 +10,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useProjectStore } from '@/stores/ProjectStore';
 
-defineProps<{
+const props = defineProps<{
   projectId: string;
 }>();
 const { t } = useI18n();
@@ -25,7 +21,7 @@ const projectStore = useProjectStore();
 const tenantData = ref<TenantItem[]>([]);
 const isLoading = ref(true);
 
-const tenancyData = ref<TenancyItem[]>([]);
+const rentalAgreements = ref<RentalAgreement[]>([]);
 
 const confirmationDialogVisible = ref(false);
 const tenantToDelete = ref<TenantItem | null>(null);
@@ -51,10 +47,9 @@ function navigateToNewTenancy() {
 }
 
 onMounted(async () => {
-  tenantData.value = await tenancyService.fetchTenantData();
+  rentalAgreements.value = await rentalAgreementService.fetchRentalAgreements(props.projectId);
+  tenantData.value = rentalAgreementService.extractTenants(rentalAgreements.value);
   isLoading.value = false;
-
-  tenancyData.value = await tenancyService.fetchTenancyData();
 });
 </script>
 
@@ -69,7 +64,7 @@ onMounted(async () => {
       </div>
       <div v-if="!isLoading" class="col-span-12 card">
         <DataTable
-          :value="tenancyData"
+          :value="rentalAgreements"
           :rows="10"
           :rowHover="true"
           dataKey="id"
@@ -80,14 +75,14 @@ onMounted(async () => {
           class="custom-scroll-height cursor-pointer"
           @rowClick="navigateToTenancyDetails($event.data.id)"
         >
-          <Column field="rentalStart" :header="t('projectTenancies.table.rentalStart')" :sortable="true" />
-          <Column field="rentalEnd" :header="t('projectTenancies.table.rentalEnd')" :sortable="true" />
+          <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" :sortable="true" />
+          <Column field="endOfRental" :header="t('projectTenancies.table.rentalEnd')" :sortable="true" />
 
-          <Column field="listOfTenants" :header="t('projectTenancies.table.tenants')">
+          <Column field="tenants" :header="t('projectTenancies.table.tenants')">
             <template #body="slotProps">
               <div class="space-y-2">
                 <div
-                  v-for="(tenant, index) in slotProps.data.listOfTenants"
+                  v-for="(tenant, index) in slotProps.data.tenants"
                   :key="`${tenant.id}-${index}`"
                   class="border-b last:border-none py-2"
                 >
@@ -97,15 +92,22 @@ onMounted(async () => {
             </template>
           </Column>
 
-          <Column field="listOfUnits" :header="t('projectTenancies.table.units')">
+          <Column :header="t('projectTenancies.table.units')">
             <template #body="slotProps">
               <div class="space-y-2">
                 <div
-                  v-for="(unit, index) in slotProps.data.listOfUnits"
-                  :key="`${unit.id}-${index}`"
+                  v-for="(rent, index) in [
+                    ...(slotProps.data.propertyRents || []),
+                    ...(slotProps.data.siteRents || []),
+                    ...(slotProps.data.buildingRents || []),
+                    ...(slotProps.data.apartmentRents || []),
+                    ...(slotProps.data.storageRents || []),
+                    ...(slotProps.data.commercialRents || [])
+                  ]"
+                  :key="`${rent.id}-${index}`"
                   class="border-b last:border-none py-2"
                 >
-                  {{ unit.rentalObject }} - {{ unit.unitTitle }}
+                  {{ rent.rentalUnit?.title || 'N/A' }}
                 </div>
               </div>
             </template>
