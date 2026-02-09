@@ -1,10 +1,10 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import AdressDisplay from '../../src/components/AddressDisplay.vue';
+import AdressDisplay from '@/components/AddressDisplay.vue';
 import Card from 'primevue/card';
 import { createApp, nextTick } from 'vue';
 import { createPinia } from 'pinia';
-import App from '../../src/App.vue';
+import App from '@/App.vue';
 
 describe('AdressDisplay', () => {
   let wrapper: VueWrapper;

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import ContractDetailView from '../../src/views/ContractDetailView.vue';
-import { tenantContractService, type TenantContractDetail } from '../../src/services/TenantContractService';
+import ContractDetailView from '@/views/ContractDetailView.vue';
+import { tenantContractService, type TenantContractDetail } from '@/services/TenantContractService';
 
 vi.mock('vue-router', () => ({ useRoute: () => ({ params: { contractId: 'CNT-TEST' } }) }));
 

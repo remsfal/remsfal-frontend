@@ -1,9 +1,9 @@
 import {describe, it, expect, beforeEach, afterEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewProjectDialog from '../../src/components/NewProjectDialog.vue';
-import router from '../../src/router';
-import { saveProject } from '../../src/helper/indexeddb';
-import { projectService } from '../../src/services/ProjectService';
+import NewProjectDialog from '@/components/NewProjectDialog.vue';
+import router from '@/router';
+import { saveProject } from '@/helper/indexeddb';
+import { projectService } from '@/services/ProjectService';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 import { Form } from '@primevue/forms';

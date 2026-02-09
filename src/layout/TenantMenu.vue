@@ -10,7 +10,7 @@ const model = ref([
       {
         label: 'Überblick',
         icon: { type: 'pi', name: 'pi pi-fw pi-info-circle' },
-        to: '/tenancies',
+        to: '/tenancies/dashboard',
       },
       {
         label: 'Meldungen',
@@ -40,7 +40,7 @@ const model = ref([
       {
         label: 'Meine Aufträge',
         icon: { type: 'pi', name: 'pi pi-fw pi-wrench' },
-        to: '/contractor',
+        to: '/contractor/dashboard',
       },
     ],
   },

@@ -5,10 +5,10 @@ import Dialog from 'primevue/dialog';
 import ProjectSettings from '@/components/ProjectSettings.vue';
 import ProjectMemberSettings from '@/components/ProjectMemberSettings.vue';
 import { ref } from 'vue';
-import { projectService } from '@/services/ProjectService';
+import { projectService } from '@/services/ProjectService.ts';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { useProjectStore } from '@/stores/ProjectStore.ts';
 import { useRouter } from 'vue-router';
 
 const props = defineProps<{

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import ContractorTable from '../../src/components/ContractorTable.vue';
+import ContractorTable from '@/components/ContractorTable.vue';
 import { contractorService } from '@/services/ContractorService';
 
 vi.mock('@/services/ContractorService', () => ({ contractorService: { getIssues: vi.fn() } }));

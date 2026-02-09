@@ -1,16 +1,15 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { commercialService, type CommercialUnit } from '@/services/CommercialService';
+import { storageService, type Storage } from '@/services/StorageService.ts';
 import { useToast } from 'primevue/usetoast';
 import {handleCancel,
   navigateToObjects,
   showSavingErrorToast,
   showValidationErrorToast,
-  valuesAreEqual,} from '@/helper/viewHelper';
+  valuesAreEqual,} from '@/helper/viewHelper.ts';
 
 const props = defineProps<{
   projectId: string;
@@ -19,101 +18,87 @@ const props = defineProps<{
 
 const toast = useToast();
 const router = useRouter();
-const { t } = useI18n();
 
+// Form fields
 const title = ref('');
 const description = ref('');
-const commercialSpace = ref<number | null>(null);
-const heatingSpace = ref<number | null>(null);
 const location = ref('');
+const usableSpace = ref<number | null>(null);
 
+// Original values for change detection
 const originalValues = ref({
   title: '',
   description: '',
-  commercialSpace: null as number | null,
-  heatingSpace: null as number | null,
   location: '',
+  usableSpace: null as number | null,
 });
 
 const hasChanges = computed(() => {
   return (
     !valuesAreEqual(title.value, originalValues.value.title) ||
     !valuesAreEqual(description.value, originalValues.value.description) ||
-    !valuesAreEqual(commercialSpace.value, originalValues.value.commercialSpace) ||
-    !valuesAreEqual(heatingSpace.value, originalValues.value.heatingSpace) ||
-    !valuesAreEqual(location.value, originalValues.value.location)
+    !valuesAreEqual(location.value, originalValues.value.location) ||
+    !valuesAreEqual(usableSpace.value, originalValues.value.usableSpace)
   );
 });
 
 const validationErrors = computed(() => {
   const errors: string[] = [];
-
-  if (commercialSpace.value === null) {
-    errors.push(t('commercialUnit.validation.commercialRequired'));
-  } else if (commercialSpace.value < 0) {
-    errors.push(t('commercialUnit.validation.commercialNegative'));
+  if (!title.value || title.value.length < 3) {
+    errors.push('Der Titel muss mindestens 3 Zeichen lang sein.');
   }
-
-  if (heatingSpace.value === null) {
-    errors.push(t('commercialUnit.validation.heatingRequired'));
-  } else if (heatingSpace.value < 0) {
-    errors.push(t('commercialUnit.validation.heatingNegative'));
+  if (!location.value) {
+    errors.push('Standort ist erforderlich.');
   }
-
+  if (usableSpace.value === null) {
+    errors.push('Nutzfläche ist erforderlich.');
+  } else if (usableSpace.value < 0) {
+    errors.push('Nutzfläche darf nicht negativ sein.');
+  }
   if (description.value && description.value.length > 500) {
-    errors.push(t('commercialUnit.validation.descriptionTooLong'));
+    errors.push('Beschreibung darf maximal 500 Zeichen lang sein.');
   }
-
   return errors;
 });
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
-async function fetchCommercialDetails() {
-  if (!props.projectId) {
-    console.error('Keine projectId');
-    return;
-  }
-  if (!props.unitId) {
-    console.error('Keine unitId');
-    return;
-  }
+const fetchStorageDetails = async () => {
+  if (!props.projectId || !props.unitId) return;
 
   try {
-    const data = await commercialService.getCommercial(props.projectId, props.unitId);
+    const data: Storage = await storageService.getStorage(props.projectId, props.unitId);
 
-    title.value = data.title || '';
-    description.value = data.description || '';
-    commercialSpace.value = data.netFloorArea ?? null;
-    heatingSpace.value = data.technicalServicesArea ?? null;
-    location.value = data.location || '';
+    title.value = data.title ?? '';
+    description.value = data.description ?? '';
+    location.value = data.location ?? '';
+    usableSpace.value = data.usableSpace ?? null;
 
     originalValues.value = {
       title: title.value,
       description: description.value,
-      commercialSpace: commercialSpace.value,
-      heatingSpace: heatingSpace.value,
       location: location.value,
+      usableSpace: usableSpace.value,
     };
-  } catch (err) {
-    console.error('Error loading commercial unit:', err);
+  } catch (error) {
+    console.error('Error loading storage:', error);
     toast.add({
       severity: 'error',
-      summary: t('commercialUnit.loadErrorTitle'),
-      detail: t('commercialUnit.loadErrorDetail'),
+      summary: 'Load Error',
+      detail: 'Could not load storage.',
       life: 6000,
     });
   }
-}
+};
 
 onMounted(() => {
   if (props.unitId) {
-    fetchCommercialDetails();
+    fetchStorageDetails();
   } else {
     toast.add({
       severity: 'warn',
-      summary: t('commercialUnit.missingIdTitle'),
-      detail: t('commercialUnit.missingIdDetail'),
+      summary: 'Invalid ID',
+      detail: 'No storage ID provided.',
       life: 6000,
     });
   }
@@ -125,32 +110,30 @@ const save = async () => {
     return;
   }
 
-  const payload: CommercialUnit = {
+  // Prepare typed payload
+  const payload: Storage = {
     title: title.value,
     description: description.value,
-    netFloorArea: commercialSpace.value ?? undefined,
-    heatingSpace: heatingSpace.value ?? undefined,
     location: location.value,
+    usableSpace: usableSpace.value ?? undefined,
   };
 
   try {
-    await commercialService.updateCommercial(props.projectId, props.unitId, payload);
+    await storageService.updateStorage(props.projectId, props.unitId, payload);
     toast.add({
       severity: 'success',
-      summary: t('commercialUnit.saveSuccessTitle'),
-      detail: t('commercialUnit.saveSuccessDetail'),
+      summary: 'Success',
+      detail: 'Storage successfully saved.',
       life: 6000,
     });
     navigateToObjects(router, props.projectId);
   } catch (err) {
-    console.error('Error saving commercial unit:', err);
-    showSavingErrorToast(toast, t('commercialUnit.saveError'));
+    console.error('Error saving storage:', err);
+    showSavingErrorToast(toast, 'Storage could not be saved.');
   }
 };
 
 const cancel = () => handleCancel(hasChanges, router, props.projectId);
-
-defineExpose({ fetchCommercialDetails });
 </script>
 
 <template>
@@ -163,23 +146,19 @@ defineExpose({ fetchCommercialDetails });
 
   <BaseCard>
     <template #title>
-      {{ t('commercialUnit.editTitle', { id: unitId }) }}
+      Bearbeite Storage mit ID: {{ unitId }}
     </template>
 
     <template #content>
       <form @submit.prevent="save">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <div class="col-span-2">
-            <label for="title" class="block text-gray-700 mb-1">{{
-              t('rentableUnits.form.title')
-            }}</label>
+            <label for="title" class="block text-gray-700 mb-1">Titel</label>
             <input id="title" v-model="title" type="text" class="form-input w-full">
           </div>
 
           <div class="col-span-2">
-            <label for="description" class="block text-gray-700 mb-1">{{
-              t('rentableUnits.form.description')
-            }}</label>
+            <label for="description" class="block text-gray-700 mb-1">Beschreibung</label>
             <textarea
               id="description"
               v-model="description"
@@ -189,37 +168,20 @@ defineExpose({ fetchCommercialDetails });
           </div>
 
           <div class="col-span-2">
-            <label for="location" class="block text-gray-700 mb-1">{{
-              t('property.address')
-            }}</label>
+            <label for="location" class="block text-gray-700 mb-1">Standort</label>
             <input id="location" v-model="location" type="text" class="form-input w-full">
           </div>
 
           <div>
-            <label for="commercialSpace" class="block text-gray-700 mb-1">
-              {{ t('commercialUnit.commercialSpace') }} (m²)
-            </label>
+            <label for="usableSpace" class="block text-gray-700 mb-1">Nutzfläche (m²)</label>
             <input
-              id="commercialSpace"
-              v-model.number="commercialSpace"
-              type="number"
-              class="form-input w-full"
-            >
-          </div>
-
-          <div>
-            <label for="heatingSpace" class="block text-gray-700 mb-1">
-              {{ t('commercialUnit.heatingSpace') }} (m²)
-            </label>
-            <input
-              id="heatingSpace"
-              v-model.number="heatingSpace"
+              id="usableSpace"
+              v-model.number="usableSpace"
               type="number"
               class="form-input w-full"
             >
           </div>
         </div>
-
         <div v-if="validationErrors.length" class="text-red-600 mt-4">
           <ul>
             <li v-for="(error, i) in validationErrors" :key="i">
@@ -234,7 +196,7 @@ defineExpose({ fetchCommercialDetails });
             :disabled="!hasChanges"
             class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ t('button.save') }}
+            Speichern
           </button>
 
           <button
@@ -242,7 +204,7 @@ defineExpose({ fetchCommercialDetails });
             class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
             @click="cancel"
           >
-            {{ t('button.cancel') }}
+            Abbrechen
           </button>
         </div>
       </form>

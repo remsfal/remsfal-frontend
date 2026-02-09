@@ -1,9 +1,9 @@
 import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import ProjectMemberSettings from '../../src/components/ProjectMemberSettings.vue';
+import ProjectMemberSettings from '@/components/ProjectMemberSettings.vue';
 import {projectMemberService,
   type Member,
-  type MemberRole,} from '../../src/services/ProjectMemberService';
+  type MemberRole,} from '@/services/ProjectMemberService';
 
 vi.mock('../../src/services/ProjectMemberService');
 

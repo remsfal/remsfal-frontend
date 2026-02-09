@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
-import ContractorTopbar from '../../src/layout/ContractorTopbar.vue';
-import { useUserSessionStore, type User } from '../../src/stores/UserSession';
+import ContractorTopbar from '@/layout/ContractorTopbar.vue';
+import { useUserSessionStore, type User } from '@/stores/UserSession';
 
 // Router mock
 const mockPush = vi.fn();

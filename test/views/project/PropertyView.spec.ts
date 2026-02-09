@@ -1,14 +1,14 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
-import Component from '../../src/views/PropertyView.vue';
-import { propertyService } from '../../src/services/PropertyService';
+import Component from '@/views/project/PropertyView.vue';
+import { propertyService } from '@/services/PropertyService';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
+import { server } from '../../mocks/server';
 
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({useRouter: () => ({ push: mockPush }),}));
 
-vi.mock('../../src/services/PropertyService', () => ({propertyService: { getProperty: vi.fn(), updateProperty: vi.fn() },}));
+vi.mock('@/services/PropertyService', () => ({propertyService: { getProperty: vi.fn(), updateProperty: vi.fn() },}));
 
 // MSW handler
 let lastUpdatedProperty: Record<string, unknown> | null = null;

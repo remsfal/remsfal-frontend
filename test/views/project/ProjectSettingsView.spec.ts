@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectSettingsView from '../../src/views/ProjectSettingsView.vue';
-import { projectService } from '../../src/services/ProjectService';
+import ProjectSettingsView from '@/views/project/ProjectSettingsView.vue';
+import { projectService } from '@/services/ProjectService';
 
 // ---- Mocks ----
 const routerPushMock = vi.fn();

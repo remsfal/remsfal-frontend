@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import MemberAutoComplete from '../../src/components/MemberAutoComplete.vue';
-import { type ProjectMemberList, projectMemberService } from '../../src/services/ProjectMemberService';
+import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
+import { type ProjectMemberList, projectMemberService } from '@/services/ProjectMemberService';
 import AutoComplete from 'primevue/autocomplete';
 
 vi.mock('@/services/ProjectMemberService', { spy: true });

@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import TenancyService from '../../src/services/TenancyService';
+import TenancyService from '@/services/TenancyService';
 
 describe('TenancyService with MSW', () => {
   const tenancyService = new TenancyService();

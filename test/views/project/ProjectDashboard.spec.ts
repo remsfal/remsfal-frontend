@@ -1,7 +1,7 @@
 // tests/views/ProjectDashboard.spec.ts
 import {describe, it, expect, vi} from 'vitest';
 import { mount } from '@vue/test-utils';
-import ProjectDashboard from '../../src/views/ProjectDashboard.vue';
+import ProjectDashboard from '@/views/project/ProjectDashboard.vue';
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
 

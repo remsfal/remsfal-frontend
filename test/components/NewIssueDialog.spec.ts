@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewIssueDialog from '../../src/components/NewIssueDialog.vue';
-import { issueService } from '../../src/services/IssueService';
+import NewIssueDialog from '@/components/NewIssueDialog.vue';
+import { issueService } from '@/services/IssueService';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';

@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
-import ContractorDashboardView from "@/views/ContractorDashboardView.vue";
+import ContractorDashboard from "@/views/contractor/ContractorDashboard.vue";
 
 // Reusable mount function with necessary stubs
 function mountView() {
-    return mount(ContractorDashboardView, {
+    return mount(ContractorDashboard, {
         global: {
             stubs: {
                 // PrimeVue Chart MUST be stubbed for Vitest

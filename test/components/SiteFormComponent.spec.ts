@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest';
 import { mount } from '@vue/test-utils';
-import SiteFormComponent from '../../src/components/SiteFormComponent.vue';
+import SiteFormComponent from '@/components/SiteFormComponent.vue';
 
 const DataTable = {
     props: ['value'],

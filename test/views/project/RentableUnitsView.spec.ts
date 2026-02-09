@@ -1,8 +1,8 @@
 import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
 import {describe, it, expect, vi, beforeEach} from 'vitest';
-import RentableUnitsView from '../../src/views/RentableUnitsView.vue';
-import { EntityType, type PropertyList, propertyService } from '../../src/services/PropertyService';
-import { buildingService } from '../../src/services/BuildingService';
+import RentableUnitsView from '@/views/project/RentableUnitsView.vue';
+import { EntityType, type PropertyList, propertyService } from '@/services/PropertyService';
+import { buildingService } from '@/services/BuildingService';
 
 vi.mock('@/services/PropertyService');
 vi.mock('@/services/ApartmentService');

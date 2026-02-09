@@ -1,13 +1,13 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import {describe, it, expect, vi, beforeEach, Mock} from 'vitest';
-import Component from '../../src/views/BuildingView.vue';
-import { buildingService } from '../../src/services/BuildingService';
+import Component from '@/views/project/BuildingView.vue';
+import { buildingService } from '@/services/BuildingService';
 
 const mockPush = vi.fn();
 
 vi.mock('vue-router', () => ({useRouter: () => ({push: mockPush,}),}));
 
-vi.mock('../../src/services/BuildingService', () => ({
+vi.mock('@/services/BuildingService', () => ({
   buildingService: {
     getBuilding: vi.fn(),
     updateBuilding: vi.fn(),

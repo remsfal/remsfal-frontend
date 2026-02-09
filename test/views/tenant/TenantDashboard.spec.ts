@@ -44,7 +44,7 @@ describe('TenantView', () => {
 
   it('renders contracts from API', async () => {
     vi.mocked(tenantContractService.listContracts).mockResolvedValue(mockContracts);
-    const { default: TenantView } = await import('../../src/views/TenantView.vue');
+    const { default: TenantView } = await import('../../../src/views/tenant/TenantDashboard.vue');
 
     const wrapper = mount(TenantView);
     await flushPromises();
@@ -59,7 +59,7 @@ describe('TenantView', () => {
 
   it('shows error notice and fallback when fetch fails', async () => {
     vi.mocked(tenantContractService.listContracts).mockRejectedValue(new Error('fail'));
-    const { default: TenantView } = await import('../../src/views/TenantView.vue');
+    const { default: TenantView } = await import('../../../src/views/tenant/TenantDashboard.vue');
 
     const wrapper = mount(TenantView);
     await flushPromises();
@@ -69,7 +69,7 @@ describe('TenantView', () => {
 
   it('shows empty state when no contracts returned', async () => {
     vi.mocked(tenantContractService.listContracts).mockResolvedValue([]);
-    const { default: TenantView } = await import('../../src/views/TenantView.vue');
+    const { default: TenantView } = await import('../../../src/views/tenant/TenantDashboard.vue');
 
     const wrapper = mount(TenantView);
     await flushPromises();

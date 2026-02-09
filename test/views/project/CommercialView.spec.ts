@@ -1,12 +1,12 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import {describe, it, expect, vi, beforeEach, Mock} from 'vitest';
-import Component from '../../src/views/CommercialView.vue';
-import { commercialService } from '../../src/services/CommercialService';
+import Component from '@/views/project/CommercialView.vue';
+import { commercialService } from '@/services/CommercialService';
 
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({useRouter: () => ({push: mockPush,}),}));
 
-vi.mock('../../src/services/CommercialService', () => ({
+vi.mock('@/services/CommercialService', () => ({
   commercialService: {
     getCommercial: vi.fn(),
     updateCommercial: vi.fn(),

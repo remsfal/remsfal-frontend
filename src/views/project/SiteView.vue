@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import SiteFormComponent from '../components/SiteFormComponent.vue';
-import { siteService, type SiteUnit } from '@/services/SiteService';
+import SiteFormComponent from '@/components/SiteFormComponent.vue';
+import { siteService, type SiteUnit } from '@/services/SiteService.ts';
 
 const props = defineProps<{
   projectId: string;

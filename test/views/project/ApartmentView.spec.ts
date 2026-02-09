@@ -1,7 +1,7 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import ApartmentView from '../../src/views/ApartmentView.vue'
-import { apartmentService } from '../../src/services/ApartmentService'
+import ApartmentView from '@/views/project/ApartmentView.vue'
+import { apartmentService } from '@/services/ApartmentService'
 
 const mockPush = vi.fn();
 

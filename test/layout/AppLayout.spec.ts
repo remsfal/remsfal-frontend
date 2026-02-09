@@ -1,7 +1,7 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import {describe, it, expect, beforeEach} from 'vitest';
-import AppLayout from '../../src/layout/AppLayout.vue';
-import AppFooter from '../../src/layout/AppFooter.vue';
+import AppLayout from '@/layout/AppLayout.vue';
+import AppFooter from '@/layout/AppFooter.vue';
 
 describe('AppLayout.vue', () => {
   let wrapper: VueWrapper;
@@ -14,7 +14,7 @@ describe('AppLayout.vue', () => {
     const footer = wrapper.findComponent(AppFooter);
     expect(footer.exists()).toBe(true);
 
-    await wrapper.vm.$router.push('/contractor/overview');
+    await wrapper.vm.$router.push('/contractor/dashboard');
     await wrapper.vm.$nextTick();
 
     const routerViewContent = wrapper.html();
@@ -22,7 +22,7 @@ describe('AppLayout.vue', () => {
   });
 
   it('should display correct content for the contractor route', async () => {
-    await wrapper.vm.$router.push('/contractor/overview');
+    await wrapper.vm.$router.push('/contractor/dashboard');
     await wrapper.vm.$nextTick();
 
     const routerViewContent = wrapper.html();

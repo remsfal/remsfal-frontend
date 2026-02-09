@@ -1,7 +1,7 @@
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
-import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
+import ProjectTenanciesDetails from '@/views/ProjectTenanciesDetails.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { rentalAgreementService } from '../../src/services/RentalAgreementService';
+import { rentalAgreementService } from '@/services/RentalAgreementService';
 
 // ---- Mocks ----
 const push = vi.fn();

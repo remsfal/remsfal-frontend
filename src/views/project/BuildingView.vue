@@ -3,14 +3,14 @@ import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { buildingService } from '@/services/BuildingService';
-import type { components } from '../../src/services/api/platform-schema';
+import { buildingService } from '@/services/BuildingService.ts';
+import type { components } from '@/services/api/platform-schema.ts';
 import { useToast } from 'primevue/usetoast';
 import {handleCancel,
   navigateToObjects,
   showSavingErrorToast,
   showValidationErrorToast,
-  valuesAreEqual,} from '@/helper/viewHelper';
+  valuesAreEqual,} from '@/helper/viewHelper.ts';
 
 const props = defineProps<{ projectId: string; unitId: string }>();
 const router = useRouter();

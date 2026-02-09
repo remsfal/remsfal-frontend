@@ -1,8 +1,8 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
 import {beforeEach, describe, expect, it, vi, Mock} from 'vitest';
-import ProjectSelectionView from '../../src/views/ManagerView.vue';
-import { projectService } from '../../src/services/ProjectService';
-import { useProjectStore } from '../../src/stores/ProjectStore';
+import ProjectSelectionView from '@/views/ManagerView.vue';
+import { projectService } from '@/services/ProjectService';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 

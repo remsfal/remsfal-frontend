@@ -1,19 +1,19 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
 import {describe, it, expect, beforeEach, vi} from 'vitest';
-import ContractorView from '../../src/views/ContractorView.vue';
+import CustomerView from '@/views/contractor/CustomerView.vue';
 
-vi.mock('../../src/components/ContractorTable.vue', () => ({
+vi.mock('@/components/ContractorTable.vue', () => ({
   default: {
     name: 'ContractorTable',
     template: '<div class="mock-contractor-table"></div>',
   },
 }));
 
-describe('ContractorView.vue', () => {
+describe('CustomerView.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    wrapper = shallowMount(ContractorView);
+    wrapper = shallowMount(CustomerView);
   });
 
   it('renders the view correctly', () => {
