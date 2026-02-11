@@ -47,7 +47,9 @@ const getContractAddress = (tenancyId?: string) => {
       class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-12 text-center text-gray-500"
     >
       <i class="pi pi-inbox text-4xl mb-4 text-gray-400" />
-      <p class="text-lg">{{ t('tenantIssues.empty') }}</p>
+      <p class="text-lg">
+        {{ t('tenantIssues.empty') }}
+      </p>
     </div>
   </div>
 </template>

@@ -47,7 +47,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'managerMenu.masterData.tenants',
           icon: { type: 'pi', name: 'pi pi-fw pi-address-book' },
-          to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
+          to: currentProjectId ? `/projects/${currentProjectId}/tenants` : '/',
         },
         {
           label: 'managerMenu.masterData.contractors',

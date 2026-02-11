@@ -190,6 +190,25 @@ const managerRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ProjectNewTenancy.vue'),
       },
       /* --------------------------------------------------------------------
+       * Tenant Views
+       * --------------------------------------------------------------------
+       */
+      {
+        path: 'tenants',
+        name: 'TenantList',
+        props: true,
+        component: () => import('@/views/project/TenantListView.vue'),
+      },
+      {
+        path: 'tenants/:tenantId',
+        name: 'TenantDetail',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          tenantId: route.params.tenantId,
+        }),
+        component: () => import('@/views/project/TenantDetailView.vue'),
+      },
+      /* --------------------------------------------------------------------
        * Contractor Views
        * --------------------------------------------------------------------
        */

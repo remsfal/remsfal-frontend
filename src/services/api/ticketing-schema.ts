@@ -4,2207 +4,2207 @@
  */
 
 export interface paths {
-  "/api/v1/inbox": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve inbox messages for the authenticated user */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Filter by read status (true = read, false = unread) */
+                    read?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of inbox messages belonging to the authenticated user */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["InboxMessage"][];
+                    };
+                };
+                /** @description Not Authorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Retrieve inbox messages for the authenticated user */
-    get: {
-      parameters: {
-        query?: {
-          /** @description Filter by read status (true = read, false = unread) */
-          read?: boolean;
+    "/api/v1/inbox/{messageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description List of inbox messages belonging to the authenticated user */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxMessage"][];
-          };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an inbox message for the authenticated user */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Message ID */
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Message deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Authorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Message not found for this user */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/inbox/{messageId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/inbox/{messageId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update the read/unread status of an inbox message */
+        patch: {
+            parameters: {
+                query: {
+                    /** @description New read flag: true = read, false = unread */
+                    read: boolean;
+                };
+                header?: never;
+                path: {
+                    /** @description Message ID */
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Message status updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["InboxMessage"];
+                    };
+                };
+                /** @description Not Authorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Message not found for this user */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an inbox message for the authenticated user */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description Message ID */
-          messageId: string;
+    "/ticketing/v1/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Message deleted */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        /** Retrieve information for all issues. */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Filter to return only issuesfor a specific tenancy */
+                    agreementId?: components["schemas"]["UUID"];
+                    /** @description Maximum number of projects to return */
+                    limit: number;
+                    /** @description Offset of the first project to return */
+                    offset: number;
+                    /** @description Filter to return only issues of a specific user */
+                    owner?: components["schemas"]["UUID"];
+                    /** @description Filter to return only issues of a specific project */
+                    projectId?: components["schemas"]["UUID"];
+                    /** @description Filter to return only issuesfor a specific rental */
+                    rentalId?: components["schemas"]["UUID"];
+                    /** @description Filter to return only issuesfor a specific rental type */
+                    rentalType?: components["schemas"]["UnitType"];
+                    /** @description Filter to return only issues with a specific status */
+                    status?: components["schemas"]["IssueStatus"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        put?: never;
+        /**
+         * Create a new issue.
+         * @description Creates a new issue based on the provided issue information. This method is intended solely for the creation of issues by a property manager.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": Record<string, never>;
+                    "application/json": components["schemas"]["IssueJson"];
+                };
+            };
+            responses: {
+                /** @description Issue created successfully */
+                201: {
+                    headers: {
+                        /** @description URL of the new issue */
+                        Location?: unknown;
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid input or unsupported file type */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Message not found for this user */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/inbox/{messageId}/status": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/ticketing/v1/issues/{issueId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve information of an issue. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The property does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete an existing issue. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The issue was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update information of an issue. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["IssueJson"];
+                };
+            };
+            responses: {
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The issue does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Update the read/unread status of an inbox message */
-    patch: {
-      parameters: {
-        query: {
-          /** @description New read flag: true = read, false = unread */
-          read: boolean;
+    "/ticketing/v1/issues/{issueId}/attachments/{attachmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path: {
-          /** @description Message ID */
-          messageId: string;
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an issue attachment */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the attachment */
+                    attachmentId: components["schemas"]["UUID"];
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attachment deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to delete this attachment */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Attachment not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Message status updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["InboxMessage"];
-          };
-        };
-        /** @description Not Authorized */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Message not found for this user */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    trace?: never;
-  };
-  "/ticketing/v1/issues": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/ticketing/v1/issues/{issueId}/attachments/{attachmentId}/{filename}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download an issue attachment */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the attachment */
+                    attachmentId: components["schemas"]["UUID"];
+                    /** @description Filename of the attachment */
+                    filename: string;
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attachment downloaded successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": unknown;
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description User does not have permission to access this attachment */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Attachment not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Retrieve information for all issues. */
-    get: {
-      parameters: {
-        query: {
-          /** @description Filter to return only issuesfor a specific tenancy */
-          agreementId?: components["schemas"]["UUID"];
-          /** @description Maximum number of projects to return */
-          limit: number;
-          /** @description Offset of the first project to return */
-          offset: number;
-          /** @description Filter to return only issues of a specific user */
-          owner?: components["schemas"]["UUID"];
-          /** @description Filter to return only issues of a specific project */
-          projectId?: components["schemas"]["UUID"];
-          /** @description Filter to return only issuesfor a specific rental */
-          rentalId?: components["schemas"]["UUID"];
-          /** @description Filter to return only issuesfor a specific rental type */
-          rentalType?: components["schemas"]["UnitType"];
-          /** @description Filter to return only issues with a specific status */
-          status?: components["schemas"]["IssueStatus"];
+    "/ticketing/v1/issues/{issueId}/chats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        /** Get all chat sessions for an issue */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat sessions retrieved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project or task not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        put?: never;
+        /** Create a new chat session */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat session created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project or task not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    /**
-     * Create a new issue.
-     * @description Creates a new issue based on the provided issue information. This method is intended solely for the creation of issues by a property manager.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": Record<string, never>;
-          "application/json": components["schemas"]["IssueJson"];
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Issue created successfully */
-        201: {
-          headers: {
-            /** @description URL of the new issue */
-            Location?: unknown;
-            [name: string]: unknown;
-          };
-          content?: never;
+        /** Get chat session details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat session details retrieved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, or chat session not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description Invalid input or unsupported file type */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        put?: never;
+        post?: never;
+        /** Delete chat session */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat session deleted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, or chat session not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get chat logs in a chat session */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat messages retrieved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, or chat session not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Send a chat message in a chat session */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChatMessageJson"];
+                };
+            };
+            responses: {
+                /** @description Chat message sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Chat session is closed or archived */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, or chat session not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Retrieve information of an issue. */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the issue */
-          issueId: components["schemas"]["UUID"];
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        get?: never;
+        put?: never;
+        /** Send a file in a chat session */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": Record<string, never>;
+                };
+            };
+            responses: {
+                /** @description File sent */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Chat session is closed or archived */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, or chat session not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The property does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    /** Delete an existing issue. */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the issue */
-          issueId: components["schemas"]["UUID"];
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/{messageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The issue was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        /** Get a chat message in a chat session */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The chat message ID */
+                    messageId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat message retrieved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                        "application/octet-stream": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, chat session, or chat message not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        /** Update a chat message in a chat session */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The chat message ID */
+                    messageId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChatMessageJson"];
+                };
+            };
+            responses: {
+                /** @description Chat message updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Chat session is closed or archived */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, chat session, or chat message not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        post?: never;
+        /** Delete a chat message in a chat session */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The chat message ID to delete */
+                    messageId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat message deleted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Chat session is closed or archived */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, chat session, or chat message not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-      };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    options?: never;
-    head?: never;
-    /** Update information of an issue. */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the issue */
-          issueId: components["schemas"]["UUID"];
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["IssueJson"];
+        /** Get participants in chat session */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Participants retrieved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, or chat session not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-      };
-      responses: {
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The issue does not exist */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/attachments/{attachmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get participant details in chat session */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The participant ID */
+                    participantId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Participant details retrieved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, chat session, or participant not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Remove participant from chat session */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The participant ID to remove */
+                    participantId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Participant removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, chat session, or participant not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an issue attachment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description ID of the issue */
-          issueId: components["schemas"]["UUID"];
+    "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        get?: never;
+        /** Change participant role in chat session */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the task */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description The participant ID */
+                    participantId: components["schemas"]["UUID"];
+                    /** @description ID of the chat session */
+                    sessionId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": string;
+                };
+            };
+            responses: {
+                /** @description Participant role updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Invalid input */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Project, task, chat session, or participant not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description User does not have permission to delete this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/attachments/{attachmentId}/{filename}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/ticketing/v1/issues/{issueId}/parent/{parentIssueId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set another issue as parent issue. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the parent issue */
+                    parentIssueId: components["schemas"]["UUID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successfully updated issue */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IssueJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Download an issue attachment */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the attachment */
-          attachmentId: components["schemas"]["UUID"];
-          /** @description Filename of the attachment */
-          filename: string;
-          /** @description ID of the issue */
-          issueId: components["schemas"]["UUID"];
+    "/ticketing/v1/issues/{issueId}/{relationType}/{relatedIssueId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Attachment downloaded successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/octet-stream": unknown;
-          };
+        get?: never;
+        put?: never;
+        /** Create a relation between two issues. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the issue */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the related issue */
+                    relatedIssueId: components["schemas"]["UUID"];
+                    /** @description Type of the relation */
+                    relationType: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successfully updated issue */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IssueJson"];
+                    };
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        /** Delete an existing relation between two issues */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the source Issue */
+                    issueId: components["schemas"]["UUID"];
+                    /** @description ID of the related Issue */
+                    relatedIssueId: components["schemas"]["UUID"];
+                    /** @description Type of the relation */
+                    relationType: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The relation was deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No user authentication provided via session cookie */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Allowed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /** @description User does not have permission to access this attachment */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Attachment not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get all chat sessions for an issue */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat sessions retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project or task not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Create a new chat session */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat session created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project or task not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get chat session details */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat session details retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete chat session */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat session deleted */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get chat logs in a chat session */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat messages retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Send a chat message in a chat session */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ChatMessageJson"];
-        };
-      };
-      responses: {
-        /** @description Chat message sent */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Chat session is closed or archived */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/upload": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Send a file in a chat session */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": Record<string, never>;
-        };
-      };
-      responses: {
-        /** @description File sent */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Chat session is closed or archived */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/{messageId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get a chat message in a chat session */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The chat message ID */
-          messageId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat message retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-            "application/octet-stream": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or chat message not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /** Update a chat message in a chat session */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The chat message ID */
-          messageId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ChatMessageJson"];
-        };
-      };
-      responses: {
-        /** @description Chat message updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Chat session is closed or archived */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or chat message not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    post?: never;
-    /** Delete a chat message in a chat session */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The chat message ID to delete */
-          messageId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat message deleted */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Chat session is closed or archived */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or chat message not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get participants in chat session */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Participants retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get participant details in chat session */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The participant ID */
-          participantId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Participant details retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or participant not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Remove participant from chat session */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The participant ID to remove */
-          participantId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Participant removed */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or participant not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}/role": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    /** Change participant role in chat session */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The participant ID */
-          participantId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": string;
-        };
-      };
-      responses: {
-        /** @description Participant role updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or participant not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/parent/{parentIssueId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    /** Set another issue as parent issue. */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the issue */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the parent issue */
-          parentIssueId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Successfully updated issue */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["IssueJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/{relationType}/{relatedIssueId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a relation between two issues. */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the issue */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the related issue */
-          relatedIssueId: components["schemas"]["UUID"];
-          /** @description Type of the relation */
-          relationType: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Successfully updated issue */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["IssueJson"];
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /** Delete an existing relation between two issues */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the source Issue */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the related Issue */
-          relatedIssueId: components["schemas"]["UUID"];
-          /** @description Type of the relation */
-          relationType: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description The relation was deleted successfully */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description The address of a customer, a building or a site */
-    AddressJson: {
-      street?: string;
-      city?: string;
-      province?: string;
-      zip?: string;
-      countryCode?: string;
+    schemas: {
+        /** @description The address of a customer, a building or a site */
+        AddressJson: {
+            street?: string;
+            city?: string;
+            province?: string;
+            zip?: string;
+            countryCode?: string;
+        };
+        /** @description An apartment inside a building according to WoFIV */
+        ApartmentJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            livingSpace?: number;
+            /** Format: float */
+            usableSpace?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            /** Format: float */
+            space?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+        };
+        /** @enum {string} */
+        BillingCycle: "WEEKLY" | "MONTHLY";
+        /** @description A building as part of a property */
+        BuildingJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            grossFloorArea?: number;
+            /** Format: float */
+            netFloorArea?: number;
+            /** Format: float */
+            constructionFloorArea?: number;
+            /** Format: float */
+            livingSpace?: number;
+            /** Format: float */
+            usableSpace?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            /** Format: float */
+            space?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+            address?: components["schemas"]["AddressJson"];
+        };
+        /** @description A single chat message */
+        ChatMessageJson: {
+            messageId?: components["schemas"]["UUID"];
+            sessionId?: components["schemas"]["UUID"];
+            senderId?: components["schemas"]["UUID"];
+            contentType?: string;
+            content?: string;
+            url?: string;
+            createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
+        };
+        /** @description A list of chat messages */
+        ChatMessageListJson: {
+            messages?: components["schemas"]["ChatMessageJson"][];
+        };
+        /** @description A chat session */
+        ChatSessionJson: {
+            sessionId?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            issueId?: components["schemas"]["UUID"];
+            createdAt?: components["schemas"]["Instant"];
+            modifiedAt?: components["schemas"]["Instant"];
+        };
+        /** @description A list of chat sessions */
+        ChatSessionListJson: {
+            /**
+             * Format: int32
+             * @description Number of chat sessions in the list
+             */
+            size: number;
+            chatSessions?: components["schemas"]["ChatSessionJson"][];
+        };
+        /** @description An commercial inside a building */
+        CommercialJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            netFloorArea?: number;
+            /** Format: float */
+            usableFloorArea?: number;
+            /** Format: float */
+            technicalServicesArea?: number;
+            /** Format: float */
+            trafficArea?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            /** Format: float */
+            space?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+        };
+        /** @description A contractor */
+        ContractorJson: {
+            id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            companyName?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
+            address?: components["schemas"]["AddressJson"];
+        };
+        /** @description A country item of a list */
+        CountryItemJson: {
+            countryCode: string;
+            name: string;
+        };
+        /** @description A list of countries */
+        CountryListJson: {
+            countries?: components["schemas"]["CountryItemJson"][];
+        };
+        /** @enum {string} */
+        EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
+        /** @description Represents an enriched issue event stored in a user's inbox */
+        InboxMessage: {
+            /** @description Unique identifier of this inbox message */
+            id?: string;
+            /** @description User who received this notification */
+            userId?: string;
+            /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
+            eventType?: string;
+            /** @description Related issue ID */
+            issueId?: string;
+            /** @description Issue title */
+            title?: string;
+            /** @description Issue description */
+            description?: string;
+            /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
+            issueType?: string;
+            /** @description Current status of the issue */
+            status?: string;
+            /** @description Link to the frontend issue page */
+            link?: string;
+            /** @description Whether the message has been read */
+            read?: boolean;
+            /** @description Timestamp when the notification was created */
+            createdAt?: components["schemas"]["OffsetDateTime"];
+            /** @description Email of the actor who triggered the event */
+            actorEmail?: string;
+            /** @description Email of the owner assigned to the issue */
+            ownerEmail?: string;
+        };
+        /**
+         * Format: date-time
+         * @example 2022-03-10T16:15:50Z
+         */
+        Instant: string;
+        /** @description An issue attachment */
+        IssueAttachmentJson: {
+            issueId?: components["schemas"]["UUID"];
+            attachmentId?: components["schemas"]["UUID"];
+            fileName?: string;
+            contentType?: string;
+            objectName?: string;
+            uploadedBy?: components["schemas"]["UUID"];
+            createdAt?: components["schemas"]["Instant"];
+        };
+        /** @description An issue item with basic information */
+        IssueItemJson: {
+            id?: components["schemas"]["UUID"];
+            name?: string;
+            title?: string;
+            type?: components["schemas"]["IssueType"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            assigneeId?: components["schemas"]["UUID"];
+        };
+        /** @description An issue */
+        IssueJson: {
+            readonly id?: components["schemas"]["UUID"];
+            projectId?: components["schemas"]["UUID"];
+            title?: string;
+            type?: components["schemas"]["IssueType"];
+            status?: components["schemas"]["IssueStatus"];
+            priority?: components["schemas"]["IssuePriority"];
+            reporterId?: components["schemas"]["UUID"];
+            agreementId?: components["schemas"]["UUID"];
+            assigneeId?: components["schemas"]["UUID"];
+            description?: string;
+            parentIssue?: components["schemas"]["UUID"];
+            childrenIssues?: string[];
+            relatedTo?: string[];
+            duplicateOf?: string[];
+            blockedBy?: string[];
+            blocks?: string[];
+            attachments?: components["schemas"]["IssueAttachmentJson"][];
+        };
+        /** @description A list of issues */
+        IssueListJson: {
+            /**
+             * Format: int32
+             * @description Index of the first element in list of total available entries, starting at 1
+             * @example 1
+             */
+            readonly first: number;
+            /**
+             * Format: int32
+             * @description Number of elements in list
+             * @default 10
+             */
+            readonly size: number;
+            /**
+             * Format: int32
+             * @description Total number of available elements
+             */
+            total: number;
+            issues?: components["schemas"]["IssueItemJson"][];
+        };
+        /** @enum {string} */
+        IssuePriority: "URGENT" | "HIGH" | "MEDIUM" | "LOW" | "UNCLASSIFIED";
+        /** @enum {string} */
+        IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
+        /** @enum {string} */
+        IssueType: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
+        /**
+         * Format: date
+         * @example 2022-03-10
+         */
+        LocalDate: string;
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50
+         */
+        LocalDateTime: string;
+        /** @enum {string} */
+        MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
+        /**
+         * Format: date-time
+         * @example 2022-03-10T12:15:50-04:00
+         */
+        OffsetDateTime: string;
+        /** @description Employee information in context of an organization */
+        OrganizationEmployeeJson: {
+            readonly id?: components["schemas"]["UUID"];
+            name?: string;
+            email?: string;
+            active?: boolean;
+            employeeRole: components["schemas"]["EmployeeRole"];
+        };
+        /** @description A list of organization employees */
+        OrganizationEmployeeListJson: {
+            employees: components["schemas"]["OrganizationEmployeeJson"][];
+        };
+        /** @description An organization */
+        OrganizationJson: {
+            id?: components["schemas"]["UUID"];
+            name?: string;
+            phone?: string;
+            email?: string;
+            trade?: string;
+            address?: components["schemas"]["AddressJson"];
+        };
+        /** @description A list of organizations */
+        OrganizationListJson: {
+            organizations: components["schemas"]["OrganizationJson"][];
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int64 */
+            total?: number;
+        };
+        /** @description A project item with the user's member role only */
+        ProjectItemJson: {
+            readonly id: components["schemas"]["UUID"];
+            name: string;
+            memberRole: components["schemas"]["MemberRole"];
+        };
+        /** @description A project */
+        ProjectJson: {
+            /** @description Unique identifier of the project (generated by server) */
+            readonly id?: components["schemas"]["UUID"];
+            title: string;
+            /** @description Project members (managed separately via members endpoint) */
+            readonly members?: components["schemas"]["ProjectMemberJson"][];
+        };
+        /** @description A list of projects */
+        ProjectListJson: {
+            /**
+             * Format: int32
+             * @description Index of the first element in projects list of total available entries, starting at 1
+             * @example 1
+             */
+            readonly first: number;
+            /**
+             * Format: int32
+             * @description Number of elements in projects list
+             * @default 10
+             */
+            readonly size: number;
+            /**
+             * Format: int64
+             * @description Total number of available projects
+             */
+            readonly total: number;
+            projects?: components["schemas"]["ProjectItemJson"][];
+        };
+        /** @description Project member information in context of a project */
+        ProjectMemberJson: {
+            privileged?: boolean;
+            /** @description Unique identifier of the project member (generated by server) */
+            readonly id?: components["schemas"]["UUID"];
+            /** @description Full name of the project member (retrieved from user profile) */
+            readonly name?: string;
+            email?: string;
+            /** @description Active status of the project member (managed by server) */
+            readonly active?: boolean;
+            role: components["schemas"]["MemberRole"];
+        };
+        /** @description A list of project members */
+        ProjectMemberListJson: {
+            members: components["schemas"]["ProjectMemberJson"][];
+        };
+        /** @description Organization assignment to a project */
+        ProjectOrganizationJson: {
+            organizationId?: components["schemas"]["UUID"];
+            organizationName?: string;
+            role: components["schemas"]["MemberRole"];
+        };
+        /** @description List of organizations assigned to a project */
+        ProjectOrganizationListJson: {
+            organizations?: components["schemas"]["ProjectOrganizationJson"][];
+        };
+        /** @description A property */
+        PropertyJson: {
+            type?: components["schemas"]["UnitType"];
+            landRegistry?: string;
+            cadastralDistrict?: string;
+            sheetNumber?: string;
+            /** Format: int32 */
+            plotNumber?: number;
+            cadastralSection?: string;
+            plot?: string;
+            economyType?: string;
+            location?: string;
+            /** Format: int32 */
+            plotArea?: number;
+            /** Format: float */
+            space?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            description?: string;
+        };
+        /** @description A list of properties */
+        PropertyListJson: {
+            readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
+        };
+        /** @description Rent information for a rentable unit */
+        RentJson: {
+            unitId: components["schemas"]["UUID"];
+            billingCycle?: components["schemas"]["BillingCycle"];
+            firstPaymentDate?: components["schemas"]["LocalDate"];
+            lastPaymentDate?: components["schemas"]["LocalDate"];
+            /** Format: float */
+            basicRent?: number;
+            /** Format: float */
+            operatingCostsPrepayment?: number;
+            /** Format: float */
+            heatingCostsPrepayment?: number;
+        };
+        /** @description A rental agreement item with aggregated rent information for list views */
+        RentalAgreementItemJson: {
+            /** @description Unique identifier of the rental agreement */
+            readonly id?: components["schemas"]["UUID"];
+            /** @description List of tenants in this rental agreement */
+            tenants?: components["schemas"]["TenantJson"][];
+            /** @description Start date of the rental period */
+            startOfRental: components["schemas"]["LocalDate"];
+            /** @description End date of the rental period */
+            endOfRental?: components["schemas"]["LocalDate"];
+            /** @description List of rental units in this agreement */
+            rentalUnits?: components["schemas"]["RentalUnitJson"][];
+            /**
+             * Format: float
+             * @description Sum of basic rent from all currently active rents
+             */
+            basicRent?: number;
+            /**
+             * Format: float
+             * @description Sum of operating costs prepayment from all currently active rents
+             */
+            operatingCostsPrepayment?: number;
+            /**
+             * Format: float
+             * @description Sum of heating costs prepayment from all currently active rents
+             */
+            heatingCostsPrepayment?: number;
+        };
+        /** @description A rental agreement for rentable units */
+        RentalAgreementJson: {
+            active?: boolean;
+            readonly id?: components["schemas"]["UUID"];
+            tenants?: components["schemas"]["TenantJson"][];
+            startOfRental?: components["schemas"]["LocalDate"];
+            endOfRental?: components["schemas"]["LocalDate"];
+            /** @description List of property rents */
+            propertyRents?: components["schemas"]["RentJson"][];
+            /** @description List of site rents */
+            siteRents?: components["schemas"]["RentJson"][];
+            /** @description List of building rents */
+            buildingRents?: components["schemas"]["RentJson"][];
+            /** @description List of apartment rents */
+            apartmentRents?: components["schemas"]["RentJson"][];
+            /** @description List of storage rents */
+            storageRents?: components["schemas"]["RentJson"][];
+            /** @description List of commercial rents */
+            commercialRents?: components["schemas"]["RentJson"][];
+        };
+        /** @description A list of rental agreements for a project */
+        RentalAgreementListJson: {
+            rentalAgreements?: components["schemas"]["RentalAgreementItemJson"][];
+        };
+        /** @description A general rental unit */
+        RentalUnitJson: {
+            type?: components["schemas"]["UnitType"];
+            location?: string;
+            description?: string;
+            /** Format: float */
+            space?: number;
+            readonly id?: components["schemas"]["UUID"];
+            title?: string;
+        };
+        /** @description Encapsulated data of a project tree node */
+        RentalUnitNodeDataJson: {
+            id?: components["schemas"]["UUID"];
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
+            type: components["schemas"]["UnitType"];
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
+            title?: string;
+            /**
+             * @description Location of the rental unit
+             * @example first floor left
+             */
+            location?: string;
+            /**
+             * @description Description of the rental unit
+             * @example A multi-story office building
+             */
+            description?: string;
+            /**
+             * @description Name of the tenant associated with this node
+             * @example Doe, John
+             */
+            tenant?: string;
+            /**
+             * Format: float
+             * @description Usable space in square meters
+             * @example 350.5
+             */
+            space?: number;
+        };
+        /** @description A tree node representing a project entity */
+        RentalUnitTreeNodeJson: {
+            /**
+             * @description Key of the node
+             * @example Property 1
+             */
+            key: components["schemas"]["UUID"];
+            /** @description Data encapsulating node attributes */
+            data?: components["schemas"]["RentalUnitNodeDataJson"];
+            /** @description Children nodes */
+            children?: components["schemas"]["RentalUnitTreeNodeJson"][];
+        };
+        /** @description A site as part of a property */
+        SiteJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            outdoorArea?: number;
+            /** Format: float */
+            space?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+            address?: components["schemas"]["AddressJson"];
+        };
+        /** @description A storage inside a building but with living space according to WoFIV */
+        StorageJson: {
+            type?: components["schemas"]["UnitType"];
+            /** Format: float */
+            usableSpace?: number;
+            /** Format: float */
+            heatingSpace?: number;
+            /** Format: float */
+            space?: number;
+            id?: components["schemas"]["UUID"];
+            title?: string;
+            location?: string;
+            description?: string;
+        };
+        /** @description A rental agreement item with basic information from a tenant's perspective */
+        TenancyItemJson: {
+            id?: string;
+            name?: string;
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
+            rentalType: components["schemas"]["UnitType"];
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
+            rentalTitle?: string;
+            /**
+             * @description Location of the node (address or custom)
+             * @example Berliner Str. 123, 12345 Berlin
+             */
+            location?: string;
+            active?: boolean;
+        };
+        /** @description A read-only rental agreement of a rentable unit from a tenant's perspective */
+        TenancyJson: {
+            id?: string;
+            /**
+             * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
+             * @example PROPERTY
+             */
+            rentalType: components["schemas"]["UnitType"];
+            /**
+             * @description Title of the node
+             * @example Main Building
+             */
+            rentalTitle?: string;
+            startOfRental?: components["schemas"]["LocalDate"];
+            endOfRental?: components["schemas"]["LocalDate"];
+            billingCycle?: components["schemas"]["BillingCycle"];
+            /** Format: float */
+            basicRent?: number;
+            /** Format: float */
+            operatingCostsPrepayment?: number;
+            /** Format: float */
+            heatingCostsPrepayment?: number;
+        };
+        /** @description A list of rental agreements from a tenant's perspective */
+        TenancyListJson: {
+            agreements?: components["schemas"]["TenancyItemJson"][];
+        };
+        /** @description A tenant item with rental units and active status for list views */
+        TenantItemJson: {
+            /** @description Unique identifier of the tenant */
+            readonly id?: components["schemas"]["UUID"];
+            /** @description First name of the tenant */
+            firstName: string;
+            /** @description Last name of the tenant */
+            lastName: string;
+            /** @description Email address of the tenant */
+            email?: string;
+            /** @description Mobile phone number of the tenant */
+            mobilePhoneNumber?: string;
+            /** @description Business phone number of the tenant */
+            businessPhoneNumber?: string;
+            /** @description Private phone number of the tenant */
+            privatePhoneNumber?: string;
+            /** @description List of all rental units the tenant has ever rented */
+            rentalUnits?: components["schemas"]["RentalUnitJson"][];
+            /** @description Indicates if the tenant has any active rental agreements */
+            active?: boolean;
+        };
+        /** @description Tenant information in a rental agreement */
+        TenantJson: {
+            readonly id?: components["schemas"]["UUID"];
+            /** @example Max */
+            firstName: string;
+            /** @example Mustermann */
+            lastName: string;
+            /** @example tenant@example.com */
+            email?: string;
+            /** @example +491234567890 */
+            mobilePhoneNumber?: string;
+            /** @example +491234567890 */
+            businessPhoneNumber?: string;
+            /** @example +491234567890 */
+            privatePhoneNumber?: string;
+            address?: components["schemas"]["AddressJson"];
+            /** @example Berlin */
+            placeOfBirth?: string;
+            /** @example 1990-01-01 */
+            dateOfBirth?: components["schemas"]["LocalDate"];
+            readonly userId?: components["schemas"]["UUID"];
+        };
+        /** @description A list of tenants for a project */
+        TenantListJson: {
+            tenants?: components["schemas"]["TenantItemJson"][];
+        };
+        /** Format: uuid */
+        UUID: string;
+        /** @enum {string} */
+        UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "STORAGE" | "COMMERCIAL";
+        /** @enum {string} */
+        UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
+        /** @description User information globally */
+        UserJson: {
+            active?: boolean;
+            readonly id?: components["schemas"]["UUID"];
+            readonly userContexts?: components["schemas"]["UserContext"][];
+            /** @example user@example.com */
+            email?: string;
+            firstName?: string;
+            lastName?: string;
+            address?: components["schemas"]["AddressJson"];
+            mobilePhoneNumber?: string;
+            businessPhoneNumber?: string;
+            privatePhoneNumber?: string;
+            locale?: string;
+            /**
+             * @example [
+             *       "test@example.com",
+             *       "info@example.com"
+             *     ]
+             */
+            additionalEmails?: string[];
+            readonly registeredDate?: components["schemas"]["LocalDate"];
+            readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
+        };
     };
-    /** @description An apartment inside a building according to WoFIV */
-    ApartmentJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      livingSpace?: number;
-      /** Format: float */
-      usableSpace?: number;
-      /** Format: float */
-      heatingSpace?: number;
-      /** Format: float */
-      space?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-    };
-    /** @enum {string} */
-    BillingCycle: "WEEKLY" | "MONTHLY";
-    /** @description A building as part of a property */
-    BuildingJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      grossFloorArea?: number;
-      /** Format: float */
-      netFloorArea?: number;
-      /** Format: float */
-      constructionFloorArea?: number;
-      /** Format: float */
-      livingSpace?: number;
-      /** Format: float */
-      usableSpace?: number;
-      /** Format: float */
-      heatingSpace?: number;
-      /** Format: float */
-      space?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-      address?: components["schemas"]["AddressJson"];
-    };
-    /** @description A single chat message */
-    ChatMessageJson: {
-      messageId?: components["schemas"]["UUID"];
-      sessionId?: components["schemas"]["UUID"];
-      senderId?: components["schemas"]["UUID"];
-      contentType?: string;
-      content?: string;
-      url?: string;
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-    };
-    /** @description A list of chat messages */
-    ChatMessageListJson: {
-      messages?: components["schemas"]["ChatMessageJson"][];
-    };
-    /** @description A chat session */
-    ChatSessionJson: {
-      sessionId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      issueId?: components["schemas"]["UUID"];
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-    };
-    /** @description A list of chat sessions */
-    ChatSessionListJson: {
-      /**
-       * Format: int32
-       * @description Number of chat sessions in the list
-       */
-      size: number;
-      chatSessions?: components["schemas"]["ChatSessionJson"][];
-    };
-    /** @description An commercial inside a building */
-    CommercialJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      netFloorArea?: number;
-      /** Format: float */
-      usableFloorArea?: number;
-      /** Format: float */
-      technicalServicesArea?: number;
-      /** Format: float */
-      trafficArea?: number;
-      /** Format: float */
-      heatingSpace?: number;
-      /** Format: float */
-      space?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-    };
-    /** @description A contractor */
-    ContractorJson: {
-      id?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      companyName?: string;
-      phone?: string;
-      email?: string;
-      trade?: string;
-      address?: components["schemas"]["AddressJson"];
-    };
-    /** @description A country item of a list */
-    CountryItemJson: {
-      countryCode: string;
-      name: string;
-    };
-    /** @description A list of countries */
-    CountryListJson: {
-      countries?: components["schemas"]["CountryItemJson"][];
-    };
-    /** @enum {string} */
-    EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
-    /** @description Represents an enriched issue event stored in a user's inbox */
-    InboxMessage: {
-      /** @description Unique identifier of this inbox message */
-      id?: string;
-      /** @description User who received this notification */
-      userId?: string;
-      /** @description Event type, e.g. ISSUE_CREATED, ISSUE_UPDATED, ISSUE_ASSIGNED */
-      eventType?: string;
-      /** @description Related issue ID */
-      issueId?: string;
-      /** @description Issue title */
-      title?: string;
-      /** @description Issue description */
-      description?: string;
-      /** @description Issue type: DEFECT, TASK, APPLICATION, ... */
-      issueType?: string;
-      /** @description Current status of the issue */
-      status?: string;
-      /** @description Link to the frontend issue page */
-      link?: string;
-      /** @description Whether the message has been read */
-      read?: boolean;
-      /** @description Timestamp when the notification was created */
-      createdAt?: components["schemas"]["OffsetDateTime"];
-      /** @description Email of the actor who triggered the event */
-      actorEmail?: string;
-      /** @description Email of the owner assigned to the issue */
-      ownerEmail?: string;
-    };
-    /**
-     * Format: date-time
-     * @example 2022-03-10T16:15:50Z
-     */
-    Instant: string;
-    /** @description An issue attachment */
-    IssueAttachmentJson: {
-      issueId?: components["schemas"]["UUID"];
-      attachmentId?: components["schemas"]["UUID"];
-      fileName?: string;
-      contentType?: string;
-      objectName?: string;
-      uploadedBy?: components["schemas"]["UUID"];
-      createdAt?: components["schemas"]["Instant"];
-    };
-    /** @description An issue item with basic information */
-    IssueItemJson: {
-      id?: components["schemas"]["UUID"];
-      name?: string;
-      title?: string;
-      type?: components["schemas"]["IssueType"];
-      status?: components["schemas"]["IssueStatus"];
-      priority?: components["schemas"]["IssuePriority"];
-      assigneeId?: components["schemas"]["UUID"];
-    };
-    /** @description An issue */
-    IssueJson: {
-      readonly id?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      title?: string;
-      type?: components["schemas"]["IssueType"];
-      status?: components["schemas"]["IssueStatus"];
-      priority?: components["schemas"]["IssuePriority"];
-      reporterId?: components["schemas"]["UUID"];
-      agreementId?: components["schemas"]["UUID"];
-      assigneeId?: components["schemas"]["UUID"];
-      description?: string;
-      parentIssue?: components["schemas"]["UUID"];
-      childrenIssues?: string[];
-      relatedTo?: string[];
-      duplicateOf?: string[];
-      blockedBy?: string[];
-      blocks?: string[];
-      attachments?: components["schemas"]["IssueAttachmentJson"][];
-    };
-    /** @description A list of issues */
-    IssueListJson: {
-      /**
-       * Format: int32
-       * @description Index of the first element in list of total available entries, starting at 1
-       * @example 1
-       */
-      readonly first: number;
-      /**
-       * Format: int32
-       * @description Number of elements in list
-       * @default 10
-       */
-      readonly size: number;
-      /**
-       * Format: int32
-       * @description Total number of available elements
-       */
-      total: number;
-      issues?: components["schemas"]["IssueItemJson"][];
-    };
-    /** @enum {string} */
-    IssuePriority: "URGENT" | "HIGH" | "MEDIUM" | "LOW" | "UNCLASSIFIED";
-    /** @enum {string} */
-    IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
-    /** @enum {string} */
-    IssueType: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
-    /**
-     * Format: date
-     * @example 2022-03-10
-     */
-    LocalDate: string;
-    /**
-     * Format: date-time
-     * @example 2022-03-10T12:15:50
-     */
-    LocalDateTime: string;
-    /** @enum {string} */
-    MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
-    /**
-     * Format: date-time
-     * @example 2022-03-10T12:15:50-04:00
-     */
-    OffsetDateTime: string;
-    /** @description Employee information in context of an organization */
-    OrganizationEmployeeJson: {
-      readonly id?: components["schemas"]["UUID"];
-      name?: string;
-      email?: string;
-      active?: boolean;
-      employeeRole: components["schemas"]["EmployeeRole"];
-    };
-    /** @description A list of organization employees */
-    OrganizationEmployeeListJson: {
-      employees: components["schemas"]["OrganizationEmployeeJson"][];
-    };
-    /** @description An organization */
-    OrganizationJson: {
-      id?: components["schemas"]["UUID"];
-      name?: string;
-      phone?: string;
-      email?: string;
-      trade?: string;
-      address?: components["schemas"]["AddressJson"];
-    };
-    /** @description A list of organizations */
-    OrganizationListJson: {
-      organizations: components["schemas"]["OrganizationJson"][];
-      /** Format: int32 */
-      offset?: number;
-      /** Format: int64 */
-      total?: number;
-    };
-    /** @description A project item with the user's member role only */
-    ProjectItemJson: {
-      readonly id: components["schemas"]["UUID"];
-      name: string;
-      memberRole: components["schemas"]["MemberRole"];
-    };
-    /** @description A project */
-    ProjectJson: {
-      /** @description Unique identifier of the project (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
-      title: string;
-      /** @description Project members (managed separately via members endpoint) */
-      readonly members?: components["schemas"]["ProjectMemberJson"][];
-    };
-    /** @description A list of projects */
-    ProjectListJson: {
-      /**
-       * Format: int32
-       * @description Index of the first element in projects list of total available entries, starting at 1
-       * @example 1
-       */
-      readonly first: number;
-      /**
-       * Format: int32
-       * @description Number of elements in projects list
-       * @default 10
-       */
-      readonly size: number;
-      /**
-       * Format: int64
-       * @description Total number of available projects
-       */
-      readonly total: number;
-      projects?: components["schemas"]["ProjectItemJson"][];
-    };
-    /** @description Project member information in context of a project */
-    ProjectMemberJson: {
-      privileged?: boolean;
-      /** @description Unique identifier of the project member (generated by server) */
-      readonly id?: components["schemas"]["UUID"];
-      /** @description Full name of the project member (retrieved from user profile) */
-      readonly name?: string;
-      email?: string;
-      /** @description Active status of the project member (managed by server) */
-      readonly active?: boolean;
-      role: components["schemas"]["MemberRole"];
-    };
-    /** @description A list of project members */
-    ProjectMemberListJson: {
-      members: components["schemas"]["ProjectMemberJson"][];
-    };
-    /** @description Organization assignment to a project */
-    ProjectOrganizationJson: {
-      organizationId?: components["schemas"]["UUID"];
-      organizationName?: string;
-      role: components["schemas"]["MemberRole"];
-    };
-    /** @description List of organizations assigned to a project */
-    ProjectOrganizationListJson: {
-      organizations?: components["schemas"]["ProjectOrganizationJson"][];
-    };
-    /** @description A property */
-    PropertyJson: {
-      type?: components["schemas"]["UnitType"];
-      landRegistry?: string;
-      cadastralDistrict?: string;
-      sheetNumber?: string;
-      /** Format: int32 */
-      plotNumber?: number;
-      cadastralSection?: string;
-      plot?: string;
-      economyType?: string;
-      location?: string;
-      /** Format: int32 */
-      plotArea?: number;
-      /** Format: float */
-      space?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      description?: string;
-    };
-    /** @description A list of properties */
-    PropertyListJson: {
-      readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
-    };
-    /** @description Rent information for a rentable unit */
-    RentJson: {
-      unitId: components["schemas"]["UUID"];
-      billingCycle?: components["schemas"]["BillingCycle"];
-      firstPaymentDate?: components["schemas"]["LocalDate"];
-      lastPaymentDate?: components["schemas"]["LocalDate"];
-      /** Format: float */
-      basicRent?: number;
-      /** Format: float */
-      operatingCostsPrepayment?: number;
-      /** Format: float */
-      heatingCostsPrepayment?: number;
-    };
-    /** @description A rental agreement item with aggregated rent information for list views */
-    RentalAgreementItemJson: {
-      /** @description Unique identifier of the rental agreement */
-      readonly id?: components["schemas"]["UUID"];
-      /** @description List of tenants in this rental agreement */
-      tenants?: components["schemas"]["TenantJson"][];
-      /** @description Start date of the rental period */
-      startOfRental: components["schemas"]["LocalDate"];
-      /** @description End date of the rental period */
-      endOfRental?: components["schemas"]["LocalDate"];
-      /** @description List of rental units in this agreement */
-      rentalUnits?: components["schemas"]["RentalUnitJson"][];
-      /**
-       * Format: float
-       * @description Sum of basic rent from all currently active rents
-       */
-      basicRent?: number;
-      /**
-       * Format: float
-       * @description Sum of operating costs prepayment from all currently active rents
-       */
-      operatingCostsPrepayment?: number;
-      /**
-       * Format: float
-       * @description Sum of heating costs prepayment from all currently active rents
-       */
-      heatingCostsPrepayment?: number;
-    };
-    /** @description A rental agreement for rentable units */
-    RentalAgreementJson: {
-      active?: boolean;
-      readonly id?: components["schemas"]["UUID"];
-      tenants?: components["schemas"]["TenantJson"][];
-      startOfRental?: components["schemas"]["LocalDate"];
-      endOfRental?: components["schemas"]["LocalDate"];
-      /** @description List of property rents */
-      propertyRents?: components["schemas"]["RentJson"][];
-      /** @description List of site rents */
-      siteRents?: components["schemas"]["RentJson"][];
-      /** @description List of building rents */
-      buildingRents?: components["schemas"]["RentJson"][];
-      /** @description List of apartment rents */
-      apartmentRents?: components["schemas"]["RentJson"][];
-      /** @description List of storage rents */
-      storageRents?: components["schemas"]["RentJson"][];
-      /** @description List of commercial rents */
-      commercialRents?: components["schemas"]["RentJson"][];
-    };
-    /** @description A list of rental agreements for a project */
-    RentalAgreementListJson: {
-      rentalAgreements?: components["schemas"]["RentalAgreementItemJson"][];
-    };
-    /** @description A general rental unit */
-    RentalUnitJson: {
-      type?: components["schemas"]["UnitType"];
-      location?: string;
-      description?: string;
-      /** Format: float */
-      space?: number;
-      readonly id?: components["schemas"]["UUID"];
-      title?: string;
-    };
-    /** @description Encapsulated data of a project tree node */
-    RentalUnitNodeDataJson: {
-      id?: components["schemas"]["UUID"];
-      /**
-       * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
-       * @example PROPERTY
-       */
-      type: components["schemas"]["UnitType"];
-      /**
-       * @description Title of the node
-       * @example Main Building
-       */
-      title?: string;
-      /**
-       * @description Location of the rental unit
-       * @example first floor left
-       */
-      location?: string;
-      /**
-       * @description Description of the rental unit
-       * @example A multi-story office building
-       */
-      description?: string;
-      /**
-       * @description Name of the tenant associated with this node
-       * @example Doe, John
-       */
-      tenant?: string;
-      /**
-       * Format: float
-       * @description Usable space in square meters
-       * @example 350.5
-       */
-      space?: number;
-    };
-    /** @description A tree node representing a project entity */
-    RentalUnitTreeNodeJson: {
-      /**
-       * @description Key of the node
-       * @example Property 1
-       */
-      key: components["schemas"]["UUID"];
-      /** @description Data encapsulating node attributes */
-      data?: components["schemas"]["RentalUnitNodeDataJson"];
-      /** @description Children nodes */
-      children?: components["schemas"]["RentalUnitTreeNodeJson"][];
-    };
-    /** @description A site as part of a property */
-    SiteJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      outdoorArea?: number;
-      /** Format: float */
-      space?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-      address?: components["schemas"]["AddressJson"];
-    };
-    /** @description A storage inside a building but with living space according to WoFIV */
-    StorageJson: {
-      type?: components["schemas"]["UnitType"];
-      /** Format: float */
-      usableSpace?: number;
-      /** Format: float */
-      heatingSpace?: number;
-      /** Format: float */
-      space?: number;
-      id?: components["schemas"]["UUID"];
-      title?: string;
-      location?: string;
-      description?: string;
-    };
-    /** @description A rental agreement item with basic information from a tenant's perspective */
-    TenancyItemJson: {
-      id?: string;
-      name?: string;
-      /**
-       * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
-       * @example PROPERTY
-       */
-      rentalType: components["schemas"]["UnitType"];
-      /**
-       * @description Title of the node
-       * @example Main Building
-       */
-      rentalTitle?: string;
-      /**
-       * @description Location of the node (address or custom)
-       * @example Berliner Str. 123, 12345 Berlin
-       */
-      location?: string;
-      active?: boolean;
-    };
-    /** @description A read-only rental agreement of a rentable unit from a tenant's perspective */
-    TenancyJson: {
-      id?: string;
-      /**
-       * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
-       * @example PROPERTY
-       */
-      rentalType: components["schemas"]["UnitType"];
-      /**
-       * @description Title of the node
-       * @example Main Building
-       */
-      rentalTitle?: string;
-      startOfRental?: components["schemas"]["LocalDate"];
-      endOfRental?: components["schemas"]["LocalDate"];
-      billingCycle?: components["schemas"]["BillingCycle"];
-      /** Format: float */
-      basicRent?: number;
-      /** Format: float */
-      operatingCostsPrepayment?: number;
-      /** Format: float */
-      heatingCostsPrepayment?: number;
-    };
-    /** @description A list of rental agreements from a tenant's perspective */
-    TenancyListJson: {
-      agreements?: components["schemas"]["TenancyItemJson"][];
-    };
-    /** @description A tenant item with rental units and active status for list views */
-    TenantItemJson: {
-      /** @description Unique identifier of the tenant */
-      readonly id?: components["schemas"]["UUID"];
-      /** @description First name of the tenant */
-      firstName: string;
-      /** @description Last name of the tenant */
-      lastName: string;
-      /** @description Email address of the tenant */
-      email?: string;
-      /** @description Mobile phone number of the tenant */
-      mobilePhoneNumber?: string;
-      /** @description Business phone number of the tenant */
-      businessPhoneNumber?: string;
-      /** @description Private phone number of the tenant */
-      privatePhoneNumber?: string;
-      /** @description List of all rental units the tenant has ever rented */
-      rentalUnits?: components["schemas"]["RentalUnitJson"][];
-      /** @description Indicates if the tenant has any active rental agreements */
-      active?: boolean;
-    };
-    /** @description Tenant information in a rental agreement */
-    TenantJson: {
-      readonly id?: components["schemas"]["UUID"];
-      /** @example Max */
-      firstName: string;
-      /** @example Mustermann */
-      lastName: string;
-      /** @example tenant@example.com */
-      email?: string;
-      /** @example +491234567890 */
-      mobilePhoneNumber?: string;
-      /** @example +491234567890 */
-      businessPhoneNumber?: string;
-      /** @example +491234567890 */
-      privatePhoneNumber?: string;
-      address?: components["schemas"]["AddressJson"];
-      /** @example Berlin */
-      placeOfBirth?: string;
-      /** @example 1990-01-01 */
-      dateOfBirth?: components["schemas"]["LocalDate"];
-      readonly userId?: components["schemas"]["UUID"];
-    };
-    /** @description A list of tenants for a project */
-    TenantListJson: {
-      tenants?: components["schemas"]["TenantItemJson"][];
-    };
-    /** Format: uuid */
-    UUID: string;
-    /** @enum {string} */
-    UnitType: "PROPERTY" | "SITE" | "BUILDING" | "APARTMENT" | "STORAGE" | "COMMERCIAL";
-    /** @enum {string} */
-    UserContext: "MANAGER" | "TENANT" | "CONTRACTOR";
-    /** @description User information globally */
-    UserJson: {
-      active?: boolean;
-      readonly id?: components["schemas"]["UUID"];
-      readonly userContexts?: components["schemas"]["UserContext"][];
-      /** @example user@example.com */
-      email?: string;
-      firstName?: string;
-      lastName?: string;
-      address?: components["schemas"]["AddressJson"];
-      mobilePhoneNumber?: string;
-      businessPhoneNumber?: string;
-      privatePhoneNumber?: string;
-      locale?: string;
-      /**
-       * @example [
-       *       "test@example.com",
-       *       "info@example.com"
-       *     ]
-       */
-      additionalEmails?: string[];
-      readonly registeredDate?: components["schemas"]["LocalDate"];
-      readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;
