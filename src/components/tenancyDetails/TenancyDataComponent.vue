@@ -3,17 +3,21 @@ import type { components } from '@/services/api/platform-schema';
 import DatePicker from 'primevue/datepicker';
 import { computed, ref, watch } from 'vue';
 
-// OpenAPI type
+// OpenAPI types - supporting both TenancyJson (tenant context) and RentalAgreementJson (manager context)
 type TenancyJson = components['schemas']['TenancyJson'];
+type RentalAgreementJson = components['schemas']['RentalAgreementJson'];
+
+// Union type to support both contexts
+type TenancyOrAgreement = TenancyJson | RentalAgreementJson;
 
 const { tenancy } = defineProps<{
-  tenancy: TenancyJson;
+  tenancy: TenancyOrAgreement;
 }>();
 
-const emit = defineEmits<(e: 'onChange', tenancy: TenancyJson) => void>();
+const emit = defineEmits<(e: 'onChange', tenancy: TenancyOrAgreement) => void>();
 
-// Local reactive copy of tenancy
-const localTenancy = ref<TenancyJson>({ ...tenancy });
+// Local reactive copy of tenancy/agreement
+const localTenancy = ref<TenancyOrAgreement>({ ...tenancy });
 
 // Computed for Date objects for DatePicker
 const startOfRentalDate = computed<Date | null>({

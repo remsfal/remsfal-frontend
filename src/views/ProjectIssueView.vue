@@ -46,7 +46,7 @@ const fetchIssue = async () => {
       reporter: issue.reporterId ?? '',
       project: props.projectId,
       issueType: issue.type,
-      tenancy: issue.tenancyId ?? '',
+      tenancy: issue.agreementId ?? '',
     };
     console.log('Fetched assigneeId:', issue);
 

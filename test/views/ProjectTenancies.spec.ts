@@ -2,7 +2,7 @@ import {mount, VueWrapper, flushPromises} from '@vue/test-utils';
 import Dialog from 'primevue/dialog';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
-import { tenancyService } from '../../src/services/TenancyService';
+import { rentalAgreementService } from '../../src/services/RentalAgreementService';
 
 // Fix for "window is not defined" error
 if (typeof window === 'undefined') (global as any).window = {};
@@ -27,23 +27,29 @@ describe('ProjectTenancies.vue', () => {
 
   const mockTenants = [
     {
- id: '1', firstName: 'John', lastName: 'Doe' 
+ id: '1', firstName: 'John', lastName: 'Doe'
 },
   ];
-  const mockUnits = [
+  const mockRentalAgreements = [
     {
- id: 'u1', rentalObject: 'Building A', unitTitle: 'Unit 101' 
-},
-  ];
-  const mockTenancies = [
-    {
- id: 't1', rentalStart: '2023-01-01', rentalEnd: '2024-01-01', listOfTenants: mockTenants, listOfUnits: mockUnits 
-},
+      id: 'agreement-1',
+      startOfRental: '2023-01-01',
+      endOfRental: '2024-01-01',
+      tenants: mockTenants,
+      apartmentRents: [
+        { unitId: 'unit-101', basicRent: 1000 }
+      ],
+      propertyRents: [],
+      siteRents: [],
+      buildingRents: [],
+      storageRents: [],
+      commercialRents: []
+    },
   ];
 
   beforeEach(async () => {
-    vi.spyOn(tenancyService, 'fetchTenantData').mockResolvedValue(mockTenants);
-    vi.spyOn(tenancyService, 'fetchTenancyData').mockResolvedValue(mockTenancies);
+    vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockResolvedValue(mockRentalAgreements);
+    vi.spyOn(rentalAgreementService, 'extractTenants').mockReturnValue(mockTenants);
 
     wrapper = mount(ProjectTenancies, {
       props: {projectId: 'proj-1',},
@@ -84,17 +90,17 @@ describe('ProjectTenancies.vue', () => {
   });
 
   it('navigates to tenancy details on row click', async () => {
-    wrapper.vm.navigateToTenancyDetails('t1');
-    expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/t1');
-    
+    wrapper.vm.navigateToTenancyDetails('agreement-1');
+    expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/agreement-1');
+
     // Also test with DataTable if possible
     const dataTable = wrapper.findComponent({ name: 'DataTable' });
     if (dataTable.exists()) {
       // Simulate row click by calling the event handler directly
       const rowClickHandler = dataTable.vm.$attrs.onRowClick;
       if (rowClickHandler && typeof rowClickHandler === 'function') {
-        await rowClickHandler({ data: { id: 't2' } });
-        expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/t2');
+        await rowClickHandler({ data: { id: 'agreement-2' } });
+        expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/agreement-2');
       }
     }
   });
@@ -135,8 +141,7 @@ describe('ProjectTenancies.vue', () => {
 
   it('renders unit information in the table', () => {
     const html = wrapper.html();
-    expect(html).toContain('Building A');
-    expect(html).toContain('Unit 101');
+    expect(html).toContain('unit-101');
   });
 
   it('closes dialog when cancel button is clicked', async () => {

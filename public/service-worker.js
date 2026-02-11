@@ -1,4 +1,3 @@
-/* eslint-env serviceworker */
 /* global importScripts, getAllProjects, deleteProject */
 importScripts('/idbHelper.js');
 

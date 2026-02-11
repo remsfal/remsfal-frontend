@@ -2,24 +2,22 @@
 import TenancyDataComponent from '@/components/tenancyDetails/TenancyDataComponent.vue';
 import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableComponent.vue';
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
-import { tenancyService } from '@/services/TenancyService';
+import { rentalAgreementService, type RentalAgreement, type TenantItem } from '@/services/RentalAgreementService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
 import { computed, onMounted, ref, toRaw } from 'vue';
 import { useRouter } from 'vue-router';
 import type { components } from '@/services/api/platform-schema';
 
-type TenancyJson = components['schemas']['TenancyJson'];
-type UserJson = components['schemas']['UserJson'];
 type TenancyUnitItem = components['schemas']['TenancyItemJson'];
 
 const router = useRouter();
 const projectStore = useProjectStore();
 
-// Reactive tenancy state using OpenAPI types
-const tenancy = ref<TenancyJson>({
+// Reactive rental agreement state using OpenAPI types
+const rentalAgreement = ref<RentalAgreement>({
   id: '',
-  tenants: [] as UserJson[],
+  tenants: [] as TenantItem[],
   startOfRental: new Date().toISOString(),
   endOfRental: new Date(
     new Date().getFullYear() + 1,
@@ -35,22 +33,21 @@ const units = ref<TenancyUnitItem[]>([]);
 // Form validation (handles possibly undefined arrays)
 const isValidForm = computed(() => {
   return (
-    tenancy.value.startOfRental &&
-    tenancy.value.endOfRental &&
-    (tenancy.value.tenants?.length ?? 0) > 0 &&
+    rentalAgreement.value.startOfRental &&
+    rentalAgreement.value.endOfRental &&
+    (rentalAgreement.value.tenants?.length ?? 0) > 0 &&
     (units.value?.length ?? 0) > 0
   );
 });
 
-// Save tenancy
-async function saveTenancy() {
-  if (!isValidForm.value) return;
+// Save rental agreement
+async function saveRentalAgreement() {
+  if (!isValidForm.value || !projectStore.projectId) return;
 
   try {
-    await tenancyService.createTenancy({
-      ...toRaw(tenancy.value),
-      tenants: toRaw(tenancy.value.tenants) ?? [],
-      // Assuming your API accepts units separately or included in tenancy JSON
+    await rentalAgreementService.createRentalAgreement(projectStore.projectId, {
+      ...toRaw(rentalAgreement.value),
+      tenants: toRaw(rentalAgreement.value.tenants) ?? [],
     });
     redirectToTenanciesList();
   } catch (error) {
@@ -64,9 +61,9 @@ function redirectToTenanciesList() {
 }
 
 // Update tenants from child component
-function updateTenants(event: UserJson[]) {
-  tenancy.value.tenants = toRaw(event);
-  console.log('Updated tenants:', tenancy.value.tenants);
+function updateTenants(event: TenantItem[]) {
+  rentalAgreement.value.tenants = toRaw(event);
+  console.log('Updated tenants:', rentalAgreement.value.tenants);
 }
 
 // Update units from child component
@@ -78,8 +75,8 @@ function updateUnits(event: TenancyUnitItem[]) {
 // Initialize rental dates
 onMounted(() => {
   const now = new Date();
-  tenancy.value.startOfRental = now.toISOString();
-  tenancy.value.endOfRental = new Date(
+  rentalAgreement.value.startOfRental = now.toISOString();
+  rentalAgreement.value.endOfRental = new Date(
     now.getFullYear() + 1,
     now.getMonth(),
     now.getDate(),
@@ -98,22 +95,22 @@ onMounted(() => {
         icon="pi pi-save"
         class="bg-green-600 hover:bg-green-700 transition-colors"
         :disabled="!isValidForm"
-        @click="saveTenancy()"
+        @click="saveRentalAgreement()"
       />
     </div>
 
     <div class="grid grid-cols-1 gap-6">
       <TenancyDataComponent
-        v-if="tenancy"
-        :tenancy="tenancy"
-        @update:startOfRental="tenancy.startOfRental = $event"
-        @update:endOfRental="tenancy.endOfRental = $event"
+        v-if="rentalAgreement"
+        :tenancy="rentalAgreement"
+        @update:startOfRental="rentalAgreement.startOfRental = $event"
+        @update:endOfRental="rentalAgreement.endOfRental = $event"
       />
 
       <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div class="space-y-4">
           <TenantsTableComponent
-            :tenants="tenancy.tenants ?? []"
+            :tenants="rentalAgreement.tenants ?? []"
             :isDeleteButtonEnabled="true"
             @onChange="updateTenants"
           />
