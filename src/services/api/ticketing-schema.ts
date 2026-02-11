@@ -231,8 +231,7 @@ export interface paths {
     put?: never;
     /**
      * Create a new issue.
-     * @description Creates a new issue based on the provided issue information.
-     * This method is intended solely for the creation of issues by a property manager.
+     * @description Creates a new issue based on the provided issue information. This method is intended solely for the creation of issues by a property manager.
      */
     post: {
       parameters: {
@@ -1939,6 +1938,34 @@ export interface components {
       /** Format: float */
       heatingCostsPrepayment?: number;
     };
+    /** @description A rental agreement item with aggregated rent information for list views */
+    RentalAgreementItemJson: {
+      /** @description Unique identifier of the rental agreement */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description List of tenants in this rental agreement */
+      tenants?: components["schemas"]["TenantJson"][];
+      /** @description Start date of the rental period */
+      startOfRental: components["schemas"]["LocalDate"];
+      /** @description End date of the rental period */
+      endOfRental?: components["schemas"]["LocalDate"];
+      /** @description List of rental units in this agreement */
+      rentalUnits?: components["schemas"]["RentalUnitJson"][];
+      /**
+       * Format: float
+       * @description Sum of basic rent from all currently active rents
+       */
+      basicRent?: number;
+      /**
+       * Format: float
+       * @description Sum of operating costs prepayment from all currently active rents
+       */
+      operatingCostsPrepayment?: number;
+      /**
+       * Format: float
+       * @description Sum of heating costs prepayment from all currently active rents
+       */
+      heatingCostsPrepayment?: number;
+    };
     /** @description A rental agreement for rentable units */
     RentalAgreementJson: {
       active?: boolean;
@@ -1961,7 +1988,7 @@ export interface components {
     };
     /** @description A list of rental agreements for a project */
     RentalAgreementListJson: {
-      rentalAgreements?: components["schemas"]["RentalAgreementJson"][];
+      rentalAgreements?: components["schemas"]["RentalAgreementItemJson"][];
     };
     /** @description A general rental unit */
     RentalUnitJson: {
@@ -2095,6 +2122,27 @@ export interface components {
     TenancyListJson: {
       agreements?: components["schemas"]["TenancyItemJson"][];
     };
+    /** @description A tenant item with rental units and active status for list views */
+    TenantItemJson: {
+      /** @description Unique identifier of the tenant */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description First name of the tenant */
+      firstName: string;
+      /** @description Last name of the tenant */
+      lastName: string;
+      /** @description Email address of the tenant */
+      email?: string;
+      /** @description Mobile phone number of the tenant */
+      mobilePhoneNumber?: string;
+      /** @description Business phone number of the tenant */
+      businessPhoneNumber?: string;
+      /** @description Private phone number of the tenant */
+      privatePhoneNumber?: string;
+      /** @description List of all rental units the tenant has ever rented */
+      rentalUnits?: components["schemas"]["RentalUnitJson"][];
+      /** @description Indicates if the tenant has any active rental agreements */
+      active?: boolean;
+    };
     /** @description Tenant information in a rental agreement */
     TenantJson: {
       readonly id?: components["schemas"]["UUID"];
@@ -2116,6 +2164,10 @@ export interface components {
       /** @example 1990-01-01 */
       dateOfBirth?: components["schemas"]["LocalDate"];
       readonly userId?: components["schemas"]["UUID"];
+    };
+    /** @description A list of tenants for a project */
+    TenantListJson: {
+      tenants?: components["schemas"]["TenantItemJson"][];
     };
     /** Format: uuid */
     UUID: string;

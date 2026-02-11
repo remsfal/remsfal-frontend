@@ -90,5 +90,5 @@ export default [
   },
 
   // ignore files at the end of the config
-  {ignores: ['**/dist/**', 'node_modules/*', 'cypress/**', 'html/**', 'coverage/'],},
+  {ignores: ['**/dist/**', 'node_modules/*', 'cypress/**', 'html/**', 'coverage/', 'src/services/api/*-schema.ts'],},
 ];
