@@ -34,7 +34,7 @@ function formatDate(dateString: string | null | undefined): string {
     return t('common.notSet');
   }
   try {
-    return d(new Date(dateString), 'short');
+    return d(new Date(dateString), 'shortFormat');
   } catch {
     return dateString;
   }

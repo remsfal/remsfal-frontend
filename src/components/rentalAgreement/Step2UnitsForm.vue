@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
 import Button from 'primevue/button';
+import SelectButton from 'primevue/selectbutton';
 import TreeSelect from 'primevue/treeselect';
 import InputNumber from 'primevue/inputnumber';
 import DatePicker from 'primevue/datepicker';
@@ -37,6 +38,12 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+
+// Billing Cycle Options
+const billingCycleOptions = [
+  { label: t('billingCycle.monthly'), value: 'MONTHLY' },
+  { label: t('billingCycle.weekly'), value: 'WEEKLY' },
+];
 
 // State
 const propertyTree = ref<TreeNode[]>([]);
@@ -100,6 +107,7 @@ function onUnitSelected(node: TreeNode) {
     basicRent: undefined,
     operatingCostsPrepayment: undefined,
     heatingCostsPrepayment: undefined,
+    billingCycle: 'MONTHLY',
     firstPaymentDate: props.startOfRental ?? undefined,
     lastPaymentDate: props.endOfRental ?? undefined,
   };
@@ -209,6 +217,21 @@ function goNext() {
           />
         </div>
 
+        <!-- Billing Cycle -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step2.billingCycle') }}
+          </label>
+          <SelectButton
+            v-model="currentUnit.billingCycle"
+            :options="billingCycleOptions"
+            optionLabel="label"
+            optionValue="value"
+            fluid
+            class="w-full"
+          />
+        </div>
+
         <!-- Operating Costs -->
         <div class="flex flex-col gap-2">
           <label class="text-sm font-semibold">
@@ -268,6 +291,17 @@ function goNext() {
             @update:modelValue="currentUnit.lastPaymentDate = toISODateString(Array.isArray($event) ? $event[0] : $event)"
           />
         </div>
+
+        <!-- Add Unit Button -->
+        <div class="flex flex-col gap-2 justify-end">
+          <Button
+            type="button"
+            :label="t('rentalAgreement.step2.addUnit')"
+            icon="pi pi-plus"
+            :disabled="!canAddAnother"
+            @click="addAnotherUnit"
+          />
+        </div>
       </div>
     </div>
 
@@ -287,7 +321,15 @@ function goNext() {
           </p>
           <p class="text-sm text-gray-600">
             {{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}
-            <span v-if="unit.basicRent !== undefined"> • {{ unit.basicRent.toFixed(2) }} €</span>
+            <span v-if="unit.basicRent !== undefined">
+              • {{ t('rentalAgreement.step2.basicRent') }} {{ unit.basicRent.toFixed(2) }} €
+            </span>
+            <span v-if="unit.operatingCostsPrepayment !== undefined">
+              • {{ t('rentalAgreement.step2.operatingCosts') }} {{ unit.operatingCostsPrepayment.toFixed(2) }} €
+            </span>
+            <span v-if="unit.heatingCostsPrepayment !== undefined">
+              • {{ t('rentalAgreement.step2.heatingCosts') }} {{ unit.heatingCostsPrepayment.toFixed(2) }} €
+            </span>
           </p>
         </div>
         <Button
@@ -313,14 +355,6 @@ function goNext() {
       />
 
       <div class="flex gap-3">
-        <Button
-          type="button"
-          :label="t('rentalAgreement.step2.addUnit')"
-          icon="pi pi-plus"
-          severity="secondary"
-          :disabled="!canAddAnother"
-          @click="addAnotherUnit"
-        />
         <Button
           type="button"
           :label="t('rentalAgreement.step2.nextButton')"

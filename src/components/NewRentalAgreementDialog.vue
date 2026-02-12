@@ -12,19 +12,15 @@ import StepPanels from 'primevue/steppanels';
 import StepPanel from 'primevue/steppanel';
 
 // Services & Types
-import {rentalAgreementService,
-  type RentalAgreement,} from '@/services/RentalAgreementService';
+import { rentalAgreementService, type RentalAgreement, type TenantItem } from '@/services/RentalAgreementService';
 import type { ApiComponents } from '@/services/ApiClient';
+import type { SelectedUnit } from './rentalAgreement/Step2UnitsForm.vue';
 
 // Step Components
 import Step1DatesForm from './rentalAgreement/Step1DatesForm.vue';
 import Step2UnitsForm from './rentalAgreement/Step2UnitsForm.vue';
 import Step3TenantsForm from './rentalAgreement/Step3TenantsForm.vue';
 import Step4Summary from './rentalAgreement/Step4Summary.vue';
-
-// Import SelectedUnit and TenantItem types from Step components
-import type { SelectedUnit } from './rentalAgreement/Step2UnitsForm.vue';
-import type { TenantItem } from '@/services/RentalAgreementService';
 
 // Extract RentJson and TenantJson types from API
 type RentJson = ApiComponents['schemas']['RentJson'];
@@ -256,6 +252,7 @@ function resetForm() {
         <StepPanel v-slot="{ activateCallback }" value="3">
           <Step3TenantsForm
             v-model:tenants="formState.tenants"
+            :projectId="projectId"
             @back="activateCallback('2')"
             @next="activateCallback('4')"
           />

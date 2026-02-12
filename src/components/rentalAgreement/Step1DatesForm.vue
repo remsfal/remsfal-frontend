@@ -155,7 +155,7 @@ const onSubmit = (event: FormSubmitEvent) => {
           :label="t('rentalAgreement.step1.nextButton')"
           icon="pi pi-arrow-right"
           iconPos="right"
-          :disabled="!$form.startOfRental?.valid"
+          :disabled="$form.startOfRental?.invalid || !$form.startOfRental?.dirty"
         />
       </div>
     </Form>

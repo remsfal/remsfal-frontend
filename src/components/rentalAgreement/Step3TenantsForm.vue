@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
@@ -7,16 +7,18 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import DatePicker from 'primevue/datepicker';
 import Message from 'primevue/message';
-import BaseCard from '@/components/common/BaseCard.vue';
+import AutoComplete from 'primevue/autocomplete';
 
-// Use TenantItem from API schema instead of custom interface
+// Services & Types
+import { tenantService, type TenantItem as TenantItemFromList } from '@/services/TenantService';
 import type { TenantItem } from '@/services/RentalAgreementService';
 
 // Re-export for parent components
-export type { TenantItem as TenantItem };
+export type { TenantItem };
 
 // Props & Emits
 const props = defineProps<{
+  projectId: string;
   tenants: TenantItem[];
 }>();
 
@@ -28,21 +30,121 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-// Add Tenant
-function addTenant() {
-  const newTenant: TenantItem = {
+// State
+const allTenants = ref<TenantItemFromList[]>([]);
+const isLoadingTenants = ref(false);
+const filteredTenants = ref<TenantItemFromList[]>([]);
+const selectedExistingTenant = ref<TenantItemFromList | null>(null);
+const currentTenant = ref<TenantItem | null>(null);
+const showTenantForm = ref(false);
+
+// Type for AutoComplete options with label
+type TenantOption = TenantItemFromList & { label: string };
+
+// Computed property for TenantOptions with label
+const tenantOptions = computed<TenantOption[]>(() =>
+  filteredTenants.value.map((t) => ({
+    ...t,
+    label: `${t.firstName} ${t.lastName}${t.email ? ` (${t.email})` : ''}`,
+  })),
+);
+
+// Load tenants on mount
+onMounted(async () => {
+  isLoadingTenants.value = true;
+  try {
+    allTenants.value = await tenantService.fetchTenants(props.projectId);
+  } catch (error) {
+    console.error('Failed to load tenants:', error);
+  } finally {
+    isLoadingTenants.value = false;
+  }
+});
+
+// AutoComplete Filter Function
+const searchTenants = (event: { query: string }) => {
+  const query = event.query.toLowerCase().trim();
+
+  if (!query) {
+    filteredTenants.value = allTenants.value;
+    return;
+  }
+
+  filteredTenants.value = allTenants.value.filter(
+    (t) =>
+      t.firstName?.toLowerCase().includes(query) ||
+      t.lastName?.toLowerCase().includes(query) ||
+      t.email?.toLowerCase().includes(query),
+  );
+};
+
+// When existing tenant is selected from AutoComplete
+const onTenantSelected = (tenant: TenantItemFromList | null) => {
+  if (!tenant) {
+    currentTenant.value = null;
+    showTenantForm.value = false;
+    return;
+  }
+
+  // Check if tenant already added
+  const alreadyAdded = props.tenants.some((t) => t.id === tenant.id);
+  if (alreadyAdded) {
+    selectedExistingTenant.value = null;
+    currentTenant.value = null;
+    showTenantForm.value = false;
+    return;
+  }
+
+  // Convert TenantItemFromList to TenantItem (add missing fields as undefined)
+  const tenantForRental: TenantItem = {
+    id: tenant.id,
+    firstName: tenant.firstName,
+    lastName: tenant.lastName,
+    email: tenant.email,
+    mobilePhoneNumber: tenant.mobilePhoneNumber,
+    businessPhoneNumber: tenant.businessPhoneNumber,
+    privatePhoneNumber: tenant.privatePhoneNumber,
+    // These fields are not in TenantItemFromList but are in TenantItem
+    placeOfBirth: undefined,
+    dateOfBirth: undefined,
+  };
+
+  // Add tenant directly (no form needed, basic data is complete)
+  emit('update:tenants', [...props.tenants, tenantForRental]);
+  selectedExistingTenant.value = null;
+};
+
+// Add new tenant button clicked
+const addNewTenant = () => {
+  currentTenant.value = {
     firstName: '',
     lastName: '',
   };
-  emit('update:tenants', [...props.tenants, newTenant]);
-}
+  showTenantForm.value = true;
+  selectedExistingTenant.value = null;
+};
 
-// Remove Tenant
-function removeTenant(index: number) {
-  if (props.tenants.length <= 1) return; // Keep at least one
+// Add current tenant to list
+const addTenantToList = () => {
+  if (!currentTenant.value) return;
+
+  // Validation
+  if (!currentTenant.value.firstName.trim() || !currentTenant.value.lastName.trim()) {
+    return;
+  }
+
+  emit('update:tenants', [...props.tenants, currentTenant.value]);
+
+  // Reset
+  currentTenant.value = null;
+  showTenantForm.value = false;
+};
+
+// Remove tenant from list
+const removeTenant = (index: number) => {
   const updated = props.tenants.filter((_, i) => i !== index);
   emit('update:tenants', updated);
-}
+};
 
 // Convert Date to ISO string (YYYY-MM-DD format for LocalDate)
 function toISODateString(date: Date | string | null | undefined): string | undefined {
@@ -57,31 +159,14 @@ function toDateObject(dateString: string | null | undefined): Date | null {
   return new Date(dateString);
 }
 
-// Update Tenant Field
-function updateTenantField(index: number, field: keyof TenantItem, value: any) {
-  const updated = [...props.tenants];
-  const tenant = updated[index];
-
-  // Convert Date objects to ISO strings for date fields
-  if (field === 'dateOfBirth') {
-    updated[index] = { ...tenant, [field]: toISODateString(value) } as TenantItem;
-  } else if (field === 'firstName' || field === 'lastName') {
-    // firstName and lastName are required, ensure they're never undefined
-    updated[index] = { ...tenant, [field]: (value || '') as string } as TenantItem;
-  } else {
-    updated[index] = { ...tenant, [field]: value || undefined } as TenantItem;
-  }
-
-  emit('update:tenants', updated);
-}
-
-// Validation: All tenants must have firstName and lastName
-const isValid = computed(() => {
-  return (
-    props.tenants.length > 0 &&
-    props.tenants.every((t) => t.firstName?.trim() !== '' && t.lastName?.trim() !== '')
-  );
-});
+// Format date for display
+const formatDate = (dateString: string | undefined): string => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('de-DE', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+};
 
 // Phone validation helper
 const phonePattern = /^\+[1-9]\d{4,14}$/;
@@ -98,32 +183,18 @@ function validateEmail(email: string | undefined): boolean {
   return emailPattern.test(email);
 }
 
-// Individual tenant validation
-function getTenantErrors(tenant: TenantItem): string[] {
-  const errors: string[] = [];
-  if (!tenant.firstName.trim()) errors.push(t('rentalAgreement.validation.firstNameRequired'));
-  if (!tenant.lastName.trim()) errors.push(t('rentalAgreement.validation.lastNameRequired'));
-  if (tenant.email && !validateEmail(tenant.email))
-    errors.push(t('rentalAgreement.validation.emailInvalid'));
-  if (tenant.mobilePhoneNumber && !validatePhone(tenant.mobilePhoneNumber))
-    errors.push(t('rentalAgreement.validation.phoneInvalid'));
-  if (tenant.businessPhoneNumber && !validatePhone(tenant.businessPhoneNumber))
-    errors.push(t('rentalAgreement.validation.phoneInvalid'));
-  if (tenant.privatePhoneNumber && !validatePhone(tenant.privatePhoneNumber))
-    errors.push(t('rentalAgreement.validation.phoneInvalid'));
-  return errors;
-}
+// Validation
+const canProceed = computed(() => {
+  return props.tenants.length > 0;
+});
 
-// Go to Next Step
-function goNext() {
-  if (!isValid.value) return;
-  emit('next');
-}
-
-// Initialize with one tenant if empty
-if (props.tenants.length === 0) {
-  addTenant();
-}
+const canAddToList = computed(() => {
+  return (
+    currentTenant.value !== null &&
+    currentTenant.value.firstName.trim() !== '' &&
+    currentTenant.value.lastName.trim() !== ''
+  );
+});
 </script>
 
 <template>
@@ -131,6 +202,204 @@ if (props.tenants.length === 0) {
     <h3 class="text-xl font-semibold">
       {{ t('rentalAgreement.step3.title') }}
     </h3>
+
+    <!-- Tenant Selection Section -->
+    <div class="flex gap-3 items-end">
+      <div class="flex-1 flex flex-col gap-2">
+        <label for="tenantSelector" class="font-semibold">
+          {{ t('rentalAgreement.step3.selectTenant') }}
+        </label>
+        <AutoComplete
+          v-model="selectedExistingTenant"
+          :suggestions="tenantOptions"
+          :loading="isLoadingTenants"
+          :placeholder="t('rentalAgreement.step3.searchTenant')"
+          :emptySearchMessage="t('rentalAgreement.step3.noTenants')"
+          dataKey="id"
+          optionLabel="label"
+          fluid
+          dropdown
+          @complete="searchTenants"
+          @update:modelValue="onTenantSelected"
+        >
+          <template #option="slotProps">
+            <div class="flex flex-col">
+              <span class="font-semibold">{{ slotProps.option.firstName }} {{ slotProps.option.lastName }}</span>
+              <span v-if="slotProps.option.email" class="text-sm text-gray-600">{{ slotProps.option.email }}</span>
+            </div>
+          </template>
+        </AutoComplete>
+      </div>
+
+      <Button
+        type="button"
+        :label="t('rentalAgreement.step3.addNewTenant')"
+        icon="pi pi-plus"
+        severity="secondary"
+        @click="addNewTenant"
+      />
+    </div>
+
+    <!-- Current Tenant Form (shown when adding new tenant) -->
+    <div v-if="showTenantForm && currentTenant" class="p-4 border rounded-lg bg-blue-50">
+      <h4 class="font-semibold mb-4">
+        {{ t('rentalAgreement.step3.newTenantDetails') }}
+      </h4>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- First Name -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step3.firstName') }} *
+          </label>
+          <InputText
+            v-model="currentTenant.firstName"
+            type="text"
+            :class="{ 'p-invalid': !currentTenant.firstName.trim() }"
+            fluid
+          />
+        </div>
+
+        <!-- Last Name -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step3.lastName') }} *
+          </label>
+          <InputText
+            v-model="currentTenant.lastName"
+            type="text"
+            :class="{ 'p-invalid': !currentTenant.lastName.trim() }"
+            fluid
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step3.email') }}
+          </label>
+          <InputText
+            v-model="currentTenant.email"
+            type="email"
+            :class="{ 'p-invalid': currentTenant.email && !validateEmail(currentTenant.email) }"
+            fluid
+          />
+        </div>
+
+        <!-- Mobile Phone -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step3.mobilePhone') }}
+          </label>
+          <InputText
+            v-model="currentTenant.mobilePhoneNumber"
+            type="tel"
+            placeholder="+491234567890"
+            :class="{ 'p-invalid': currentTenant.mobilePhoneNumber && !validatePhone(currentTenant.mobilePhoneNumber) }"
+            fluid
+          />
+        </div>
+
+        <!-- Business Phone -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step3.businessPhone') }}
+          </label>
+          <InputText
+            v-model="currentTenant.businessPhoneNumber"
+            type="tel"
+            placeholder="+491234567890"
+            :class="{ 'p-invalid': currentTenant.businessPhoneNumber && !validatePhone(currentTenant.businessPhoneNumber) }"
+            fluid
+          />
+        </div>
+
+        <!-- Private Phone -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step3.privatePhone') }}
+          </label>
+          <InputText
+            v-model="currentTenant.privatePhoneNumber"
+            type="tel"
+            placeholder="+491234567890"
+            :class="{ 'p-invalid': currentTenant.privatePhoneNumber && !validatePhone(currentTenant.privatePhoneNumber) }"
+            fluid
+          />
+        </div>
+
+        <!-- Place of Birth -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step3.placeOfBirth') }}
+          </label>
+          <InputText
+            v-model="currentTenant.placeOfBirth"
+            type="text"
+            fluid
+          />
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold">
+            {{ t('rentalAgreement.step3.dateOfBirth') }}
+          </label>
+          <DatePicker
+            :modelValue="toDateObject(currentTenant.dateOfBirth)"
+            dateFormat="dd.mm.yy"
+            showIcon
+            fluid
+            @update:modelValue="currentTenant.dateOfBirth = toISODateString(Array.isArray($event) ? $event[0] : $event)"
+          />
+        </div>
+
+        <!-- Add Tenant Button -->
+        <div class="flex flex-col gap-2 justify-end md:col-span-2">
+          <Button
+            type="button"
+            :label="t('rentalAgreement.step3.addTenantToList')"
+            icon="pi pi-check"
+            :disabled="!canAddToList"
+            @click="addTenantToList"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected Tenants List (Compact Display) -->
+    <div v-if="tenants.length > 0" class="flex flex-col gap-2">
+      <h4 class="font-semibold">
+        {{ t('rentalAgreement.step3.selectedTenants') }}
+      </h4>
+      <div
+        v-for="(tenant, index) in tenants"
+        :key="tenant.id || index"
+        class="flex items-center justify-between p-3 border rounded-lg bg-gray-50"
+      >
+        <div class="flex-1">
+          <p class="font-semibold">
+            {{ tenant.firstName }} {{ tenant.lastName }}
+          </p>
+          <p class="text-sm text-gray-600">
+            <span v-if="tenant.email">{{ tenant.email }}</span>
+            <span v-if="tenant.mobilePhoneNumber"> • {{ tenant.mobilePhoneNumber }}</span>
+            <span v-if="tenant.dateOfBirth">
+              • {{ t('rentalAgreement.step3.born') }}: {{ formatDate(tenant.dateOfBirth) }}
+            </span>
+          </p>
+        </div>
+        <Button
+          icon="pi pi-trash"
+          severity="danger"
+          text
+          rounded
+          size="small"
+          :aria-label="t('rentalAgreement.step3.removeTenant')"
+          @click="removeTenant(index)"
+        />
+      </div>
+    </div>
 
     <!-- Validation Message -->
     <Message
@@ -141,177 +410,6 @@ if (props.tenants.length === 0) {
     >
       {{ t('rentalAgreement.validation.oneTenantRequired') }}
     </Message>
-
-    <!-- Tenants List -->
-    <div class="flex flex-col gap-4">
-      <BaseCard
-        v-for="(tenant, index) in tenants"
-        :key="index"
-      >
-        <template #title>
-          <div class="flex justify-between items-center">
-            <span>{{ t('rentalAgreement.step3.title') }} {{ index + 1 }}</span>
-            <Button
-              v-if="tenants.length > 1"
-              icon="pi pi-trash"
-              severity="danger"
-              text
-              rounded
-              :aria-label="t('rentalAgreement.step3.removeTenant')"
-              @click="removeTenant(index)"
-            />
-          </div>
-        </template>
-
-        <template #content>
-          <!-- Tenant Error Messages -->
-          <div v-if="getTenantErrors(tenant).length > 0" class="mb-4">
-            <Message
-              v-for="(error, errorIndex) in getTenantErrors(tenant)"
-              :key="errorIndex"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ error }}
-            </Message>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- First Name -->
-            <div class="flex flex-col gap-2">
-              <label :for="`firstName-${index}`" class="font-semibold">
-                {{ t('rentalAgreement.step3.firstName') }} *
-              </label>
-              <InputText
-                :id="`firstName-${index}`"
-                :modelValue="tenant.firstName"
-                type="text"
-                :class="{ 'p-invalid': !tenant.firstName.trim() }"
-                fluid
-                @update:modelValue="updateTenantField(index, 'firstName', $event)"
-              />
-            </div>
-
-            <!-- Last Name -->
-            <div class="flex flex-col gap-2">
-              <label :for="`lastName-${index}`" class="font-semibold">
-                {{ t('rentalAgreement.step3.lastName') }} *
-              </label>
-              <InputText
-                :id="`lastName-${index}`"
-                :modelValue="tenant.lastName"
-                type="text"
-                :class="{ 'p-invalid': !tenant.lastName.trim() }"
-                fluid
-                @update:modelValue="updateTenantField(index, 'lastName', $event)"
-              />
-            </div>
-
-            <!-- Email -->
-            <div class="flex flex-col gap-2">
-              <label :for="`email-${index}`" class="font-semibold">
-                {{ t('rentalAgreement.step3.email') }}
-              </label>
-              <InputText
-                :id="`email-${index}`"
-                :modelValue="tenant.email"
-                type="email"
-                :class="{ 'p-invalid': tenant.email && !validateEmail(tenant.email) }"
-                fluid
-                @update:modelValue="updateTenantField(index, 'email', $event)"
-              />
-            </div>
-
-            <!-- Mobile Phone -->
-            <div class="flex flex-col gap-2">
-              <label :for="`mobile-${index}`" class="font-semibold">
-                {{ t('rentalAgreement.step3.mobilePhone') }}
-              </label>
-              <InputText
-                :id="`mobile-${index}`"
-                :modelValue="tenant.mobilePhoneNumber"
-                type="tel"
-                placeholder="+491234567890"
-                :class="{ 'p-invalid': tenant.mobilePhoneNumber && !validatePhone(tenant.mobilePhoneNumber) }"
-                fluid
-                @update:modelValue="updateTenantField(index, 'mobilePhoneNumber', $event)"
-              />
-            </div>
-
-            <!-- Business Phone -->
-            <div class="flex flex-col gap-2">
-              <label :for="`business-${index}`" class="font-semibold">
-                {{ t('rentalAgreement.step3.businessPhone') }}
-              </label>
-              <InputText
-                :id="`business-${index}`"
-                :modelValue="tenant.businessPhoneNumber"
-                type="tel"
-                placeholder="+491234567890"
-                :class="{ 'p-invalid': tenant.businessPhoneNumber && !validatePhone(tenant.businessPhoneNumber) }"
-                fluid
-                @update:modelValue="updateTenantField(index, 'businessPhoneNumber', $event)"
-              />
-            </div>
-
-            <!-- Private Phone -->
-            <div class="flex flex-col gap-2">
-              <label :for="`private-${index}`" class="font-semibold">
-                {{ t('rentalAgreement.step3.privatePhone') }}
-              </label>
-              <InputText
-                :id="`private-${index}`"
-                :modelValue="tenant.privatePhoneNumber"
-                type="tel"
-                placeholder="+491234567890"
-                :class="{ 'p-invalid': tenant.privatePhoneNumber && !validatePhone(tenant.privatePhoneNumber) }"
-                fluid
-                @update:modelValue="updateTenantField(index, 'privatePhoneNumber', $event)"
-              />
-            </div>
-
-            <!-- Place of Birth -->
-            <div class="flex flex-col gap-2">
-              <label :for="`placeOfBirth-${index}`" class="font-semibold">
-                {{ t('rentalAgreement.step3.placeOfBirth') }}
-              </label>
-              <InputText
-                :id="`placeOfBirth-${index}`"
-                :modelValue="tenant.placeOfBirth"
-                type="text"
-                fluid
-                @update:modelValue="updateTenantField(index, 'placeOfBirth', $event)"
-              />
-            </div>
-
-            <!-- Date of Birth -->
-            <div class="flex flex-col gap-2">
-              <label :for="`dateOfBirth-${index}`" class="font-semibold">
-                {{ t('rentalAgreement.step3.dateOfBirth') }}
-              </label>
-              <DatePicker
-                :id="`dateOfBirth-${index}`"
-                :modelValue="toDateObject(tenant.dateOfBirth)"
-                dateFormat="dd.mm.yy"
-                showIcon
-                fluid
-                @update:modelValue="updateTenantField(index, 'dateOfBirth', $event)"
-              />
-            </div>
-          </div>
-        </template>
-      </BaseCard>
-    </div>
-
-    <!-- Add Tenant Button -->
-    <Button
-      :label="t('rentalAgreement.step3.addTenant')"
-      icon="pi pi-plus"
-      severity="secondary"
-      outlined
-      @click="addTenant"
-    />
 
     <!-- Action Buttons -->
     <div class="flex justify-between gap-3 mt-6">
@@ -327,8 +425,8 @@ if (props.tenants.length === 0) {
         :label="t('rentalAgreement.step3.nextButton')"
         icon="pi pi-arrow-right"
         iconPos="right"
-        :disabled="!isValid"
-        @click="goNext"
+        :disabled="!canProceed"
+        @click="emit('next')"
       />
     </div>
   </div>
