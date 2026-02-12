@@ -1,7 +1,22 @@
 describe('NewProjectView E2E Tests', () => {
-    const longTitle = 'a'.repeat(101);
+  const projectId = 'test-project-123';
+  const longTitle = String("a").repeat(101);
+
   beforeEach(() => {
-    cy.intercept('GET', 'http://localhost:4173/api/v1/projects', {
+    // Mock user authentication
+    cy.intercept('GET', '/api/v1/user', {
+      statusCode: 200,
+      body: {
+        id: 'user-123',
+        name: 'Test User',
+        email: 'test@example.com',
+        registerDate: '2024-01-01',
+        lastLoginDate: '2024-01-15T10:00:00',
+      },
+    }).as('getUser');
+
+    // Mock project list
+    cy.intercept('GET', '/api/v1/projects?offset=0&limit=10', {
       statusCode: 200,
       body: {
         first: 0,
@@ -9,13 +24,15 @@ describe('NewProjectView E2E Tests', () => {
         total: 1,
         projects: [
           {
-            id: 'df3d6629-257b-46dc-bbbe-7d3605dd4e03',
-            name: 'TEST-PROJECT',
-            memberRole: 'MANAGER'
-          }
-        ]
-      }
+            id: projectId,
+            name: 'Test Project',
+            memberRole: 'MANAGER',
+          },
+        ],
+      },
     }).as('getProjects');
+
+    // Mock project creation
     cy.intercept('POST', '/api/v1/projects', {
       statusCode: 201,
       body: {

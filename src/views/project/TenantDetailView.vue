@@ -7,6 +7,11 @@ import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
+import ProgressSpinner from 'primevue/progressspinner';
+import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
+import Button from 'primevue/button';
+import DatePicker from 'primevue/datepicker';
 import { tenantService, type Tenant } from '@/services/TenantService';
 import BaseCard from '@/components/common/BaseCard.vue';
 
@@ -58,8 +63,10 @@ async function loadTenant() {
 
     if (!tenant) {
       toast.add({
- severity: 'error', summary: t('tenantDetail.notFound'), life: 3000 
-});
+        severity: 'error',
+        summary: t('tenantDetail.notFound'),
+        life: 3000,
+      });
       router.push({ name: 'TenantList', params: { projectId: props.projectId } });
       return;
     }
@@ -80,10 +87,12 @@ async function loadTenant() {
       placeOfBirth: tenant.placeOfBirth || '',
       dateOfBirth: tenant.dateOfBirth || '',
     };
-  } catch (error) {
+  } catch {
     toast.add({
- severity: 'error', summary: t('tenantDetail.error'), life: 3000 
-});
+      severity: 'error',
+      summary: t('tenantDetail.error'),
+      life: 3000,
+    });
     router.push({ name: 'TenantList', params: { projectId: props.projectId } });
   } finally {
     isLoading.value = false;
@@ -123,13 +132,17 @@ async function onSubmit(event: FormSubmitEvent) {
   try {
     await tenantService.updateTenant(props.projectId, props.tenantId, updatedTenant);
     toast.add({
- severity: 'success', summary: t('tenantDetail.success'), life: 3000 
-});
+      severity: 'success',
+      summary: t('tenantDetail.success'),
+      life: 3000,
+    });
     router.push({ name: 'TenantList', params: { projectId: props.projectId } });
-  } catch (error) {
+  } catch {
     toast.add({
- severity: 'error', summary: t('tenantDetail.error'), life: 3000 
-});
+      severity: 'error',
+      summary: t('tenantDetail.error'),
+      life: 3000,
+    });
   }
 }
 

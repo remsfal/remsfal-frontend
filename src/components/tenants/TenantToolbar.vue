@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import SelectButton from 'primevue/selectbutton';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
 
 type ActiveFilter = 'ALL' | 'ACTIVE' | 'INACTIVE';
 

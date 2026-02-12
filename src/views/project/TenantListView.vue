@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import ProgressSpinner from 'primevue/progressspinner';
+import DataView from 'primevue/dataview';
 import { tenantService, type TenantItem } from '@/services/TenantService';
 import TenantCard from '@/components/tenants/TenantCard.vue';
 import TenantToolbar from '@/components/tenants/TenantToolbar.vue';

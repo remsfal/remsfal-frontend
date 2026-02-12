@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import Card from 'primevue/card';
+import Tag from 'primevue/tag';
 import type { TenantItem } from '@/services/TenantService';
 import TenantContactButtons from './TenantContactButtons.vue';
 import { useI18n } from 'vue-i18n';
