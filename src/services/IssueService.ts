@@ -10,7 +10,7 @@ export type IssueAttachment = ApiComponents['schemas']['IssueAttachmentJson'];
 
 class IssueService {
   async getIssues(
-    projectId: string,
+    projectId?: string,
     status?: Status,
     category?: string,
     assigneeId?: string,
@@ -20,9 +20,9 @@ class IssueService {
   ): Promise<IssueList> {
     const data = await apiClient.get('/ticketing/v1/issues', {
       params: {
-        projectId,
         limit,
         offset,
+        ...(projectId ? { projectId } : {}),
         ...(status ? { status } : {}),
         ...(category ? { category } : {}),
         ...(assigneeId ? { assigneeId } : {}),

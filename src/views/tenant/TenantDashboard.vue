@@ -1,62 +1,27 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import { tenantContractService } from '@/services/TenantContractService.ts';
-import type { TenantContractStatus, TenantContractSummary } from '@/services/TenantContractService.ts';
+import { tenancyService, type TenancyItem } from '@/services/TenancyService';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Tag from 'primevue/tag';
 
-const fallbackContracts: TenantContractSummary[] = [
-  {
-    id: 'CNT-001',
-    address: 'Hauptstr. 12, 70173 Stuttgart',
-    leaseStart: '2022-04-01',
-    leaseEnd: '2024-03-31',
-    status: 'Active',
-  },
-  {
-    id: 'CNT-002',
-    address: 'Neckarweg 5, 70376 Stuttgart',
-    leaseStart: '2021-06-15',
-    leaseEnd: '2023-06-14',
-    status: 'Active',
-  },
-  {
-    id: 'CNT-003',
-    address: 'Rosenstr. 8, 73728 Esslingen',
-    leaseStart: '2019-01-01',
-    leaseEnd: '2022-12-31',
-    status: 'Expired',
-  },
-];
-
-const contracts = ref<TenantContractSummary[]>([]);
+const contracts = ref<TenancyItem[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-const getSeverity = (status: TenantContractStatus) => {
+const getTenancyStatus = (item: TenancyItem) => {
+  // TenancyItemJson doesn't have endOfRental field, use active status
+  return item.active !== false ? 'Active' : 'Expired';
+};
+
+const getSeverity = (status: 'Active' | 'Expired') => {
   return status === 'Active' ? 'success' : 'secondary';
 };
 
-const getStatusLabel = (status: TenantContractStatus) => {
+const getStatusLabel = (status: 'Active' | 'Expired') => {
   return status === 'Active' ? 'Aktiv' : 'Abgelaufen';
-};
-
-const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
-
-const normalizeContracts = (
-  data: TenantContractSummary[] | { contracts?: TenantContractSummary[] } | unknown,
-): TenantContractSummary[] => {
-    const contractsContainer = data as { contracts?: TenantContractSummary[] };
-    if (Array.isArray(contractsContainer?.contracts)) {
-      return contractsContainer.contracts!;
-  }
-  if (Array.isArray(data)) {
-    return data;
-  }
-  return [];
 };
 
 const loadContracts = async () => {
@@ -64,13 +29,11 @@ const loadContracts = async () => {
   error.value = null;
 
   try {
-    const data = await tenantContractService.listContracts();
-    const list = normalizeContracts(data);
-    contracts.value = list;
+    contracts.value = await tenancyService.getTenancies();
   } catch (err) {
     console.error(err);
-    error.value = 'Verträge konnten nicht geladen werden. Anzeige mit Demo-Daten.';
-    contracts.value = fallbackContracts;
+    error.value = 'Verträge konnten nicht geladen werden.';
+    contracts.value = [];
   } finally {
     loading.value = false;
   }
@@ -128,9 +91,13 @@ onMounted(loadContracts);
                   <template #content>
                     <div class="flex items-start justify-between gap-2 mb-3">
                       <h2 class="text-lg font-medium text-gray-900">
-                        {{ contract.address }}
+                        {{ contract.location || contract.rentalTitle || 'Keine Adresse' }}
                       </h2>
-                      <Tag :value="getStatusLabel(contract.status)" :severity="getSeverity(contract.status)" rounded />
+                      <Tag
+                        :value="getStatusLabel(getTenancyStatus(contract))"
+                        :severity="getSeverity(getTenancyStatus(contract))"
+                        rounded
+                      />
                     </div>
 
                     <dl class="space-y-1 text-sm text-gray-600">
@@ -142,20 +109,12 @@ onMounted(loadContracts);
                           {{ contract.id }}
                         </dd>
                       </div>
-                      <div class="flex justify-between">
+                      <div v-if="contract.rentalType" class="flex justify-between">
                         <dt class="font-medium text-gray-500">
-                          Beginn
+                          Typ
                         </dt>
                         <dd class="text-gray-900">
-                          {{ formatDate(contract.leaseStart) }}
-                        </dd>
-                      </div>
-                      <div class="flex justify-between">
-                        <dt class="font-medium text-gray-500">
-                          Ende
-                        </dt>
-                        <dd class="text-gray-900">
-                          {{ formatDate(contract.leaseEnd) }}
+                          {{ contract.rentalType }}
                         </dd>
                       </div>
                     </dl>

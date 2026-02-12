@@ -106,16 +106,18 @@ function onTenantClick(tenant: TenantItem) {
         </p>
       </div>
 
-      <!-- Tenant Grid -->
-      <DataView v-else :value="filteredTenants" layout="grid">
-        <template #grid="{ items }">
-          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <TenantCard
-              v-for="tenant in items"
-              :key="tenant.id"
-              :tenant="tenant"
-              @click="onTenantClick(tenant)"
-            />
+      <!-- Tenant List -->
+      <DataView v-else :value="filteredTenants">
+        <template #list="slotProps">
+          <div class="flex flex-col">
+            <div v-for="(tenant, index) in slotProps.items" :key="tenant.id">
+              <div
+                class="flex flex-col sm:flex-row sm:items-center gap-4"
+                :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }"
+              >
+                <TenantCard :tenant="tenant" @click="onTenantClick(tenant)" />
+              </div>
+            </div>
           </div>
         </template>
       </DataView>

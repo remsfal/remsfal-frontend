@@ -41,7 +41,7 @@ function confirmDeletion() {
 }
 
 function navigateToTenancyDetails(id: string) {
-  router.push('/projects/' + projectStore.projectId + '/tenancies/' + id);
+  router.push('/projects/' + props.projectId + '/tenancies/' + id);
 }
 
 function navigateToNewTenancy() {

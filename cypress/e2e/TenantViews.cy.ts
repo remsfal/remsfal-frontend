@@ -37,7 +37,7 @@ describe('Tenant Views E2E Tests', () => {
       },
     }).as('getProjects');
 
-    // Mock project
+    // Mock specific project details (ProjectJson)
     cy.intercept('GET', `/api/v1/projects/${projectId}`, {
       statusCode: 200,
       body: {
@@ -46,13 +46,12 @@ describe('Tenant Views E2E Tests', () => {
         members: [
           {
             id: 'user-123',
-            name: 'Test User',
             email: 'test@example.com',
             role: 'MANAGER',
           },
         ],
       },
-    }).as('getProjects');
+    }).as('getProject');
   });
 
   describe('TenantListView', () => {
@@ -128,10 +127,10 @@ describe('Tenant Views E2E Tests', () => {
 
     it('should display loading spinner initially', () => {
       // Delay API response to test loading state
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenancies`, {
+      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
         statusCode: 200,
         delay: 1000,
-        body: [],
+        body: { tenants: [] },
       }).as('getDelayedTenants');
 
       cy.visit(`/projects/${projectId}/tenants`);
@@ -145,7 +144,7 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenants');
 
       // Check if tenant cards are displayed
-      cy.get('.p-card').should('have.length', 3);
+      cy.get('[data-testid="tenant-card"]').should('have.length', 3);
     });
 
     it('should display tenant information on cards', () => {
@@ -153,9 +152,9 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenants');
 
       // Check first tenant card
-      cy.get('.p-card').first().should('contain', 'John Doe');
-      cy.get('.p-card').first().should('contain', /aktiv|active/i);
-      cy.get('.p-card').first().should('contain', /einheiten|units/i);
+      cy.get('[data-testid="tenant-card"]').first().should('contain', 'John Doe');
+      cy.get('[data-testid="tenant-card"]').first().should('contain', /aktiv|active/i);
+      cy.get('[data-testid="tenant-card"]').first().should('contain', /apartment|wohnung/i);
     });
 
     it('should display active/inactive status tag', () => {
@@ -166,10 +165,10 @@ describe('Tenant Views E2E Tests', () => {
       cy.get('.p-tag').should('have.length.at.least', 2);
 
       // Check first tenant (active)
-      cy.get('.p-card').first().find('.p-tag').should('have.class', 'p-tag-success');
+      cy.get('[data-testid="tenant-card"]').first().find('.p-tag').should('have.class', 'p-tag-success');
 
       // Check second tenant (inactive)
-      cy.get('.p-card').eq(1).find('.p-tag').should('have.class', 'p-tag-secondary');
+      cy.get('[data-testid="tenant-card"]').eq(1).find('.p-tag').should('have.class', 'p-tag-secondary');
     });
 
     it('should display contact buttons on each card', () => {
@@ -177,7 +176,7 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenants');
 
       // Each card should have phone and email buttons
-      cy.get('.p-card').each(($card) => {
+      cy.get('[data-testid="tenant-card"]').each(($card) => {
         cy.wrap($card).find('button.pi-phone').should('exist');
         cy.wrap($card).find('button.pi-envelope').should('exist');
       });
@@ -200,15 +199,15 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenants');
 
       // Initially all tenants should be visible
-      cy.get('.p-card').should('have.length', 3);
+      cy.get('[data-testid="tenant-card"]').should('have.length', 3);
 
       // Click "Active" filter
       cy.get('.p-selectbutton').contains(/aktiv|active/i).click();
 
       // Only active tenants should be visible
-      cy.get('.p-card').should('have.length', 2);
-      cy.get('.p-card').first().should('contain', 'John Doe');
-      cy.get('.p-card').eq(1).should('contain', 'Alice Johnson');
+      cy.get('[data-testid="tenant-card"]').should('have.length', 2);
+      cy.get('[data-testid="tenant-card"]').first().should('contain', 'John Doe');
+      cy.get('[data-testid="tenant-card"]').eq(1).should('contain', 'Alice Johnson');
     });
 
     it('should filter tenants by inactive status', () => {
@@ -219,8 +218,8 @@ describe('Tenant Views E2E Tests', () => {
       cy.get('.p-selectbutton').contains(/inaktiv|inactive/i).click();
 
       // Only inactive tenants should be visible
-      cy.get('.p-card').should('have.length', 1);
-      cy.get('.p-card').first().should('contain', 'Jane Smith');
+      cy.get('[data-testid="tenant-card"]').should('have.length', 1);
+      cy.get('[data-testid="tenant-card"]').first().should('contain', 'Jane Smith');
     });
 
     it('should search tenants by last name', () => {
@@ -231,8 +230,8 @@ describe('Tenant Views E2E Tests', () => {
       cy.get('input[type="text"]').type('Doe');
 
       // Only matching tenant should be visible
-      cy.get('.p-card').should('have.length', 1);
-      cy.get('.p-card').first().should('contain', 'John Doe');
+      cy.get('[data-testid="tenant-card"]').should('have.length', 1);
+      cy.get('[data-testid="tenant-card"]').first().should('contain', 'John Doe');
     });
 
     it('should search case-insensitively', () => {
@@ -243,8 +242,8 @@ describe('Tenant Views E2E Tests', () => {
       cy.get('input[type="text"]').type('smith');
 
       // Should find Jane Smith
-      cy.get('.p-card').should('have.length', 1);
-      cy.get('.p-card').first().should('contain', 'Jane Smith');
+      cy.get('[data-testid="tenant-card"]').should('have.length', 1);
+      cy.get('[data-testid="tenant-card"]').first().should('contain', 'Jane Smith');
     });
 
     it('should show empty state when no tenants match filters', () => {
@@ -279,7 +278,7 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenants');
 
       // Click on first tenant card
-      cy.get('.p-card').first().click();
+      cy.get('[data-testid="tenant-card"]').first().click();
 
       // Should navigate to tenant detail page
       cy.url().should('include', `/projects/${projectId}/tenants/tenant-1`);
@@ -290,12 +289,12 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenants');
 
       // Third tenant has 4 units
-      cy.get('.p-card').eq(2).within(() => {
-        // Should show first 3 units
-        cy.get('li').should('have.length', 4); // 3 units + 1 "more" message
+      cy.get('[data-testid="tenant-card"]').eq(2).within(() => {
+        // Should show first 3 unit tags + 1 "more" tag = 4 tags total
+        cy.get('.p-tag').should('have.length', 5); // 3 unit tags + 1 "more" tag + 1 status tag
 
-        // Should show "1 more unit" message
-        cy.contains(/weitere|more/i).should('exist');
+        // Should show "+ 1 more" message
+        cy.contains(/\+.*weitere|\+.*more/i).should('exist');
       });
     });
 
@@ -303,8 +302,9 @@ describe('Tenant Views E2E Tests', () => {
       cy.visit(`/projects/${projectId}/tenants`);
       cy.wait('@getTenants');
 
-      // First tenant card
-      cy.get('.p-card').first().should('contain', 'Apartment 101');
+      // First tenant card should contain unit type (Apartment/Wohnung) and title
+      cy.get('[data-testid="tenant-card"]').first().should('contain', '101');
+      cy.get('[data-testid="tenant-card"]').first().should('contain', /apartment|wohnung/i);
     });
   });
 
@@ -354,10 +354,15 @@ describe('Tenant Views E2E Tests', () => {
 
     it('should display loading spinner while loading tenant data', () => {
       // Delay API response
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
+      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants/${tenantId}`, {
         statusCode: 200,
         delay: 1000,
-        body: { tenants: [] },
+        body: {
+          id: tenantId,
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe@example.com',
+        },
       }).as('getDelayedTenant');
 
       cy.visit(`/projects/${projectId}/tenants/${tenantId}`);

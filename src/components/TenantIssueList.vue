@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import type { IssueItem } from '@/services/IssueService.ts';
-import type { TenantContractSummary } from '@/services/TenantContractService.ts';
+import type { TenancyItem } from '@/services/TenancyService';
 import TenantIssueCard from './TenantIssueCard.vue';
 import DataView from 'primevue/dataview';
 
@@ -15,7 +15,7 @@ type ExtendedIssueItem = IssueItem & {
 
 const props = defineProps<{
   issues: ExtendedIssueItem[];
-  contracts: TenantContractSummary[];
+  contracts: TenancyItem[];
 }>();
 
 const { t } = useI18n();
@@ -23,7 +23,7 @@ const { t } = useI18n();
 const getContractAddress = (tenancyId?: string) => {
   if (!tenancyId) return undefined;
   const contract = props.contracts.find(c => c.id === tenancyId);
-  return contract?.address;
+  return contract?.location || contract?.rentalTitle;
 };
 </script>
 

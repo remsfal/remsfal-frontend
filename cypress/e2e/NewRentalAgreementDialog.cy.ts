@@ -31,10 +31,26 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
       },
     }).as('getProjects');
 
-    // Mock rental agreements list
-    cy.intercept('GET', `/api/v1/projects/${projectId}/tenancies`, {
+    // Mock specific project details (ProjectJson)
+    cy.intercept('GET', `/api/v1/projects/${projectId}`, {
       statusCode: 200,
-      body: [],
+      body: {
+        id: projectId,
+        title: 'Test Project',
+        members: [
+          {
+            id: 'user-123',
+            email: 'test@example.com',
+            role: 'MANAGER',
+          },
+        ],
+      },
+    }).as('getProject');
+
+    // Mock rental agreements list
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements`, {
+      statusCode: 200,
+      body: { rentalAgreements: [] },
     }).as('getRentalAgreements');
 
     // Mock available units (for Step 2)
@@ -96,16 +112,16 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should open dialog when clicking add tenant button', () => {
     // Click add button
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Dialog should be visible
     cy.get('[role="dialog"]').should('be.visible');
-    cy.get('[role="dialog"]').should('contain', /mietvertrag|rental agreement/i);
+    cy.get('[role="dialog"]').should('contain.text', 'Neuer Mietvertrag');
   });
 
   it('should display stepper with 4 steps', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Check if stepper is visible
     cy.get('.p-stepper').should('be.visible');
@@ -116,18 +132,18 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should show Step 1 (Dates) initially', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Check if Step 1 is active
     cy.get('.p-step').first().should('have.class', 'p-step-active');
 
-    // Check if date form is visible
-    cy.contains(/mietbeginn|start of rental|datumsangaben|dates/i).should('be.visible');
+    // Check if date form is visible (title or start date label)
+    cy.contains('Mietdaten').should('be.visible');
   });
 
   it('should disable Step 2 until Step 1 is complete', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Step 2 should be disabled
     cy.get('.p-step').eq(1).should('satisfy', ($el) => {
@@ -137,7 +153,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should disable Step 3 and Step 4 initially', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Steps 3 and 4 should be disabled
     cy.get('.p-step')
@@ -155,7 +171,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should close dialog when clicking cancel', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Dialog should be visible
     cy.get('[role="dialog"]').should('be.visible');
@@ -171,7 +187,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should navigate to Step 2 after completing Step 1', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Fill in start date
     cy.get('input[name="startOfRental"]').type('2024-01-01');
@@ -185,7 +201,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should allow going back from Step 2 to Step 1', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Complete Step 1
     cy.get('input[name="startOfRental"]').type('2024-01-01');
@@ -203,7 +219,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should disable next button in Step 2 until at least one unit is selected', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Complete Step 1
     cy.get('input[name="startOfRental"]').type('2024-01-01');
@@ -218,7 +234,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should navigate to Step 3 after selecting units', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Complete Step 1
     cy.get('input[name="startOfRental"]').type('2024-01-01');
@@ -234,7 +250,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should disable next button in Step 3 until at least one tenant is added', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Complete Step 1
     cy.get('input[name="startOfRental"]').type('2024-01-01');
@@ -292,7 +308,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should show loading state while creating rental agreement', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Dialog should be visible
     cy.get('[role="dialog"]').should('be.visible');
@@ -312,7 +328,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should reset form when closing dialog', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Fill some data
     cy.get('input[name="startOfRental"]').type('2024-01-01');
@@ -323,7 +339,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     });
 
     // Open dialog again
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Form should be reset (Step 1 should be active, form empty)
     cy.get('.p-step').first().should('have.class', 'p-step-active');
@@ -337,7 +353,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should validate required fields in each step', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Try to proceed without filling required fields
     // Next button should be disabled
@@ -346,7 +362,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
   it('should handle optional end date', () => {
     // Open dialog
-    cy.contains('button', /mieter hinzufügen|add tenant/i).click();
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
 
     // Fill only start date (end date optional)
     cy.get('input[name="startOfRental"]').type('2024-01-01');

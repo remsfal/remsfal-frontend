@@ -1,36 +1,38 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import { tenantContractService, type TenantContractSummary } from '@/services/TenantContractService.ts';
+import { tenancyService, type TenancyItem } from '@/services/TenancyService';
 
-vi.mock('@/services/TenantContractService.ts', async () => {
-  const actual = await vi.importActual<typeof import('@/services/TenantContractService.ts')>(
-    '@/services/TenantContractService.ts',
+vi.mock('@/services/TenancyService', async () => {
+  const actual = await vi.importActual<typeof import('@/services/TenancyService')>(
+    '@/services/TenancyService',
   );
 
   return {
     ...actual,
-    tenantContractService: {
-      listContracts: vi.fn(),
-      getContract: vi.fn(),
+    tenancyService: {
+      getTenancies: vi.fn(),
+      getTenancyDetail: vi.fn(),
     },
   };
 });
 
-describe('TenantView', () => {
-  const mockContracts: TenantContractSummary[] = [
+describe('TenantDashboard', () => {
+  const mockContracts: TenancyItem[] = [
     {
-      id: 'C-1',
-      address: 'Teststr. 1',
-      leaseStart: '2023-01-01',
-      leaseEnd: '2024-01-01',
-      status: 'Active',
+      id: 'T-1',
+      name: 'Mietverhältnis 1',
+      rentalType: 'APARTMENT',
+      rentalTitle: 'Wohnung 1',
+      location: 'Teststr. 1, 12345 Berlin',
+      active: true,
     },
     {
-      id: 'C-2',
-      address: 'Musterweg 5',
-      leaseStart: '2022-06-01',
-      leaseEnd: '2023-06-01',
-      status: 'Expired',
+      id: 'T-2',
+      name: 'Mietverhältnis 2',
+      rentalType: 'APARTMENT',
+      rentalTitle: 'Wohnung 2',
+      location: 'Musterweg 5, 12345 Berlin',
+      active: false,
     },
   ];
 
@@ -43,10 +45,10 @@ describe('TenantView', () => {
   });
 
   it('renders contracts from API', async () => {
-    vi.mocked(tenantContractService.listContracts).mockResolvedValue(mockContracts);
-    const { default: TenantView } = await import('../../../src/views/tenant/TenantDashboard.vue');
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue(mockContracts);
+    const { default: TenantDashboard } = await import('../../../src/views/tenant/TenantDashboard.vue');
 
-    const wrapper = mount(TenantView);
+    const wrapper = mount(TenantDashboard);
     await flushPromises();
 
     const cards = wrapper.findAll('[data-testid="contract-card"]');
@@ -57,21 +59,21 @@ describe('TenantView', () => {
     expect(wrapper.text()).toContain('Abgelaufen');
   });
 
-  it('shows error notice and fallback when fetch fails', async () => {
-    vi.mocked(tenantContractService.listContracts).mockRejectedValue(new Error('fail'));
-    const { default: TenantView } = await import('../../../src/views/tenant/TenantDashboard.vue');
+  it('shows error notice when fetch fails', async () => {
+    vi.mocked(tenancyService.getTenancies).mockRejectedValue(new Error('fail'));
+    const { default: TenantDashboard } = await import('../../../src/views/tenant/TenantDashboard.vue');
 
-    const wrapper = mount(TenantView);
+    const wrapper = mount(TenantDashboard);
     await flushPromises();
 
     expect(wrapper.text()).toContain('Verträge konnten nicht geladen werden');
   });
 
   it('shows empty state when no contracts returned', async () => {
-    vi.mocked(tenantContractService.listContracts).mockResolvedValue([]);
-    const { default: TenantView } = await import('../../../src/views/tenant/TenantDashboard.vue');
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
+    const { default: TenantDashboard } = await import('../../../src/views/tenant/TenantDashboard.vue');
 
-    const wrapper = mount(TenantView);
+    const wrapper = mount(TenantDashboard);
     await flushPromises();
 
     expect(wrapper.find('[data-testid="empty-state"]').exists()).toBe(true);

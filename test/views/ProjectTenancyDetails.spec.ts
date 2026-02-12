@@ -50,7 +50,12 @@ describe('ProjectTenanciesDetails', () => {
     vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockResolvedValue(undefined);
     vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockResolvedValue(undefined);
 
-    wrapper = mount(ProjectTenanciesDetails);
+    wrapper = mount(ProjectTenanciesDetails, {
+      props: {
+        projectId: 'proj-1',
+        tenancyId: 'agreement-1'
+      }
+    });
     await flushPromises();
   });
 

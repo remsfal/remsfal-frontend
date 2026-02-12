@@ -379,6 +379,8 @@
   "tenantList.card.inactive": "Inaktiv",
   "tenantList.card.units": "Einheiten",
   "tenantList.card.moreUnits": "+{count} weitere",
+  "tenantList.card.noUnits": "Keine Wohneinheiten zugewiesen",
+  "tenantList.card.unknownUnit": "Unbekannte Einheit",
   "tenantList.card.callButton": "Anrufen",
   "tenantList.card.messageButton": "Nachricht",
   "tenantDetail.title": "Mieterdetails",

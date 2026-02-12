@@ -1,47 +1,52 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import ContractDetailView from '@/views/ContractDetailView.vue';
-import { tenantContractService, type TenantContractDetail } from '@/services/TenantContractService';
+import { tenancyService, type TenancyItem } from '@/services/TenancyService';
 
-vi.mock('vue-router', () => ({ useRoute: () => ({ params: { contractId: 'CNT-TEST' } }) }));
+vi.mock('vue-router', () => ({ useRoute: () => ({ params: { contractId: 'T-TEST' } }) }));
 
 describe('ContractDetailView', () => {
-  const detail: TenantContractDetail = {
-    id: 'CNT-TEST',
-    address: 'Hauptstr. 99',
-    monthlyRent: 1200,
-    deposit: 3000,
-    leaseStart: '2023-01-01',
-    leaseEnd: '2024-01-01',
-    landlord: 'Test GmbH',
-    status: 'Active',
-    documents: [{ label: 'Mietvertrag', url: '#' }],
-  };
+  const mockTenancies: TenancyItem[] = [
+    {
+      id: 'T-TEST',
+      name: 'Test Mietverhältnis',
+      rentalType: 'APARTMENT',
+      rentalTitle: 'Wohnung 1',
+      location: 'Hauptstr. 99, 12345 Berlin',
+      active: true,
+    },
+  ];
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
   it('renders contract details from API', async () => {
-    vi.spyOn(tenantContractService, 'getContract').mockResolvedValue(detail);
+    vi.spyOn(tenancyService, 'getTenancies').mockResolvedValue(mockTenancies);
 
     const wrapper = mount(ContractDetailView);
     await flushPromises();
 
     expect(wrapper.text()).toContain('Hauptstr. 99');
-    expect(wrapper.text()).toContain('1.200,00');
-    expect(wrapper.text()).toContain('3.000,00');
-    expect(wrapper.text()).toContain('Test GmbH');
-    expect(wrapper.text()).toContain('Mietvertrag');
+    expect(wrapper.text()).toContain('APARTMENT');
+    expect(wrapper.text()).toContain('Aktiv');
   });
 
-  it('shows fallback notice when fetch fails', async () => {
-    vi.spyOn(tenantContractService, 'getContract').mockRejectedValue(new Error('fail'));
+  it('shows error when contract not found', async () => {
+    vi.spyOn(tenancyService, 'getTenancies').mockResolvedValue([]);
 
     const wrapper = mount(ContractDetailView);
     await flushPromises();
 
     expect(wrapper.text()).toContain('Vertragsdetails konnten nicht geladen werden');
-    expect(wrapper.text()).toContain('Hauptstr. 12'); // fallback address
+  });
+
+  it('shows error when fetch fails', async () => {
+    vi.spyOn(tenancyService, 'getTenancies').mockRejectedValue(new Error('fail'));
+
+    const wrapper = mount(ContractDetailView);
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Vertragsdetails konnten nicht geladen werden');
   });
 });

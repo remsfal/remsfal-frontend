@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { tenantContractService, type TenantContractSummary } from '@/services/TenantContractService.ts';
+import { tenancyService, type TenancyItem } from '@/services/TenancyService';
 import { issueService, type IssueItem, type Status, type Type, type Issue } from '@/services/IssueService.ts';
 import TenantIssueToolbar from '@/components/TenantIssueToolbar.vue';
 import TenantIssueList from '@/components/TenantIssueList.vue';
@@ -19,7 +19,7 @@ type ExtendedIssueItem = IssueItem & {
   modifiedAt?: string;
 };
 
-const contracts = ref<TenantContractSummary[]>([]);
+const contracts = ref<TenancyItem[]>([]);
 const issues = ref<ExtendedIssueItem[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
@@ -35,29 +35,22 @@ const searchQuery = ref('');
 
 // Get first active contract for creating new issues
 const firstActiveContract = computed(() => {
-  return contracts.value.find(c => c.status === 'Active');
-});
-
-// Since TenantContractSummary doesn't have projectId, we'll extract it from the first issue
-// or we could use a hardcoded/mocked projectId for the demo
-const projectId = computed(() => {
-  // Try to get projectId from first issue
-  if (issues.value.length > 0 && issues.value[0]?.projectId) {
-    return issues.value[0].projectId;
-  }
-  // Fallback: use a demo projectId
-  // In production, this would come from the contract or tenant service
-  return 'demo-project-id';
+  // TenancyItemJson doesn't have endOfRental field, use active status
+  return contracts.value.find(c => c.active !== false);
 });
 
 const loadContracts = async () => {
+  loading.value = true;
+  error.value = null;
+
   try {
-    const data = await tenantContractService.listContracts();
-    const list = Array.isArray(data) ? data : [];
-    contracts.value = list;
+    contracts.value = await tenancyService.getTenancies();
   } catch (err) {
     console.error('Error loading contracts:', err);
     error.value = t('error.general');
+    contracts.value = [];
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -66,17 +59,8 @@ const loadIssues = async () => {
   error.value = null;
 
   try {
-    // For demo purposes, we'll use the first contract's derived projectId
-    // In production, you would fetch issues for all tenant's projects
-    const currentProjectId = projectId.value;
-
-    if (!currentProjectId) {
-      issues.value = [];
-      return;
-    }
-
     const issueList = await issueService.getIssues(
-      currentProjectId,
+      undefined, // projectId - not used for tenants
       filters.value.status || undefined,
       filters.value.type || undefined,
       undefined, // assigneeId - not used for tenants
@@ -166,7 +150,6 @@ onMounted(async () => {
       <!-- New Issue Dialog -->
       <TenantNewIssueDialog
         v-model:visible="showNewIssueDialog"
-        :projectId="firstActiveContract ? projectId : undefined"
         :tenancyId="firstActiveContract?.id"
         @issueCreated="handleIssueCreated"
       />
