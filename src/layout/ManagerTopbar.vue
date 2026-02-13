@@ -57,7 +57,7 @@ const unreadCount = computed(() =>
     <div v-if="sessionStore.user != null" class="layout-topbar-action">
       <Select
         v-model="projectStore.selectedProject"
-        :options="projectStore.projectList ?? []"
+        :options="projectStore.projectList"
         optionLabel="name"
         :placeholder="t('toolbar.project.placeholder')"
         @change="onProjectSelectionChange($event)"
