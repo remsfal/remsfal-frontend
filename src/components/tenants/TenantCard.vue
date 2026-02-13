@@ -89,7 +89,9 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
       <!-- Name & Units -->
       <div class="flex flex-col gap-4">
         <!-- Name -->
-        <div class="font-bold text-2xl">{{ fullName }}</div>
+        <div class="font-bold text-2xl">
+          {{ fullName }}
+        </div>
 
         <!-- Rental Units Tags (horizontal) -->
         <div v-if="hasRentalUnits" class="flex flex-wrap gap-2">

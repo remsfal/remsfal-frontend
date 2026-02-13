@@ -9,7 +9,6 @@ import Dialog from 'primevue/dialog';
 import NewRentalAgreementDialog from '@/components/NewRentalAgreementDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useProjectStore } from '@/stores/ProjectStore';
 
 const props = defineProps<{
   projectId: string;
@@ -17,7 +16,6 @@ const props = defineProps<{
 const { t } = useI18n();
 
 const router = useRouter();
-const projectStore = useProjectStore();
 
 const tenantData = ref<TenantItem[]>([]);
 const isLoading = ref(true);
@@ -74,7 +72,7 @@ onMounted(async () => {
         <DataTable
           :value="rentalAgreements"
           :rows="10"
-          :rowHover="true"
+          rowHover
           dataKey="id"
           tableStyle="min-width: 60rem"
           scrollable

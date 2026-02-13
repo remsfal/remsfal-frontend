@@ -171,9 +171,7 @@ const managerRoutes: RouteRecordRaw[] = [
       {
         path: 'tenancies',
         name: 'ProjectTenancies',
-        props: (route: RouteLocationNormalizedLoaded) => ({
-          projectId: route.params.projectId,
-        }),
+        props: (route: RouteLocationNormalizedLoaded) => ({projectId: route.params.projectId,}),
         component: () => import('@/views/ProjectTenancies.vue'),
       },
       {
