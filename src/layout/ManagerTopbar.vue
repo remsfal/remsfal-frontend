@@ -63,7 +63,7 @@ const projectListOptions = computed(() => {
       <i class="pi pi-home" />
       <span>{{ t('toolbar.projects') }}</span>
     </Button>
-    <div v-if="sessionStore.user != null" class="layout-topbar-action">
+    <div v-if="sessionStore.user != null && projectListOptions.length > 0" class="layout-topbar-action">
       <Select
         v-model="projectStore.selectedProject"
         :options="projectListOptions"
