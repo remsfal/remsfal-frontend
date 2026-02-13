@@ -52,72 +52,70 @@ describe('Tenant Views E2E Tests', () => {
         ],
       },
     }).as('getProject');
+
+    // Mock tenants list
+    cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
+      statusCode: 200,
+      body: {
+        tenants: [
+          {
+            id: 'tenant-1',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john.doe@example.com',
+            active: true,
+            rentalUnits: [
+              {
+                type: 'APARTMENT',
+                title: 'Apartment 101',
+                location: 'Building A',
+              },
+            ],
+          },
+          {
+            id: 'tenant-2',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane.smith@example.com',
+            active: false,
+            rentalUnits: [
+              {
+                type: 'BUILDING',
+                title: 'Building A',
+              },
+            ],
+          },
+          {
+            id: 'tenant-3',
+            firstName: 'Alice',
+            lastName: 'Johnson',
+            email: 'alice.johnson@example.com',
+            active: true,
+            rentalUnits: [
+              {
+                type: 'APARTMENT',
+                title: 'Apartment 102',
+              },
+              {
+                type: 'APARTMENT',
+                title: 'Apartment 103',
+              },
+              {
+                type: 'APARTMENT',
+                title: 'Apartment 104',
+              },
+              {
+                type: 'APARTMENT',
+                title: 'Apartment 105',
+              },
+            ],
+          },
+        ],
+      },
+    }).as('getTenants');
   });
 
   describe('TenantListView', () => {
-    beforeEach(() => {
-      // Mock tenants list
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
-        statusCode: 200,
-        body: {
-          tenants: [
-            {
-              id: 'tenant-1',
-              firstName: 'John',
-              lastName: 'Doe',
-              email: 'john.doe@example.com',
-              active: true,
-              rentalUnits: [
-                {
-                  type: 'APARTMENT',
-                  title: 'Apartment 101',
-                  location: 'Building A',
-                },
-              ],
-            },
-            {
-              id: 'tenant-2',
-              firstName: 'Jane',
-              lastName: 'Smith',
-              email: 'jane.smith@example.com',
-              active: false,
-              rentalUnits: [
-                {
-                  type: 'BUILDING',
-                  title: 'Building A',
-                },
-              ],
-            },
-            {
-              id: 'tenant-3',
-              firstName: 'Alice',
-              lastName: 'Johnson',
-              email: 'alice.johnson@example.com',
-              active: true,
-              rentalUnits: [
-                {
-                  type: 'APARTMENT',
-                  title: 'Apartment 102',
-                },
-                {
-                  type: 'APARTMENT',
-                  title: 'Apartment 103',
-                },
-                {
-                  type: 'APARTMENT',
-                  title: 'Apartment 104',
-                },
-                {
-                  type: 'APARTMENT',
-                  title: 'Apartment 105',
-                },
-              ],
-            },
-          ],
-        },
-      }).as('getTenants');
-    });
-
     it('should display tenant list title', () => {
       cy.visit(`/projects/${projectId}/tenants`);
       cy.wait('@getTenants');
