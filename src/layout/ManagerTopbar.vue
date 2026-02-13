@@ -42,6 +42,8 @@ const unreadCount = computed(() =>
     ? inboxStore.messages.filter(m => !m?.isRead).length
     : 0
 );
+
+const projectListOptions = computed(() => projectStore.projectList || []);
 </script>
 
 <template>
@@ -57,7 +59,7 @@ const unreadCount = computed(() =>
     <div v-if="sessionStore.user != null" class="layout-topbar-action">
       <Select
         v-model="projectStore.selectedProject"
-        :options="projectStore.projectList"
+        :options="projectListOptions"
         optionLabel="name"
         :placeholder="t('toolbar.project.placeholder')"
         @change="onProjectSelectionChange($event)"
