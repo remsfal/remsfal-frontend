@@ -2,11 +2,6 @@
 
 describe('Test Landing Page', () => {
   beforeEach(() => {
-    // Ignore uncaught exceptions from navigation guards
-    cy.on('uncaught:exception', () => {
-      return false;
-    });
-
     // Mock user authentication
     cy.intercept('GET', '/api/v1/user', {
       statusCode: 401,
