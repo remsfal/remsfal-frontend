@@ -45,7 +45,9 @@ const unreadCount = computed(() =>
 
 const projectListOptions = computed(() => {
   try {
-    return projectStore.projectList ?? [];
+    const list = projectStore.projectList;
+    // Ensure we always return a valid array, even if store is not initialized
+    return Array.isArray(list) ? list : [];
   } catch (error) {
     console.warn('ProjectStore not yet initialized:', error);
     return [];
@@ -63,12 +65,13 @@ const projectListOptions = computed(() => {
       <i class="pi pi-home" />
       <span>{{ t('toolbar.projects') }}</span>
     </Button>
-    <div v-if="sessionStore.user != null && projectListOptions.length > 0" class="layout-topbar-action">
+    <div v-if="sessionStore.user != null" class="layout-topbar-action">
       <Select
         v-model="projectStore.selectedProject"
         :options="projectListOptions"
         optionLabel="name"
         :placeholder="t('toolbar.project.placeholder')"
+        showClear
         @change="onProjectSelectionChange($event)"
       />
     </div>

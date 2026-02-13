@@ -59,10 +59,6 @@ describe('NewProjectView E2E Tests', () => {
     // Wait for all initial API calls to complete
     cy.wait('@getUser');
     cy.wait('@getProjects');
-
-    // Ensure the ManagerTopbar Select is fully rendered with the project list
-    // This prevents the "Cannot read properties of undefined (reading 'length')" error
-    cy.get('.layout-topbar-action').should('be.visible');
   });
 
   it('should display the new project form dialog', () => {
@@ -149,15 +145,6 @@ describe('NewProjectView E2E Tests', () => {
 
   it('should trim whitespace from project title before creating', () => {
     const projectName = '  Trimmed Project  ';
-
-    // Debug: Log store state before interacting with the dialog
-    cy.window().then((win) => {
-      const app = (win as any).__VUE_APP__;
-      if (app) {
-        console.log('=== Vue App Instance ===', app);
-      }
-      console.log('=== Window Object Keys ===', Object.keys(win));
-    });
 
     // Ensure dialog is visible
     cy.get('[role="dialog"]').should('be.visible');
