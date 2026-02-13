@@ -17,3 +17,10 @@
 import './commands'
 
 import '@cypress/code-coverage/support';
+
+// Set default language to German for consistent E2E tests
+// This ensures tests pass in both local and CI environments
+Cypress.on('window:before:load', (win) => {
+  Object.defineProperty(win.navigator, 'language', { value: 'de' });
+  Object.defineProperty(win.navigator, 'languages', { value: ['de'] });
+});
