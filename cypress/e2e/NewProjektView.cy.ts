@@ -44,6 +44,10 @@ describe('NewProjectView E2E Tests', () => {
 
     // Visit the new project page
     cy.visit('/new-project');
+
+    // Wait for all initial API calls to complete
+    cy.wait('@getUser');
+    cy.wait('@getProjects');
   });
 
   it('should display the new project form dialog', () => {

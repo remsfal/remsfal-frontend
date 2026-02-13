@@ -43,7 +43,14 @@ const unreadCount = computed(() =>
     : 0
 );
 
-const projectListOptions = computed(() => projectStore.projectList || []);
+const projectListOptions = computed(() => {
+  try {
+    return projectStore.projectList ?? [];
+  } catch (error) {
+    console.warn('ProjectStore not yet initialized:', error);
+    return [];
+  }
+});
 </script>
 
 <template>
