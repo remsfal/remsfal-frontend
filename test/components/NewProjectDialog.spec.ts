@@ -1,8 +1,8 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewProjectDialog from '../../src/components/NewProjectDialog.vue';
-import { projectService } from '../../src/services/ProjectService';
-import { useProjectStore } from '../../src/stores/ProjectStore';
+import NewProjectDialog from '@/components/NewProjectDialog.vue';
+import { projectService } from '@/services/ProjectService';
+import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';

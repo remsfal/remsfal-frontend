@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { useUserSessionStore, type User } from '../../src/stores/UserSession';
-import { apiClient } from '../../src/services/ApiClient';
+import { useUserSessionStore, type User } from '@/stores/UserSession';
+import { apiClient } from '@/services/ApiClient';
 
 
 describe('UserSession Store', () => {

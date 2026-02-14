@@ -54,7 +54,7 @@ describe("ProjectIssueView.vue", () => {
 
   // ---- Fetch & Render Tests ----
   test("fetches issue on mount with correct arguments", () => {
-    expect(issueService.getIssue).toHaveBeenCalledWith("PROJ-1", "ISSUE-1");
+    expect(issueService.getIssue).toHaveBeenCalledWith("ISSUE-1");
   });
 
   test("renders IssueDetailsCard and IssueDescriptionCard", () => {
@@ -154,7 +154,7 @@ describe("ProjectIssueView.vue", () => {
     await wrapper.setProps({ projectId: "PROJ-2", issueId: "ISSUE-2" });
     await flushPromises();
   
-    expect(issueService.getIssue).toHaveBeenCalledWith("PROJ-2", "ISSUE-2");
+    expect(issueService.getIssue).toHaveBeenCalledWith("ISSUE-2");
   });
   
 });

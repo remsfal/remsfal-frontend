@@ -103,7 +103,7 @@ export async function testErrorHandling(
   await expectToReject(serviceCall());
 }
 
-import type { InboxMessage } from '../../src/services/InboxService';
+import type { InboxMessage } from '@/services/InboxService';
 
 /**
  * Creates a mock InboxMessage object

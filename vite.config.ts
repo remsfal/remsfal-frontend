@@ -47,6 +47,10 @@ export default defineConfig({
     }),
   ].filter(Boolean),
   resolve: {alias: {'@': fileURLToPath(new URL('./src', import.meta.url)),},},
+  build: {
+    // Enable source maps for better stack traces
+    sourcemap: true,
+  },
   server: {
     // https://vitejs.dev/config/server-options.html
     strictPort: true,

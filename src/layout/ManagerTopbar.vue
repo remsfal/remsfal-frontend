@@ -42,6 +42,17 @@ const unreadCount = computed(() =>
     ? inboxStore.messages.filter(m => !m?.isRead).length
     : 0
 );
+
+const projectListOptions = computed(() => {
+  try {
+    const list = projectStore.projectList;
+    // Ensure we always return a valid array, even if store is not initialized
+    return Array.isArray(list) ? list : [];
+  } catch (error) {
+    console.warn('ProjectStore not yet initialized:', error);
+    return [];
+  }
+});
 </script>
 
 <template>
@@ -57,9 +68,10 @@ const unreadCount = computed(() =>
     <div v-if="sessionStore.user != null" class="layout-topbar-action">
       <Select
         v-model="projectStore.selectedProject"
-        :options="projectStore.projectList"
+        :options="projectListOptions"
         optionLabel="name"
         :placeholder="t('toolbar.project.placeholder')"
+        showClear
         @change="onProjectSelectionChange($event)"
       />
     </div>

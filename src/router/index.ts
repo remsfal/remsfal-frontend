@@ -92,13 +92,13 @@ const managerRoutes: RouteRecordRaw[] = [
         path: 'dashboard',
         name: 'ProjectDashboard',
         props: true,
-        component: () => import('@/views/ProjectDashboard.vue'),
+        component: () => import('@/views/project/ProjectDashboard.vue'),
       },
       {
         path: 'settings',
         name: 'ProjectSettings',
         props: true,
-        component: () => import('@/views/ProjectSettingsView.vue'),
+        component: () => import('@/views/project/ProjectSettingsView.vue'),
       },
       /* --------------------------------------------------------------------
        * Rentable Unit Views
@@ -108,7 +108,7 @@ const managerRoutes: RouteRecordRaw[] = [
         path: 'units',
         name: 'RentableUnits',
         props: true,
-        component: () => import('@/views/RentableUnitsView.vue'),
+        component: () => import('@/views/project/RentableUnitsView.vue'),
       },
       {
         path: 'units/property/:unitId',
@@ -117,7 +117,7 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
-        component: () => import('@/views/PropertyView.vue'),
+        component: () => import('@/views/project/PropertyView.vue'),
       },
       {
         path: 'units/site/:unitId',
@@ -126,7 +126,7 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
-        component: () => import('@/views/SiteView.vue'),
+        component: () => import('@/views/project/SiteView.vue'),
       },
       {
         path: 'units/building/:unitId',
@@ -135,7 +135,7 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
-        component: () => import('@/views/BuildingView.vue'),
+        component: () => import('@/views/project/BuildingView.vue'),
       },
       {
         path: 'units/apartment/:unitId',
@@ -144,7 +144,7 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
-        component: () => import('@/views/ApartmentView.vue'),
+        component: () => import('@/views/project/ApartmentView.vue'),
       },
       {
         path: 'units/storage/:unitId',
@@ -153,7 +153,7 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
-        component: () => import('@/views/StorageView.vue'),
+        component: () => import('@/views/project/StorageView.vue'),
       },
       {
         path: 'units/commercial/:unitId',
@@ -162,7 +162,7 @@ const managerRoutes: RouteRecordRaw[] = [
           projectId: route.params.projectId,
           unitId: route.params.unitId,
         }),
-        component: () => import('@/views/CommercialView.vue'),
+        component: () => import('@/views/project/CommercialView.vue'),
       },
       /* --------------------------------------------------------------------
        * Tenancy Views
@@ -171,7 +171,7 @@ const managerRoutes: RouteRecordRaw[] = [
       {
         path: 'tenancies',
         name: 'ProjectTenancies',
-        props: true,
+        props: (route: RouteLocationNormalizedLoaded) => ({projectId: route.params.projectId,}),
         component: () => import('@/views/ProjectTenancies.vue'),
       },
       {
@@ -188,6 +188,25 @@ const managerRoutes: RouteRecordRaw[] = [
         name: 'ProjectNewTenancy',
         props: (route: RouteLocationNormalizedLoaded) => ({ projectId: route.params.projectId, }),
         component: () => import('@/views/ProjectNewTenancy.vue'),
+      },
+      /* --------------------------------------------------------------------
+       * Tenant Views
+       * --------------------------------------------------------------------
+       */
+      {
+        path: 'tenants',
+        name: 'TenantList',
+        props: true,
+        component: () => import('@/views/project/TenantListView.vue'),
+      },
+      {
+        path: 'tenants/:tenantId',
+        name: 'TenantDetail',
+        props: (route: RouteLocationNormalizedLoaded) => ({
+          projectId: route.params.projectId,
+          tenantId: route.params.tenantId,
+        }),
+        component: () => import('@/views/project/TenantDetailView.vue'),
       },
       /* --------------------------------------------------------------------
        * Contractor Views
@@ -239,16 +258,21 @@ const tenantRoutes: RouteRecordRaw[] = [
     props: { default: { fullscreen: false, }, },
     children: [
       {
-        path: '',
-        name: 'TenantView',
+        path: 'dashboard',
+        name: 'TenantDashboard',
         props: true,
-        component: () => import('@/views/TenantView.vue'),
+        component: () => import('@/views/tenant/TenantDashboard.vue'),
       },
       {
         path: 'contract/:contractId',
         name: 'TenantContractDetail',
         props: true,
         component: () => import('@/views/ContractDetailView.vue'),
+      },
+      {
+        path: 'issues',
+        name: 'TenantIssues',
+        component: () => import('@/views/TenantIssuesView.vue'),
       },
     ],
   },
@@ -266,16 +290,16 @@ const contractorRoutes: RouteRecordRaw[] = [
     props: { default: { fullscreen: false, }, },
     children: [
       {
-        path: 'overview',
+        path: 'dashboard',
         name: 'ContractorDashboard',
         props: true,
-        component: () => import('@/views/ContractorDashboardView.vue'),
+        component: () => import('@/views/contractor/ContractorDashboard.vue'),
       },
       {
         path: 'issues',
         name: 'ContractorView',
         props: true,
-        component: () => import('@/views/ContractorView.vue'),
+        component: () => import('@/views/contractor/CustomerView.vue'),
       },
     ],
   },
@@ -306,9 +330,9 @@ router.beforeEach((to, from, next) => {
     if (roles.includes('MANAGER')) {
       return next({ name: 'ProjectSelection' });
     } else if (roles.includes('CONTRACTOR')) {
-      return next({ name: 'ContractorView' });
+      return next({ name: 'ContractorDashboard' });
     } else if (roles.includes('TENANT')) {
-      return next({ name: 'TenantView' });
+      return next({ name: 'TenantDashboard' });
     } else {
       return next({ name: 'ProjectSelection' }); // fallback
     }

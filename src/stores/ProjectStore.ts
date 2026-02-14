@@ -10,7 +10,7 @@ export const useProjectStore = defineStore('project-store', {
     firstOffset: 0,
   }),
   getters: {
-    projectList: (state) => state.projects,
+    projectList: (state) => state.projects ?? [],
     projectSelection: (state) => state.selectedProject,
     projectId: (state) => state.selectedProject?.id,
   },

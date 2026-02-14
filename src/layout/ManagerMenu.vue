@@ -36,17 +36,22 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
       items: [
         {
           label: 'managerMenu.masterData.properties',
-          icon: { type: 'pi', name: 'pi pi-fw pi-home' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-building' },
           to: currentProjectId ? `/projects/${currentProjectId}/units` : '/',
         },
         {
-          label: 'managerMenu.masterData.tenants',
-          icon: { type: 'pi', name: 'pi pi-fw pi-users' },
+          label: 'managerMenu.masterData.tenancies',
+          icon: { type: 'pi', name: 'pi pi-fw pi-receipt' },
           to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
         },
         {
+          label: 'managerMenu.masterData.tenants',
+          icon: { type: 'pi', name: 'pi pi-fw pi-address-book' },
+          to: currentProjectId ? `/projects/${currentProjectId}/tenants` : '/',
+        },
+        {
           label: 'managerMenu.masterData.contractors',
-          icon: { type: 'pi', name: 'pi pi-fw pi-users' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
           to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
         },
       ],

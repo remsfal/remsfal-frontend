@@ -9,7 +9,7 @@ import {primeVueStubs,
   expectEventEmitted,} from '../../setup/issueTestHelpers';
 
 // ---- Mock issueService ----
-vi.mock('@/services/IssueService', () => ({issueService: { modifyIssue: vi.fn() },}));
+vi.mock('@/services/IssueService', () => ({issueService: { updateIssue: vi.fn() },}));
 
 // ---- Test Suite ----
 describe('IssueDescriptionCard.vue', () => {
@@ -23,7 +23,7 @@ describe('IssueDescriptionCard.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (issueService.modifyIssue as vi.Mock).mockResolvedValue({});
+    (issueService.updateIssue as vi.Mock).mockResolvedValue({});
     wrapper = mountComponent();
   });
 
@@ -32,13 +32,12 @@ describe('IssueDescriptionCard.vue', () => {
   });
 
 
-  test('calls modifyIssue when saving', async () => {
+  test('calls updateIssue when saving', async () => {
     wrapper.vm.description = 'Updated description';
     await wrapper.vm.handleSave();
 
     expectModifyIssueCalled(
-      issueService.modifyIssue,
-      defaultIssueDescriptionProps.projectId,
+      issueService.updateIssue,
       defaultIssueDescriptionProps.issueId,
       { description: 'Updated description' } as Partial<Issue>
     );
@@ -51,19 +50,19 @@ describe('IssueDescriptionCard.vue', () => {
     expectEventEmitted(wrapper, 'saved');
   });
 
-  test('does not call modifyIssue if canSave is false', async () => {
+  test('does not call updateIssue if canSave is false', async () => {
     wrapper.vm.description = 'Initial description'; // same as original
     await wrapper.vm.handleSave();
   
-    expect(issueService.modifyIssue).not.toHaveBeenCalled();
+    expect(issueService.updateIssue).not.toHaveBeenCalled();
   });
   
-  test('does not call modifyIssue if loadingSave is true', async () => {
+  test('does not call updateIssue if loadingSave is true', async () => {
     wrapper.vm.description = 'Updated description';
     wrapper.vm.loadingSave = true;
     await wrapper.vm.handleSave();
   
-    expect(issueService.modifyIssue).not.toHaveBeenCalled();
+    expect(issueService.updateIssue).not.toHaveBeenCalled();
   });
   
   test('resets originalDescription after successful save', async () => {
@@ -74,8 +73,8 @@ describe('IssueDescriptionCard.vue', () => {
     expect(wrapper.vm.originalDescription).toBe('Updated description');
   });
   
-  test('handles error when modifyIssue fails', async () => {
-    (issueService.modifyIssue as vi.Mock).mockRejectedValueOnce(new Error('API Error'));
+  test('handles error when updateIssue fails', async () => {
+    (issueService.updateIssue as vi.Mock).mockRejectedValueOnce(new Error('API Error'));
   
     wrapper.vm.description = 'Updated description';
     await wrapper.vm.handleSave();
@@ -117,8 +116,7 @@ describe('IssueDescriptionCard.vue', () => {
     await wrapper.vm.handleSave();
     
     // Should still save empty string if it's different
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.emptyString }
     );
@@ -128,8 +126,7 @@ describe('IssueDescriptionCard.vue', () => {
     wrapper.vm.description = edgeCaseTestData.longText;
     await wrapper.vm.handleSave();
     
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.longText }
     );
@@ -139,8 +136,7 @@ describe('IssueDescriptionCard.vue', () => {
     wrapper.vm.description = edgeCaseTestData.specialChars;
     await wrapper.vm.handleSave();
     
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.specialChars }
     );
@@ -155,11 +151,11 @@ describe('IssueDescriptionCard.vue', () => {
     await Promise.all([promise1, promise2]);
     
     // Should only be called once due to loadingSave guard
-    expect(issueService.modifyIssue).toHaveBeenCalledTimes(1);
+    expect(issueService.updateIssue).toHaveBeenCalledTimes(1);
   });
 
   test('preserves description after failed save', async () => {
-    (issueService.modifyIssue as vi.Mock).mockRejectedValueOnce(new Error('Network error'));
+    (issueService.updateIssue as vi.Mock).mockRejectedValueOnce(new Error('Network error'));
     
     const updatedDesc = 'Updated but failed';
     wrapper.vm.description = updatedDesc;
@@ -182,8 +178,7 @@ describe('IssueDescriptionCard.vue', () => {
     wrapper.vm.description = edgeCaseTestData.markdown;
     await wrapper.vm.handleSave();
     
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.markdown }
     );
@@ -193,8 +188,7 @@ describe('IssueDescriptionCard.vue', () => {
     wrapper.vm.description = edgeCaseTestData.unicode;
     await wrapper.vm.handleSave();
     
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      defaultIssueDescriptionProps.projectId,
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
       { description: edgeCaseTestData.unicode }
     );
