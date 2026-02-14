@@ -4,14 +4,15 @@ import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import DatePicker from 'primevue/datepicker';
 import Message from 'primevue/message';
 import AutoComplete from 'primevue/autocomplete';
 
 // Services & Types
 import { tenantService, type TenantItem as TenantItemFromList } from '@/services/TenantService';
 import type { TenantItem } from '@/services/RentalAgreementService';
+
+// Components
+import TenantForm from './TenantForm.vue';
 
 // Re-export for parent components
 export type { TenantItem };
@@ -35,7 +36,6 @@ const allTenants = ref<TenantItemFromList[]>([]);
 const isLoadingTenants = ref(false);
 const filteredTenants = ref<TenantItemFromList[]>([]);
 const selectedExistingTenant = ref<TenantItemFromList | null>(null);
-const currentTenant = ref<TenantItem | null>(null);
 const showTenantForm = ref(false);
 
 // Type for AutoComplete options with label
@@ -81,7 +81,6 @@ const searchTenants = (event: { query: string }) => {
 // When existing tenant is selected from AutoComplete
 const onTenantSelected = (tenant: TenantItemFromList | null) => {
   if (!tenant) {
-    currentTenant.value = null;
     showTenantForm.value = false;
     return;
   }
@@ -90,7 +89,6 @@ const onTenantSelected = (tenant: TenantItemFromList | null) => {
   const alreadyAdded = props.tenants.some((t) => t.id === tenant.id);
   if (alreadyAdded) {
     selectedExistingTenant.value = null;
-    currentTenant.value = null;
     showTenantForm.value = false;
     return;
   }
@@ -116,28 +114,8 @@ const onTenantSelected = (tenant: TenantItemFromList | null) => {
 
 // Add new tenant button clicked
 const addNewTenant = () => {
-  currentTenant.value = {
-    firstName: '',
-    lastName: '',
-  };
   showTenantForm.value = true;
   selectedExistingTenant.value = null;
-};
-
-// Add current tenant to list
-const addTenantToList = () => {
-  if (!currentTenant.value) return;
-
-  // Validation
-  if (!currentTenant.value.firstName.trim() || !currentTenant.value.lastName.trim()) {
-    return;
-  }
-
-  emit('update:tenants', [...props.tenants, currentTenant.value]);
-
-  // Reset
-  currentTenant.value = null;
-  showTenantForm.value = false;
 };
 
 // Remove tenant from list
@@ -146,55 +124,32 @@ const removeTenant = (index: number) => {
   emit('update:tenants', updated);
 };
 
-// Convert Date to ISO string (YYYY-MM-DD format for LocalDate)
-function toISODateString(date: Date | string | null | undefined): string | undefined {
-  if (!date) return undefined;
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toISOString().split('T')[0];
-}
-
-// Convert ISO string to Date for DatePicker display
-function toDateObject(dateString: string | null | undefined): Date | null {
-  if (!dateString) return null;
-  return new Date(dateString);
-}
-
 // Format date for display
 const formatDate = (dateString: string | undefined): string => {
   if (!dateString) return '';
   const date = new Date(dateString);
   return date.toLocaleDateString('de-DE', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   });
 };
-
-// Phone validation helper
-const phonePattern = /^\+[1-9]\d{4,14}$/;
-
-function validatePhone(phone: string | undefined): boolean {
-  if (!phone || phone.trim() === '') return true; // Optional field
-  return phonePattern.test(phone);
-}
-
-// Email validation helper
-function validateEmail(email: string | undefined): boolean {
-  if (!email || email.trim() === '') return true; // Optional field
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailPattern.test(email);
-}
 
 // Validation
 const canProceed = computed(() => {
   return props.tenants.length > 0;
 });
 
-const canAddToList = computed(() => {
-  return (
-    currentTenant.value !== null &&
-    currentTenant.value.firstName.trim() !== '' &&
-    currentTenant.value.lastName.trim() !== ''
-  );
-});
+// Handle tenant form submission
+const onTenantFormSubmit = (tenant: TenantItem) => {
+  emit('update:tenants', [...props.tenants, tenant]);
+  showTenantForm.value = false;
+};
+
+// Handle tenant form cancel
+const onTenantFormCancel = () => {
+  showTenantForm.value = false;
+};
 </script>
 
 <template>
@@ -240,132 +195,8 @@ const canAddToList = computed(() => {
       />
     </div>
 
-    <!-- Current Tenant Form (shown when adding new tenant) -->
-    <div v-if="showTenantForm && currentTenant" class="p-4 border rounded-lg bg-blue-50">
-      <h4 class="font-semibold mb-4">
-        {{ t('rentalAgreement.step3.newTenantDetails') }}
-      </h4>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- First Name -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.firstName') }} *
-          </label>
-          <InputText
-            v-model="currentTenant.firstName"
-            type="text"
-            :class="{ 'p-invalid': !currentTenant.firstName.trim() }"
-            fluid
-          />
-        </div>
-
-        <!-- Last Name -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.lastName') }} *
-          </label>
-          <InputText
-            v-model="currentTenant.lastName"
-            type="text"
-            :class="{ 'p-invalid': !currentTenant.lastName.trim() }"
-            fluid
-          />
-        </div>
-
-        <!-- Email -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.email') }}
-          </label>
-          <InputText
-            v-model="currentTenant.email"
-            type="email"
-            :class="{ 'p-invalid': currentTenant.email && !validateEmail(currentTenant.email) }"
-            fluid
-          />
-        </div>
-
-        <!-- Mobile Phone -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.mobilePhone') }}
-          </label>
-          <InputText
-            v-model="currentTenant.mobilePhoneNumber"
-            type="tel"
-            placeholder="+491234567890"
-            :class="{ 'p-invalid': currentTenant.mobilePhoneNumber && !validatePhone(currentTenant.mobilePhoneNumber) }"
-            fluid
-          />
-        </div>
-
-        <!-- Business Phone -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.businessPhone') }}
-          </label>
-          <InputText
-            v-model="currentTenant.businessPhoneNumber"
-            type="tel"
-            placeholder="+491234567890"
-            :class="{ 'p-invalid': currentTenant.businessPhoneNumber && !validatePhone(currentTenant.businessPhoneNumber) }"
-            fluid
-          />
-        </div>
-
-        <!-- Private Phone -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.privatePhone') }}
-          </label>
-          <InputText
-            v-model="currentTenant.privatePhoneNumber"
-            type="tel"
-            placeholder="+491234567890"
-            :class="{ 'p-invalid': currentTenant.privatePhoneNumber && !validatePhone(currentTenant.privatePhoneNumber) }"
-            fluid
-          />
-        </div>
-
-        <!-- Place of Birth -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.placeOfBirth') }}
-          </label>
-          <InputText
-            v-model="currentTenant.placeOfBirth"
-            type="text"
-            fluid
-          />
-        </div>
-
-        <!-- Date of Birth -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.dateOfBirth') }}
-          </label>
-          <DatePicker
-            :modelValue="toDateObject(currentTenant.dateOfBirth)"
-            dateFormat="dd.mm.yy"
-            showIcon
-            fluid
-            @update:modelValue="currentTenant.dateOfBirth = toISODateString(Array.isArray($event) ? $event[0] : $event)"
-          />
-        </div>
-
-        <!-- Add Tenant Button -->
-        <div class="flex flex-col gap-2 justify-end md:col-span-2">
-          <Button
-            type="button"
-            :label="t('rentalAgreement.step3.addTenantToList')"
-            icon="pi pi-check"
-            :disabled="!canAddToList"
-            @click="addTenantToList"
-          />
-        </div>
-      </div>
-    </div>
+    <!-- Tenant Form (shown when adding new tenant) -->
+    <TenantForm v-if="showTenantForm" @submit="onTenantFormSubmit" @cancel="onTenantFormCancel" />
 
     <!-- Selected Tenants List (Compact Display) -->
     <div v-if="tenants.length > 0" class="flex flex-col gap-2">

@@ -4,15 +4,15 @@ import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
 import Button from 'primevue/button';
-import SelectButton from 'primevue/selectbutton';
 import TreeSelect from 'primevue/treeselect';
-import InputNumber from 'primevue/inputnumber';
-import DatePicker from 'primevue/datepicker';
 import type { TreeNode } from 'primevue/treenode';
 
 // Services & Types
 import { propertyService, type RentableUnitTreeNode, type UnitType } from '@/services/PropertyService';
 import type { ApiComponents } from '@/services/ApiClient';
+
+// Components
+import RentalDetailsForm, { type RentalDetails } from './RentalDetailsForm.vue';
 
 // Extract RentJson from API schema
 type RentJson = ApiComponents['schemas']['RentJson'];
@@ -39,19 +39,17 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-// Billing Cycle Options
-const billingCycleOptions = [
-  { label: t('billingCycle.monthly'), value: 'MONTHLY' },
-  { label: t('billingCycle.weekly'), value: 'WEEKLY' },
-];
-
 // State
 const propertyTree = ref<TreeNode[]>([]);
 const selectedNodeKey = ref<string | null>(null);
 const isLoadingTree = ref(false);
 
 // Current unit being edited (before adding to list)
-const currentUnit = ref<SelectedUnit | null>(null);
+const currentUnit = ref<{
+  unitId: string;
+  unitType: UnitType;
+  unitTitle: string;
+} | null>(null);
 
 // Transform RentableUnitTreeNode to TreeSelect format
 function transformTreeNodes(nodes: RentableUnitTreeNode[]): TreeNode[] {
@@ -102,25 +100,32 @@ function onUnitSelected(node: TreeNode) {
 
   currentUnit.value = {
     unitId: node.key,
-    unitType: node.data.type as SelectedUnit['unitType'],
+    unitType: node.data.type as UnitType,
     unitTitle: node.data.title || 'Unbenannt',
-    basicRent: undefined,
-    operatingCostsPrepayment: undefined,
-    heatingCostsPrepayment: undefined,
-    billingCycle: 'MONTHLY',
-    firstPaymentDate: props.startOfRental ?? undefined,
-    lastPaymentDate: props.endOfRental ?? undefined,
   };
 }
 
-// Add current unit to saved list and reset form
-function addAnotherUnit() {
+// Handle rental details form submission
+function onRentalDetailsSubmit(details: RentalDetails) {
   if (!currentUnit.value) return;
 
+  const unit: SelectedUnit = {
+    unitId: currentUnit.value.unitId,
+    unitType: currentUnit.value.unitType,
+    unitTitle: currentUnit.value.unitTitle,
+    ...details,
+  };
+
   // Add to saved units
-  emit('update:selectedUnits', [...props.selectedUnits, currentUnit.value]);
+  emit('update:selectedUnits', [...props.selectedUnits, unit]);
 
   // Reset form
+  selectedNodeKey.value = null;
+  currentUnit.value = null;
+}
+
+// Handle rental details form cancel
+function onRentalDetailsCancel() {
   selectedNodeKey.value = null;
   currentUnit.value = null;
 }
@@ -131,42 +136,10 @@ function removeUnit(index: number) {
   emit('update:selectedUnits', updated);
 }
 
-// Convert Date to ISO string (YYYY-MM-DD format for LocalDate)
-function toISODateString(date: Date | string | null | undefined): string | undefined {
-  if (!date) return undefined;
-  const d = date instanceof Date ? date : new Date(date);
-  return d ? (d.toISOString().split('T')[0] as string) : undefined;
-}
-
-// Convert ISO string to Date for DatePicker display
-function toDateObject(dateString: string | null | undefined): Date | null {
-  if (!dateString) return null;
-  return new Date(dateString);
-}
-
-// Validation: At least one unit required
+// Validation
 const canProceed = computed(() => {
-  // Can proceed if we have saved units OR current unit is filled
-  return props.selectedUnits.length > 0 || currentUnit.value !== null;
+  return props.selectedUnits.length > 0;
 });
-
-const canAddAnother = computed(() => {
-  return currentUnit.value !== null;
-});
-
-// Go to Next Step
-function goNext() {
-  // If we have a current unit that hasn't been saved, save it first
-  if (currentUnit.value) {
-    emit('update:selectedUnits', [...props.selectedUnits, currentUnit.value]);
-    currentUnit.value = null;
-    selectedNodeKey.value = null;
-  }
-
-  if (props.selectedUnits.length > 0 || currentUnit.value) {
-    emit('next');
-  }
-}
 </script>
 
 <template>
@@ -191,119 +164,16 @@ function goNext() {
       />
     </div>
 
-    <!-- Current Unit Detail Form (shown when unit is selected) -->
-    <div v-if="currentUnit" class="p-4 border rounded-lg bg-blue-50">
-      <h4 class="font-semibold mb-4">
-        {{ currentUnit.unitTitle }}
-      </h4>
-      <p class="text-sm text-gray-600 mb-4">
-        {{ t(`unitTypes.${currentUnit.unitType.toLowerCase()}`) }}
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Basic Rent -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.basicRent') }}
-          </label>
-          <InputNumber
-            v-model="currentUnit.basicRent"
-            :min="0"
-            :maxFractionDigits="2"
-            mode="currency"
-            currency="EUR"
-            locale="de-DE"
-            fluid
-          />
-        </div>
-
-        <!-- Billing Cycle -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.billingCycle') }}
-          </label>
-          <SelectButton
-            v-model="currentUnit.billingCycle"
-            :options="billingCycleOptions"
-            optionLabel="label"
-            optionValue="value"
-            fluid
-            class="w-full"
-          />
-        </div>
-
-        <!-- Operating Costs -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.operatingCosts') }}
-          </label>
-          <InputNumber
-            v-model="currentUnit.operatingCostsPrepayment"
-            :min="0"
-            :maxFractionDigits="2"
-            mode="currency"
-            currency="EUR"
-            locale="de-DE"
-            fluid
-          />
-        </div>
-
-        <!-- Heating Costs -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.heatingCosts') }}
-          </label>
-          <InputNumber
-            v-model="currentUnit.heatingCostsPrepayment"
-            :min="0"
-            :maxFractionDigits="2"
-            mode="currency"
-            currency="EUR"
-            locale="de-DE"
-            fluid
-          />
-        </div>
-
-        <!-- First Payment Date -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.firstPayment') }}
-          </label>
-          <DatePicker
-            :modelValue="toDateObject(currentUnit.firstPaymentDate)"
-            dateFormat="dd.mm.yy"
-            showIcon
-            fluid
-            @update:modelValue="currentUnit.firstPaymentDate = toISODateString(Array.isArray($event) ? $event[0] : $event)"
-          />
-        </div>
-
-        <!-- Last Payment Date -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.lastPayment') }}
-          </label>
-          <DatePicker
-            :modelValue="toDateObject(currentUnit.lastPaymentDate)"
-            dateFormat="dd.mm.yy"
-            showIcon
-            fluid
-            @update:modelValue="currentUnit.lastPaymentDate = toISODateString(Array.isArray($event) ? $event[0] : $event)"
-          />
-        </div>
-
-        <!-- Add Unit Button -->
-        <div class="flex flex-col gap-2 justify-end">
-          <Button
-            type="button"
-            :label="t('rentalAgreement.step2.addUnit')"
-            icon="pi pi-plus"
-            :disabled="!canAddAnother"
-            @click="addAnotherUnit"
-          />
-        </div>
-      </div>
-    </div>
+    <!-- Rental Details Form (shown when unit is selected) -->
+    <RentalDetailsForm
+      v-if="currentUnit"
+      :unitTitle="currentUnit.unitTitle"
+      :unitType="currentUnit.unitType"
+      :initialFirstPaymentDate="startOfRental ?? undefined"
+      :initialLastPaymentDate="endOfRental ?? undefined"
+      @submit="onRentalDetailsSubmit"
+      @cancel="onRentalDetailsCancel"
+    />
 
     <!-- Saved Units (Compact Display) -->
     <div v-if="selectedUnits.length > 0" class="flex flex-col gap-2">
@@ -354,16 +224,14 @@ function goNext() {
         @click="emit('back')"
       />
 
-      <div class="flex gap-3">
-        <Button
-          type="button"
-          :label="t('rentalAgreement.step2.nextButton')"
-          icon="pi pi-arrow-right"
-          iconPos="right"
-          :disabled="!canProceed"
-          @click="goNext"
-        />
-      </div>
+      <Button
+        type="button"
+        :label="t('rentalAgreement.step2.nextButton')"
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        :disabled="!canProceed"
+        @click="emit('next')"
+      />
     </div>
   </div>
 </template>
