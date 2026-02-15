@@ -15,7 +15,7 @@ import Message from 'primevue/message';
 
 const props = defineProps<{
   visible: boolean;
-  agreementId?: string;
+  tenancyId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -59,7 +59,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
   const title = formState.title?.value?.trim() || '';
   const type = formState.type?.value as Type;
 
-  if (!title || !type || !props.agreementId) {
+  if (!title || !type || !props.tenancyId) {
     return;
   }
 
@@ -69,7 +69,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
     const newIssue = await issueService.createIssue({
       title,
       type,
-      agreementId: props.agreementId,
+      agreementId: props.tenancyId,
     });
 
     toast.add({
@@ -104,7 +104,7 @@ const onCancel = () => {
   emit('update:visible', false);
 };
 
-const hasNoContracts = computed(() => !props.agreementId);
+const hasNoContracts = computed(() => !props.tenancyId);
 </script>
 
 <template>

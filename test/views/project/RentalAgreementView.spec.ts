@@ -1,7 +1,7 @@
 import {mount, VueWrapper, flushPromises} from '@vue/test-utils';
 import Dialog from 'primevue/dialog';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import ProjectTenancies from '@/views/ProjectTenancies.vue';
+import RentalAgreementView from '@/views/project/RentalAgreementView.vue';
 import { rentalAgreementService } from '@/services/RentalAgreementService';
 
 // Fix for "window is not defined" error
@@ -22,7 +22,7 @@ vi.mock('primevue/dialog', () => ({
 // ---- Pinia store mock ----
 vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
 
-describe('ProjectTenancies.vue', () => {
+describe('RentalAgreementView.vue', () => {
   let wrapper: VueWrapper<any>;
 
   const mockTenants = [
@@ -51,7 +51,7 @@ describe('ProjectTenancies.vue', () => {
     vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockResolvedValue(mockRentalAgreements);
     vi.spyOn(rentalAgreementService, 'extractTenants').mockReturnValue(mockTenants);
 
-    wrapper = mount(ProjectTenancies, {
+    wrapper = mount(RentalAgreementView, {
       props: {projectId: 'proj-1',},
       global: {components: { Dialog },},
     });
@@ -89,9 +89,12 @@ describe('ProjectTenancies.vue', () => {
     expect(wrapper.vm.tenantData.length).toBe(initialLength);
   });
 
-  it('navigates to tenancy details on row click', async () => {
-    wrapper.vm.navigateToTenancyDetails('agreement-1');
-    expect(routerPushMock).toHaveBeenCalledWith('/projects/proj-1/tenancies/agreement-1');
+  it('navigates to rental agreement details on row click', async () => {
+    wrapper.vm.navigateToRentalAgreementDetails('agreement-1');
+    expect(routerPushMock).toHaveBeenCalledWith({
+      name: 'RentalAgreementDetails',
+      params: { projectId: 'proj-1', agreementId: 'agreement-1' }
+    });
 
     // Also test with DataTable if possible
     const dataTable = wrapper.findComponent({ name: 'DataTable' });
@@ -100,7 +103,10 @@ describe('ProjectTenancies.vue', () => {
       const rowClickHandler = dataTable.vm.$attrs.onRowClick;
       if (rowClickHandler && typeof rowClickHandler === 'function') {
         await rowClickHandler({ data: { id: 'agreement-2' } });
-        expect(routerPushMock).toHaveBeenCalledWith('/projects/proj-1/tenancies/agreement-2');
+        expect(routerPushMock).toHaveBeenCalledWith({
+          name: 'RentalAgreementDetails',
+          params: { projectId: 'proj-1', agreementId: 'agreement-2' }
+        });
       }
     }
   });
