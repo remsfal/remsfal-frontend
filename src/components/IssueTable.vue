@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import { type IssueItem } from '../services/IssueService.ts';
+import { type IssueItem } from '@/services/IssueService.ts';
 
 const props = defineProps<{
   issues: IssueItem[];

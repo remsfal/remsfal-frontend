@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { EntityType, propertyService, type RentableUnitTreeNode } from '@/services/PropertyService';
-import { tenancyService } from '@/services/TenancyService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -15,6 +14,7 @@ import type { components } from '@/services/api/platform-schema';
 type TenancyUnitItem = components['schemas']['TenancyItemJson'];
 
 const props = defineProps<{
+  projectId?: string;
   listOfUnits: TenancyUnitItem[];
   isDeleteButtonEnabled: boolean;
 }>();
@@ -39,7 +39,8 @@ const unitTypes = ref<Array<{ label: string; value: string }>>([]);
 
 const loadDropdownOptions = async () => {
   try {
-    const response = await propertyService.getPropertyTree(projectStore.projectId || '');
+    const projectId = props.projectId || projectStore.projectId || '';
+    const response = await propertyService.getPropertyTree(projectId);
     const properties: RentableUnitTreeNode[] = (response.properties || []).filter(
       (p): p is RentableUnitTreeNode => p !== undefined,
     );
@@ -112,7 +113,9 @@ const onCellEditComplete = async (event: any) => {
   localListOfUnits.value[index] = newData;
   const unit = localListOfUnits.value[index];
   if (unit) {
-    await tenancyService.updateTenancyUnitItem(unit);
+    // TODO: updateTenancyUnitItem method not available in tenant context
+    // This feature is only available in manager/contractor context
+    console.warn('Update tenancy unit item not implemented');
   }
   emit('onChange', localListOfUnits.value);
 };

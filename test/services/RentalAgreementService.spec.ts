@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import RentalAgreementService from '../../src/services/RentalAgreementService';
+import RentalAgreementService from '@/services/RentalAgreementService';
 
 describe('RentalAgreementService', () => {
   const service = new RentalAgreementService();

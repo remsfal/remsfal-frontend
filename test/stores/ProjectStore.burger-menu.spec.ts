@@ -1,6 +1,6 @@
 import {describe, it, expect, beforeEach, vi} from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { useProjectStore } from '../../src/stores/ProjectStore';
+import { useProjectStore } from '@/stores/ProjectStore';
 
 // Mock the project service with proper vi.mocked support
 const mockProjectService = {

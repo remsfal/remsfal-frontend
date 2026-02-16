@@ -4,18 +4,21 @@ import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableCompo
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
 import { rentalAgreementService, type RentalAgreement } from '@/services/RentalAgreementService';
 import type { components } from '@/services/api/platform-schema';
-import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
+const props = defineProps<{
+  projectId: string;
+  tenancyId: string;
+}>();
+
 type RentJson = components['schemas']['RentJson'];
 
 const router = useRouter();
 const toast = useToast();
-const projectStore = useProjectStore();
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreement | null>(null);
@@ -47,15 +50,14 @@ const listOfUnits = computed(() => {
 });
 
 onMounted(async () => {
-  const agreementId = window.location.href.split('/').pop();
-  if (!agreementId || !projectStore.projectId) {
+  if (!props.tenancyId || !props.projectId) {
     console.error('Agreement ID or Project ID not found');
     return;
   }
 
   rentalAgreement.value = await rentalAgreementService.loadRentalAgreement(
-    projectStore.projectId,
-    agreementId
+    props.projectId,
+    props.tenancyId
   );
   rentalStart.value = rentalAgreement.value?.startOfRental || null;
   rentalEnd.value = rentalAgreement.value?.endOfRental || null;
@@ -63,7 +65,7 @@ onMounted(async () => {
 
 function confirmDeletion() {
   const agreementId = rentalAgreement.value?.id;
-  if (!agreementId || !projectStore.projectId) {
+  if (!agreementId || !props.projectId) {
     console.error('Agreement ID or Project ID is missing');
     confirmationDialogVisible.value = false;
     return;
@@ -74,23 +76,23 @@ function confirmDeletion() {
 }
 
 function deleteRentalAgreement(agreementId: string) {
-  if (!projectStore.projectId) return;
+  if (!props.projectId) return;
 
   rentalAgreementService
-    .deleteRentalAgreement(projectStore.projectId, agreementId)
+    .deleteRentalAgreement(props.projectId, agreementId)
     .then(() => redirectToTenanciesList())
     .catch((error) => console.error('Error deleting rental agreement:', error));
 }
 
 function redirectToTenanciesList() {
-  router.push('/project/' + projectStore.projectId + '/tenancies/');
+  router.push('/project/' + props.projectId + '/tenancies/');
 }
 
 function updateRentalAgreement(agreement: RentalAgreement | null) {
-  if (!agreement?.id || !projectStore.projectId) return;
+  if (!agreement?.id || !props.projectId) return;
 
   rentalAgreementService.updateRentalAgreement(
-    projectStore.projectId,
+    props.projectId,
     agreement.id,
     agreement
   );
@@ -132,6 +134,7 @@ defineExpose({
 
       <!-- Units Table -->
       <UnitsTableComponent
+        :projectId="props.projectId"
         :listOfUnits="listOfUnits"
         :isDeleteButtonEnabled="false"
       />

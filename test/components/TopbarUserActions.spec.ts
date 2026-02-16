@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
-import TopbarUserActions from '../../src/components/TopbarUserActions.vue';
-import { useUserSessionStore, type User } from '../../src/stores/UserSession';
+import TopbarUserActions from '@/components/TopbarUserActions.vue';
+import { useUserSessionStore, type User } from '@/stores/UserSession';
 import PrimeVue from 'primevue/config';
 import { createI18n } from 'vue-i18n';
 

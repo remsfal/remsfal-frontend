@@ -100,11 +100,10 @@ export async function waitForSave(wrapper: VueWrapper<any>) {
 
 export function expectModifyIssueCalled(
   mockFn: any,
-  projectId: string,
   issueId: string,
   payload: any
 ) {
-  expect(mockFn).toHaveBeenCalledWith(projectId, issueId, payload);
+  expect(mockFn).toHaveBeenCalledWith(issueId, payload);
 }
 
 export function expectEventEmitted(

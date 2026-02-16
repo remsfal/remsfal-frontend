@@ -1,6 +1,6 @@
 import {describe, it, expect, beforeAll, afterAll, afterEach} from 'vitest';
 import { server } from '../mocks/server';
-import { siteService, type SiteUnit } from '../../src/services/SiteService';
+import { siteService, type SiteUnit } from '@/services/SiteService';
 
 const projectId = 'project123';
 const propertyId = 'property456';

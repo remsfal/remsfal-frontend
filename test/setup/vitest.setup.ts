@@ -1,8 +1,8 @@
 import { config } from '@vue/test-utils';
 import { vi, beforeAll } from 'vitest';
 import PrimeVue from 'primevue/config';
-import router from '../../src/router';
-import i18n from '../../src/i18n/i18n';
+import router from '@/router';
+import i18n from '@/i18n/i18n';
 import { createTestingPinia } from '@pinia/testing';
 import BadgeDirective from 'primevue/badgedirective';
 import Ripple from 'primevue/ripple';

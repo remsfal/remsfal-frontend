@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import ProjectChatView from '../../src/views/ProjectChatView.vue';
+import ProjectChatView from '@/views/ProjectChatView.vue';
 import Button from 'primevue/button';
 
 // Use vi.hoisted to ensure the mock function is available during hoisting

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { useTopbarUserActions } from '../../src/composables/useTopbarUserActions';
+import { useTopbarUserActions } from '@/composables/useTopbarUserActions';
 import { createTestingPinia } from '@pinia/testing';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';

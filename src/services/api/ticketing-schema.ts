@@ -1737,6 +1737,31 @@ export interface components {
       uploadedBy?: components["schemas"]["UUID"];
       createdAt?: components["schemas"]["Instant"];
     };
+    /** @enum {string} */
+    IssueCategory:
+      | "BLOCKED_DRAIN"
+      | "ELECTRICAL_FAULT"
+      | "FIRE_DAMAGE"
+      | "HEATING_SYSTEM_MALFUNCTION"
+      | "PEST_INFESTATION"
+      | "POLLUTION_INSIDE_BUILDING"
+      | "POLLUTION_OUTSIDE_BUILDING"
+      | "SANITARY_SYSTEM_DAMAGE"
+      | "ROLLER_SHUTTER_DAMAGE"
+      | "WATER_DAMAGE"
+      | "CERTIFICATE_OF_NO_RENT_ARREARS"
+      | "CONFIRMATION_OF_RESIDENCE"
+      | "ALARM_SYSTEM_MAINTENANCE"
+      | "CHIMNEY_SWEEP_MAINTENANCE"
+      | "CLEANING_MAINTENANCE"
+      | "FIRE_ALARM_MAINTENANCE"
+      | "FIRE_EXTINGUISHER_MAINTENANCE"
+      | "GARDEN_MAINTENANCE"
+      | "HEATING_MAINTENANCE"
+      | "PUMP_MAINTENANCE"
+      | "SNOW_REMOVAL_MAINTENANCE"
+      | "TREE_CARE_MAINTENANCE"
+      | "GENERAL";
     /** @description An issue item with basic information */
     IssueItemJson: {
       id?: components["schemas"]["UUID"];
@@ -1753,11 +1778,14 @@ export interface components {
       projectId?: components["schemas"]["UUID"];
       title?: string;
       type?: components["schemas"]["IssueType"];
+      category?: components["schemas"]["IssueCategory"];
       status?: components["schemas"]["IssueStatus"];
       priority?: components["schemas"]["IssuePriority"];
       reporterId?: components["schemas"]["UUID"];
       agreementId?: components["schemas"]["UUID"];
+      visibleToTenants?: boolean;
       assigneeId?: components["schemas"]["UUID"];
+      location?: string;
       description?: string;
       parentIssue?: components["schemas"]["UUID"];
       childrenIssues?: string[];
@@ -1793,7 +1821,7 @@ export interface components {
     /** @enum {string} */
     IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
     /** @enum {string} */
-    IssueType: "APPLICATION" | "TASK" | "DEFECT" | "MAINTENANCE";
+    IssueType: "APPLICATION" | "DEFECT" | "INQUIRY" | "MAINTENANCE" | "TASK" | "TERMINATION";
     /**
      * Format: date
      * @example 2022-03-10

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import InboxToolbar from '../../../src/components/inbox/InboxToolbar.vue';
+import InboxToolbar from '@/components/inbox/InboxToolbar.vue';
 import SelectButton from 'primevue/selectbutton';
 import InputText from 'primevue/inputtext';
 

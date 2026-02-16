@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { getRelativeTime, getStatusColor, getStatusIcon } from '../../../../src/components/inbox/composables/useInboxHelpers';
+import { getRelativeTime, getStatusColor, getStatusIcon } from '@/components/inbox/composables/useInboxHelpers';
 
 describe('useInboxHelpers', () => {
   let mockDate: Date;

@@ -3,12 +3,12 @@ import { createTestingPinia } from '@pinia/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import InboxView from '../../src/views/InboxView.vue';
-import { useInboxStore } from '../../src/stores/InboxStore';
-import InboxSidebar from '../../src/components/inbox/InboxSidebar.vue';
-import InboxToolbar from '../../src/components/inbox/InboxToolbar.vue';
-import InboxMessageList from '../../src/components/inbox/InboxMessageList.vue';
-import type { InboxMessage } from '../../src/services/InboxService';
+import InboxView from '@/views/InboxView.vue';
+import { useInboxStore } from '@/stores/InboxStore';
+import InboxSidebar from '@/components/inbox/InboxSidebar.vue';
+import InboxToolbar from '@/components/inbox/InboxToolbar.vue';
+import InboxMessageList from '@/components/inbox/InboxMessageList.vue';
+import type { InboxMessage } from '@/services/InboxService';
 import { createMockInboxMessage } from '../utils/testHelpers';
 
 // Mocks

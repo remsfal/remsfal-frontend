@@ -6,9 +6,9 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
+import NewRentalAgreementDialog from '@/components/NewRentalAgreementDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useProjectStore } from '@/stores/ProjectStore';
 
 const props = defineProps<{
   projectId: string;
@@ -16,7 +16,6 @@ const props = defineProps<{
 const { t } = useI18n();
 
 const router = useRouter();
-const projectStore = useProjectStore();
 
 const tenantData = ref<TenantItem[]>([]);
 const isLoading = ref(true);
@@ -25,6 +24,7 @@ const rentalAgreements = ref<RentalAgreement[]>([]);
 
 const confirmationDialogVisible = ref(false);
 const tenantToDelete = ref<TenantItem | null>(null);
+const showNewRentalDialog = ref(false);
 
 function deleteTenant(tenantId: string) {
   tenantData.value = tenantData.value.filter((t) => t.id !== tenantId);
@@ -39,11 +39,17 @@ function confirmDeletion() {
 }
 
 function navigateToTenancyDetails(id: string) {
-  router.push('/project/' + projectStore.projectId + '/tenancies/' + id);
+  router.push('/projects/' + props.projectId + '/tenancies/' + id);
 }
 
 function navigateToNewTenancy() {
-  router.push(`/project/${projectStore.projectId}/tenancies/new-tenancy`);
+  showNewRentalDialog.value = true;
+}
+
+async function handleRentalAgreementCreated() {
+  // Refresh rental agreements list
+  rentalAgreements.value = await rentalAgreementService.fetchRentalAgreements(props.projectId);
+  tenantData.value = rentalAgreementService.extractTenants(rentalAgreements.value);
 }
 
 onMounted(async () => {
@@ -66,7 +72,7 @@ onMounted(async () => {
         <DataTable
           :value="rentalAgreements"
           :rows="10"
-          :rowHover="true"
+          rowHover
           dataKey="id"
           tableStyle="min-width: 60rem"
           scrollable
@@ -142,5 +148,12 @@ onMounted(async () => {
         <Button :label="t('projectTenancies.dialog.delete')" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
       </template>
     </Dialog>
+
+    <!-- New Rental Agreement Dialog -->
+    <NewRentalAgreementDialog
+      v-model:visible="showNewRentalDialog"
+      :projectId="projectId"
+      @rentalAgreementCreated="handleRentalAgreementCreated"
+    />
   </main>
 </template>

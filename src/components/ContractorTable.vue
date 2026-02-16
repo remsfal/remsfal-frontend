@@ -2,7 +2,7 @@
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { ref, onMounted } from 'vue';
-import type { components } from '../../src/services/api/ticketing-schema'; 
+import type { components } from '@/services/api/ticketing-schema'; 
 import { contractorService } from '@/services/ContractorService'; 
 
 type IssueListJson = components['schemas']['IssueListJson'];

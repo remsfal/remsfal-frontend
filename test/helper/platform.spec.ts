@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isNativePlatform, isDevMode, shouldShowDevLogin } from '../../src/helper/platform';
+import { isNativePlatform, isDevMode, shouldShowDevLogin } from '@/helper/platform';
 
 describe('Platform Helper', () => {
     describe('isNativePlatform', () => {

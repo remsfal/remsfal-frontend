@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import IssueTable from '../../src/components/IssueTable.vue';
+import IssueTable from '@/components/IssueTable.vue';
 import DataTable from 'primevue/datatable';
-import { type IssueItem } from '../../src/services/IssueService';
+import { type IssueItem } from '@/services/IssueService';
 
 const mockIssues: IssueItem[] = [
   {

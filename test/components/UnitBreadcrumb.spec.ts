@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import UnitBreadcrumb from '../../src/components/UnitBreadcrumb.vue';
-import { propertyService } from '../../src/services/PropertyService';
+import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
+import { propertyService } from '@/services/PropertyService';
 
 // Mocks
 vi.mock('../../src/services/PropertyService', () => ({

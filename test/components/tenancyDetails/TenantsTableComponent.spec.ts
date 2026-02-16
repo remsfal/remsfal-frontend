@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import TenantsTableComponent from '../../../src/components/tenancyDetails/TenantsTableComponent.vue';
+import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableComponent.vue';
 
 describe('TenantsTableComponent', () => {
   const tenantsMock = [{

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import InboxMessageItem from '../../../src/components/inbox/InboxMessageItem.vue';
-import type { InboxMessage } from '../../../src/services/InboxService';
+import InboxMessageItem from '@/components/inbox/InboxMessageItem.vue';
+import type { InboxMessage } from '@/services/InboxService';
 
 describe('InboxMessageItem', () => {
   let wrapper: VueWrapper;

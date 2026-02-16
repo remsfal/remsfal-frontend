@@ -1,9 +1,9 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import InboxMessageList from '../../../src/components/inbox/InboxMessageList.vue';
-import InboxEmptyState from '../../../src/components/inbox/InboxEmptyState.vue';
-import InboxMessageItem from '../../../src/components/inbox/InboxMessageItem.vue';
-import type { InboxMessage } from '../../../src/services/InboxService';
+import InboxMessageList from '@/components/inbox/InboxMessageList.vue';
+import InboxEmptyState from '@/components/inbox/InboxEmptyState.vue';
+import InboxMessageItem from '@/components/inbox/InboxMessageItem.vue';
+import type { InboxMessage } from '@/services/InboxService';
 import { createMockInboxMessage, createGroupingTestMessages } from '../../utils/testHelpers';
 
 describe('InboxMessageList', () => {

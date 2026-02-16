@@ -1,7 +1,7 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import {describe, it, expect, beforeEach, vi} from 'vitest';
-import ContractorMenu from '../../src/layout/ContractorMenu.vue';
-import { useUserSessionStore } from '../../src/stores/UserSession';
+import ContractorMenu from '@/layout/ContractorMenu.vue';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 describe('ContractorMenu.vue', () => {
   let wrapper: VueWrapper;
@@ -57,7 +57,7 @@ describe('ContractorMenu.vue', () => {
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
 
     await wrapper.find('.pi-home').trigger('click');
-    expect(pushSpy).toHaveBeenCalledWith('/contractor/overview');
+    expect(pushSpy).toHaveBeenCalledWith('/contractor/dashboard');
   });
 
 });

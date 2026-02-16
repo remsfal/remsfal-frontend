@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { commercialService } from '../../src/services/CommercialService';
+import { commercialService } from '@/services/CommercialService';
 
 describe('CommercialService with MSW', () => {
   const projectId = 'project-1';

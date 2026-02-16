@@ -1,8 +1,8 @@
 import {describe, test, expect, beforeEach, vi} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import type { FormSubmitEvent } from '@primevue/forms';
-import NewProjectMemberButton from '../../src/components/NewProjectMemberButton.vue';
-import { projectMemberService } from '../../src/services/ProjectMemberService';
+import NewProjectMemberButton from '@/components/NewProjectMemberButton.vue';
+import { projectMemberService } from '@/services/ProjectMemberService';
 
 // Mock translation function
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) })); // just return key for simplicity

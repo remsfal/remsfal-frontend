@@ -1,8 +1,8 @@
 import {mount, VueWrapper, flushPromises} from '@vue/test-utils';
 import Dialog from 'primevue/dialog';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import ProjectTenancies from '../../src/views/ProjectTenancies.vue';
-import { rentalAgreementService } from '../../src/services/RentalAgreementService';
+import ProjectTenancies from '@/views/ProjectTenancies.vue';
+import { rentalAgreementService } from '@/services/RentalAgreementService';
 
 // Fix for "window is not defined" error
 if (typeof window === 'undefined') (global as any).window = {};
@@ -91,7 +91,7 @@ describe('ProjectTenancies.vue', () => {
 
   it('navigates to tenancy details on row click', async () => {
     wrapper.vm.navigateToTenancyDetails('agreement-1');
-    expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/agreement-1');
+    expect(routerPushMock).toHaveBeenCalledWith('/projects/proj-1/tenancies/agreement-1');
 
     // Also test with DataTable if possible
     const dataTable = wrapper.findComponent({ name: 'DataTable' });
@@ -100,7 +100,7 @@ describe('ProjectTenancies.vue', () => {
       const rowClickHandler = dataTable.vm.$attrs.onRowClick;
       if (rowClickHandler && typeof rowClickHandler === 'function') {
         await rowClickHandler({ data: { id: 'agreement-2' } });
-        expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/agreement-2');
+        expect(routerPushMock).toHaveBeenCalledWith('/projects/proj-1/tenancies/agreement-2');
       }
     }
   });
@@ -124,19 +124,6 @@ describe('ProjectTenancies.vue', () => {
     expect(titleText).not.toContain('Mieterdaten Ansicht Mieterdaten Ansicht');
     // Title should be from translation
     expect(titleText.length).toBeGreaterThan(0);
-  });
-
-  it('navigates to new tenancy page when add button is clicked', async () => {
-    wrapper.vm.navigateToNewTenancy();
-    expect(routerPushMock).toHaveBeenCalledWith('/project/proj-1/tenancies/new-tenancy');
-    
-    // Also try to click the actual button
-    const buttons = wrapper.findAllComponents({ name: 'Button' });
-    const addButton = buttons.find(btn => btn.props('icon') === 'pi pi-plus');
-    if (addButton) {
-      await addButton.trigger('click');
-      expect(routerPushMock).toHaveBeenCalled();
-    }
   });
 
   it('renders unit information in the table', () => {

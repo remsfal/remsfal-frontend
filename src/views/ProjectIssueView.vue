@@ -34,7 +34,7 @@ const description = ref('');
 const fetchIssue = async () => {
   loadingFetch.value = true;
   try {
-    const issue: Issue = await issueService.getIssue(props.projectId, props.issueId);
+    const issue: Issue = await issueService.getIssue(props.issueId);
     console.log('#######', issue);
 
     // Map API response to UI-friendly format

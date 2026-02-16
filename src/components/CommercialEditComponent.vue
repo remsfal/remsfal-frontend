@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ReusableForm from '../components/ReusableFormComponent.vue';
+import ReusableForm from '@/components/ReusableFormComponent.vue';
 import { onMounted, ref } from 'vue';
 import { commercialService, type CommercialUnit } from '@/services/CommercialService';
 

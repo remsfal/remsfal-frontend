@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import DeleteRentableUnitButton from '../../src/components/DeleteRentableUnitButton.vue';
-import type { RentableUnitTreeNode } from '../../src/services/PropertyService';
+import DeleteRentableUnitButton from '@/components/DeleteRentableUnitButton.vue';
+import type { RentableUnitTreeNode } from '@/services/PropertyService';
 
 // Mock translation function
 vi.mock('vue-i18n', () => ({

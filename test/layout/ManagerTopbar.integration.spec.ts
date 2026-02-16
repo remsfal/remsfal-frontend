@@ -1,9 +1,9 @@
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { it, expect, vi } from 'vitest'
-import ManagerTopbar from '../../src/layout/ManagerTopbar.vue'
-import { useInboxStore } from '../../src/stores/InboxStore'
-import { useUserSessionStore } from '../../src/stores/UserSession'
+import ManagerTopbar from '@/layout/ManagerTopbar.vue'
+import { useInboxStore } from '@/stores/InboxStore'
+import { useUserSessionStore } from '@/stores/UserSession'
 
 // Router mock
 const mockPush = vi.fn()

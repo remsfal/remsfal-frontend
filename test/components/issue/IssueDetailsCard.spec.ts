@@ -14,7 +14,7 @@ vi.mock('@/services/IssueService', async () => {
   const actual = await vi.importActual<any>('@/services/IssueService');
   return {
     ...actual,
-    issueService: {modifyIssue: vi.fn(),},
+    issueService: {updateIssue: vi.fn(),},
   };
 });
 
@@ -95,15 +95,14 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('calls modifyIssue and shows success toast on save', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+  test('calls updateIssue and shows success toast on save', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     wrapper.vm.title = 'Updated title';
 
     await wrapper.vm.handleSave();
 
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       'issue-1',
       { title: 'Updated title' },
     );
@@ -119,7 +118,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('shows error toast when API call fails', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockRejectedValue(new Error('fail'));
+    vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
 
     wrapper.vm.title = 'Broken title';
 
@@ -136,7 +135,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('sets loadingSave during save', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     wrapper.vm.title = 'Updated title';
 
@@ -150,7 +149,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('updates original values after successful save', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     wrapper.vm.title = 'Updated title';
 
@@ -163,7 +162,7 @@ describe('IssueDetailsCard.vue', () => {
   test('does not call API when no changes are made', async () => {
     await wrapper.vm.handleSave();
 
-    expect(issueService.modifyIssue).not.toHaveBeenCalled();
+    expect(issueService.updateIssue).not.toHaveBeenCalled();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -193,15 +192,14 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('includes only changed fields in API payload', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     wrapper.vm.title = 'New title';
     wrapper.vm.status = 'IN_PROGRESS';
 
     await wrapper.vm.handleSave();
 
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       'issue-1',
       { title: 'New title', status: 'IN_PROGRESS' },
     );
@@ -214,12 +212,12 @@ describe('IssueDetailsCard.vue', () => {
 
     await wrapper.vm.handleSave();
 
-    expect(issueService.modifyIssue).not.toHaveBeenCalled();
+    expect(issueService.updateIssue).not.toHaveBeenCalled();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('emits saved event after successful save', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     wrapper.vm.title = 'New title';
     await wrapper.vm.handleSave();
@@ -230,7 +228,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('resets loadingSave to false after error', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockRejectedValue(new Error('fail'));
+    vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
 
     wrapper.vm.title = 'New title';
     await wrapper.vm.handleSave();
@@ -240,7 +238,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('updates all original values after save', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     wrapper.vm.title = 'New title';
     wrapper.vm.status = 'CLOSED';
@@ -267,7 +265,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('prevents concurrent saves', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
+    vi.spyOn(issueService, 'updateIssue').mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
 
     wrapper.vm.title = 'First';
     const promise1 = wrapper.vm.handleSave();
@@ -275,20 +273,19 @@ describe('IssueDetailsCard.vue', () => {
 
     await Promise.all([promise1, promise2]);
 
-    expect(issueService.modifyIssue).toHaveBeenCalledTimes(1);
+    expect(issueService.updateIssue).toHaveBeenCalledTimes(1);
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('handles very long title', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     const longTitle = 'A'.repeat(1000);
     wrapper.vm.title = longTitle;
 
     await wrapper.vm.handleSave();
 
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       'issue-1',
       { title: longTitle },
     );
@@ -296,14 +293,13 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('handles special characters in title', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     wrapper.vm.title = '<script>alert("XSS")</script>';
 
     await wrapper.vm.handleSave();
 
-    expect(issueService.modifyIssue).toHaveBeenCalledWith(
-      'project-1',
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
       'issue-1',
       { title: '<script>alert("XSS")</script>' },
     );
@@ -311,7 +307,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('preserves field values after failed save', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockRejectedValue(new Error('fail'));
+    vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
 
     wrapper.vm.title = 'Failed title';
     await wrapper.vm.handleSave();
@@ -327,7 +323,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('shows correct toast message on successful save', async () => {
-    vi.spyOn(issueService, 'modifyIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
 
     wrapper.vm.title = 'Updated';
     await wrapper.vm.handleSave();

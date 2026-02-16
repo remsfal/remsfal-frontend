@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { projectMemberService, type ProjectMember } from '../../src/services/ProjectMemberService';
+import { projectMemberService, type ProjectMember } from '@/services/ProjectMemberService';
 import { server } from '../mocks/server';
 import { testErrorHandling, useTestServer } from '../utils/testHelpers';
 

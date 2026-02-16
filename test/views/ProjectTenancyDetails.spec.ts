@@ -1,7 +1,7 @@
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
-import ProjectTenanciesDetails from '../../src/views/ProjectTenanciesDetails.vue';
+import ProjectTenanciesDetails from '@/views/ProjectTenanciesDetails.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { rentalAgreementService } from '../../src/services/RentalAgreementService';
+import { rentalAgreementService } from '@/services/RentalAgreementService';
 
 // ---- Mocks ----
 const push = vi.fn();
@@ -50,7 +50,12 @@ describe('ProjectTenanciesDetails', () => {
     vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockResolvedValue(undefined);
     vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockResolvedValue(undefined);
 
-    wrapper = mount(ProjectTenanciesDetails);
+    wrapper = mount(ProjectTenanciesDetails, {
+      props: {
+        projectId: 'proj-1',
+        tenancyId: 'agreement-1'
+      }
+    });
     await flushPromises();
   });
 

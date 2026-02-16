@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeAll, afterAll, afterEach} from 'vitest';
-import { ContractorService } from '../../src/services/ContractorService';
+import { ContractorService } from '@/services/ContractorService';
 import { server } from '../mocks/server';
 import { http, HttpResponse } from 'msw';
 

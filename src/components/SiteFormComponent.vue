@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import ReusableForm from '../components/ReusableFormComponent.vue';
+import ReusableForm from '@/components/ReusableFormComponent.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import { currentTenants, formerTenants } from '../mocks/tenants';
-import type { Tenant } from '../mocks/tenants';
+import { currentTenants, formerTenants } from '@/mocks/tenants';
+import type { Tenant } from '@/mocks/tenants';
 
 const props = defineProps<{
   projectId: string;

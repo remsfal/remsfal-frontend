@@ -612,12 +612,12 @@ const deleteAlternativeEmail = () => {
             </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/tenancies">
+            <RouterLink to="/tenancies/dashboard">
               {{ t('accountSettings.userProfile.tenanciesView') }}
             </RouterLink>
           </Button>
           <Button severity="info">
-            <RouterLink to="/contractor/overview">
+            <RouterLink to="/contractor/dashboard">
               Zur Auftragnehmer Ansicht
             </RouterLink>
           </Button>

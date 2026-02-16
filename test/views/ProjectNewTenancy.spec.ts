@@ -1,6 +1,6 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import {beforeEach, describe, expect, it} from 'vitest';
-import ProjectNewTenancy from '../../src/views/ProjectNewTenancy.vue';
+import ProjectNewTenancy from '@/views/ProjectNewTenancy.vue';
 
 describe('ProjectTenancies.vue', () => {
   let wrapper: VueWrapper;

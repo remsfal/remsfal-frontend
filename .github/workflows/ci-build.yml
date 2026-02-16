@@ -28,15 +28,7 @@ jobs:
       - name: Run Unit Test with Vitest (test)
         run: npm run coverage:unit
       - name: Run E2E Test with Cypress (test)
-        uses: cypress-io/github-action@v7
-        with:
-          # we have already installed all dependencies above
-          install: false
-          # start the server and wait for it
-          start: npm run preview
-          wait-on: 'http://localhost:4173/index.html'
-          # wait for 3 minutes for the server to respond
-          wait-on-timeout: 180
+        run: npm run coverage:e2e
       - name: Check style with ESLint (lint)
         run: npm run lint
       - name: Check css with Stylelint (stylelint)

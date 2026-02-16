@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectSettings from '../../src/components/ProjectSettings.vue';
-import { projectService } from '../../src/services/ProjectService';
+import ProjectSettings from '@/components/ProjectSettings.vue';
+import { projectService } from '@/services/ProjectService';
 
 // ---- Mocks ----
 const addMock = vi.fn();

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewIssueDialog from '../../src/components/NewIssueDialog.vue';
-import { issueService } from '../../src/services/IssueService';
+import NewIssueDialog from '@/components/NewIssueDialog.vue';
+import { issueService } from '@/services/IssueService';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -115,11 +115,11 @@ describe('NewIssueDialog.vue', () => {
     await wrapper.vm.$nextTick();
 
     expect(issueService.createIssue).toHaveBeenCalledWith(
-      'project-123',
       expect.objectContaining({
         title: 'Valid Issue Title',
         type: 'TASK',
         priority: 'UNCLASSIFIED',
+        projectId: 'project-123',
       }),
     );
   });

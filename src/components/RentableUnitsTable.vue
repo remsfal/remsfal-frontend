@@ -103,25 +103,45 @@ function onDeleteNode(node: RentableUnitTreeNode) {
           </template>
         </Column>
 
-        <Column field="type" :header="t('rentableUnits.table.type')">
+        <Column
+          field="type"
+          :header="t('rentableUnits.table.type')"
+          headerClass="hidden md:table-cell"
+          bodyClass="hidden md:table-cell"
+        >
           <template #body="{ node }">
             <div>{{ translateType(node.data.type) }}</div>
           </template>
         </Column>
 
-        <Column field="description" :header="t('rentableUnits.table.description')">
+        <Column
+          field="description"
+          :header="t('rentableUnits.table.description')"
+          headerClass="hidden lg:table-cell"
+          bodyClass="hidden lg:table-cell"
+        >
           <template #body="{ node }">
             <div>{{ node.data.description }}</div>
           </template>
         </Column>
 
-        <Column field="tenant" :header="t('rentableUnits.table.tenant')">
+        <Column
+          field="tenant"
+          :header="t('rentableUnits.table.tenant')"
+          headerClass="hidden md:table-cell"
+          bodyClass="hidden md:table-cell"
+        >
           <template #body="{ node }">
             <div>{{ node.data.tenant }}</div>
           </template>
         </Column>
 
-        <Column field="usable_space" :header="t('rentableUnits.table.area')">
+        <Column
+          field="usable_space"
+          :header="t('rentableUnits.table.area')"
+          headerClass="hidden lg:table-cell"
+          bodyClass="hidden lg:table-cell"
+        >
           <template #body="{ node }">
             <div>{{ node.data.usable_space }}</div>
           </template>

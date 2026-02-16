@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest';
 import { mount } from '@vue/test-utils';
-import TenancyDataComponent from '../../../src/components/tenancyDetails/TenancyDataComponent.vue';
+import TenancyDataComponent from '@/components/tenancyDetails/TenancyDataComponent.vue';
 
 describe('TenancyDataComponent', () => {
   const today = new Date();
