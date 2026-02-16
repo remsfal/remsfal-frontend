@@ -307,6 +307,32 @@ components:
           $ref: "#/components/schemas/UUID"
         createdAt:
           $ref: "#/components/schemas/Instant"
+    IssueCategory:
+      type: string
+      enum:
+      - BLOCKED_DRAIN
+      - ELECTRICAL_FAULT
+      - FIRE_DAMAGE
+      - HEATING_SYSTEM_MALFUNCTION
+      - PEST_INFESTATION
+      - POLLUTION_INSIDE_BUILDING
+      - POLLUTION_OUTSIDE_BUILDING
+      - SANITARY_SYSTEM_DAMAGE
+      - ROLLER_SHUTTER_DAMAGE
+      - WATER_DAMAGE
+      - CERTIFICATE_OF_NO_RENT_ARREARS
+      - CONFIRMATION_OF_RESIDENCE
+      - ALARM_SYSTEM_MAINTENANCE
+      - CHIMNEY_SWEEP_MAINTENANCE
+      - CLEANING_MAINTENANCE
+      - FIRE_ALARM_MAINTENANCE
+      - FIRE_EXTINGUISHER_MAINTENANCE
+      - GARDEN_MAINTENANCE
+      - HEATING_MAINTENANCE
+      - PUMP_MAINTENANCE
+      - SNOW_REMOVAL_MAINTENANCE
+      - TREE_CARE_MAINTENANCE
+      - GENERAL
     IssueItemJson:
       description: An issue item with basic information
       type: object
@@ -340,6 +366,8 @@ components:
           maxLength: 255
         type:
           $ref: "#/components/schemas/IssueType"
+        category:
+          $ref: "#/components/schemas/IssueCategory"
         status:
           $ref: "#/components/schemas/IssueStatus"
         priority:
@@ -348,8 +376,12 @@ components:
           $ref: "#/components/schemas/UUID"
         agreementId:
           $ref: "#/components/schemas/UUID"
+        visibleToTenants:
+          type: boolean
         assigneeId:
           $ref: "#/components/schemas/UUID"
+        location:
+          type: string
         description:
           type: string
         parentIssue:
@@ -445,9 +477,11 @@ components:
       type: string
       enum:
       - APPLICATION
-      - TASK
       - DEFECT
+      - INQUIRY
       - MAINTENANCE
+      - TASK
+      - TERMINATION
     LocalDate:
       type: string
       format: date
