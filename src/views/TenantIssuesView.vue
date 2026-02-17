@@ -33,12 +33,6 @@ const filters = ref({
 
 const searchQuery = ref('');
 
-// Get first active contract for creating new issues
-const firstActiveContract = computed(() => {
-  // TenancyItemJson doesn't have endOfRental field, use active status
-  return contracts.value.find(c => c.active !== false);
-});
-
 const loadContracts = async () => {
   loading.value = true;
   error.value = null;
@@ -150,7 +144,6 @@ onMounted(async () => {
       <!-- New Issue Dialog -->
       <TenantNewIssueDialog
         v-model:visible="showNewIssueDialog"
-        :tenancyId="firstActiveContract?.id"
         @issueCreated="handleIssueCreated"
       />
     </div>

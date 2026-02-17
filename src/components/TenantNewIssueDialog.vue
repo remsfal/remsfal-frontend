@@ -1,21 +1,32 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
-import { zodResolver } from '@primevue/forms/resolvers/zod';
-import { z } from 'zod';
 import { useToast } from 'primevue/usetoast';
-import { issueService, type Issue, type Type } from '@/services/IssueService.ts';
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
-import Message from 'primevue/message';
 
+// PrimeVue Components
+import Dialog from 'primevue/dialog';
+import Stepper from 'primevue/stepper';
+import StepList from 'primevue/steplist';
+import Step from 'primevue/step';
+import StepPanels from 'primevue/steppanels';
+import StepPanel from 'primevue/steppanel';
+import Message from 'primevue/message';
+import ProgressSpinner from 'primevue/progressspinner';
+
+// Services & Types
+import { issueService, type Issue, type Type } from '@/services/IssueService';
+import { tenancyService, type TenancyItem } from '@/services/TenancyService';
+import { useUserSessionStore } from '@/stores/UserSession';
+
+// Step Components
+import Step1TypeCategoryForm from './tenantIssue/Step1TypeCategoryForm.vue';
+import Step2DetailsForm from './tenantIssue/Step2DetailsForm.vue';
+import Step3AttachmentsForm from './tenantIssue/Step3AttachmentsForm.vue';
+import Step4SummaryForm from './tenantIssue/Step4SummaryForm.vue';
+
+// Props & Emits
 const props = defineProps<{
   visible: boolean;
-  tenancyId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -25,183 +36,342 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const toast = useToast();
+const userSessionStore = useUserSessionStore();
 
-const schema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(3, { message: t('newIssueDialog.title.required') })
-    .max(200, { message: t('newIssueDialog.title.error', { maxLength: 200 }) }),
-  type: z.enum(['APPLICATION', 'TASK', 'DEFECT', 'MAINTENANCE'], { message: t('newIssueDialog.type.required') }),
+// Stepper State
+const currentStep = ref<string>('1');
+
+// Tenancies State
+const tenancies = ref<TenancyItem[]>([]);
+const loadingTenancies = ref(false);
+
+// Form State
+interface TenantIssueFormState {
+  tenancyId: string | null;
+  issueType: Type | null;
+  issueCategory: string | null;
+  causedBy: string | null;
+  causedByUnknown: boolean;
+  location: string | null;
+  description: string | null;
+  files: File[];
+}
+
+const formState = ref<TenantIssueFormState>({
+  tenancyId: null,
+  issueType: null,
+  issueCategory: null,
+  causedBy: null,
+  causedByUnknown: false,
+  location: null,
+  description: null,
+  files: [],
 });
 
-const resolver = zodResolver(schema);
-const initialValues = ref({
-  title: '',
-  type: 'DEFECT' as Type,
-});
+// Loading State
+const isCreating = ref(false);
 
-const typeOptions = computed(() => [
-  { label: t('inbox.filters.type.application'), value: 'APPLICATION' },
-  { label: t('inbox.filters.type.task'), value: 'TASK' },
-  { label: t('inbox.filters.type.defect'), value: 'DEFECT' },
-  { label: t('inbox.filters.type.maintenance'), value: 'MAINTENANCE' },
-]);
-
-const isSubmitting = ref(false);
-
-const onSubmit = async (event: FormSubmitEvent) => {
-  if (!event.valid) {
-    return;
-  }
-
-  const formState = event.states;
-  const title = formState.title?.value?.trim() || '';
-  const type = formState.type?.value as Type;
-
-  if (!title || !type || !props.tenancyId) {
-    return;
-  }
-
-  isSubmitting.value = true;
+// Load tenancies
+async function loadTenancies() {
+  loadingTenancies.value = true;
 
   try {
-    const newIssue = await issueService.createIssue({
-      title,
-      type,
-      agreementId: props.tenancyId,
+    tenancies.value = await tenancyService.getTenancies();
+
+    // Auto-select if only one tenancy
+    if (tenancies.value.length === 1 && tenancies.value[0]?.id) {
+      formState.value.tenancyId = tenancies.value[0].id;
+    }
+  } catch (error) {
+    console.error('Error loading tenancies:', error);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('error.apiRequest'),
+      life: 5000,
     });
+  } finally {
+    loadingTenancies.value = false;
+  }
+}
+
+// Load tenancies when dialog opens
+watch(() => props.visible, (visible) => {
+  if (visible && tenancies.value.length === 0) {
+    loadTenancies();
+  }
+});
+
+onMounted(() => {
+  if (props.visible && tenancies.value.length === 0) {
+    loadTenancies();
+  }
+});
+
+// Step Completion Tracking
+const step1Complete = computed(() =>
+  !!(
+    formState.value.tenancyId &&
+    formState.value.issueType &&
+    (formState.value.issueType === 'TERMINATION' || formState.value.issueCategory)
+  ),
+);
+
+const step2Complete = computed(() => {
+  const type = formState.value.issueType;
+  if (type === 'DEFECT') {
+    return !!(formState.value.description && formState.value.description.trim().length > 0);
+  }
+  return true; // INQUIRY/TERMINATION: no required fields
+});
+
+// Jump to specific step (for Edit links in Summary)
+function editStep(stepValue: string) {
+  currentStep.value = stepValue;
+}
+
+// Get reporter name from user session
+const reporterName = computed(() => {
+  const firstName = userSessionStore.user?.firstName || '';
+  const lastName = userSessionStore.user?.lastName || '';
+  return `${firstName} ${lastName}`.trim() || 'Unbekannt';
+});
+
+// Extract tenancyId from composite ID (format: "tenancyId/buildings/rentalId")
+function extractTenancyId(compositeId: string | null | undefined): string | null {
+  if (!compositeId) return null;
+  // The tenancyId is the first part before the first slash
+  const parts = compositeId.split('/');
+  return parts[0] || null;
+}
+
+// Generate Issue Title
+function generateIssueTitle(state: TenantIssueFormState): string {
+  const { issueType, issueCategory } = state;
+
+  // Category or Type label
+  const categoryText = issueCategory
+    ? t(`tenantIssue.categories.${issueCategory}`)
+    : issueType
+      ? t(`tenantIssue.types.${issueType}`)
+      : '';
+
+  // For DEFECT: "Category bei Reporter"
+  if (issueType === 'DEFECT') {
+    return `${categoryText} bei ${reporterName.value}`;
+  }
+
+  // For INQUIRY: "Category von Reporter"
+  if (issueType === 'INQUIRY') {
+    return `${categoryText} von ${reporterName.value}`;
+  }
+
+  // For TERMINATION: "Kündigung von Reporter"
+  return `Kündigung von ${reporterName.value}`;
+}
+
+// Generated title for display in Step 4
+const generatedTitle = computed(() => generateIssueTitle(formState.value));
+
+// Build description with causedBy and location
+function buildDescription(state: TenantIssueFormState): string {
+  let desc = state.description?.trim() || '';
+
+  // For DEFECT: Append causedBy and location
+  if (state.issueType === 'DEFECT') {
+    if (state.causedByUnknown) {
+      desc += '\n\nVerursacher: Unbekannt';
+    } else if (state.causedBy?.trim()) {
+      desc += `\n\nVerursacher: ${state.causedBy.trim()}`;
+    }
+
+    if (state.location?.trim()) {
+      desc += `\nOrt: ${state.location.trim()}`;
+    }
+  }
+
+  return desc;
+}
+
+// Transform Form Data to Issue API Schema
+function transformFormDataToIssue(state: TenantIssueFormState): Partial<Issue> {
+  // Extract the actual tenancyId (UUID) from the composite ID
+  const actualTenancyId = extractTenancyId(state.tenancyId);
+
+  return {
+    title: generateIssueTitle(state),
+    type: state.issueType!,
+    category: (state.issueCategory as any) || undefined,
+    agreementId: actualTenancyId!,
+    description: buildDescription(state),
+    location: state.location?.trim() || undefined,
+  };
+}
+
+// Submit Handler
+async function handleSubmit() {
+  if (!step1Complete.value || !step2Complete.value) {
+    return;
+  }
+
+  isCreating.value = true;
+
+  try {
+    const issueData = transformFormDataToIssue(formState.value);
+
+    let newIssue: Issue;
+
+    if (formState.value.files.length > 0) {
+      newIssue = await issueService.createIssueWithAttachment(issueData, formState.value.files);
+    } else {
+      newIssue = await issueService.createIssue(issueData);
+    }
 
     toast.add({
       severity: 'success',
       summary: t('success.created'),
-      detail: t('newIssueDialog.successCreated'),
-      life: 3000,
+      detail: t('tenantIssue.success'),
+      life: 4000,
     });
 
+    resetForm();
     emit('issueCreated', newIssue);
     emit('update:visible', false);
-
-    // Reset form
-    initialValues.value = {
-      title: '',
-      type: 'DEFECT' as Type,
-    };
   } catch (error) {
-    console.error('Error creating issue:', error);
+    console.error('Failed to create issue:', error);
     toast.add({
       severity: 'error',
       summary: t('error.general'),
-      detail: t('newIssueDialog.errorCreated'),
+      detail: t('tenantIssue.error'),
       life: 5000,
     });
   } finally {
-    isSubmitting.value = false;
+    isCreating.value = false;
   }
-};
+}
 
-const onCancel = () => {
-  emit('update:visible', false);
-};
+// Reset Form
+function resetForm() {
+  formState.value = {
+    tenancyId: (tenancies.value.length === 1 && tenancies.value[0]?.id) ? tenancies.value[0].id : null,
+    issueType: null,
+    issueCategory: null,
+    causedBy: null,
+    causedByUnknown: false,
+    location: null,
+    description: null,
+    files: [],
+  };
+  currentStep.value = '1';
+}
 
-const hasNoContracts = computed(() => !props.tenancyId);
+// Check if no contracts available
+const hasNoContracts = computed(() => tenancies.value.length === 0 && !loadingTenancies.value);
 </script>
 
 <template>
   <Dialog
     :visible="visible"
     modal
-    :header="t('tenantNewIssueDialog.title')"
-    :style="{ width: '32rem' }"
+    :header="t('tenantIssue.dialog.title')"
+    class="w-full max-w-4xl"
     @update:visible="emit('update:visible', $event)"
   >
-    <Message v-if="hasNoContracts" severity="warn" :closable="false" class="mb-4">
+    <!-- Loading State -->
+    <div v-if="loadingTenancies" class="flex justify-center items-center p-6">
+      <ProgressSpinner style="width: 50px; height: 50px" />
+    </div>
+
+    <!-- No Contracts Warning -->
+    <Message v-else-if="hasNoContracts" severity="warn" :closable="false" class="mb-4">
       {{ t('tenantNewIssueDialog.noActiveContracts') }}
     </Message>
 
-    <Form
-      v-if="!hasNoContracts"
-      v-slot="$form"
-      :initialValues
-      :resolver
-      @submit="onSubmit"
+    <!-- Stepper Form -->
+    <Stepper
+      v-else
+      v-model:value="currentStep"
+      linear
+      class="basis-[50rem]"
     >
-      <div class="flex flex-col gap-6">
-        <div class="flex flex-col gap-2">
-          <label for="title" class="font-semibold">
-            {{ t('newIssueDialog.title.label') }}
-          </label>
+      <!-- Step Headers -->
+      <StepList>
+        <Step value="1">{{ t('tenantIssue.step1.title') }}</Step>
+        <Step value="2">{{ t('tenantIssue.step2.title') }}</Step>
+        <Step value="3">{{ t('tenantIssue.step3.title') }}</Step>
+        <Step value="4">{{ t('tenantIssue.step4.title') }}</Step>
+      </StepList>
 
-          <InputText
-            name="title"
-            type="text"
-            :placeholder="t('newIssueDialog.title.placeholder')"
-            :class="{ 'p-invalid': $form.title?.invalid && $form.title?.touched }"
-            autofocus
-            fluid
+      <!-- Step Panels -->
+      <StepPanels>
+        <!-- Step 1: Type & Category -->
+        <StepPanel v-slot="{ activateCallback }" value="1">
+          <Step1TypeCategoryForm
+            :tenancyId="formState.tenancyId"
+            :issueType="formState.issueType"
+            :issueCategory="formState.issueCategory"
+            :tenancies="tenancies"
+            @update:tenancyId="formState.tenancyId = $event"
+            @update:issueType="formState.issueType = $event"
+            @update:issueCategory="formState.issueCategory = $event"
+            @next="activateCallback('2')"
           />
+        </StepPanel>
 
-          <Message
-            v-if="$form.title?.invalid && $form.title?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.title.error.message }}
-          </Message>
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <label for="type" class="font-semibold">
-            {{ t('newIssueDialog.type.label') }}
-          </label>
-
-          <Select
-            name="type"
-            :options="typeOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('newIssueDialog.type.placeholder')"
-            :class="{ 'p-invalid': $form.type?.invalid && $form.type?.touched }"
-            fluid
+        <!-- Step 2: Details -->
+        <StepPanel v-slot="{ activateCallback }" value="2">
+          <Step2DetailsForm
+            :issueType="formState.issueType"
+            :causedBy="formState.causedBy"
+            :causedByUnknown="formState.causedByUnknown"
+            :location="formState.location"
+            :description="formState.description"
+            @update:causedBy="formState.causedBy = $event"
+            @update:causedByUnknown="formState.causedByUnknown = $event"
+            @update:location="formState.location = $event"
+            @update:description="formState.description = $event"
+            @next="activateCallback('3')"
+            @back="activateCallback('1')"
           />
+        </StepPanel>
 
-          <Message
-            v-if="$form.type?.invalid && $form.type?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.type.error.message }}
-          </Message>
-        </div>
-      </div>
+        <!-- Step 3: Attachments -->
+        <StepPanel v-slot="{ activateCallback }" value="3">
+          <Step3AttachmentsForm
+            :files="formState.files"
+            @update:files="formState.files = $event"
+            @next="activateCallback('4')"
+            @back="activateCallback('2')"
+          />
+        </StepPanel>
 
-      <div class="flex justify-end gap-3 mt-6">
-        <Button
-          type="button"
-          :label="t('button.cancel')"
-          severity="secondary"
-          @click="onCancel"
-        />
-        <Button
-          type="submit"
-          :label="t('tenantNewIssueDialog.createButton')"
-          icon="pi pi-check"
-          severity="success"
-          :disabled="!$form.title?.valid || !$form.type?.valid || !$form.title?.dirty || isSubmitting"
-          :loading="isSubmitting"
-        />
-      </div>
-    </Form>
+        <!-- Step 4: Summary -->
+        <StepPanel v-slot="{ activateCallback }" value="4">
+          <Step4SummaryForm
+            :tenancyId="formState.tenancyId"
+            :issueType="formState.issueType"
+            :issueCategory="formState.issueCategory"
+            :causedBy="formState.causedBy"
+            :causedByUnknown="formState.causedByUnknown"
+            :location="formState.location"
+            :description="formState.description"
+            :files="formState.files"
+            :tenancies="tenancies"
+            :generatedTitle="generatedTitle"
+            @submit="handleSubmit"
+            @back="activateCallback('3')"
+            @editStep="editStep"
+          />
+        </StepPanel>
+      </StepPanels>
+    </Stepper>
 
-    <div v-if="hasNoContracts" class="flex justify-end mt-4">
-      <Button
-        type="button"
-        :label="t('button.cancel')"
-        severity="secondary"
-        @click="onCancel"
-      />
+    <!-- Loading Overlay during submission -->
+    <div
+      v-if="isCreating"
+      class="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center rounded-lg"
+    >
+      <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
     </div>
   </Dialog>
 </template>

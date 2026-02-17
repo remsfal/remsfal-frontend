@@ -1,0 +1,237 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+// PrimeVue Components
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+import Checkbox from 'primevue/checkbox';
+import Message from 'primevue/message';
+
+// PrimeVue Forms
+import { Form } from '@primevue/forms';
+import type { FormSubmitEvent } from '@primevue/forms';
+import { zodResolver } from '@primevue/forms/resolvers/zod';
+import { z } from 'zod';
+
+// Types
+import type { Type } from '@/services/IssueService';
+
+// Props & Emits
+const props = defineProps<{
+  issueType: Type | null;
+  causedBy: string | null;
+  causedByUnknown: boolean;
+  location: string | null;
+  description: string | null;
+}>();
+
+const emit = defineEmits<{
+  'update:causedBy': [value: string | null];
+  'update:causedByUnknown': [value: boolean];
+  'update:location': [value: string | null];
+  'update:description': [value: string | null];
+  next: [];
+  back: [];
+}>();
+
+const { t } = useI18n();
+
+// Zod Validation Schema
+const step2Schema = z
+  .object({
+    causedBy: z.string().trim().max(200).nullable(),
+    causedByUnknown: z.boolean(),
+    location: z.string().trim().max(200).nullable(),
+    description: z.string().trim().max(5000).nullable(),
+  })
+  .refine(
+    (data) => {
+      // DEFECT: Description is required
+      if (props.issueType === 'DEFECT') {
+        return data.description && data.description.length > 0;
+      }
+      return true; // INQUIRY/TERMINATION: optional
+    },
+    {
+      message: t('tenantIssue.validation.descriptionRequired'),
+      path: ['description'],
+    },
+  );
+
+const resolver = zodResolver(step2Schema);
+
+// Initial Values
+const initialValues = ref({
+  causedBy: props.causedBy || '',
+  causedByUnknown: props.causedByUnknown,
+  location: props.location || '',
+  description: props.description || '',
+});
+
+// Local state for causedByUnknown checkbox
+const localCausedByUnknown = ref(props.causedByUnknown);
+
+// Form Submit Handler
+const onSubmit = (event: FormSubmitEvent) => {
+  const formState = event.states;
+
+  if (!event.valid) {
+    return;
+  }
+
+  const causedBy = formState.causedBy?.value?.trim() || null;
+  const location = formState.location?.value?.trim() || null;
+  const description = formState.description?.value?.trim() || null;
+
+  // If DEFECT and description is required
+  if (props.issueType === 'DEFECT' && !description) {
+    return;
+  }
+
+  // Update parent state
+  emit('update:causedBy', causedBy);
+  emit('update:causedByUnknown', localCausedByUnknown.value);
+  emit('update:location', location);
+  emit('update:description', description);
+  emit('next');
+};
+
+// Handle Back Button
+function handleBack() {
+  emit('back');
+}
+</script>
+
+<template>
+  <div class="flex flex-col gap-6">
+    <h3 class="text-xl font-semibold">
+      {{ t('tenantIssue.step2.title') }}
+    </h3>
+
+    <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
+      <div class="flex flex-col gap-6">
+        <!-- DEFECT-specific fields -->
+        <template v-if="issueType === 'DEFECT'">
+          <!-- Caused By Field -->
+          <div class="flex flex-col gap-2">
+            <label for="causedBy" class="font-semibold">
+              {{ t('tenantIssue.step2.causedByLabel') }}
+            </label>
+            <InputText
+              id="causedBy"
+              name="causedBy"
+              type="text"
+              :placeholder="t('tenantIssue.step2.causedByPlaceholder')"
+              :disabled="localCausedByUnknown"
+              fluid
+              autofocus
+            />
+          </div>
+
+          <!-- Caused By Unknown Checkbox -->
+          <div class="flex items-center gap-2">
+            <Checkbox
+              inputId="causedByUnknown"
+              v-model="localCausedByUnknown"
+              binary
+            />
+            <label for="causedByUnknown" class="cursor-pointer">
+              {{ t('tenantIssue.step2.causedByUnknownLabel') }}
+            </label>
+          </div>
+
+          <!-- Location Field -->
+          <div class="flex flex-col gap-2">
+            <label for="location" class="font-semibold">
+              {{ t('tenantIssue.step2.locationLabel') }}
+            </label>
+            <InputText
+              id="location"
+              name="location"
+              type="text"
+              :placeholder="t('tenantIssue.step2.locationPlaceholder')"
+              fluid
+            />
+          </div>
+
+          <!-- Description Field (Required for DEFECT) -->
+          <div class="flex flex-col gap-2">
+            <label for="description" class="font-semibold">
+              {{ t('tenantIssue.step2.descriptionLabel') }} *
+            </label>
+            <Textarea
+              id="description"
+              name="description"
+              :placeholder="t('tenantIssue.step2.descriptionPlaceholder')"
+              :class="{ 'p-invalid': $form.description?.invalid && $form.description?.touched }"
+              rows="6"
+              fluid
+            />
+            <Message
+              v-if="$form.description?.invalid && $form.description?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ $form.description.error.message }}
+            </Message>
+          </div>
+        </template>
+
+        <!-- INQUIRY-specific fields -->
+        <template v-if="issueType === 'INQUIRY'">
+          <div class="flex flex-col gap-2">
+            <label for="description" class="font-semibold">
+              {{ t('tenantIssue.step2.descriptionLabel') }}
+            </label>
+            <Textarea
+              id="description"
+              name="description"
+              :placeholder="t('tenantIssue.step2.descriptionPlaceholder')"
+              rows="6"
+              fluid
+              autofocus
+            />
+          </div>
+        </template>
+
+        <!-- TERMINATION-specific fields -->
+        <template v-if="issueType === 'TERMINATION'">
+          <div class="flex flex-col gap-2">
+            <label for="description" class="font-semibold">
+              {{ t('tenantIssue.step2.messageLabel') }}
+            </label>
+            <Textarea
+              id="description"
+              name="description"
+              :placeholder="t('tenantIssue.step2.messagePlaceholder')"
+              rows="6"
+              fluid
+              autofocus
+            />
+          </div>
+        </template>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end gap-3 mt-6">
+        <Button
+          type="button"
+          :label="t('tenantIssue.step2.backButton')"
+          severity="secondary"
+          icon="pi pi-arrow-left"
+          @click="handleBack"
+        />
+        <Button
+          type="submit"
+          :label="t('tenantIssue.step2.nextButton')"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          :disabled="issueType === 'DEFECT' && (!$form.description?.valid || !$form.description?.dirty)"
+        />
+      </div>
+    </Form>
+  </div>
+</template>

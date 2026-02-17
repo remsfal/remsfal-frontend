@@ -48,7 +48,10 @@ class IssueService {
 
   async createIssueWithAttachment(body: Partial<Issue>, files: File[]): Promise<Issue> {
     const formData = new FormData();
-    formData.append('issue', JSON.stringify(body));
+
+    // Create Blob with application/json content type for the issue part
+    const issueBlob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+    formData.append('issue', issueBlob);
 
     files.forEach((file, index) => {
       formData.append(`attachment${index}`, file);
