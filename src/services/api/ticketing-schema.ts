@@ -2105,6 +2105,7 @@ export interface components {
     /** @description A rental agreement item with basic information from a tenant's perspective */
     TenancyItemJson: {
       id?: string;
+      agreementId?: components["schemas"]["UUID"];
       name?: string;
       /**
        * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
