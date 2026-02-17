@@ -1008,6 +1008,8 @@ components:
       properties:
         id:
           type: string
+        agreementId:
+          $ref: "#/components/schemas/UUID"
         name:
           type: string
         rentalType:
