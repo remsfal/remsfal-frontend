@@ -209,6 +209,30 @@
           }
         }
       },
+      "CoTenantJson" : {
+        "description" : "Tenant information in a rental agreement",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "firstName" : {
+            "type" : "string",
+            "readOnly" : true
+          },
+          "lastName" : {
+            "type" : "string",
+            "readOnly" : true
+          },
+          "userId" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }
+      },
       "CommercialJson" : {
         "description" : "An commercial inside a building",
         "type" : "object",
@@ -521,6 +545,12 @@
           },
           "visibleToTenants" : {
             "type" : "boolean"
+          },
+          "rentalUnitId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "rentalUnitType" : {
+            "$ref" : "#/components/schemas/UnitType"
           },
           "assigneeId" : {
             "$ref" : "#/components/schemas/UUID"
@@ -994,6 +1024,35 @@
           }
         }
       },
+      "RentModel" : {
+        "type" : "object",
+        "properties" : {
+          "unitId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "firstPaymentDate" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "lastPaymentDate" : {
+            "$ref" : "#/components/schemas/LocalDate"
+          },
+          "billingCycle" : {
+            "$ref" : "#/components/schemas/BillingCycle"
+          },
+          "basicRent" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "operatingCostsPrepayment" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "heatingCostsPrepayment" : {
+            "type" : "number",
+            "format" : "float"
+          }
+        }
+      },
       "RentalAgreementItemJson" : {
         "description" : "A rental agreement item with aggregated rent information for list views",
         "type" : "object",
@@ -1050,6 +1109,30 @@
         "description" : "A rental agreement for rentable units",
         "type" : "object",
         "properties" : {
+          "allRents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentModel"
+            }
+          },
+          "basicRent" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "operatingCostsPrepayment" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "heatingCostsPrepayment" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "activeRents" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentModel"
+            }
+          },
           "active" : {
             "type" : "boolean"
           },
@@ -1127,8 +1210,8 @@
         }
       },
       "RentalUnitJson" : {
-        "type" : "object",
         "description" : "A general rental unit",
+        "type" : "object",
         "properties" : {
           "type" : {
             "$ref" : "#/components/schemas/UnitType"
@@ -1291,82 +1374,66 @@
           }
         }
       },
-      "TenancyItemJson" : {
-        "description" : "A rental agreement item with basic information from a tenant's perspective",
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "agreementId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "rentalType" : {
-            "description" : "Type of the node (e.g., 'PROPERTY', 'BUILDING')",
-            "type" : "string",
-            "examples" : [ "PROPERTY" ],
-            "$ref" : "#/components/schemas/UnitType"
-          },
-          "rentalTitle" : {
-            "type" : "string",
-            "description" : "Title of the node",
-            "examples" : [ "Main Building" ]
-          },
-          "location" : {
-            "type" : "string",
-            "description" : "Location of the node (address or custom)",
-            "examples" : [ "Berliner Str. 123, 12345 Berlin" ]
-          },
-          "active" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "rentalType" ]
-      },
       "TenancyJson" : {
         "description" : "A read-only rental agreement of a rentable unit from a tenant's perspective",
         "type" : "object",
         "properties" : {
+          "active" : {
+            "type" : "boolean"
+          },
           "id" : {
-            "type" : "string"
-          },
-          "rentalType" : {
-            "description" : "Type of the node (e.g., 'PROPERTY', 'BUILDING')",
+            "description" : "Unique identifier of the rental agreement",
+            "readOnly" : true,
             "type" : "string",
-            "examples" : [ "PROPERTY" ],
-            "$ref" : "#/components/schemas/UnitType"
+            "$ref" : "#/components/schemas/UUID"
           },
-          "rentalTitle" : {
-            "type" : "string",
-            "description" : "Title of the node",
-            "examples" : [ "Main Building" ]
+          "tenants" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CoTenantJson"
+            },
+            "description" : "List of tenants in this rental agreement",
+            "readOnly" : true
           },
           "startOfRental" : {
+            "description" : "Start date of the rental period",
+            "type" : "string",
             "$ref" : "#/components/schemas/LocalDate"
           },
           "endOfRental" : {
+            "description" : "End date of the rental period",
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/LocalDate"
           },
-          "billingCycle" : {
-            "$ref" : "#/components/schemas/BillingCycle"
+          "rentalUnits" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RentalUnitJson"
+            },
+            "description" : "List of rental units in this agreement",
+            "readOnly" : true
           },
           "basicRent" : {
             "type" : "number",
-            "format" : "float"
+            "format" : "float",
+            "description" : "Sum of basic rent from all currently active rents",
+            "readOnly" : true
           },
           "operatingCostsPrepayment" : {
             "type" : "number",
-            "format" : "float"
+            "format" : "float",
+            "description" : "Sum of operating costs prepayment from all currently active rents",
+            "readOnly" : true
           },
           "heatingCostsPrepayment" : {
             "type" : "number",
-            "format" : "float"
+            "format" : "float",
+            "description" : "Sum of heating costs prepayment from all currently active rents",
+            "readOnly" : true
           }
         },
-        "required" : [ "rentalType" ]
+        "required" : [ "startOfRental" ]
       },
       "TenancyListJson" : {
         "description" : "A list of rental agreements from a tenant's perspective",
@@ -1375,7 +1442,7 @@
           "agreements" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/TenancyItemJson"
+              "$ref" : "#/components/schemas/TenancyJson"
             }
           }
         }
@@ -5544,246 +5611,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/api/v1/tenancies/{tenancyId}/apartments/{rentalId}" : {
-      "get" : {
-        "summary" : "Retrieve information of a tenancy.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Apartment for specified tenancy and rental ID returned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TenancyJson"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The tenancy does not exist"
-          }
-        }
-      }
-    },
-    "/api/v1/tenancies/{tenancyId}/buildings/{rentalId}" : {
-      "get" : {
-        "summary" : "Retrieve information of a tenancy.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Building for specified tenancy and rental ID returned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TenancyJson"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The tenancy does not exist"
-          }
-        }
-      }
-    },
-    "/api/v1/tenancies/{tenancyId}/commercials/{rentalId}" : {
-      "get" : {
-        "summary" : "Retrieve information of a tenancy.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Commercial for specified tenancy and rental ID returned.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TenancyJson"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The tenancy does not exist"
-          }
-        }
-      }
-    },
-    "/api/v1/tenancies/{tenancyId}/properties/{rentalId}" : {
-      "get" : {
-        "summary" : "Retrieve information of a tenancy.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Property for specified tenancy and rental ID returned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TenancyJson"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The tenancy does not exist"
-          }
-        }
-      }
-    },
-    "/api/v1/tenancies/{tenancyId}/sites/{rentalId}" : {
-      "get" : {
-        "summary" : "Retrieve information of a tenancy.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Site for specified tenancy and rental ID returned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TenancyJson"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The tenancy does not exist"
-          }
-        }
-      }
-    },
-    "/api/v1/tenancies/{tenancyId}/storages/{rentalId}" : {
-      "get" : {
-        "summary" : "Retrieve information of a tenancy.",
-        "parameters" : [ {
-          "description" : "ID of the rental",
-          "required" : true,
-          "name" : "rentalId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        }, {
-          "description" : "ID of the tenancy",
-          "required" : true,
-          "name" : "tenancyId",
-          "in" : "path",
-          "schema" : {
-            "$ref" : "#/components/schemas/UUID"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Storage for specified tenancy and rental ID returned.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TenancyJson"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "No user authentication provided via session cookie"
-          },
-          "404" : {
-            "description" : "The tenancy does not exist"
           }
         }
       }
