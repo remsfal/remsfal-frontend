@@ -150,7 +150,7 @@ onMounted(async () => {
       <!-- New Issue Dialog -->
       <TenantNewIssueDialog
         v-model:visible="showNewIssueDialog"
-        :tenancyId="firstActiveContract?.id"
+        :tenancyId="firstActiveContract?.agreementId"
         @issueCreated="handleIssueCreated"
       />
     </div>

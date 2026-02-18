@@ -1069,6 +1069,9 @@
         "description" : "A rental agreement for rentable units",
         "type" : "object",
         "properties" : {
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
           "allRents" : {
             "type" : "array",
             "items" : {
@@ -1341,11 +1344,22 @@
           "active" : {
             "type" : "boolean"
           },
-          "id" : {
+          "agreementId" : {
             "description" : "Unique identifier of the rental agreement",
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
+          },
+          "projectTitle" : {
+            "type" : "string",
+            "description" : "Title of the project this rental agreement belongs to",
+            "readOnly" : true
+          },
+          "address" : {
+            "description" : "Address of the building this rental agreement belongs to",
+            "readOnly" : true,
+            "type" : "object",
+            "$ref" : "#/components/schemas/AddressJson"
           },
           "tenants" : {
             "type" : "array",
@@ -1357,6 +1371,7 @@
           },
           "startOfRental" : {
             "description" : "Start date of the rental period",
+            "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/LocalDate"
           },
@@ -1392,8 +1407,7 @@
             "description" : "Sum of heating costs prepayment from all currently active rents",
             "readOnly" : true
           }
-        },
-        "required" : [ "startOfRental" ]
+        }
       },
       "TenancyListJson" : {
         "description" : "A list of rental agreements from a tenant's perspective",

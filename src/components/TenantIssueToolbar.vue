@@ -30,8 +30,8 @@ const { t } = useI18n();
 const tenancyOptions = computed(() => [
   { label: t('tenantIssues.filter.allTenancies'), value: null },
   ...props.contracts.map(c => ({
-    label: c.rentalUnits?.[0]?.location || c.rentalUnits?.[0]?.title || c.id,
-    value: c.id,
+    label: c.rentalUnits?.[0]?.location || c.rentalUnits?.[0]?.title || c.agreementId,
+    value: c.agreementId,
   })),
 ]);
 

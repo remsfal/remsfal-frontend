@@ -20,7 +20,7 @@ const loadContract = async () => {
   try {
     // Load tenancy list to find the contract
     const tenancies = await tenancyService.getTenancies();
-    const item = tenancies.find(t => t.id === contractId);
+    const item = tenancies.find(t => t.agreementId === contractId);
 
     if (!item) {
       throw new Error('Vertrag nicht gefunden');
@@ -58,7 +58,7 @@ onMounted(loadContract);
           <template #content>
             <div class="flex flex-col gap-1 mb-6">
               <p class="text-sm text-gray-500">
-                Vertragsnummer {{ contract?.id ?? route.params.contractId }}
+                Vertragsnummer {{ contract?.agreementId ?? route.params.contractId }}
               </p>
               <h2 class="text-xl font-semibold text-gray-900">
                 {{ contract?.rentalUnits?.[0]?.location || contract?.rentalUnits?.[0]?.title || 'Lade Adresse …' }}

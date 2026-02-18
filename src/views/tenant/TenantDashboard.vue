@@ -82,8 +82,8 @@ onMounted(loadContracts);
             >
               <RouterLink
                 v-for="contract in contracts"
-                :key="contract.id"
-                :to="`/tenancies/contract/${contract.id}`"
+                :key="contract.agreementId"
+                :to="`/tenancies/contract/${contract.agreementId}`"
                 class="no-underline"
                 data-testid="contract-card"
               >
@@ -106,7 +106,7 @@ onMounted(loadContracts);
                           Vertragsnummer
                         </dt>
                         <dd class="text-gray-900">
-                          {{ contract.id }}
+                          {{ contract.agreementId }}
                         </dd>
                       </div>
                       <div v-if="contract.rentalUnits?.[0]?.type" class="flex justify-between">
