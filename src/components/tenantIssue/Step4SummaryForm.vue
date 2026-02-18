@@ -9,19 +9,21 @@ import Divider from 'primevue/divider';
 
 // Types
 import type { Type } from '@/services/IssueService';
-import type { TenancyItem } from '@/services/TenancyService';
+import type { TenancyJson } from '@/services/TenancyService';
+import { formatTenancyLabel } from '@/services/TenancyService';
 
 // Props & Emits
 const props = defineProps<{
   tenancyId: string | null;
   issueType: Type | null;
   issueCategory: string | null;
+  rentalUnitId: string | null;
   causedBy: string | null;
   causedByUnknown: boolean;
   location: string | null;
   description: string | null;
   files: File[];
-  tenancies: TenancyItem[];
+  tenancies: TenancyJson[];
   generatedTitle: string;
 }>();
 
@@ -33,11 +35,20 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-// Get tenancy title
+// Get tenancy label
 const tenancyTitle = computed(() => {
-  const tenancy = props.tenancies.find(t => t.id === props.tenancyId);
+  const tenancy = props.tenancies.find(t => t.agreementId === props.tenancyId);
   if (!tenancy) return '-';
-  return tenancy.rentalTitle || tenancy.name || tenancy.location || tenancy.id || 'Unbekannt';
+  return formatTenancyLabel(tenancy);
+});
+
+// Get rental unit label
+const rentalUnitTitle = computed(() => {
+  if (!props.rentalUnitId) return null;
+  const tenancy = props.tenancies.find(t => t.agreementId === props.tenancyId);
+  const unit = tenancy?.rentalUnits?.find(u => u.id === props.rentalUnitId);
+  if (!unit) return null;
+  return unit.title || unit.location || unit.type || 'Einheit';
 });
 
 // Get type label
@@ -145,6 +156,11 @@ function handleEdit(stepValue: string) {
           <div>
             <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.tenancySection') }}</p>
             <p class="font-medium">{{ tenancyTitle }}</p>
+          </div>
+
+          <div v-if="rentalUnitTitle">
+            <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.rentalUnitSection') }}</p>
+            <p class="font-medium">{{ rentalUnitTitle }}</p>
           </div>
         </div>
       </div>

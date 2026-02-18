@@ -15,7 +15,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 
 // Services & Types
 import { issueService, type Issue, type Type } from '@/services/IssueService';
-import { tenancyService, type TenancyItem } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 // Step Components
@@ -42,7 +42,7 @@ const userSessionStore = useUserSessionStore();
 const currentStep = ref<string>('1');
 
 // Tenancies State
-const tenancies = ref<TenancyItem[]>([]);
+const tenancies = ref<TenancyJson[]>([]);
 const loadingTenancies = ref(false);
 
 // Form State
@@ -50,6 +50,7 @@ interface TenantIssueFormState {
   tenancyId: string | null;
   issueType: Type | null;
   issueCategory: string | null;
+  rentalUnitId: string | null;
   causedBy: string | null;
   causedByUnknown: boolean;
   location: string | null;
@@ -61,6 +62,7 @@ const formState = ref<TenantIssueFormState>({
   tenancyId: null,
   issueType: null,
   issueCategory: null,
+  rentalUnitId: null,
   causedBy: null,
   causedByUnknown: false,
   location: null,
@@ -79,8 +81,8 @@ async function loadTenancies() {
     tenancies.value = await tenancyService.getTenancies();
 
     // Auto-select if only one tenancy
-    if (tenancies.value.length === 1 && tenancies.value[0]?.id) {
-      formState.value.tenancyId = tenancies.value[0].id;
+    if (tenancies.value.length === 1 && tenancies.value[0]?.agreementId) {
+      formState.value.tenancyId = tenancies.value[0].agreementId;
     }
   } catch (error) {
     console.error('Error loading tenancies:', error);
@@ -192,6 +194,7 @@ function transformFormDataToIssue(state: TenantIssueFormState): Partial<Issue> {
     type: state.issueType!,
     category: (state.issueCategory as any) || undefined,
     agreementId: state.tenancyId!,
+    rentalUnitId: state.rentalUnitId || undefined,
     description: buildDescription(state),
     location: state.location?.trim() || undefined,
   };
@@ -242,9 +245,12 @@ async function handleSubmit() {
 // Reset Form
 function resetForm() {
   formState.value = {
-    tenancyId: (tenancies.value.length === 1 && tenancies.value[0]?.id) ? tenancies.value[0].id : null,
+    tenancyId: (tenancies.value.length === 1 && tenancies.value[0]?.agreementId)
+      ? tenancies.value[0].agreementId
+      : null,
     issueType: null,
     issueCategory: null,
+    rentalUnitId: null,
     causedBy: null,
     causedByUnknown: false,
     location: null,
@@ -299,10 +305,12 @@ const hasNoContracts = computed(() => tenancies.value.length === 0 && !loadingTe
             :tenancyId="formState.tenancyId"
             :issueType="formState.issueType"
             :issueCategory="formState.issueCategory"
+            :rentalUnitId="formState.rentalUnitId"
             :tenancies="tenancies"
             @update:tenancyId="formState.tenancyId = $event"
             @update:issueType="formState.issueType = $event"
             @update:issueCategory="formState.issueCategory = $event"
+            @update:rentalUnitId="formState.rentalUnitId = $event"
             @next="activateCallback('2')"
           />
         </StepPanel>
@@ -340,6 +348,7 @@ const hasNoContracts = computed(() => tenancies.value.length === 0 && !loadingTe
             :tenancyId="formState.tenancyId"
             :issueType="formState.issueType"
             :issueCategory="formState.issueCategory"
+            :rentalUnitId="formState.rentalUnitId"
             :causedBy="formState.causedBy"
             :causedByUnknown="formState.causedByUnknown"
             :location="formState.location"

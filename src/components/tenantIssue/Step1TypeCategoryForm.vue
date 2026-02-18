@@ -11,7 +11,8 @@ import Message from 'primevue/message';
 
 // Types
 import type { Type } from '@/services/IssueService';
-import type { TenancyItem } from '@/services/TenancyService';
+import type { TenancyJson, RentalUnitJson } from '@/services/TenancyService';
+import { formatTenancyLabel } from '@/services/TenancyService';
 
 // Category type definition
 interface CategoryOption {
@@ -25,13 +26,15 @@ const props = defineProps<{
   tenancyId: string | null;
   issueType: Type | null;
   issueCategory: string | null;
-  tenancies: TenancyItem[];
+  rentalUnitId: string | null;
+  tenancies: TenancyJson[];
 }>();
 
 const emit = defineEmits<{
   'update:tenancyId': [value: string | null];
   'update:issueType': [value: Type | null];
   'update:issueCategory': [value: string | null];
+  'update:rentalUnitId': [value: string | null];
   next: [];
 }>();
 
@@ -165,11 +168,9 @@ function onCategoryChange(value: CategoryOption | string | null) {
   if (!value) {
     emit('update:issueCategory', null);
   } else if (typeof value === 'string') {
-    // User typed something - find matching category
     const match = availableCategories.value.find(c => c.label === value);
     emit('update:issueCategory', match?.value || null);
   } else {
-    // Selected from dropdown
     emit('update:issueCategory', value.value);
   }
 }
@@ -177,6 +178,7 @@ function onCategoryChange(value: CategoryOption | string | null) {
 // Local state for form fields
 const localTenancyId = ref(props.tenancyId);
 const localIssueType = ref(props.issueType);
+const localRentalUnitId = ref(props.rentalUnitId);
 
 // Watch type changes to reset category
 watch(() => props.issueType, (newType) => {
@@ -185,16 +187,40 @@ watch(() => props.issueType, (newType) => {
   }
 });
 
+// Reset rental unit when tenancy changes
+watch(localTenancyId, () => {
+  localRentalUnitId.value = null;
+  emit('update:rentalUnitId', null);
+});
+
 // Tenancy select options
 const tenancyOptions = computed(() =>
-  props.tenancies.map(t => ({
-    label: t.rentalTitle || t.name || t.location || t.id || 'Unbekannt',
-    value: t.id,
+  props.tenancies.map(tenancy => ({
+    label: formatTenancyLabel(tenancy),
+    value: tenancy.agreementId,
   }))
 );
 
 // Check if only one tenancy
 const hasOnlyOneTenancy = computed(() => props.tenancies.length === 1);
+
+// Currently selected tenancy object
+const selectedTenancy = computed<TenancyJson | undefined>(() =>
+  props.tenancies.find(t => t.agreementId === localTenancyId.value)
+);
+
+// Rental unit options for the selected tenancy
+const rentalUnitOptions = computed(() => {
+  const units = selectedTenancy.value?.rentalUnits ?? [];
+  return units.map((unit: RentalUnitJson) => ({
+    label: unit.title || unit.location || unit.type || 'Einheit',
+    value: unit.id,
+  }));
+});
+
+const hasRentalUnits = computed(() =>
+  !!localTenancyId.value && rentalUnitOptions.value.length > 0
+);
 
 // Validation
 const canProceed = computed(() => {
@@ -211,6 +237,7 @@ function handleNext() {
 
   emit('update:tenancyId', localTenancyId.value);
   emit('update:issueType', localIssueType.value);
+  emit('update:rentalUnitId', localRentalUnitId.value);
   emit('next');
 }
 </script>
@@ -286,6 +313,23 @@ function handleNext() {
         <Message severity="info" size="small" variant="simple">
           {{ t('tenantIssue.step1.categoryHint') }}
         </Message>
+      </div>
+
+      <!-- Rental Unit Selection (optional) -->
+      <div v-if="hasRentalUnits" class="flex flex-col gap-2">
+        <label for="rentalUnitId" class="font-semibold">
+          {{ t('tenantIssue.step1.rentalUnitLabel') }}
+        </label>
+        <Select
+          id="rentalUnitId"
+          v-model="localRentalUnitId"
+          :options="rentalUnitOptions"
+          optionLabel="label"
+          optionValue="value"
+          :placeholder="t('tenantIssue.step1.rentalUnitPlaceholder')"
+          showClear
+          fluid
+        />
       </div>
     </div>
 
