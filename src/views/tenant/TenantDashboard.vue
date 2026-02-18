@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import { tenancyService, type TenancyItem } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Tag from 'primevue/tag';
 
-const contracts = ref<TenancyItem[]>([]);
+const contracts = ref<TenancyJson[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-const getTenancyStatus = (item: TenancyItem) => {
-  // TenancyItemJson doesn't have endOfRental field, use active status
+const getTenancyStatus = (item: TenancyJson) => {
+  // TenancyJsonJson doesn't have endOfRental field, use active status
   return item.active !== false ? 'Active' : 'Expired';
 };
 
@@ -91,7 +91,7 @@ onMounted(loadContracts);
                   <template #content>
                     <div class="flex items-start justify-between gap-2 mb-3">
                       <h2 class="text-lg font-medium text-gray-900">
-                        {{ contract.location || contract.rentalTitle || 'Keine Adresse' }}
+                        {{ contract.rentalUnits?.[0]?.location || contract.rentalUnits?.[0]?.title || 'Keine Adresse' }}
                       </h2>
                       <Tag
                         :value="getStatusLabel(getTenancyStatus(contract))"
@@ -109,12 +109,12 @@ onMounted(loadContracts);
                           {{ contract.id }}
                         </dd>
                       </div>
-                      <div v-if="contract.rentalType" class="flex justify-between">
+                      <div v-if="contract.rentalUnits?.[0]?.type" class="flex justify-between">
                         <dt class="font-medium text-gray-500">
                           Typ
                         </dt>
                         <dd class="text-gray-900">
-                          {{ contract.rentalType }}
+                          {{ contract.rentalUnits?.[0]?.type }}
                         </dd>
                       </div>
                     </dl>

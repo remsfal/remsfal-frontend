@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { tenancyService, type TenancyItem } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 const route = useRoute();
 
-const contract = ref<TenancyItem | null>(null);
+const contract = ref<TenancyJson | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -26,8 +26,8 @@ const loadContract = async () => {
       throw new Error('Vertrag nicht gefunden');
     }
 
-    // TenancyItemJson doesn't have rentalId, so we can't fetch detailed data
-    // Just use the summary data available in TenancyItem
+    // TenancyJson doesn't have rentalId, so we can't fetch detailed data
+    // Just use the summary data available in TenancyJson
     contract.value = item;
   } catch (err) {
     console.error(err);
@@ -61,7 +61,7 @@ onMounted(loadContract);
                 Vertragsnummer {{ contract?.id ?? route.params.contractId }}
               </p>
               <h2 class="text-xl font-semibold text-gray-900">
-                {{ contract?.location || contract?.rentalTitle || 'Lade Adresse …' }}
+                {{ contract?.rentalUnits?.[0]?.location || contract?.rentalUnits?.[0]?.title || 'Lade Adresse …' }}
               </h2>
             </div>
 
@@ -75,12 +75,12 @@ onMounted(loadContract);
             </div>
 
             <div v-if="contract" class="grid grid-cols-1 gap-4 md:grid-cols-2 mb-6">
-              <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+              <div v-if="contract.rentalUnits?.[0]?.type" class="rounded-lg border border-gray-200 bg-gray-50 p-4">
                 <p class="text-sm font-medium text-gray-500">
                   Objekttyp
                 </p>
                 <p class="text-lg font-semibold text-gray-900">
-                  {{ contract.rentalType }}
+                  {{ contract.rentalUnits?.[0]?.type }}
                 </p>
               </div>
               <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
@@ -91,20 +91,12 @@ onMounted(loadContract);
                   {{ contract.active ? 'Aktiv' : 'Inaktiv' }}
                 </p>
               </div>
-              <div v-if="contract.name" class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <p class="text-sm font-medium text-gray-500">
-                  Name
-                </p>
-                <p class="text-lg font-semibold text-gray-900">
-                  {{ contract.name }}
-                </p>
-              </div>
-              <div v-if="contract.rentalTitle" class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+              <div v-if="contract.rentalUnits?.[0]?.title" class="rounded-lg border border-gray-200 bg-gray-50 p-4">
                 <p class="text-sm font-medium text-gray-500">
                   Objektbezeichnung
                 </p>
                 <p class="text-lg font-semibold text-gray-900">
-                  {{ contract.rentalTitle }}
+                  {{ contract.rentalUnits?.[0]?.title }}
                 </p>
               </div>
             </div>

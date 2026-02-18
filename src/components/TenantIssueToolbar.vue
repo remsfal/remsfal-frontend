@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { TenancyItem } from '@/services/TenancyService';
+import type { TenancyJson } from '@/services/TenancyService.ts';
 import type { Status, Type } from '@/services/IssueService.ts';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
@@ -14,7 +14,7 @@ const props = defineProps<{
   status: Status | null;
   type: Type | null;
   search: string;
-  contracts: TenancyItem[];
+  contracts: TenancyJson[];
 }>();
 
 const emit = defineEmits<{
@@ -30,7 +30,7 @@ const { t } = useI18n();
 const tenancyOptions = computed(() => [
   { label: t('tenantIssues.filter.allTenancies'), value: null },
   ...props.contracts.map(c => ({
-    label: c.location || c.rentalTitle || c.id,
+    label: c.rentalUnits?.[0]?.location || c.rentalUnits?.[0]?.title || c.id,
     value: c.id,
   })),
 ]);

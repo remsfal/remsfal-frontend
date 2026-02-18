@@ -9,7 +9,7 @@ import { computed, onMounted, ref, toRaw } from 'vue';
 import { useRouter } from 'vue-router';
 import type { components } from '@/services/api/platform-schema';
 
-type TenancyUnitItem = components['schemas']['TenancyItemJson'];
+type TenancyUnitItem = components['schemas']['RentalUnitJson'];
 
 const router = useRouter();
 const projectStore = useProjectStore();

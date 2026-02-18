@@ -8,28 +8,42 @@ export const tenancyHandlers = [
   http.get(`${API_BASE}/tenancies`, () => {
     return HttpResponse.json(
       {
-        tenancies: [
+        agreements: [
           {
             id: 't1',
-            rentalType: 'APARTMENT',
-            rentalTitle: 'Apartment 101',
-            startOfRental: new Date().toISOString(),
-            endOfRental: new Date().toISOString(),
+            startOfRental: '2024-01-01',
+            endOfRental: '2024-12-31',
             active: true,
+            tenants: [],
+            rentalUnits: [
+              {
+                id: 'u1',
+                type: 'APARTMENT',
+                title: 'Apartment 101',
+                location: 'Musterstraße 1',
+              },
+            ],
             basicRent: 1000,
             operatingCostsPrepayment: 200,
-            heatingCostsPrepayment: 150
+            heatingCostsPrepayment: 150,
           },
           {
             id: 't2',
-            rentalType: 'PROPERTY',
-            rentalTitle: 'Property A',
-            startOfRental: new Date().toISOString(),
-            endOfRental: new Date().toISOString(),
+            startOfRental: '2024-01-01',
+            endOfRental: '2024-12-31',
             active: true,
+            tenants: [],
+            rentalUnits: [
+              {
+                id: 'u2',
+                type: 'PROPERTY',
+                title: 'Property A',
+                location: 'Beispielweg 5',
+              },
+            ],
             basicRent: 2000,
             operatingCostsPrepayment: 400,
-            heatingCostsPrepayment: 300
+            heatingCostsPrepayment: 300,
           },
         ],
       },

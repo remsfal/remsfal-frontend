@@ -1,19 +1,25 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import ContractDetailView from '@/views/ContractDetailView.vue';
-import { tenancyService, type TenancyItem } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 
 vi.mock('vue-router', () => ({ useRoute: () => ({ params: { contractId: 'T-TEST' } }) }));
 
 describe('ContractDetailView', () => {
-  const mockTenancies: TenancyItem[] = [
+  const mockTenancies: TenancyJson[] = [
     {
       id: 'T-TEST',
-      name: 'Test Mietverhältnis',
-      rentalType: 'APARTMENT',
-      rentalTitle: 'Wohnung 1',
-      location: 'Hauptstr. 99, 12345 Berlin',
+      startOfRental: '2024-01-01',
       active: true,
+      tenants: [],
+      rentalUnits: [
+        {
+          id: 'u1',
+          type: 'APARTMENT',
+          title: 'Wohnung 1',
+          location: 'Hauptstr. 99, 12345 Berlin',
+        },
+      ],
     },
   ];
 

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import { tenancyService, type TenancyItem } from '@/services/TenancyService';
+import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 
 vi.mock('@/services/TenancyService', async () => {
   const actual = await vi.importActual<typeof import('@/services/TenancyService')>(
@@ -9,30 +9,39 @@ vi.mock('@/services/TenancyService', async () => {
 
   return {
     ...actual,
-    tenancyService: {
-      getTenancies: vi.fn(),
-      getTenancyDetail: vi.fn(),
-    },
+    tenancyService: {getTenancies: vi.fn(),},
   };
 });
 
 describe('TenantDashboard', () => {
-  const mockContracts: TenancyItem[] = [
+  const mockContracts: TenancyJson[] = [
     {
       id: 'T-1',
-      name: 'Mietverhältnis 1',
-      rentalType: 'APARTMENT',
-      rentalTitle: 'Wohnung 1',
-      location: 'Teststr. 1, 12345 Berlin',
+      startOfRental: '2024-01-01',
       active: true,
+      tenants: [],
+      rentalUnits: [
+        {
+          id: 'u1',
+          type: 'APARTMENT',
+          title: 'Wohnung 1',
+          location: 'Teststr. 1, 12345 Berlin',
+        },
+      ],
     },
     {
       id: 'T-2',
-      name: 'Mietverhältnis 2',
-      rentalType: 'APARTMENT',
-      rentalTitle: 'Wohnung 2',
-      location: 'Musterweg 5, 12345 Berlin',
+      startOfRental: '2024-01-01',
       active: false,
+      tenants: [],
+      rentalUnits: [
+        {
+          id: 'u2',
+          type: 'APARTMENT',
+          title: 'Wohnung 2',
+          location: 'Musterweg 5, 12345 Berlin',
+        },
+      ],
     },
   ];
 
