@@ -268,11 +268,12 @@ function handleNext() {
           :suggestions="filteredCategories"
           optionLabel="label"
           :placeholder="t('tenantIssue.step1.categoryPlaceholder')"
+          fluid
+          dropdown
+          forceSelection
           @complete="searchCategories"
           @itemSelect="onCategorySelect"
           @update:modelValue="onCategoryChange"
-          fluid
-          forceSelection
         >
           <template #option="{ option }">
             <div class="flex flex-col">

@@ -137,14 +137,6 @@ const reporterName = computed(() => {
   return `${firstName} ${lastName}`.trim() || 'Unbekannt';
 });
 
-// Extract tenancyId from composite ID (format: "tenancyId/buildings/rentalId")
-function extractTenancyId(compositeId: string | null | undefined): string | null {
-  if (!compositeId) return null;
-  // The tenancyId is the first part before the first slash
-  const parts = compositeId.split('/');
-  return parts[0] || null;
-}
-
 // Generate Issue Title
 function generateIssueTitle(state: TenantIssueFormState): string {
   const { issueType, issueCategory } = state;
@@ -195,14 +187,11 @@ function buildDescription(state: TenantIssueFormState): string {
 
 // Transform Form Data to Issue API Schema
 function transformFormDataToIssue(state: TenantIssueFormState): Partial<Issue> {
-  // Extract the actual tenancyId (UUID) from the composite ID
-  const actualTenancyId = extractTenancyId(state.tenancyId);
-
   return {
     title: generateIssueTitle(state),
     type: state.issueType!,
     category: (state.issueCategory as any) || undefined,
-    agreementId: actualTenancyId!,
+    agreementId: state.tenancyId!,
     description: buildDescription(state),
     location: state.location?.trim() || undefined,
   };
