@@ -606,6 +606,7 @@ export interface components {
     };
     /** @description A rental agreement for rentable units */
     RentalAgreementJson: {
+      projectId?: components["schemas"]["UUID"];
       allRents?: components["schemas"]["RentModel"][];
       /** Format: float */
       basicRent?: number;
@@ -724,11 +725,15 @@ export interface components {
     TenancyJson: {
       active?: boolean;
       /** @description Unique identifier of the rental agreement */
-      readonly id?: components["schemas"]["UUID"];
+      readonly agreementId?: components["schemas"]["UUID"];
+      /** @description Title of the project this rental agreement belongs to */
+      readonly projectTitle?: string;
+      /** @description Address of the building this rental agreement belongs to */
+      readonly address?: components["schemas"]["AddressJson"];
       /** @description List of tenants in this rental agreement */
       readonly tenants?: components["schemas"]["CoTenantJson"][];
       /** @description Start date of the rental period */
-      startOfRental: components["schemas"]["LocalDate"];
+      readonly startOfRental?: components["schemas"]["LocalDate"];
       /** @description End date of the rental period */
       readonly endOfRental?: components["schemas"]["LocalDate"];
       /** @description List of rental units in this agreement */
