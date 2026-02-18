@@ -11,7 +11,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import type { components } from '@/services/api/platform-schema';
 
 // OpenAPI type
-type TenancyUnitItem = components['schemas']['TenancyItemJson'];
+type TenancyUnitItem = components['schemas']['RentalUnitJson'];
 
 const props = defineProps<{
   projectId?: string;
@@ -90,9 +90,8 @@ let newRowId = 1; // incremental counter for new rows
 
 const emptyRowTemplate: TenancyUnitItem = {
   id: '', // will be set when adding a row
-  rentalType: 'PROPERTY', // default valid value
-  rentalTitle: '',
-  active: true,
+  type: 'PROPERTY',
+  title: '',
 };
 
 const addNewRow = () => {
@@ -102,10 +101,10 @@ const addNewRow = () => {
 
 const columns = ref([
   {
- field: 'rentalType', header: 'Mietgegenstand', editor: 'Dropdown' 
+ field: 'type', header: 'Mietgegenstand', editor: 'Dropdown' 
 },
   {
- field: 'unitTitle', header: 'Wohneinheit', editor: 'Dropdown' 
+ field: 'title', header: 'Wohneinheit', editor: 'Dropdown' 
 },
 ]);
 const onCellEditComplete = async (event: any) => {
