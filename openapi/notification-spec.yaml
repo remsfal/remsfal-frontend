@@ -152,6 +152,24 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ChatSessionJson"
+    CoTenantJson:
+      description: Tenant information in a rental agreement
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        firstName:
+          type: string
+          readOnly: true
+        lastName:
+          type: string
+          readOnly: true
+        userId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
     CommercialJson:
       description: An commercial inside a building
       type: object
@@ -378,6 +396,10 @@ components:
           $ref: "#/components/schemas/UUID"
         visibleToTenants:
           type: boolean
+        rentalUnitId:
+          $ref: "#/components/schemas/UUID"
+        rentalUnitType:
+          $ref: "#/components/schemas/UnitType"
         assigneeId:
           $ref: "#/components/schemas/UUID"
         location:
@@ -770,6 +792,26 @@ components:
           type: number
           format: float
           minimum: 0
+    RentModel:
+      type: object
+      properties:
+        unitId:
+          $ref: "#/components/schemas/UUID"
+        firstPaymentDate:
+          $ref: "#/components/schemas/LocalDate"
+        lastPaymentDate:
+          $ref: "#/components/schemas/LocalDate"
+        billingCycle:
+          $ref: "#/components/schemas/BillingCycle"
+        basicRent:
+          type: number
+          format: float
+        operatingCostsPrepayment:
+          type: number
+          format: float
+        heatingCostsPrepayment:
+          type: number
+          format: float
     RentalAgreementItemJson:
       description: A rental agreement item with aggregated rent information for list
         views
@@ -817,6 +859,23 @@ components:
       description: A rental agreement for rentable units
       type: object
       properties:
+        allRents:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentModel"
+        basicRent:
+          type: number
+          format: float
+        operatingCostsPrepayment:
+          type: number
+          format: float
+        heatingCostsPrepayment:
+          type: number
+          format: float
+        activeRents:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentModel"
         active:
           type: boolean
         id:
@@ -870,8 +929,8 @@ components:
           items:
             $ref: "#/components/schemas/RentalAgreementItemJson"
     RentalUnitJson:
-      type: object
       description: A general rental unit
+      type: object
       properties:
         type:
           $ref: "#/components/schemas/UnitType"
@@ -1001,72 +1060,57 @@ components:
           type: string
         description:
           type: string
-    TenancyItemJson:
-      description: A rental agreement item with basic information from a tenant's
-        perspective
-      type: object
-      properties:
-        id:
-          type: string
-        agreementId:
-          $ref: "#/components/schemas/UUID"
-        name:
-          type: string
-        rentalType:
-          description: "Type of the node (e.g., 'PROPERTY', 'BUILDING')"
-          type: string
-          examples:
-          - PROPERTY
-          $ref: "#/components/schemas/UnitType"
-        rentalTitle:
-          type: string
-          description: Title of the node
-          examples:
-          - Main Building
-        location:
-          type: string
-          description: Location of the node (address or custom)
-          examples:
-          - "Berliner Str. 123, 12345 Berlin"
-        active:
-          type: boolean
-      required:
-      - rentalType
     TenancyJson:
       description: A read-only rental agreement of a rentable unit from a tenant's
         perspective
       type: object
       properties:
+        active:
+          type: boolean
         id:
+          description: Unique identifier of the rental agreement
+          readOnly: true
           type: string
-        rentalType:
-          description: "Type of the node (e.g., 'PROPERTY', 'BUILDING')"
-          type: string
-          examples:
-          - PROPERTY
-          $ref: "#/components/schemas/UnitType"
-        rentalTitle:
-          type: string
-          description: Title of the node
-          examples:
-          - Main Building
+          $ref: "#/components/schemas/UUID"
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/CoTenantJson"
+          description: List of tenants in this rental agreement
+          readOnly: true
         startOfRental:
+          description: Start date of the rental period
+          type: string
           $ref: "#/components/schemas/LocalDate"
         endOfRental:
+          description: End date of the rental period
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/LocalDate"
-        billingCycle:
-          $ref: "#/components/schemas/BillingCycle"
+        rentalUnits:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentalUnitJson"
+          description: List of rental units in this agreement
+          readOnly: true
         basicRent:
           type: number
           format: float
+          description: Sum of basic rent from all currently active rents
+          readOnly: true
         operatingCostsPrepayment:
           type: number
           format: float
+          description: Sum of operating costs prepayment from all currently active
+            rents
+          readOnly: true
         heatingCostsPrepayment:
           type: number
           format: float
+          description: Sum of heating costs prepayment from all currently active rents
+          readOnly: true
       required:
-      - rentalType
+      - startOfRental
     TenancyListJson:
       description: A list of rental agreements from a tenant's perspective
       type: object
@@ -1074,7 +1118,7 @@ components:
         agreements:
           type: array
           items:
-            $ref: "#/components/schemas/TenancyItemJson"
+            $ref: "#/components/schemas/TenancyJson"
     TenantItemJson:
       description: A tenant item with rental units and active status for list views
       type: object
