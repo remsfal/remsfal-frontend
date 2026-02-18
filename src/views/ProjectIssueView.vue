@@ -4,6 +4,7 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
 import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
+import IssueRelationshipsCard from '@/components/issue/IssueRelationshipsCard.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
 
 /* Props */
@@ -100,6 +101,12 @@ watch(
       :issueId="issueId"
       :initialDescription="description"
       @saved="handleDescriptionSaved"
+    />
+
+    <!-- Issue Relationships Card -->
+    <IssueRelationshipsCard
+      :projectId="projectId"
+      :issueId="issueId"
     />
   </div>
 </template>
