@@ -115,20 +115,19 @@ watch(
 
     <template #content>
       <div class="flex flex-col gap-3">
-        <!-- Parent Issue Panel -->
-        <Panel :collapsed="true" toggleable>
+        <!-- Parent Issue Panel - Only render if parent exists -->
+        <Panel v-if="issueData?.parentIssue" :collapsed="true" toggleable>
           <template #header>
             <div class="flex items-center gap-2">
               <i class="pi pi-arrow-up text-gray-600" />
               <span class="font-medium">Parent Issue</span>
               <Chip
-                v-if="relationshipCounts.parent > 0"
                 :label="relationshipCounts.parent.toString()"
                 class="ml-2"
               />
             </div>
           </template>
-          <div v-if="issueData?.parentIssue" class="p-2">
+          <div class="p-2">
             <div
               class="issue-link"
               @click="navigateToIssue(issueData.parentIssue)"
@@ -136,25 +135,21 @@ watch(
               {{ issueData.parentIssue }}
             </div>
           </div>
-          <div v-else class="text-gray-500 text-sm p-2">
-            No parent issue assigned
-          </div>
         </Panel>
 
-        <!-- Children Issues Panel -->
-        <Panel :collapsed="true" toggleable>
+        <!-- Children Issues Panel - Only render if children exist -->
+        <Panel v-if="issueData?.childrenIssues?.length" :collapsed="true" toggleable>
           <template #header>
             <div class="flex items-center gap-2">
               <i class="pi pi-arrow-down text-gray-600" />
               <span class="font-medium">Children Issues</span>
               <Chip
-                v-if="relationshipCounts.children > 0"
                 :label="relationshipCounts.children.toString()"
                 class="ml-2"
               />
             </div>
           </template>
-          <div v-if="issueData?.childrenIssues?.length" class="p-2 flex flex-col gap-2">
+          <div class="p-2 flex flex-col gap-2">
             <div
               v-for="childId in issueData.childrenIssues"
               :key="childId"
@@ -164,25 +159,21 @@ watch(
               {{ childId }}
             </div>
           </div>
-          <div v-else class="text-gray-500 text-sm p-2">
-            No children issues
-          </div>
         </Panel>
 
-        <!-- Blocked By Panel -->
-        <Panel :collapsed="true" toggleable>
+        <!-- Blocked By Panel - Only render if blockedBy exists -->
+        <Panel v-if="issueData?.blockedBy?.length" :collapsed="true" toggleable>
           <template #header>
             <div class="flex items-center gap-2">
               <i class="pi pi-lock text-gray-600" />
               <span class="font-medium">Blocked By</span>
               <Chip
-                v-if="relationshipCounts.blockedBy > 0"
                 :label="relationshipCounts.blockedBy.toString()"
                 class="ml-2"
               />
             </div>
           </template>
-          <div v-if="issueData?.blockedBy?.length" class="p-2 flex flex-col gap-2">
+          <div class="p-2 flex flex-col gap-2">
             <div
               v-for="blockedById in issueData.blockedBy"
               :key="blockedById"
@@ -192,25 +183,21 @@ watch(
               {{ blockedById }}
             </div>
           </div>
-          <div v-else class="text-gray-500 text-sm p-2">
-            Not blocked by any issues
-          </div>
         </Panel>
 
-        <!-- Blocks Panel -->
-        <Panel :collapsed="true" toggleable>
+        <!-- Blocks Panel - Only render if blocks exists -->
+        <Panel v-if="issueData?.blocks?.length" :collapsed="true" toggleable>
           <template #header>
             <div class="flex items-center gap-2">
               <i class="pi pi-ban text-gray-600" />
               <span class="font-medium">Blocks</span>
               <Chip
-                v-if="relationshipCounts.blocks > 0"
                 :label="relationshipCounts.blocks.toString()"
                 class="ml-2"
               />
             </div>
           </template>
-          <div v-if="issueData?.blocks?.length" class="p-2 flex flex-col gap-2">
+          <div class="p-2 flex flex-col gap-2">
             <div
               v-for="blocksId in issueData.blocks"
               :key="blocksId"
@@ -220,25 +207,21 @@ watch(
               {{ blocksId }}
             </div>
           </div>
-          <div v-else class="text-gray-500 text-sm p-2">
-            Not blocking any issues
-          </div>
         </Panel>
 
-        <!-- Related To Panel -->
-        <Panel :collapsed="true" toggleable>
+        <!-- Related To Panel - Only render if relatedTo exists -->
+        <Panel v-if="issueData?.relatedTo?.length" :collapsed="true" toggleable>
           <template #header>
             <div class="flex items-center gap-2">
               <i class="pi pi-link text-gray-600" />
               <span class="font-medium">Related To</span>
               <Chip
-                v-if="relationshipCounts.relatedTo > 0"
                 :label="relationshipCounts.relatedTo.toString()"
                 class="ml-2"
               />
             </div>
           </template>
-          <div v-if="issueData?.relatedTo?.length" class="p-2 flex flex-col gap-2">
+          <div class="p-2 flex flex-col gap-2">
             <div
               v-for="relatedId in issueData.relatedTo"
               :key="relatedId"
@@ -248,25 +231,21 @@ watch(
               {{ relatedId }}
             </div>
           </div>
-          <div v-else class="text-gray-500 text-sm p-2">
-            No related issues
-          </div>
         </Panel>
 
-        <!-- Duplicate Of Panel -->
-        <Panel :collapsed="true" toggleable>
+        <!-- Duplicate Of Panel - Only render if duplicateOf exists -->
+        <Panel v-if="issueData?.duplicateOf?.length" :collapsed="true" toggleable>
           <template #header>
             <div class="flex items-center gap-2">
               <i class="pi pi-copy text-gray-600" />
               <span class="font-medium">Duplicate Of</span>
               <Chip
-                v-if="relationshipCounts.duplicateOf > 0"
                 :label="relationshipCounts.duplicateOf.toString()"
                 class="ml-2"
               />
             </div>
           </template>
-          <div v-if="issueData?.duplicateOf?.length" class="p-2 flex flex-col gap-2">
+          <div class="p-2 flex flex-col gap-2">
             <div
               v-for="duplicateId in issueData.duplicateOf"
               :key="duplicateId"
@@ -275,9 +254,6 @@ watch(
             >
               {{ duplicateId }}
             </div>
-          </div>
-          <div v-else class="text-gray-500 text-sm p-2">
-            Not a duplicate
           </div>
         </Panel>
       </div>
