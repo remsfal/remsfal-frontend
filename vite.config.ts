@@ -59,6 +59,7 @@ export default defineConfig({
     proxy: {
       '/api': createProxyConfig('http://localhost:8080', 'Platform Microservice'),
       '/ticketing': createProxyConfig('http://localhost:8081', 'Ticketing Microservice'),
+      '/notification': createProxyConfig('http://localhost:8082', 'Notification Microservice'),
     },
   },
 });
