@@ -8,7 +8,7 @@ vi.mock('vue-router', () => ({ useRoute: () => ({ params: { contractId: 'T-TEST'
 describe('ContractDetailView', () => {
   const mockTenancies: TenancyJson[] = [
     {
-      id: 'T-TEST',
+      agreementId: 'T-TEST',
       startOfRental: '2024-01-01',
       active: true,
       tenants: [],

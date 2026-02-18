@@ -22,7 +22,7 @@ const { t } = useI18n();
 
 const getContractAddress = (tenancyId?: string) => {
   if (!tenancyId) return undefined;
-  const contract = props.contracts.find(c => c.id === tenancyId);
+  const contract = props.contracts.find(c => c.agreementId === tenancyId);
   return contract?.rentalUnits?.[0]?.location || contract?.rentalUnits?.[0]?.title;
 };
 </script>
