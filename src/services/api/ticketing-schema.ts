@@ -1652,6 +1652,13 @@ export interface components {
       size: number;
       chatSessions?: components["schemas"]["ChatSessionJson"][];
     };
+    /** @description Tenant information in a rental agreement */
+    CoTenantJson: {
+      readonly id?: components["schemas"]["UUID"];
+      readonly firstName?: string;
+      readonly lastName?: string;
+      readonly userId?: components["schemas"]["UUID"];
+    };
     /** @description An commercial inside a building */
     CommercialJson: {
       type?: components["schemas"]["UnitType"];
@@ -1784,6 +1791,8 @@ export interface components {
       reporterId?: components["schemas"]["UUID"];
       agreementId?: components["schemas"]["UUID"];
       visibleToTenants?: boolean;
+      rentalUnitId?: components["schemas"]["UUID"];
+      rentalUnitType?: components["schemas"]["UnitType"];
       assigneeId?: components["schemas"]["UUID"];
       location?: string;
       description?: string;
@@ -1966,6 +1975,18 @@ export interface components {
       /** Format: float */
       heatingCostsPrepayment?: number;
     };
+    RentModel: {
+      unitId?: components["schemas"]["UUID"];
+      firstPaymentDate?: components["schemas"]["LocalDate"];
+      lastPaymentDate?: components["schemas"]["LocalDate"];
+      billingCycle?: components["schemas"]["BillingCycle"];
+      /** Format: float */
+      basicRent?: number;
+      /** Format: float */
+      operatingCostsPrepayment?: number;
+      /** Format: float */
+      heatingCostsPrepayment?: number;
+    };
     /** @description A rental agreement item with aggregated rent information for list views */
     RentalAgreementItemJson: {
       /** @description Unique identifier of the rental agreement */
@@ -1996,6 +2017,14 @@ export interface components {
     };
     /** @description A rental agreement for rentable units */
     RentalAgreementJson: {
+      allRents?: components["schemas"]["RentModel"][];
+      /** Format: float */
+      basicRent?: number;
+      /** Format: float */
+      operatingCostsPrepayment?: number;
+      /** Format: float */
+      heatingCostsPrepayment?: number;
+      activeRents?: components["schemas"]["RentModel"][];
       active?: boolean;
       readonly id?: components["schemas"]["UUID"];
       tenants?: components["schemas"]["TenantJson"][];
@@ -2102,54 +2131,38 @@ export interface components {
       location?: string;
       description?: string;
     };
-    /** @description A rental agreement item with basic information from a tenant's perspective */
-    TenancyItemJson: {
-      id?: string;
-      agreementId?: components["schemas"]["UUID"];
-      name?: string;
-      /**
-       * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
-       * @example PROPERTY
-       */
-      rentalType: components["schemas"]["UnitType"];
-      /**
-       * @description Title of the node
-       * @example Main Building
-       */
-      rentalTitle?: string;
-      /**
-       * @description Location of the node (address or custom)
-       * @example Berliner Str. 123, 12345 Berlin
-       */
-      location?: string;
-      active?: boolean;
-    };
     /** @description A read-only rental agreement of a rentable unit from a tenant's perspective */
     TenancyJson: {
-      id?: string;
+      active?: boolean;
+      /** @description Unique identifier of the rental agreement */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description List of tenants in this rental agreement */
+      readonly tenants?: components["schemas"]["CoTenantJson"][];
+      /** @description Start date of the rental period */
+      startOfRental: components["schemas"]["LocalDate"];
+      /** @description End date of the rental period */
+      readonly endOfRental?: components["schemas"]["LocalDate"];
+      /** @description List of rental units in this agreement */
+      readonly rentalUnits?: components["schemas"]["RentalUnitJson"][];
       /**
-       * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
-       * @example PROPERTY
+       * Format: float
+       * @description Sum of basic rent from all currently active rents
        */
-      rentalType: components["schemas"]["UnitType"];
+      readonly basicRent?: number;
       /**
-       * @description Title of the node
-       * @example Main Building
+       * Format: float
+       * @description Sum of operating costs prepayment from all currently active rents
        */
-      rentalTitle?: string;
-      startOfRental?: components["schemas"]["LocalDate"];
-      endOfRental?: components["schemas"]["LocalDate"];
-      billingCycle?: components["schemas"]["BillingCycle"];
-      /** Format: float */
-      basicRent?: number;
-      /** Format: float */
-      operatingCostsPrepayment?: number;
-      /** Format: float */
-      heatingCostsPrepayment?: number;
+      readonly operatingCostsPrepayment?: number;
+      /**
+       * Format: float
+       * @description Sum of heating costs prepayment from all currently active rents
+       */
+      readonly heatingCostsPrepayment?: number;
     };
     /** @description A list of rental agreements from a tenant's perspective */
     TenancyListJson: {
-      agreements?: components["schemas"]["TenancyItemJson"][];
+      agreements?: components["schemas"]["TenancyJson"][];
     };
     /** @description A tenant item with rental units and active status for list views */
     TenantItemJson: {
