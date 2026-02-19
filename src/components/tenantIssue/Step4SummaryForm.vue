@@ -257,7 +257,6 @@ function handleEdit(stepValue: string) {
         type="button"
         :label="t('tenantIssue.step4.submitButton')"
         icon="pi pi-check"
-        severity="success"
         @click="handleSubmit"
       />
     </div>

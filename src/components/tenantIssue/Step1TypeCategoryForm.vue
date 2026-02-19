@@ -122,12 +122,18 @@ const INQUIRY_CATEGORIES = computed<CategoryOption[]>(() => [
   },
 ]);
 
-// Get categories based on type
+// Local state for form fields
+const localTenancyId = ref(props.tenancyId);
+const localIssueType = ref(props.issueType);
+const localRentalUnitId = ref(props.rentalUnitId);
+const localCategory = ref<CategoryOption | null>(null);
+
+// Get categories based on localIssueType (not props.issueType which lags behind)
 const availableCategories = computed<CategoryOption[]>(() => {
-  if (props.issueType === 'DEFECT') {
+  if (localIssueType.value === 'DEFECT') {
     return DEFECT_CATEGORIES.value;
   }
-  if (props.issueType === 'INQUIRY') {
+  if (localIssueType.value === 'INQUIRY') {
     return INQUIRY_CATEGORIES.value;
   }
   return []; // TERMINATION has no categories
@@ -135,13 +141,6 @@ const availableCategories = computed<CategoryOption[]>(() => {
 
 // AutoComplete state
 const filteredCategories = ref<CategoryOption[]>([]);
-
-// Get category label from value
-const selectedCategoryLabel = computed(() => {
-  if (!props.issueCategory) return null;
-  const category = availableCategories.value.find(c => c.value === props.issueCategory);
-  return category?.label || props.issueCategory;
-});
 
 // AutoComplete search
 function searchCategories(event: { query: string }) {
@@ -158,30 +157,14 @@ function searchCategories(event: { query: string }) {
   );
 }
 
-// Handle category selection
-function onCategorySelect(event: CategoryOption) {
-  emit('update:issueCategory', event.value);
-}
-
-// Handle manual input
-function onCategoryChange(value: CategoryOption | string | null) {
-  if (!value) {
-    emit('update:issueCategory', null);
-  } else if (typeof value === 'string') {
-    const match = availableCategories.value.find(c => c.label === value);
-    emit('update:issueCategory', match?.value || null);
-  } else {
-    emit('update:issueCategory', value.value);
-  }
-}
-
-// Local state for form fields
-const localTenancyId = ref(props.tenancyId);
-const localIssueType = ref(props.issueType);
-const localRentalUnitId = ref(props.rentalUnitId);
+// Emit category value whenever localCategory changes
+watch(localCategory, (newVal) => {
+  emit('update:issueCategory', newVal?.value ?? null);
+});
 
 // Watch type changes to reset category
-watch(() => props.issueType, (newType) => {
+watch(localIssueType, (newType) => {
+  localCategory.value = null;
   if (newType === 'TERMINATION') {
     emit('update:issueCategory', null);
   }
@@ -227,7 +210,7 @@ const canProceed = computed(() => {
   return !!(
     localTenancyId.value &&
     localIssueType.value &&
-    (localIssueType.value === 'TERMINATION' || props.issueCategory)
+    (localIssueType.value === 'TERMINATION' || localCategory.value)
   );
 });
 
@@ -291,7 +274,7 @@ function handleNext() {
 
         <AutoComplete
           id="issueCategory"
-          :modelValue="selectedCategoryLabel"
+          v-model="localCategory"
           :suggestions="filteredCategories"
           optionLabel="label"
           :placeholder="t('tenantIssue.step1.categoryPlaceholder')"
@@ -299,8 +282,6 @@ function handleNext() {
           dropdown
           forceSelection
           @complete="searchCategories"
-          @itemSelect="onCategorySelect"
-          @update:modelValue="onCategoryChange"
         >
           <template #option="{ option }">
             <div class="flex flex-col">
@@ -316,7 +297,7 @@ function handleNext() {
       </div>
 
       <!-- Rental Unit Selection (optional) -->
-      <div v-if="hasRentalUnits" class="flex flex-col gap-2">
+      <div v-if="hasRentalUnits && localIssueType && localIssueType !== 'TERMINATION'" class="flex flex-col gap-2">
         <label for="rentalUnitId" class="font-semibold">
           {{ t('tenantIssue.step1.rentalUnitLabel') }}
         </label>

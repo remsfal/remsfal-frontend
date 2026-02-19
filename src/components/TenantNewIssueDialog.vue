@@ -167,34 +167,53 @@ function generateIssueTitle(state: TenantIssueFormState): string {
 // Generated title for display in Step 4
 const generatedTitle = computed(() => generateIssueTitle(formState.value));
 
-// Build description with causedBy and location
-function buildDescription(state: TenantIssueFormState): string {
-  let desc = state.description?.trim() || '';
+// Build description with causedBy and location embedded
+function buildDescription(state: TenantIssueFormState): string | undefined {
+  const parts: string[] = [];
 
-  // For DEFECT: Append causedBy and location
+  const desc = state.description?.trim();
+  if (desc) {
+    parts.push(desc);
+  }
+
   if (state.issueType === 'DEFECT') {
+    const metaParts: string[] = [];
+
     if (state.causedByUnknown) {
-      desc += '\n\nVerursacher: Unbekannt';
+      metaParts.push('Verursacher: Unbekannt');
     } else if (state.causedBy?.trim()) {
-      desc += `\n\nVerursacher: ${state.causedBy.trim()}`;
+      metaParts.push(`Verursacher: ${state.causedBy.trim()}`);
     }
 
     if (state.location?.trim()) {
-      desc += `\nOrt: ${state.location.trim()}`;
+      metaParts.push(`Ort: ${state.location.trim()}`);
+    }
+
+    if (metaParts.length > 0) {
+      parts.push(metaParts.join('\n'));
     }
   }
 
-  return desc;
+  return parts.length > 0 ? parts.join('\n\n') : undefined;
 }
 
 // Transform Form Data to Issue API Schema
 function transformFormDataToIssue(state: TenantIssueFormState): Partial<Issue> {
+  // Derive rentalUnitType from the selected rental unit of the tenancy
+  let rentalUnitType: Issue['rentalUnitType'] | undefined;
+  if (state.rentalUnitId && state.tenancyId) {
+    const tenancy = tenancies.value.find(t => t.agreementId === state.tenancyId);
+    const unit = tenancy?.rentalUnits?.find(u => u.id === state.rentalUnitId);
+    rentalUnitType = unit?.type;
+  }
+
   return {
     title: generateIssueTitle(state),
     type: state.issueType!,
     category: (state.issueCategory as any) || undefined,
     agreementId: state.tenancyId!,
     rentalUnitId: state.rentalUnitId || undefined,
+    rentalUnitType,
     description: buildDescription(state),
     location: state.location?.trim() || undefined,
   };
