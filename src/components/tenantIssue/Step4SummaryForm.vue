@@ -105,7 +105,7 @@ function handleEdit(stepValue: string) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-5">
     <h3 class="text-xl font-semibold">
       {{ t('tenantIssue.step4.title') }}
     </h3>
@@ -114,138 +114,114 @@ function handleEdit(stepValue: string) {
       {{ t('tenantIssue.step4.reviewHint') }}
     </Message>
 
-    <div class="flex flex-col gap-4">
-      <!-- Generated Title -->
-      <div class="p-4 border border-surface rounded-lg bg-surface-50">
-        <div class="flex justify-between items-start">
-          <div class="flex-1">
-            <h4 class="font-semibold text-sm text-gray-600 mb-1">
-              {{ t('tenantIssue.step4.generatedTitle') }}
-            </h4>
-            <p class="text-lg font-medium">{{ generatedTitle }}</p>
-          </div>
+    <!-- Generated Title -->
+    <div class="px-3 py-2 border border-surface rounded-lg bg-surface-50">
+      <span class="font-semibold">{{ t('tenantIssue.step4.generatedTitle') }}:</span>
+      <span class="ml-2">{{ generatedTitle }}</span>
+    </div>
+
+    <!-- Type & Category Section -->
+    <div class="flex flex-col gap-1">
+      <div class="flex justify-between items-center">
+        <h4 class="text-xs font-semibold uppercase tracking-wider text-surface-500">
+          {{ t('tenantIssue.step4.typeSection') }}
+        </h4>
+        <Button
+          :label="t('tenantIssue.step4.edit')"
+          icon="pi pi-pencil"
+          text
+          size="small"
+          @click="handleEdit('1')"
+        />
+      </div>
+      <div class="flex flex-col gap-0.5 pl-1">
+        <div>
+          <span class="font-semibold">{{ t('tenantIssue.step4.typeSection') }}:</span>
+          <span class="ml-2">{{ typeLabel }}</span>
+        </div>
+        <div v-if="issueCategory">
+          <span class="font-semibold">{{ t('tenantIssue.step4.categorySection') }}:</span>
+          <span class="ml-2">{{ categoryLabel }}</span>
+        </div>
+        <div>
+          <span class="font-semibold">{{ t('tenantIssue.step4.tenancySection') }}:</span>
+          <span class="ml-2">{{ tenancyTitle }}</span>
+        </div>
+        <div v-if="rentalUnitTitle">
+          <span class="font-semibold">{{ t('tenantIssue.step4.rentalUnitSection') }}:</span>
+          <span class="ml-2">{{ rentalUnitTitle }}</span>
         </div>
       </div>
+    </div>
 
-      <Divider />
+    <Divider class="my-0" />
 
-      <!-- Type & Category Section -->
-      <div class="flex flex-col gap-3">
-        <div class="flex justify-between items-center">
-          <h4 class="font-semibold">{{ t('tenantIssue.step4.typeSection') }}</h4>
-          <Button
-            :label="t('tenantIssue.step4.edit')"
-            icon="pi pi-pencil"
-            text
-            size="small"
-            @click="handleEdit('1')"
-          />
+    <!-- Details Section -->
+    <div class="flex flex-col gap-1">
+      <div class="flex justify-between items-center">
+        <h4 class="text-xs font-semibold uppercase tracking-wider text-surface-500">
+          {{ t('tenantIssue.step4.detailsSection') }}
+        </h4>
+        <Button
+          :label="t('tenantIssue.step4.edit')"
+          icon="pi pi-pencil"
+          text
+          size="small"
+          @click="handleEdit('2')"
+        />
+      </div>
+      <div class="flex flex-col gap-0.5 pl-1">
+        <div v-if="issueType === 'DEFECT'">
+          <span class="font-semibold">{{ t('tenantIssue.step4.causedBy') }}:</span>
+          <span class="ml-2">{{
+            causedByUnknown ? t('tenantIssue.step2.causedByUnknownLabel') : causedBy || '-'
+          }}</span>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.typeSection') }}</p>
-            <p class="font-medium">{{ typeLabel }}</p>
-          </div>
-
-          <div v-if="issueCategory">
-            <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.categorySection') }}</p>
-            <p class="font-medium">{{ categoryLabel }}</p>
-          </div>
-
-          <div>
-            <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.tenancySection') }}</p>
-            <p class="font-medium">{{ tenancyTitle }}</p>
-          </div>
-
-          <div v-if="rentalUnitTitle">
-            <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.rentalUnitSection') }}</p>
-            <p class="font-medium">{{ rentalUnitTitle }}</p>
-          </div>
+        <div v-if="issueType === 'DEFECT' && location">
+          <span class="font-semibold">{{ t('tenantIssue.step4.location') }}:</span>
+          <span class="ml-2">{{ location }}</span>
+        </div>
+        <div v-if="description">
+          <span class="font-semibold">{{ t('tenantIssue.step4.description') }}:</span>
+          <p class="mt-0.5 pl-1 whitespace-pre-wrap text-sm">{{ description }}</p>
         </div>
       </div>
+    </div>
 
-      <Divider />
+    <Divider class="my-0" />
 
-      <!-- Details Section -->
-      <div class="flex flex-col gap-3">
-        <div class="flex justify-between items-center">
-          <h4 class="font-semibold">{{ t('tenantIssue.step4.detailsSection') }}</h4>
-          <Button
-            :label="t('tenantIssue.step4.edit')"
-            icon="pi pi-pencil"
-            text
-            size="small"
-            @click="handleEdit('2')"
-          />
-        </div>
-
-        <div class="flex flex-col gap-3">
-          <!-- Caused By (DEFECT only) -->
-          <div v-if="issueType === 'DEFECT'">
-            <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.causedBy') }}</p>
-            <p class="font-medium">
-              {{ causedByUnknown ? t('tenantIssue.step2.causedByUnknownLabel') : (causedBy || '-') }}
-            </p>
-          </div>
-
-          <!-- Location (DEFECT only) -->
-          <div v-if="issueType === 'DEFECT' && location">
-            <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.location') }}</p>
-            <p class="font-medium">{{ location }}</p>
-          </div>
-
-          <!-- Description -->
-          <div v-if="description">
-            <p class="text-sm text-gray-600">{{ t('tenantIssue.step4.description') }}</p>
-            <p class="font-medium whitespace-pre-wrap">{{ description }}</p>
-          </div>
-        </div>
+    <!-- Attachments Section -->
+    <div class="flex flex-col gap-1">
+      <div class="flex justify-between items-center">
+        <h4 class="text-xs font-semibold uppercase tracking-wider text-surface-500">
+          {{ t('tenantIssue.step4.attachmentsSection') }}
+        </h4>
+        <Button
+          :label="t('tenantIssue.step4.edit')"
+          icon="pi pi-pencil"
+          text
+          size="small"
+          @click="handleEdit('3')"
+        />
       </div>
-
-      <Divider />
-
-      <!-- Attachments Section -->
-      <div class="flex flex-col gap-3">
-        <div class="flex justify-between items-center">
-          <h4 class="font-semibold">{{ t('tenantIssue.step4.attachmentsSection') }}</h4>
-          <Button
-            :label="t('tenantIssue.step4.edit')"
-            icon="pi pi-pencil"
-            text
-            size="small"
-            @click="handleEdit('3')"
-          />
-        </div>
-
-        <div v-if="files.length === 0">
-          <p class="text-gray-500">{{ t('tenantIssue.step4.noAttachments') }}</p>
-        </div>
-
-        <div v-else class="flex flex-col gap-2">
-          <p class="text-sm text-gray-600">
-            {{ t('tenantIssue.step4.fileCount', { count: files.length }) }}
-          </p>
-
-          <div class="flex flex-col gap-2">
-            <div
-              v-for="(file, index) in files"
-              :key="index"
-              class="flex items-center gap-3 p-3 border border-surface rounded-lg"
-            >
-              <i :class="getFileIcon(file)" class="text-2xl"></i>
-              <div>
-                <p class="font-medium">{{ file.name }}</p>
-                <p class="text-sm text-gray-500">{{ formatFileSize(file.size) }}</p>
-              </div>
-            </div>
-          </div>
+      <div v-if="files.length === 0" class="pl-1">
+        <span class="text-surface-400">{{ t('tenantIssue.step4.noAttachments') }}</span>
+      </div>
+      <div v-else class="flex flex-wrap gap-2 pl-1">
+        <div
+          v-for="(file, index) in files"
+          :key="index"
+          class="flex items-center gap-1.5 px-2.5 py-1 border border-surface rounded-full text-sm"
+        >
+          <i :class="getFileIcon(file)"></i>
+          <span>{{ file.name }}</span>
+          <span class="text-surface-400">({{ formatFileSize(file.size) }})</span>
         </div>
       </div>
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
+    <div class="flex flex-col sm:flex-row justify-end gap-3 mt-4">
       <Button
         type="button"
         :label="t('tenantIssue.step4.backButton')"

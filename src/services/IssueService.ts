@@ -42,11 +42,11 @@ class IssueService {
     return apiClient.get('/ticketing/v1/issues/{issueId}', { pathParams: { issueId } }) as Promise<Issue>;
   }
 
-  async createIssue(body: Partial<Issue>): Promise<Issue> {
+  async createProjectIssue(body: Partial<Issue>): Promise<Issue> {
     return apiClient.post('/ticketing/v1/issues', body) as Promise<Issue>;
   }
 
-  async createIssueWithAttachment(body: Partial<Issue>, files: File[]): Promise<Issue> {
+  async createTenancyIssueWithAttachment(body: Partial<Issue>, files: File[]): Promise<Issue> {
     const formData = new FormData();
 
     // Create Blob with application/json content type for the issue part

@@ -552,6 +552,7 @@
   "tenantIssue.validation.typeRequired": "Please select a report type",
   "tenantIssue.validation.categoryRequired": "Please select a category",
   "tenantIssue.validation.descriptionRequired": "Please enter a description",
+  "tenantIssue.validation.causedByRequired": "Please enter a cause or check 'Cause unknown'",
   "tenantIssue.validation.tenancyRequired": "Please select a rental unit",
   "tenantIssue.success": "Report successfully created",
   "tenantIssue.error": "Error creating report"

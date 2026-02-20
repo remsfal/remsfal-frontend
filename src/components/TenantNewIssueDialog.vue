@@ -230,13 +230,7 @@ async function handleSubmit() {
   try {
     const issueData = transformFormDataToIssue(formState.value);
 
-    let newIssue: Issue;
-
-    if (formState.value.files.length > 0) {
-      newIssue = await issueService.createIssueWithAttachment(issueData, formState.value.files);
-    } else {
-      newIssue = await issueService.createIssue(issueData);
-    }
+    let newIssue = await issueService.createTenancyIssueWithAttachment(issueData, formState.value.files);
 
     toast.add({
       severity: 'success',

@@ -14,7 +14,7 @@ describe('NewIssueDialog.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof NewIssueDialog>>;
 
   beforeEach(() => {
-    vi.spyOn(issueService, 'createIssue').mockResolvedValue({
+    vi.spyOn(issueService, 'createProjectIssue').mockResolvedValue({
       id: 'issue-123',
       title: 'Test Issue',
       description: 'Test Description',
@@ -114,7 +114,7 @@ describe('NewIssueDialog.vue', () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
     await wrapper.vm.$nextTick();
 
-    expect(issueService.createIssue).toHaveBeenCalledWith(
+    expect(issueService.createProjectIssue).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'Valid Issue Title',
         type: 'TASK',

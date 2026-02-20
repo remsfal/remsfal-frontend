@@ -135,7 +135,7 @@ async function createIssue(data: {
     }
 
     // Call API
-    const newIssue = await issueService.createIssue({
+    const newIssue = await issueService.createProjectIssue({
       title: data.title,
       description: data.description,
       type: data.type,

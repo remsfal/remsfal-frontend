@@ -38,6 +38,9 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
+// Local state for causedByUnknown checkbox (must be declared before schema)
+const localCausedByUnknown = ref(props.causedByUnknown);
+
 // Zod Validation Schema
 const step2Schema = z
   .object({
@@ -58,6 +61,19 @@ const step2Schema = z
       message: t('tenantIssue.validation.descriptionRequired'),
       path: ['description'],
     },
+  )
+  .refine(
+    (data) => {
+      // DEFECT: causedBy is required unless causedByUnknown is checked
+      if (props.issueType === 'DEFECT') {
+        return localCausedByUnknown.value || Boolean(data.causedBy?.trim());
+      }
+      return true;
+    },
+    {
+      message: t('tenantIssue.validation.causedByRequired'),
+      path: ['causedBy'],
+    },
   );
 
 const resolver = zodResolver(step2Schema);
@@ -69,9 +85,6 @@ const initialValues = ref({
   location: props.location || '',
   description: props.description || '',
 });
-
-// Local state for causedByUnknown checkbox
-const localCausedByUnknown = ref(props.causedByUnknown);
 
 // Form Submit Handler
 const onSubmit = (event: FormSubmitEvent) => {
@@ -125,15 +138,25 @@ function handleBack() {
               type="text"
               :placeholder="t('tenantIssue.step2.causedByPlaceholder')"
               :disabled="localCausedByUnknown"
+              :invalid="$form.causedBy?.invalid && $form.causedBy?.touched"
               fluid
               autofocus
             />
+            <Message
+              v-if="$form.causedBy?.invalid && $form.causedBy?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ $form.causedBy.error.message }}
+            </Message>
           </div>
 
           <!-- Caused By Unknown Checkbox -->
           <div class="flex items-center gap-2">
             <Checkbox
               inputId="causedByUnknown"
+              name="causedByUnknown"
               v-model="localCausedByUnknown"
               binary
             />
@@ -229,7 +252,11 @@ function handleBack() {
           :label="t('tenantIssue.step2.nextButton')"
           icon="pi pi-arrow-right"
           iconPos="right"
-          :disabled="issueType === 'DEFECT' && (!$form.description?.valid || !$form.description?.dirty)"
+          :disabled="
+            issueType === 'DEFECT' &&
+            ((!$form.description?.valid || !$form.description?.dirty) ||
+              (!localCausedByUnknown && !$form.causedBy?.value?.trim()))
+          "
         />
       </div>
     </Form>

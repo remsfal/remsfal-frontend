@@ -557,6 +557,7 @@
   "tenantIssue.validation.typeRequired": "Bitte wählen Sie eine Art der Meldung",
   "tenantIssue.validation.categoryRequired": "Bitte wählen Sie eine Kategorie",
   "tenantIssue.validation.descriptionRequired": "Bitte geben Sie eine Beschreibung ein",
+  "tenantIssue.validation.causedByRequired": "Bitte geben Sie einen Verursacher ein oder setzen Sie den Haken bei 'Verursacher unbekannt'",
   "tenantIssue.validation.tenancyRequired": "Bitte wählen Sie eine Mieteinheit",
   "tenantIssue.success": "Meldung erfolgreich erstellt",
   "tenantIssue.error": "Fehler beim Erstellen der Meldung"
