@@ -115,9 +115,13 @@ function handleBack() {
       >
         <template #empty>
           <div class="flex flex-col items-center gap-3 p-6">
-            <i class="pi pi-cloud-upload text-4xl text-gray-400"></i>
-            <p class="text-gray-600">{{ t('tenantIssue.step3.dragDrop') }}</p>
-            <p class="text-sm text-gray-500">{{ t('tenantIssue.step3.fileTypeHint') }}</p>
+            <i class="pi pi-cloud-upload text-4xl text-gray-400" />
+            <p class="text-gray-600">
+              {{ t('tenantIssue.step3.dragDrop') }}
+            </p>
+            <p class="text-sm text-gray-500">
+              {{ t('tenantIssue.step3.fileTypeHint') }}
+            </p>
           </div>
         </template>
       </FileUpload>
@@ -135,10 +139,14 @@ function handleBack() {
             class="flex items-center justify-between p-3 border border-surface rounded-lg"
           >
             <div class="flex items-center gap-3">
-              <i :class="getFileIcon(file)" class="text-2xl"></i>
+              <i :class="getFileIcon(file)" class="text-2xl" />
               <div>
-                <p class="font-medium">{{ file.name }}</p>
-                <p class="text-sm text-gray-500">{{ formatFileSize(file.size) }}</p>
+                <p class="font-medium">
+                  {{ file.name }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  {{ formatFileSize(file.size) }}
+                </p>
               </div>
             </div>
             <Button

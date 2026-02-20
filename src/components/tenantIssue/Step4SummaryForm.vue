@@ -183,7 +183,9 @@ function handleEdit(stepValue: string) {
         </div>
         <div v-if="description">
           <span class="font-semibold">{{ t('tenantIssue.step4.description') }}:</span>
-          <p class="mt-0.5 pl-1 whitespace-pre-wrap text-sm">{{ description }}</p>
+          <p class="mt-0.5 pl-1 whitespace-pre-wrap text-sm">
+            {{ description }}
+          </p>
         </div>
       </div>
     </div>
@@ -213,7 +215,7 @@ function handleEdit(stepValue: string) {
           :key="index"
           class="flex items-center gap-1.5 px-2.5 py-1 border border-surface rounded-full text-sm"
         >
-          <i :class="getFileIcon(file)"></i>
+          <i :class="getFileIcon(file)" />
           <span>{{ file.name }}</span>
           <span class="text-surface-400">({{ formatFileSize(file.size) }})</span>
         </div>

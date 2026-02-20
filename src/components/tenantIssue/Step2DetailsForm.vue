@@ -155,9 +155,9 @@ function handleBack() {
           <!-- Caused By Unknown Checkbox -->
           <div class="flex items-center gap-2">
             <Checkbox
+              v-model="localCausedByUnknown"
               inputId="causedByUnknown"
               name="causedByUnknown"
-              v-model="localCausedByUnknown"
               binary
             />
             <label for="causedByUnknown" class="cursor-pointer">
@@ -254,8 +254,8 @@ function handleBack() {
           iconPos="right"
           :disabled="
             issueType === 'DEFECT' &&
-            ((!$form.description?.valid || !$form.description?.dirty) ||
-              (!localCausedByUnknown && !$form.causedBy?.value?.trim()))
+              ((!$form.description?.valid || !$form.description?.dirty) ||
+                (!localCausedByUnknown && !$form.causedBy?.value?.trim()))
           "
         />
       </div>

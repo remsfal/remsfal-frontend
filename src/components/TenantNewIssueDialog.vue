@@ -304,10 +304,18 @@ const hasNoContracts = computed(() => tenancies.value.length === 0 && !loadingTe
     >
       <!-- Step Headers -->
       <StepList>
-        <Step value="1">{{ t('tenantIssue.step1.title') }}</Step>
-        <Step value="2">{{ t('tenantIssue.step2.title') }}</Step>
-        <Step value="3">{{ t('tenantIssue.step3.title') }}</Step>
-        <Step value="4">{{ t('tenantIssue.step4.title') }}</Step>
+        <Step value="1">
+          {{ t('tenantIssue.step1.title') }}
+        </Step>
+        <Step value="2">
+          {{ t('tenantIssue.step2.title') }}
+        </Step>
+        <Step value="3">
+          {{ t('tenantIssue.step3.title') }}
+        </Step>
+        <Step value="4">
+          {{ t('tenantIssue.step4.title') }}
+        </Step>
       </StepList>
 
       <!-- Step Panels -->
