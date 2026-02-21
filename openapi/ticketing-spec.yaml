@@ -356,18 +356,39 @@ components:
       type: object
       properties:
         id:
+          description: Unique identifier of the issue
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         name:
           type: string
+          description: Title of the issue
+          readOnly: true
         title:
           type: string
+          description: Title of the issue
+          readOnly: true
         type:
+          description: Type of the issue
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/IssueType"
         status:
+          description: Status of the issue
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/IssueStatus"
         priority:
+          description: Priority of the issue
+          readOnly: true
+          type: string
+          $comment: "Only available for project issues, not for tenancy issues"
           $ref: "#/components/schemas/IssuePriority"
         assigneeId:
+          description: Unique identifier of the assignee of the issue
+          readOnly: true
+          type: string
+          $comment: "Only available for project issues, not for tenancy issues"
           $ref: "#/components/schemas/UUID"
     IssueJson:
       description: An issue
@@ -453,7 +474,6 @@ components:
       required:
       - first
       - size
-      - total
       properties:
         first:
           type: integer
@@ -466,15 +486,11 @@ components:
         size:
           type: integer
           format: int32
-          maximum: 100
+          maximum: 500
           minimum: 1
           description: Number of elements in list
           readOnly: true
-          default: 10
-        total:
-          type: integer
-          format: int32
-          description: Total number of available elements
+          default: 50
         issues:
           type: array
           items:
@@ -1399,8 +1415,13 @@ paths:
     get:
       summary: Retrieve information for all issues.
       parameters:
-      - description: Filter to return only issuesfor a specific tenancy
+      - description: Filter to return only issuesfor a specific rental agreement
         name: agreementId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only issues of a assigned user
+        name: assigneeId
         in: query
         schema:
           $ref: "#/components/schemas/UUID"
@@ -1423,23 +1444,24 @@ paths:
           minimum: 0
           default: "0"
         required: true
-      - description: Filter to return only issues of a specific user
-        name: owner
+      - description: Whether to prefer tenancy issues over project issues
+        name: preferTenancyIssues
         in: query
         schema:
-          $ref: "#/components/schemas/UUID"
+          type: boolean
+          default: false
       - description: Filter to return only issues of a specific project
         name: projectId
         in: query
         schema:
           $ref: "#/components/schemas/UUID"
-      - description: Filter to return only issuesfor a specific rental
-        name: rentalId
+      - description: Filter to return only issuesfor a specific rental unit
+        name: rentalUnitId
         in: query
         schema:
           $ref: "#/components/schemas/UUID"
-      - description: Filter to return only issuesfor a specific rental type
-        name: rentalType
+      - description: Filter to return only issuesfor a specific unit type
+        name: rentalUnitType
         in: query
         schema:
           $ref: "#/components/schemas/UnitType"
@@ -1541,6 +1563,41 @@ paths:
           description: No user authentication provided via session cookie
         "403":
           description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/attachments:
+    post:
+      summary: Upload one or more attachments to an existing issue.
+      description: Uploads one or more image files to an already-existing issue. Each
+        file must be provided as a separate 'attachment' part in the multipart request.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+        required: true
+      responses:
+        "200":
+          description: Attachments uploaded successfully
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Invalid input or unsupported file type
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to upload attachments to this
+            issue
+        "404":
+          description: Issue not found
       security:
       - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/attachments/{attachmentId}:
@@ -1932,157 +1989,6 @@ paths:
           description: "Project, task, chat session, or chat message not found"
         "401":
           description: No user authentication provided via session cookie
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/participants:
-    get:
-      summary: Get participants in chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Participants retrieved
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}:
-    delete:
-      summary: Remove participant from chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: The participant ID to remove
-        required: true
-        name: participantId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Participant removed
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, chat session, or participant not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-    get:
-      summary: Get participant details in chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: The participant ID
-        required: true
-        name: participantId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Participant details retrieved
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, chat session, or participant not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}/role:
-    put:
-      summary: Change participant role in chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: The participant ID
-        required: true
-        name: participantId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: string
-        required: true
-      responses:
-        "200":
-          description: Participant role updated
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, chat session, or participant not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
       security:
       - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/parent/{parentIssueId}:

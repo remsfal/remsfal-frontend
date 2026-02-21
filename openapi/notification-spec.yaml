@@ -356,18 +356,39 @@ components:
       type: object
       properties:
         id:
+          description: Unique identifier of the issue
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         name:
           type: string
+          description: Title of the issue
+          readOnly: true
         title:
           type: string
+          description: Title of the issue
+          readOnly: true
         type:
+          description: Type of the issue
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/IssueType"
         status:
+          description: Status of the issue
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/IssueStatus"
         priority:
+          description: Priority of the issue
+          readOnly: true
+          type: string
+          $comment: "Only available for project issues, not for tenancy issues"
           $ref: "#/components/schemas/IssuePriority"
         assigneeId:
+          description: Unique identifier of the assignee of the issue
+          readOnly: true
+          type: string
+          $comment: "Only available for project issues, not for tenancy issues"
           $ref: "#/components/schemas/UUID"
     IssueJson:
       description: An issue
@@ -453,7 +474,6 @@ components:
       required:
       - first
       - size
-      - total
       properties:
         first:
           type: integer
@@ -466,15 +486,11 @@ components:
         size:
           type: integer
           format: int32
-          maximum: 100
+          maximum: 500
           minimum: 1
           description: Number of elements in list
           readOnly: true
-          default: 10
-        total:
-          type: integer
-          format: int32
-          description: Total number of available elements
+          default: 50
         issues:
           type: array
           items:

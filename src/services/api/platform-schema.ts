@@ -4977,13 +4977,20 @@ export interface components {
       | "GENERAL";
     /** @description An issue item with basic information */
     IssueItemJson: {
-      id?: components["schemas"]["UUID"];
-      name?: string;
-      title?: string;
-      type?: components["schemas"]["IssueType"];
-      status?: components["schemas"]["IssueStatus"];
-      priority?: components["schemas"]["IssuePriority"];
-      assigneeId?: components["schemas"]["UUID"];
+      /** @description Unique identifier of the issue */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description Title of the issue */
+      readonly name?: string;
+      /** @description Title of the issue */
+      readonly title?: string;
+      /** @description Type of the issue */
+      readonly type?: components["schemas"]["IssueType"];
+      /** @description Status of the issue */
+      readonly status?: components["schemas"]["IssueStatus"];
+      /** @description Priority of the issue */
+      readonly priority?: components["schemas"]["IssuePriority"];
+      /** @description Unique identifier of the assignee of the issue */
+      readonly assigneeId?: components["schemas"]["UUID"];
     };
     /** @description An issue */
     IssueJson: {
@@ -5021,14 +5028,9 @@ export interface components {
       /**
        * Format: int32
        * @description Number of elements in list
-       * @default 10
+       * @default 50
        */
       readonly size: number;
-      /**
-       * Format: int32
-       * @description Total number of available elements
-       */
-      total: number;
       issues?: components["schemas"]["IssueItemJson"][];
     };
     /** @enum {string} */
