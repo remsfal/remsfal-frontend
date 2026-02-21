@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
@@ -77,6 +77,18 @@ const step2Schema = z
   );
 
 const resolver = zodResolver(step2Schema);
+
+const descriptionLabel = computed(() =>
+  props.issueType === 'TERMINATION'
+    ? t('tenantIssue.step2.messageLabel')
+    : t('tenantIssue.step2.descriptionLabel'),
+);
+
+const descriptionPlaceholder = computed(() =>
+  props.issueType === 'TERMINATION'
+    ? t('tenantIssue.step2.messagePlaceholder')
+    : t('tenantIssue.step2.descriptionPlaceholder'),
+);
 
 // Initial Values
 const initialValues = ref({
@@ -178,64 +190,31 @@ function handleBack() {
               fluid
             />
           </div>
-
-          <!-- Description Field (Required for DEFECT) -->
-          <div class="flex flex-col gap-2">
-            <label for="description" class="font-semibold">
-              {{ t('tenantIssue.step2.descriptionLabel') }} *
-            </label>
-            <Textarea
-              id="description"
-              name="description"
-              :placeholder="t('tenantIssue.step2.descriptionPlaceholder')"
-              :class="{ 'p-invalid': $form.description?.invalid && $form.description?.touched }"
-              rows="6"
-              fluid
-            />
-            <Message
-              v-if="$form.description?.invalid && $form.description?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.description.error.message }}
-            </Message>
-          </div>
         </template>
 
-        <!-- INQUIRY-specific fields -->
-        <template v-if="issueType === 'INQUIRY'">
-          <div class="flex flex-col gap-2">
-            <label for="description" class="font-semibold">
-              {{ t('tenantIssue.step2.descriptionLabel') }}
-            </label>
-            <Textarea
-              id="description"
-              name="description"
-              :placeholder="t('tenantIssue.step2.descriptionPlaceholder')"
-              rows="6"
-              fluid
-              autofocus
-            />
-          </div>
-        </template>
-
-        <!-- TERMINATION-specific fields -->
-        <template v-if="issueType === 'TERMINATION'">
-          <div class="flex flex-col gap-2">
-            <label for="description" class="font-semibold">
-              {{ t('tenantIssue.step2.messageLabel') }}
-            </label>
-            <Textarea
-              id="description"
-              name="description"
-              :placeholder="t('tenantIssue.step2.messagePlaceholder')"
-              rows="6"
-              fluid
-              autofocus
-            />
-          </div>
-        </template>
+        <!-- Description / Message (all issue types) -->
+        <div class="flex flex-col gap-2">
+          <label for="description" class="font-semibold">
+            {{ descriptionLabel }}
+            <template v-if="issueType === 'DEFECT'"> *</template>
+          </label>
+          <Textarea
+            id="description"
+            name="description"
+            :placeholder="descriptionPlaceholder"
+            :invalid="$form.description?.invalid && $form.description?.touched"
+            rows="6"
+            fluid
+          />
+          <Message
+            v-if="$form.description?.invalid && $form.description?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.description.error.message }}
+          </Message>
+        </div>
       </div>
 
       <!-- Action Buttons -->
