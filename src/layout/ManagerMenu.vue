@@ -42,7 +42,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'managerMenu.masterData.tenancies',
           icon: { type: 'pi', name: 'pi pi-fw pi-receipt' },
-          to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
+          to: currentProjectId ? `/projects/${currentProjectId}/agreements` : '/',
         },
         {
           label: 'managerMenu.masterData.tenants',

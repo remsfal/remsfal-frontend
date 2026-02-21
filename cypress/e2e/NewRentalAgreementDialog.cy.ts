@@ -128,7 +128,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     }).as('getTenants');
 
     // Visit tenancies page
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
     cy.wait('@getRentalAgreements');
   });
 

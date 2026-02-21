@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { rentalAgreementService, type RentalAgreement, type TenantItem } from '@/services/RentalAgreementService';
+import { rentalAgreementService, type RentalAgreement, type TenantItem } from '@/services/RentalAgreementService.ts';
 
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -38,12 +38,8 @@ function confirmDeletion() {
   confirmationDialogVisible.value = false;
 }
 
-function navigateToTenancyDetails(id: string) {
-  router.push('/projects/' + props.projectId + '/tenancies/' + id);
-}
-
-function navigateToNewTenancy() {
-  showNewRentalDialog.value = true;
+function navigateToRentalAgreementDetails(id: string) {
+  router.push({ name: 'RentalAgreementDetails', params: { projectId: props.projectId, agreementId: id } });
 }
 
 async function handleRentalAgreementCreated() {
@@ -79,7 +75,7 @@ onMounted(async () => {
           scrollDirection="both"
           scrollHeight="var(--custom-scroll-height)"
           class="custom-scroll-height cursor-pointer"
-          @rowClick="navigateToTenancyDetails($event.data.id)"
+          @rowClick="navigateToRentalAgreementDetails($event.data.id)"
         >
           <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" :sortable="true" />
           <Column field="endOfRental" :header="t('projectTenancies.table.rentalEnd')" :sortable="true" />
@@ -126,7 +122,7 @@ onMounted(async () => {
             icon="pi pi-plus"
             :label="t('projectTenancies.button.addTenant')"
             class="mr-2 mb-2"
-            @click="navigateToNewTenancy"
+            @click="showNewRentalDialog = true"
           />
         </div>
       </div>

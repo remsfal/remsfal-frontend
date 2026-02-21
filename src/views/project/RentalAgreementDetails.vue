@@ -2,8 +2,8 @@
 import TenancyDataComponent from '@/components/tenancyDetails/TenancyDataComponent.vue';
 import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableComponent.vue';
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
-import { rentalAgreementService, type RentalAgreement } from '@/services/RentalAgreementService';
-import type { components } from '@/services/api/platform-schema';
+import { rentalAgreementService, type RentalAgreement } from '@/services/RentalAgreementService.ts';
+import type { components } from '@/services/api/platform-schema.ts';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
@@ -12,7 +12,7 @@ import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   projectId: string;
-  tenancyId: string;
+  agreementId: string;
 }>();
 
 type RentJson = components['schemas']['RentJson'];
@@ -50,14 +50,14 @@ const listOfUnits = computed(() => {
 });
 
 onMounted(async () => {
-  if (!props.tenancyId || !props.projectId) {
+  if (!props.agreementId || !props.projectId) {
     console.error('Agreement ID or Project ID not found');
     return;
   }
 
   rentalAgreement.value = await rentalAgreementService.loadRentalAgreement(
     props.projectId,
-    props.tenancyId
+    props.agreementId
   );
   rentalStart.value = rentalAgreement.value?.startOfRental || null;
   rentalEnd.value = rentalAgreement.value?.endOfRental || null;
@@ -85,7 +85,7 @@ function deleteRentalAgreement(agreementId: string) {
 }
 
 function redirectToTenanciesList() {
-  router.push('/project/' + props.projectId + '/tenancies/');
+  router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
 
 function updateRentalAgreement(agreement: RentalAgreement | null) {

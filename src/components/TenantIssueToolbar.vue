@@ -77,7 +77,6 @@ const onSearchInput = (event: Event) => {
       <Button
         :label="t('tenantIssues.newIssue')"
         icon="pi pi-plus"
-        severity="success"
         @click="emit('newIssue')"
       />
 

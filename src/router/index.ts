@@ -165,29 +165,23 @@ const managerRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/project/CommercialView.vue'),
       },
       /* --------------------------------------------------------------------
-       * Tenancy Views
+       * Rental Agreement Views
        * --------------------------------------------------------------------
        */
       {
-        path: 'tenancies',
-        name: 'ProjectTenancies',
+        path: 'agreements',
+        name: 'RentalAgreementView',
         props: (route: RouteLocationNormalizedLoaded) => ({projectId: route.params.projectId,}),
-        component: () => import('@/views/ProjectTenancies.vue'),
+        component: () => import('@/views/project/RentalAgreementView.vue'),
       },
       {
-        path: 'tenancies/:tenancyId',
-        name: 'ProjectTenancyDetails',
+        path: 'agreements/:agreementId',
+        name: 'RentalAgreementDetails',
         props: (route: RouteLocationNormalizedLoaded) => ({
           projectId: route.params.projectId,
-          tenancyId: route.params.tenancyId,
+          agreementId: route.params.agreementId,
         }),
-        component: () => import('@/views/ProjectTenanciesDetails.vue'),
-      },
-      {
-        path: 'tenancies/new-tenancy',
-        name: 'ProjectNewTenancy',
-        props: (route: RouteLocationNormalizedLoaded) => ({ projectId: route.params.projectId, }),
-        component: () => import('@/views/ProjectNewTenancy.vue'),
+        component: () => import('@/views/project/RentalAgreementDetails.vue'),
       },
       /* --------------------------------------------------------------------
        * Tenant Views
@@ -262,12 +256,6 @@ const tenantRoutes: RouteRecordRaw[] = [
         name: 'TenantDashboard',
         props: true,
         component: () => import('@/views/tenant/TenantDashboard.vue'),
-      },
-      {
-        path: 'contract/:contractId',
-        name: 'TenantContractDetail',
-        props: true,
-        component: () => import('@/views/ContractDetailView.vue'),
       },
       {
         path: 'issues',

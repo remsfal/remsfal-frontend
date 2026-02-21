@@ -27,9 +27,8 @@ describe('IssueService with MSW (http)', () => {
       title: 'New Issue',
       description: 'New Description',
       status: 'OPEN' as Status,
-      owner: 'owner1',
     };
-    const createdIssue = await issueService.createIssue(newIssue);
+    const createdIssue = await issueService.createProjectIssue(newIssue);
     expect(createdIssue.id).toBeDefined();
     expect(createdIssue.title).toBe('New Issue');
     expect(createdIssue.status).toBe('OPEN' as Status);

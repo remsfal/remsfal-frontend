@@ -164,8 +164,8 @@ describe('ProjectTenancies E2E Tests', () => {
     }).as('getTenants');
   });
 
-  it('should display the tenancies page with title', () => {
-    cy.visit(`/projects/${projectId}/tenancies`);
+  it('should display the rental agreements page with title', () => {
+    cy.visit(`/projects/${projectId}/agreements`);
 
     // Check if title is visible
     cy.contains('h1', /mieterdaten ansicht|tenant data view/i).should('be.visible');
@@ -179,14 +179,14 @@ describe('ProjectTenancies E2E Tests', () => {
       body: { rentalAgreements: [] },
     }).as('getDelayedRentalAgreements');
 
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     // Check if loading message is displayed
     cy.contains(/laden|loading/i).should('be.visible');
   });
 
   it('should display rental agreements in a data table', () => {
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 
@@ -217,7 +217,7 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should display "Add Tenant" button', () => {
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 
@@ -236,7 +236,7 @@ describe('ProjectTenancies E2E Tests', () => {
       },
     }).as('getProperties');
 
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 
@@ -247,7 +247,7 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('[role="dialog"]').should('be.visible');
   });
 
-  it('should navigate to tenancy details on row click', () => {
+  it('should navigate to rental agreement details on row click', () => {
     // Mock rental agreement details
     cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
       statusCode: 200,
@@ -280,7 +280,7 @@ describe('ProjectTenancies E2E Tests', () => {
       },
     }).as('getProperties');
 
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 
@@ -288,11 +288,11 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-datatable-tbody tr[role="row"]').first().click();
 
     // Check if URL changed to details page
-    cy.url().should('include', `/projects/${projectId}/tenancies/agreement-1`);
+    cy.url().should('include', `/projects/${projectId}/agreements/agreement-1`);
   });
 
   it('should display rental agreements with multiple units', () => {
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 
@@ -307,7 +307,7 @@ describe('ProjectTenancies E2E Tests', () => {
       body: { rentalAgreements: [] },
     }).as('getEmptyRentalAgreements');
 
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getEmptyRentalAgreements');
 
@@ -318,7 +318,7 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should display confirmation dialog when deleting tenant', () => {
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 
@@ -328,7 +328,7 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should refresh list after creating new rental agreement', () => {
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     // Wait for initial load
     cy.wait('@getRentalAgreements');
@@ -338,7 +338,7 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should display sortable columns', () => {
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 
@@ -347,7 +347,7 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should handle scrollable table', () => {
-    cy.visit(`/projects/${projectId}/tenancies`);
+    cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 

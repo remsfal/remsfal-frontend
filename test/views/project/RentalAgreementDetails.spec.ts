@@ -1,5 +1,5 @@
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
-import ProjectTenanciesDetails from '@/views/ProjectTenanciesDetails.vue';
+import ProjectTenanciesDetails from '@/views/project/RentalAgreementDetails.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { rentalAgreementService } from '@/services/RentalAgreementService';
 
@@ -18,7 +18,7 @@ vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'p
 
 // ---- Mock window.location.href ----
 Object.defineProperty(window, 'location', {
-  value: { href: 'http://localhost/project/proj-1/tenancies/agreement-1' },
+  value: { href: 'http://localhost/project/proj-1/agreements/agreement-1' },
   writable: true,
 });
 
@@ -53,7 +53,7 @@ describe('ProjectTenanciesDetails', () => {
     wrapper = mount(ProjectTenanciesDetails, {
       props: {
         projectId: 'proj-1',
-        tenancyId: 'agreement-1'
+        agreementId: 'agreement-1'
       }
     });
     await flushPromises();
@@ -67,7 +67,8 @@ describe('ProjectTenanciesDetails', () => {
   });
 
   it('opens confirmation dialog when delete is clicked', async () => {
-    const deleteBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Löschen'));
+    const deleteBtn = wrapper
+      .findAll('button').find((btn) => btn.text().includes('Löschen'));
     expect(deleteBtn).toBeTruthy();
 
     await deleteBtn!.trigger('click');
@@ -75,7 +76,8 @@ describe('ProjectTenanciesDetails', () => {
   });
 
   it('calls updateRentalAgreement and shows toast', async () => {
-    const saveBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Speichern'));
+    const saveBtn = wrapper
+      .findAll('button').find((btn) => btn.text().includes('Speichern'));
     expect(saveBtn).toBeTruthy();
 
     await saveBtn!.trigger('click');
@@ -91,6 +93,9 @@ describe('ProjectTenanciesDetails', () => {
     await flushPromises();
 
     expect(rentalAgreementService.deleteRentalAgreement).toHaveBeenCalledWith('proj-1', 'agreement-1');
-    expect(push).toHaveBeenCalledWith(expect.stringContaining('/tenancies/'));
+    expect(push).toHaveBeenCalledWith({
+      name: 'RentalAgreementView',
+      params: { projectId: 'proj-1' }
+    });
   });
 });
