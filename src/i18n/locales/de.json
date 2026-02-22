@@ -505,7 +505,6 @@
   "tenantIssue.step3.uploadButton": "Dateien auswählen",
   "tenantIssue.step3.dragDrop": "Oder Dateien hier ablegen",
   "tenantIssue.step3.selectedFiles": "Ausgewählte Dateien",
-  "tenantIssue.step3.removeFile": "Entfernen",
   "tenantIssue.step3.fileTypeHint": "Erlaubte Formate: JPG, PNG, PDF, MP4, MOV (max. 10MB pro Datei)",
   "tenantIssue.step3.backButton": "Zurück",
   "tenantIssue.step3.nextButton": "Weiter zur Zusammenfassung",

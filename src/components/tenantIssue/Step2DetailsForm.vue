@@ -195,8 +195,7 @@ function handleBack() {
         <!-- Description / Message (all issue types) -->
         <div class="flex flex-col gap-2">
           <label for="description" class="font-semibold">
-            {{ descriptionLabel }}
-            <template v-if="issueType === 'DEFECT'"> *</template>
+            {{ descriptionLabel }} *
           </label>
           <Textarea
             id="description"
@@ -232,8 +231,8 @@ function handleBack() {
           icon="pi pi-arrow-right"
           iconPos="right"
           :disabled="
-            issueType === 'DEFECT' &&
-              ((!$form.description?.valid || !$form.description?.dirty) ||
+            (!$form.description?.valid || !$form.description?.dirty) ||
+              (issueType === 'DEFECT' &&
                 (!localCausedByUnknown && !$form.causedBy?.value?.trim()))
           "
         />

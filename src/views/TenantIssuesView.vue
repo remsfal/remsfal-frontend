@@ -5,7 +5,7 @@ import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { issueService, type IssueItem, type Status, type Type, type Issue } from '@/services/IssueService.ts';
 import TenantIssueToolbar from '@/components/TenantIssueToolbar.vue';
 import TenantIssueList from '@/components/TenantIssueList.vue';
-import TenantNewIssueDialog from '@/components/TenantNewIssueDialog.vue';
+import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import Message from 'primevue/message';
 
@@ -142,7 +142,7 @@ onMounted(async () => {
       />
 
       <!-- New Issue Dialog -->
-      <TenantNewIssueDialog
+      <NewTenancyIssueDialog
         v-model:visible="showNewIssueDialog"
         @issueCreated="handleIssueCreated"
       />

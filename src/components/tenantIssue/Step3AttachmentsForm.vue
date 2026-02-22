@@ -28,7 +28,7 @@ const localFiles = ref<File[]>([...props.files]);
 function onFilesSelected(event: FileUploadSelectEvent) {
   // Add new files to existing ones
   const newFiles = event.files as File[];
-  localFiles.value = [...localFiles.value, ...newFiles];
+  localFiles.value = [...newFiles];
   emit('update:files', localFiles.value);
 }
 
@@ -37,37 +37,6 @@ function onFileRemoved(event: FileUploadRemoveEvent) {
   const removedFile = event.file as File;
   localFiles.value = localFiles.value.filter(f => f !== removedFile);
   emit('update:files', localFiles.value);
-}
-
-// Remove file by index
-function removeFile(index: number) {
-  localFiles.value = localFiles.value.filter((_, i) => i !== index);
-  emit('update:files', localFiles.value);
-}
-
-// File icon based on type
-function getFileIcon(file: File): string {
-  if (file.type.startsWith('image/')) {
-    return 'pi pi-image text-blue-500';
-  }
-  if (file.type.startsWith('video/')) {
-    return 'pi pi-video text-purple-500';
-  }
-  if (file.type === 'application/pdf') {
-    return 'pi pi-file-pdf text-red-500';
-  }
-  return 'pi pi-file text-gray-500';
-}
-
-// Format file size
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
-
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }
 
 // Handle Next
@@ -103,10 +72,12 @@ function handleBack() {
       <!-- File Upload Component -->
       <FileUpload
         mode="advanced"
-        :multiple="true"
+        :chooseLabel="t('tenantIssue.step3.uploadButton')"
+        multiple
         accept="image/*,video/*,application/pdf"
         :maxFileSize="10485760"
-        :customUpload="true"
+        :fileLimit="10"
+        customUpload
         :auto="false"
         :showUploadButton="false"
         :showCancelButton="false"
@@ -125,40 +96,6 @@ function handleBack() {
           </div>
         </template>
       </FileUpload>
-
-      <!-- Selected Files List -->
-      <div v-if="localFiles.length > 0" class="flex flex-col gap-3">
-        <h4 class="font-semibold">
-          {{ t('tenantIssue.step3.selectedFiles') }} ({{ localFiles.length }})
-        </h4>
-
-        <div class="flex flex-col gap-2">
-          <div
-            v-for="(file, index) in localFiles"
-            :key="index"
-            class="flex items-center justify-between p-3 border border-surface rounded-lg"
-          >
-            <div class="flex items-center gap-3">
-              <i :class="getFileIcon(file)" class="text-2xl" />
-              <div>
-                <p class="font-medium">
-                  {{ file.name }}
-                </p>
-                <p class="text-sm text-gray-500">
-                  {{ formatFileSize(file.size) }}
-                </p>
-              </div>
-            </div>
-            <Button
-              icon="pi pi-times"
-              severity="danger"
-              text
-              rounded
-              @click="removeFile(index)"
-            />
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Action Buttons -->

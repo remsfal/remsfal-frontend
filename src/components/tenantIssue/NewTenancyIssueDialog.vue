@@ -14,15 +14,15 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 // Services & Types
-import { issueService, type Issue, type Type } from '@/services/IssueService';
-import { tenancyService, type TenancyJson } from '@/services/TenancyService';
-import { useUserSessionStore } from '@/stores/UserSession';
+import { issueService, type Issue, type Type } from '@/services/IssueService.ts';
+import { tenancyService, type TenancyJson } from '@/services/TenancyService.ts';
+import { useUserSessionStore } from '@/stores/UserSession.ts';
 
 // Step Components
-import Step1TypeCategoryForm from './tenantIssue/Step1TypeCategoryForm.vue';
-import Step2DetailsForm from './tenantIssue/Step2DetailsForm.vue';
-import Step3AttachmentsForm from './tenantIssue/Step3AttachmentsForm.vue';
-import Step4SummaryForm from './tenantIssue/Step4SummaryForm.vue';
+import Step1TypeCategoryForm from './Step1TypeCategoryForm.vue';
+import Step2DetailsForm from './Step2DetailsForm.vue';
+import Step3AttachmentsForm from './Step3AttachmentsForm.vue';
+import Step4SummaryForm from './Step4SummaryForm.vue';
 
 // Props & Emits
 const props = defineProps<{
@@ -282,7 +282,7 @@ const hasNoContracts = computed(() => tenancies.value.length === 0 && !loadingTe
     :visible="visible"
     modal
     :header="t('tenantIssue.dialog.title')"
-    class="w-full max-w-4xl"
+    class="w-screen h-screen max-w-none md:w-full md:h-auto md:max-w-4xl"
     @update:visible="emit('update:visible', $event)"
   >
     <!-- Loading State -->
