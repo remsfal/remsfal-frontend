@@ -62,10 +62,9 @@ function transformTreeNodes(nodes: RentableUnitTreeNode[]): TreeNode[] {
       label: `${title} (${unitType})`,
       data: node.data,
       children: node.children ? transformTreeNodes(node.children) : undefined,
-      // Only leaf nodes (apartments, commercial, storage) are selectable
-      selectable: node.data?.type === 'APARTMENT' ||
-                  node.data?.type === 'COMMERCIAL' ||
-                  node.data?.type === 'STORAGE',
+      // All units with a type are selectable (except PROPERTY which is a container)
+      selectable: node.data?.type !== undefined &&
+                  node.data.type !== 'PROPERTY',
     };
   });
 }
