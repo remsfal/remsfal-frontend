@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { propertyService, type PropertyJson, type PropertyListJsonJson } from '@/services/PropertyService';
+import { propertyService, type PropertyJson, type PropertyListJson } from '@/services/PropertyService';
 import { toRentableUnitView, EntityType } from '@/services/PropertyService';
 import { testErrorHandling } from '../utils/testHelpers';
 import { server } from '../mocks/server';
@@ -13,13 +13,6 @@ const mockProperty: PropertyJson = {
   description: 'Primary property location',
   plotArea: 1000,
   type: EntityType.Property,
-  address: {
-    street: 'Main St',
-    city: 'Sample City',
-    zip: '12345',
-    province: 'Sample State',
-    countryCode: 'US',
-  },
 };
 
 const mockPropertyTree: PropertyListJson = {
@@ -106,13 +99,6 @@ describe('PropertyService', () => {
         title: 'New Property',
         description: 'A new property location',
         plotArea: 1500,
-        address: {
-          street: '123 New St',
-          city: 'New City',
-          zip: '54321',
-          province: 'New State',
-          countryCode: 'US',
-        },
       };
 
       const result = await propertyService.createProperty('project-1', newProperty);
