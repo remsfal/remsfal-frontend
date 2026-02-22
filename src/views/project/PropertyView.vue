@@ -3,7 +3,7 @@ import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { propertyService, type PropertyUnit } from '@/services/PropertyService.ts';
+import { propertyService, type PropertyJson } from '@/services/PropertyService.ts';
 import { useToast } from 'primevue/usetoast';
 import {handleCancel,
   navigateToObjects,
@@ -109,7 +109,7 @@ const usageOptions = [
   { label: 'Nutzung noch nicht zugeordnet', value: 'Nutzung noch nicht zugeordnet' },
 ];
 
-const originalValues = ref<PropertyUnit | null>(null); // no fallback
+const originalValues = ref<PropertyJson | null>(null); // no fallback
 
 const hasChanges = computed(() => {
   if (!originalValues.value) return false;
@@ -211,7 +211,7 @@ const save = async () => {
     return;
   }
 
-  const payload: PropertyUnit = {
+  const payload: PropertyJson = {
     title: title.value,
     description: description.value,
     cadastralDistrict: district.value,

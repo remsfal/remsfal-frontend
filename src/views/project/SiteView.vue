@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import SiteFormComponent from '@/components/SiteFormComponent.vue';
-import { siteService, type SiteUnit } from '@/services/SiteService.ts';
+import { siteService, type SiteJson } from '@/services/SiteService.ts';
 
 const props = defineProps<{
   projectId: string;
@@ -9,7 +9,7 @@ const props = defineProps<{
   siteId: string;
 }>();
 
-const initialValues = ref<Partial<SiteUnit>>({});
+const initialValues = ref<Partial<SiteJson>>({});
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -27,11 +27,11 @@ onMounted(async () => {
   }
 });
 
-const handleSubmit = async (formValues: Partial<SiteUnit>) => {
+const handleSubmit = async (formValues: Partial<SiteJson>) => {
   loading.value = true;
   error.value = null;
 
-  const siteUpdate: Partial<SiteUnit> = {
+  const siteUpdate: Partial<SiteJson> = {
     title: formValues.title,
     description: formValues.description,
     space: formValues.space === undefined ? undefined : formValues.space,

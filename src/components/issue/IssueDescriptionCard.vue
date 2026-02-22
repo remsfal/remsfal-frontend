@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import IssueDescription from '@/views/IssueDescription.vue';
-import { issueService, type Issue } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/services/IssueService';
 
 const props = defineProps<{
   projectId: string;
@@ -40,7 +40,7 @@ const handleSave = async () => {
 
   loadingSave.value = true;
   try {
-    const payload: Partial<Issue> = { description: description.value };
+    const payload: Partial<IssueJson> = { description: description.value };
           
     // Call backend API
     await issueService.updateIssue(props.issueId, payload);

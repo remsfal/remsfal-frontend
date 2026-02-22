@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueTable from '@/components/IssueTable.vue';
 import DataTable from 'primevue/datatable';
-import { type IssueItem } from '@/services/IssueService';
+import { type IssueItemJson } from '@/services/IssueService';
 
-const mockIssues: IssueItem[] = [
+const mockIssues: IssueItemJson[] = [
   {
  id: '1', title: 'Issue 1', owner: 'user1', status: 'OPEN', name: 'issue1' 
 },

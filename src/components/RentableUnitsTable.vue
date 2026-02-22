@@ -6,7 +6,7 @@ import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import TreeTable, { type TreeTableExpandedKeys, type TreeTableSelectionKeys } from 'primevue/treetable';
-import type { RentableUnitTreeNode } from '@/services/PropertyService';
+import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
 import { toRentableUnitView } from '@/services/PropertyService';
 import type { components } from '@/services/api/platform-schema';
 import NewRentableUnitButton from '@/components/NewRentableUnitButton.vue';
@@ -15,7 +15,7 @@ import NewPropertyButton from '@/components/NewPropertyButton.vue';
 
 const props = defineProps<{
   projectId: string;
-  rentableUnitTree: RentableUnitTreeNode[];
+  rentableUnitTree: RentalUnitTreeNodeJson[];
   isLoading: boolean;
   expandedKeys: TreeTableExpandedKeys;
 }>();
@@ -25,7 +25,7 @@ const emit = defineEmits<{
   expandAll: [];
   collapseAll: [];
   newUnit: [title: string];
-  deleteNode: [node: RentableUnitTreeNode];
+  deleteNode: [node: RentalUnitTreeNodeJson];
 }>();
 
 const { t } = useI18n();
@@ -41,7 +41,7 @@ function collapseAll() {
   emit('collapseAll');
 }
 
-function onNodeSelect(node: RentableUnitTreeNode) {
+function onNodeSelect(node: RentalUnitTreeNodeJson) {
   const nodeData = node.data;
   if (!nodeData?.type) return;
   const view = toRentableUnitView(nodeData.type as components['schemas']['UnitType']);
@@ -56,7 +56,7 @@ function onNewRentableUnit(title: string) {
   emit('newUnit', title);
 }
 
-function onDeleteNode(node: RentableUnitTreeNode) {
+function onDeleteNode(node: RentalUnitTreeNodeJson) {
   emit('deleteNode', node);
 }
 </script>

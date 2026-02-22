@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { propertyService, type RentableUnitTreeNode } from '@/services/PropertyService.ts';
+import { propertyService, type RentalUnitTreeNodeJson } from '@/services/PropertyService.ts';
 import { apartmentService } from '@/services/ApartmentService.ts';
 import { buildingService } from '@/services/BuildingService.ts';
 import { commercialService } from '@/services/CommercialService.ts';
@@ -14,7 +14,7 @@ const props = defineProps<{ projectId: string }>();
 const toast = useToast();
 
 // --- Refs ---
-const rentableUnitTree = ref<RentableUnitTreeNode[]>([]);
+const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 const expandedKeys = ref<TreeTableExpandedKeys>({});
@@ -23,8 +23,8 @@ const expandedKeys = ref<TreeTableExpandedKeys>({});
 async function fetchPropertyTree(projectId: string) {
   try {
     const data = await propertyService.getPropertyTree(projectId);
-    rentableUnitTree.value = data.properties as RentableUnitTreeNode[];
-    return data.properties as RentableUnitTreeNode[];
+    rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
+    return data.properties as RentalUnitTreeNodeJson[];
   } catch (err: any) {
     error.value = `Failed to fetch object data: ${err.message || 'Unknown error'}`;
     return [];
@@ -32,7 +32,7 @@ async function fetchPropertyTree(projectId: string) {
 }
 
 function expandAll() {
-  const expandRecursive = (nodes: RentableUnitTreeNode[], expanded: Record<string, boolean>) => {
+  const expandRecursive = (nodes: RentalUnitTreeNodeJson[], expanded: Record<string, boolean>) => {
     nodes.forEach((node) => {
       expanded[node.key] = true;
       if (node.children?.length) expandRecursive(node.children, expanded);
@@ -60,7 +60,7 @@ function onNewRentableUnit(title: string) {
   });
 }
 
-function onDeleteNode(node: RentableUnitTreeNode) {
+function onDeleteNode(node: RentalUnitTreeNodeJson) {
   if (!node.data) return;
 
   isLoading.value = true;

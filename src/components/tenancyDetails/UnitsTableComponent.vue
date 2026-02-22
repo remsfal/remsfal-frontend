@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { EntityType, propertyService, type RentableUnitTreeNode } from '@/services/PropertyService';
+import { EntityType, propertyService, type RentalUnitTreeNodeJson } from '@/services/PropertyService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -41,8 +41,8 @@ const loadDropdownOptions = async () => {
   try {
     const projectId = props.projectId || projectStore.projectId || '';
     const response = await propertyService.getPropertyTree(projectId);
-    const properties: RentableUnitTreeNode[] = (response.properties || []).filter(
-      (p): p is RentableUnitTreeNode => p !== undefined,
+    const properties: RentalUnitTreeNodeJson[] = (response.properties || []).filter(
+      (p): p is RentalUnitTreeNodeJson => p !== undefined,
     );
 
     // Rental objects dropdown
@@ -53,7 +53,7 @@ const loadDropdownOptions = async () => {
 
     // Recursive function to get all units
     const getAllUnits = (
-      nodes: RentableUnitTreeNode[],
+      nodes: RentalUnitTreeNodeJson[],
     ): Array<{ label: string; value: string }> => {
       return nodes.reduce(
         (acc, node) => {
@@ -63,7 +63,7 @@ const loadDropdownOptions = async () => {
           if (node?.children?.length) {
             acc.push(
               ...getAllUnits(
-                node.children.filter((n): n is RentableUnitTreeNode => n !== undefined),
+                node.children.filter((n): n is RentalUnitTreeNodeJson => n !== undefined),
               ),
             );
           }

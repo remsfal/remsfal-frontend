@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { TenancyJson } from '@/services/TenancyService.ts';
-import type { Status, Type } from '@/services/IssueService.ts';
+import type { IssueStatus, IssueType } from '@/services/IssueService.ts';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import IconField from 'primevue/iconfield';
@@ -11,16 +11,16 @@ import InputText from 'primevue/inputtext';
 
 const props = defineProps<{
   tenancyId: string | null;
-  status: Status | null;
-  type: Type | null;
+  status: IssueStatus | null;
+  type: IssueType | null;
   search: string;
   contracts: TenancyJson[];
 }>();
 
 const emit = defineEmits<{
   'update:tenancyId': [value: string | null];
-  'update:status': [value: Status | null];
-  'update:type': [value: Type | null];
+  'update:status': [value: IssueStatus | null];
+  'update:type': [value: IssueType | null];
   'update:search': [value: string];
   newIssue: [];
 }>();
@@ -56,11 +56,11 @@ const onTenancyChange = (value: string | null) => {
   emit('update:tenancyId', value);
 };
 
-const onStatusChange = (value: Status | null) => {
+const onStatusChange = (value: IssueStatus | null) => {
   emit('update:status', value);
 };
 
-const onTypeChange = (value: Type | null) => {
+const onTypeChange = (value: IssueType | null) => {
   emit('update:type', value);
 };
 

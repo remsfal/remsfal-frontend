@@ -1,52 +1,55 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
+import { type UnitType } from '@/services/PropertyService.ts';
 
-export type Status = ApiComponents['schemas']['IssueStatus'];
-export type Type = ApiComponents['schemas']['IssueType'];
+export type IssueStatus = ApiComponents['schemas']['IssueStatus'];
+export type IssueType = ApiComponents['schemas']['IssueType'];
 export type IssuePriority = ApiComponents['schemas']['IssuePriority'];
-export type Issue = ApiComponents['schemas']['IssueJson'];
-export type IssueItem = ApiComponents['schemas']['IssueItemJson'];
-export type IssueList = ApiComponents['schemas']['IssueListJson'];
-export type IssueAttachment = ApiComponents['schemas']['IssueAttachmentJson'];
+export type IssueJson = ApiComponents['schemas']['IssueJson'];
+export type IssueItemJson = ApiComponents['schemas']['IssueItemJson'];
+export type IssueListJson = ApiComponents['schemas']['IssueListJson'];
+export type IssueAttachmentJson = ApiComponents['schemas']['IssueAttachmentJson'];
 
 class IssueService {
   async getIssues(
     projectId?: string,
-    status?: Status,
-    category?: string,
+    preferTenancyIssues?: boolean,
+    status?: IssueStatus,
     assigneeId?: string,
-    tenancyId?: string,
+    agreementId?: string,
+    rentalUnitId?: string,
+    rentalUnitType?: UnitType,
     limit = 100,
     offset = 0,
-  ): Promise<IssueList> {
-    const data = await apiClient.get('/ticketing/v1/issues', {
+  ): Promise<IssueListJson> {
+    const result = await apiClient.get('/ticketing/v1/issues', {
       params: {
         limit,
         offset,
         ...(projectId ? { projectId } : {}),
+        ...(preferTenancyIssues ? { preferTenancyIssues } : {}),
         ...(status ? { status } : {}),
-        ...(category ? { category } : {}),
         ...(assigneeId ? { assigneeId } : {}),
-        ...(tenancyId ? { tenancyId } : {}),
+        ...(agreementId ? { agreementId } : {}),
+        ...(rentalUnitId ? { rentalUnitId } : {}),
+        ...(rentalUnitType ? { rentalUnitType } : {}),
       },
-    }) as IssueList;
-
+    }) as Partial<IssueListJson>;
     return {
-      first: data.first ?? 0,
-      size: data.size ?? 0,
-      total: data.total ?? 0,
-      issues: data.issues ?? [],
+      first: result.first ?? 0,
+      size: result.size ?? 0,
+      issues: result.issues ?? [],
     };
   }
 
-  async getIssue(issueId: string): Promise<Issue> {
-    return apiClient.get('/ticketing/v1/issues/{issueId}', { pathParams: { issueId } }) as Promise<Issue>;
+  async getIssue(issueId: string): Promise<IssueJson> {
+    return apiClient.get('/ticketing/v1/issues/{issueId}', { pathParams: { issueId } }) as Promise<IssueJson>;
   }
 
-  async createProjectIssue(body: Partial<Issue>): Promise<Issue> {
-    return apiClient.post('/ticketing/v1/issues', body) as Promise<Issue>;
+  async createProjectIssue(body: Partial<IssueJson>): Promise<IssueJson> {
+    return apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
   }
 
-  async createTenancyIssueWithAttachment(body: Partial<Issue>, files: File[]): Promise<Issue> {
+  async createTenancyIssueWithAttachment(body: Partial<IssueJson>, files: File[]): Promise<IssueJson> {
     const formData = new FormData();
 
     // Create Blob with application/json content type for the issue part
@@ -58,11 +61,11 @@ class IssueService {
     });
 
     return apiClient.post('/ticketing/v1/issues', formData as any,
-      {config: { headers: { 'Content-Type': 'multipart/form-data' } },}) as Promise<Issue>;
+      {config: { headers: { 'Content-Type': 'multipart/form-data' } },}) as Promise<IssueJson>;
   }
 
-  async updateIssue(issueId: string, body: Partial<Issue>): Promise<Issue> {
-    return apiClient.patch('/ticketing/v1/issues/{issueId}', body, { pathParams: { issueId } }) as Promise<Issue>;
+  async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {
+    return apiClient.patch('/ticketing/v1/issues/{issueId}', body, { pathParams: { issueId } }) as Promise<IssueJson>;
   }
 
   async deleteAttachment(issueId: string, attachmentId: string): Promise<void> {

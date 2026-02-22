@@ -2,7 +2,7 @@
 import { onMounted, ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
-import { issueService, type IssueItem, type Status, type Type, type Issue } from '@/services/IssueService.ts';
+import { issueService, type IssueItemJson, type IssueStatus, type IssueType, type IssueJson } from '@/services/IssueService.ts';
 import TenantIssueToolbar from '@/components/TenantIssueToolbar.vue';
 import TenantIssueList from '@/components/TenantIssueList.vue';
 import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
@@ -12,7 +12,7 @@ import Message from 'primevue/message';
 const { t } = useI18n();
 
 // Extended IssueItem type with additional fields for display
-type ExtendedIssueItem = IssueItem & {
+type ExtendedIssueItem = IssueItemJson & {
   projectId?: string;
   tenancyId?: string;
   createdAt?: string;
@@ -27,8 +27,8 @@ const showNewIssueDialog = ref(false);
 
 const filters = ref({
   tenancyId: null as string | null,
-  status: null as Status | null,
-  type: null as Type | null,
+  status: null as IssueStatus | null,
+  type: null as IssueType | null,
 });
 
 const searchQuery = ref('');
@@ -55,8 +55,8 @@ const loadIssues = async () => {
   try {
     const issueList = await issueService.getIssues(
       undefined, // projectId - not used for tenants
+      true, // preferTenancyIssues
       filters.value.status || undefined,
-      filters.value.type || undefined,
       undefined, // assigneeId - not used for tenants
       filters.value.tenancyId || undefined,
     );
@@ -72,12 +72,18 @@ const loadIssues = async () => {
   }
 };
 
-// Client-side search filter
+// Client-side search and type filter
 const filteredIssues = computed(() => {
-  if (!searchQuery.value) return issues.value;
+  let result = issues.value;
+
+  if (filters.value.type) {
+    result = result.filter((issue) => issue.type === filters.value.type);
+  }
+
+  if (!searchQuery.value) return result;
 
   const query = searchQuery.value.toLowerCase();
-  return issues.value.filter(issue =>
+  return result.filter(issue =>
     issue.title?.toLowerCase().includes(query) ||
     issue.id?.toLowerCase().includes(query)
   );
@@ -92,7 +98,7 @@ watch(
   { deep: true }
 );
 
-const handleIssueCreated = (newIssue: Issue) => {
+const handleIssueCreated = (newIssue: IssueJson) => {
   // Add the new issue to the list
   issues.value = [newIssue as ExtendedIssueItem, ...issues.value];
 };

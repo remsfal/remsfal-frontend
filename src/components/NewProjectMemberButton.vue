@@ -10,7 +10,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import ProjectMemberRoleSelect from '@/components/ProjectMemberRoleSelect.vue';
-import { type ProjectMember, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
+import { type ProjectMemberJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newMember', email: string) => void>();
@@ -54,7 +54,7 @@ const onSubmit = (event: FormSubmitEvent) => {
 const addMember = async (email: string, role: MemberRole) => {
   visible.value = false;
 
-  const member: ProjectMember = {
+  const member: ProjectMemberJson = {
     email,
     role,
   };

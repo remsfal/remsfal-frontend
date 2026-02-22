@@ -18,7 +18,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 // Services & Types
-import { issueService, type Issue, type Type, type IssuePriority } from '@/services/IssueService';
+import { issueService, type IssueJson, type IssueType, type IssuePriority } from '@/services/IssueService';
 
 // Props & Emits
 const props = defineProps<{
@@ -29,7 +29,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:visible': [value: boolean];
-  issueCreated: [issue: Issue];
+  issueCreated: [issue: IssueJson];
 }>();
 
 const { t } = useI18n();
@@ -61,7 +61,7 @@ const resolver = zodResolver(validationSchema);
 const initialValues = ref({
   issueTitle: '',
   issueDescription: '',
-  issueType: (props.category === 'DEFECT' ? 'DEFECT' : 'TASK') as Type,
+  issueType: (props.category === 'DEFECT' ? 'DEFECT' : 'TASK') as IssueType,
   issuePriority: 'UNCLASSIFIED' as IssuePriority,
 });
 
@@ -69,17 +69,17 @@ const initialValues = ref({
 watch(
   () => props.category,
   (newCategory) => {
-    initialValues.value.issueType = (newCategory === 'DEFECT' ? 'DEFECT' : 'TASK') as Type;
+    initialValues.value.issueType = (newCategory === 'DEFECT' ? 'DEFECT' : 'TASK') as IssueType;
   },
   { immediate: true },
 );
 
 // Dropdown Options (computed for i18n reactivity)
 const typeOptions = computed(() => [
-  { label: t('inbox.filters.type.application'), value: 'APPLICATION' as Type },
-  { label: t('inbox.filters.type.task'), value: 'TASK' as Type },
-  { label: t('inbox.filters.type.defect'), value: 'DEFECT' as Type },
-  { label: t('inbox.filters.type.maintenance'), value: 'MAINTENANCE' as Type },
+  { label: t('inbox.filters.type.application'), value: 'APPLICATION' as IssueType },
+  { label: t('inbox.filters.type.task'), value: 'TASK' as IssueType },
+  { label: t('inbox.filters.type.defect'), value: 'DEFECT' as IssueType },
+  { label: t('inbox.filters.type.maintenance'), value: 'MAINTENANCE' as IssueType },
 ]);
 
 const priorityOptions = computed(() => [
@@ -118,7 +118,7 @@ const onSubmit = (event: FormSubmitEvent) => {
 async function createIssue(data: {
   title: string;
   description: string;
-  type: Type;
+  type: IssueType;
   priority: IssuePriority;
 }) {
   try {

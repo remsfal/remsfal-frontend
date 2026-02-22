@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { rentalAgreementService, type RentalAgreement, type TenantItem } from '@/services/RentalAgreementService.ts';
+import { rentalAgreementService, type RentalAgreementJson, type TenantJson } from '@/services/RentalAgreementService.ts';
 
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -17,13 +17,13 @@ const { t } = useI18n();
 
 const router = useRouter();
 
-const tenantData = ref<TenantItem[]>([]);
+const tenantData = ref<TenantJson[]>([]);
 const isLoading = ref(true);
 
-const rentalAgreements = ref<RentalAgreement[]>([]);
+const rentalAgreements = ref<RentalAgreementJson[]>([]);
 
 const confirmationDialogVisible = ref(false);
-const tenantToDelete = ref<TenantItem | null>(null);
+const tenantToDelete = ref<TenantJson | null>(null);
 const showNewRentalDialog = ref(false);
 
 function deleteTenant(tenantId: string) {

@@ -3,7 +3,7 @@ import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { storageService, type Storage } from '@/services/StorageService.ts';
+import { storageService, type StorageJson } from '@/services/StorageService.ts';
 import { useToast } from 'primevue/usetoast';
 import {handleCancel,
   navigateToObjects,
@@ -63,11 +63,11 @@ const validationErrors = computed(() => {
 
 const isValid = computed(() => validationErrors.value.length === 0);
 
-const fetchStorageDetails = async () => {
+const fetchStorageJsonDetails = async () => {
   if (!props.projectId || !props.unitId) return;
 
   try {
-    const data: Storage = await storageService.getStorage(props.projectId, props.unitId);
+    const data: StorageJson = await storageService.getStorage(props.projectId, props.unitId);
 
     title.value = data.title ?? '';
     description.value = data.description ?? '';
@@ -93,7 +93,7 @@ const fetchStorageDetails = async () => {
 
 onMounted(() => {
   if (props.unitId) {
-    fetchStorageDetails();
+    fetchStorageJsonDetails();
   } else {
     toast.add({
       severity: 'warn',
@@ -111,7 +111,7 @@ const save = async () => {
   }
 
   // Prepare typed payload
-  const payload: Storage = {
+  const payload: StorageJson = {
     title: title.value,
     description: description.value,
     location: location.value,
@@ -123,13 +123,13 @@ const save = async () => {
     toast.add({
       severity: 'success',
       summary: 'Success',
-      detail: 'Storage successfully saved.',
+      detail: 'StorageJson successfully saved.',
       life: 6000,
     });
     navigateToObjects(router, props.projectId);
   } catch (err) {
     console.error('Error saving storage:', err);
-    showSavingErrorToast(toast, 'Storage could not be saved.');
+    showSavingErrorToast(toast, 'StorageJson could not be saved.');
   }
 };
 
@@ -146,7 +146,7 @@ const cancel = () => handleCancel(hasChanges, router, props.projectId);
 
   <BaseCard>
     <template #title>
-      Bearbeite Storage mit ID: {{ unitId }}
+      Bearbeite StorageJson mit ID: {{ unitId }}
     </template>
 
     <template #content>

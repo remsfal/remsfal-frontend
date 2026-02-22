@@ -12,7 +12,7 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
-import { tenantService, type Tenant } from '@/services/TenantService';
+import { tenantService, type TenantJson } from '@/services/TenantService';
 import BaseCard from '@/components/common/BaseCard.vue';
 
 const props = defineProps<{
@@ -110,7 +110,7 @@ async function onSubmit(event: FormSubmitEvent) {
   const formData = event.states;
 
   // Rebuild Tenant with nested address
-  const updatedTenant: Tenant = {
+  const updatedTenant: TenantJson = {
     id: props.tenantId,
     firstName: formData.firstName?.value || '',
     lastName: formData.lastName?.value || '',

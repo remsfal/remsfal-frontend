@@ -3,14 +3,14 @@ import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useI18n } from 'vue-i18n';
-import type { RentableUnitTreeNode } from '@/services/PropertyService';
+import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
 
 const props = defineProps<{
-  node: RentableUnitTreeNode;
+  node: RentalUnitTreeNodeJson;
 }>();
 
 const emit = defineEmits<{
-  delete: [node: RentableUnitTreeNode];
+  delete: [node: RentalUnitTreeNodeJson];
 }>();
 
 const { t } = useI18n();

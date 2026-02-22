@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { propertyService, type PropertyUnit, type PropertyList } from '@/services/PropertyService';
+import { propertyService, type PropertyJson, type PropertyListJsonJson } from '@/services/PropertyService';
 import { toRentableUnitView, EntityType } from '@/services/PropertyService';
 import { testErrorHandling } from '../utils/testHelpers';
 import { server } from '../mocks/server';
 
 // --- MOCK DATA ---
 
-const mockProperty: PropertyUnit = {
+const mockProperty: PropertyJson = {
   id: 'property-1',
   title: 'Main Property',
   description: 'Primary property location',
@@ -22,7 +22,7 @@ const mockProperty: PropertyUnit = {
   },
 };
 
-const mockPropertyTree: PropertyList = {
+const mockPropertyTree: PropertyListJson = {
   properties: [
     {
       key: 'property-1',
@@ -56,7 +56,7 @@ const mockPropertyTree: PropertyList = {
 
 const handlers = [
   http.post('/api/v1/projects/:projectId/properties', async ({ request }) => {
-    const body = (await request.json()) as PropertyUnit;
+    const body = (await request.json()) as PropertyJson;
     return HttpResponse.json(
       { ...body, id: 'new-property-id' },
       { status: 201 },
@@ -78,7 +78,7 @@ const handlers = [
   }),
 
   http.patch('/api/v1/projects/:projectId/properties/:propertyId', async ({ request, params }) => {
-    const body = (await request.json()) as Partial<PropertyUnit>;
+    const body = (await request.json()) as Partial<PropertyJson>;
     return HttpResponse.json({
        ...mockProperty, ...body, id: params.propertyId 
       });
@@ -102,7 +102,7 @@ describe('PropertyService', () => {
 
   describe('createProperty', () => {
     it('should create a new property', async () => {
-      const newProperty: PropertyUnit = {
+      const newProperty: PropertyJson = {
         title: 'New Property',
         description: 'A new property location',
         plotArea: 1500,
@@ -185,7 +185,7 @@ describe('PropertyService', () => {
 
   describe('updateProperty', () => {
     it('should update a property', async () => {
-      const updates: PropertyUnit = {
+      const updates: PropertyJson = {
         ...mockProperty,
         title: 'Updated Property',
         plotArea: 2000,
@@ -197,7 +197,7 @@ describe('PropertyService', () => {
     });
 
     it('should handle partial updates', async () => {
-      const partialUpdate: PropertyUnit = { title: 'Only Title Updated' };
+      const partialUpdate: PropertyJson = { title: 'Only Title Updated' };
 
       const result = await propertyService.updateProperty('project-1', 'property-1', partialUpdate);
       expect(result.title).toBe('Only Title Updated');

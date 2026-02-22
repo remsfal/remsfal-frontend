@@ -1,19 +1,19 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type ProjectList = ApiComponents['schemas']['ProjectListJson'];
-export type ProjectItem = NonNullable<ProjectList['projects']>[number];
-export type Project = ApiComponents['schemas']['ProjectJson'];
+export type ProjectListJson = ApiComponents['schemas']['ProjectListJson'];
+export type ProjectItem = NonNullable<ProjectListJson['projects']>[number];
+export type ProjectJson = ApiComponents['schemas']['ProjectJson'];
 
 export default class ProjectService {
   // Get projects with pagination
-  async getProjects(offset = 0, limit = 10): Promise<ProjectList> {
+  async getProjects(offset = 0, limit = 10): Promise<ProjectListJson> {
     const projectList = await apiClient.get('/api/v1/projects', {params: { offset, limit },});
     console.log('GET projects:', projectList);
     return projectList;
   }
 
   // Search projects by ID (client-side filtering because OpenAPI doesn't define projectId query)
-  async searchProjects(projectId: string, offset = 0, limit = 100): Promise<ProjectList> {
+  async searchProjects(projectId: string, offset = 0, limit = 100): Promise<ProjectListJson> {
     const allProjects = await this.getProjects(offset, limit);
 
     // Safely handle optional 'projects' array
@@ -27,22 +27,22 @@ export default class ProjectService {
   }
 
   // Create a new project
-  async createProject(title: string): Promise<Project> {
-    const project = await apiClient.post('/api/v1/projects', { title }) as Project;
+  async createProject(title: string): Promise<ProjectJson> {
+    const project = await apiClient.post('/api/v1/projects', { title }) as ProjectJson;
     console.log('POST create project:', project);
     return project;
   }
 
   // Get a single project
-  async getProject(projectId: string): Promise<Project> {
-    const project = await apiClient.get('/api/v1/projects/{projectId}', {pathParams: { projectId },}) as Project;
+  async getProject(projectId: string): Promise<ProjectJson> {
+    const project = await apiClient.get('/api/v1/projects/{projectId}', {pathParams: { projectId },}) as ProjectJson;
     console.log('project returned', project);
     return project;
   }
 
   // Update a project
-  async updateProject(projectId: string, data: Project): Promise<Project> {
-    const updated = await apiClient.patch('/api/v1/projects/{projectId}', data, {pathParams: { projectId },}) as Project;
+  async updateProject(projectId: string, data: ProjectJson): Promise<ProjectJson> {
+    const updated = await apiClient.patch('/api/v1/projects/{projectId}', data, {pathParams: { projectId },}) as ProjectJson;
     console.log('PATCH update project:', updated);
     return updated;
   }

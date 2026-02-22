@@ -1,8 +1,8 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type RentalAgreement = ApiComponents['schemas']['RentalAgreementJson'];
-export type RentalAgreementList = ApiComponents['schemas']['RentalAgreementListJson'];
-export type TenantItem = ApiComponents['schemas']['TenantJson'];
+export type RentalAgreementJson = ApiComponents['schemas']['RentalAgreementJson'];
+export type RentalAgreementListJson = ApiComponents['schemas']['RentalAgreementListJson'];
+export type TenantJson = ApiComponents['schemas']['TenantJson'];
 
 /**
  * Service for managing rental agreements in the manager/property owner context.
@@ -12,7 +12,7 @@ export default class RentalAgreementService {
   /**
    * Fetch all rental agreements for a project
    */
-  async fetchRentalAgreements(projectId: string): Promise<RentalAgreement[]> {
+  async fetchRentalAgreements(projectId: string): Promise<RentalAgreementJson[]> {
     const result = await apiClient.get('/api/v1/projects/{projectId}/rental-agreements',
       {pathParams: { projectId },});
     return result.rentalAgreements || [];
@@ -21,7 +21,7 @@ export default class RentalAgreementService {
   /**
    * Load a single rental agreement by ID
    */
-  async loadRentalAgreement(projectId: string, agreementId: string): Promise<RentalAgreement> {
+  async loadRentalAgreement(projectId: string, agreementId: string): Promise<RentalAgreementJson> {
     return apiClient.get('/api/v1/projects/{projectId}/rental-agreements/{agreementId}',
       {pathParams: { projectId, agreementId },});
   }
@@ -29,7 +29,7 @@ export default class RentalAgreementService {
   /**
    * Create a new rental agreement
    */
-  async createRentalAgreement(projectId: string, agreement: RentalAgreement): Promise<void> {
+  async createRentalAgreement(projectId: string, agreement: RentalAgreementJson): Promise<void> {
     await apiClient.post(
       '/api/v1/projects/{projectId}/rental-agreements',
       agreement,
@@ -43,7 +43,7 @@ export default class RentalAgreementService {
   async updateRentalAgreement(
     projectId: string,
     agreementId: string,
-    agreement: RentalAgreement
+    agreement: RentalAgreementJson
   ): Promise<void> {
     await apiClient.patch(
       '/api/v1/projects/{projectId}/rental-agreements/{agreementId}',
@@ -63,7 +63,7 @@ export default class RentalAgreementService {
   /**
    * Extract all tenants from rental agreements
    */
-  extractTenants(agreements: RentalAgreement[]): TenantItem[] {
+  extractTenants(agreements: RentalAgreementJson[]): TenantJson[] {
     return agreements.flatMap(agreement => agreement.tenants ?? []);
   }
 }

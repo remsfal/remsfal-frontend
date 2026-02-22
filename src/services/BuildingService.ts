@@ -1,21 +1,21 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type Building = ApiComponents['schemas']['BuildingJson'];
+export type BuildingJson = ApiComponents['schemas']['BuildingJson'];
 
 export default class BuildingService {
   // Create a new building
-  async createBuilding(projectId: string, propertyId: string, building: Building): Promise<Building> {
+  async createBuilding(projectId: string, propertyId: string, building: BuildingJson): Promise<BuildingJson> {
     const created = await apiClient.post(
       '/api/v1/projects/{projectId}/properties/{propertyId}/buildings',
       building,
       { pathParams: { projectId, propertyId } },
-    ) as Building;
+    ) as BuildingJson;
     console.log('POST create building:', created);
     return created;
   }
 
   // Get a single building
-  async getBuilding(projectId: string, buildingId: string): Promise<Building> {
+  async getBuilding(projectId: string, buildingId: string): Promise<BuildingJson> {
     const building = await apiClient.get(
       '/api/v1/projects/{projectId}/buildings/{buildingId}',
       {pathParams: { projectId, buildingId },},
@@ -25,7 +25,7 @@ export default class BuildingService {
   }
 
   // Update a building
-  async updateBuilding(projectId: string, buildingId: string, building: Building): Promise<Building> {
+  async updateBuilding(projectId: string, buildingId: string, building: BuildingJson): Promise<BuildingJson> {
     const updated = await apiClient.patch(
       '/api/v1/projects/{projectId}/buildings/{buildingId}',
       building,

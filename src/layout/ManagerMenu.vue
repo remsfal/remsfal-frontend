@@ -4,7 +4,7 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
-import type { Status } from '@/services/IssueService';
+import type { IssueStatus } from '@/services/IssueService';
 
 const router = useRouter();
 const projectStore = useProjectStore();
@@ -79,7 +79,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
             router.push({
               name: 'IssueOverview',
               params: { projectId: currentProjectId },
-              query: { status: 'OPEN' as Status },
+              query: { status: 'OPEN' as IssueStatus },
             });
           },
         },

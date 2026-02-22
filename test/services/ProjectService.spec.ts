@@ -1,13 +1,13 @@
 /* eslint-disable object-curly-newline */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { projectService, type Project, type ProjectList } from '@/services/ProjectService';
+import { projectService, type ProjectJson, type ProjectListJson } from '@/services/ProjectService';
 import { server } from '../mocks/server';
 import { testErrorHandling } from '../utils/testHelpers';
 
 // --- MOCK DATA ---
 
-const mockProjects: ProjectList = {
+const mockProjects: ProjectListJson = {
   projects: [
     { id: 'project-1', title: 'Project 1', memberRole: 'MANAGER' },
     { id: 'project-2', title: 'Project 2', memberRole: 'CONTRACTOR' },
@@ -17,7 +17,7 @@ const mockProjects: ProjectList = {
   total: 2,
 };
 
-const mockProject: Project = {
+const mockProject: ProjectJson = {
   id: 'project-1',
   title: 'Project 1',
   description: 'Test project description',
@@ -61,7 +61,7 @@ const handlers = [
   }),
 
   http.patch('/api/v1/projects/:projectId', async ({ request, params }) => {
-    const body = (await request.json()) as Partial<Project>;
+    const body = (await request.json()) as Partial<ProjectJson>;
     return HttpResponse.json({
       ...mockProject,
       ...body,
@@ -154,7 +154,7 @@ describe('ProjectService', () => {
 
   describe('updateProject', () => {
     it('should update a project', async () => {
-      const updates: Project = {
+      const updates: ProjectJson = {
         ...mockProject,
         title: 'Updated Title',
         description: 'Updated description',

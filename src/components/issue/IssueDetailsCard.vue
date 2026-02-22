@@ -7,8 +7,8 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
-import { issueService, type Issue, type Type } from '@/services/IssueService';
-import { projectMemberService, type ProjectMember } from '@/services/ProjectMemberService';
+import { issueService, type IssueJson, type IssueType } from '@/services/IssueService';
+import { projectMemberService, type ProjectMemberJson } from '@/services/ProjectMemberService';
 import { useProjectStore } from '@/stores/ProjectStore';
 
 /* =========================
@@ -20,11 +20,11 @@ const props = defineProps<{
   initialData: {
     issueId: string;
     title: string;
-    status: Issue["status"];
+    status: IssueJson["status"];
     assigneeId: string;
     reporter: string;
     project: string;
-    issueType: Issue["type"];
+    issueType: IssueJson["type"];
     tenancy: string;
   };
 }>();
@@ -51,7 +51,7 @@ const issueType = ref(props.initialData.issueType);
 const tenancy = ref(props.initialData.tenancy);
 
 // Member data for name resolution
-const members = ref<ProjectMember[]>([]);
+const members = ref<ProjectMemberJson[]>([]);
 const loadingMembers = ref(false);
 
 /* =========================
@@ -93,10 +93,10 @@ const statusOptions = [
 ];
 
 const typeOptions = [
-  { label: 'Task', value: 'TASK' as Type },
-  { label: 'Application', value: 'APPLICATION' as Type },
-  { label: 'Defect', value: 'DEFECT' as Type },
-  { label: 'Maintenance', value: 'MAINTENANCE' as Type },
+  { label: 'Task', value: 'TASK' as IssueType },
+  { label: 'Application', value: 'APPLICATION' as IssueType },
+  { label: 'Defect', value: 'DEFECT' as IssueType },
+  { label: 'Maintenance', value: 'MAINTENANCE' as IssueType },
 ];
 
 /* =========================
@@ -108,7 +108,7 @@ const fetchMembers = async () => {
   try {
     const memberList = await projectMemberService.getMembers(props.projectId);
     // TEMP FIX: Handle nested response structure
-    members.value = (memberList as { members: ProjectMember[] }).members || [];
+    members.value = (memberList as { members: ProjectMemberJson[] }).members || [];
   } catch (error) {
     console.error('Failed to fetch members:', error);
     toast.add({
@@ -162,14 +162,14 @@ const handleSave = async () => {
   loadingSave.value = true;
 
   try {
-    const payload: Partial<Issue> = {};
+    const payload: Partial<IssueJson> = {};
     if (title.value !== originalTitle.value) payload.title = title.value;
     if (status.value !== originalStatus.value)
-      payload.status = status.value as Issue["status"];
+      payload.status = status.value as IssueJson["status"];
     if (assigneeId.value !== originalAssigneeId.value)
       payload.assigneeId = assigneeId.value;
     if (issueType.value !== originalIssueType.value)
-      payload.type = issueType.value as Issue["type"];
+      payload.type = issueType.value as IssueJson["type"];
 
     await issueService.updateIssue(props.issueId, payload);
 
