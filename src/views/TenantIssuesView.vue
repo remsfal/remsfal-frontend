@@ -5,7 +5,7 @@ import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { issueService, type IssueItem, type Status, type Type, type Issue } from '@/services/IssueService.ts';
 import TenantIssueToolbar from '@/components/TenantIssueToolbar.vue';
 import TenantIssueList from '@/components/TenantIssueList.vue';
-import TenantNewIssueDialog from '@/components/TenantNewIssueDialog.vue';
+import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
 import ProgressSpinner from 'primevue/progressspinner';
 import Message from 'primevue/message';
 
@@ -32,12 +32,6 @@ const filters = ref({
 });
 
 const searchQuery = ref('');
-
-// Get first active contract for creating new issues
-const firstActiveContract = computed(() => {
-  // TenancyJsonJson doesn't have endOfRental field, use active status
-  return contracts.value.find(c => c.active !== false);
-});
 
 const loadContracts = async () => {
   loading.value = true;
@@ -148,9 +142,8 @@ onMounted(async () => {
       />
 
       <!-- New Issue Dialog -->
-      <TenantNewIssueDialog
+      <NewTenancyIssueDialog
         v-model:visible="showNewIssueDialog"
-        :tenancyId="firstActiveContract?.agreementId"
         @issueCreated="handleIssueCreated"
       />
     </div>
