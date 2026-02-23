@@ -109,7 +109,7 @@
     "vite-plugin-istanbul": "^7.2.1",
     "vite-plugin-vue-devtools": "^8.0.3",
     "vitest": "^4.0.3",
-    "vue-eslint-parser": "^10.2.0",
+    "vue-eslint-parser": "^10.4.0",
     "vue-i18n-extract": "^2.0.7",
     "vue-tsc": "^3.2.4"
   },
