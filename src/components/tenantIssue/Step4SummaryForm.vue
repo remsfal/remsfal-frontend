@@ -8,14 +8,14 @@ import Message from 'primevue/message';
 import Divider from 'primevue/divider';
 
 // Types
-import type { Type } from '@/services/IssueService';
+import type { IssueType } from '@/services/IssueService';
 import type { TenancyJson } from '@/services/TenancyService';
 import { formatTenancyLabel } from '@/services/TenancyService';
 
 // Props & Emits
 const props = defineProps<{
   tenancyId: string | null;
-  issueType: Type | null;
+  issueType: IssueType | null;
   issueCategory: string | null;
   rentalUnitId: string | null;
   causedBy: string | null;

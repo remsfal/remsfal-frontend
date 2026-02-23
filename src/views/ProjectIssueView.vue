@@ -4,7 +4,7 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
 import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
-import { issueService, type Issue } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/services/IssueService';
 
 /* Props */
 const props = defineProps<{ projectId: string; issueId: string }>();
@@ -21,8 +21,8 @@ type IssueUI = {
   reporter: string;
   project: string;
   tenancy: string;
-  status: Issue['status'];
-  issueType: Issue['type'];
+  status: IssueJson['status'];
+  issueType: IssueJson['type'];
 };
 
 /* State */
@@ -34,7 +34,7 @@ const description = ref('');
 const fetchIssue = async () => {
   loadingFetch.value = true;
   try {
-    const issue: Issue = await issueService.getIssue(props.issueId);
+    const issue: IssueJson = await issueService.getIssue(props.issueId);
     console.log('#######', issue);
 
     // Map API response to UI-friendly format

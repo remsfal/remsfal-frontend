@@ -12,7 +12,7 @@ import StepPanels from 'primevue/steppanels';
 import StepPanel from 'primevue/steppanel';
 
 // Services & Types
-import { rentalAgreementService, type RentalAgreement, type TenantItem } from '@/services/RentalAgreementService';
+import { rentalAgreementService, type RentalAgreementJson, type TenantJson } from '@/services/RentalAgreementService';
 import type { ApiComponents } from '@/services/ApiClient';
 import type { SelectedUnit } from './rentalAgreement/Step2UnitsForm.vue';
 
@@ -22,9 +22,8 @@ import Step2UnitsForm from './rentalAgreement/Step2UnitsForm.vue';
 import Step3TenantsForm from './rentalAgreement/Step3TenantsForm.vue';
 import Step4Summary from './rentalAgreement/Step4Summary.vue';
 
-// Extract RentJson and TenantJson types from API
+// Extract RentJson type from API
 type RentJson = ApiComponents['schemas']['RentJson'];
-type TenantJson = ApiComponents['schemas']['TenantJson'];
 
 // Props & Emits
 const props = defineProps<{
@@ -48,7 +47,7 @@ const formState = ref<{
   startOfRental: string | null;
   endOfRental: string | null;
   selectedUnits: SelectedUnit[];
-  tenants: TenantItem[];
+  tenants: TenantJson[];
 }>({
   startOfRental: null,
   endOfRental: null,
@@ -76,7 +75,7 @@ function editStep(stepValue: string) {
 // Transform Form Data to RentalAgreement API Schema
 function transformFormDataToRentalAgreement(
   state: typeof formState.value,
-): RentalAgreement {
+): RentalAgreementJson {
   // Group units by type
   const propertyRents: RentJson[] = [];
   const siteRents: RentJson[] = [];
@@ -117,7 +116,7 @@ function transformFormDataToRentalAgreement(
     }
   });
 
-  // Transform tenants to TenantJson
+  // Transform tenants
   const tenants: TenantJson[] = state.tenants.map((tenant) => ({
     firstName: tenant.firstName.trim(),
     lastName: tenant.lastName.trim(),

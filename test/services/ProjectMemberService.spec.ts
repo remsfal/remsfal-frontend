@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { projectMemberService, type ProjectMember } from '@/services/ProjectMemberService';
+import { projectMemberService, type ProjectMemberJson } from '@/services/ProjectMemberService';
 import { server } from '../mocks/server';
 import { testErrorHandling, useTestServer } from '../utils/testHelpers';
 
@@ -7,7 +7,7 @@ useTestServer(server);
 
 describe('projectMemberService (MSW)', () => {
   const projectId = 'project123';
-  const member: ProjectMember = {
+  const member: ProjectMemberJson = {
     email: 'test@example.com',
     role: 'COLLABORATOR',
   };

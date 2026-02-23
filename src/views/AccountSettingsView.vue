@@ -8,7 +8,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import type {paths} from '@/services/api/platform-schema';
-import { userService, type User } from '@/services/UserService';
+import { userService, type UserJson } from '@/services/UserService';
 import { RouterLink } from 'vue-router'
 import AdressDisplay from '@/components/AddressDisplay.vue';
 import { locales, type Locale } from '@/i18n/i18n';
@@ -19,8 +19,8 @@ const i18n = useI18n();
 
 type UserGetResponse = paths['/api/v1/user']['get']['responses'][200]['content']['application/json'];
 
-const userProfile = ref<User | null>(null);
-const editedUserProfile = ref<Partial<User>>({});
+const userProfile = ref<UserJson | null>(null);
+const editedUserProfile = ref<Partial<UserJson>>({});
 
 const deleteAcc = ref(false); // Sichtbarkeit des Dialogs für Konto löschen
 const changes = ref(false);
@@ -48,7 +48,7 @@ onMounted(() => {
 
 async function fetchUserProfile() {
   try {
-    const profile = (await userService.getUser()) as User;
+    const profile = (await userService.getUser()) as UserJson;
     if (profile) {
       userProfile.value = profile;
       editedUserProfile.value = { ...profile };
@@ -64,8 +64,8 @@ async function fetchUserProfile() {
   }
 }
 
-function getUpdatedValue<K extends keyof User>(field: K): string | undefined {
-  const value = editedUserProfile.value[field] ?? userProfile.value?.[field as keyof User];
+function getUpdatedValue<K extends keyof UserJson>(field: K): string | undefined {
+  const value = editedUserProfile.value[field] ?? userProfile.value?.[field as keyof UserJson];
   if (typeof value === 'string' && value.trim() === '') {
     return undefined;
   }
@@ -74,7 +74,7 @@ function getUpdatedValue<K extends keyof User>(field: K): string | undefined {
 
 async function saveProfile(): Promise<void> {
   try {
-    const user: Partial<User> = {
+    const user: Partial<UserJson> = {
       firstName: getUpdatedValue('firstName'),
       businessPhoneNumber: getUpdatedValue('businessPhoneNumber'),
       lastName: getUpdatedValue('lastName'),

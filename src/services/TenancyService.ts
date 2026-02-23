@@ -1,7 +1,6 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
 export type TenancyJson = ApiComponents['schemas']['TenancyJson'];
-export type TenancyItem = TenancyJson;
 export type UnitType = ApiComponents['schemas']['UnitType'];
 export type TenancyListJson = ApiComponents['schemas']['TenancyListJson'];
 export type RentalUnitJson = ApiComponents['schemas']['RentalUnitJson'];

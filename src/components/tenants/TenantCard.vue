@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import Tag from 'primevue/tag';
-import type { TenantItem } from '@/services/TenantService';
+import type { TenantItemJson } from '@/services/TenantService';
 import TenantContactButtons from './TenantContactButtons.vue';
 import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';
 
 const props = defineProps<{
-  tenant: TenantItem;
+  tenant: TenantItemJson;
 }>();
 
 const emit = defineEmits<{

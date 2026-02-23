@@ -7,7 +7,7 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { onMounted, ref } from 'vue';
-import { type ProjectMember, projectMemberService } from '@/services/ProjectMemberService';
+import { type ProjectMemberJson, projectMemberService } from '@/services/ProjectMemberService';
 import ProjectMemberRoleSelect from '@/components/ProjectMemberRoleSelect.vue';
 
 const props = defineProps<{
@@ -17,21 +17,21 @@ const props = defineProps<{
 const { t } = useI18n();
 const toast = useToast();
 
-const members = ref<ProjectMember[]>([]);
+const members = ref<ProjectMemberJson[]>([]);
 
 const fetchMembers = async () => {
   await projectMemberService
     .getMembers(props.projectId)
     .then((list) => {
       // TEMP FIX: cast to expected type until backend spec is fixed
-      members.value = (list as { members: ProjectMember[] }).members;
+      members.value = (list as { members: ProjectMemberJson[] }).members;
     })
     .catch((error) => {
       console.error('Failed to fetch members', error);
     });
 };
 
-const updateMemberRole = async (member: ProjectMember) => {
+const updateMemberRole = async (member: ProjectMemberJson) => {
   try {
     // TEMP FIX: pass memberId and a body with role
     if (!member.id) {

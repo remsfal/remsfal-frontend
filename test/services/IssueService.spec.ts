@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { issueService, type Issue, type Status } from '@/services/IssueService';
+import { issueService, type IssueJson, type IssueStatus } from '@/services/IssueService';
 
 const projectId = 'test-project';
 const issueId = 'test-issue';
@@ -23,19 +23,19 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('createIssue returns the newly created issue', async () => {
-    const newIssue: Partial<Issue> = {
+    const newIssue: Partial<IssueJson> = {
       title: 'New Issue',
       description: 'New Description',
-      status: 'OPEN' as Status,
+      status: 'OPEN' as IssueStatus,
     };
     const createdIssue = await issueService.createProjectIssue(newIssue);
     expect(createdIssue.id).toBeDefined();
     expect(createdIssue.title).toBe('New Issue');
-    expect(createdIssue.status).toBe('OPEN' as Status);
+    expect(createdIssue.status).toBe('OPEN' as IssueStatus);
   });
 
   test('updateIssue returns the updated issue', async () => {
-    const updates: Partial<Issue> = {
+    const updates: Partial<IssueJson> = {
       title: 'Updated Issue',
       description: 'Updated Description',
     };
@@ -51,7 +51,6 @@ describe('IssueService with MSW (http)', () => {
     expect(issueList.issues.length).toBeGreaterThan(0);
     expect(issueList.first).toBeDefined();
     expect(issueList.size).toBeDefined();
-    expect(issueList.total).toBeDefined();
   });
   
   test('getIssue handles non-existing issue (404)', async () => {
@@ -67,7 +66,6 @@ describe('IssueService with MSW (http)', () => {
     const result = await issueService.getIssues(projectId);
     expect(result.first).toBe(0);
     expect(result.size).toBe(0);
-    expect(result.total).toBe(0);
     expect(result.issues).toEqual([]);
   });
 });

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import { type IssueItem } from '@/services/IssueService.ts';
+import { type IssueItemJson } from '@/services/IssueService.ts';
 
 const props = defineProps<{
-  issues: IssueItem[];
+  issues: IssueItemJson[];
 }>();
 
 const emit = defineEmits<{
-  rowSelect: [issue: IssueItem];
+  rowSelect: [issue: IssueItemJson];
 }>();
 
 const onRowSelect = (event: any) => {

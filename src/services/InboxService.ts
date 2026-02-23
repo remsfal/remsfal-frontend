@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/ApiClient';
-import type { Type, Status } from '@/services/IssueService';
+import type { IssueType, IssueStatus } from '@/services/IssueService';
 
 export interface InboxMessage {
   id: string;
@@ -9,8 +9,8 @@ export interface InboxMessage {
   // Issue data
   issueId: string;
   issueTitle: string;
-  issueType: Type;
-  issueStatus: Status;
+  issueType: IssueType;
+  issueStatus: IssueStatus;
 
   // Project data
   projectId: string;

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import type { IssueItem } from '@/services/IssueService.ts';
+import type { IssueItemJson } from '@/services/IssueService.ts';
 import type { TenancyJson } from '@/services/TenancyService.ts';
 import TenantIssueCard from './TenantIssueCard.vue';
 import DataView from 'primevue/dataview';
 
 // Extended type with optional date fields that may be returned from API
-type ExtendedIssueItem = IssueItem & {
+type ExtendedIssueItem = IssueItemJson & {
   createdAt?: string;
   modifiedAt?: string;
   tenancyId?: string;

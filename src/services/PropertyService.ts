@@ -2,9 +2,9 @@ import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
 /** -------------------- TYPES & UTILS -------------------- **/
 
-export type PropertyUnit = ApiComponents['schemas']['PropertyJson'];
-export type PropertyList = ApiComponents['schemas']['PropertyListJson'];
-export type RentableUnitTreeNode = ApiComponents['schemas']['RentalUnitTreeNodeJson'];
+export type PropertyJson = ApiComponents['schemas']['PropertyJson'];
+export type PropertyListJson = ApiComponents['schemas']['PropertyListJson'];
+export type RentalUnitTreeNodeJson = ApiComponents['schemas']['RentalUnitTreeNodeJson'];
 export type UnitType = ApiComponents['schemas']['UnitType'];
 
 export enum EntityType {
@@ -27,34 +27,34 @@ export function toRentableUnitView(entity: UnitType | undefined): string {
 /** -------------------- SERVICE -------------------- **/
 
 class PropertyService {
-  async createProperty(projectId: string, property: PropertyUnit): Promise<PropertyUnit> {
+  async createProperty(projectId: string, property: PropertyJson): Promise<PropertyJson> {
     return apiClient.post(
       '/api/v1/projects/{projectId}/properties',
       property,
       { pathParams: { projectId } },
-    ) as Promise<PropertyUnit>;
+    ) as Promise<PropertyJson>;
   }
 
-  async getPropertyTree(projectId: string): Promise<PropertyList> {
+  async getPropertyTree(projectId: string): Promise<PropertyListJson> {
     return apiClient.get(
       '/api/v1/projects/{projectId}/properties',
       { pathParams: { projectId } },
     );
   }
 
-  async getProperty(projectId: string, propertyId: string): Promise<PropertyUnit> {
+  async getProperty(projectId: string, propertyId: string): Promise<PropertyJson> {
     return apiClient.get(
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       { pathParams: { projectId, propertyId } },
     );
   }
 
-  async updateProperty(projectId: string, propertyId: string, property: PropertyUnit): Promise<PropertyUnit> {
+  async updateProperty(projectId: string, propertyId: string, property: PropertyJson): Promise<PropertyJson> {
     return apiClient.patch(
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       property,
       { pathParams: { projectId, propertyId } },
-    ) as Promise<PropertyUnit>;
+    ) as Promise<PropertyJson>;
   }
 
   async deleteProperty(projectId: string, propertyId: string): Promise<void> {
@@ -73,13 +73,13 @@ class PropertyService {
   ): Promise<{ title: string; id: string; type: UnitType }[]> {
     try {
       const data = await this.getPropertyTree(projectId);
-      const tree = (data.properties ?? []) as RentableUnitTreeNode[];
+      const tree = (data.properties ?? []) as RentalUnitTreeNodeJson[];
 
       const findPath = (
-        nodes: RentableUnitTreeNode[],
+        nodes: RentalUnitTreeNodeJson[],
         targetId: string,
-        currentPath: RentableUnitTreeNode[],
-      ): RentableUnitTreeNode[] | null => {
+        currentPath: RentalUnitTreeNodeJson[],
+      ): RentalUnitTreeNodeJson[] | null => {
         for (const node of nodes) {
           if (node.key === targetId) {
             return [...currentPath, node];
@@ -111,10 +111,10 @@ class PropertyService {
   async getParentId(projectId: string, childId: string): Promise<string | undefined> {
     try {
       const data = await this.getPropertyTree(projectId);
-      const tree = (data.properties ?? []) as RentableUnitTreeNode[];
+      const tree = (data.properties ?? []) as RentalUnitTreeNodeJson[];
 
       const findParent = (
-        nodes: RentableUnitTreeNode[],
+        nodes: RentalUnitTreeNodeJson[],
         target: string,
         parent: string | undefined,
       ): string | undefined => {

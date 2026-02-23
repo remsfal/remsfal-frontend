@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { storageService, type Storage } from '@/services/StorageService';
+import { storageService, type StorageJson } from '@/services/StorageService';
 
-const mockStorage: Storage = {
+const mockStorage: StorageJson = {
   id: 'storage-1',
   title: 'Storage Unit 1',
   location: 'Basement Level',
@@ -16,7 +16,7 @@ describe('StorageService', () => {
   beforeEach(() => {
     server.use(
       http.post('/api/v1/projects/:projectId/buildings/:buildingId/storages', async ({ request }) => {
-        const body = (await request.json()) as Storage;
+        const body = (await request.json()) as StorageJson;
         return HttpResponse.json(
           {
             ...body,
@@ -35,7 +35,7 @@ describe('StorageService', () => {
         });
       }),
       http.patch('/api/v1/projects/:projectId/storages/:storageId', async ({ request, params }) => {
-        const body = (await request.json()) as Partial<Storage>;
+        const body = (await request.json()) as Partial<StorageJson>;
         return HttpResponse.json({
           ...mockStorage,
           ...body,
@@ -53,7 +53,7 @@ describe('StorageService', () => {
 
   describe('createStorage', () => {
     it('should create a new storage', async () => {
-      const newStorage: Storage = {
+      const newStorage: StorageJson = {
         title: 'New Storage',
         location: 'Ground Floor',
         description: 'New storage unit',
@@ -131,7 +131,7 @@ describe('StorageService', () => {
 
   describe('updateStorage', () => {
     it('should update a storage', async () => {
-      const updates: Storage = {
+      const updates: StorageJson = {
         ...mockStorage,
         title: 'Updated Storage',
         usableSpace: 20,
@@ -143,7 +143,7 @@ describe('StorageService', () => {
     });
 
     it('should handle partial updates', async () => {
-      const partialUpdate: Storage = {title: 'Only Title Updated',};
+      const partialUpdate: StorageJson = {title: 'Only Title Updated',};
 
       const result = await storageService.updateStorage('project-1', 'storage-1', partialUpdate);
       expect(result.title).toBe('Only Title Updated');

@@ -2,7 +2,7 @@
 import TenancyDataComponent from '@/components/tenancyDetails/TenancyDataComponent.vue';
 import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableComponent.vue';
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
-import { rentalAgreementService, type RentalAgreement } from '@/services/RentalAgreementService.ts';
+import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService.ts';
 import type { components } from '@/services/api/platform-schema.ts';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -21,7 +21,7 @@ const router = useRouter();
 const toast = useToast();
 
 const confirmationDialogVisible = ref(false);
-const rentalAgreement = ref<RentalAgreement | null>(null);
+const rentalAgreement = ref<RentalAgreementJson | null>(null);
 
 const rentalStart = ref<string | null>(null);
 const rentalEnd = ref<string | null>(null);
@@ -88,7 +88,7 @@ function redirectToTenanciesList() {
   router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
 
-function updateRentalAgreement(agreement: RentalAgreement | null) {
+function updateRentalAgreement(agreement: RentalAgreementJson | null) {
   if (!agreement?.id || !props.projectId) return;
 
   rentalAgreementService.updateRentalAgreement(
@@ -104,7 +104,7 @@ function updateRentalAgreement(agreement: RentalAgreement | null) {
   });
 }
 
-function handleTenancyDataChange(updatedAgreement: RentalAgreement) {
+function handleTenancyDataChange(updatedAgreement: RentalAgreementJson) {
   rentalAgreement.value = updatedAgreement;
   rentalStart.value = rentalAgreement.value?.startOfRental || null;
   rentalEnd.value = rentalAgreement.value?.endOfRental || null;

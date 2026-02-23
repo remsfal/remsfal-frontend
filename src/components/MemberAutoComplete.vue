@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AutoComplete from 'primevue/autocomplete';
-import { projectMemberService, type ProjectMember } from '@/services/ProjectMemberService';
+import { projectMemberService, type ProjectMemberJson } from '@/services/ProjectMemberService';
 
 const props = defineProps<{
   modelValue: string | null;     // Member ID (UUID)
@@ -20,12 +20,12 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 // State
-const members = ref<ProjectMember[]>([]);
+const members = ref<ProjectMemberJson[]>([]);
 const loadingMembers = ref(false);
 const filteredMembers = ref<MemberOption[]>([]);
 
 // Member with computed label for display
-type MemberOption = ProjectMember & { label: string };
+type MemberOption = ProjectMemberJson & { label: string };
 
 // Transform members to options with labels
 const memberOptions = computed<MemberOption[]>(() =>
@@ -47,7 +47,7 @@ const fetchMembers = async () => {
   try {
     const memberList = await projectMemberService.getMembers(props.projectId);
     // TEMP FIX: Handle nested response structure
-    members.value = (memberList as { members: ProjectMember[] }).members || [];
+    members.value = (memberList as { members: ProjectMemberJson[] }).members || [];
   } catch (error) {
     console.error('Failed to fetch members:', error);
   } finally {

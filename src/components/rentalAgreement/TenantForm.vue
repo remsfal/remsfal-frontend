@@ -13,15 +13,15 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 // Types
-import type { TenantItem } from '@/services/RentalAgreementService';
+import type { TenantJson } from '@/services/RentalAgreementService';
 
 // Props & Emits
 defineProps<{
-  initialTenant?: TenantItem | null;
+  initialTenant?: TenantJson | null;
 }>();
 
 const emit = defineEmits<{
-  submit: [tenant: TenantItem];
+  submit: [tenant: TenantJson];
   cancel: [];
 }>();
 

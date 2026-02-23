@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import DeleteRentableUnitButton from '@/components/DeleteRentableUnitButton.vue';
-import type { RentableUnitTreeNode } from '@/services/PropertyService';
+import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
 
 // Mock translation function
 vi.mock('vue-i18n', () => ({
@@ -17,7 +17,7 @@ vi.mock('vue-i18n', () => ({
 
 describe('DeleteRentableUnitButton.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof DeleteRentableUnitButton>>;
-  let mockNode: RentableUnitTreeNode;
+  let mockNode: RentalUnitTreeNodeJson;
 
   beforeEach(async () => {
     mockNode = {
@@ -117,7 +117,7 @@ describe('DeleteRentableUnitButton.vue', () => {
   });
 
   test('handles different unit types', () => {
-    const apartmentNode: RentableUnitTreeNode = {
+    const apartmentNode: RentalUnitTreeNodeJson = {
       key: 'apartment-456',
       data: {
         id: 'apartment-456',
@@ -137,7 +137,7 @@ describe('DeleteRentableUnitButton.vue', () => {
   });
 
   test('handles node without data gracefully', async () => {
-    const emptyNode: RentableUnitTreeNode = {
+    const emptyNode: RentalUnitTreeNodeJson = {
       key: 'empty-node',
       data: undefined,
       children: [],

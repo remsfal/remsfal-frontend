@@ -8,7 +8,7 @@ import TreeSelect from 'primevue/treeselect';
 import type { TreeNode } from 'primevue/treenode';
 
 // Services & Types
-import { propertyService, type RentableUnitTreeNode, type UnitType } from '@/services/PropertyService';
+import { propertyService, type RentalUnitTreeNodeJson, type UnitType } from '@/services/PropertyService';
 import type { ApiComponents } from '@/services/ApiClient';
 
 // Components
@@ -51,8 +51,8 @@ const currentUnit = ref<{
   unitTitle: string;
 } | null>(null);
 
-// Transform RentableUnitTreeNode to TreeSelect format
-function transformTreeNodes(nodes: RentableUnitTreeNode[]): TreeNode[] {
+// Transform RentalUnitTreeNodeJson to TreeSelect format
+function transformTreeNodes(nodes: RentalUnitTreeNodeJson[]): TreeNode[] {
   return nodes.map((node) => {
     const unitType = node.data?.type ? t(`unitTypes.${node.data.type.toLowerCase()}`) : '';
     const title = node.data?.title || 'Unbenannt';
@@ -74,7 +74,7 @@ onMounted(async () => {
   isLoadingTree.value = true;
   try {
     const data = await propertyService.getPropertyTree(props.projectId);
-    const rawTree = (data.properties || []) as RentableUnitTreeNode[];
+    const rawTree = (data.properties || []) as RentalUnitTreeNodeJson[];
     propertyTree.value = transformTreeNodes(rawTree);
   } catch (error) {
     console.error('Failed to load property tree:', error);

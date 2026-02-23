@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { projectService } from '@/services/ProjectService';
-import type { ProjectList, ProjectItem } from '@/services/ProjectService';
+import type { ProjectListJson, ProjectItem } from '@/services/ProjectService';
 
 export const useProjectStore = defineStore('project-store', {
   state: () => ({
@@ -17,7 +17,7 @@ export const useProjectStore = defineStore('project-store', {
   actions: {
     async refreshProjectList() {
       try {
-        const projectList: ProjectList = await projectService.getProjects();
+        const projectList: ProjectListJson = await projectService.getProjects();
         this.projects = projectList.projects ?? [];
         this.totalProjects = projectList.total;
         this.firstOffset = projectList.first;
@@ -29,7 +29,7 @@ export const useProjectStore = defineStore('project-store', {
 
     async fetchProjects(offset: number, limit: number): Promise<void> {
       try {
-        const projectList: ProjectList = await projectService.getProjects(offset, limit);
+        const projectList: ProjectListJson = await projectService.getProjects(offset, limit);
         this.projects = projectList.projects ?? [];
         this.totalProjects = projectList.total;
         this.firstOffset = projectList.first;
@@ -41,7 +41,7 @@ export const useProjectStore = defineStore('project-store', {
 
     async searchProjects(projectId: string): Promise<void> {
       try {
-        const projectList: ProjectList = await projectService.searchProjects(projectId);
+        const projectList: ProjectListJson = await projectService.searchProjects(projectId);
         this.projects = projectList.projects ?? [];
         this.totalProjects = projectList.total;
         this.firstOffset = projectList.first;

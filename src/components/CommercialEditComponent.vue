@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ReusableForm from '@/components/ReusableFormComponent.vue';
 import { onMounted, ref } from 'vue';
-import { commercialService, type CommercialUnit } from '@/services/CommercialService';
+import { commercialService, type CommercialJson } from '@/services/CommercialService';
 
 const props = defineProps<{
   projectId: string;
@@ -67,7 +67,7 @@ const fields: {
   },
 ];
 
-const initialCommercialData = ref<CommercialUnit>({
+const initialCommercialData = ref<CommercialJson>({
   title: '',
   location: '',
   netFloorArea: 0,

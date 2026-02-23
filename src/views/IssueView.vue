@@ -4,19 +4,19 @@ import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import IssueTable from '@/components/IssueTable.vue';
 import NewIssueDialog from '@/components/NewIssueDialog.vue';
-import { issueService, type IssueItem, type Status } from '@/services/IssueService';
+import { issueService, type IssueItemJson, type IssueStatus } from '@/services/IssueService';
 
-const props = defineProps<{ projectId: string; assigneeId?: string; status?: Status; category?: string; }>();
+const props = defineProps<{ projectId: string; assigneeId?: string; status?: IssueStatus; category?: string; }>();
 const router = useRouter();
 
 // Reactive state
 const showNewIssueDialog = ref(false);
-const issues = ref<IssueItem[]>([]);
-const issuesByStatusOpen = ref<IssueItem[]>([]);
-const myIssues = ref<IssueItem[]>([]);
+const issues = ref<IssueItemJson[]>([]);
+const issuesByStatusOpen = ref<IssueItemJson[]>([]);
+const myIssues = ref<IssueItemJson[]>([]);
 
 // --- Handle issue created from dialog ---
-const handleIssueCreated = (newIssue: IssueItem) => {
+const handleIssueCreated = (newIssue: IssueItemJson) => {
   // Update local state reactively
   issues.value = [...issues.value, newIssue];
 
@@ -38,11 +38,8 @@ const handleIssueCreated = (newIssue: IssueItem) => {
 // --- Load all issues ---
 const loadIssues = async () => {
   try {
-    // Signature: (projectId, status, category)
     const issueList = await issueService.getIssues(
         props.projectId,
-        undefined,
-        props.category
     );
     issues.value = issueList?.issues ?? [];
   } catch (err) {
@@ -55,8 +52,8 @@ const loadIssuesWithOpenStatus = async () => {
   try {
     const issueList = await issueService.getIssues(
         props.projectId,
-        'OPEN' as Status,
-        props.category
+        undefined,
+        'OPEN' as IssueStatus,
     );
     issuesByStatusOpen.value = issueList?.issues ?? [];
   } catch (err) {
@@ -69,12 +66,10 @@ const loadMyIssues = async () => {
   try {
     const issueList = await issueService.getIssues(
         props.projectId,
-        undefined,
-        props.category
     );
 
     myIssues.value =
-        issueList?.issues?.map((issue: IssueItem) => ({
+        issueList?.issues?.map((issue: IssueItemJson) => ({
           ...issue,
           assigneeId: props.assigneeId,
         })) ?? [];
@@ -84,7 +79,7 @@ const loadMyIssues = async () => {
 };
 
 // --- Handle row selection ---
-const onIssueSelect = (issue: IssueItem) => {
+const onIssueSelect = (issue: IssueItemJson) => {
   router.push({ name: 'IssueDetails', params: { issueId: issue.id } });
 };
 

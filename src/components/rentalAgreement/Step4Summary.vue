@@ -8,14 +8,14 @@ import BaseCard from '@/components/common/BaseCard.vue';
 
 // Types (imported from Step components)
 import type { SelectedUnit } from './Step2UnitsForm.vue';
-import type { TenantItem } from '@/services/RentalAgreementService';
+import type { TenantJson } from '@/services/RentalAgreementService';
 
 // Props & Emits
 const props = defineProps<{
   startOfRental: string | null;
   endOfRental: string | null;
   selectedUnits: SelectedUnit[];
-  tenants: TenantItem[];
+  tenants: TenantJson[];
   isLoading: boolean;
 }>();
 

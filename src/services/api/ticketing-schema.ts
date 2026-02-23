@@ -189,20 +189,22 @@ export interface paths {
     get: {
       parameters: {
         query: {
-          /** @description Filter to return only issuesfor a specific tenancy */
+          /** @description Filter to return only issuesfor a specific rental agreement */
           agreementId?: components["schemas"]["UUID"];
+          /** @description Filter to return only issues of a assigned user */
+          assigneeId?: components["schemas"]["UUID"];
           /** @description Maximum number of projects to return */
           limit: number;
           /** @description Offset of the first project to return */
           offset: number;
-          /** @description Filter to return only issues of a specific user */
-          owner?: components["schemas"]["UUID"];
+          /** @description Whether to prefer tenancy issues over project issues */
+          preferTenancyIssues?: boolean;
           /** @description Filter to return only issues of a specific project */
           projectId?: components["schemas"]["UUID"];
-          /** @description Filter to return only issuesfor a specific rental */
-          rentalId?: components["schemas"]["UUID"];
-          /** @description Filter to return only issuesfor a specific rental type */
-          rentalType?: components["schemas"]["UnitType"];
+          /** @description Filter to return only issuesfor a specific rental unit */
+          rentalUnitId?: components["schemas"]["UUID"];
+          /** @description Filter to return only issuesfor a specific unit type */
+          rentalUnitType?: components["schemas"]["UnitType"];
           /** @description Filter to return only issues with a specific status */
           status?: components["schemas"]["IssueStatus"];
         };
@@ -408,6 +410,80 @@ export interface paths {
         };
       };
     };
+    trace?: never;
+  };
+  "/ticketing/v1/issues/{issueId}/attachments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Upload one or more attachments to an existing issue.
+     * @description Uploads one or more image files to an already-existing issue. Each file must be provided as a separate 'attachment' part in the multipart request.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": Record<string, never>;
+        };
+      };
+      responses: {
+        /** @description Attachments uploaded successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": unknown;
+          };
+        };
+        /** @description Invalid input or unsupported file type */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to upload attachments to this issue */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Issue not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/ticketing/v1/issues/{issueId}/attachments/{attachmentId}": {
@@ -1146,276 +1222,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get participants in chat session */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Participants retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get participant details in chat session */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The participant ID */
-          participantId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Participant details retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or participant not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Remove participant from chat session */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The participant ID to remove */
-          participantId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Participant removed */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or participant not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/participants/{participantId}/role": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    /** Change participant role in chat session */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The participant ID */
-          participantId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": string;
-        };
-      };
-      responses: {
-        /** @description Participant role updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or participant not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/ticketing/v1/issues/{issueId}/parent/{parentIssueId}": {
     parameters: {
       query?: never;
@@ -1771,13 +1577,20 @@ export interface components {
       | "GENERAL";
     /** @description An issue item with basic information */
     IssueItemJson: {
-      id?: components["schemas"]["UUID"];
-      name?: string;
-      title?: string;
-      type?: components["schemas"]["IssueType"];
-      status?: components["schemas"]["IssueStatus"];
-      priority?: components["schemas"]["IssuePriority"];
-      assigneeId?: components["schemas"]["UUID"];
+      /** @description Unique identifier of the issue */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description Title of the issue */
+      readonly name?: string;
+      /** @description Title of the issue */
+      readonly title?: string;
+      /** @description Type of the issue */
+      readonly type?: components["schemas"]["IssueType"];
+      /** @description Status of the issue */
+      readonly status?: components["schemas"]["IssueStatus"];
+      /** @description Priority of the issue */
+      readonly priority?: components["schemas"]["IssuePriority"];
+      /** @description Unique identifier of the assignee of the issue */
+      readonly assigneeId?: components["schemas"]["UUID"];
     };
     /** @description An issue */
     IssueJson: {
@@ -1815,14 +1628,9 @@ export interface components {
       /**
        * Format: int32
        * @description Number of elements in list
-       * @default 10
+       * @default 50
        */
       readonly size: number;
-      /**
-       * Format: int32
-       * @description Total number of available elements
-       */
-      total: number;
       issues?: components["schemas"]["IssueItemJson"][];
     };
     /** @enum {string} */

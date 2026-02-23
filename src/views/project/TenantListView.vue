@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ProgressSpinner from 'primevue/progressspinner';
 import DataView from 'primevue/dataview';
-import { tenantService, type TenantItem } from '@/services/TenantService';
+import { tenantService, type TenantItemJson } from '@/services/TenantService';
 import TenantCard from '@/components/tenants/TenantCard.vue';
 import TenantToolbar from '@/components/tenants/TenantToolbar.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
@@ -19,7 +19,7 @@ const { t } = useI18n();
 type ActiveFilter = 'ALL' | 'ACTIVE' | 'INACTIVE';
 
 // State
-const tenants = ref<TenantItem[]>([]);
+const tenants = ref<TenantItemJson[]>([]);
 const isLoading = ref(false);
 const activeFilter = ref<ActiveFilter>('ALL');
 const searchQuery = ref('');
@@ -59,7 +59,7 @@ const filteredTenants = computed(() => {
 });
 
 // Navigation
-function onTenantClick(tenant: TenantItem) {
+function onTenantClick(tenant: TenantItemJson) {
   router.push({
     name: 'TenantDetail',
     params: { projectId: props.projectId, tenantId: tenant.id },

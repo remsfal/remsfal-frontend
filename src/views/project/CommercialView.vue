@@ -4,7 +4,7 @@ import BaseCard from '@/components/common/BaseCard.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { commercialService, type CommercialUnit } from '@/services/CommercialService.ts';
+import { commercialService, type CommercialJson } from '@/services/CommercialService.ts';
 import { useToast } from 'primevue/usetoast';
 import {handleCancel,
   navigateToObjects,
@@ -125,7 +125,7 @@ const save = async () => {
     return;
   }
 
-  const payload: CommercialUnit = {
+  const payload: CommercialJson = {
     title: title.value,
     description: description.value,
     netFloorArea: commercialSpace.value ?? undefined,

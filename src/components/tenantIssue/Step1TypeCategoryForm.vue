@@ -10,7 +10,7 @@ import AutoComplete from 'primevue/autocomplete';
 import Message from 'primevue/message';
 
 // Types
-import type { Type } from '@/services/IssueService';
+import type { IssueType } from '@/services/IssueService';
 import type { TenancyJson, RentalUnitJson } from '@/services/TenancyService';
 import { formatTenancyLabel } from '@/services/TenancyService';
 
@@ -24,7 +24,7 @@ interface CategoryOption {
 // Props & Emits
 const props = defineProps<{
   tenancyId: string | null;
-  issueType: Type | null;
+  issueType: IssueType | null;
   issueCategory: string | null;
   rentalUnitId: string | null;
   tenancies: TenancyJson[];
@@ -32,7 +32,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:tenancyId': [value: string | null];
-  'update:issueType': [value: Type | null];
+  'update:issueType': [value: IssueType | null];
   'update:issueCategory': [value: string | null];
   'update:rentalUnitId': [value: string | null];
   next: [];
@@ -124,7 +124,7 @@ const INQUIRY_CATEGORIES = computed<CategoryOption[]>(() => [
 
 // Local state for form fields
 const localTenancyId = ref(props.tenancyId);
-const localIssueType = ref(props.issueType);
+const localIssueType = ref<IssueType | null>(props.issueType);
 const localRentalUnitId = ref(props.rentalUnitId);
 const localCategory = ref<CategoryOption | null>(null);
 

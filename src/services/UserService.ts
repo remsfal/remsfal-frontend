@@ -1,17 +1,17 @@
 import { apiClient, type ApiComponents, type ApiPaths } from '@/services/ApiClient.ts';
 
-export type User = ApiComponents['schemas']['UserJson'];
-export type AddressInfo = ApiComponents['schemas']['AddressJson'];
+export type UserJson = ApiComponents['schemas']['UserJson'];
+export type AddressJson = ApiComponents['schemas']['AddressJson'];
 export type UserUpdateRequest = ApiPaths['/api/v1/user']['patch']['requestBody']['content']['application/json'];
 
 export default class UserService {
   // Get current user data
-  async getUser(): Promise<User> {
+  async getUser(): Promise<UserJson> {
     return apiClient.get('/api/v1/user');
   }
 
   // Update user
-  async updateUser(updatedUser: UserUpdateRequest): Promise<User> {
+  async updateUser(updatedUser: UserUpdateRequest): Promise<UserJson> {
     return apiClient.patch('/api/v1/user', updatedUser);
   }
 

@@ -1,10 +1,10 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import RentableUnitsTable from '@/components/RentableUnitsTable.vue';
-import type { RentableUnitTreeNode } from '@/services/PropertyService';
+import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
 
 // ---- Mock Data ----
-const mockTreeData: RentableUnitTreeNode[] = [
+const mockTreeData: RentalUnitTreeNodeJson[] = [
   {
     key: 'property-1',
     data: {
@@ -122,7 +122,7 @@ describe('RentableUnitsTable.vue', () => {
   });
 
   test('navigates to correct route when node is selected', async () => {
-    const node: RentableUnitTreeNode = {
+    const node: RentalUnitTreeNodeJson = {
       key: 'apartment-1',
       data: {
         title: 'Test Apartment',
@@ -144,7 +144,7 @@ describe('RentableUnitsTable.vue', () => {
   });
 
   test('does not navigate when node has no type', async () => {
-    const node: RentableUnitTreeNode = {
+    const node: RentalUnitTreeNodeJson = {
       key: 'invalid-node',
       data: undefined,
       children: [],
@@ -165,7 +165,7 @@ describe('RentableUnitsTable.vue', () => {
   });
 
   test('emits deleteNode event when DeleteRentableUnitButton triggers delete', async () => {
-    const node: RentableUnitTreeNode = {
+    const node: RentalUnitTreeNodeJson = {
       key: 'apartment-1',
       data: {
         title: 'Test Apartment',

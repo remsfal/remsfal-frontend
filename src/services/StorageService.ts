@@ -1,21 +1,21 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
-export type Storage = ApiComponents['schemas']['StorageJson'];
+export type StorageJson = ApiComponents['schemas']['StorageJson'];
 
 export default class StorageService {
   // Create a new storage
-  async createStorage(projectId: string, buildingId: string, data: Storage): Promise<Storage> {
+  async createStorage(projectId: string, buildingId: string, data: StorageJson): Promise<StorageJson> {
     const storage = await apiClient.post(
       '/api/v1/projects/{projectId}/buildings/{buildingId}/storages',
       data,
       { pathParams: { projectId, buildingId } },
-    ) as Storage;
+    ) as StorageJson;
     console.log('POST create storage:', storage);
     return storage;
   }
 
   // Get a single storage
-  async getStorage(projectId: string, storageId: string): Promise<Storage> {
+  async getStorage(projectId: string, storageId: string): Promise<StorageJson> {
     const storage = await apiClient.get(
       '/api/v1/projects/{projectId}/storages/{storageId}',
       {pathParams: { projectId, storageId },},
@@ -25,7 +25,7 @@ export default class StorageService {
   }
 
   // Update a storage
-  async updateStorage(projectId: string, storageId: string, data: Storage): Promise<Storage> {
+  async updateStorage(projectId: string, storageId: string, data: StorageJson): Promise<StorageJson> {
     const updated = await apiClient.patch(
       '/api/v1/projects/{projectId}/storages/{storageId}',
       data,

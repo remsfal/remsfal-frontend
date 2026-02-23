@@ -8,23 +8,23 @@ import Message from 'primevue/message';
 import AutoComplete from 'primevue/autocomplete';
 
 // Services & Types
-import { tenantService, type TenantItem as TenantItemFromList } from '@/services/TenantService';
-import type { TenantItem } from '@/services/RentalAgreementService';
+import { tenantService, type TenantItemJson as TenantItemFromList } from '@/services/TenantService';
+import type { TenantJson } from '@/services/RentalAgreementService';
 
 // Components
 import TenantForm from './TenantForm.vue';
 
 // Re-export for parent components
-export type { TenantItem };
+export type { TenantJson };
 
 // Props & Emits
 const props = defineProps<{
   projectId: string;
-  tenants: TenantItem[];
+  tenants: TenantJson[];
 }>();
 
 const emit = defineEmits<{
-  'update:tenants': [value: TenantItem[]];
+  'update:tenants': [value: TenantJson[]];
   back: [];
   next: [];
 }>();
@@ -93,8 +93,8 @@ const onTenantSelected = (tenant: TenantItemFromList | null) => {
     return;
   }
 
-  // Convert TenantItemFromList to TenantItem (add missing fields as undefined)
-  const tenantForRental: TenantItem = {
+  // Convert TenantItemFromList to TenantJson (add missing fields as undefined)
+  const tenantForRental: TenantJson = {
     id: tenant.id,
     firstName: tenant.firstName,
     lastName: tenant.lastName,
@@ -141,7 +141,7 @@ const canProceed = computed(() => {
 });
 
 // Handle tenant form submission
-const onTenantFormSubmit = (tenant: TenantItem) => {
+const onTenantFormSubmit = (tenant: TenantJson) => {
   emit('update:tenants', [...props.tenants, tenant]);
   showTenantForm.value = false;
 };
