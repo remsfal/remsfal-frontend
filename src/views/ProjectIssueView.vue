@@ -41,7 +41,6 @@ const fetchIssue = async () => {
     // Map API response to UI-friendly format
     issueDetailsData.value = {
       issueId: issue.id ?? '',
-      title: issue.title ?? '',
       status: issue.status ?? 'OPEN',
       assigneeId: issue.assigneeId ?? '',
       reporter: issue.reporterId ?? '',
@@ -74,9 +73,11 @@ const handleDescriptionSaved = () => {
 /* Fetch issue on mount and when props change */
 onMounted(() => fetchIssue());
 
+/* Fetch issue on mount and when props change */
 watch(
   () => [props.projectId, props.issueId],
-  () => fetchIssue()
+  () => fetchIssue(),
+  { immediate: true }
 );
 </script>
 
