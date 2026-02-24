@@ -54,8 +54,8 @@ const relationshipCounts = computed(() => {
 /* =========================
      Data Fetching
   ========================= */
-const fetchIssueData = async () => {
-  if (!props.issueId || !props.projectId) {
+  const fetchIssueData = async () => {
+  if (!props.issueId) {
     return;
   }
 
@@ -63,7 +63,7 @@ const fetchIssueData = async () => {
   error.value = null;
 
   try {
-    issueData.value = await issueService.getIssue(props.projectId, props.issueId);
+    issueData.value = await issueService.getIssue(props.issueId);
   } catch (err) {
     console.error('Failed to fetch issue relationships:', err);
     error.value = 'Failed to load issue relationships';
