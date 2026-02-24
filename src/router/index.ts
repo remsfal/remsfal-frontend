@@ -16,6 +16,9 @@ import ManagerMobileBar from '@/layout/ManagerMobileBar.vue';
 import ContractorMobileBar from '@/layout/ContractorMobileBar.vue';
 import TenantMobileBar from '@/layout/TenantMobileBar.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
+import ProjectMenu from "@/layout/ProjectMenu.vue";
+import ProjectTopbar from "@/layout/ProjectTopbar.vue";
+import ProjectMobileBar from "@/layout/ProjectMobileBar.vue";
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -23,7 +26,6 @@ const fullscreenRoutes: RouteRecordRaw[] = [
     components: {
       default: AppLayout,
       topbar: ManagerTopbar,
-      mobilebar: ManagerMobileBar,
     },
     props: { default: { fullscreen: true, }, },
     children: [
@@ -43,21 +45,6 @@ const fullscreenRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/PrivacyView.vue'),
       },
       {
-        path: '/projects',
-        name: 'ProjectSelection',
-        component: () => import('@/views/ManagerView.vue'),
-      },
-      {
-        path: '/new-project',
-        name: 'NewProject',
-        component: () => import('@/views/NewProjectView.vue'),
-      },
-      {
-        path: '/account-settings',
-        name: 'AccountSettings',
-        component: () => import('@/views/AccountSettingsView.vue'),
-      },
-      {
         path: '/inbox',
         name: 'Inbox',
         component: () => import('@/views/InboxView.vue'),
@@ -74,12 +61,47 @@ const fullscreenRoutes: RouteRecordRaw[] = [
 
 const managerRoutes: RouteRecordRaw[] = [
   {
-    path: '/projects/:projectId',
+    path: '/manager',
     components: {
       default: AppLayout,
       topbar: ManagerTopbar,
       sidebar: ManagerMenu,
       mobilebar: ManagerMobileBar,
+    },
+    props: { default: { fullscreen: false, }, },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'ManagerDashboard',
+        component: () => import('@/views/project/ProjectDashboard.vue'),
+      },
+      {
+        path: 'projects',
+        name: 'ProjectSelection',
+        component: () => import('@/views/ManagerView.vue'),
+      },
+      {
+        path: 'new-project',
+        name: 'NewProject',
+        component: () => import('@/views/NewProjectView.vue'),
+      },
+      {
+        path: 'account-settings',
+        name: 'ManagerAccountSettings',
+        component: () => import('@/views/AccountSettingsView.vue'),
+      },
+    ],
+  },
+];
+
+const projectRoutes: RouteRecordRaw[] = [
+  {
+    path: '/projects/:projectId',
+    components: {
+      default: AppLayout,
+      topbar: ProjectTopbar,
+      sidebar: ProjectMenu,
+      mobilebar: ProjectMobileBar,
     },
     props: { default: { fullscreen: false, }, },
     beforeEnter: (to: RouteLocationNormalized) => {
@@ -262,6 +284,11 @@ const tenantRoutes: RouteRecordRaw[] = [
         name: 'TenantIssues',
         component: () => import('@/views/TenantIssuesView.vue'),
       },
+      {
+        path: 'account-settings',
+        name: 'TenantAccountSettings',
+        component: () => import('@/views/AccountSettingsView.vue'),
+      },
     ],
   },
 ];
@@ -296,6 +323,7 @@ const contractorRoutes: RouteRecordRaw[] = [
 const routes: Readonly<RouteRecordRaw[]> = [
   ...fullscreenRoutes,
   ...managerRoutes,
+  ...projectRoutes,
   ...tenantRoutes,
   ...contractorRoutes,
 ];
