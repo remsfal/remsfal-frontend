@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import Card from 'primevue/card';
 import Panel from 'primevue/panel';
 import Chip from 'primevue/chip';
-import { issueService, type Issue } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/services/IssueService';
 
 /* =========================
      Props
@@ -20,9 +20,9 @@ const props = defineProps<{
 const router = useRouter();
 
 /* =========================
-     State
-  ========================= */
-const issueData = ref<Issue | null>(null);
+   State
+========================= */
+const issueData = ref<IssueJson | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
