@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
+
 import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
 import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
 import IssueRelationshipsCard from '@/components/issue/IssueRelationshipsCard.vue';
+
 import { issueService, type IssueJson } from '@/services/IssueService';
 
 /* Props */
-const props = defineProps<{ projectId: string; issueId: string }>();
+const props = defineProps<{
+  projectId: string;
+  issueId: string;
+}>();
 
 /* Toast & i18n */
 const toast = useToast();
@@ -31,31 +36,39 @@ const loadingFetch = ref(false);
 const issueDetailsData = ref<IssueUI | null>(null);
 const description = ref('');
 
-/* Fetch issue from API and map to UI type */
+/* Mapper: API -> UI */
+function mapIssueToUI(issue: IssueJson): IssueUI {
+  return {
+    issueId: issue.id ?? '',
+    title: issue.title ?? '',
+    assigneeId: issue.assigneeId ?? '',
+    reporter: issue.reporterId ?? '',
+    project: issue.projectId ?? '',
+    tenancy: issue.rentalUnitId ?? '', // adjust if agreementId is correct instead
+    status: issue.status,
+    issueType: issue.type,
+  };
+}
+
+/* Fetch issue from API */
 const fetchIssue = async () => {
   loadingFetch.value = true;
+
   try {
     const issue: IssueJson = await issueService.getIssue(props.issueId);
-    console.log('#######', issue);
 
-    // Map API response to UI-friendly format
-    issueDetailsData.value = {
-      issueId: issue.id ?? '',
-      status: issue.status ?? 'OPEN',
-      assigneeId: issue.assigneeId ?? '',
-      reporter: issue.reporterId ?? '',
-      project: props.projectId,
-      issueType: issue.type,
-      tenancy: issue.agreementId ?? '',
-    };
-    console.log('Fetched assigneeId:', issue);
-
+    issueDetailsData.value = mapIssueToUI(issue);
     description.value = issue.description ?? '';
+
   } catch (error) {
     console.error('Error fetching issue:', error);
+
     toast.add({
- severity: 'error', summary: t('error.general'), detail: t('issueDetails.fetchError'), life: 3000 
-});
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('issueDetails.fetchError'),
+      life: 3000
+    });
   } finally {
     loadingFetch.value = false;
   }
@@ -63,17 +76,14 @@ const fetchIssue = async () => {
 
 /* Handle save events from child components */
 const handleDetailsSaved = () => {
-  fetchIssue(); // refresh after saving details
+  fetchIssue();
 };
 
 const handleDescriptionSaved = () => {
-  fetchIssue(); // refresh after saving description
+  fetchIssue();
 };
 
-/* Fetch issue on mount and when props change */
-onMounted(() => fetchIssue());
-
-/* Fetch issue on mount and when props change */
+/* Fetch when props change (runs on mount too) */
 watch(
   () => [props.projectId, props.issueId],
   () => fetchIssue(),
