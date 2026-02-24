@@ -31,7 +31,9 @@ describe('ProjectTopbar.vue', () => {
     const userStore = useUserSessionStore(pinia);
     userStore.user = user;
     const wrapper = mount(ProjectTopbar, { global: { plugins: [pinia] } });
-    return { wrapper, pinia, userStore };
+    return {
+ wrapper, pinia, userStore 
+};
   };
 
   describe('Logged in user interface', () => {
@@ -50,7 +52,6 @@ describe('ProjectTopbar.vue', () => {
 
     it.each([
       ['home button (Projekte)', 'Projekte'],
-      ['new project button', 'Neues Projekt'],
       ['inbox button', 'Posteingang'],
     ])('should show %s when logged in', async (_, expectedText) => {
       const { wrapper } = mountComponent(createMockUser());
@@ -88,8 +89,12 @@ describe('ProjectTopbar.vue', () => {
 
       userStore.user = createMockUser();
       projectStore.projects = [
-        { id: 'project-1', name: 'Test Project 1', memberRole: 'MANAGER' as const } as ProjectItem,
-        { id: 'project-2', name: 'Test Project 2', memberRole: 'STAFF' as const } as ProjectItem,
+        {
+ id: 'project-1', name: 'Test Project 1', memberRole: 'MANAGER' as const 
+} as ProjectItem,
+        {
+ id: 'project-2', name: 'Test Project 2', memberRole: 'STAFF' as const 
+} as ProjectItem,
       ];
 
       const wrapper = mount(ProjectTopbar, { global: { plugins: [pinia] } });

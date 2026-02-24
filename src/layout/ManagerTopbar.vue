@@ -24,10 +24,6 @@ const onProjectSelectionChange = (event: SelectChangeEvent) => {
   router.push({ name: 'ProjectDashboard', params: { projectId: projectStore.projectId } });
 };
 
-const onNewProjectClick = () => {
-  router.push('/new-project');
-};
-
 const onHomeClick = () => {
   projectStore.refreshProjectList();
   router.push('/projects');
@@ -75,15 +71,6 @@ const projectListOptions = computed(() => {
         @change="onProjectSelectionChange($event)"
       />
     </div>
-    <Button
-      v-if="sessionStore.user != null"
-      class="layout-topbar-shortcut-button layout-topbar-action"
-      @click="onNewProjectClick()"
-    >
-      <i class="pi pi-plus" />
-      <span>{{ t('toolbar.newProject') }}</span>
-    </Button>
-    
     <!-- Inbox button remains separate as it has specific logic (unread count) -->
     <Button
       v-if="sessionStore.user != null"

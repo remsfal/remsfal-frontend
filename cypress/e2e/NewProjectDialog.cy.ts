@@ -1,4 +1,4 @@
-describe('NewProjectView E2E Tests', () => {
+describe('NewProjectDialog E2E Tests', () => {
   const projectId = 'test-project-123';
   const longTitle = String("a").repeat(101);
 
@@ -53,24 +53,27 @@ describe('NewProjectView E2E Tests', () => {
       },
     }).as('createProject');
 
-    // Visit the new project page
-    cy.visit('/new-project');
+    // Visit the manager projects page and open dialog via "+" button
+    cy.visit('/manager/projects');
 
     // Wait for all initial API calls to complete
     cy.wait('@getUser');
     cy.wait('@getProjects');
+
+    // Open the dialog by clicking the add button
+    cy.contains('button', /hinzufügen|add/i).click();
   });
 
   it('should display the new project form dialog', () => {
     // Check if dialog is visible
     cy.get('[role="dialog"]').should('be.visible');
-    
+
     // Check if header exists (dialog title)
     cy.get('[role="dialog"]').find('.p-dialog-title').should('exist');
-    
+
     // Check if input field is visible
     cy.get('#projectTitle').should('be.visible');
-    
+
     // Check if buttons are visible
     cy.contains('button', /cancel|abbrechen/i).should('be.visible');
     cy.contains('button', /create|erstellen/i).should('be.visible');
@@ -108,7 +111,7 @@ describe('NewProjectView E2E Tests', () => {
 
   it('should cancel and redirect to project selection', () => {
     cy.contains('button', /cancel|abbrechen/i).click();
-    
+
     // Should redirect to project selection
     cy.url().should('include', '/projects');
   });
@@ -118,7 +121,7 @@ describe('NewProjectView E2E Tests', () => {
     cy.get('[role="dialog"]').within(() => {
       cy.get('button[aria-label], .p-dialog-header-close').first().click();
     });
-    
+
     // Should redirect to project selection
     cy.url().should('include', '/projects');
   });
@@ -163,19 +166,13 @@ describe('NewProjectView E2E Tests', () => {
     // Test typing
     cy.get('#projectTitle').type('Test');
     cy.get('#projectTitle').should('have.value', 'Test');
-    
+
     // Test clearing
     cy.get('#projectTitle').clear();
     cy.get('#projectTitle').should('have.value', '');
-    
+
     // Test paste
     cy.get('#projectTitle').invoke('val', 'Pasted Text').trigger('input');
     cy.get('#projectTitle').should('have.value', 'Pasted Text');
-  });
-
-  it('should render the view with proper styling', () => {
-    // Check parent container has proper classes
-    cy.get('.flex.items-center.justify-center').should('exist');
-    cy.get('.bg-gray-50').should('exist');
   });
 });

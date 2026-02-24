@@ -81,11 +81,6 @@ const managerRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/ManagerView.vue'),
       },
       {
-        path: 'new-project',
-        name: 'NewProject',
-        component: () => import('@/views/NewProjectView.vue'),
-      },
-      {
         path: 'account-settings',
         name: 'ManagerAccountSettings',
         component: () => import('@/views/AccountSettingsView.vue'),

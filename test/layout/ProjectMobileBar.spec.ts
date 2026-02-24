@@ -7,7 +7,9 @@ vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
 vi.mock('@/layout/ProjectMenu.vue', () => ({ default: { name: 'ProjectMenu', template: '<div></div>' } }));
 // Mock ProjectStore used by ProjectMenu
 vi.mock('@/stores/ProjectStore', () => ({
-  useProjectStore: () => ({ projectId: undefined, projectList: [], selectedProject: null }),
+useProjectStore: () => ({
+ projectId: undefined, projectList: [], selectedProject: null 
+}),
 }));
 
 import { mount, config } from '@vue/test-utils';
@@ -30,7 +32,9 @@ const RouterLinkStub = {
 };
 
 describe('ProjectMobileBar.vue', () => {
-  const defaultRoute = { path: '/', name: 'ProjectSelection', params: {}, query: {} };
+  const defaultRoute = {
+ path: '/', name: 'ProjectSelection', params: {}, query: {} 
+};
 
   const mountComponent = (initialRoute = defaultRoute) => {
     const route = reactive(initialRoute);
@@ -53,7 +57,9 @@ describe('ProjectMobileBar.vue', () => {
   };
 
   it('renders global navigation items when no project is selected', () => {
-    const { wrapper } = mountComponent({ path: '/', name: 'ProjectSelection', params: {}, query: {} });
+    const { wrapper } = mountComponent({
+ path: '/', name: 'ProjectSelection', params: {}, query: {} 
+});
     const navItems = wrapper.findAll('a.nav-item');
     expect(navItems.length).toBe(2);
   });
