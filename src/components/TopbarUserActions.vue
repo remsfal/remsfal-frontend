@@ -29,7 +29,7 @@ const {
   <Button
     v-if="sessionStore.user == null && !showDevLoginButton"
     class="layout-topbar-action"
-    @click="login('/projects')"
+    @click="login()"
   >
     <i class="pi pi-sign-in" />
     <span>{{ t('toolbar.login') }}</span>

@@ -10,7 +10,7 @@ vi.mock('primevue/usetoast', () => ({useToast: () => ({add: addMock,}),}));
 
 // ---- Test Suite ----
 describe('ProjectSettings.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof ProjectSettings>>;
 
   beforeEach(async () => {
     vi.clearAllMocks();

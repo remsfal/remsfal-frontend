@@ -108,7 +108,7 @@ describe('RentableUnitsView', () => {
       children: [],
     };
 
-    (wrapper.vm as any).onDeleteNode(sampleNode);
+    (wrapper.vm as InstanceType<typeof RentableUnitsView>).onDeleteNode(sampleNode);
     await flushPromises();
 
     expect(deleteSpy).toHaveBeenCalledWith('projId', 'prop-1');
@@ -139,7 +139,7 @@ describe('RentableUnitsView', () => {
       children: [],
     };
 
-    (wrapper.vm as any).onDeleteNode(sampleNode);
+    (wrapper.vm as InstanceType<typeof RentableUnitsView>).onDeleteNode(sampleNode);
     await flushPromises();
 
     expect(deleteSpy).toHaveBeenCalledWith('projId', 'building-1');

@@ -91,10 +91,10 @@ const itemClick = (event: Event, item: MenuItem) => {
 };
 
 const checkActiveRoute = (item: MenuItem) => {
-  if(item.to === undefined) {
-    return false;
-  }
-  return route.path.includes(item.to);
+  if (!item.to) return false;
+  const matchPath = item.to.split('?')[0];
+  if (!matchPath || matchPath === '/') return false;
+  return route.path.startsWith(matchPath);
 };
 </script>
 

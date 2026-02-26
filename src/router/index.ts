@@ -62,6 +62,7 @@ const fullscreenRoutes: RouteRecordRaw[] = [
 const managerRoutes: RouteRecordRaw[] = [
   {
     path: '/manager',
+    meta: { requiresAuth: true },
     components: {
       default: AppLayout,
       topbar: ManagerTopbar,
@@ -85,6 +86,16 @@ const managerRoutes: RouteRecordRaw[] = [
         name: 'ManagerAccountSettings',
         component: () => import('@/views/AccountSettingsView.vue'),
       },
+      {
+        path: 'settings',
+        name: 'ManagerSettings',
+        component: () => import('@/views/ManagerSettingsView.vue'),
+      },
+      {
+        path: 'organizations',
+        name: 'ManagerOrganizations',
+        component: () => import('@/views/ManagerOrganizationsView.vue'),
+      },
     ],
   },
 ];
@@ -92,6 +103,7 @@ const managerRoutes: RouteRecordRaw[] = [
 const projectRoutes: RouteRecordRaw[] = [
   {
     path: '/projects/:projectId',
+    meta: { requiresAuth: true },
     components: {
       default: AppLayout,
       topbar: ProjectTopbar,
@@ -253,6 +265,12 @@ const projectRoutes: RouteRecordRaw[] = [
         props: true,
         component: () => import('@/views/ProjectChatView.vue'),
       },
+      {
+        path: 'contractors',
+        name: 'ProjectContractorList',
+        props: true,
+        component: () => import('@/views/project/ProjectContractorListView.vue'),
+      },
     ],
   },
 ];
@@ -260,6 +278,7 @@ const projectRoutes: RouteRecordRaw[] = [
 const tenantRoutes: RouteRecordRaw[] = [
   {
     path: '/tenancies',
+    meta: { requiresAuth: true },
     components: {
       default: AppLayout,
       topbar: TenantTopbar,
@@ -291,6 +310,7 @@ const tenantRoutes: RouteRecordRaw[] = [
 const contractorRoutes: RouteRecordRaw[] = [
   {
     path: '/contractor',
+    meta: { requiresAuth: true },
     components: {
       default: AppLayout,
       topbar: ContractorTopbar,
@@ -310,6 +330,21 @@ const contractorRoutes: RouteRecordRaw[] = [
         name: 'ContractorView',
         props: true,
         component: () => import('@/views/contractor/CustomerView.vue'),
+      },
+      {
+        path: 'clients/open',
+        name: 'ContractorClientsOpen',
+        component: () => import('@/views/contractor/ContractorClientsView.vue'),
+      },
+      {
+        path: 'clients/ongoing',
+        name: 'ContractorClientsOngoing',
+        component: () => import('@/views/contractor/ContractorClientsView.vue'),
+      },
+      {
+        path: 'clients/closed',
+        name: 'ContractorClientsClosed',
+        component: () => import('@/views/contractor/ContractorClientsView.vue'),
       },
     ],
   },
@@ -334,22 +369,21 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const sessionStore = useUserSessionStore();
   const isLoggedIn = !!sessionStore.user;
-  const roles = sessionStore.user?.userContexts || [];
 
-  // If trying to access LandingPage while logged in, redirect to appropriate view
-  if (to.name === 'LandingPage' && isLoggedIn) {
-    if (roles.includes('MANAGER')) {
-      return next({ name: 'ProjectSelection' });
-    } else if (roles.includes('CONTRACTOR')) {
-      return next({ name: 'ContractorDashboard' });
-    } else if (roles.includes('TENANT')) {
-      return next({ name: 'TenantDashboard' });
-    } else {
-      return next({ name: 'ProjectSelection' }); // fallback
-    }
+  // Redirect unauthenticated users away from protected routes
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return next({ name: 'LandingPage', query: { redirect: to.fullPath } });
   }
 
-  // Proceed normally otherwise
+  // Redirect authenticated users away from LandingPage to their role-specific view
+  if (to.name === 'LandingPage' && isLoggedIn) {
+    const roles = sessionStore.user?.userContexts || [];
+    if (roles.includes('MANAGER')) return next({ name: 'ProjectSelection' });
+    if (roles.includes('CONTRACTOR')) return next({ name: 'ContractorDashboard' });
+    if (roles.includes('TENANT')) return next({ name: 'TenantDashboard' });
+    return next({ name: 'ProjectSelection' });
+  }
+
   next();
 });
 

@@ -46,7 +46,7 @@ describe('IssueDescription.vue', () => {
     });
 
     it('renders with undefined description', () => {
-      const wrapper = mountComponent({ description: undefined as any });
+      const wrapper = mountComponent({ description: undefined as unknown as string });
 
       // Component should handle undefined gracefully
       expect(wrapper.find('textarea').exists()).toBe(true);
@@ -216,7 +216,7 @@ describe('IssueDescription.vue', () => {
     });
 
     it('handles null-like values gracefully', () => {
-      const wrapper = mountComponent({ description: null as any });
+      const wrapper = mountComponent({ description: null as unknown as string });
 
       // Component should not crash
       expect(wrapper.find('textarea').exists()).toBe(true);

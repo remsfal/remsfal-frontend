@@ -26,12 +26,14 @@ const mockIssue = {
 
 // ---- Test Suite ----
 describe("ProjectIssueView.vue", () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof ProjectIssueView>>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
 
-    vi.spyOn(issueService, "getIssue").mockResolvedValue(mockIssue as any);
+    vi.spyOn(issueService, "getIssue").mockResolvedValue(
+      mockIssue as unknown as Awaited<ReturnType<typeof issueService.getIssue>>
+    );
 
     wrapper = mount(ProjectIssueView, {
       props: {
@@ -128,7 +130,9 @@ describe("ProjectIssueView.vue", () => {
   test("loading spinner shows while fetching issue", async () => {
     // Create a promise that never resolves to simulate ongoing fetch
     const pendingPromise = new Promise(() => {});
-    vi.spyOn(issueService, "getIssue").mockReturnValue(pendingPromise as any);
+    vi.spyOn(issueService, "getIssue").mockReturnValue(
+      pendingPromise as unknown as ReturnType<typeof issueService.getIssue>
+    );
   
     const tempWrapper = mount(ProjectIssueView, {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },

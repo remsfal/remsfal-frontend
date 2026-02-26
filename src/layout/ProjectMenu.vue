@@ -2,11 +2,8 @@
 import { ref, watch } from 'vue';
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 import { useProjectStore } from '@/stores/ProjectStore';
-import { useRouter } from 'vue-router';
 import { useUserSessionStore } from '@/stores/UserSession';
-import type { IssueStatus } from '@/services/IssueService';
 
-const router = useRouter();
 const projectStore = useProjectStore();
 const sessionStore = useUserSessionStore();
 
@@ -52,7 +49,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'projectMenu.masterData.contractors',
           icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
-          to: currentProjectId ? `/projects/${currentProjectId}/tenancies` : '/',
+          to: currentProjectId ? `/projects/${currentProjectId}/contractors` : '/',
         },
       ],
     },
@@ -62,37 +59,17 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'projectMenu.issueManagement.mine',
           icon: { type: 'fa', name: ['fas', 'list'] },
-          navigate: () => {
-            if (!currentProjectId) return;
-            router.push({
-              name: 'IssueOverview',
-              params: { projectId: currentProjectId },
-              query: { owner: sessionStore.user?.id },
-            });
-          },
+          to: currentProjectId ? `/projects/${currentProjectId}/issues?owner=${sessionStore.user?.id}` : '/',
         },
         {
           label: 'projectMenu.issueManagement.open',
           icon: { type: 'fa', name: ['fas', 'list-check'] },
-          navigate: () => {
-            if (!currentProjectId) return;
-            router.push({
-              name: 'IssueOverview',
-              params: { projectId: currentProjectId },
-              query: { status: 'OPEN' as IssueStatus },
-            });
-          },
+          to: currentProjectId ? `/projects/${currentProjectId}/issues?status=OPEN` : '/',
         },
         {
           label: 'projectMenu.issueManagement.all',
           icon: { type: 'fa', name: ['far', 'rectangle-list'] },
-          navigate: () => {
-            if (!currentProjectId) return;
-            router.push({
-              name: 'IssueOverview',
-              params: { projectId: currentProjectId },
-            });
-          },
+          to: currentProjectId ? `/projects/${currentProjectId}/issues` : '/',
         },
       ],
     },

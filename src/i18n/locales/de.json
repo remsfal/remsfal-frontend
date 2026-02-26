@@ -318,6 +318,8 @@
   "storage.validation.titleTooShort": "Der Titel muss mindestens 3 Zeichen lang sein.",
   "storage.validation.usableSpaceNegative": "Nutzfläche darf nicht negativ sein.",
   "storage.validation.descriptionTooLong": "Beschreibung darf maximal 500 Zeichen lang sein.",
+  "auth.sessionExpiredSummary": "Sitzung abgelaufen",
+  "auth.sessionExpiredDetail": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
   "error.general": "Fehler",
   "error.apiRequest": "Fehler bei der Anfrage an das Backend!",
   "error.apiResponse": "Fehler bei der Backend-Kommunikation!",

@@ -64,11 +64,11 @@ watch(
   <div class="grid grid-cols-3 gap-4 mb-6">
     <div class="col-span-1">
       <label for="rentalStart" class="block text-sm font-medium mb-2">Mietbeginn</label>
-      <DatePicker id="rentalStart" v-model="startOfRentalDate" :showIcon="true" dateFormat="dd/mm/yy" />
+      <DatePicker id="rentalStart" v-model="startOfRentalDate" showIcon dateFormat="dd/mm/yy" />
     </div>
     <div class="col-span-1">
       <label for="rentalEnd" class="block text-sm font-medium mb-2">Mietende</label>
-      <DatePicker id="rentalEnd" v-model="endOfRentalDate" :showIcon="true" dateFormat="dd/mm/yy" />
+      <DatePicker id="rentalEnd" v-model="endOfRentalDate" showIcon dateFormat="dd/mm/yy" />
     </div>
     <div class="col-span-1 flex items-center">
       <div class="flex items-center gap-2">

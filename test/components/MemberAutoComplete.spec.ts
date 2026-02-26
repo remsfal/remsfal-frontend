@@ -43,7 +43,7 @@ describe('MemberAutoComplete.vue', () => {
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as InstanceType<typeof MemberAutoComplete>;
     vm.searchMembers({ query: 'John' });
 
     expect(vm.filteredMembers).toHaveLength(1);
@@ -60,7 +60,7 @@ describe('MemberAutoComplete.vue', () => {
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as InstanceType<typeof MemberAutoComplete>;
     vm.onMemberChange({
       id: 'user-1', name: 'John Doe', email: 'john@example.com',
     });
@@ -73,8 +73,8 @@ describe('MemberAutoComplete.vue', () => {
 
   it('shows loading state while fetching', async () => {
     // Create a delayed promise to catch loading state
-    let resolvePromise: any;
-    const delayedPromise = new Promise((resolve) => {
+    let resolvePromise: (value: ProjectMemberList) => void;
+    const delayedPromise = new Promise<ProjectMemberList>((resolve) => {
       resolvePromise = resolve;
     });
 
@@ -107,7 +107,7 @@ describe('MemberAutoComplete.vue', () => {
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as InstanceType<typeof MemberAutoComplete>;
     vm.onMemberChange(null);
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy();

@@ -2,7 +2,7 @@
  * Shared test utilities and helpers for Issue-related components
  * Reduces code duplication across test files
  */
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 
 // ✅ Static imports (ESLint-friendly)
@@ -24,7 +24,7 @@ export class ResizeObserverMock {
  * Setup ResizeObserver mock globally
  */
 export function setupResizeObserverMock() {
-  global.ResizeObserver = ResizeObserverMock as any;
+  global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
 }
 
 /**
@@ -57,8 +57,8 @@ export const primeVueStubs = {
 
 // ========== Component Mounting Helpers ==========
 
-export function mountIssueDescriptionCard(props = {}, options: any = {}) {
-  return mount(IssueDescriptionCard as any, {
+export function mountIssueDescriptionCard(props = {}, options: Record<string, unknown> = {}) {
+  return mount(IssueDescriptionCard, {
     props: { ...defaultIssueDescriptionProps, ...props },
     global: {
       stubs: primeVueStubs,
@@ -68,8 +68,8 @@ export function mountIssueDescriptionCard(props = {}, options: any = {}) {
   });
 }
 
-export function mountIssueDescription(props = {}, options: any = {}) {
-  return mount(IssueDescriptionView as any, {
+export function mountIssueDescription(props = {}, options: Record<string, unknown> = {}) {
+  return mount(IssueDescriptionView, {
     props: { ...defaultIssueDescriptionViewProps, ...props },
     global: {
       stubs: { Textarea: true },
@@ -81,17 +81,17 @@ export function mountIssueDescription(props = {}, options: any = {}) {
 
 // ========== Test Utilities ==========
 
-export async function setTextareaValue(wrapper: VueWrapper<any>, value: string) {
+export async function setTextareaValue(wrapper: VueWrapper, value: string) {
   const textarea = wrapper.find('textarea');
   await textarea.setValue(value);
   return textarea;
 }
 
-export function getEmittedEvents(wrapper: VueWrapper<any>, eventName: string) {
+export function getEmittedEvents(wrapper: VueWrapper, eventName: string) {
   return wrapper.emitted(eventName);
 }
 
-export async function waitForSave(wrapper: VueWrapper<any>) {
+export async function waitForSave(wrapper: VueWrapper) {
   await wrapper.vm.$nextTick();
   await new Promise(resolve => setTimeout(resolve, 0));
 }
@@ -99,17 +99,17 @@ export async function waitForSave(wrapper: VueWrapper<any>) {
 // ========== Common Test Assertions ==========
 
 export function expectModifyIssueCalled(
-  mockFn: any,
+  mockFn: Mock,
   issueId: string,
-  payload: any
+  payload: Record<string, unknown>
 ) {
   expect(mockFn).toHaveBeenCalledWith(issueId, payload);
 }
 
 export function expectEventEmitted(
-  wrapper: VueWrapper<any>,
+  wrapper: VueWrapper,
   eventName: string,
-  payload?: any
+  payload?: unknown
 ) {
   const emitted = wrapper.emitted(eventName);
   expect(emitted).toBeTruthy();

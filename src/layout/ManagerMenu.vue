@@ -24,7 +24,7 @@ const model = ref([
       {
         label: 'managerMenu.myData.settings',
         icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
-        to: '/manager/dashboard',
+        to: '/manager/settings',
       },
     ],
   },
@@ -34,7 +34,7 @@ const model = ref([
       {
         label: 'managerMenu.organizations.create',
         icon: { type: 'pi', name: 'pi pi-fw pi-user-plus' },
-        to: '/manager/dashboard',
+        to: '/manager/organizations',
       },
     ],
   },

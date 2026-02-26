@@ -15,7 +15,7 @@ vi.mock('@/services/BuildingService', () => ({
 }));
 
 describe('BuildingView.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof Component>>;
 
   beforeEach(async () => {
     (buildingService.getBuilding as Mock).mockResolvedValue({

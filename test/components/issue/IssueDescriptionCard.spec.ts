@@ -13,7 +13,7 @@ vi.mock('@/services/IssueService', () => ({issueService: { updateIssue: vi.fn() 
 
 // ---- Test Suite ----
 describe('IssueDescriptionCard.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof IssueDescriptionCard>>;
 
   const mountComponent = (props = {}) =>
     mount(IssueDescriptionCard, {

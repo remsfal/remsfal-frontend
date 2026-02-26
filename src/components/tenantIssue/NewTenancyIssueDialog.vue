@@ -14,7 +14,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 // Services & Types
-import { issueService, type IssueJson, type IssueType } from '@/services/IssueService.ts';
+import { issueService, type IssueCategory, type IssueJson, type IssueType } from '@/services/IssueService.ts';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService.ts';
 import { useUserSessionStore } from '@/stores/UserSession.ts';
 
@@ -49,7 +49,7 @@ const loadingTenancies = ref(false);
 interface TenantIssueFormState {
   tenancyId: string | null;
   issueType: IssueType | null;
-  issueCategory: string | null;
+  issueCategory: IssueCategory | null;
   rentalUnitId: string | null;
   causedBy: string | null;
   causedByUnknown: boolean;
@@ -210,7 +210,7 @@ function transformFormDataToIssue(state: TenantIssueFormState): Partial<IssueJso
   return {
     title: generateIssueTitle(state),
     type: state.issueType!,
-    category: (state.issueCategory as any) || undefined,
+    category: state.issueCategory || undefined,
     agreementId: state.tenancyId!,
     rentalUnitId: state.rentalUnitId || undefined,
     rentalUnitType,

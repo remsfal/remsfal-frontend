@@ -47,7 +47,7 @@ const updateMemberRole = async (member: ProjectMemberJson) => {
       life: 3000,
     });
   } catch (error) {
-    const err = error as { response?: { data: any }; message: string };
+    const err = error as { response?: { data: ProjectMemberJson }; message: string };
     console.error('Failed to update member role:', err.response?.data || err.message);
   }
 };

@@ -26,7 +26,7 @@
   <div class="w-full">
     <Textarea
       v-model="localDescription"
-      :autoResize="true"
+      autoResize
       :rows="8"
       class="w-full"
       placeholder="Write markdown description here..."
