@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useRoute, RouterLink, type RouteLocationRaw } from 'vue-router';
 import Drawer from 'primevue/drawer';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
@@ -13,18 +13,18 @@ interface MobileNavItem {
 const route = useRoute();
 const sidebarVisible = ref(false);
 
-const navItems = computed<MobileNavItem[]>(() => [
+const navItems: MobileNavItem[] = [
   {
     label: 'Übersicht',
-    to: { name: 'ContractorView' }, 
+    to: { name: 'ContractorDashboard' },
     icon: 'pi-home'
   },
   {
-    label: 'Aufträge',
-    to: { name: 'ContractorView', query: { tab: 'orders' } },
+    label: 'Auftraggeber',
+    to: { name: 'ContractorView' },
     icon: 'pi-id-card'
   }
-]);
+];
 
 function toggleSidebar() {
   sidebarVisible.value = !sidebarVisible.value;
@@ -32,40 +32,18 @@ function toggleSidebar() {
 
 function isActive(item: MobileNavItem) {
   if (!item.to) return false;
-  
-  // Special logic for Contractor query params
-  if (
-    typeof item.to === 'object' &&
-    item.to !== null &&
-    'name' in item.to &&
-    item.to.name === 'ContractorView' &&
-    route.name === 'ContractorView'
-  ) {
-      // Cast to assume query exists or is accessible, similar to standard Vue Router types
-      const targetQuery = (item.to as { query?: Record<string, string> }).query || {};
-      const currentQuery = route.query || {};
-      
-      // If we are looking for the 'orders' tab
-      if (targetQuery.tab === 'orders') {
-          return currentQuery.tab === 'orders';
-      }
-      
-      // If we are looking for the 'overview' (no tab or empty tab)
-      return !currentQuery.tab;
+
+  if (typeof item.to === 'object' && item.to !== null && 'name' in item.to) {
+    return route.name === item.to.name;
   }
-  
+
+  if (typeof item.to === 'string') {
+    return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
+  }
+
   return false;
 }
 
-function getIconClass(item: MobileNavItem) {
-    if (typeof item.icon === 'string') {
-        return item.icon;
-    }
-    if (item.icon && item.icon.type === 'pi') {
-        return item.icon.name;
-    }
-    return '';
-}
 </script>
 
 <template>
@@ -79,7 +57,7 @@ function getIconClass(item: MobileNavItem) {
     >
       <i
         class="pi"
-        :class="getIconClass(item)"
+        :class="typeof item.icon === 'string' ? item.icon : ''"
         style="font-size: 1.2rem;"
       />
       <span class="sr-only">{{ item.label }}</span>

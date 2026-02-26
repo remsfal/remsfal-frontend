@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useRoute, RouterLink, type RouteLocationRaw } from 'vue-router';
 import Drawer from 'primevue/drawer';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
 
 interface MobileNavItem {
@@ -14,125 +13,35 @@ interface MobileNavItem {
 const route = useRoute();
 const sidebarVisible = ref(false);
 
-const projectId = computed(() => route.params.projectId);
-
-const navItems = computed<MobileNavItem[]>(() => {
-  if (!projectId.value) {
-    return [
-      {
-        label: 'Projekte',
-        to: { name: 'ProjectSelection' },
-        icon: 'pi-briefcase'
-      },
-      {
-        label: 'Einstellungen',
-        to: { name: 'AccountSettings' },
-        icon: 'pi-cog'
-      }
-    ];
+const navItems: MobileNavItem[] = [
+  {
+    label: 'Projekte',
+    to: { name: 'ProjectSelection' },
+    icon: 'pi-briefcase'
+  },
+  {
+    label: 'Einstellungen',
+    to: { name: 'ManagerAccountSettings' },
+    icon: 'pi-cog'
   }
-
-  return [
-    {
-      label: 'Dashboard',
-      to: { name: 'ProjectDashboard', params: { projectId: projectId.value } },
-      icon: 'pi-chart-bar'
-    },
-    {
-      label: 'Aufgaben',
-      to: {
-        name: 'IssueOverview',
-        params: { projectId: projectId.value },
-        query: { status: 'OPEN', category: 'TASK' }
-      },
-      icon: 'pi-list'
-    },
-    {
-      label: 'Mängel',
-      to: {
-        name: 'IssueOverview',
-        params: { projectId: projectId.value },
-        query: { status: 'OPEN', category: 'DEFECT' }
-      },
-      icon: 'pi-exclamation-circle'
-    },
-     {
-      label: 'Chat',
-      to: { name: 'ProjectChatView', params: { projectId: projectId.value } },
-      icon: 'pi-comments'
-    }
-  ];
-});
+];
 
 function toggleSidebar() {
   sidebarVisible.value = !sidebarVisible.value;
 }
 
-// Helper to check query parameters logic from original file
-function matchesQuery(
-  targetQuery: Record<string, string>, 
-  routeQuery: Record<string, string | null | (string | null)[]>, 
-  strict: boolean
-): boolean {
-  
-  const targetKeys = Object.keys(targetQuery);
-  const routeKeys = Object.keys(routeQuery);
-  
-  if (targetKeys.length > 0) {
-    for (const key of targetKeys) {
-      if (routeQuery[key] !== targetQuery[key]) return false;
-    }
-    return true;
-  }
-  
-  if (strict && routeKeys.length > 0) {
-    return false;
-  }
-  
-  return true;
-}
-
-
 function isActive(item: MobileNavItem) {
   if (!item.to) return false;
-  
-  const target = item.to;
-  const currentRouteQuery = route.query as Record<string, string>;
 
-  // String Path matching
-  if (typeof target === 'string') {
-     return route.path === target || (target !== '/' && route.path.startsWith(target));
-  }
-  
-  // Named Route matching
-  if (typeof target === 'object' && target !== null && 'name' in target) {
-      if (target.name && route.name !== target.name) return false;
-      
-      // Cast safely instead of using any, assuming standard router object structure
-      const targetQuery = (target as { query?: Record<string, string> }).query || {};
-      
-      // Determine strictness: if target has no query, do we require route to have no query?
-      // For tasks/defects (same route name, different query), we need rigorous checking.
-      // If we are navigating to IssueOverview with task query, strict mode doesn't matter much as long as we match.
-      // BUT if we navigate to base IssueOverview without query, we shouldn't highlight if we are on task view.
-      
-      // Original logic was: !target.query && route.name === target.name
-      const strict = !Object.keys(targetQuery).length && route.name === (target as { name?: string }).name;
-      
-      return matchesQuery(targetQuery, currentRouteQuery, strict);
+  if (typeof item.to === 'object' && item.to !== null && 'name' in item.to) {
+    return route.name === item.to.name;
   }
 
-  return true;
-}
+  if (typeof item.to === 'string') {
+    return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
+  }
 
-function getIconClass(item: MobileNavItem) {
-    if (typeof item.icon === 'string') {
-        return item.icon;
-    }
-    if (item.icon && item.icon.type === 'pi') {
-        return item.icon.name;
-    }
-    return '';
+  return false;
 }
 </script>
 
@@ -146,15 +55,8 @@ function getIconClass(item: MobileNavItem) {
       :class="{ active: isActive(item) }"
     >
       <i
-        v-if="typeof item.icon === 'string' || item.icon?.type === 'pi'"
         class="pi"
-        :class="getIconClass(item)"
-        style="font-size: 1.2rem;"
-      />
-
-      <FontAwesomeIcon
-        v-else-if="item.icon?.type === 'fa'"
-        :icon="item.icon.name"
+        :class="typeof item.icon === 'string' ? item.icon : ''"
         style="font-size: 1.2rem;"
       />
       <span class="sr-only">{{ item.label }}</span>

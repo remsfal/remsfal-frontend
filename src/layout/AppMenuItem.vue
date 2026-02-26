@@ -49,7 +49,7 @@ onBeforeMount(() => {
   const activeItem = layoutState.activeMenuItem;
 
   isActiveMenu.value =
-    activeItem === itemKey.value || activeItem ? activeItem.startsWith(itemKey.value + '-') : false;
+    activeItem !== undefined && (activeItem === itemKey.value || activeItem.startsWith(itemKey.value + '-'));
 });
 
 watch(
