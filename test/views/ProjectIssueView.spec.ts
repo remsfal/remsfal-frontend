@@ -6,17 +6,11 @@ import { issueService } from "@/services/IssueService";
 // ---- Mocks ----
 const toastAddMock = vi.fn();
 
-vi.mock("@/services/IssueService", () => ({
-  issueService: { getIssue: vi.fn() },
-}));
+vi.mock("@/services/IssueService", () => ({issueService: { getIssue: vi.fn() },}));
 
-vi.mock("primevue/usetoast", () => ({
-  useToast: () => ({ add: toastAddMock }),
-}));
+vi.mock("primevue/usetoast", () => ({useToast: () => ({ add: toastAddMock }),}));
 
-vi.mock("vue-i18n", () => ({
-  useI18n: () => ({ t: (key: string) => key }),
-}));
+vi.mock("vue-i18n", () => ({useI18n: () => ({ t: (key: string) => key }),}));
 
 // ---- Test Data (aligned with component mapper) ----
 const mockIssue = {
@@ -46,12 +40,8 @@ describe("ProjectIssueView.vue", () => {
       },
       global: {
         stubs: {
-          IssueDetailsCard: {
-            template: `<div data-test="details" @click="$emit('saved')" />`,
-          },
-          IssueDescriptionCard: {
-            template: `<div data-test="description" @click="$emit('saved')" />`,
-          },
+          IssueDetailsCard: {template: `<div data-test="details" @click="$emit('saved')" />`,},
+          IssueDescriptionCard: {template: `<div data-test="description" @click="$emit('saved')" />`,},
           IssueRelationshipsCard: true,
         },
       },
