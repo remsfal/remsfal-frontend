@@ -85,8 +85,12 @@ const handleDescriptionSaved = () => {
 
 /* Fetch when props change (runs on mount too) */
 watch(
-  [() => props.projectId, () => props.issueId],
-  fetchIssue,
+  () => props.issueId,
+  () => {
+    if (props.issueId) {
+      fetchIssue();
+    }
+  },
   { immediate: true }
 );
 </script>
