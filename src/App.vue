@@ -8,6 +8,9 @@ import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useEventBus } from '@/stores/EventStore.ts';
 import { useI18n } from 'vue-i18n';
+import { onMounted, onBeforeUnmount } from 'vue';
+import { useIssueNotificationsSse } from '@/composables/useIssueNotificationsSse';
+
 
 defineOptions({
   async created() {
@@ -37,8 +40,8 @@ const toast = useToast();
 const bus = useEventBus();
 bus.on('toast:translate', ({ severity, summary, detail }) => {
   bus.emit('toast:show', {
- severity: severity, summary: t(summary), detail: t(detail) 
-});
+    severity: severity, summary: t(summary), detail: t(detail)
+  });
 });
 bus.on('toast:show', ({ severity, summary, detail }) => {
   toast.add({
@@ -48,6 +51,16 @@ bus.on('toast:show', ({ severity, summary, detail }) => {
     life: 3000,
   });
 });
+const sse = useIssueNotificationsSse();
+
+onMounted(() => {
+  sse.connect();
+});
+
+onBeforeUnmount(() => {
+  sse.disconnect();
+});
+
 </script>
 
 <template>
