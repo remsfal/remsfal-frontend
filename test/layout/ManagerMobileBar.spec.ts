@@ -25,7 +25,9 @@ const RouterLinkStub = {
 };
 
 describe('ManagerMobileBar.vue', () => {
-    const defaultRoute = { path: '/manager/projects', name: 'ProjectSelection', params: {}, query: {} };
+    const defaultRoute = {
+ path: '/manager/projects', name: 'ProjectSelection', params: {}, query: {} 
+};
     const mountComponent = (initialRoute = defaultRoute) => {
         const route = reactive(initialRoute);
 
@@ -61,7 +63,9 @@ describe('ManagerMobileBar.vue', () => {
     });
 
     it('highlights Projekte when on ProjectSelection route', async () => {
-        const { wrapper } = mountComponent({ path: '/manager/projects', name: 'ProjectSelection', params: {}, query: {} });
+        const { wrapper } = mountComponent({
+ path: '/manager/projects', name: 'ProjectSelection', params: {}, query: {} 
+});
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
@@ -70,7 +74,9 @@ describe('ManagerMobileBar.vue', () => {
     });
 
     it('highlights Einstellungen when on ManagerAccountSettings route', async () => {
-        const { wrapper } = mountComponent({ path: '/manager/account-settings', name: 'ManagerAccountSettings', params: {}, query: {} });
+        const { wrapper } = mountComponent({
+ path: '/manager/account-settings', name: 'ManagerAccountSettings', params: {}, query: {} 
+});
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
@@ -79,7 +85,9 @@ describe('ManagerMobileBar.vue', () => {
     });
 
     it('does not highlight any item on an unrelated route', async () => {
-        const { wrapper } = mountComponent({ path: '/manager/other', name: 'SomeOtherRoute', params: {}, query: {} });
+        const { wrapper } = mountComponent({
+ path: '/manager/other', name: 'SomeOtherRoute', params: {}, query: {} 
+});
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
