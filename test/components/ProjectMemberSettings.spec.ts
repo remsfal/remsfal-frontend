@@ -48,7 +48,7 @@ describe('ProjectMemberSettings.vue', () => {
 
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 
-    await (wrapper.vm as any).updateMemberRole(member);
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).updateMemberRole(member);
 
     expect(projectMemberService.updateMemberRole).toHaveBeenCalledWith('test-project-id', '1', {role: 'MANAGER',});
   });
@@ -61,7 +61,7 @@ describe('ProjectMemberSettings.vue', () => {
     vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce({ members: [] }); // return empty list after removal
 
     // Call removeMember on the component
-    await (wrapper.vm as any).removeMember(memberId);
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).removeMember(memberId);
 
     // Assert removeMember was called with correct arguments
     expect(removeMock).toHaveBeenCalledWith('test-project-id', memberId);

@@ -16,6 +16,9 @@ import ManagerMobileBar from '@/layout/ManagerMobileBar.vue';
 import ContractorMobileBar from '@/layout/ContractorMobileBar.vue';
 import TenantMobileBar from '@/layout/TenantMobileBar.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
+import ProjectMenu from "@/layout/ProjectMenu.vue";
+import ProjectTopbar from "@/layout/ProjectTopbar.vue";
+import ProjectMobileBar from "@/layout/ProjectMobileBar.vue";
 
 const fullscreenRoutes: RouteRecordRaw[] = [
   {
@@ -23,7 +26,6 @@ const fullscreenRoutes: RouteRecordRaw[] = [
     components: {
       default: AppLayout,
       topbar: ManagerTopbar,
-      mobilebar: ManagerMobileBar,
     },
     props: { default: { fullscreen: true, }, },
     children: [
@@ -43,21 +45,6 @@ const fullscreenRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/PrivacyView.vue'),
       },
       {
-        path: '/projects',
-        name: 'ProjectSelection',
-        component: () => import('@/views/ManagerView.vue'),
-      },
-      {
-        path: '/new-project',
-        name: 'NewProject',
-        component: () => import('@/views/NewProjectView.vue'),
-      },
-      {
-        path: '/account-settings',
-        name: 'AccountSettings',
-        component: () => import('@/views/AccountSettingsView.vue'),
-      },
-      {
         path: '/inbox',
         name: 'Inbox',
         component: () => import('@/views/InboxView.vue'),
@@ -74,12 +61,54 @@ const fullscreenRoutes: RouteRecordRaw[] = [
 
 const managerRoutes: RouteRecordRaw[] = [
   {
-    path: '/projects/:projectId',
+    path: '/manager',
+    meta: { requiresAuth: true },
     components: {
       default: AppLayout,
       topbar: ManagerTopbar,
       sidebar: ManagerMenu,
       mobilebar: ManagerMobileBar,
+    },
+    props: { default: { fullscreen: false, }, },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'ManagerDashboard',
+        component: () => import('@/views/project/ProjectDashboard.vue'),
+      },
+      {
+        path: 'projects',
+        name: 'ProjectSelection',
+        component: () => import('@/views/ManagerView.vue'),
+      },
+      {
+        path: 'account-settings',
+        name: 'ManagerAccountSettings',
+        component: () => import('@/views/AccountSettingsView.vue'),
+      },
+      {
+        path: 'settings',
+        name: 'ManagerSettings',
+        component: () => import('@/views/ManagerSettingsView.vue'),
+      },
+      {
+        path: 'organizations',
+        name: 'ManagerOrganizations',
+        component: () => import('@/views/ManagerOrganizationsView.vue'),
+      },
+    ],
+  },
+];
+
+const projectRoutes: RouteRecordRaw[] = [
+  {
+    path: '/projects/:projectId',
+    meta: { requiresAuth: true },
+    components: {
+      default: AppLayout,
+      topbar: ProjectTopbar,
+      sidebar: ProjectMenu,
+      mobilebar: ProjectMobileBar,
     },
     props: { default: { fullscreen: false, }, },
     beforeEnter: (to: RouteLocationNormalized) => {
@@ -236,6 +265,12 @@ const managerRoutes: RouteRecordRaw[] = [
         props: true,
         component: () => import('@/views/ProjectChatView.vue'),
       },
+      {
+        path: 'contractors',
+        name: 'ProjectContractorList',
+        props: true,
+        component: () => import('@/views/project/ProjectContractorListView.vue'),
+      },
     ],
   },
 ];
@@ -243,6 +278,7 @@ const managerRoutes: RouteRecordRaw[] = [
 const tenantRoutes: RouteRecordRaw[] = [
   {
     path: '/tenancies',
+    meta: { requiresAuth: true },
     components: {
       default: AppLayout,
       topbar: TenantTopbar,
@@ -262,6 +298,11 @@ const tenantRoutes: RouteRecordRaw[] = [
         name: 'TenantIssues',
         component: () => import('@/views/TenantIssuesView.vue'),
       },
+      {
+        path: 'account-settings',
+        name: 'TenantAccountSettings',
+        component: () => import('@/views/AccountSettingsView.vue'),
+      },
     ],
   },
 ];
@@ -269,6 +310,7 @@ const tenantRoutes: RouteRecordRaw[] = [
 const contractorRoutes: RouteRecordRaw[] = [
   {
     path: '/contractor',
+    meta: { requiresAuth: true },
     components: {
       default: AppLayout,
       topbar: ContractorTopbar,
@@ -289,6 +331,21 @@ const contractorRoutes: RouteRecordRaw[] = [
         props: true,
         component: () => import('@/views/contractor/CustomerView.vue'),
       },
+      {
+        path: 'clients/open',
+        name: 'ContractorClientsOpen',
+        component: () => import('@/views/contractor/ContractorClientsView.vue'),
+      },
+      {
+        path: 'clients/ongoing',
+        name: 'ContractorClientsOngoing',
+        component: () => import('@/views/contractor/ContractorClientsView.vue'),
+      },
+      {
+        path: 'clients/closed',
+        name: 'ContractorClientsClosed',
+        component: () => import('@/views/contractor/ContractorClientsView.vue'),
+      },
     ],
   },
 ];
@@ -296,6 +353,7 @@ const contractorRoutes: RouteRecordRaw[] = [
 const routes: Readonly<RouteRecordRaw[]> = [
   ...fullscreenRoutes,
   ...managerRoutes,
+  ...projectRoutes,
   ...tenantRoutes,
   ...contractorRoutes,
 ];
@@ -311,22 +369,21 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const sessionStore = useUserSessionStore();
   const isLoggedIn = !!sessionStore.user;
-  const roles = sessionStore.user?.userContexts || [];
 
-  // If trying to access LandingPage while logged in, redirect to appropriate view
-  if (to.name === 'LandingPage' && isLoggedIn) {
-    if (roles.includes('MANAGER')) {
-      return next({ name: 'ProjectSelection' });
-    } else if (roles.includes('CONTRACTOR')) {
-      return next({ name: 'ContractorDashboard' });
-    } else if (roles.includes('TENANT')) {
-      return next({ name: 'TenantDashboard' });
-    } else {
-      return next({ name: 'ProjectSelection' }); // fallback
-    }
+  // Redirect unauthenticated users away from protected routes
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return next({ name: 'LandingPage', query: { redirect: to.fullPath } });
   }
 
-  // Proceed normally otherwise
+  // Redirect authenticated users away from LandingPage to their role-specific view
+  if (to.name === 'LandingPage' && isLoggedIn) {
+    const roles = sessionStore.user?.userContexts || [];
+    if (roles.includes('MANAGER')) return next({ name: 'ProjectSelection' });
+    if (roles.includes('CONTRACTOR')) return next({ name: 'ContractorDashboard' });
+    if (roles.includes('TENANT')) return next({ name: 'TenantDashboard' });
+    return next({ name: 'ProjectSelection' });
+  }
+
   next();
 });
 

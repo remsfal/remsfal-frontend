@@ -3,7 +3,7 @@ import type { components } from '@/services/api/platform-schema';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Column from 'primevue/column';
-import type { DataTablePassThroughMethodOptions } from 'primevue/datatable';
+import type { DataTableCellEditCompleteEvent, DataTablePassThroughMethodOptions } from 'primevue/datatable';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -48,7 +48,7 @@ const columns = ref([
     { field: 'email', header: 'E-Mail' },
 ]);
 
-const onCellEditComplete = (event: any) => {
+const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
     let { newData, index } = event;
     localTenants.value[index] = newData;
     emit('onChange', localTenants.value);
@@ -82,11 +82,15 @@ onMounted(() => {
     </template>
     <template #content>
       <DataTable
-        :value="localTenants" :rows="10"
-        :rowHover="true" dataKey="localTenants.id"
-        tableStyle="min-width: 60rem" scrollable
+        :value="localTenants"
+        :rows="10"
+        rowHover
+        dataKey="localTenants.id"
+        tableStyle="min-width: 60rem"
+        scrollable
         scrollDirection="both"
-        scrollHeight="var(--custom-scroll-height)" editMode="cell"
+        scrollHeight="var(--custom-scroll-height)"
+        editMode="cell"
         class="custom-scroll-height" :pt="{
           table: { style: 'min-width: 50rem' },
           column: {

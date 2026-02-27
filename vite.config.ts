@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig, type ProxyOptions } from 'vite';
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import istanbul from 'vite-plugin-istanbul';
 import vue from '@vitejs/plugin-vue';
@@ -7,21 +7,21 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
 
 // Proxy-Configurations-Factory
-function createProxyConfig(target: string, backendName: string) {
+function createProxyConfig(target: string, backendName: string): ProxyOptions {
   return {
     target,
     changeOrigin: true,
     secure: false,
     xfwd: true,
     ws: true,
-    configure: (proxy: any) => {
-      proxy.on('error', (err: any) => {
+    configure: (proxy) => {
+      proxy.on('error', (err) => {
         console.log(`[Proxy Error - ${backendName}]`, err);
       });
-      proxy.on('proxyReq', (proxyReq: any, req: any) => {
+      proxy.on('proxyReq', (proxyReq, req) => {
         console.log(`[Proxy Request to ${backendName}]:`, req.method, req.url);
       });
-      proxy.on('proxyRes', (proxyRes: any, req: any) => {
+      proxy.on('proxyRes', (proxyRes, req) => {
         console.log(`[Proxy Response from ${backendName}]:`, proxyRes.statusCode, req.url);
       });
     },

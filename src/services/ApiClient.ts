@@ -8,6 +8,7 @@ import type { paths as ticketingPaths, components as ticketingComponents } from 
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
 import { useEventBus } from '@/stores/EventStore.ts';
+import { authService } from '@/services/AuthService.ts';
 
 // Combine all OpenAPI paths
 export type ApiPaths = ticketingPaths & platformPaths & notificationPaths;
@@ -33,6 +34,11 @@ declare module 'axios' {
      * @default "curly"
      */
     pathParamsPlaceholderStyle?: 'curly' | 'colon' | 'both';
+
+    /**
+     * Internal flag to prevent infinite retry loops on 401 responses.
+     */
+    _retry?: boolean;
   }
 }
 
@@ -156,14 +162,56 @@ function responseHandler(response: AxiosResponse): AxiosResponse {
   return response;
 }
 
-function responseErrorHandler(error: AxiosError) {
-  console.error(`[response error] [${JSON.stringify(error)}]`);
-  emitToast('error', 'error.general', 'error.apiResponse');
-  return Promise.reject(error);
-}
-
 function createAxiosInstance() {
   const instance = axios.create({});
+
+  let isRefreshing = false;
+  let pendingQueue: Array<{ resolve: () => void; reject: (e: unknown) => void }> = [];
+
+  const processQueue = (error: unknown) => {
+    pendingQueue.forEach(p => error ? p.reject(error) : p.resolve());
+    pendingQueue = [];
+  };
+
+  const responseErrorHandler = async (error: AxiosError) => {
+    const originalConfig = error.config;
+
+    if (error.response?.status === 401 && !originalConfig?._retry) {
+      if (isRefreshing) {
+        return new Promise<void>((resolve, reject) => {
+          pendingQueue.push({ resolve, reject });
+        }).then(() => instance(originalConfig!))
+          .catch(e => Promise.reject(e));
+      }
+
+      originalConfig!._retry = true;
+      isRefreshing = true;
+
+      try {
+        const refreshed = await authService.refreshTokens();
+        if (refreshed) {
+          processQueue(null);
+          isRefreshing = false;
+          return instance(originalConfig!);
+        } else {
+          processQueue(error);
+          isRefreshing = false;
+          useEventBus().emit('auth:session-expired', {});
+          return Promise.reject(error);
+        }
+      } catch (e) {
+        processQueue(e);
+        isRefreshing = false;
+        useEventBus().emit('auth:session-expired', {});
+        return Promise.reject(e);
+      }
+    }
+
+    console.error(`[response error] [${JSON.stringify(error)}]`);
+    emitToast('error', 'error.general', 'error.apiResponse');
+    return Promise.reject(error);
+  };
+
   instance.interceptors.request.use(requestHandler, requestErrorHandler);
   instance.interceptors.response.use(responseHandler, responseErrorHandler);
   return instance;
@@ -215,9 +263,9 @@ type ResponseType<P extends keyof ApiPaths, M extends HttpMethod> =
     ? M extends keyof ApiPaths[P]
       ? ApiPaths[P][M] extends { responses: { 200: { content: { 'application/json': infer Res } } } }
         ? Res
-        : ApiPaths[P][M] extends { responses: { 204: any } }
+        : ApiPaths[P][M] extends { responses: { 204: unknown } }
           ? void
-          : ApiPaths[P][M] extends { responses: { 200: any } }
+          : ApiPaths[P][M] extends { responses: { 200: unknown } }
             ? void
             : unknown
       : unknown

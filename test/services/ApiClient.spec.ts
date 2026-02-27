@@ -1,7 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
 import { apiClient } from '@/services/ApiClient';
+import { authService } from '@/services/AuthService';
+import { setActivePinia, createPinia } from 'pinia';
+import { useEventBus } from '@/stores/EventStore';
 
 describe('ApiClient', () => {
   // Set up test-specific handlers for ApiClient testing
@@ -132,6 +135,92 @@ describe('ApiClient', () => {
       await expect(
         apiClient.get('/api/v1/test/{id}', {pathParams: {},}),
       ).rejects.toThrow();
+    });
+  });
+
+  describe('401 retry logic', () => {
+    beforeEach(() => {
+      setActivePinia(createPinia());
+      vi.spyOn(authService, 'refreshTokens');
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should retry the request after a successful token refresh on 401', async () => {
+      let callCount = 0;
+      server.use(
+        http.get('/api/v1/retry-test', () => {
+          callCount += 1;
+          if (callCount === 1) {
+            return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+          }
+          return HttpResponse.json({ message: 'retry success' });
+        }),
+      );
+      vi.mocked(authService.refreshTokens).mockResolvedValue(true);
+
+      const result = await apiClient.get('/api/v1/retry-test');
+
+      expect(authService.refreshTokens).toHaveBeenCalledOnce();
+      expect(result).toEqual({ message: 'retry success' });
+    });
+
+    it('should emit auth:session-expired and reject when refresh token is expired', async () => {
+      server.use(
+        http.get('/api/v1/retry-test', () => {
+          return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }),
+      );
+      vi.mocked(authService.refreshTokens).mockResolvedValue(false);
+
+      const bus = useEventBus();
+      const sessionExpiredHandler = vi.fn();
+      bus.on('auth:session-expired', sessionExpiredHandler);
+
+      await expect(apiClient.get('/api/v1/retry-test')).rejects.toBeDefined();
+
+      expect(authService.refreshTokens).toHaveBeenCalledOnce();
+      expect(sessionExpiredHandler).toHaveBeenCalledOnce();
+    });
+
+    it('should emit auth:session-expired when refresh throws an error', async () => {
+      server.use(
+        http.get('/api/v1/retry-test', () => {
+          return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }),
+      );
+      vi.mocked(authService.refreshTokens).mockRejectedValue(new Error('Network error'));
+
+      const bus = useEventBus();
+      const sessionExpiredHandler = vi.fn();
+      bus.on('auth:session-expired', sessionExpiredHandler);
+
+      await expect(apiClient.get('/api/v1/retry-test')).rejects.toBeDefined();
+
+      expect(sessionExpiredHandler).toHaveBeenCalledOnce();
+    });
+
+    it('should not retry a request that already has _retry flag set', async () => {
+      server.use(
+        http.get('/api/v1/retry-test', () => {
+          return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }),
+      );
+      vi.mocked(authService.refreshTokens).mockResolvedValue(true);
+
+      const bus = useEventBus();
+      const sessionExpiredHandler = vi.fn();
+      bus.on('auth:session-expired', sessionExpiredHandler);
+
+      // The retry request also returns 401, so the second 401 should NOT trigger another refresh
+      // (because _retry is set) and should emit session-expired instead
+      await expect(apiClient.get('/api/v1/retry-test')).rejects.toBeDefined();
+
+      // refreshTokens was called for the first 401, but the retried request also returns 401
+      // The second 401 hits the else branch (non-401 toast) since _retry is set
+      expect(authService.refreshTokens).toHaveBeenCalledOnce();
     });
   });
 

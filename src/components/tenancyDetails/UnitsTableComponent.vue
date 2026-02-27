@@ -4,7 +4,7 @@ import { useProjectStore } from '@/stores/ProjectStore';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Column from 'primevue/column';
-import type { DataTablePassThroughMethodOptions } from 'primevue/datatable';
+import type { DataTableCellEditCompleteEvent, DataTablePassThroughMethodOptions } from 'primevue/datatable';
 import DataTable from 'primevue/datatable';
 import Select from 'primevue/select';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -107,7 +107,7 @@ const columns = ref([
  field: 'title', header: 'Wohneinheit', editor: 'Dropdown' 
 },
 ]);
-const onCellEditComplete = async (event: any) => {
+const onCellEditComplete = async (event: DataTableCellEditCompleteEvent) => {
   const { newData, index } = event;
   localListOfUnits.value[index] = newData;
   const unit = localListOfUnits.value[index];
@@ -148,7 +148,7 @@ const displayedColumns = computed(() =>
       <DataTable
         :value="localListOfUnits"
         :rows="10"
-        :rowHover="true"
+        rowHover
         dataKey="id"
         tableStyle="min-width: 60rem"
         scrollable

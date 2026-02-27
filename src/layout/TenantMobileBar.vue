@@ -16,13 +16,13 @@ const sidebarVisible = ref(false);
 const navItems: MobileNavItem[] = [
   {
     label: 'Überblick',
-    to: '/',
+    to: { name: 'TenantDashboard' },
     icon: 'pi-home'
   },
   {
     label: 'Meldungen',
-    to: { name: 'Inbox' },
-    icon: 'pi-inbox'
+    to: { name: 'TenantIssues' },
+    icon: 'pi-list'
   }
 ];
 
@@ -32,17 +32,15 @@ function toggleSidebar() {
 
 function isActive(item: MobileNavItem) {
   if (!item.to) return false;
-  
-   // String Path matching
-  if (typeof item.to === 'string') {
-     return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
-  }
-  
-  // Named Route matching
+
   if (typeof item.to === 'object' && item.to !== null && 'name' in item.to) {
-      return route.name === item.to.name;
+    return route.name === item.to.name;
   }
-  
+
+  if (typeof item.to === 'string') {
+    return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
+  }
+
   return false;
 }
 </script>

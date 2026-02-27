@@ -31,6 +31,10 @@ describe('UserSession Store', () => {
         it('should have null user initially', () => {
             expect(store.user).toBeNull();
         });
+
+        it('should have sessionInitialized as false initially', () => {
+            expect(store.sessionInitialized).toBe(false);
+        });
     });
 
     describe('refreshSessionState', () => {
@@ -41,6 +45,15 @@ describe('UserSession Store', () => {
             await store.refreshSessionState();
 
             expect(store.user).toEqual(mockUser);
+        });
+
+        it('should set sessionInitialized to true on successful fetch', async () => {
+            const mockUser = { email: 'test@example.com' };
+            vi.mocked(apiClient.get).mockResolvedValue(mockUser);
+
+            await store.refreshSessionState();
+
+            expect(store.sessionInitialized).toBe(true);
         });
 
         it('should set user to null on 401 error', async () => {
@@ -56,6 +69,15 @@ describe('UserSession Store', () => {
             expect(store.user).toBeNull();
         });
 
+        it('should set sessionInitialized to true even on 401 error', async () => {
+            const error401 = { response: { status: 401 } };
+            vi.mocked(apiClient.get).mockRejectedValue(error401);
+
+            await store.refreshSessionState();
+
+            expect(store.sessionInitialized).toBe(true);
+        });
+
         it('should log error but keep user for other errors', async () => {
             const error500 = { response: { status: 500 } };
             vi.mocked(apiClient.get).mockRejectedValue(error500);
@@ -67,6 +89,15 @@ describe('UserSession Store', () => {
 
             expect(store.user).not.toBeNull();
             expect(consoleSpy).toHaveBeenCalledWith('Invalid user session:', error500);
+        });
+
+        it('should set sessionInitialized to true even on non-401 errors', async () => {
+            const error500 = { response: { status: 500 } };
+            vi.mocked(apiClient.get).mockRejectedValue(error500);
+
+            await store.refreshSessionState();
+
+            expect(store.sessionInitialized).toBe(true);
         });
     });
 

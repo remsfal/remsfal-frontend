@@ -14,10 +14,7 @@ describe('UserService with MSW', () => {
   });
   
   test('updateUser returns updated user', async () => {
-    const updatedUser = await userService.updateUser({ 
-      // cast to `any` to bypass TS check
-      ...( { name: 'Jane' } as any )
-    });
+    const updatedUser = await userService.updateUser({...( { name: 'Jane' } as Parameters<typeof userService.updateUser>[0] )});
     expect(updatedUser).toMatchObject({
       id: 'user-123',
       name: 'Jane',

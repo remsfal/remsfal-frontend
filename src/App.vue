@@ -1,25 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { RouterView, useRoute } from 'vue-router';
+import { RouterView, useRoute, useRouter } from 'vue-router';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import { useLayout } from '@/layout/composables/layout';
-import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { useEventBus } from '@/stores/EventStore.ts';
 import { useI18n } from 'vue-i18n';
 
-defineOptions({
-  async created() {
-    const sessionStore = useUserSessionStore();
-    await sessionStore.refreshSessionState();
-    const projectStore = useProjectStore();
-    projectStore.refreshProjectList();
-    console.log('App created!');
-  },
-});
-
 const route = useRoute();
+const router = useRouter();
 const { layoutConfig, layoutState } = useLayout();
 
 const containerClass = computed(() => {
@@ -35,17 +25,29 @@ const containerClass = computed(() => {
 const { t } = useI18n();
 const toast = useToast();
 const bus = useEventBus();
+const sessionStore = useUserSessionStore();
+
 bus.on('toast:translate', ({ severity, summary, detail }) => {
   bus.emit('toast:show', {
- severity: severity, summary: t(summary), detail: t(detail) 
+ severity, summary: t(summary), detail: t(detail) 
 });
 });
 bus.on('toast:show', ({ severity, summary, detail }) => {
   toast.add({
-    severity: severity,
-    summary: summary,
-    detail: detail,
-    life: 3000,
+ severity, summary, detail, life: 3000 
+});
+});
+bus.on('auth:session-expired', () => {
+  sessionStore.user = null;
+  bus.emit('toast:translate', {
+    severity: 'warn',
+    summary: 'auth.sessionExpiredSummary',
+    detail: 'auth.sessionExpiredDetail',
+  });
+  const targetPath = router.currentRoute.value.fullPath;
+  router.push({
+    name: 'LandingPage',
+    query: { redirect: targetPath !== '/' ? targetPath : undefined },
   });
 });
 </script>
