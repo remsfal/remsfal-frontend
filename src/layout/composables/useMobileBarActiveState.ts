@@ -1,3 +1,4 @@
+import { ref, watch } from 'vue';
 import { useRoute, type RouteLocationRaw } from 'vue-router';
 
 export interface MobileNavItem {
@@ -8,6 +9,15 @@ export interface MobileNavItem {
 
 export function useMobileBarActiveState() {
   const route = useRoute();
+  const sidebarVisible = ref(false);
+
+  watch(route, () => {
+    sidebarVisible.value = false;
+  });
+
+  function toggleSidebar() {
+    sidebarVisible.value = !sidebarVisible.value;
+  }
 
   function isActive(item: MobileNavItem): boolean {
     if (!item.to) return false;
@@ -23,5 +33,9 @@ export function useMobileBarActiveState() {
     return false;
   }
 
-  return { isActive };
+  return {
+    sidebarVisible,
+    toggleSidebar,
+    isActive,
+  };
 }

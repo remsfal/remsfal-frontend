@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import Drawer from 'primevue/drawer';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
 import { useMobileBarActiveState, type MobileNavItem } from '@/layout/composables/useMobileBarActiveState';
 
-const { isActive } = useMobileBarActiveState();
-const sidebarVisible = ref(false);
+const { isActive, sidebarVisible, toggleSidebar } = useMobileBarActiveState();
 
 const navItems: MobileNavItem[] = [
   {
@@ -20,10 +18,6 @@ const navItems: MobileNavItem[] = [
     icon: 'pi-cog'
   }
 ];
-
-function toggleSidebar() {
-  sidebarVisible.value = !sidebarVisible.value;
-}
 </script>
 
 <template>
