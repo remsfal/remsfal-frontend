@@ -18,8 +18,7 @@ const containerClass = computed(() => {
     'layout-static': layoutConfig.menuMode === 'static',
     'layout-static-inactive': layoutState.staticMenuDesktopInactive && layoutConfig.menuMode === 'static',
     'layout-overlay-active': layoutState.overlayMenuActive,
-    'layout-mobile-active': layoutState.staticMenuMobileActive,
-  };
+};
 });
 
 const { t } = useI18n();
@@ -63,8 +62,6 @@ bus.on('auth:session-expired', () => {
     <RouterView :key="route.fullPath" />
 
     <RouterView name="mobilebar" class="layout-mobile-navbar" />
-
-    <div class="layout-mask animate-fadein" />
   </div>
   <Toast />
 </template>

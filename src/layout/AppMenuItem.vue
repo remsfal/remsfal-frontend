@@ -66,10 +66,7 @@ const itemClick = (event: Event, item: MenuItem) => {
     return;
   }
 
-  if (
-    (item.to || item.url) &&
-    (layoutState.staticMenuMobileActive || layoutState.overlayMenuActive)
-  ) {
+  if ((item.to || item.url) && layoutState.overlayMenuActive) {
     toggleMenu();
   }
 

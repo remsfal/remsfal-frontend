@@ -13,7 +13,6 @@ const layoutState = reactive({
   overlayMenuActive: false,
   profileSidebarVisible: false,
   configSidebarVisible: false,
-  staticMenuMobileActive: false,
   menuHoverActive: false,
   activeMenuItem: ref<string | undefined>(undefined),
 });
@@ -55,14 +54,10 @@ export function useLayout() {
 
     if (window.innerWidth > 991) {
       layoutState.staticMenuDesktopInactive = !layoutState.staticMenuDesktopInactive;
-    } else {
-      layoutState.staticMenuMobileActive = !layoutState.staticMenuMobileActive;
     }
   };
 
-  const isSidebarActive = computed(
-    () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive,
-  );
+  const isSidebarActive = computed(() => layoutState.overlayMenuActive);
 
   const isDarkTheme = computed(() => layoutConfig.darkTheme);
 
