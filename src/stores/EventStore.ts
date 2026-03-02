@@ -4,6 +4,7 @@ type Events = {
   'toast:show': { severity: string; summary: string; detail: string };
   'toast:translate': { severity: string; summary: string; detail: string };
   'auth:login': { userId: string };
+  'auth:session-expired': Record<string, never>;
 };
 
 type Key = keyof Events;

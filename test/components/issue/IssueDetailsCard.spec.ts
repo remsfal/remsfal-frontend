@@ -2,7 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
 import { issueService } from '@/services/IssueService';
-import { projectMemberService } from '@/services/ProjectMemberService';
+import { projectMemberService, type ProjectMemberList } from '@/services/ProjectMemberService';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
 const addMock = vi.fn();
@@ -11,7 +11,7 @@ vi.mock('primevue/usetoast', () => ({useToast: () => ({add: addMock,}),}));
 
 // ─── Service Mock ────────────────────────────────────────────────────────────
 vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<any>('@/services/IssueService');
+  const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
   return {
     ...actual,
     issueService: {updateIssue: vi.fn(),},
@@ -19,7 +19,7 @@ vi.mock('@/services/IssueService', async () => {
 });
 
 vi.mock('@/services/ProjectMemberService', async () => {
-  const actual = await vi.importActual<any>('@/services/ProjectMemberService');
+  const actual = await vi.importActual<typeof import('@/services/ProjectMemberService')>('@/services/ProjectMemberService');
   return {
     ...actual,
     projectMemberService: {
@@ -55,7 +55,7 @@ const baseProps = {
 
 // ─── Test Suite ──────────────────────────────────────────────────────────────
 describe('IssueDetailsCard.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof IssueDetailsCard>>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -70,7 +70,7 @@ describe('IssueDetailsCard.vue', () => {
           id: 'reporter-1', name: 'Jane Smith', email: 'jane@example.com', role: 'STAFF',
         },
       ],
-    } as any);
+    } as ProjectMemberList);
 
     wrapper = mount(IssueDetailsCard, {props: baseProps,});
   });
@@ -259,7 +259,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('handles undefined field values', async () => {
-    wrapper.vm.tenancy = undefined as any;
+    wrapper.vm.tenancy = undefined as unknown as string;
     expect(wrapper.vm.canSave).toBe(true);
   });
 

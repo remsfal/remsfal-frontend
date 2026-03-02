@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useLayout } from '@/layout/composables/layout';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import Button from 'primevue/button';
-import { ref, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
+import { ref, watch, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
 
 const { toggleDarkMode, isDarkTheme } = useLayout();
+const route = useRoute();
 
 const isMobileMenuOpen = ref(false);
 const menuButtonRef = ref<ComponentPublicInstance>();
@@ -17,6 +18,8 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;
 };
+
+watch(route, closeMobileMenu);
 
 // Close menu when clicking outside
 const handleOutsideClick = (event: Event) => {

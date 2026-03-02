@@ -13,7 +13,7 @@ vi.mock('@/stores/ProjectStore', () => ({useProjectStore: vi.fn(),}));
 vi.mock('vue-router', () => ({useRouter: vi.fn(),}));
 
 describe('NewProjectDialog.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof NewProjectDialog>>;
   let pushMock: ReturnType<typeof vi.fn>;
   let storeMock: {
     addProjectToList: ReturnType<typeof vi.fn>;

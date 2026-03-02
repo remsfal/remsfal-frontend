@@ -32,7 +32,6 @@ function bindOutsideClickListener() {
     outsideClickListener.value = (event: Event) => {
       if (isOutsideClicked(event)) {
         layoutState.overlayMenuActive = false;
-        layoutState.staticMenuMobileActive = false;
         layoutState.menuHoverActive = false;
       }
     };

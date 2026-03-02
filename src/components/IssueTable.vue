@@ -20,7 +20,7 @@ const onRowSelect = (event: any) => {
   <DataTable 
     :value="props.issues" 
     tableStyle="min-width: 60rem" 
-    :paginator="true" 
+    paginator
     :rows="5"
     selectionMode="single"
     :metaKeySelection="false"

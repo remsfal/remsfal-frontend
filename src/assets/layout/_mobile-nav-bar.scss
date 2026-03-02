@@ -1,0 +1,31 @@
+.mobile-nav-bar {
+  height: 60px;
+  background-color: var(--surface-card);
+  border-top: 1px solid var(--surface-border);
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--text-color-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-item.active {
+  color: var(--p-primary-color, #4CAF50);
+  border-top: 3px solid var(--p-primary-color, #4CAF50);
+}
+
+.more-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color-secondary);
+}

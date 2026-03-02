@@ -5,7 +5,7 @@ import i18n from '@/i18n/i18n';
 export type User = ApiComponents['schemas']['UserJson'];
 
 export const useUserSessionStore = defineStore('user-session', {
-  state: () => ({ user: null as User | null, }),
+  state: () => ({ user: null as User | null, sessionInitialized: false }),
 
   actions: {
     async refreshSessionState() {
@@ -26,6 +26,8 @@ export const useUserSessionStore = defineStore('user-session', {
         ) {
           this.user = null;
         }
+      } finally {
+        this.sessionInitialized = true;
       }
     },
 

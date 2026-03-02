@@ -5,7 +5,11 @@ import { openDB } from 'idb';
 vi.mock('idb', () => ({openDB: vi.fn(),}));
 
 describe('IndexedDB Helper Functions', () => {
-  let mockDb: any;
+  let mockDb: {
+    add: ReturnType<typeof vi.fn>;
+    getAll: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     // Mock openDB to return a mock database object

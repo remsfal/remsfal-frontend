@@ -14,23 +14,18 @@ import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
 
-
-
-
-// Remove global router plugin
+// Remove global router plugin for this test file
+// We need manual control over routing
 config.global.plugins = config.global.plugins.filter(p => p !== router);
 
+// Stub for RouterLink
 const RouterLinkStub = {
     template: '<a><slot /></a>',
     props: ['to']
 };
 
-
-
 describe('ContractorMobileBar.vue', () => {
-    const defaultRoute = {
-        name: 'ContractorView', query: {}, path: '/customers'
-    };
+    const defaultRoute = { path: '/contractor/dashboard', name: 'ContractorDashboard' };
     const mountComponent = (initialRoute = defaultRoute) => {
         const route = reactive(initialRoute);
 
@@ -58,11 +53,8 @@ describe('ContractorMobileBar.vue', () => {
         expect(navItems.length).toBe(2);
     });
 
-    it('highlights Overview active state correctly', async () => {
-        // Overview matches when query.tab is undefined or not 'orders'
-        const { wrapper } = mountComponent({
-            name: 'ContractorView', query: {}, path: '/customers'
-        });
+    it('highlights Übersicht when on ContractorDashboard route', async () => {
+        const { wrapper } = mountComponent({ path: '/contractor/dashboard', name: 'ContractorDashboard' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
@@ -70,36 +62,8 @@ describe('ContractorMobileBar.vue', () => {
         expect(navItems[1].classes()).not.toContain('active');
     });
 
-    it('highlights Overview active state when tab is explicitly undefined/null if possible or just empty', async () => {
-        // Technically just empty query
-        const { wrapper } = mountComponent({
-            name: 'ContractorView', query: { other: 'param' }, path: '/customers'
-        });
-        await wrapper.vm.$nextTick();
-
-        const navItems = wrapper.findAll('a.nav-item');
-        // Logic: !currentQuery.tab. 'other' is not 'tab'. So should be active.
-        expect(navItems[0].classes()).toContain('active');
-    });
-
-
-
-    it('handles potentially missing query gracefully', async () => {
-        // Simulate route where query might be null/undefined logic
-        const { wrapper } = mountComponent({
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            name: 'ContractorView', query: undefined as unknown as Record<string, any>, path: '/customers'
-        });
-        await wrapper.vm.$nextTick();
-
-        const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[0].classes()).toContain('active');
-    });
-
-    it('highlights Orders active state correctly', async () => {
-        const { wrapper } = mountComponent({
-            name: 'ContractorView', query: { tab: 'orders' }, path: '/customers'
-        });
+    it('highlights Auftraggeber when on ContractorView route', async () => {
+        const { wrapper } = mountComponent({ path: '/contractor/issues', name: 'ContractorView' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
@@ -107,26 +71,11 @@ describe('ContractorMobileBar.vue', () => {
         expect(navItems[1].classes()).toContain('active');
     });
 
-    it('does NOT highlight Overview or Orders when route name differs', async () => {
-        const { wrapper } = mountComponent({
-            name: 'AnotherView', query: {}, path: '/other'
-        });
+    it('does not highlight any item when on an unrelated route', async () => {
+        const { wrapper } = mountComponent({ path: '/other', name: 'AnotherView' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[0].classes()).not.toContain('active');
-        expect(navItems[1].classes()).not.toContain('active');
-    });
-
-    it('does NOT highlight Orders if tab is different', async () => {
-        const { wrapper } = mountComponent({
-            name: 'ContractorView', query: { tab: 'something-else' }, path: '/customers'
-        });
-        await wrapper.vm.$nextTick();
-
-        const navItems = wrapper.findAll('a.nav-item');
-        // Overview logic: !currentQuery.tab. 'something-else' is truthy. So Overview inactive.
-        // Orders logic: tab === 'orders'. 'something-else' !== 'orders'. So Orders inactive.
         expect(navItems[0].classes()).not.toContain('active');
         expect(navItems[1].classes()).not.toContain('active');
     });

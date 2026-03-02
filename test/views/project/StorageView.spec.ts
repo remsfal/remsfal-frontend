@@ -20,7 +20,7 @@ beforeEach(() => server.use(...handlers));
 afterEach(() => server.resetHandlers());
 
 describe('StorageView.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof Component>>;
 
   beforeEach(async () => {
     wrapper = mount(Component, {

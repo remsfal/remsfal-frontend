@@ -1,6 +1,7 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 import { type UnitType } from '@/services/PropertyService.ts';
 
+export type IssueCategory = ApiComponents['schemas']['IssueCategory'];
 export type IssueStatus = ApiComponents['schemas']['IssueStatus'];
 export type IssueType = ApiComponents['schemas']['IssueType'];
 export type IssuePriority = ApiComponents['schemas']['IssuePriority'];

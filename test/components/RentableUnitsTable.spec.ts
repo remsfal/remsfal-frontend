@@ -61,7 +61,7 @@ vi.mock('vue-router', () => ({useRouter: () => ({ push: mockRouterPush }),}));
 
 // ---- Test Suite ----
 describe('RentableUnitsTable.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof RentableUnitsTable>>;
 
   beforeEach(async () => {
     vi.clearAllMocks();

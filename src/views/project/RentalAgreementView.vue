@@ -77,8 +77,8 @@ onMounted(async () => {
           class="custom-scroll-height cursor-pointer"
           @rowClick="navigateToRentalAgreementDetails($event.data.id)"
         >
-          <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" :sortable="true" />
-          <Column field="endOfRental" :header="t('projectTenancies.table.rentalEnd')" :sortable="true" />
+          <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" sortable />
+          <Column field="endOfRental" :header="t('projectTenancies.table.rentalEnd')" sortable />
 
           <Column field="tenants" :header="t('projectTenancies.table.tenants')">
             <template #body="slotProps">

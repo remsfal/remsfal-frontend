@@ -53,6 +53,6 @@ describe('TenancyDataComponent', () => {
   
     const emitted = wrapper.emitted('onChange') as unknown[][];
     expect(emitted).toBeTruthy();
-    expect((emitted[0][0] as any).startOfRental).toEqual(today.toISOString());
+    expect((emitted[0][0] as { startOfRental: string }).startOfRental).toEqual(today.toISOString());
   });   
 });

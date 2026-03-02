@@ -1,5 +1,5 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils'
 import ApartmentView from '@/views/project/ApartmentView.vue'
 import { apartmentService } from '@/services/ApartmentService'
 
@@ -10,7 +10,7 @@ vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: vi.fn() }),}))
 vi.mock('vue-router', () => ({useRouter: () => ({ push: mockPush }),}))
 
 describe('ApartmentView.vue', () => {
-  let wrapper: any
+  let wrapper: VueWrapper<InstanceType<typeof ApartmentView>>
 
   const mockApartment = {
     title: 'Initial Apartment Title',

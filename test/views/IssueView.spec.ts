@@ -30,7 +30,7 @@ import type { Status, Type } from "@/services/IssueService";
 
 // ---- TESTS ----
 describe("IssueView.vue", () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof IssueView>>;
 
   beforeEach(() => {
     vi.clearAllMocks();

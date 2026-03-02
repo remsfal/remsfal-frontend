@@ -5,7 +5,7 @@ import RentalAgreementView from '@/views/project/RentalAgreementView.vue';
 import { rentalAgreementService } from '@/services/RentalAgreementService';
 
 // Fix for "window is not defined" error
-if (typeof window === 'undefined') (global as any).window = {};
+if (typeof window === 'undefined') (global as Record<string, unknown>).window = {};
 
 // ---- Router Mock ----
 const routerPushMock = vi.fn();
@@ -23,7 +23,7 @@ vi.mock('primevue/dialog', () => ({
 vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
 
 describe('RentalAgreementView.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof RentalAgreementView>>;
 
   const mockTenants = [
     {
