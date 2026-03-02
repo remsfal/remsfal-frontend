@@ -9,15 +9,13 @@ import AppLayout from '@/layout/AppLayout.vue';
 import ManagerMenu from '@/layout/ManagerMenu.vue';
 import ManagerTopbar from '@/layout/ManagerTopbar.vue';
 import ContractorMenu from '@/layout/ContractorMenu.vue';
-import ContractorTopbar from '@/layout/ContractorTopbar.vue';
 import TenantMenu from '@/layout/TenantMenu.vue';
-import TenantTopbar from '@/layout/TenantTopbar.vue';
+import AppSimpleTopbar from '@/layout/AppSimpleTopbar.vue';
 import ManagerMobileBar from '@/layout/ManagerMobileBar.vue';
 import ContractorMobileBar from '@/layout/ContractorMobileBar.vue';
 import TenantMobileBar from '@/layout/TenantMobileBar.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
 import ProjectMenu from "@/layout/ProjectMenu.vue";
-import ProjectTopbar from "@/layout/ProjectTopbar.vue";
 import ProjectMobileBar from "@/layout/ProjectMobileBar.vue";
 
 const fullscreenRoutes: RouteRecordRaw[] = [
@@ -106,7 +104,7 @@ const projectRoutes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
     components: {
       default: AppLayout,
-      topbar: ProjectTopbar,
+      topbar: ManagerTopbar,
       sidebar: ProjectMenu,
       mobilebar: ProjectMobileBar,
     },
@@ -281,7 +279,7 @@ const tenantRoutes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
     components: {
       default: AppLayout,
-      topbar: TenantTopbar,
+      topbar: AppSimpleTopbar,
       sidebar: TenantMenu,
       mobilebar: TenantMobileBar,
     },
@@ -313,7 +311,7 @@ const contractorRoutes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
     components: {
       default: AppLayout,
-      topbar: ContractorTopbar,
+      topbar: AppSimpleTopbar,
       sidebar: ContractorMenu,
       mobilebar: ContractorMobileBar,
     },

@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { RouterLink, useRoute, type RouteLocationRaw } from 'vue-router';
+import { RouterLink } from 'vue-router';
 import Drawer from 'primevue/drawer';
 import TenantMenu from '@/layout/TenantMenu.vue';
+import { useMobileBarActiveState, type MobileNavItem } from '@/layout/composables/useMobileBarActiveState';
 
-interface MobileNavItem {
-  label: string;
-  to: RouteLocationRaw;
-  icon: string;
-}
-
-const route = useRoute();
+const { isActive } = useMobileBarActiveState();
 const sidebarVisible = ref(false);
 
 const navItems: MobileNavItem[] = [
@@ -28,20 +23,6 @@ const navItems: MobileNavItem[] = [
 
 function toggleSidebar() {
   sidebarVisible.value = !sidebarVisible.value;
-}
-
-function isActive(item: MobileNavItem) {
-  if (!item.to) return false;
-
-  if (typeof item.to === 'object' && item.to !== null && 'name' in item.to) {
-    return route.name === item.to.name;
-  }
-
-  if (typeof item.to === 'string') {
-    return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
-  }
-
-  return false;
 }
 </script>
 
@@ -76,49 +57,3 @@ function isActive(item: MobileNavItem) {
     </Drawer>
   </div>
 </template>
-
-<style scoped>
-.mobile-nav-bar {
-  height: 60px;
-  background-color: var(--surface-card);
-  border-top: 1px solid var(--surface-border);
-  justify-content: space-around;
-  align-items: center;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.nav-item {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: var(--text-color-secondary);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.nav-item.active {
-  color: var(--p-primary-color, #4CAF50);
-  border-top: 3px solid var(--p-primary-color, #4CAF50);
-}
-
-.more-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-color-secondary);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-</style>

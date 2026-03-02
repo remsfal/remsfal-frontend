@@ -26,7 +26,7 @@ const onProjectSelectionChange = (event: SelectChangeEvent) => {
 
 const onHomeClick = () => {
   projectStore.refreshProjectList();
-  router.push('/projects');
+  router.push({ name: 'ProjectSelection' });
 };
 
 const onInboxClick = () => {
