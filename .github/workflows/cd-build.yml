@@ -68,7 +68,7 @@ jobs:
         # Should we use cache-from and cache-to here for speed up?
       - name: Build and push Docker image
         id: push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
             context: .
             file: ./docker/Dockerfile
