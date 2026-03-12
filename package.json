@@ -70,7 +70,7 @@
     "@capacitor/cli": "^8.1.0",
     "@cypress/code-coverage": "^3.14.7",
     "@intlify/eslint-plugin-vue-i18n": "^4.3.0",
-    "@pinia/testing": "^1.0.2",
+    "@pinia/testing": "^1.0.3",
     "@primevue/auto-import-resolver": "^4.5.4",
     "@stylistic/eslint-plugin": "^5.7.1",
     "@tailwindcss/postcss": "^4.2.0",
