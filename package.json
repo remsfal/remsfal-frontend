@@ -1,6 +1,6 @@
 {
   "name": "@remsfal/remsfal-frontend",
-  "version": "0.0.8-SNAPSHOT",
+  "version": "0.0.8",
   "type": "module",
   "homepage": "https://remsfal.de",
   "license": "MIT",
