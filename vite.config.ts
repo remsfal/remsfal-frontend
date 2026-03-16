@@ -5,6 +5,7 @@ import istanbul from 'vite-plugin-istanbul';
 import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
+import VueRouter from 'unplugin-vue-router/vite';
 
 // Proxy-Configurations-Factory
 function createProxyConfig(target: string, backendName: string): ProxyOptions {
@@ -32,6 +33,10 @@ function createProxyConfig(target: string, backendName: string): ProxyOptions {
 export default defineConfig({
   optimizeDeps: {noDiscovery: true,},
   plugins: [
+    VueRouter({
+      routesFolder: 'src/pages',
+      dts: 'src/typed-router.d.ts',
+    }),
     vue(),
     // Disable DevTools in test environment to avoid localStorage issues
     process.env.VITEST ? undefined : vueDevTools(),

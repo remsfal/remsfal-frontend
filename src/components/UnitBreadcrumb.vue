@@ -101,10 +101,10 @@ const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
     id: node.id,
     icon: getIconForType(node.type),
     command: () => {
-      router.push({ 
-        name: toRentableUnitView(node.type), 
-        params: { projectId: props.projectId, unitId: node.id }, 
-      });
+      router.push({
+        name: toRentableUnitView(node.type),
+        params: { projectId: props.projectId, unitId: node.id },
+      } as Parameters<typeof router.push>[0]);
     },
   }));
 };

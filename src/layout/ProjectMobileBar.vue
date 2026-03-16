@@ -15,7 +15,7 @@ interface MobileNavItem {
 const route = useRoute();
 const { sidebarVisible, toggleSidebar } = useMobileBarActiveState();
 
-const projectId = computed(() => route.params.projectId);
+const projectId = computed(() => (route.params as Record<string, string>).projectId);
 
 const navItems = computed<MobileNavItem[]>(() => {
   if (!projectId.value) {
