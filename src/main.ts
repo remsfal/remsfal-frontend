@@ -120,9 +120,19 @@ library.add(fas, far, fab);
 
 const pinia = createPinia();
 const app = createApp(App);
-// Install Pinia
+// Install Pinia first (needed for stores)
 app.use(pinia);
-// Install Router for SPA
+
+// Initialize session BEFORE installing the router.
+// Vue Router 4 triggers the initial navigation synchronously during app.use(router),
+// which fires the beforeEach guard. The session must be populated at that point.
+const { useUserSessionStore } = await import('@/stores/UserSession');
+const { useProjectStore } = await import('@/stores/ProjectStore');
+const sessionStore = useUserSessionStore();
+await sessionStore.refreshSessionState();
+useProjectStore().refreshProjectList();
+
+// Install Router for SPA (initial navigation fires here — session is already set)
 app.use(router);
 // Make PrimeVue available throughout the project
 app.use(PrimeVue, {

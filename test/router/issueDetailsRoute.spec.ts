@@ -1,11 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { setActivePinia, createPinia } from 'pinia';
 import router from '@/router/index';
+import { useUserSessionStore } from '@/stores/UserSession';
 import { generateIdTestCases } from '../setup/issueTestHelpers';
 
 describe('Router - Issue Details Route', () => {
   const testIds = generateIdTestCases();
-  
+
   beforeEach(async () => {
+    setActivePinia(createPinia());
+    // Set a logged-in user so requiresAuth guard does not redirect
+    const sessionStore = useUserSessionStore();
+    const user = { email: 'test@example.com', userContexts: ['MANAGER'] };
+    sessionStore.user = user as ReturnType<typeof useUserSessionStore>['user'];
     await router.push('/');
     await router.isReady();
   });
@@ -134,8 +141,9 @@ describe('Router - Issue Details Route', () => {
     });
 
     it('should be accessible from other routes', async () => {
+      // With a logged-in MANAGER user, LandingPage redirects to ProjectSelection
       await router.push({ name: 'LandingPage' });
-      expect(router.currentRoute.value.name).toBe('LandingPage');
+      expect(router.currentRoute.value.name).toBe('ProjectSelection');
       await router.push({ name: 'IssueDetails', params: { projectId: 'test', issueId: 'test' } });
       expect(router.currentRoute.value.name).toBe('IssueDetails');
     });

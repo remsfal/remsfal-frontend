@@ -49,7 +49,7 @@ describe('ManagerView.vue', () => {
   });
 
   it('toggles the dialog visibility', async () => {
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as InstanceType<typeof ProjectSelectionView>;
 
     // Initially dialog should be closed
     expect(vm.showDialog).toBe(false);

@@ -35,14 +35,14 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
       ],
     };
 
-    (propertyService.getPropertyTree as any).mockResolvedValueOnce(mockTree);
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValueOnce(mockTree);
 
     const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [],},});
 
     // Wait for onMounted and loadDropdownOptions to finish
     await new Promise(setImmediate);
 
-    const vm: any = wrapper.vm;
+    const vm = wrapper.vm as InstanceType<typeof UnitsTableComponent>;
 
     expect(propertyService.getPropertyTree).toHaveBeenCalledWith('mock-project-id');
     expect(vm.rentalObjects).toEqual([
@@ -56,13 +56,13 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
   });
 
   it('handles fetch error gracefully', async () => {
-    (propertyService.getPropertyTree as any).mockRejectedValueOnce(new Error('fetch failed'));
+    vi.mocked(propertyService.getPropertyTree).mockRejectedValueOnce(new Error('fetch failed'));
 
     const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [],},});
 
     await new Promise(setImmediate); // wait for onMounted + promise
 
-    const vm: any = wrapper.vm;
+    const vm = wrapper.vm as InstanceType<typeof UnitsTableComponent>;
     expect(vm.unitTypes).toEqual([]);
     expect(vm.rentalObjects).toEqual([]);
   });

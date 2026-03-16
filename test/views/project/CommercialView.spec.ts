@@ -14,7 +14,7 @@ vi.mock('@/services/CommercialService', () => ({
 }));
 
 describe('CommercialView.vue', () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof Component>>;
 
   beforeEach(async () => {
     (commercialService.getCommercial as Mock).mockResolvedValue({

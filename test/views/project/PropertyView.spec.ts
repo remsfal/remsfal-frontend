@@ -1,4 +1,4 @@
-import { mount, flushPromises } from '@vue/test-utils';
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
 import Component from '@/views/project/PropertyView.vue';
 import { propertyService } from '@/services/PropertyService';
@@ -35,10 +35,10 @@ afterEach(() => {
 });
 
 describe('PropertyView.vue', () => {
-  let wrapper: any;
+  let wrapper: VueWrapper<InstanceType<typeof Component>>;
 
   beforeEach(async () => {
-    (propertyService.getProperty as any).mockResolvedValue({
+    vi.mocked(propertyService.getProperty).mockResolvedValue({
       title: 'Initial Property Title',
       description: 'Initial Property Description',
       cadastralDistrict: 'Initial District',
@@ -84,7 +84,7 @@ describe('PropertyView.vue', () => {
   });
 
   it('calls updateProperty service with correct data when saved', async () => {
-    (propertyService.updateProperty as any).mockImplementation(
+    vi.mocked(propertyService.updateProperty).mockImplementation(
       async (projectId, unitId, payload) => {
         // Let fetch go through MSW
         const res = await fetch(`/api/v1/projects/${projectId}/units/${unitId}/property`, {
@@ -139,7 +139,7 @@ describe('PropertyView.vue', () => {
   });
 
   it('redirects to correct property view path after successful save', async () => {
-    (propertyService.updateProperty as any).mockResolvedValue({});
+    vi.mocked(propertyService.updateProperty).mockResolvedValue({});
     mockPush.mockClear();
     wrapper.vm.title = 'Updated Title';
     await wrapper.vm.save();

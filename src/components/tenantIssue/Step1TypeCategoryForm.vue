@@ -10,13 +10,13 @@ import AutoComplete from 'primevue/autocomplete';
 import Message from 'primevue/message';
 
 // Types
-import type { IssueType } from '@/services/IssueService';
+import type { IssueCategory, IssueType } from '@/services/IssueService';
 import type { TenancyJson, RentalUnitJson } from '@/services/TenancyService';
 import { formatTenancyLabel } from '@/services/TenancyService';
 
 // Category type definition
 interface CategoryOption {
-  value: string;
+  value: IssueCategory;
   label: string;
   examples?: string;
 }
@@ -25,7 +25,7 @@ interface CategoryOption {
 const props = defineProps<{
   tenancyId: string | null;
   issueType: IssueType | null;
-  issueCategory: string | null;
+  issueCategory: IssueCategory | null;
   rentalUnitId: string | null;
   tenancies: TenancyJson[];
 }>();
@@ -33,7 +33,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:tenancyId': [value: string | null];
   'update:issueType': [value: IssueType | null];
-  'update:issueCategory': [value: string | null];
+  'update:issueCategory': [value: IssueCategory | null];
   'update:rentalUnitId': [value: string | null];
   next: [];
 }>();

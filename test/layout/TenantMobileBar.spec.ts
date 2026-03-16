@@ -45,8 +45,8 @@ describe('TenantMobileBar.vue', () => {
         expect(navItems.length).toBe(2);
     });
 
-    it('highlights Overview active state', async () => {
-        const { wrapper } = mountComponent({ path: '/', name: 'TenantView' });
+    it('highlights Overview active state when on TenantDashboard', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
@@ -54,51 +54,33 @@ describe('TenantMobileBar.vue', () => {
         expect(navItems[1].classes()).not.toContain('active');
     });
 
-    it('highlights Inbox active state', async () => {
-        const { wrapper } = mountComponent({ path: '/inbox', name: 'Inbox' });
+    it('highlights Meldungen active state when on TenantIssues', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/issues', name: 'TenantIssues' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
-
         expect(navItems[0].classes()).not.toContain('active');
         expect(navItems[1].classes()).toContain('active');
     });
 
-    it('highlights Overview when on a sub-route of Overview', async () => {
-        // e.g. /some-sub-page which starts with /
-        const { wrapper } = mountComponent({ path: '/some-sub-page', name: 'SomeSubPage' });
+    it('does not highlight Overview when on an unrelated route', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/account-settings', name: 'TenantAccountSettings' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
-        // The first item 'to' is '/', logic says: route.path === '/' || (item.to !== '/' && ...)
-        // Wait, logic is:
-        // if (typeof item.to === 'string') {
-        //    return route.path === item.to || (item.to !== '/' && route.path.startsWith(item.to));
-        // }
-        // For item.to = '/', the second part (item.to !== '/') is false.
-        // So strict equality is required for '/'.
-        // Let's verify this assumption with the test.
-
-        // Actually, looking at the code:
-        // item 1: to: '/'
-        // isActive: return route.path === '/' || ('/' !== '/' && ...) -> return route.path === '/'
-
         expect(navItems[0].classes()).not.toContain('active');
     });
 
-    it('highlights Inbox when on a sub-route matching Inbox name', async () => {
-        // The Inbox item definition is: to: { name: 'Inbox' }
-        // The logic for object 'to': return route.name === item.to.name
-
-        const { wrapper } = mountComponent({ path: '/inbox/details', name: 'Inbox' }); // Name matches
+    it('highlights Overview when route name matches TenantDashboard', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[1].classes()).toContain('active');
+        expect(navItems[0].classes()).toContain('active');
     });
 
-    it('does not highlight Inbox when route name differs', async () => {
-        const { wrapper } = mountComponent({ path: '/inbox', name: 'OtherRoute' });
+    it('does not highlight Meldungen when route name differs', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');

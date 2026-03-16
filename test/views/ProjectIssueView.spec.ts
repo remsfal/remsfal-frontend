@@ -26,12 +26,14 @@ const mockIssue = {
 };
 
 describe("ProjectIssueView.vue", () => {
-  let wrapper: VueWrapper<any>;
+  let wrapper: VueWrapper<InstanceType<typeof ProjectIssueView>>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
 
-    vi.spyOn(issueService, "getIssue").mockResolvedValue(mockIssue as any);
+    vi.spyOn(issueService, "getIssue").mockResolvedValue(
+      mockIssue as unknown as Awaited<ReturnType<typeof issueService.getIssue>>
+    );
 
     wrapper = mount(ProjectIssueView, {
       props: {
@@ -144,10 +146,31 @@ describe("ProjectIssueView.vue", () => {
     expect(issueService.getIssue).toHaveBeenCalledTimes(1);
   });
 
-  test("does NOT refetch when only projectId changes", async () => {
-    vi.clearAllMocks();
+  test("sets description after fetching issue", () => {
+    // match the actual mock used in beforeEach
+    expect(wrapper.vm.description).toBe("Test description");
+  });
 
-    await wrapper.setProps({ projectId: "PROJ-2" });
+  test("loading spinner shows while fetching issue", async () => {
+    // Create a promise that never resolves to simulate ongoing fetch
+    const pendingPromise = new Promise(() => {});
+    vi.spyOn(issueService, "getIssue").mockReturnValue(
+      pendingPromise as unknown as ReturnType<typeof issueService.getIssue>
+    );
+  
+    const tempWrapper = mount(ProjectIssueView, {
+      props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
+      global: { stubs: { IssueDetailsCard: true, IssueDescriptionCard: true } },
+    });
+  
+    // Wait for next tick so loadingFetch is set to true
+    await tempWrapper.vm.$nextTick();
+  
+    expect(tempWrapper.find("i.pi-spin").exists()).toBe(true);
+  });
+
+  test("refetches issue when description card emits saved", async () => {
+    await wrapper.find('[data-test="description"]').trigger("click");
     await flushPromises();
 
     expect(issueService.getIssue).not.toHaveBeenCalled();

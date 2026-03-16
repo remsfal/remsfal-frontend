@@ -25,17 +25,17 @@ const model = ref([
       {
         label: 'consultantMenu.clientManagement.open',
         icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
-        to: '/contractor/dashboard'
+        to: '/contractor/clients/open',
       },
       {
         label: 'consultantMenu.clientManagement.ongoing',
         icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
-        to: '/contractor/dashboard',
+        to: '/contractor/clients/ongoing',
       },
       {
         label: 'consultantMenu.clientManagement.closed',
         icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
-        to: '/contractor/dashboard',
+        to: '/contractor/clients/closed',
       },
     ],
   },
