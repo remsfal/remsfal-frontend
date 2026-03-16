@@ -328,8 +328,8 @@ import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
 
 | Phase | Status | Description |
 |-------|--------|-------------|
-| 1 — File-Based Routing | 🔲 Not started | Install `unplugin-vue-router`, create `src/pages/` |
-| 2 — Layout System | 🔲 Not started | Create `src/layouts/`, update `App.vue` |
+| 1 — File-Based Routing | ✅ Done | `unplugin-vue-router`, `src/pages/`, `src/router/guards.ts` |
+| 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
 | 3 — Feature-Sliced | 🔲 Not started | Incremental; new code goes into `src/features/` |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
