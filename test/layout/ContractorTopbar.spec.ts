@@ -6,7 +6,11 @@ import { useUserSessionStore, type User } from '@/stores/UserSession';
 
 // Router mock
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }), }));
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: mockPush }),
+  useRoute: () => ({ params: {}, query: {}, fullPath: '/', name: undefined, meta: {} }),
+  RouterLink: { template: '<a><slot /></a>' },
+}));
 
 // Mock platform helper (since TopbarUserActions uses it)
 vi.mock('../../src/helper/platform', () => ({ shouldShowDevLogin: vi.fn().mockReturnValue(false), }));

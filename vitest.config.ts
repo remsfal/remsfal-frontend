@@ -29,7 +29,7 @@ export default mergeConfig(
       mockReset: true,
       restoreMocks: true,
       clearMocks: true,
-      exclude: [...configDefaults.exclude, 'e2e/*'],
+      exclude: [...configDefaults.exclude, 'e2e/*', '.claude/**'],
       setupFiles: [
         resolve(__dirname, 'test/setup/jsdom-fix.ts'),
         resolve(__dirname, 'test/setup/vitest.setup.ts'),

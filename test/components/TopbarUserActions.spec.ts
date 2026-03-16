@@ -8,7 +8,11 @@ import { createI18n } from 'vue-i18n';
 
 // Mock vue-router
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }), }));
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: mockPush }),
+  useRoute: () => ({ params: {}, query: {}, fullPath: '/', name: undefined, meta: {} }),
+  RouterLink: { template: '<a><slot /></a>' },
+}));
 
 
 // Mock platform helper to NOT show dev login by default, but allow overriding
