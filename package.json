@@ -111,7 +111,7 @@
     "vitest": "^4.0.3",
     "vue-eslint-parser": "^10.4.0",
     "vue-i18n-extract": "^2.0.7",
-    "vue-tsc": "^3.2.4"
+    "vue-tsc": "^3.2.5"
   },
   "overrides": {
     "glob": "^9.3.2",
