@@ -144,18 +144,16 @@ test/                           # Mirrors src/ structure (pages/ + features/ + s
 
 ---
 
-### Phase 1 — File-Based Routing (`unplugin-vue-router`)
+### Phase 1 — File-Based Routing (Vue Router v5)
 
 **Goal**: Replace the manual `src/router/index.ts` (currently 392 lines) with auto-generated routes from file structure.
 
-**Install**:
-```bash
-npm install -D unplugin-vue-router
-```
+> **Note**: File-based routing was previously provided by the separate `unplugin-vue-router` package.
+> As of Vue Router v5, it is built into the core — no extra package needed.
 
 **`vite.config.ts`** — add plugin **before** `Vue()`:
 ```ts
-import VueRouter from 'unplugin-vue-router/vite'
+import VueRouter from 'vue-router/vite'
 
 export default defineConfig({
   plugins: [
@@ -211,7 +209,7 @@ meta:
 </script>
 ```
 
-**Typed route names**: `unplugin-vue-router` generates a `RouteNamedMap` — no more string-typos in `router.push({ name: '...' })`.
+**Typed route names**: Vue Router v5 generates a `RouteNamedMap` — no more string-typos in `router.push({ name: '...' })`.
 
 ---
 
@@ -328,7 +326,7 @@ import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
 
 | Phase | Status | Description |
 |-------|--------|-------------|
-| 1 — File-Based Routing | ✅ Done | `unplugin-vue-router`, `src/pages/`, `src/router/guards.ts` |
+| 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
 | 3 — Feature-Sliced | 🔲 Not started | Incremental; new code goes into `src/features/` |
 

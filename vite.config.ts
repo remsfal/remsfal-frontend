@@ -5,7 +5,7 @@ import istanbul from 'vite-plugin-istanbul';
 import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
-import VueRouter from 'unplugin-vue-router/vite';
+import VueRouter from 'vue-router/vite';
 
 // Proxy-Configurations-Factory
 function createProxyConfig(target: string, backendName: string): ProxyOptions {
@@ -55,6 +55,19 @@ export default defineConfig({
   build: {
     // Enable source maps for better stack traces
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (id.includes('@fortawesome')) return 'vendor-icons'
+          if (id.includes('chart.js') || id.includes('chartjs')) return 'vendor-chart'
+          if (id.includes('primevue') || id.includes('@primevue')) return 'vendor-primevue'
+          if (id.includes('vue-i18n') || id.includes('@intlify')) return 'vendor-i18n'
+          if (id.includes('/vue/') || id.includes('/vue-router/') || id.includes('/pinia/') || id.includes('@vue/')) return 'vendor-vue'
+          return 'vendor'
+        },
+      },
+    },
   },
   server: {
     // https://vitejs.dev/config/server-options.html
