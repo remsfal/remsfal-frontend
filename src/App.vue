@@ -33,10 +33,14 @@ const bus = useEventBus()
 const sessionStore = useUserSessionStore()
 
 bus.on('toast:translate', ({ severity, summary, detail }) => {
-  bus.emit('toast:show', { severity, summary: t(summary), detail: t(detail) })
+  bus.emit('toast:show', {
+ severity, summary: t(summary), detail: t(detail) 
+})
 })
 bus.on('toast:show', ({ severity, summary, detail }) => {
-  toast.add({ severity, summary, detail, life: 3000 })
+  toast.add({
+ severity, summary, detail, life: 3000 
+})
 })
 bus.on('auth:session-expired', () => {
   sessionStore.user = null

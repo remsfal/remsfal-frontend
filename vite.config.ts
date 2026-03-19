@@ -63,7 +63,8 @@ export default defineConfig({
           if (id.includes('chart.js') || id.includes('chartjs')) return 'vendor-chart'
           if (id.includes('primevue') || id.includes('@primevue')) return 'vendor-primevue'
           if (id.includes('vue-i18n') || id.includes('@intlify')) return 'vendor-i18n'
-          if (id.includes('/vue/') || id.includes('/vue-router/') || id.includes('/pinia/') || id.includes('@vue/')) return 'vendor-vue'
+          if (id.includes('/vue/') || id.includes('/vue-router/')
+            || id.includes('/pinia/') || id.includes('@vue/')) return 'vendor-vue'
           return 'vendor'
         },
       },

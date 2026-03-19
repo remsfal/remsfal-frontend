@@ -45,7 +45,10 @@ function onNodeSelect(node: RentalUnitTreeNodeJson) {
   const nodeData = node.data;
   if (!nodeData?.type) return;
   const view = toRentableUnitView(nodeData.type as components['schemas']['UnitType']);
-  router.push({ name: view as string, params: { projectId: props.projectId, unitId: node.key } } as Parameters<typeof router.push>[0]);
+  router.push({
+    name: view as string,
+    params: { projectId: props.projectId, unitId: node.key }
+  } as Parameters<typeof router.push>[0]);
 }
 
 function translateType(type: string): string {

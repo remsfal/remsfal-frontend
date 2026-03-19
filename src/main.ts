@@ -15,7 +15,8 @@ import Tooltip from 'primevue/tooltip';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faList, faListCheck, faLightbulb, faTriangleExclamation, faRocket, faScrewdriverWrench, faFileLines, faChartLine, faBuildingUser } from '@fortawesome/free-solid-svg-icons';
+import { faList, faListCheck, faLightbulb, faTriangleExclamation, faRocket, faScrewdriverWrench, faFileLines,
+  faChartLine, faBuildingUser } from '@fortawesome/free-solid-svg-icons';
 import { faRectangleList } from '@fortawesome/free-regular-svg-icons';
 
 import '@/assets/styles.scss';
@@ -25,7 +26,8 @@ import { addOnlineEventListener, registerServiceWorker } from '@/helper/service-
 import i18n from '@/i18n/i18n';
 
 // Add Font Awesome Icons to the Library (only icons actually used in the app)
-library.add(faList, faListCheck, faLightbulb, faTriangleExclamation, faRocket, faScrewdriverWrench, faFileLines, faChartLine, faBuildingUser, faRectangleList);
+library.add(faList, faListCheck, faLightbulb, faTriangleExclamation, faRocket, faScrewdriverWrench, faFileLines,
+  faChartLine, faBuildingUser, faRectangleList);
 
 const pinia = createPinia();
 const app = createApp(App);

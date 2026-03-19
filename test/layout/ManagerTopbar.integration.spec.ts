@@ -9,7 +9,9 @@ import { useUserSessionStore } from '@/stores/UserSession'
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: mockPush }),
-  useRoute: () => ({ params: {}, query: {}, fullPath: '/', name: undefined, meta: {} }),
+  useRoute: () => ({
+ params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
+}),
   RouterLink: { template: '<a><slot /></a>' },
 }))
 

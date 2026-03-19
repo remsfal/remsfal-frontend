@@ -6,11 +6,7 @@ import AppFooter from '@/layout/AppFooter.vue'
 
 const mocks = vi.hoisted(() => ({ setFullscreen: vi.fn() }))
 
-vi.mock('@/layout/composables/layout', () => ({
-  useLayout: () => ({
-    setFullscreen: mocks.setFullscreen,
-  }),
-}))
+vi.mock('@/layout/composables/layout', () => ({useLayout: () => ({setFullscreen: mocks.setFullscreen,}),}))
 
 vi.mock('@/layout/ManagerTopbar.vue', () => ({ default: { template: '<div data-test="manager-topbar" />' } }))
 vi.mock('@/layout/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
@@ -31,9 +27,7 @@ describe('layouts/public.vue', () => {
   })
 
   it('renders slot content', async () => {
-    const wrapper = mount(PublicLayout, {
-      slots: { default: '<div data-test="page-content">Seite</div>' },
-    })
+    const wrapper = mount(PublicLayout, {slots: { default: '<div data-test="page-content">Seite</div>' },})
     await flushPromises()
     expect(wrapper.find('[data-test="page-content"]').exists()).toBe(true)
   })

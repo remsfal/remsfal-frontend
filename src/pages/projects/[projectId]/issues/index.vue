@@ -10,13 +10,17 @@ import IssueView from '@/views/IssueView.vue'
 import type { IssueStatus } from '@/services/IssueService'
 import { useRoute } from 'vue-router'
 const route = useRoute('IssueOverview')
+const projectId = route.params.projectId as string
+const assigneeId = route.query.owner as string | undefined
+const status = route.query.status as IssueStatus | undefined
+const category = route.query.category as string | undefined
 </script>
 
 <template>
   <IssueView
-    :projectId="(route.params.projectId as string)"
-    :assigneeId="route.query.owner as string | undefined"
-    :status="route.query.status as IssueStatus | undefined"
-    :category="route.query.category as string | undefined"
+    :projectId="projectId"
+    :assigneeId="assigneeId"
+    :status="status"
+    :category="category"
   />
 </template>

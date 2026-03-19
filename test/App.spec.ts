@@ -5,7 +5,9 @@ import PrimeVue from 'primevue/config';
 
 
 vi.mock('vue-router', () => ({
-  useRoute: () => ({ fullPath: '/', meta: {}, params: {}, query: {}, name: undefined }),
+  useRoute: () => ({
+ fullPath: '/', meta: {}, params: {}, query: {}, name: undefined 
+}),
   useRouter: () => ({ push: vi.fn(), currentRoute: { value: { fullPath: '/' } } }),
   RouterView: { template: '<div id="router-view" />' }
 }));

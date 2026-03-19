@@ -12,7 +12,9 @@ const mocks = vi.hoisted(() => ({ setFullscreen: vi.fn() }))
 vi.mock('@/layout/composables/layout', () => ({
   useLayout: () => ({
     layoutConfig: { menuMode: 'static' },
-    layoutState: { staticMenuDesktopInactive: false, overlayMenuActive: false, menuHoverActive: false },
+    layoutState: {
+ staticMenuDesktopInactive: false, overlayMenuActive: false, menuHoverActive: false 
+},
     isSidebarActive: ref(false),
     setFullscreen: mocks.setFullscreen,
   }),
@@ -51,9 +53,7 @@ describe('layouts/manager.vue', () => {
   })
 
   it('renders slot content', async () => {
-    const wrapper = mount(ManagerLayout, {
-      slots: { default: '<div data-test="page-content">Seite</div>' },
-    })
+    const wrapper = mount(ManagerLayout, {slots: { default: '<div data-test="page-content">Seite</div>' },})
     await flushPromises()
     expect(wrapper.find('[data-test="page-content"]').exists()).toBe(true)
   })
