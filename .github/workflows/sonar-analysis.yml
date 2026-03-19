@@ -46,12 +46,12 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           name: eslint-${{ github.event.workflow_run.id }}
-          path: ${{ runner.temp }}/artifacts/eslint
+          path: ${{ runner.temp }}/artifacts/reports
       - name: Prepare ESLint directory and move eslint-report.json
         run: |
           mkdir -p reports
-          if [ -f "${{ runner.temp }}/artifacts/eslint/eslint-report.json" ]; then
-            mv "${{ runner.temp }}/artifacts/eslint/eslint-report.json" reports/
+          if [ -f "${{ runner.temp }}/artifacts/reports/eslint-report.json" ]; then
+            mv "${{ runner.temp }}/artifacts/reports/eslint-report.json" reports/
           else
             echo "Error: eslint-report.json not found in reports artifact." >&2
             exit 1
