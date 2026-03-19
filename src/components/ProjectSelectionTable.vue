@@ -17,7 +17,7 @@ const router = useRouter();
 
 function onRowClick(event: DataTableRowClickEvent): void {
   projectStore.setSelectedProject(event.data);
-  router.push({ name: 'ProjectDashboard', params: { projectId: projectStore.projectId } });
+  router.push({ name: 'ProjectDashboard', params: { projectId: projectStore.projectId ?? '' } });
 }
 
 function onPageChange(event: DataTablePageEvent): void {

@@ -16,11 +16,14 @@ vi.mock("@/services/IssueService", () => {
 
   const getIssuesMock = vi.fn().mockResolvedValue({ issues: [] });
 
+  const instanceMethods = {
+    createIssue: createIssueMock,
+    getIssues: getIssuesMock,
+  };
+
   return {
-    IssueService: vi.fn().mockImplementation(() => ({
-      createIssue: createIssueMock,
-      getIssues: getIssuesMock,
-    })),
+    IssueService: vi.fn().mockImplementation(() => instanceMethods),
+    issueService: instanceMethods,
   };
 });
 
@@ -90,7 +93,7 @@ describe("IssueView.vue", () => {
 
     expect(pushMock).toHaveBeenCalledWith({
       name: "IssueDetails",
-      params: { issueId: "123" },
+      params: { projectId: "proj-1", issueId: "123" },
     });
   });
 
@@ -150,21 +153,25 @@ describe("IssueView.vue", () => {
 
   test("handles error during loadIssuesWithOpenStatus", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  
+    const { issueService: mockedIssueService } = await import("@/services/IssueService");
+    vi.spyOn(mockedIssueService, "getIssues").mockRejectedValueOnce(new Error("Network error"));
+
     await expect(wrapper.vm.loadIssuesWithOpenStatus()).resolves.not.toThrow();
-  
+
     expect(consoleErrorSpy).toHaveBeenCalled();
-  
+
     consoleErrorSpy.mockRestore();
   });
-  
+
   test("handles error during loadMyIssues", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  
+    const { issueService: mockedIssueService } = await import("@/services/IssueService");
+    vi.spyOn(mockedIssueService, "getIssues").mockRejectedValueOnce(new Error("Network error"));
+
     await expect(wrapper.vm.loadMyIssues()).resolves.not.toThrow();
-  
+
     expect(consoleErrorSpy).toHaveBeenCalled();
-  
+
     consoleErrorSpy.mockRestore();
   });  
 

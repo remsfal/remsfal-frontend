@@ -8,7 +8,13 @@ import type { ProjectItem } from '@/services/ProjectService';
 
 // Router mock
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: mockPush }),
+  useRoute: () => ({
+ params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
+}),
+  RouterLink: { template: '<a><slot /></a>' },
+}));
 
 describe('ProjectTopbar.vue', () => {
   beforeEach(() => {

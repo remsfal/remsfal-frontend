@@ -62,7 +62,7 @@ const filteredTenants = computed(() => {
 function onTenantClick(tenant: TenantItemJson) {
   router.push({
     name: 'TenantDetail',
-    params: { projectId: props.projectId, tenantId: tenant.id },
+    params: { projectId: props.projectId, tenantId: tenant.id ?? '' },
   });
 }
 </script>

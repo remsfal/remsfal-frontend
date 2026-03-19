@@ -177,8 +177,7 @@ describe('Router - Issue Details Route', () => {
 
     it('should inherit layout from parent route', () => {
       const route = router.resolve({ name: 'IssueDetails', params: { projectId: 'test-project', issueId: 'test-issue' } });
-      const parentRoute = route.matched[0];
-      expect(parentRoute.components).toBeDefined();
+      expect(route.meta.layout).toBe('project');
     });
   });
 });
