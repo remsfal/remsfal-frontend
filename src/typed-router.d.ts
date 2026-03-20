@@ -82,13 +82,6 @@ declare module 'vue-router/auto-routes' {
       { id: ParamValue<false> },
       | never
     >,
-    'LegalNotice': RouteRecordInfo<
-      'LegalNotice',
-      '/legal-notice',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     'ManagerAccountSettings': RouteRecordInfo<
       'ManagerAccountSettings',
       '/manager/account-settings',
@@ -120,13 +113,6 @@ declare module 'vue-router/auto-routes' {
     'ManagerSettings': RouteRecordInfo<
       'ManagerSettings',
       '/manager/settings',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    'Privacy': RouteRecordInfo<
-      'Privacy',
-      '/privacy',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -332,12 +318,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/legal-notice.vue': {
-      routes:
-        | 'LegalNotice'
-      views:
-        | never
-    }
     'src/pages/manager/account-settings.vue': {
       routes:
         | 'ManagerAccountSettings'
@@ -365,12 +345,6 @@ declare module 'vue-router/auto-routes' {
     'src/pages/manager/settings.vue': {
       routes:
         | 'ManagerSettings'
-      views:
-        | never
-    }
-    'src/pages/privacy.vue': {
-      routes:
-        | 'Privacy'
       views:
         | never
     }

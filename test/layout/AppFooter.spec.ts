@@ -21,20 +21,4 @@ describe('AppFooter.vue', () => {
     const wrapper = mountFooter();
     expect(wrapper.find('.layout-footer').exists()).toBe(true);
   });
-
-  it('renders the legal notice link text', () => {
-    const wrapper = mountFooter();
-    expect(wrapper.text()).toContain('Impressum');
-  });
-
-  it('renders the privacy link text', () => {
-    const wrapper = mountFooter();
-    expect(wrapper.text()).toContain('Datenschutzerklärung');
-  });
-
-  it('renders two router links', () => {
-    const wrapper = mountFooter();
-    const links = wrapper.findAll('a');
-    expect(links.length).toBe(2);
-  });
 });
