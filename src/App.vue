@@ -86,9 +86,5 @@ bus.on('auth:session-expired', () => {
   .layout-sidebar-wrapper {
     display: none !important;
   }
-
-  .layout-main {
-    padding-bottom: 80px !important;
-  }
 }
 </style>
