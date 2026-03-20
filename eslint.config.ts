@@ -2,6 +2,7 @@ import globals from 'globals';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import vue from 'eslint-plugin-vue';
+import type { Linter } from 'eslint';
 
 export default [
   {
@@ -90,5 +91,5 @@ export default [
   },
 
   // ignore files at the end of the config
-  {ignores: ['**/dist/**', 'node_modules/*', 'cypress/**', 'html/**', 'coverage/', 'src/services/api/*-schema.ts'],},
-];
+  {ignores: ['dist/**', 'node_modules/**', 'cypress/**', 'html/**', 'coverage/**', 'src/services/api/*-schema.ts'],},
+] satisfies Linter.Config[];
