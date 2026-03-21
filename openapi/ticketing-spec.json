@@ -1594,6 +1594,7 @@
           },
           "email" : {
             "type" : "string",
+            "readOnly" : true,
             "examples" : [ "user@example.com" ],
             "maxLength" : 255
           },
@@ -1612,15 +1613,15 @@
           },
           "mobilePhoneNumber" : {
             "type" : "string",
-            "pattern" : "^\\+[1-9]\\d{4,14}$"
+            "pattern" : "^$|^\\+[1-9]\\d{4,14}$"
           },
           "businessPhoneNumber" : {
             "type" : "string",
-            "pattern" : "^\\+[1-9]\\d{4,14}$"
+            "pattern" : "^$|^\\+[1-9]\\d{4,14}$"
           },
           "privatePhoneNumber" : {
             "type" : "string",
-            "pattern" : "^\\+[1-9]\\d{4,14}$"
+            "pattern" : "^$|^\\+[1-9]\\d{4,14}$"
           },
           "locale" : {
             "type" : "string",

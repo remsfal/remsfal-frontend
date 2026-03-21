@@ -819,7 +819,7 @@ export interface components {
       readonly id?: components["schemas"]["UUID"];
       readonly userContexts?: components["schemas"]["UserContext"][];
       /** @example user@example.com */
-      email?: string;
+      readonly email?: string;
       firstName?: string;
       lastName?: string;
       address?: components["schemas"]["AddressJson"];
