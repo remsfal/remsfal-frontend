@@ -18,13 +18,14 @@ const toast = useToast();
 
 const addressService = new AddressService();
 
+const streetRegex = /^(?=.*[A-Za-zÄÖÜäöüß])(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/;
+
 const schema = z.object({
   street: z
     .string()
     .trim()
     .min(1, { message: t('validation.required') })
-    // eslint-disable-next-line max-len
-    .regex(/^(?=.*[A-Za-zÄÖÜäöüß])(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/, { message: t('accountSettings.validation.streetInvalid') }),
+    .regex(streetRegex, { message: t('accountSettings.validation.streetInvalid') }),
   zip: z.string().trim().min(1, { message: t('validation.required') }),
   city: z
     .string()
