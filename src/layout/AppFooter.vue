@@ -1,5 +1,6 @@
 <script setup lang="ts">
 </script>
+
 <template>
   <footer>
     <div class="layout-footer flex items-end">

@@ -123,7 +123,7 @@ src/
 │       └── index.ts
 │
 ├── shared/                     # Code used by ≥2 features
-│   ├── components/             # BaseCard, AddressDisplay, StatCard, MemberAutoComplete
+│   ├── components/             # BaseCard, UserContactDataCard, UserAddressCard, StatCard, MemberAutoComplete
 │   ├── composables/            # useTopbarUserActions
 │   ├── services/               # ApiClient.ts, AuthService.ts (infrastructure)
 │   ├── stores/                 # UserSession.ts, EventStore.ts (app-wide state)
