@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import SiteFormComponent from '@/components/SiteFormComponent.vue';
+import FacilityAddressCard from '@/components/FacilityAddressCard.vue';
 import { siteService, type SiteJson } from '@/services/SiteService.ts';
 
 const props = defineProps<{
@@ -35,7 +36,6 @@ const handleSubmit = async (formValues: Partial<SiteJson>) => {
     title: formValues.title,
     description: formValues.description,
     space: formValues.space === undefined ? undefined : formValues.space,
-    address: formValues.address,
   };
 
   try {
@@ -68,6 +68,11 @@ const handleCancel = () => {
       :initialValues="initialValues"
     />
     
+    <FacilityAddressCard
+      :projectId="projectId"
+      :unitId="siteId"
+      facilityType="site"
+    />
     <div v-if="loading" class="text-center mt-4">
       Senden...
     </div>

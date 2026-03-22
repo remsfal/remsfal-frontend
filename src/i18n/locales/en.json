@@ -580,5 +580,17 @@
   "tenantDashboard.section.rentalUnits": "Rental units",
   "tenantDashboard.section.coTenants": "Co-tenants",
   "tenantDashboard.status.active": "Active",
-  "tenantDashboard.status.expired": "Expired"
+  "tenantDashboard.status.expired": "Expired",
+  "address.title": "Address",
+  "address.street": "Street and House Number",
+  "address.zip": "Postal Code",
+  "address.city": "City",
+  "address.province": "Province / State",
+  "address.countryCode": "Country",
+  "address.selectCountry": "Select Country",
+  "address.saveSuccess": "Address saved successfully.",
+  "address.saveError": "Failed to save address.",
+  "address.validation.streetInvalid": "Please enter street and house number",
+  "address.validation.nameInvalid": "Only letters and spaces allowed",
+  "address.validation.countryRequired": "Please select a country"
 }
