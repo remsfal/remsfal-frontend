@@ -21,6 +21,5 @@ async function saveAddress(addr: AddressJson): Promise<void> {
     :loadAddress="loadAddress"
     :saveAddress="saveAddress"
     :title="t('accountSettings.address.title')"
-    :required="true"
   />
 </template>

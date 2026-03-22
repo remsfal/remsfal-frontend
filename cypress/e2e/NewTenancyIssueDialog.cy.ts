@@ -60,7 +60,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       body: { agreements: [tenancy1, tenancy2] },
     }).as('getTenancies');
 
-    cy.intercept('GET', '/ticketing/v1/issues', {
+    cy.intercept('GET', '/ticketing/v1/issues*', {
       statusCode: 200,
       body: { first: 0, size: 0, issues: [] },
     }).as('getIssues');

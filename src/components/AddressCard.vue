@@ -19,10 +19,9 @@ interface Props {
   loadAddress: () => Promise<AddressJson | undefined>;
   saveAddress: (addr: AddressJson) => Promise<void>;
   title?: string;
-  required?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {required: false,});
+const props = defineProps<Props>();
 
 const { t } = useI18n();
 const toast = useToast();
@@ -31,47 +30,27 @@ const addressService = new AddressService();
 const streetRegex = /^(?=.*[A-Za-zÄÖÜäöüß])(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/;
 const nameRegex = /^[A-Za-zÄÖÜäöüß\s-]+$/;
 
-const schema = computed(() => {
-  if (props.required) {
-    return z.object({
-      street: z
-        .string()
-        .trim()
-        .min(1, { message: t('validation.required') })
-        .regex(streetRegex, { message: t('address.validation.streetInvalid') }),
-      zip: z.string().trim().min(1, { message: t('validation.required') }),
-      city: z
-        .string()
-        .trim()
-        .min(1, { message: t('validation.required') })
-        .regex(nameRegex, { message: t('address.validation.nameInvalid') }),
-      province: z
-        .string()
-        .trim()
-        .min(1, { message: t('validation.required') })
-        .regex(nameRegex, { message: t('address.validation.nameInvalid') }),
-      countryCode: z.string().min(2, { message: t('address.validation.countryRequired') }),
-    });
-  }
-  return z.object({
-    street: z
-      .string()
-      .trim()
-      .refine((v) => !v || streetRegex.test(v), { message: t('address.validation.streetInvalid') }),
-    zip: z.string().trim(),
-    city: z
-      .string()
-      .trim()
-      .refine((v) => !v || nameRegex.test(v), { message: t('address.validation.nameInvalid') }),
-    province: z
-      .string()
-      .trim()
-      .refine((v) => !v || nameRegex.test(v), { message: t('address.validation.nameInvalid') }),
-    countryCode: z.string(),
-  });
+const schema = z.object({
+  street: z
+    .string()
+    .trim()
+    .min(1, { message: t('validation.required') })
+    .regex(streetRegex, { message: t('address.validation.streetInvalid') }),
+  zip: z.string().trim().min(1, { message: t('validation.required') }),
+  city: z
+    .string()
+    .trim()
+    .min(1, { message: t('validation.required') })
+    .regex(nameRegex, { message: t('address.validation.nameInvalid') }),
+  province: z
+    .string()
+    .trim()
+    .min(1, { message: t('validation.required') })
+    .regex(nameRegex, { message: t('address.validation.nameInvalid') }),
+  countryCode: z.string().min(2, { message: t('address.validation.countryRequired') }),
 });
 
-const resolver = computed(() => zodResolver(schema.value));
+const resolver = zodResolver(schema);
 
 // serverValues = baseline from backend (for dirty comparison)
 const serverValues = reactive({
@@ -191,7 +170,7 @@ async function onSubmit(event: FormSubmitEvent) {
           <!-- Street -->
           <div class="flex flex-col gap-1">
             <label for="street" class="font-medium">
-              {{ t('address.street') }}{{ required ? '*' : '' }}
+              {{ t('address.street') }}*
             </label>
             <InputText
               id="street"
@@ -213,7 +192,7 @@ async function onSubmit(event: FormSubmitEvent) {
             <!-- ZIP -->
             <div class="flex flex-col gap-1">
               <label for="zip" class="font-medium">
-                {{ t('address.zip') }}{{ required ? '*' : '' }}
+                {{ t('address.zip') }}*
               </label>
               <InputText
                 id="zip"
@@ -235,7 +214,7 @@ async function onSubmit(event: FormSubmitEvent) {
             <!-- City -->
             <div class="flex flex-col gap-1">
               <label for="city" class="font-medium">
-                {{ t('address.city') }}{{ required ? '*' : '' }}
+                {{ t('address.city') }}*
               </label>
               <InputText
                 id="city"
@@ -256,7 +235,7 @@ async function onSubmit(event: FormSubmitEvent) {
             <!-- Province -->
             <div class="flex flex-col gap-1">
               <label for="province" class="font-medium">
-                {{ t('address.province') }}{{ required ? '*' : '' }}
+                {{ t('address.province') }}*
               </label>
               <InputText
                 id="province"
@@ -277,7 +256,7 @@ async function onSubmit(event: FormSubmitEvent) {
             <!-- Country -->
             <div class="flex flex-col gap-1">
               <label for="countryCode" class="font-medium">
-                {{ t('address.countryCode') }}{{ required ? '*' : '' }}
+                {{ t('address.countryCode') }}*
               </label>
               <Select
                 id="countryCode"
