@@ -118,13 +118,6 @@ describe('BuildingView.vue', () => {
       commercialSpace: 60,
       usableSpace: 80,
       heatingSpace: 70,
-      address: {
-        street: 'Street 1',
-        city: 'City',
-        province: 'Province',
-        zip: '12345',
-        country: { country: 'DE' },
-      },
     });
   });
 

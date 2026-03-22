@@ -583,5 +583,17 @@
   "tenantDashboard.section.rentalUnits": "Mieteinheiten",
   "tenantDashboard.section.coTenants": "Mitmieter",
   "tenantDashboard.status.active": "Aktiv",
-  "tenantDashboard.status.expired": "Abgelaufen"
+  "tenantDashboard.status.expired": "Abgelaufen",
+  "address.title": "Adresse",
+  "address.street": "Straße und Hausnummer",
+  "address.zip": "Postleitzahl",
+  "address.city": "Stadt",
+  "address.province": "Bundesland",
+  "address.countryCode": "Land",
+  "address.selectCountry": "Land auswählen",
+  "address.saveSuccess": "Adresse wurde erfolgreich gespeichert.",
+  "address.saveError": "Adresse konnte nicht gespeichert werden.",
+  "address.validation.streetInvalid": "Bitte Straße und Hausnummer eingeben",
+  "address.validation.nameInvalid": "Nur Buchstaben und Leerzeichen erlaubt",
+  "address.validation.countryRequired": "Bitte ein Land auswählen"
 }
