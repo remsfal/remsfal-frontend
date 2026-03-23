@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import PropertyPage from '@/pages/projects/[projectId]/units/property/[unitId].vue';
-import PropertyDataCard from '@/components/property/PropertyDataCard.vue';
+import PropertyDataCard from '@/features/project/rentableUnits/components/PropertyDataCard.vue';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -13,7 +13,7 @@ vi.mock('vue-router', async (importOriginal) => {
 });
 
 // Stub PropertyDataCard to avoid mounting its form/service dependencies
-vi.mock('@/components/property/PropertyDataCard.vue', () => ({
+vi.mock('@/features/project/rentableUnits/components/PropertyDataCard.vue', () => ({
   default: {
     name: 'PropertyDataCard',
     props: ['projectId', 'unitId'],

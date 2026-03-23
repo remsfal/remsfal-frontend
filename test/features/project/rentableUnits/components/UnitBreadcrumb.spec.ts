@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
+import UnitBreadcrumb from '@/features/project/rentableUnits/components/UnitBreadcrumb.vue';
 import { propertyService } from '@/services/PropertyService';
 
 // Mocks
-vi.mock('../../src/services/PropertyService', () => ({
+vi.mock('@/services/PropertyService', () => ({
   propertyService: {
     getBreadcrumbPath: vi.fn(),
     getProperty: vi.fn(),

@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import RentableUnitsTable from '@/components/RentableUnitsTable.vue';
+import RentableUnitsTable from '@/features/project/rentableUnits/components/RentableUnitsTable.vue';
 import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
 
 // ---- Mock Data ----
@@ -70,7 +70,6 @@ describe('RentableUnitsTable.vue', () => {
       props: {
         projectId: 'test-project-id',
         rentableUnitTree: mockTreeData,
-        isLoading: false,
         expandedKeys: {},
       },
     });
@@ -78,21 +77,10 @@ describe('RentableUnitsTable.vue', () => {
     await flushPromises();
   });
 
-  test('displays the correct title', () => {
-    const title = wrapper.find('.font-semibold.text-xl');
-    expect(title.exists()).toBe(true);
-  });
-
   test('renders TreeTable with provided data', () => {
     const treeTable = wrapper.findComponent({ name: 'TreeTable' });
     expect(treeTable.exists()).toBe(true);
     expect(treeTable.props('value')).toEqual(mockTreeData);
-  });
-
-  test('shows loading state when isLoading is true', async () => {
-    await wrapper.setProps({ isLoading: true });
-    const treeTable = wrapper.findComponent({ name: 'TreeTable' });
-    expect(treeTable.props('loading')).toBe(true);
   });
 
   test('renders expand all button', () => {

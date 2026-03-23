@@ -7,8 +7,7 @@ meta:
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
-import StorageDataCard from '@/components/storage/StorageDataCard.vue';
+import { UnitBreadcrumb, StorageDataCard } from '@/features/project/rentableUnits';
 
 const route = useRoute('StorageView');
 </script>

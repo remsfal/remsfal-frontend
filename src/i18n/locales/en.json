@@ -259,6 +259,7 @@
   "rentableUnits.delete.confirmTitle": "Really delete rentable unit?",
   "rentableUnits.delete.confirmMessage": "Are you sure you want to delete {type} \"{title}\"? This action cannot be undone.",
   "rentableUnits.delete.confirmDeleteButton": "Delete permanently",
+  "rentableUnits.loadError": "Failed to load rentable units",
   "toolbar.inbox": "Inbox",
   "inbox.title": "Inbox",
   "inbox.loading": "Loading messages…",

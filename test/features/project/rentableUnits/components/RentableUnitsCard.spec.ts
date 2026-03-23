@@ -1,6 +1,6 @@
-import {flushPromises, mount, VueWrapper} from '@vue/test-utils';
-import {describe, it, expect, vi, beforeEach} from 'vitest';
-import RentableUnitsView from '@/views/project/RentableUnitsView.vue';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import RentableUnitsCard from '@/features/project/rentableUnits/components/RentableUnitsCard.vue';
 import { EntityType, type PropertyList, propertyService } from '@/services/PropertyService';
 import { buildingService } from '@/services/BuildingService';
 
@@ -11,20 +11,20 @@ vi.mock('@/services/CommercialService');
 vi.mock('@/services/SiteService');
 vi.mock('@/services/StorageService');
 
-describe('RentableUnitsView', () => {
+describe('RentableUnitsCard', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders correctly with fetched data', async () => {
+  it('renders RentableUnitsTable after successful data fetch', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
       properties: [
         {
           key: '1',
           data: {
- type: 'PROPERTY', title: 'Root', usable_space: 100
+ type: 'PROPERTY', title: 'Root', usable_space: 100 
 },
           children: [],
         },
@@ -34,7 +34,7 @@ describe('RentableUnitsView', () => {
       total: 1,
     } as PropertyList);
 
-    wrapper = mount(RentableUnitsView, {
+    wrapper = mount(RentableUnitsCard, {
       props: { projectId: '123' },
       global: { stubs: { teleport: true } },
     });
@@ -46,32 +46,47 @@ describe('RentableUnitsView', () => {
     expect(propertyService.getPropertyTree).toHaveBeenCalledWith('123');
   });
 
-  it('displays an error when fetch fails', async () => {
+  it('shows skeleton while loading', () => {
+    vi.mocked(propertyService.getPropertyTree).mockReturnValue(new Promise(() => {}));
+
+    wrapper = mount(RentableUnitsCard, {
+      props: { projectId: '123' },
+      global: { stubs: { teleport: true } },
+    });
+
+    expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: 'RentableUnitsTable' }).exists()).toBe(false);
+  });
+
+  it('shows skeleton and toast when fetch fails', async () => {
     vi.mocked(propertyService.getPropertyTree).mockRejectedValueOnce(new Error('Fetch failed'));
 
-    wrapper = mount(RentableUnitsView, {
+    wrapper = mount(RentableUnitsCard, {
       props: { projectId: '123' },
       global: { stubs: { teleport: true } },
     });
 
     await flushPromises();
 
-    expect(wrapper.find('.alert-error').text()).toBe('Failed to fetch object data: Fetch failed');
+    expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: 'RentableUnitsTable' }).exists()).toBe(false);
   });
 
   it('opens delete confirmation dialog when delete button is clicked', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
       properties: [
         {
- key: '1', data: { title: 'Test', type: EntityType.Property }, children: []
-},
+          key: '1',
+          data: { title: 'Test', type: EntityType.Property },
+          children: [],
+        },
       ],
       first: 0,
       size: 1,
       total: 1,
     } as PropertyList);
 
-    wrapper = mount(RentableUnitsView, {
+    wrapper = mount(RentableUnitsCard, {
       props: { projectId: '1' },
       attachTo: document.body,
       global: { stubs: { teleport: true } },
@@ -92,7 +107,7 @@ describe('RentableUnitsView', () => {
       total: 0,
     } as PropertyList);
 
-    wrapper = mount(RentableUnitsView, {
+    wrapper = mount(RentableUnitsCard, {
       props: { projectId: 'projId' },
       attachTo: document.body,
       global: { stubs: { teleport: true } },
@@ -103,12 +118,16 @@ describe('RentableUnitsView', () => {
     const sampleNode = {
       key: 'prop-1',
       data: {
- type: EntityType.Property, title: 'Test Property', description: '', tenant: '', usable_space: 0
-},
+        type: EntityType.Property,
+        title: 'Test Property',
+        description: '',
+        tenant: '',
+        usable_space: 0,
+      },
       children: [],
     };
 
-    (wrapper.vm as InstanceType<typeof RentableUnitsView>).onDeleteNode(sampleNode);
+    (wrapper.vm as InstanceType<typeof RentableUnitsCard>).onDeleteNode(sampleNode);
     await flushPromises();
 
     expect(deleteSpy).toHaveBeenCalledWith('projId', 'prop-1');
@@ -123,7 +142,7 @@ describe('RentableUnitsView', () => {
       total: 0,
     } as PropertyList);
 
-    wrapper = mount(RentableUnitsView, {
+    wrapper = mount(RentableUnitsCard, {
       props: { projectId: 'projId' },
       attachTo: document.body,
       global: { stubs: { teleport: true } },
@@ -134,12 +153,16 @@ describe('RentableUnitsView', () => {
     const sampleNode = {
       key: 'building-1',
       data: {
- type: EntityType.Building, title: 'Test Building', description: '', tenant: '', usable_space: 0
-},
+        type: EntityType.Building,
+        title: 'Test Building',
+        description: '',
+        tenant: '',
+        usable_space: 0,
+      },
       children: [],
     };
 
-    (wrapper.vm as InstanceType<typeof RentableUnitsView>).onDeleteNode(sampleNode);
+    (wrapper.vm as InstanceType<typeof RentableUnitsCard>).onDeleteNode(sampleNode);
     await flushPromises();
 
     expect(deleteSpy).toHaveBeenCalledWith('projId', 'building-1');

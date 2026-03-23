@@ -11,8 +11,8 @@ beforeAll(() => {
   global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 });
 
-import SiteDataCard from '@/components/site/SiteDataCard.vue';
-import { siteService, type SiteJson } from '@/services/SiteService';
+import ApartmentDataCard from '@/features/project/rentableUnits/components/ApartmentDataCard.vue';
+import { apartmentService, type ApartmentJson } from '@/services/ApartmentService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -25,7 +25,7 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/SiteService', () => ({ siteService: { getSite: vi.fn(), updateSite: vi.fn() } }));
+vi.mock('@/services/ApartmentService', () => ({apartmentService: { getApartment: vi.fn(), updateApartment: vi.fn() },}));
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {
@@ -36,80 +36,80 @@ vi.mock('@/helper/viewHelper', async (importOriginal) => {
 });
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
-const mockSite = {
-  title: 'Testanlage',
+const mockApartment = {
+  title: 'Testwohnung',
   description: 'Eine Beschreibung',
-  location: 'Musterstraße 1',
-  outdoorArea: 300,
-  space: 150.5,
+  location: 'Musterstraße 1, 2. OG',
+  livingSpace: 80,
+  usableSpace: 70,
+  heatingSpace: 75,
+  space: 85,
 };
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
 
 // ─── Test Suite ───────────────────────────────────────────────────────────────
-describe('SiteDataCard.vue', () => {
+describe('ApartmentDataCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(siteService.getSite).mockResolvedValue({ ...mockSite });
-    vi.mocked(siteService.updateSite).mockResolvedValue({} as SiteJson);
+    vi.mocked(apartmentService.getApartment).mockResolvedValue({ ...mockApartment });
+    vi.mocked(apartmentService.updateApartment).mockResolvedValue({} as ApartmentJson);
   });
 
-  it('renders card title "Außenanlage"', async () => {
-    const wrapper = mount(SiteDataCard, { props: defaultProps });
+  it('renders card title "Wohnungsdaten"', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
-    expect(wrapper.text()).toContain('Außenanlage');
+    expect(wrapper.text()).toContain('Wohnungsdaten');
   });
 
-  it('calls getSite on mount with correct ids', async () => {
-    mount(SiteDataCard, { props: defaultProps });
+  it('calls getApartment on mount with correct ids', async () => {
+    mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
-    expect(siteService.getSite).toHaveBeenCalledWith('project1', 'unit1');
+    expect(apartmentService.getApartment).toHaveBeenCalledWith('project1', 'unit1');
   });
 
   it('shows warning toast when unitId is empty', async () => {
-    mount(SiteDataCard, { props: { projectId: 'p1', unitId: '' } });
+    mount(ApartmentDataCard, { props: { projectId: 'p1', unitId: '' } });
     await flushPromises();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'warn' }));
-    expect(siteService.getSite).not.toHaveBeenCalled();
+    expect(apartmentService.getApartment).not.toHaveBeenCalled();
   });
 
-  it('shows error toast when getSite fails', async () => {
-    vi.mocked(siteService.getSite).mockRejectedValue(new Error('Network error'));
-    mount(SiteDataCard, { props: defaultProps });
+  it('shows error toast when getApartment fails', async () => {
+    vi.mocked(apartmentService.getApartment).mockRejectedValue(new Error('Network error'));
+    mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
   });
 
   it('save button is disabled before any changes', async () => {
-    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
     const saveButton = wrapper.find('button[type="submit"]');
     expect(saveButton.attributes('disabled')).toBeDefined();
   });
 
   it('save button becomes enabled after title input changes', async () => {
-    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
 
-    const titleInput = wrapper.find('input[name="title"]');
-    await titleInput.setValue('Geänderter Titel');
+    await wrapper.find('input[name="title"]').setValue('Geänderter Titel');
     await flushPromises();
 
     const saveButton = wrapper.find('button[type="submit"]');
     expect(saveButton.attributes('disabled')).toBeUndefined();
   });
 
-  it('calls updateSite with correct payload on submit', async () => {
-    const wrapper = mount(SiteDataCard, { props: defaultProps });
+  it('calls updateApartment with correct payload on submit', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
     await flushPromises();
-
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(siteService.updateSite).toHaveBeenCalledWith(
+    expect(apartmentService.updateApartment).toHaveBeenCalledWith(
       'project1',
       'unit1',
       expect.objectContaining({ title: 'Neuer Titel' }),
@@ -117,7 +117,7 @@ describe('SiteDataCard.vue', () => {
   });
 
   it('shows success toast after successful save', async () => {
-    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -128,10 +128,10 @@ describe('SiteDataCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('calls showSavingErrorToast when updateSite fails', async () => {
-    vi.mocked(siteService.updateSite).mockRejectedValue(new Error('Save failed'));
+  it('calls showSavingErrorToast when updateApartment fails', async () => {
+    vi.mocked(apartmentService.updateApartment).mockRejectedValue(new Error('Save failed'));
 
-    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Fehlertitel');
@@ -143,7 +143,7 @@ describe('SiteDataCard.vue', () => {
   });
 
   it('save button is disabled again after successful save (no new changes)', async () => {
-    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -151,18 +151,25 @@ describe('SiteDataCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    const saveButton = wrapper.find('button[type="submit"]');
-    expect(saveButton.attributes('disabled')).toBeDefined();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
   });
 
   it('renders all required form fields', async () => {
-    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
 
     expect(wrapper.find('input[name="title"]').exists()).toBe(true);
     expect(wrapper.find('textarea[name="description"]').exists()).toBe(true);
     expect(wrapper.find('input[name="location"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="outdoorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="livingSpace"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="usableSpace"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="heatingSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="space"]').exists()).toBe(true);
+  });
+
+  it('renders WoFlV fieldset', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.text()).toContain('WoFlV');
   });
 });

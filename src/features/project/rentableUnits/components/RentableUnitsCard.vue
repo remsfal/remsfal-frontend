@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { propertyService, type RentalUnitTreeNodeJson } from '@/services/PropertyService.ts';
 import { apartmentService } from '@/services/ApartmentService.ts';
 import { buildingService } from '@/services/BuildingService.ts';
@@ -8,15 +9,17 @@ import { siteService } from '@/services/SiteService.ts';
 import { storageService } from '@/services/StorageService.ts';
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import { useToast } from 'primevue/usetoast';
-import RentableUnitsTable from '@/components/RentableUnitsTable.vue';
+import Skeleton from 'primevue/skeleton';
+import BaseCard from '@/components/common/BaseCard.vue';
+import RentableUnitsTable from './RentableUnitsTable.vue';
 
 const props = defineProps<{ projectId: string }>();
+const { t } = useI18n();
 const toast = useToast();
 
 // --- Refs ---
 const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
 const isLoading = ref(true);
-const error = ref<string | null>(null);
 const expandedKeys = ref<TreeTableExpandedKeys>({});
 
 // --- Functions ---
@@ -24,10 +27,15 @@ async function fetchPropertyTree(projectId: string) {
   try {
     const data = await propertyService.getPropertyTree(projectId);
     rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
-    return data.properties as RentalUnitTreeNodeJson[];
-  } catch (err: any) {
-    error.value = `Failed to fetch object data: ${err.message || 'Unknown error'}`;
-    return [];
+    isLoading.value = false;
+    expandAll();
+  } catch {
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('rentableUnits.loadError'),
+      life: 6000,
+    });
   }
 }
 
@@ -48,10 +56,8 @@ function collapseAll() {
 }
 
 function onNewRentableUnit(title: string) {
-  fetchPropertyTree(props.projectId).finally(() => {
-    isLoading.value = false;
-    expandAll();
-  });
+  isLoading.value = true;
+  fetchPropertyTree(props.projectId);
   toast.add({
     severity: 'success',
     summary: 'Neue Einheit hinzugefügt',
@@ -62,58 +68,52 @@ function onNewRentableUnit(title: string) {
 
 function onDeleteNode(node: RentalUnitTreeNodeJson) {
   if (!node.data) return;
-
   isLoading.value = true;
   const entity = node.data.type;
   switch (entity) {
     case 'PROPERTY':
       propertyService
         .deleteProperty(props.projectId, node.key)
-        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .then(() => fetchPropertyTree(props.projectId))
         .catch((err) => console.error('Error deleting property:', err));
       break;
     case 'SITE':
       siteService
         .deleteSite(props.projectId, node.key)
-        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .then(() => fetchPropertyTree(props.projectId))
         .catch((err) => console.error('Error deleting site:', err));
       break;
     case 'BUILDING':
       buildingService
         .deleteBuilding(props.projectId, node.key)
-        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .then(() => fetchPropertyTree(props.projectId))
         .catch((err) => console.error('Error deleting building:', err));
       break;
     case 'APARTMENT':
       apartmentService
         .deleteApartment(props.projectId, node.key)
-        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .then(() => fetchPropertyTree(props.projectId))
         .catch((err) => console.error('Error deleting apartment:', err));
       break;
     case 'COMMERCIAL':
       commercialService
         .deleteCommercial(props.projectId, node.key)
-        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .then(() => fetchPropertyTree(props.projectId))
         .catch((err) => console.error('Error deleting commercial:', err));
       break;
     case 'STORAGE':
       storageService
         .deleteStorage(props.projectId, node.key)
-        .then(() => fetchPropertyTree(props.projectId).finally(() => (isLoading.value = false)))
+        .then(() => fetchPropertyTree(props.projectId))
         .catch((err) => console.error('Error deleting storage:', err));
       break;
   }
 }
 
 // --- Lifecycle ---
-onMounted(() =>
-  fetchPropertyTree(props.projectId).finally(() => {
-    isLoading.value = false;
-    expandAll();
-  }),
-);
+onMounted(() => fetchPropertyTree(props.projectId));
 
-// --- Expose refs & methods for tests ---
+// --- Expose for tests ---
 defineExpose({
   onDeleteNode,
   expandedKeys,
@@ -121,19 +121,26 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="error" class="alert alert-error">
-    {{ error }}
-  </div>
-  <RentableUnitsTable
-    v-if="!error"
-    :projectId="props.projectId"
-    :rentableUnitTree="rentableUnitTree"
-    :isLoading="isLoading"
-    :expandedKeys="expandedKeys"
-    @update:expandedKeys="expandedKeys = $event"
-    @expandAll="expandAll"
-    @collapseAll="collapseAll"
-    @newUnit="onNewRentableUnit"
-    @deleteNode="onDeleteNode"
-  />
+  <BaseCard>
+    <template #title>
+      {{ t('rentableUnits.view.title') }}
+    </template>
+
+    <template #content>
+      <template v-if="isLoading">
+        <Skeleton v-for="i in 6" :key="i" height="2.5rem" class="mb-2" />
+      </template>
+      <RentableUnitsTable
+        v-else
+        :projectId="props.projectId"
+        :rentableUnitTree="rentableUnitTree"
+        :expandedKeys="expandedKeys"
+        @update:expandedKeys="expandedKeys = $event"
+        @expandAll="expandAll"
+        @collapseAll="collapseAll"
+        @newUnit="onNewRentableUnit"
+        @deleteNode="onDeleteNode"
+      />
+    </template>
+  </BaseCard>
 </template>

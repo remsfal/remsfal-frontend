@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import ApartmentPage from '@/pages/projects/[projectId]/units/apartment/[unitId].vue';
-import ApartmentDataCard from '@/components/apartment/ApartmentDataCard.vue';
+import ApartmentDataCard from '@/features/project/rentableUnits/components/ApartmentDataCard.vue';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -12,7 +12,7 @@ vi.mock('vue-router', async (importOriginal) => {
   };
 });
 
-vi.mock('@/components/apartment/ApartmentDataCard.vue', () => ({
+vi.mock('@/features/project/rentableUnits/components/ApartmentDataCard.vue', () => ({
   default: {
     name: 'ApartmentDataCard',
     props: ['projectId', 'unitId'],

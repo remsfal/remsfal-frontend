@@ -39,8 +39,6 @@ src/
 │
 ├── pages/                      # File-based routes via unplugin-vue-router
 │   ├── index.vue               →  /                    (layout: public)
-│   ├── legal-notice.vue        →  /legal-notice        (layout: public)
-│   ├── privacy.vue             →  /privacy             (layout: public)
 │   ├── inbox/
 │   │   ├── index.vue           →  /inbox               (layout: manager)
 │   │   └── [id].vue            →  /inbox/:id           (layout: manager)
@@ -312,6 +310,31 @@ import { TenantCard } from '@/features/project/tenants'
 import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
 ```
 
+**Import order** — follow the pattern established in `PropertyDataCard.vue`:
+```ts
+// 1. Vue core
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
+
+// 2. PrimeVue Components
+import Button from 'primevue/button';
+// ...
+
+// 3. Third-party (forms, validation, etc.)
+import { Form } from '@primevue/forms';
+import { z } from 'zod';
+
+// 4. Internal shared components
+import BaseCard from '@/components/common/BaseCard.vue';
+
+// 5. Services & Types
+import { myService } from '@/services/MyService';
+import type { MyType } from '@/services/MyService';
+
+// Props & Emits defined directly in <script setup> (no import section)
+```
+
 **Priority order for migration** (highest impact first):
 1. `src/services/` → split into feature slices (most files, clearest ownership)
 2. `src/components/` subdirectories → already partially organized, finish the grouping
@@ -327,7 +350,7 @@ import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔲 Not started | Incremental; new code goes into `src/features/` |
+| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` complete; incremental for other domains |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 

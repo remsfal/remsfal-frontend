@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import DeleteRentableUnitButton from '@/components/DeleteRentableUnitButton.vue';
+import DeleteRentableUnitButton from '@/features/project/rentableUnits/components/DeleteRentableUnitButton.vue';
 import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
 
 // Mock translation function

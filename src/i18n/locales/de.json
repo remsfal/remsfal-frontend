@@ -266,6 +266,7 @@
   "rentableUnits.delete.confirmTitle": "Mieteinheit wirklich löschen?",
   "rentableUnits.delete.confirmMessage": "Sind Sie sicher, dass Sie {type} \"{title}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
   "rentableUnits.delete.confirmDeleteButton": "Endgültig löschen",
+  "rentableUnits.loadError": "Fehler beim Laden der Wirtschaftseinheiten",
   "toolbar.inbox": "Posteingang",
   "inbox.title": "Posteingang",
   "inbox.loading": "Lade Nachrichten…",

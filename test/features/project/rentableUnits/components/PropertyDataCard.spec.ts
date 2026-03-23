@@ -10,9 +10,8 @@ class MockResizeObserver {
 beforeAll(() => {
   global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 });
-
-import StorageDataCard from '@/components/storage/StorageDataCard.vue';
-import { storageService, type StorageJson } from '@/services/StorageService';
+import PropertyDataCard from '@/features/project/rentableUnits/components/PropertyDataCard.vue';
+import { propertyService } from '@/services/PropertyService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -25,88 +24,98 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/StorageService', () => ({storageService: { getStorage: vi.fn(), updateStorage: vi.fn() },}));
+vi.mock('@/services/PropertyService', () => ({propertyService: { getProperty: vi.fn(), updateProperty: vi.fn() },}));
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
   return {
-    ...actual, navigateToObjects: vi.fn(), showSavingErrorToast: vi.fn(),
-  };
+ ...actual, navigateToObjects: vi.fn(), showSavingErrorToast: vi.fn() 
+};
 });
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
-const mockStorage = {
-  title: 'Testlager',
+const mockProperty = {
+  title: 'Testgrundstück',
   description: 'Eine Beschreibung',
-  location: 'Keller 1',
-  usableSpace: 20,
-  heatingSpace: 15,
-  space: 25,
+  cadastralDistrict: 'Gemarkung A',
+  sheetNumber: 'S123',
+  cadastralSection: 'Flur 1',
+  plot: 'Flurstück 1/2',
+  plotNumber: 42,
+  landRegistry: 'LR456',
+  economyType: 'GF Wohnen',
+  location: 'Musterstraße 1',
+  plotArea: 500,
+  space: 250.5,
 };
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
 
 // ─── Test Suite ───────────────────────────────────────────────────────────────
-describe('StorageDataCard.vue', () => {
+describe('PropertyDataCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage });
-    vi.mocked(storageService.updateStorage).mockResolvedValue({} as StorageJson);
+    vi.mocked(propertyService.getProperty).mockResolvedValue({ ...mockProperty });
+    vi.mocked(propertyService.updateProperty).mockResolvedValue({});
   });
 
-  it('renders card title "Lagerdaten"', async () => {
-    const wrapper = mount(StorageDataCard, { props: defaultProps });
+  it('renders card title "Grundstücksdaten"', async () => {
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
-    expect(wrapper.text()).toContain('Lagerdaten');
+    expect(wrapper.text()).toContain('Grundstücksdaten');
   });
 
-  it('calls getStorage on mount with correct ids', async () => {
-    mount(StorageDataCard, { props: defaultProps });
+  it('calls getProperty on mount with correct ids', async () => {
+    mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
-    expect(storageService.getStorage).toHaveBeenCalledWith('project1', 'unit1');
+    expect(propertyService.getProperty).toHaveBeenCalledWith('project1', 'unit1');
   });
 
   it('shows warning toast when unitId is empty', async () => {
-    mount(StorageDataCard, { props: { projectId: 'p1', unitId: '' } });
+    mount(PropertyDataCard, { props: { projectId: 'p1', unitId: '' } });
     await flushPromises();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'warn' }));
-    expect(storageService.getStorage).not.toHaveBeenCalled();
+    expect(propertyService.getProperty).not.toHaveBeenCalled();
   });
 
-  it('shows error toast when getStorage fails', async () => {
-    vi.mocked(storageService.getStorage).mockRejectedValue(new Error('Network error'));
-    mount(StorageDataCard, { props: defaultProps });
+  it('shows error toast when getProperty fails', async () => {
+    vi.mocked(propertyService.getProperty).mockRejectedValue(new Error('Network error'));
+    mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
   });
 
   it('save button is disabled before any changes', async () => {
-    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
-    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
+    const saveButton = wrapper.find('button[type="submit"]');
+    expect(saveButton.attributes('disabled')).toBeDefined();
   });
 
   it('save button becomes enabled after title input changes', async () => {
-    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
 
-    await wrapper.find('input[name="title"]').setValue('Geänderter Titel');
+    const titleInput = wrapper.find('input[name="title"]');
+    await titleInput.setValue('Geänderter Titel');
     await flushPromises();
 
-    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+    const saveButton = wrapper.find('button[type="submit"]');
+    expect(saveButton.attributes('disabled')).toBeUndefined();
   });
 
-  it('calls updateStorage with correct payload on submit', async () => {
-    const wrapper = mount(StorageDataCard, { props: defaultProps });
+  it('calls updateProperty with correct payload on submit', async () => {
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
     await flushPromises();
+
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(storageService.updateStorage).toHaveBeenCalledWith(
+    expect(propertyService.updateProperty).toHaveBeenCalledWith(
       'project1',
       'unit1',
       expect.objectContaining({ title: 'Neuer Titel' }),
@@ -114,7 +123,7 @@ describe('StorageDataCard.vue', () => {
   });
 
   it('shows success toast after successful save', async () => {
-    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -125,10 +134,10 @@ describe('StorageDataCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('calls showSavingErrorToast when updateStorage fails', async () => {
-    vi.mocked(storageService.updateStorage).mockRejectedValue(new Error('Save failed'));
+  it('calls showSavingErrorToast when updateProperty fails', async () => {
+    vi.mocked(propertyService.updateProperty).mockRejectedValue(new Error('Save failed'));
 
-    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Fehlertitel');
@@ -140,7 +149,7 @@ describe('StorageDataCard.vue', () => {
   });
 
   it('save button is disabled again after successful save (no new changes)', async () => {
-    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -148,18 +157,21 @@ describe('StorageDataCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
+    const saveButton = wrapper.find('button[type="submit"]');
+    expect(saveButton.attributes('disabled')).toBeDefined();
   });
 
   it('renders all required form fields', async () => {
-    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
     await flushPromises();
 
     expect(wrapper.find('input[name="title"]').exists()).toBe(true);
     expect(wrapper.find('textarea[name="description"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="cadastralDistrict"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="sheetNumber"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="cadastralSection"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="plot"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="landRegistry"]').exists()).toBe(true);
     expect(wrapper.find('input[name="location"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="usableSpace"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="heatingSpace"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="space"]').exists()).toBe(true);
   });
 });

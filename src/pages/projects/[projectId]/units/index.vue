@@ -6,11 +6,11 @@ meta:
 </route>
 
 <script setup lang="ts">
-import RentableUnitsView from '@/views/project/RentableUnitsView.vue'
+import { RentableUnitsCard } from '@/features/project/rentableUnits'
 import { useRoute } from 'vue-router'
 const route = useRoute('RentableUnits')
 </script>
 
 <template>
-  <RentableUnitsView :projectId="(route.params.projectId as string)" />
+  <RentableUnitsCard :projectId="(route.params.projectId as string)" />
 </template>

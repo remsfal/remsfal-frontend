@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import CommercialPage from '@/pages/projects/[projectId]/units/commercial/[unitId].vue';
-import CommercialDataCard from '@/components/commercial/CommercialDataCard.vue';
+import CommercialDataCard from '@/features/project/rentableUnits/components/CommercialDataCard.vue';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -12,7 +12,7 @@ vi.mock('vue-router', async (importOriginal) => {
   };
 });
 
-vi.mock('@/components/commercial/CommercialDataCard.vue', () => ({
+vi.mock('@/features/project/rentableUnits/components/CommercialDataCard.vue', () => ({
   default: {
     name: 'CommercialDataCard',
     props: ['projectId', 'unitId'],

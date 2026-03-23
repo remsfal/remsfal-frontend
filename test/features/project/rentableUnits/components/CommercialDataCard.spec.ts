@@ -11,7 +11,7 @@ beforeAll(() => {
   global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 });
 
-import CommercialDataCard from '@/components/commercial/CommercialDataCard.vue';
+import CommercialDataCard from '@/features/project/rentableUnits/components/CommercialDataCard.vue';
 import { commercialService, type CommercialJson } from '@/services/CommercialService';
 import * as viewHelper from '@/helper/viewHelper';
 

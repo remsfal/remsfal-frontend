@@ -22,11 +22,11 @@ interface BreadcrumbItem {
 }
 
 const props = defineProps<{ 
-  projectId: string; 
-  unitId?: string;       
-  parentId?: string;     
-  contextParentId?: string; 
-  currentTitle?: string; 
+  projectId: string;
+  unitId?: string;
+  parentId?: string;
+  contextParentId?: string;
+  currentTitle?: string;
   mode?: 'edit' | 'create';
 }>();
 
