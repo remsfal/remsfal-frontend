@@ -9,7 +9,6 @@ import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
 import { toRentableUnitView } from '@/services/PropertyService';
 import type { components } from '@/services/api/platform-schema';
 import NewRentableUnitButton from './NewRentableUnitButton.vue';
-import DeleteRentableUnitButton from './DeleteRentableUnitButton.vue';
 import NewPropertyButton from './NewPropertyButton.vue';
 
 const props = defineProps<{
@@ -23,7 +22,6 @@ const emit = defineEmits<{
   expandAll: [];
   collapseAll: [];
   newUnit: [title: string];
-  deleteNode: [node: RentalUnitTreeNodeJson];
 }>();
 
 const { t } = useI18n();
@@ -55,10 +53,6 @@ function translateType(type: string): string {
 
 function onNewRentableUnit(title: string) {
   emit('newUnit', title);
-}
-
-function onDeleteNode(node: RentalUnitTreeNodeJson) {
-  emit('deleteNode', node);
 }
 </script>
 
@@ -150,7 +144,6 @@ function onDeleteNode(node: RentalUnitTreeNodeJson) {
             :type="node.data.type"
             @newUnit="onNewRentableUnit"
           />
-          <DeleteRentableUnitButton :node="node" @delete="onDeleteNode" />
         </div>
       </template>
     </Column>

@@ -1,4 +1,5 @@
 export { default as RentableUnitsCard } from './components/RentableUnitsCard.vue';
+export { default as RentableUnitDangerZoneCard } from './components/RentableUnitDangerZoneCard.vue';
 export { default as UnitBreadcrumb } from './components/UnitBreadcrumb.vue';
 export { default as ApartmentDataCard } from './components/ApartmentDataCard.vue';
 export { default as BuildingDataCard } from './components/BuildingDataCard.vue';
