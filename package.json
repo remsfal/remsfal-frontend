@@ -114,10 +114,7 @@
     "vue-tsc": "^3.2.5"
   },
   "overrides": {
-    "glob": "^9.3.2",
-    "vite-plugin-vue-devtools": {
-      "vite-plugin-inspect": "^11.3.0"
-    }
+    "glob": "^9.3.2"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.56.0"
