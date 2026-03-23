@@ -86,7 +86,7 @@
     "chai": "^6.2.2",
     "cypress": "^15.10.0",
     "eslint": "^9.39.2",
-    "eslint-plugin-cypress": "^5.3.0",
+    "eslint-plugin-cypress": "^6.2.0",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^16.4.0",
     "jsdom": "^28.1.0",
@@ -114,10 +114,7 @@
     "vue-tsc": "^3.2.5"
   },
   "overrides": {
-    "glob": "^9.3.2",
-    "vite-plugin-vue-devtools": {
-      "vite-plugin-inspect": "^11.3.0"
-    }
+    "glob": "^9.3.2"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.56.0"
