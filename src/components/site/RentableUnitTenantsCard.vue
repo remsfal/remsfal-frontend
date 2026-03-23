@@ -47,7 +47,9 @@ const showFormer = ref(false);
 
     <template #content>
       <div class="flex flex-col gap-4">
-        <h3 class="font-medium">Aktuelle Mieter</h3>
+        <h3 class="font-medium">
+          Aktuelle Mieter
+        </h3>
         <DataTable :value="items" class="w-full">
           <Column field="id" header="ID" />
           <Column field="firstName" header="Vorname" />
@@ -69,7 +71,9 @@ const showFormer = ref(false);
         </div>
 
         <div v-if="showFormer">
-          <h3 class="font-medium mb-2">Ehemalige Mieter</h3>
+          <h3 class="font-medium mb-2">
+            Ehemalige Mieter
+          </h3>
           <DataTable :value="formerItems" class="w-full">
             <Column field="id" header="ID" />
             <Column field="firstName" header="Vorname" />

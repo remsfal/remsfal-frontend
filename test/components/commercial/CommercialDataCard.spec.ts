@@ -11,8 +11,8 @@ beforeAll(() => {
   global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 });
 
-import ApartmentDataCard from '@/components/apartment/ApartmentDataCard.vue';
-import { apartmentService } from '@/services/ApartmentService';
+import CommercialDataCard from '@/components/commercial/CommercialDataCard.vue';
+import { commercialService } from '@/services/CommercialService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -25,7 +25,7 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/ApartmentService', () => ({apartmentService: { getApartment: vi.fn(), updateApartment: vi.fn() },}));
+vi.mock('@/services/CommercialService', () => ({commercialService: { getCommercial: vi.fn(), updateCommercial: vi.fn() },}));
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {
@@ -36,72 +36,72 @@ vi.mock('@/helper/viewHelper', async (importOriginal) => {
 });
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
-const mockApartment = {
-  title: 'Testwohnung',
+const mockCommercial = {
+  title: 'Testgewerbe',
   description: 'Eine Beschreibung',
-  location: 'Musterstraße 1, 2. OG',
-  livingSpace: 80,
-  usableSpace: 70,
-  heatingSpace: 75,
-  space: 85,
+  location: 'Musterstraße 1',
+  netFloorArea: 200,
+  usableFloorArea: null,
+  technicalServicesArea: null,
+  trafficArea: null,
+  heatingSpace: 180,
+  space: 210,
 };
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
 
 // ─── Test Suite ───────────────────────────────────────────────────────────────
-describe('ApartmentDataCard.vue', () => {
+describe('CommercialDataCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(apartmentService.getApartment).mockResolvedValue({ ...mockApartment });
-    vi.mocked(apartmentService.updateApartment).mockResolvedValue({} as any);
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({ ...mockCommercial });
+    vi.mocked(commercialService.updateCommercial).mockResolvedValue({} as any);
   });
 
-  it('renders card title "Wohnungsdaten"', async () => {
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+  it('renders card title "Gewerbedaten"', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
-    expect(wrapper.text()).toContain('Wohnungsdaten');
+    expect(wrapper.text()).toContain('Gewerbedaten');
   });
 
-  it('calls getApartment on mount with correct ids', async () => {
-    mount(ApartmentDataCard, { props: defaultProps });
+  it('calls getCommercial on mount with correct ids', async () => {
+    mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
-    expect(apartmentService.getApartment).toHaveBeenCalledWith('project1', 'unit1');
+    expect(commercialService.getCommercial).toHaveBeenCalledWith('project1', 'unit1');
   });
 
   it('shows warning toast when unitId is empty', async () => {
-    mount(ApartmentDataCard, { props: { projectId: 'p1', unitId: '' } });
+    mount(CommercialDataCard, { props: { projectId: 'p1', unitId: '' } });
     await flushPromises();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'warn' }));
-    expect(apartmentService.getApartment).not.toHaveBeenCalled();
+    expect(commercialService.getCommercial).not.toHaveBeenCalled();
   });
 
-  it('shows error toast when getApartment fails', async () => {
-    vi.mocked(apartmentService.getApartment).mockRejectedValue(new Error('Network error'));
-    mount(ApartmentDataCard, { props: defaultProps });
+  it('shows error toast when getCommercial fails', async () => {
+    vi.mocked(commercialService.getCommercial).mockRejectedValue(new Error('Network error'));
+    mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
   });
 
   it('save button is disabled before any changes', async () => {
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
-    const saveButton = wrapper.find('button[type="submit"]');
-    expect(saveButton.attributes('disabled')).toBeDefined();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
   });
 
   it('save button becomes enabled after title input changes', async () => {
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Geänderter Titel');
     await flushPromises();
 
-    const saveButton = wrapper.find('button[type="submit"]');
-    expect(saveButton.attributes('disabled')).toBeUndefined();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
   });
 
-  it('calls updateApartment with correct payload on submit', async () => {
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+  it('calls updateCommercial with correct payload on submit', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -109,7 +109,7 @@ describe('ApartmentDataCard.vue', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(apartmentService.updateApartment).toHaveBeenCalledWith(
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
       'project1',
       'unit1',
       expect.objectContaining({ title: 'Neuer Titel' }),
@@ -117,7 +117,7 @@ describe('ApartmentDataCard.vue', () => {
   });
 
   it('shows success toast after successful save', async () => {
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -128,10 +128,10 @@ describe('ApartmentDataCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('calls showSavingErrorToast when updateApartment fails', async () => {
-    vi.mocked(apartmentService.updateApartment).mockRejectedValue(new Error('Save failed'));
+  it('calls showSavingErrorToast when updateCommercial fails', async () => {
+    vi.mocked(commercialService.updateCommercial).mockRejectedValue(new Error('Save failed'));
 
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Fehlertitel');
@@ -143,7 +143,7 @@ describe('ApartmentDataCard.vue', () => {
   });
 
   it('save button is disabled again after successful save (no new changes)', async () => {
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
 
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -154,22 +154,56 @@ describe('ApartmentDataCard.vue', () => {
     expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
   });
 
-  it('renders all required form fields', async () => {
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+  it('renders required form fields in total mode', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
 
     expect(wrapper.find('input[name="title"]').exists()).toBe(true);
     expect(wrapper.find('textarea[name="description"]').exists()).toBe(true);
     expect(wrapper.find('input[name="location"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="livingSpace"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="usableSpace"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
     expect(wrapper.find('input[name="heatingSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="space"]').exists()).toBe(true);
   });
 
-  it('renders WoFlV fieldset', async () => {
-    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+  it('renders DIN 277 fieldset', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
-    expect(wrapper.text()).toContain('WoFlV');
+    expect(wrapper.text()).toContain('DIN 277');
+  });
+
+  it('switches to detail mode and shows NUF/TF/VF fields', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    // Click "Aufgeschlüsselt" option in SelectButton
+    const detailButton = wrapper.findAll('.p-selectbutton .p-togglebutton').find(
+      (btn) => btn.text() === 'Aufgeschlüsselt',
+    );
+    if (detailButton) {
+      await detailButton.trigger('click');
+      await flushPromises();
+    }
+
+    expect(wrapper.find('input[name="usableFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="technicalServicesArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="trafficArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(false);
+  });
+
+  it('auto-detects detail mode when API returns detail fields', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: null,
+      usableFloorArea: 100,
+      technicalServicesArea: 50,
+      trafficArea: 30,
+    });
+
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="usableFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(false);
   });
 });
