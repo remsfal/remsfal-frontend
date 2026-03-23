@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 
 import CommercialDataCard from '@/components/commercial/CommercialDataCard.vue';
-import { commercialService } from '@/services/CommercialService';
+import { commercialService, type CommercialJson } from '@/services/CommercialService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -55,7 +55,7 @@ describe('CommercialDataCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(commercialService.getCommercial).mockResolvedValue({ ...mockCommercial });
-    vi.mocked(commercialService.updateCommercial).mockResolvedValue({} as any);
+    vi.mocked(commercialService.updateCommercial).mockResolvedValue({} as CommercialJson);
   });
 
   it('renders card title "Gewerbedaten"', async () => {

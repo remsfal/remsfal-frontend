@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 
 import SiteDataCard from '@/components/site/SiteDataCard.vue';
-import { siteService } from '@/services/SiteService';
+import { siteService, type SiteJson } from '@/services/SiteService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -51,7 +51,7 @@ describe('SiteDataCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(siteService.getSite).mockResolvedValue({ ...mockSite });
-    vi.mocked(siteService.updateSite).mockResolvedValue({} as any);
+    vi.mocked(siteService.updateSite).mockResolvedValue({} as SiteJson);
   });
 
   it('renders card title "Außenanlage"', async () => {

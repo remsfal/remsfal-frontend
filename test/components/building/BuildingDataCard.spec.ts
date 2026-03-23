@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 
 import BuildingDataCard from '@/components/building/BuildingDataCard.vue';
-import { buildingService } from '@/services/BuildingService';
+import { buildingService, type BuildingJson } from '@/services/BuildingService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -54,7 +54,7 @@ describe('BuildingDataCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(buildingService.getBuilding).mockResolvedValue({ ...mockBuilding });
-    vi.mocked(buildingService.updateBuilding).mockResolvedValue({} as any);
+    vi.mocked(buildingService.updateBuilding).mockResolvedValue({} as BuildingJson);
   });
 
   it('renders card title "Gebäudedaten"', async () => {
