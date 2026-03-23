@@ -5,22 +5,29 @@
       "AddressJson" : {
         "description" : "The address of a customer, a building or a site",
         "type" : "object",
+        "required" : [ "street", "city", "province", "zip", "countryCode" ],
         "properties" : {
           "street" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "\\S"
           },
           "city" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "\\S"
           },
           "province" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "\\S"
           },
           "zip" : {
             "type" : "string",
             "pattern" : "^\\d{4,5}$"
           },
           "countryCode" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "\\S",
+            "minLength" : 2,
+            "maxLength" : 2
           }
         }
       },

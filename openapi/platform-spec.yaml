@@ -5,18 +5,30 @@ components:
     AddressJson:
       description: "The address of a customer, a building or a site"
       type: object
+      required:
+      - street
+      - city
+      - province
+      - zip
+      - countryCode
       properties:
         street:
           type: string
+          pattern: \S
         city:
           type: string
+          pattern: \S
         province:
           type: string
+          pattern: \S
         zip:
           type: string
           pattern: "^\\d{4,5}$"
         countryCode:
           type: string
+          pattern: \S
+          minLength: 2
+          maxLength: 2
     ApartmentJson:
       description: An apartment inside a building according to WoFIV
       type: object

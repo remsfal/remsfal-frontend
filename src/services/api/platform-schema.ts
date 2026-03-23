@@ -4764,11 +4764,11 @@ export interface components {
   schemas: {
     /** @description The address of a customer, a building or a site */
     AddressJson: {
-      street?: string;
-      city?: string;
-      province?: string;
-      zip?: string;
-      countryCode?: string;
+      street: string;
+      city: string;
+      province: string;
+      zip: string;
+      countryCode: string;
     };
     /** @description An apartment inside a building according to WoFIV */
     ApartmentJson: {
