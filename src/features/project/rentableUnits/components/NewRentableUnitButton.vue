@@ -7,6 +7,7 @@ import InputText from 'primevue/inputtext';
 import SplitButton from 'primevue/splitbutton';
 import Textarea from 'primevue/textarea';
 import { EntityType, propertyService } from '@/services/PropertyService';
+import { UNIT_TYPE_ICONS } from '../unitTypeIcons';
 import { siteService } from '@/services/SiteService';
 import { buildingService } from '@/services/BuildingService';
 import { apartmentService } from '@/services/ApartmentService';
@@ -178,7 +179,7 @@ async function createStorage(): Promise<void> {
       :model="[
         {
           label: 'Gebäude hinzufügen',
-          icon: 'pi pi-building',
+          icon: UNIT_TYPE_ICONS.BUILDING,
           command: () => {
             visible = true;
             newUnitType = EntityType.Building;
@@ -186,7 +187,7 @@ async function createStorage(): Promise<void> {
         },
         {
           label: 'Außenanlage hinzufügen',
-          icon: 'pi pi-sun',
+          icon: UNIT_TYPE_ICONS.SITE,
           command: () => {
             visible = true;
             newUnitType = EntityType.Site;
@@ -201,7 +202,7 @@ async function createStorage(): Promise<void> {
       :model="[
         {
           label: 'Wohnung hinzufügen',
-          icon: 'pi pi-building',
+          icon: UNIT_TYPE_ICONS.APARTMENT,
           command: () => {
             visible = true;
             newUnitType = EntityType.Apartment;
@@ -209,7 +210,7 @@ async function createStorage(): Promise<void> {
         },
         {
           label: 'Gewerbe hinzufügen',
-          icon: 'pi pi-briefcase',
+          icon: UNIT_TYPE_ICONS.COMMERCIAL,
           command: () => {
             visible = true;
             newUnitType = EntityType.Commercial;
@@ -217,7 +218,7 @@ async function createStorage(): Promise<void> {
         },
         {
           label: 'Nebennutzungsraum hinzufügen',
-          icon: 'pi pi-car',
+          icon: UNIT_TYPE_ICONS.STORAGE,
           command: () => {
             visible = true;
             newUnitType = EntityType.Storage;

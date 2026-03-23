@@ -5,6 +5,7 @@ import Breadcrumb from 'primevue/breadcrumb';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { useI18n } from 'vue-i18n';
 import { propertyService, toRentableUnitView, type UnitType } from '@/services/PropertyService';
+import { getIconForUnitType } from '../unitTypeIcons';
 
 interface BreadcrumbNode {
   title: string;
@@ -33,18 +34,6 @@ const props = defineProps<{
 const router = useRouter();
 const { t } = useI18n();
 const items = ref<BreadcrumbItem[]>([]);
-
-const getIconForType = (type: string): string => {
-  const icons: Record<string, string> = {
-    PROPERTY: 'pi pi-map',
-    BUILDING: 'pi pi-building',
-    APARTMENT: 'pi pi-home',
-    COMMERCIAL: 'pi pi-briefcase',
-    STORAGE: 'pi pi-box',
-    SITE: 'pi pi-tree',
-  };
-  return icons[type] || 'pi pi-folder';
-};
 
 const fetchPathNodes = async (targetId: string | undefined): Promise<BreadcrumbNode[]> => {
   if (!targetId || !props.projectId || typeof propertyService.getBreadcrumbPath !== 'function') {
@@ -99,7 +88,7 @@ const mapNodesToItems = (nodes: BreadcrumbNode[]): BreadcrumbItem[] => {
   return nodes.map((node) => ({
     label: node.title,
     id: node.id,
-    icon: getIconForType(node.type),
+    icon: getIconForUnitType(node.type),
     command: () => {
       router.push({
         name: toRentableUnitView(node.type),
