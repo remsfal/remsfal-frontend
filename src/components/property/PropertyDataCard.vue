@@ -2,7 +2,6 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import { useRouter } from 'vue-router';
 
 // PrimeVue Components
 import Button from 'primevue/button';
@@ -21,7 +20,7 @@ import BaseCard from '@/components/common/BaseCard.vue';
 // Services & Types
 import { propertyService } from '@/services/PropertyService.ts';
 import type { PropertyJson } from '@/services/PropertyService.ts';
-import { navigateToObjects, showSavingErrorToast } from '@/helper/viewHelper.ts';
+import { showSavingErrorToast } from '@/helper/viewHelper.ts';
 
 // Props & Emits
 const props = defineProps<{
@@ -31,7 +30,6 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const toast = useToast();
-const router = useRouter();
 
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
@@ -223,7 +221,6 @@ async function onSubmit(event: FormSubmitEvent) {
       detail: t('property.saveSuccess'),
       life: 3000,
     });
-    navigateToObjects(router, props.projectId);
   } catch (err) {
     console.error('Fehler beim Speichern der Grundstücksdaten:', err);
     showSavingErrorToast(toast, t('property.saveError'));
