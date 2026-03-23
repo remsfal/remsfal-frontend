@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import ManagerMenu from '@/layout/ManagerMenu.vue';
+import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
 
 describe('ManagerMenu.vue', () => {
   let wrapper: VueWrapper;

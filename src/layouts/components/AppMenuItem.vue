@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
-import { useLayout } from '@/layout/composables/layout';
+import { useLayout } from '@/layouts/composables/layout';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 

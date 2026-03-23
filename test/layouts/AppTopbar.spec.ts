@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import AppTopbar from '@/layout/AppTopbar.vue';
-import { useLayout } from '@/layout/composables/layout';
+import AppTopbar from '@/layouts/components/AppTopbar.vue';
+import { useLayout } from '@/layouts/composables/layout';
 
 // Mock the layout composable
-vi.mock('@/layout/composables/layout', () => ({ useLayout: vi.fn(), }));
+vi.mock('@/layouts/composables/layout', () => ({ useLayout: vi.fn(), }));
 
 describe('AppTopbar', () => {
   let mockUseLayout: {

@@ -33,7 +33,9 @@ src/
 │   ├── project.vue             # ProjectMenu + ProjectTopbar + ProjectMobileBar
 │   ├── tenant.vue              # TenantMenu + AppSimpleTopbar + TenantMobileBar
 │   ├── contractor.vue          # ContractorMenu + AppSimpleTopbar + ContractorMobileBar
-│   └── public.vue              # AppSimpleTopbar + AppFooter (Landing, Legal, Privacy)
+│   ├── public.vue              # AppSimpleTopbar + AppFooter (Landing, Legal, Privacy)
+│   ├── components/             # Layout chrome sub-components (Topbars, Menus, MobileBars)
+│   └── composables/            # useLayout(), useMobileBarActiveState()
 │
 ├── pages/                      # File-based routes via unplugin-vue-router
 │   ├── index.vue               →  /                    (layout: public)
@@ -131,9 +133,6 @@ src/
 │   ├── types/                  # Shared TypeScript types
 │   ├── helpers/                # viewHelper, platform, indexeddb, service-worker-init
 │   └── constants/              # countries.ts
-│
-├── layout/                     # LEGACY — layout chrome components (not deleted yet)
-│   └── composables/            # useLayout(), useMobileBarActiveState()
 │
 ├── App.vue                     # Root: resolves route.meta.layout → renders <component>
 ├── main.ts                     # Bootstrap only

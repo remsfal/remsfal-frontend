@@ -4,7 +4,7 @@ vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => false }
 vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
 
 // Mock ProjectMenu to avoid deep dependency resolution
-vi.mock('@/layout/ProjectMenu.vue', () => ({ default: { name: 'ProjectMenu', template: '<div></div>' } }));
+vi.mock('@/layouts/components/ProjectMenu.vue', () => ({ default: { name: 'ProjectMenu', template: '<div></div>' } }));
 // Mock ProjectStore used by ProjectMenu
 vi.mock('@/stores/ProjectStore', () => ({
 useProjectStore: () => ({
@@ -13,7 +13,7 @@ useProjectStore: () => ({
 }));
 
 import { mount, config } from '@vue/test-utils';
-import ProjectMobileBar from '@/layout/ProjectMobileBar.vue';
+import ProjectMobileBar from '@/layouts/components/ProjectMobileBar.vue';
 import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';

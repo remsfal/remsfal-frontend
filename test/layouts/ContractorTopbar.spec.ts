@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
-import ContractorTopbar from '@/layout/AppSimpleTopbar.vue';
+import ContractorTopbar from '@/layouts/components/AppSimpleTopbar.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 
 // Router mock

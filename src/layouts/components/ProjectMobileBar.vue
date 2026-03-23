@@ -3,8 +3,8 @@ import { computed } from 'vue';
 import { useRoute, RouterLink, type RouteLocationRaw } from 'vue-router';
 import Drawer from 'primevue/drawer';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import ProjectMenu from '@/layout/ProjectMenu.vue';
-import { useMobileBarActiveState } from '@/layout/composables/useMobileBarActiveState';
+import ProjectMenu from '@/layouts/components/ProjectMenu.vue';
+import { useMobileBarActiveState } from '@/layouts/composables/useMobileBarActiveState';
 
 interface MobileNavItem {
   label: string;

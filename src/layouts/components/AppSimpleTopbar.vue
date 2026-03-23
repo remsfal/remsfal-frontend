@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppTopbar from '@/layout/AppTopbar.vue';
+import AppTopbar from '@/layouts/components/AppTopbar.vue';
 import TopbarUserActions from '@/components/TopbarUserActions.vue';
 </script>
 

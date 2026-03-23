@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import AppFooter from '@/layout/AppFooter.vue';
+import AppFooter from '@/layouts/components/AppFooter.vue';
 
 describe('AppFooter.vue', () => {
   const mountFooter = () => mount(AppFooter);

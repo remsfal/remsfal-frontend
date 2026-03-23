@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import Drawer from 'primevue/drawer';
-import ContractorMenu from '@/layout/ContractorMenu.vue';
-import { useMobileBarActiveState, type MobileNavItem } from '@/layout/composables/useMobileBarActiveState';
+import TenantMenu from '@/layouts/components/TenantMenu.vue';
+import { useMobileBarActiveState, type MobileNavItem } from '@/layouts/composables/useMobileBarActiveState';
 
 const { isActive, sidebarVisible, toggleSidebar } = useMobileBarActiveState();
 
 const navItems: MobileNavItem[] = [
   {
-    label: 'Übersicht',
-    to: { name: 'ContractorDashboard' },
+    label: 'Überblick',
+    to: { name: 'TenantDashboard' },
     icon: 'pi-home'
   },
   {
-    label: 'Auftraggeber',
-    to: { name: 'ContractorView' },
-    icon: 'pi-id-card'
+    label: 'Meldungen',
+    to: { name: 'TenantIssues' },
+    icon: 'pi-list'
   }
 ];
 </script>
@@ -31,7 +31,7 @@ const navItems: MobileNavItem[] = [
     >
       <i
         class="pi"
-        :class="typeof item.icon === 'string' ? item.icon : ''"
+        :class="item.icon"
         style="font-size: 1.2rem;"
       />
       <span class="sr-only">{{ item.label }}</span>
@@ -47,7 +47,7 @@ const navItems: MobileNavItem[] = [
       class="mobile-sidebar-drawer"
       style="width: 80vw; max-width: 300px;"
     >
-      <ContractorMenu />
+      <TenantMenu />
     </Drawer>
   </div>
 </template>

@@ -3,8 +3,8 @@ import { mount, config } from '@vue/test-utils';
 import { reactive, nextTick } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
-import AppMenuItem from '@/layout/AppMenuItem.vue';
-import { useLayout } from '@/layout/composables/layout';
+import AppMenuItem from '@/layouts/components/AppMenuItem.vue';
+import { useLayout } from '@/layouts/composables/layout';
 
 // Remove global router - we inject a controlled route via routeLocationKey
 config.global.plugins = config.global.plugins.filter((p) => p !== router);

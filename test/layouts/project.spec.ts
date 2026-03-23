@@ -2,14 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import ProjectLayout from '@/layouts/project.vue'
-import ManagerTopbar from '@/layout/ManagerTopbar.vue'
-import ProjectMenu from '@/layout/ProjectMenu.vue'
-import ProjectMobileBar from '@/layout/ProjectMobileBar.vue'
-import AppFooter from '@/layout/AppFooter.vue'
+import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
+import ProjectMenu from '@/layouts/components/ProjectMenu.vue'
+import ProjectMobileBar from '@/layouts/components/ProjectMobileBar.vue'
+import AppFooter from '@/layouts/components/AppFooter.vue'
 
 const mocks = vi.hoisted(() => ({ setFullscreen: vi.fn() }))
 
-vi.mock('@/layout/composables/layout', () => ({
+vi.mock('@/layouts/composables/layout', () => ({
   useLayout: () => ({
     layoutConfig: { menuMode: 'static' },
     layoutState: {
@@ -20,10 +20,10 @@ vi.mock('@/layout/composables/layout', () => ({
   }),
 }))
 
-vi.mock('@/layout/ManagerTopbar.vue', () => ({ default: { template: '<div data-test="manager-topbar" />' } }))
-vi.mock('@/layout/ProjectMenu.vue', () => ({ default: { template: '<div data-test="project-menu" />' } }))
-vi.mock('@/layout/ProjectMobileBar.vue', () => ({ default: { template: '<div data-test="project-mobilebar" />' } }))
-vi.mock('@/layout/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
+vi.mock('@/layouts/components/ManagerTopbar.vue', () => ({ default: { template: '<div data-test="manager-topbar" />' } }))
+vi.mock('@/layouts/components/ProjectMenu.vue', () => ({ default: { template: '<div data-test="project-menu" />' } }))
+vi.mock('@/layouts/components/ProjectMobileBar.vue', () => ({ default: { template: '<div data-test="project-mobilebar" />' } }))
+vi.mock('@/layouts/components/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
 
 describe('layouts/project.vue', () => {
   beforeEach(() => vi.clearAllMocks())

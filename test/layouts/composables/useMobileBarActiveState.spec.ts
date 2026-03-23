@@ -3,7 +3,7 @@ import { mount, config } from '@vue/test-utils';
 import { defineComponent, reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
-import { useMobileBarActiveState, type MobileNavItem } from '@/layout/composables/useMobileBarActiveState';
+import { useMobileBarActiveState, type MobileNavItem } from '@/layouts/composables/useMobileBarActiveState';
 
 // Remove real router so our routeLocationKey provide takes effect in useRoute()
 config.global.plugins = config.global.plugins.filter((p) => p !== router);

@@ -1,14 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-
-// Mock capacitor core/utils
-vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => false } }));
-vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
-
-// Mock the Menu component to prevent it from importing dependencies that fail resolution
-vi.mock('@/layout/ManagerMenu.vue', () => ({ default: { name: 'ManagerMenu', template: '<div></div>' } }));
-
+import { describe, it, expect } from 'vitest';
 import { mount, config } from '@vue/test-utils';
-import ManagerMobileBar from '@/layout/ManagerMobileBar.vue';
+import TenantMobileBar from '@/layouts/components/TenantMobileBar.vue';
 import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
@@ -24,19 +16,17 @@ const RouterLinkStub = {
     props: ['to']
 };
 
-describe('ManagerMobileBar.vue', () => {
-    const defaultRoute = {
- path: '/manager/projects', name: 'ProjectSelection', params: {}, query: {} 
-};
+describe('TenantMobileBar.vue', () => {
+    const defaultRoute = { path: '/', name: 'TenantView' };
     const mountComponent = (initialRoute = defaultRoute) => {
         const route = reactive(initialRoute);
 
-        const wrapper = mount(ManagerMobileBar, {
+        const wrapper = mount(TenantMobileBar, {
             global: {
                 plugins: [PrimeVue],
                 provide: { [routeLocationKey as symbol]: route },
                 stubs: {
-                    ManagerMenu: true,
+                    TenantMenu: true,
                     Drawer: {
                         template: '<div class="p-drawer" v-if="visible"><slot /></div>',
                         props: ['visible']
@@ -55,17 +45,8 @@ describe('ManagerMobileBar.vue', () => {
         expect(navItems.length).toBe(2);
     });
 
-    it('renders Projekte and Einstellungen items', () => {
-        const { wrapper } = mountComponent();
-        const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[0].text()).toContain('Projekte');
-        expect(navItems[1].text()).toContain('Einstellungen');
-    });
-
-    it('highlights Projekte when on ProjectSelection route', async () => {
-        const { wrapper } = mountComponent({
- path: '/manager/projects', name: 'ProjectSelection', params: {}, query: {} 
-});
+    it('highlights Overview active state when on TenantDashboard', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
@@ -73,10 +54,8 @@ describe('ManagerMobileBar.vue', () => {
         expect(navItems[1].classes()).not.toContain('active');
     });
 
-    it('highlights Einstellungen when on ManagerAccountSettings route', async () => {
-        const { wrapper } = mountComponent({
- path: '/manager/account-settings', name: 'ManagerAccountSettings', params: {}, query: {} 
-});
+    it('highlights Meldungen active state when on TenantIssues', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/issues', name: 'TenantIssues' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
@@ -84,19 +63,33 @@ describe('ManagerMobileBar.vue', () => {
         expect(navItems[1].classes()).toContain('active');
     });
 
-    it('does not highlight any item on an unrelated route', async () => {
-        const { wrapper } = mountComponent({
- path: '/manager/other', name: 'SomeOtherRoute', params: {}, query: {} 
-});
+    it('does not highlight Overview when on an unrelated route', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/account-settings', name: 'TenantAccountSettings' });
         await wrapper.vm.$nextTick();
 
         const navItems = wrapper.findAll('a.nav-item');
         expect(navItems[0].classes()).not.toContain('active');
+    });
+
+    it('highlights Overview when route name matches TenantDashboard', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
+        expect(navItems[0].classes()).toContain('active');
+    });
+
+    it('does not highlight Meldungen when route name differs', async () => {
+        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
+        await wrapper.vm.$nextTick();
+
+        const navItems = wrapper.findAll('a.nav-item');
         expect(navItems[1].classes()).not.toContain('active');
     });
 
     it('toggles sidebar', async () => {
         const { wrapper } = mountComponent();
+
         const moreBtn = wrapper.find('.more-btn');
 
         expect(wrapper.vm.sidebarVisible).toBe(false);

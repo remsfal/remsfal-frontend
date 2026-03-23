@@ -5,7 +5,7 @@ import { useProjectStore } from '@/stores/ProjectStore';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
-import AppTopbar from '@/layout/AppTopbar.vue';
+import AppTopbar from '@/layouts/components/AppTopbar.vue';
 import { computed } from 'vue';
 import { useInboxStore } from '@/stores/InboxStore';
 import TopbarUserActions from '@/components/TopbarUserActions.vue';

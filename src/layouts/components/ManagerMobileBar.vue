@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import Drawer from 'primevue/drawer';
-import ManagerMenu from '@/layout/ManagerMenu.vue';
-import { useMobileBarActiveState, type MobileNavItem } from '@/layout/composables/useMobileBarActiveState';
+import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
+import { useMobileBarActiveState, type MobileNavItem } from '@/layouts/composables/useMobileBarActiveState';
 
 const { isActive, sidebarVisible, toggleSidebar } = useMobileBarActiveState();
 

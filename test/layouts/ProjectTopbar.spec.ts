@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
-import ProjectTopbar from '@/layout/ManagerTopbar.vue';
+import ProjectTopbar from '@/layouts/components/ManagerTopbar.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
 import type { ProjectItem } from '@/services/ProjectService';

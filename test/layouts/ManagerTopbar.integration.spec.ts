@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { it, expect, vi } from 'vitest'
-import ManagerTopbar from '@/layout/ManagerTopbar.vue'
+import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
 import { useInboxStore } from '@/stores/InboxStore'
 import { useUserSessionStore } from '@/stores/UserSession'
 

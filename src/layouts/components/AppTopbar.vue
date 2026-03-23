@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLayout } from '@/layout/composables/layout';
+import { useLayout } from '@/layouts/composables/layout';
 import { RouterLink, useRoute } from 'vue-router';
 import Button from 'primevue/button';
 import { ref, watch, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue';
