@@ -56,13 +56,6 @@ jobs:
             echo "Error: eslint-report.json not found in reports artifact." >&2
             exit 1
           fi
-      - name: Filter null ruleId entries from ESLint report
-        run: |
-          jq '[.[] |
-                .messages = [.messages[]? | select(.ruleId != null and .ruleId != "")]
-              ] | map(select(.messages | length > 0))' \
-            reports/eslint-report.json > reports/eslint-report-filtered.json
-          mv reports/eslint-report-filtered.json reports/eslint-report.json
 
       # --- Sonar -> PULL REQUESTS ---
       - name: Find Pull Request by Branch
