@@ -6,13 +6,21 @@ meta:
 </route>
 
 <script setup lang="ts">
-import PropertyView from '@/views/project/PropertyView.vue'
 import { useRoute } from 'vue-router'
+import UnitBreadcrumb from "@/components/UnitBreadcrumb.vue";
+import PropertyDataCard from "@/components/property/PropertyDataCard.vue";
 const route = useRoute('PropertyView')
 </script>
 
 <template>
-  <PropertyView
+  <UnitBreadcrumb
+    :projectId="(route.params.projectId as string)"
+    :unitId="(route.params.unitId as string)"
+    currentTitle=""
+    mode="edit"
+  />
+
+  <PropertyDataCard
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
   />

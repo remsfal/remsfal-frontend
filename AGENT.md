@@ -638,6 +638,12 @@ const onSubmit = (event: FormSubmitEvent) => {
 - Form validates on submit
 - Errors only appear after first blur or submit attempt
 
+**Unit suffixes on numeric fields:** Physical units (m², €, kg, etc.) must **not** be written into i18n label keys. Instead, pass the unit as the `suffix` prop on `InputNumber`:
+```html
+<InputNumber name="grossFloorArea" suffix=" m²" :min="0" :maxFractionDigits="2" fluid />
+```
+Labels stay clean (e.g. `"building.grossFloorArea": "Brutto-Grundfläche BGF"`), and the unit is rendered consistently by PrimeVue.
+
 **Known Issues:**
 - Issue [#6789](https://github.com/primefaces/primevue/issues/6789): `event.values` can be undefined in submit event
 - **Workaround:** Extract values from `event.states.[fieldName].value` instead of `event.values`
