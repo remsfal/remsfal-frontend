@@ -93,7 +93,19 @@ onMounted(() => { loadBreadcrumbs(); });
 <template>
   <BaseCard>
     <template #content>
-      <Breadcrumb :model="items" :pt="{ root: { style: 'padding: 0' } }" />
+      <Breadcrumb
+        :model="items"
+        :pt="{
+          root: { style: 'padding: 0' },
+          itemLink: { class: 'flex items-baseline' },
+        }"
+      />
     </template>
   </BaseCard>
 </template>
+
+<style scoped>
+:deep(.p-breadcrumb .p-breadcrumb-item-link) {
+  align-items: baseline !important;
+}
+</style>
