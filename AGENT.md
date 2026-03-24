@@ -122,8 +122,8 @@ src/
 │       ├── services/           # InboxService
 │       └── index.ts
 │
-├── shared/                     # Code used by ≥2 features
-│   ├── components/             # BaseCard, UserContactDataCard, UserAddressCard, StatCard, MemberAutoComplete
+├── shared/                     # Code used by ≥2 features (target for Phase 3 completion)
+│   ├── components/             # → until migration complete: use src/components/common/
 │   ├── composables/            # useTopbarUserActions
 │   ├── services/               # ApiClient.ts, AuthService.ts (infrastructure)
 │   ├── stores/                 # UserSession.ts, EventStore.ts (app-wide state)
@@ -301,6 +301,11 @@ declare module 'vue-router' {
 - Existing code moves to its feature slice when the file is next modified
 - Never reach into a feature's internals from outside — use `index.ts` as the public API
 - `shared/` is for code actually used by ≥2 features; when in doubt, start in the feature
+
+**Shared components during migration**:
+- Until `src/shared/` is fully established, all shared components (used by ≥2 features) go into `src/components/common/`
+- `src/components/` (root level) remains for app-wide non-common components (e.g. `ProjectDangerZoneCard.vue`)
+- When Phase 3 migration is complete, `src/components/common/` contents move to `src/shared/components/`
 
 ```ts
 // ✅ Correct — import through public API
@@ -531,7 +536,7 @@ Use lazy loading for routes: `component: () => import('@/views/ViewName.vue')`
 - Use PrimeVue components when available instead of custom implementations
 - Toast/dialog/confirm services available globally
 
-**BaseCard Component** (`src/components/BaseCard.vue`):
+**BaseCard Component** (`src/components/common/BaseCard.vue`):
 - Standardized wrapper around PrimeVue Card with consistent styling
 - Default classes: `flex flex-col gap-4 basis-full`
 - Default title styling: `font-semibold text-xl`

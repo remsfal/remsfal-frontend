@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import BaseCard from '@/components/common/BaseCard.vue';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
+import DangerZoneCard from '@/components/common/DangerZoneCard.vue';
 import { propertyService, type UnitType } from '@/services/PropertyService';
 import { buildingService } from '@/services/BuildingService';
 import { apartmentService } from '@/services/ApartmentService';
@@ -22,8 +20,6 @@ const props = defineProps<{
 const { t } = useI18n();
 const toast = useToast();
 const router = useRouter();
-
-const showDeleteDialog = ref(false);
 
 const unitTypeLabel = computed(() => t(`unitTypes.${props.unitType.toLowerCase()}`));
 
@@ -55,7 +51,6 @@ async function deleteUnit(): Promise<void> {
       detail: t('rentableUnits.dangerZone.deleteSuccess', { type: unitTypeLabel.value }),
       life: 3000,
     });
-    showDeleteDialog.value = false;
     await router.push({ name: 'RentableUnits', params: { projectId: props.projectId } });
   } catch (err) {
     console.error('Error deleting unit:', err);
@@ -70,48 +65,11 @@ async function deleteUnit(): Promise<void> {
 </script>
 
 <template>
-  <BaseCard titleClass="text-red-600 font-semibold text-xl">
-    <template #title>
-      {{ t('rentableUnits.dangerZone.title') }}
-    </template>
-    <template #content>
-      <div class="flex flex-col gap-4">
-        <p class="text-gray-700">
-          {{ t('rentableUnits.dangerZone.description', { type: unitTypeLabel }) }}
-        </p>
-        <div>
-          <Button
-            severity="danger"
-            :label="t('rentableUnits.dangerZone.deleteButton', { type: unitTypeLabel })"
-            icon="pi pi-trash"
-            @click="showDeleteDialog = true"
-          />
-        </div>
-      </div>
-    </template>
-  </BaseCard>
-
-  <Dialog
-    v-model:visible="showDeleteDialog"
-    :header="t('rentableUnits.dangerZone.confirmTitle', { type: unitTypeLabel })"
-    modal
-    :style="{ width: '30rem' }"
-  >
-    <p class="mb-4">
-      {{ t('rentableUnits.dangerZone.confirmMessage', { type: unitTypeLabel }) }}
-    </p>
-    <template #footer>
-      <Button
-        :label="t('button.cancel')"
-        severity="secondary"
-        @click="showDeleteDialog = false"
-      />
-      <Button
-        :label="t('rentableUnits.dangerZone.confirmDeleteButton')"
-        severity="danger"
-        icon="pi pi-trash"
-        @click="deleteUnit"
-      />
-    </template>
-  </Dialog>
+  <DangerZoneCard
+    :description="t('rentableUnits.dangerZone.description', { type: unitTypeLabel })"
+    :deleteButtonLabel="t('rentableUnits.dangerZone.deleteButton', { type: unitTypeLabel })"
+    :confirmTitle="t('rentableUnits.dangerZone.confirmTitle', { type: unitTypeLabel })"
+    :confirmMessage="t('rentableUnits.dangerZone.confirmMessage', { type: unitTypeLabel })"
+    @confirm="deleteUnit"
+  />
 </template>

@@ -53,6 +53,8 @@
   "button.save": "Speichern",
   "button.edit": "Bearbeiten",
   "button.cancel": "Abbrechen",
+  "dangerZone.title": "Gefährliche Änderungen",
+  "dangerZone.confirmDeleteButton": "Endgültig löschen",
   "button.create": "Erstellen",
   "button.delete": "Löschen",
   "button.update": "Aktualisieren",
