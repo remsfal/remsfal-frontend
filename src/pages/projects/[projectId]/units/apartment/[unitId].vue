@@ -16,8 +16,6 @@ const route = useRoute('ApartmentView');
   <UnitBreadcrumb
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
-    currentTitle=""
-    mode="edit"
   />
   <ApartmentDataCard
     :projectId="(route.params.projectId as string)"

@@ -795,7 +795,9 @@ Key environment variables in `.env`:
 ## Code Quality Standards
 
 ### TypeScript Guidelines
-- Avoid `any` type - use proper type definitions
+- **Never use `any`** — not in production code, not in tests. ESLint enforces `@typescript-eslint/no-explicit-any`.
+  - In tests: import the real type from the service and annotate mock data directly (e.g. `const mockTree: PropertyListJson = { ... }`) instead of casting with `as any`.
+  - If a cast is truly unavoidable, use `as unknown as TargetType` and add a comment explaining why.
 - Create interfaces in `src/types/` for complex types
 - Use type imports: `import type { ComponentType } from './types'`
 - Prefer `interface` over `type` for object definitions

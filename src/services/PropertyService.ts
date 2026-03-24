@@ -5,6 +5,7 @@ import { apiClient, type ApiComponents } from '@/services/ApiClient';
 export type PropertyJson = ApiComponents['schemas']['PropertyJson'];
 export type PropertyListJson = ApiComponents['schemas']['PropertyListJson'];
 export type RentalUnitTreeNodeJson = ApiComponents['schemas']['RentalUnitTreeNodeJson'];
+export type RentalUnitNodeDataJson = ApiComponents['schemas']['RentalUnitNodeDataJson'];
 export type UnitType = ApiComponents['schemas']['UnitType'];
 
 export enum EntityType {
@@ -62,79 +63,6 @@ class PropertyService {
       '/api/v1/projects/{projectId}/properties/{propertyId}',
       { pathParams: { projectId, propertyId } },
     );
-  }
-
-/**
-   * Calculates the breadcrumb path to a specific node ID.
-   */
-  async getBreadcrumbPath(
-    projectId: string,
-    targetNodeId: string,
-  ): Promise<{ title: string; id: string; type: UnitType }[]> {
-    try {
-      const data = await this.getPropertyTree(projectId);
-      const tree = (data.properties ?? []) as RentalUnitTreeNodeJson[];
-
-      const findPath = (
-        nodes: RentalUnitTreeNodeJson[],
-        targetId: string,
-        currentPath: RentalUnitTreeNodeJson[],
-      ): RentalUnitTreeNodeJson[] | null => {
-        for (const node of nodes) {
-          if (node.key === targetId) {
-            return [...currentPath, node];
-          }
-          if (node.children && node.children.length > 0) {
-            const found = findPath(node.children, targetId, [...currentPath, node]);
-            if (found) return found;
-          }
-        }
-        return null;
-      };
-
-      const resultNodes = findPath(tree, targetNodeId, []);
-      
-      if (!resultNodes) return [];
-
-      return resultNodes.map((node) => ({
-        title: node.data?.title || 'Unbenannt',
-        id: node.key,
-        type: node.data?.type ?? EntityType.Property, 
-      }));
-
-    } catch (e) {
-      console.error('Breadcrumb calculation failed', e);
-      return [];
-    }
-  }
-
-  async getParentId(projectId: string, childId: string): Promise<string | undefined> {
-    try {
-      const data = await this.getPropertyTree(projectId);
-      const tree = (data.properties ?? []) as RentalUnitTreeNodeJson[];
-
-      const findParent = (
-        nodes: RentalUnitTreeNodeJson[],
-        target: string,
-        parent: string | undefined,
-      ): string | undefined => {
-        for (const node of nodes) {
-          if (node.key === target) {
-            return parent;
-          }
-          if (node.children && node.children.length > 0) {
-            const found = findParent(node.children, target, node.key);
-            if (found) return found;
-          }
-        }
-        return undefined;
-      };
-
-      return findParent(tree, childId, undefined);
-    } catch (e) {
-      console.error('Fehler bei der Eltern-Suche:', e);
-      return undefined;
-    }
   }
 }
 

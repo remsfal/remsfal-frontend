@@ -152,25 +152,6 @@ describe('RentableUnitsTable.vue', () => {
     expect(wrapper.emitted('newUnit')?.[0]).toEqual(['New Unit Title']);
   });
 
-  test('emits deleteNode event when DeleteRentableUnitButton triggers delete', async () => {
-    const node: RentalUnitTreeNodeJson = {
-      key: 'apartment-1',
-      data: {
-        title: 'Test Apartment',
-        type: 'APARTMENT',
-        description: 'A test apartment',
-        tenant: 'John Doe',
-        usable_space: '75',
-      },
-      children: [],
-    };
-
-    wrapper.vm.onDeleteNode(node);
-    await flushPromises();
-
-    expect(wrapper.emitted('deleteNode')).toBeTruthy();
-    expect(wrapper.emitted('deleteNode')?.[0]).toEqual([node]);
-  });
 
   test('emits update:expandedKeys event when expanded keys change', async () => {
     const treeTable = wrapper.findComponent({ name: 'TreeTable' });

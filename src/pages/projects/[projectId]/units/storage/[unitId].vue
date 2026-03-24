@@ -16,8 +16,6 @@ const route = useRoute('StorageView');
   <UnitBreadcrumb
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
-    currentTitle=""
-    mode="edit"
   />
   <StorageDataCard
     :projectId="(route.params.projectId as string)"

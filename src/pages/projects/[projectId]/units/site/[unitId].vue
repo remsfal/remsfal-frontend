@@ -18,8 +18,6 @@ const route = useRoute('SiteView');
   <UnitBreadcrumb
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
-    currentTitle=""
-    mode="edit"
   />
   <SiteDataCard
     :projectId="(route.params.projectId as string)"
