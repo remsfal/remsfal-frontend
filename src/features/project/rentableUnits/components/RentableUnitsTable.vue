@@ -64,6 +64,7 @@ function onNewRentableUnit(title: string) {
     selectionMode="single"
     :metaKeySelection="false"
     scrollable
+    pt:footer="gap-2 min-h-[46.5px] p-0!"
     @update:expandedKeys="emit('update:expandedKeys', $event)"
     @nodeSelect="onNodeSelect"
   >
@@ -135,22 +136,20 @@ function onNewRentableUnit(title: string) {
       </template>
     </Column>
 
-    <Column frozen alignFrozen="right" bodyClass="flex flex-wrap justify-end">
+    <Column frozen alignFrozen="right" bodyClass="flex flex-wrap justify-end gap-2 min-h-[46.5px] p-0! items-center">
       <template #body="{ node }">
-        <div class="flex flex-wrap justify-end gap-2">
-          <NewRentableUnitButton
-            :projectId="props.projectId"
-            :parentId="node.key"
-            :type="node.data.type"
-            @newUnit="onNewRentableUnit"
-          />
-        </div>
+        <NewRentableUnitButton
+          :projectId="props.projectId"
+          :parentId="node.key"
+          :type="node.data.type"
+          @newUnit="onNewRentableUnit"
+        />
       </template>
     </Column>
+    <template #footer>
+      <div class="flex justify-end items-center min-h-[46.5px]">
+        <NewPropertyButton :projectId="props.projectId" @newUnit="onNewRentableUnit" />
+      </div>
+    </template>
   </TreeTable>
-  <div class="flex justify-end basis-auto mt-6">
-    <NewPropertyButton :projectId="props.projectId" @newUnit="onNewRentableUnit" />
-  </div>
 </template>
-
-<style scoped></style>

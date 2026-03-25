@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import SplitButton from 'primevue/splitbutton';
+import Popover from 'primevue/popover';
 import Textarea from 'primevue/textarea';
 import { EntityType, propertyService } from '@/services/PropertyService';
 import { UNIT_TYPE_ICONS } from '../unitTypeIcons';
@@ -29,6 +29,60 @@ const visible = ref<boolean>(false);
 const newUnitType = ref<EntityType | undefined>(undefined);
 const title = ref<string | undefined>(undefined);
 const description = ref<string | undefined>(undefined);
+
+const op = ref();
+
+function toggle(event: Event) {
+  op.value.toggle(event);
+}
+
+function selectType(type: EntityType) {
+  op.value.hide();
+  newUnitType.value = type;
+  visible.value = true;
+}
+
+const options = computed(() => {
+  if (props.type === EntityType.Property) {
+    return [
+      {
+        type: EntityType.Building,
+        icon: UNIT_TYPE_ICONS.BUILDING,
+        label: 'Gebäude',
+        description: 'Kann aus Wohnungen, Garagen, Nebennutzungsräumen und Gewerbeeinheiten bestehen',
+      },
+      {
+        type: EntityType.Site,
+        icon: UNIT_TYPE_ICONS.SITE,
+        label: 'Außenanlage',
+        description: 'Garten, Stellplatz oder Grundstücksteil mit reiner Außenanlagenfläche',
+      },
+    ];
+  }
+  if (props.type === EntityType.Building) {
+    return [
+      {
+        type: EntityType.Apartment,
+        icon: UNIT_TYPE_ICONS.APARTMENT,
+        label: 'Wohnung',
+        description: 'Verfügt über eine Wohnfläche nach Wohnflächenverordnung (WoFlV)',
+      },
+      {
+        type: EntityType.Commercial,
+        icon: UNIT_TYPE_ICONS.COMMERCIAL,
+        label: 'Gewerbe',
+        description: 'Gewerbeflächen nach DIN 277',
+      },
+      {
+        type: EntityType.Storage,
+        icon: UNIT_TYPE_ICONS.STORAGE,
+        label: 'Nebennutzungsraum',
+        description: 'Kann eine Garage, Keller oder Hobbyraum sein mit reiner Nutzfläche',
+      },
+    ];
+  }
+  return [];
+});
 
 const createRentableUnit = async () => {
   if (!props.parentId && newUnitType.value === EntityType.Property) {
@@ -161,72 +215,42 @@ async function createStorage(): Promise<void> {
 </script>
 
 <template>
-  <div v-if="props.type === EntityType.Project">
+  <Button
+    v-if="props.type === EntityType.Project"
+    type="button"
+    icon="pi pi-plus"
+    label="Grundstück erstellen"
+    severity="success"
+    @click="
+      visible = true;
+      newUnitType = EntityType.Property;
+    "
+  />
+
+  <template v-else-if="props.type === EntityType.Property || props.type === EntityType.Building">
     <Button
       type="button"
       icon="pi pi-plus"
-      label="Grundstück erstellen "
-      severity="success"
-      @click="
-        visible = true;
-        newUnitType = EntityType.Property;
-      "
+      :label="props.type === EntityType.Property ? 'Anlage hinzufügen' : 'Einheit hinzufügen'"
+      @click="toggle"
     />
-  </div>
-  <div v-if="props.type === EntityType.Property">
-    <SplitButton
-      label="Anlage hinzufügen"
-      :model="[
-        {
-          label: 'Gebäude hinzufügen',
-          icon: UNIT_TYPE_ICONS.BUILDING,
-          command: () => {
-            visible = true;
-            newUnitType = EntityType.Building;
-          },
-        },
-        {
-          label: 'Außenanlage hinzufügen',
-          icon: UNIT_TYPE_ICONS.SITE,
-          command: () => {
-            visible = true;
-            newUnitType = EntityType.Site;
-          },
-        },
-      ]"
-    />
-  </div>
-  <div v-if="props.type === EntityType.Building">
-    <SplitButton
-      label="Einheit hinzufügen"
-      :model="[
-        {
-          label: 'Wohnung hinzufügen',
-          icon: UNIT_TYPE_ICONS.APARTMENT,
-          command: () => {
-            visible = true;
-            newUnitType = EntityType.Apartment;
-          },
-        },
-        {
-          label: 'Gewerbe hinzufügen',
-          icon: UNIT_TYPE_ICONS.COMMERCIAL,
-          command: () => {
-            visible = true;
-            newUnitType = EntityType.Commercial;
-          },
-        },
-        {
-          label: 'Nebennutzungsraum hinzufügen',
-          icon: UNIT_TYPE_ICONS.STORAGE,
-          command: () => {
-            visible = true;
-            newUnitType = EntityType.Storage;
-          },
-        },
-      ]"
-    />
-  </div>
+    <Popover ref="op">
+      <ul class="list-none p-0 m-0 flex flex-col min-w-64">
+        <li
+          v-for="option in options"
+          :key="option.type"
+          class="flex items-center gap-3 px-3 py-3 hover:bg-emphasis cursor-pointer rounded-border"
+          @click="selectType(option.type)"
+        >
+          <i :class="option.icon" class="text-xl" />
+          <div>
+            <span class="font-medium block">{{ option.label }}</span>
+            <div class="text-sm text-surface-500">{{ option.description }}</div>
+          </div>
+        </li>
+      </ul>
+    </Popover>
+  </template>
 
   <Dialog v-model:visible="visible" modal header="Einheit hinzufügen" :style="{ width: '35rem' }">
     <div class="flex items-center gap-6 mb-6">
@@ -235,7 +259,7 @@ async function createStorage(): Promise<void> {
         id="title"
         v-model="title"
         type="text"
-        placeholder="Titel der neun Einheit"
+        placeholder="Titel der neuen Einheit"
         class="flex-auto"
         autocomplete="on"
         autofocus
