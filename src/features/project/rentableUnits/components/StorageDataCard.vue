@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
@@ -51,6 +51,22 @@ const currentValues = reactive({ ...serverValues });
 const initialValues = ref({ ...currentValues });
 const formKey = ref(0);
 
+const titleMatchesLocation = ref(false);
+
+watch(titleMatchesLocation, (checked) => {
+  if (checked) {
+    currentValues.location = currentValues.title;
+    initialValues.value = { ...currentValues };
+    formKey.value++;
+  }
+});
+
+watch(() => currentValues.title, (newTitle) => {
+  if (titleMatchesLocation.value) {
+    currentValues.location = newTitle;
+  }
+});
+
 const isDirty = computed(() =>
   currentValues.title !== serverValues.title ||
   currentValues.description !== serverValues.description ||
@@ -83,6 +99,7 @@ onMounted(async () => {
     Object.assign(serverValues, loaded);
     Object.assign(currentValues, loaded);
     initialValues.value = { ...loaded };
+    titleMatchesLocation.value = !!(loaded.title && loaded.location && loaded.title === loaded.location);
     formKey.value++;
   } catch (err) {
     console.error('Fehler beim Laden des Lagers:', err);
@@ -101,7 +118,7 @@ async function onSubmit(event: FormSubmitEvent) {
   const payload: Partial<StorageJson> = {
     title: s.title?.value || undefined,
     description: s.description?.value || undefined,
-    location: s.location?.value || undefined,
+    location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
     usableSpace: s.usableSpace?.value ?? undefined,
     heatingSpace: s.heatingSpace?.value ?? undefined,
     space: s.space?.value ?? undefined,
@@ -167,6 +184,30 @@ async function onSubmit(event: FormSubmitEvent) {
             </Message>
           </div>
 
+          <!-- Lage/Standort -->
+          <div class="flex flex-col gap-1">
+            <label for="location" class="font-medium">{{ t('storage.location') }}</label>
+            <InputText
+              id="location"
+              name="location"
+              fluid
+              :disabled="titleMatchesLocation"
+              @update:modelValue="(v) => (currentValues.location = v as string)"
+            />
+            <div class="flex items-center gap-2 mt-1">
+              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
+              <label for="titleMatchesLocation" class="text-sm text-surface-600">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
+            </div>
+            <Message
+              v-if="$form.location?.invalid && $form.location?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ $form.location.error?.message }}
+            </Message>
+          </div>
+
           <!-- Beschreibung -->
           <div class="flex flex-col gap-1">
             <label for="description" class="font-medium">{{ t('storage.description') }}</label>
@@ -185,25 +226,6 @@ async function onSubmit(event: FormSubmitEvent) {
               variant="simple"
             >
               {{ $form.description.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Lage -->
-          <div class="flex flex-col gap-1">
-            <label for="location" class="font-medium">{{ t('storage.location') }}</label>
-            <InputText
-              id="location"
-              name="location"
-              fluid
-              @update:modelValue="(v) => (currentValues.location = v as string)"
-            />
-            <Message
-              v-if="$form.location?.invalid && $form.location?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.location.error?.message }}
             </Message>
           </div>
 

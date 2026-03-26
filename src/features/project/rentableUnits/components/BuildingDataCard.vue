@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
@@ -31,6 +31,7 @@ const toast = useToast();
 const schema = z.object({
   title: z.string().trim().min(3, { message: t('validation.minLength', { min: 3 }) }),
   description: z.string().trim().max(500, { message: t('validation.maxLength', { max: 500 }) }).optional().or(z.literal('')),
+  location: z.string().trim().optional().or(z.literal('')),
   grossFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   netFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   constructionFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
@@ -44,6 +45,7 @@ const resolver = zodResolver(schema);
 const serverValues = reactive({
   title: '',
   description: '',
+  location: '',
   grossFloorArea: null as number | null,
   netFloorArea: null as number | null,
   constructionFloorArea: null as number | null,
@@ -56,9 +58,26 @@ const currentValues = reactive({ ...serverValues });
 const initialValues = ref({ ...currentValues });
 const formKey = ref(0);
 
+const titleMatchesLocation = ref(false);
+
+watch(titleMatchesLocation, (checked) => {
+  if (checked) {
+    currentValues.location = currentValues.title;
+    initialValues.value = { ...currentValues };
+    formKey.value++;
+  }
+});
+
+watch(() => currentValues.title, (newTitle) => {
+  if (titleMatchesLocation.value) {
+    currentValues.location = newTitle;
+  }
+});
+
 const isDirty = computed(() =>
   currentValues.title !== serverValues.title ||
   currentValues.description !== serverValues.description ||
+  currentValues.location !== serverValues.location ||
   currentValues.grossFloorArea !== serverValues.grossFloorArea ||
   currentValues.netFloorArea !== serverValues.netFloorArea ||
   currentValues.constructionFloorArea !== serverValues.constructionFloorArea ||
@@ -82,6 +101,7 @@ onMounted(async () => {
     const loaded = {
       title: data.title || '',
       description: data.description || '',
+      location: data.location || '',
       grossFloorArea: data.grossFloorArea ?? null,
       netFloorArea: data.netFloorArea ?? null,
       constructionFloorArea: data.constructionFloorArea ?? null,
@@ -92,6 +112,7 @@ onMounted(async () => {
     Object.assign(serverValues, loaded);
     Object.assign(currentValues, loaded);
     initialValues.value = { ...loaded };
+    titleMatchesLocation.value = !!(loaded.title && loaded.location && loaded.title === loaded.location);
     formKey.value++;
   } catch (err) {
     console.error('Fehler beim Laden der Gebäudedaten:', err);
@@ -110,6 +131,7 @@ async function onSubmit(event: FormSubmitEvent) {
   const payload: Partial<BuildingJson> = {
     title: s.title?.value || undefined,
     description: s.description?.value || undefined,
+    location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
     grossFloorArea: s.grossFloorArea?.value ?? undefined,
     netFloorArea: s.netFloorArea?.value ?? undefined,
     constructionFloorArea: s.constructionFloorArea?.value ?? undefined,
@@ -122,6 +144,7 @@ async function onSubmit(event: FormSubmitEvent) {
     const saved = {
       title: payload.title || '',
       description: payload.description || '',
+      location: payload.location || '',
       grossFloorArea: payload.grossFloorArea ?? null,
       netFloorArea: payload.netFloorArea ?? null,
       constructionFloorArea: payload.constructionFloorArea ?? null,
@@ -178,6 +201,22 @@ async function onSubmit(event: FormSubmitEvent) {
             >
               {{ $form.title.error?.message }}
             </Message>
+          </div>
+
+          <!-- Lage/Standort -->
+          <div class="flex flex-col gap-1">
+            <label for="location" class="font-medium">{{ t('building.location') }}</label>
+            <InputText
+              id="location"
+              name="location"
+              fluid
+              :disabled="titleMatchesLocation"
+              @update:modelValue="(v) => (currentValues.location = v as string)"
+            />
+            <div class="flex items-center gap-2 mt-1">
+              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
+              <label for="titleMatchesLocation" class="text-sm text-surface-600">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
+            </div>
           </div>
 
           <!-- Beschreibung -->

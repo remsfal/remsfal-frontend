@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Popover from 'primevue/popover';
@@ -28,7 +29,14 @@ const { t } = useI18n();
 const visible = ref<boolean>(false);
 const newUnitType = ref<EntityType | undefined>(undefined);
 const title = ref<string | undefined>(undefined);
+const location = ref<string | undefined>(undefined);
+const titleMatchesLocation = ref(true);
 const description = ref<string | undefined>(undefined);
+
+const locationValue = computed({
+  get: () => titleMatchesLocation.value ? (title.value ?? '') : (location.value ?? ''),
+  set: (v: string) => { if (!titleMatchesLocation.value) location.value = v; },
+});
 
 const op = ref();
 
@@ -97,30 +105,34 @@ const createRentableUnit = async () => {
   }
 
   visible.value = false;
+  const resolvedLocation = titleMatchesLocation.value ? title.value : location.value;
+  // Reset dialog state
+  location.value = undefined;
+  titleMatchesLocation.value = false;
   let creationPromise: Promise<void> = Promise.resolve();
   switch (newUnitType.value) {
     case EntityType.Property: {
-      creationPromise = createProperty();
+      creationPromise = createProperty(resolvedLocation);
       break;
     }
     case EntityType.Site: {
-      creationPromise = createSite();
+      creationPromise = createSite(resolvedLocation);
       break;
     }
     case EntityType.Building: {
-      creationPromise = createBuilding();
+      creationPromise = createBuilding(resolvedLocation);
       break;
     }
     case EntityType.Apartment: {
-      creationPromise = createApartment();
+      creationPromise = createApartment(resolvedLocation);
       break;
     }
     case EntityType.Commercial: {
-      creationPromise = createCommercial();
+      creationPromise = createCommercial(resolvedLocation);
       break;
     }
     case EntityType.Storage: {
-      creationPromise = createStorage();
+      creationPromise = createStorage(resolvedLocation);
       break;
     }
   }
@@ -134,11 +146,12 @@ const createRentableUnit = async () => {
     });
 };
 
-async function createProperty(): Promise<void> {
+async function createProperty(loc: string | undefined): Promise<void> {
   console.log('createProperty called');
   return propertyService
     .createProperty(props.projectId, {
       title: title.value!,
+      location: loc,
       description: description.value,
       plotArea: 0,
     })
@@ -148,11 +161,12 @@ async function createProperty(): Promise<void> {
     });
 }
 
-async function createSite(): Promise<void> {
+async function createSite(loc: string | undefined): Promise<void> {
   console.log('createSite called');
   return siteService
     .createSite(props.projectId, props.parentId!, {
       title: title.value!,
+      location: loc,
       description: description.value,
     })
     .then((newSite) => {
@@ -161,11 +175,12 @@ async function createSite(): Promise<void> {
     });
 }
 
-async function createBuilding(): Promise<void> {
+async function createBuilding(loc: string | undefined): Promise<void> {
   console.log('createBuilding called');
   return buildingService
     .createBuilding(props.projectId, props.parentId!, {
       title: title.value!,
+      location: loc,
       description: description.value,
     })
     .then((newBuilding) => {
@@ -174,11 +189,12 @@ async function createBuilding(): Promise<void> {
     });
 }
 
-async function createApartment(): Promise<void> {
+async function createApartment(loc: string | undefined): Promise<void> {
   console.log('createApartment called');
   return apartmentService
     .createApartment(props.projectId, props.parentId!, {
       title: title.value!,
+      location: loc,
       description: description.value,
     })
     .then((newApartment) => {
@@ -187,11 +203,12 @@ async function createApartment(): Promise<void> {
     });
 }
 
-async function createCommercial(): Promise<void> {
+async function createCommercial(loc: string | undefined): Promise<void> {
   console.log('createCommercial called');
   return commercialService
     .createCommercial(props.projectId, props.parentId!, {
       title: title.value!,
+      location: loc,
       description: description.value,
     })
     .then((newCommercial) => {
@@ -200,11 +217,12 @@ async function createCommercial(): Promise<void> {
     });
 }
 
-async function createStorage(): Promise<void> {
+async function createStorage(loc: string | undefined): Promise<void> {
   console.log('createStorage called');
   return storageService
     .createStorage(props.projectId, props.parentId!, {
       title: title.value!,
+      location: loc,
       description: description.value,
     })
     .then((newStorage) => {
@@ -254,19 +272,37 @@ async function createStorage(): Promise<void> {
 
   <Dialog v-model:visible="visible" modal header="Einheit hinzufügen" :style="{ width: '35rem' }">
     <div class="flex items-center gap-6 mb-6">
-      <label for="title" class="font-semibold w-24">Titel</label>
+      <label for="title" class="font-semibold w-24">{{ t('rentableUnits.form.title') }}</label>
       <InputText
         id="title"
         v-model="title"
         type="text"
-        placeholder="Titel der neuen Einheit"
+        :placeholder="t('rentableUnits.form.titlePlaceholder')"
         class="flex-auto"
         autocomplete="on"
         autofocus
       />
     </div>
+
+    <div class="flex flex-col gap-2 mb-6">
+      <div class="flex items-center gap-6">
+        <label for="location" class="font-semibold w-24">{{ t('rentableUnits.form.location') }}</label>
+        <InputText
+          id="location"
+          v-model="locationValue"
+          type="text"
+          class="flex-auto"
+          :disabled="titleMatchesLocation"
+        />
+      </div>
+      <div class="flex items-center gap-2 ml-30">
+        <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
+        <label for="titleMatchesLocation" class="text-sm">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
+      </div>
+    </div>
+
     <div class="flex items-center gap-6 mb-20">
-      <label for="description" class="font-semibold w-24">Beschreibung</label>
+      <label for="description" class="font-semibold w-24">{{ t('rentableUnits.form.description') }}</label>
       <Textarea id="description" v-model="description" rows="4" class="flex-auto" />
     </div>
     <div class="flex justify-end gap-2">

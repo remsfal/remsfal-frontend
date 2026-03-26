@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
@@ -122,6 +122,22 @@ const currentValues = reactive({ ...serverValues });
 const initialValues = ref({ ...currentValues });
 const formKey = ref(0);
 
+const titleMatchesLocation = ref(false);
+
+watch(titleMatchesLocation, (checked) => {
+  if (checked) {
+    currentValues.location = currentValues.title;
+    initialValues.value = { ...currentValues };
+    formKey.value++;
+  }
+});
+
+watch(() => currentValues.title, (newTitle) => {
+  if (titleMatchesLocation.value) {
+    currentValues.location = newTitle;
+  }
+});
+
 const isDirty = computed(() =>
   currentValues.title !== serverValues.title ||
   currentValues.description !== serverValues.description ||
@@ -166,6 +182,7 @@ onMounted(async () => {
     Object.assign(serverValues, loaded);
     Object.assign(currentValues, loaded);
     initialValues.value = { ...loaded };
+    titleMatchesLocation.value = !!(loaded.title && loaded.location && loaded.title === loaded.location);
     formKey.value++;
   } catch (err) {
     console.error('Fehler beim Laden der Grundstücksdaten:', err);
@@ -191,7 +208,7 @@ async function onSubmit(event: FormSubmitEvent) {
     plotNumber: s.plotNumber?.value ?? undefined,
     landRegistry: s.landRegistry?.value || undefined,
     economyType: s.economyType?.value ?? undefined,
-    location: s.location?.value || undefined,
+    location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
     plotArea: s.plotArea?.value ?? undefined,
     space: s.space?.value ?? undefined,
   };
@@ -260,6 +277,22 @@ async function onSubmit(event: FormSubmitEvent) {
             >
               {{ $form.title.error?.message }}
             </Message>
+          </div>
+
+          <!-- Lage/Standort -->
+          <div class="col-span-2 flex flex-col gap-1">
+            <label for="location" class="font-medium">{{ t('property.location') }}</label>
+            <InputText
+              id="location"
+              name="location"
+              fluid
+              :disabled="titleMatchesLocation"
+              @update:modelValue="(v) => (currentValues.location = v as string)"
+            />
+            <div class="flex items-center gap-2 mt-1">
+              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
+              <label for="titleMatchesLocation" class="text-sm text-surface-600">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
+            </div>
           </div>
 
           <!-- Beschreibung -->
@@ -416,17 +449,6 @@ async function onSubmit(event: FormSubmitEvent) {
             >
               {{ $form.space.error?.message }}
             </Message>
-          </div>
-
-          <!-- Lage -->
-          <div class="col-span-2 flex flex-col gap-1">
-            <label for="location" class="font-medium">{{ t('property.location') }}</label>
-            <InputText
-              id="location"
-              name="location"
-              fluid
-              @update:modelValue="(v) => (currentValues.location = v as string)"
-            />
           </div>
 
           <Message size="small" severity="secondary" variant="simple" class="col-span-2">

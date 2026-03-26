@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -19,7 +20,14 @@ const { t } = useI18n();
 const toast = useToast();
 const visible = ref<boolean>(false);
 const title = ref<string | undefined>(undefined);
+const location = ref<string | undefined>(undefined);
+const titleMatchesLocation = ref(true);
 const description = ref<string | undefined>(undefined);
+
+const locationValue = computed({
+  get: () => titleMatchesLocation.value ? (title.value ?? '') : (location.value ?? ''),
+  set: (v: string) => { if (!titleMatchesLocation.value) location.value = v; },
+});
 
 const createProperty = async () => {
   console.log('createProperty called');
@@ -38,6 +46,7 @@ const createProperty = async () => {
   try {
     const newProperty = await propertyService.createProperty(props.projectId, {
       title: title.value,
+      location: titleMatchesLocation.value ? title.value : location.value,
       description: description.value,
       plotArea: 0,
     });
@@ -47,6 +56,8 @@ const createProperty = async () => {
 
     // Reset form
     title.value = undefined;
+    location.value = undefined;
+    titleMatchesLocation.value = false;
     description.value = undefined;
     visible.value = false;
 
@@ -93,6 +104,23 @@ const createProperty = async () => {
         autocomplete="on"
         autofocus
       />
+    </div>
+
+    <div class="flex flex-col gap-2 mb-6">
+      <div class="flex items-center gap-6">
+        <label for="location" class="font-semibold w-24">{{ t('rentableUnits.form.location') }}</label>
+        <InputText
+          id="location"
+          v-model="locationValue"
+          type="text"
+          class="flex-auto"
+          :disabled="titleMatchesLocation"
+        />
+      </div>
+      <div class="flex items-center gap-2 ml-30">
+        <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
+        <label for="titleMatchesLocation" class="text-sm">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
+      </div>
     </div>
 
     <div class="flex items-center gap-6 mb-20">
