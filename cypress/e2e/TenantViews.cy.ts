@@ -128,8 +128,8 @@ describe('Tenant Views E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/tenants`);
 
-      // Loading spinner should be visible - check for the SVG element
-      cy.get('[role="progressbar"]', { timeout: 1000 }).should('exist');
+      // Loading spinner should be visible
+      cy.get('.p-progressspinner', { timeout: 1000 }).should('exist');
     });
 
     it('should display tenant cards in a grid', () => {
@@ -373,8 +373,8 @@ describe('Tenant Views E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/tenants/${tenantId}`);
 
-      // Loading spinner should be visible - check for the SVG element
-      cy.get('[role="progressbar"]', { timeout: 1000 }).should('exist');
+      // Loading spinner should be visible
+      cy.get('.p-progressspinner', { timeout: 1000 }).should('exist');
     });
 
     it('should populate form fields with tenant data', () => {
