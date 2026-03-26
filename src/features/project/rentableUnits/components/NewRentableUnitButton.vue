@@ -25,9 +25,7 @@ const props = defineProps<{
   parentId?: string;
   type: EntityType;
 }>();
-const emit = defineEmits<{
-  (e: 'newUnit', title: string): void;
-}>();
+const emit = defineEmits<(e: 'newUnit', title: string) => void>();
 
 const { t } = useI18n();
 
@@ -58,11 +56,11 @@ watch(titleMatchesLocation, (checked) => {
 const op = ref<InstanceType<typeof Popover>>();
 
 function toggle(event: Event) {
-  op.value.toggle(event);
+  op.value?.toggle(event);
 }
 
 function selectType(type: EntityType) {
-  op.value.hide();
+  op.value?.hide();
   newUnitType.value = type;
   visible.value = true;
 }

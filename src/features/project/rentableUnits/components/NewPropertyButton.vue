@@ -18,9 +18,7 @@ const props = defineProps<{
   projectId: string;
 }>();
 
-const emit = defineEmits<{
-  (e: 'newUnit', title: string): void;
-}>();
+const emit = defineEmits<(e: 'newUnit', title: string) => void>();
 
 const { t } = useI18n();
 const toast = useToast();
