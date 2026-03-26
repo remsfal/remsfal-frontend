@@ -35,7 +35,9 @@ const visible = ref<boolean>(false);
 const newUnitType = ref<EntityType | undefined>(undefined);
 const titleMatchesLocation = ref(true);
 const currentTitle = ref('');
-const initialValues = ref({ title: '', location: '', description: '' });
+const initialValues = ref({
+ title: '', location: '', description: '' 
+});
 const formKey = ref(0);
 
 const schema = z.object({
@@ -53,7 +55,7 @@ watch(titleMatchesLocation, (checked) => {
   }
 });
 
-const op = ref();
+const op = ref<InstanceType<typeof Popover>>();
 
 function toggle(event: Event) {
   op.value.toggle(event);
@@ -147,7 +149,9 @@ async function onSubmit(event: FormSubmitEvent) {
       emit('newUnit', titleVal);
       titleMatchesLocation.value = true;
       currentTitle.value = '';
-      initialValues.value = { title: '', location: '', description: '' };
+      initialValues.value = {
+ title: '', location: '', description: '' 
+};
       formKey.value++;
       visible.value = false;
     })
@@ -159,7 +163,9 @@ async function onSubmit(event: FormSubmitEvent) {
 async function createProperty(title: string, loc: string | undefined, desc: string | undefined): Promise<void> {
   console.log('createProperty called');
   return propertyService
-    .createProperty(props.projectId, { title, location: loc, description: desc, plotArea: 0 })
+    .createProperty(props.projectId, {
+ title, location: loc, description: desc, plotArea: 0 
+})
     .then((newProperty) => {
       console.log('Property created:', newProperty);
     });
@@ -168,7 +174,9 @@ async function createProperty(title: string, loc: string | undefined, desc: stri
 async function createSite(title: string, loc: string | undefined, desc: string | undefined): Promise<void> {
   console.log('createSite called');
   return siteService
-    .createSite(props.projectId, props.parentId!, { title, location: loc, description: desc })
+    .createSite(props.projectId, props.parentId!, {
+ title, location: loc, description: desc 
+})
     .then((newSite) => {
       console.log('Site created:', newSite);
     });
@@ -177,7 +185,9 @@ async function createSite(title: string, loc: string | undefined, desc: string |
 async function createBuilding(title: string, loc: string | undefined, desc: string | undefined): Promise<void> {
   console.log('createBuilding called');
   return buildingService
-    .createBuilding(props.projectId, props.parentId!, { title, location: loc, description: desc })
+    .createBuilding(props.projectId, props.parentId!, {
+ title, location: loc, description: desc 
+})
     .then((newBuilding) => {
       console.log('Building created:', newBuilding);
     });
@@ -186,7 +196,9 @@ async function createBuilding(title: string, loc: string | undefined, desc: stri
 async function createApartment(title: string, loc: string | undefined, desc: string | undefined): Promise<void> {
   console.log('createApartment called');
   return apartmentService
-    .createApartment(props.projectId, props.parentId!, { title, location: loc, description: desc })
+    .createApartment(props.projectId, props.parentId!, {
+ title, location: loc, description: desc 
+})
     .then((newApartment) => {
       console.log('Apartment created:', newApartment);
     });
@@ -195,7 +207,9 @@ async function createApartment(title: string, loc: string | undefined, desc: str
 async function createCommercial(title: string, loc: string | undefined, desc: string | undefined): Promise<void> {
   console.log('createCommercial called');
   return commercialService
-    .createCommercial(props.projectId, props.parentId!, { title, location: loc, description: desc })
+    .createCommercial(props.projectId, props.parentId!, {
+ title, location: loc, description: desc 
+})
     .then((newCommercial) => {
       console.log('Commercial created:', newCommercial);
     });
@@ -204,7 +218,9 @@ async function createCommercial(title: string, loc: string | undefined, desc: st
 async function createStorage(title: string, loc: string | undefined, desc: string | undefined): Promise<void> {
   console.log('createStorage called');
   return storageService
-    .createStorage(props.projectId, props.parentId!, { title, location: loc, description: desc })
+    .createStorage(props.projectId, props.parentId!, {
+ title, location: loc, description: desc 
+})
     .then((newStorage) => {
       console.log('Storage created:', newStorage);
     });
@@ -218,6 +234,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
     icon="pi pi-plus"
     :label="t('rentableUnits.button.createProperty')"
     severity="success"
+    pt:root="min-w-[188px]"
     @click="
       visible = true;
       newUnitType = EntityType.Property;
@@ -229,6 +246,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
       type="button"
       icon="pi pi-plus"
       :label="props.type === EntityType.Property ? t('rentableUnits.button.addAnnexation') : t('rentableUnits.button.addUnit')"
+      pt:root="min-w-[188px]"
       @click="toggle"
     />
     <Popover ref="op">
@@ -242,7 +260,9 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
           <i :class="option.icon" class="text-xl" />
           <div>
             <span class="font-medium block">{{ option.label }}</span>
-            <div class="text-sm text-surface-500">{{ option.description }}</div>
+            <div class="text-sm text-surface-500">
+              {{ option.description }}
+            </div>
           </div>
         </li>
       </ul>
@@ -289,7 +309,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
             :disabled="titleMatchesLocation"
           />
           <div class="flex items-center gap-2 mt-1">
-            <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
+            <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
             <label for="titleMatchesLocation" class="text-sm">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
           </div>
         </div>
@@ -297,7 +317,11 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
         <!-- Beschreibung -->
         <div class="flex flex-col gap-1">
           <label for="description" class="font-semibold">{{ t('rentableUnits.form.description') }}</label>
-          <Textarea id="description" name="description" :rows="4" autoResize fluid />
+          <Textarea
+            id="description" name="description"
+            :rows="4" autoResize
+            fluid
+          />
         </div>
 
         <div class="flex justify-end gap-2">

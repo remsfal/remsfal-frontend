@@ -9,6 +9,7 @@ import Select from 'primevue/select';
 import Message from 'primevue/message';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
+import Checkbox from 'primevue/checkbox';
 import Textarea from 'primevue/textarea';
 
 import { Form } from '@primevue/forms';
@@ -290,8 +291,10 @@ async function onSubmit(event: FormSubmitEvent) {
               @update:modelValue="(v) => (currentValues.location = v as string)"
             />
             <div class="flex items-center gap-2 mt-1">
-              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
-              <label for="titleMatchesLocation" class="text-sm text-surface-600">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
+              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
+              <label for="titleMatchesLocation" class="text-sm text-surface-600">
+                {{ t('rentableUnits.form.locationMatchesTitle') }}
+              </label>
             </div>
           </div>
 

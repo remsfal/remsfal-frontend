@@ -406,7 +406,7 @@
   "rentableUnits.form.titlePlaceholder": "Title of the new property",
   "rentableUnits.button.addProperty": "Add Property",
   "rentableUnits.button.createProperty": "Create Property",
-  "rentableUnits.button.addAnnexation": "Add Annexation",
+  "rentableUnits.button.addAnnexation": "Add Facility",
   "rentableUnits.button.addUnit": "Add Unit",
   "rentableUnits.dialog.addUnit": "Add Unit",
   "rentableUnits.type.building.label": "Building",

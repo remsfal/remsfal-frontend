@@ -9,6 +9,7 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import Fieldset from 'primevue/fieldset';
 import Message from 'primevue/message';
+import Checkbox from 'primevue/checkbox';
 import SelectButton from 'primevue/selectbutton';
 
 import { Form } from '@primevue/forms';
@@ -45,20 +46,6 @@ const resolver = zodResolver(schema);
 
 const titleMatchesLocation = ref(false);
 
-watch(titleMatchesLocation, (checked) => {
-  if (checked) {
-    currentValues.location = currentValues.title;
-    initialValues.value = { ...currentValues };
-    formKey.value++;
-  }
-});
-
-watch(() => currentValues.title, (newTitle) => {
-  if (titleMatchesLocation.value) {
-    currentValues.location = newTitle;
-  }
-});
-
 // ─── DIN 277 mode toggle ──────────────────────────────────────────────────────
 type Din277Mode = 'total' | 'detail';
 const din277Mode = ref<Din277Mode>('total');
@@ -83,6 +70,20 @@ const serverValues = reactive({
 const currentValues = reactive({ ...serverValues });
 const initialValues = ref({ ...currentValues });
 const formKey = ref(0);
+
+watch(titleMatchesLocation, (checked) => {
+  if (checked) {
+    currentValues.location = currentValues.title;
+    initialValues.value = { ...currentValues };
+    formKey.value++;
+  }
+});
+
+watch(() => currentValues.title, (newTitle) => {
+  if (titleMatchesLocation.value) {
+    currentValues.location = newTitle;
+  }
+});
 
 const isDirty = computed(() =>
   currentValues.title !== serverValues.title ||
@@ -254,8 +255,10 @@ async function onSubmit(event: FormSubmitEvent) {
               @update:modelValue="(v) => (currentValues.location = v as string)"
             />
             <div class="flex items-center gap-2 mt-1">
-              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
-              <label for="titleMatchesLocation" class="text-sm text-surface-600">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
+              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
+              <label for="titleMatchesLocation" class="text-sm text-surface-600">
+                {{ t('rentableUnits.form.locationMatchesTitle') }}
+              </label>
             </div>
             <Message
               v-if="$form.location?.invalid && $form.location?.touched"

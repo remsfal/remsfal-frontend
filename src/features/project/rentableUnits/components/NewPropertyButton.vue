@@ -28,7 +28,9 @@ const toast = useToast();
 const visible = ref<boolean>(false);
 const titleMatchesLocation = ref(true);
 const currentTitle = ref('');
-const initialValues = ref({ title: '', location: '', description: '' });
+const initialValues = ref({
+ title: '', location: '', description: '' 
+});
 const formKey = ref(0);
 
 const schema = z.object({
@@ -64,7 +66,9 @@ async function onSubmit(event: FormSubmitEvent) {
 
     titleMatchesLocation.value = true;
     currentTitle.value = '';
-    initialValues.value = { title: '', location: '', description: '' };
+    initialValues.value = {
+ title: '', location: '', description: '' 
+};
     formKey.value++;
     visible.value = false;
 
@@ -91,6 +95,7 @@ async function onSubmit(event: FormSubmitEvent) {
     type="button"
     icon="pi pi-plus"
     :label="t('rentableUnits.button.addProperty')"
+    pt:root="min-w-[188px]"
     @click="visible = true"
   />
 
@@ -139,7 +144,7 @@ async function onSubmit(event: FormSubmitEvent) {
             :disabled="titleMatchesLocation"
           />
           <div class="flex items-center gap-2 mt-1">
-            <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" :binary="true" />
+            <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
             <label for="titleMatchesLocation" class="text-sm">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
           </div>
         </div>
@@ -147,7 +152,11 @@ async function onSubmit(event: FormSubmitEvent) {
         <!-- Beschreibung -->
         <div class="flex flex-col gap-1">
           <label for="description" class="font-semibold">{{ t('rentableUnits.form.description') }}</label>
-          <Textarea id="description" name="description" :rows="4" autoResize fluid />
+          <Textarea
+            id="description" name="description"
+            :rows="4" autoResize
+            fluid
+          />
         </div>
 
         <div class="flex justify-end gap-2">
