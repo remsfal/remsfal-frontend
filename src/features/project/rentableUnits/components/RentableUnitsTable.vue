@@ -134,13 +134,13 @@ function onNewRentableUnit(title: string) {
     </Column>
 
     <Column
-      field="usable_space"
+      field="space"
       :header="t('rentableUnits.table.area')"
       headerClass="hidden lg:table-cell"
       bodyClass="hidden lg:table-cell"
     >
       <template #body="{ node }">
-        <div>{{ node.data.usable_space }}</div>
+        <div>{{ node.data.space != null ? node.data.space + ' m²' : '' }}</div>
       </template>
     </Column>
 
