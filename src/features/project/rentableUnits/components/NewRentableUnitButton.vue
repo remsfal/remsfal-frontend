@@ -71,14 +71,14 @@ const options = computed(() => {
       {
         type: EntityType.Building,
         icon: UNIT_TYPE_ICONS.BUILDING,
-        label: 'Gebäude',
-        description: 'Kann aus Wohnungen, Garagen, Nebennutzungsräumen und Gewerbeeinheiten bestehen',
+        label: t('rentableUnits.type.building.label'),
+        description: t('rentableUnits.type.building.description'),
       },
       {
         type: EntityType.Site,
         icon: UNIT_TYPE_ICONS.SITE,
-        label: 'Außenanlage',
-        description: 'Garten, Stellplatz oder Grundstücksteil mit reiner Außenanlagenfläche',
+        label: t('rentableUnits.type.site.label'),
+        description: t('rentableUnits.type.site.description'),
       },
     ];
   }
@@ -87,20 +87,20 @@ const options = computed(() => {
       {
         type: EntityType.Apartment,
         icon: UNIT_TYPE_ICONS.APARTMENT,
-        label: 'Wohnung',
-        description: 'Verfügt über eine Wohnfläche nach Wohnflächenverordnung (WoFlV)',
+        label: t('rentableUnits.type.apartment.label'),
+        description: t('rentableUnits.type.apartment.description'),
       },
       {
         type: EntityType.Commercial,
         icon: UNIT_TYPE_ICONS.COMMERCIAL,
-        label: 'Gewerbe',
-        description: 'Gewerbeflächen nach DIN 277',
+        label: t('rentableUnits.type.commercial.label'),
+        description: t('rentableUnits.type.commercial.description'),
       },
       {
         type: EntityType.Storage,
         icon: UNIT_TYPE_ICONS.STORAGE,
-        label: 'Nebennutzungsraum',
-        description: 'Kann eine Garage, Keller oder Hobbyraum sein mit reiner Nutzfläche',
+        label: t('rentableUnits.type.storage.label'),
+        description: t('rentableUnits.type.storage.description'),
       },
     ];
   }
@@ -216,7 +216,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
     v-if="props.type === EntityType.Project"
     type="button"
     icon="pi pi-plus"
-    label="Grundstück erstellen"
+    :label="t('rentableUnits.button.createProperty')"
     severity="success"
     @click="
       visible = true;
@@ -228,7 +228,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
     <Button
       type="button"
       icon="pi pi-plus"
-      :label="props.type === EntityType.Property ? 'Anlage hinzufügen' : 'Einheit hinzufügen'"
+      :label="props.type === EntityType.Property ? t('rentableUnits.button.addAnnexation') : t('rentableUnits.button.addUnit')"
       @click="toggle"
     />
     <Popover ref="op">
@@ -249,7 +249,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
     </Popover>
   </template>
 
-  <Dialog v-model:visible="visible" modal header="Einheit hinzufügen" :style="{ width: '35rem' }">
+  <Dialog v-model:visible="visible" modal :header="t('rentableUnits.dialog.addUnit')" :style="{ width: '35rem' }">
     <Form
       :key="formKey"
       v-slot="$form"
