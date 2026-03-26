@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import TreeTable, { type TreeTableExpandedKeys, type TreeTableSelectionKeys } from 'primevue/treetable';
-import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
+import type { RentalUnitNodeDataJson, RentalUnitTreeNodeJson } from '@/services/PropertyService';
 import { toRentableUnitView } from '@/services/PropertyService';
 import type { components } from '@/services/api/platform-schema';
 import NewRentableUnitButton from './NewRentableUnitButton.vue';
@@ -28,6 +28,14 @@ const { t } = useI18n();
 const router = useRouter();
 
 const selectedKey = ref<TreeTableSelectionKeys>({});
+
+function locationOrDescription(data: RentalUnitNodeDataJson): string | undefined {
+  const { title, location, description } = data;
+  if (location && !(location === title && description)) {
+    return location;
+  }
+  return description;
+}
 
 function expandAll() {
   emit('expandAll');
@@ -110,7 +118,7 @@ function onNewRentableUnit(title: string) {
       bodyClass="hidden lg:table-cell"
     >
       <template #body="{ node }">
-        <div>{{ node.data.description }}</div>
+        <div>{{ locationOrDescription(node.data) }}</div>
       </template>
     </Column>
 

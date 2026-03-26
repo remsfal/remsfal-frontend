@@ -255,7 +255,7 @@
   "rentableUnits.button.collapseAll": "Collapse all",
   "rentableUnits.table.title": "Title",
   "rentableUnits.table.type": "Type",
-  "rentableUnits.table.description": "Description",
+  "rentableUnits.table.description": "Location/Description",
   "rentableUnits.table.tenant": "Tenant",
   "rentableUnits.table.area": "Area",
   "rentableUnits.view.title": "Rentable Units",

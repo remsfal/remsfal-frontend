@@ -265,7 +265,7 @@
   "rentableUnits.form.titleRequired": "Titel ist ein Pflichtfeld!",
   "rentableUnits.table.title": "Titel",
   "rentableUnits.table.type": "Typ",
-  "rentableUnits.table.description": "Beschreibung",
+  "rentableUnits.table.description": "Standort/Beschreibung",
   "rentableUnits.table.tenant": "Mieter",
   "rentableUnits.table.area": "Fläche",
   "rentableUnits.delete.confirmTitle": "Mieteinheit wirklich löschen?",
