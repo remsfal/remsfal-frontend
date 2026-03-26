@@ -117,4 +117,55 @@ describe('UnitBreadcrumb.vue', () => {
       params: { projectId: 'proj-1' },
     });
   });
+
+  it('shows only overview link when backend fails with a unitId', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockRejectedValue(new Error('Backend down'));
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: { projectId: 'p1', unitId: 'unit-1' },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
+    expect(model).toHaveLength(1);
+    expect(model[0].label).toBe('breadcrumb.overview');
+  });
+
+  it('calls router.push when a non-last breadcrumb item is clicked', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(mockTree);
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: defaultProps,
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
+    // model[1] = Property A (non-last item) — should navigate
+    model[1].command();
+    expect(mockPush).toHaveBeenCalledWith(
+      expect.objectContaining({ params: expect.objectContaining({ unitId: 'prop-1' }) }),
+    );
+  });
+
+  it('calls preventDefault and does not navigate when last breadcrumb item is clicked', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(mockTree);
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: defaultProps,
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
+    const preventDefault = vi.fn();
+    // model[2] = My Unit (last item) — should prevent default only
+    model[2].command({ originalEvent: { preventDefault } });
+    expect(preventDefault).toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 });

@@ -183,4 +183,22 @@ describe('RentableUnitsTable.vue', () => {
     const treeTable = wrapper.findComponent({ name: 'TreeTable' });
     expect(treeTable.props('expandedKeys')).toEqual(expandedKeys);
   });
+
+  test('locationOrDescription returns location when location differs from title', () => {
+    const result = wrapper.vm.locationOrDescription({
+      title: 'My Building',
+      location: 'Floor 3',
+      description: undefined,
+    } as any);
+    expect(result).toBe('Floor 3');
+  });
+
+  test('locationOrDescription returns description when location equals title and description exists', () => {
+    const result = wrapper.vm.locationOrDescription({
+      title: 'Same',
+      location: 'Same',
+      description: 'Some description',
+    } as any);
+    expect(result).toBe('Some description');
+  });
 });

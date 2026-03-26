@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue';
+import { reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-import Textarea from 'primevue/textarea';
 import Fieldset from 'primevue/fieldset';
-import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
 
-import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
-import BaseCard from '@/components/common/BaseCard.vue';
+import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
+import {
+  useRentableUnitForm,
+  createBaseRentableUnitSchema,
+} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
 import { buildingService } from '@/services/BuildingService.ts';
 import type { BuildingJson } from '@/services/BuildingService.ts';
 import { showSavingErrorToast } from '@/helper/viewHelper.ts';
@@ -30,9 +29,7 @@ const { t } = useI18n();
 const toast = useToast();
 
 const schema = z.object({
-  title: z.string().trim().min(3, { message: t('validation.minLength', { min: 3 }) }),
-  description: z.string().trim().max(500, { message: t('validation.maxLength', { max: 500 }) }).optional().or(z.literal('')),
-  location: z.string().trim().optional().or(z.literal('')),
+  ...createBaseRentableUnitSchema(t),
   grossFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   netFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   constructionFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
@@ -56,24 +53,7 @@ const serverValues = reactive({
 });
 
 const currentValues = reactive({ ...serverValues });
-const initialValues = ref({ ...currentValues });
-const formKey = ref(0);
-
-const titleMatchesLocation = ref(false);
-
-watch(titleMatchesLocation, (checked) => {
-  if (checked) {
-    currentValues.location = currentValues.title;
-    initialValues.value = { ...currentValues };
-    formKey.value++;
-  }
-});
-
-watch(() => currentValues.title, (newTitle) => {
-  if (titleMatchesLocation.value) {
-    currentValues.location = newTitle;
-  }
-});
+const { titleMatchesLocation, formKey, initialValues, syncState } = useRentableUnitForm(currentValues);
 
 const isDirty = computed(() =>
   currentValues.title !== serverValues.title ||
@@ -89,17 +69,12 @@ const isDirty = computed(() =>
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn',
-      summary: t('error.general'),
-      detail: t('building.noId'),
-      life: 6000,
-    });
+    toast.add({ severity: 'warn', summary: t('error.general'), detail: t('building.noId'), life: 6000 });
     return;
   }
   try {
     const data = await buildingService.getBuilding(props.projectId, props.unitId);
-    const loaded = {
+    syncState(serverValues, currentValues, {
       title: data.title || '',
       description: data.description || '',
       location: data.location || '',
@@ -109,20 +84,10 @@ onMounted(async () => {
       livingSpace: data.livingSpace ?? null,
       usableSpace: data.usableSpace ?? null,
       heatingSpace: data.heatingSpace ?? null,
-    };
-    Object.assign(serverValues, loaded);
-    Object.assign(currentValues, loaded);
-    initialValues.value = { ...loaded };
-    titleMatchesLocation.value = !!(loaded.title && loaded.location && loaded.title === loaded.location);
-    formKey.value++;
+    });
   } catch (err) {
     console.error('Fehler beim Laden der Gebäudedaten:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('building.loadError'),
-      life: 6000,
-    });
+    toast.add({ severity: 'error', summary: t('error.general'), detail: t('building.loadError'), life: 6000 });
   }
 });
 
@@ -142,7 +107,7 @@ async function onSubmit(event: FormSubmitEvent) {
   };
   try {
     await buildingService.updateBuilding(props.projectId, props.unitId, payload);
-    const saved = {
+    syncState(serverValues, currentValues, {
       title: payload.title || '',
       description: payload.description || '',
       location: payload.location || '',
@@ -152,17 +117,8 @@ async function onSubmit(event: FormSubmitEvent) {
       livingSpace: payload.livingSpace ?? null,
       usableSpace: payload.usableSpace ?? null,
       heatingSpace: payload.heatingSpace ?? null,
-    };
-    Object.assign(serverValues, saved);
-    Object.assign(currentValues, saved);
-    initialValues.value = { ...saved };
-    formKey.value++;
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('building.saveSuccess'),
-      life: 3000,
     });
+    toast.add({ severity: 'success', summary: t('success.saved'), detail: t('building.saveSuccess'), life: 3000 });
   } catch (err) {
     console.error('Fehler beim Speichern der Gebäudedaten:', err);
     showSavingErrorToast(toast, t('building.saveError'));
@@ -171,235 +127,162 @@ async function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <BaseCard>
-    <template #title>
-      {{ t('building.cardTitle') }}
-    </template>
-
-    <template #content>
-      <Form
-        :key="formKey"
-        v-slot="$form"
-        :initialValues
-        :resolver
-        @submit="onSubmit"
-      >
-        <div class="flex flex-col gap-6">
-          <!-- Titel -->
+  <RentableUnitBaseDataCard
+    :cardTitle="t('building.cardTitle')"
+    :formKey
+    :initialValues
+    :resolver
+    :isDirty
+    :titleMatchesLocation
+    :currentValues
+    :titleLabel="t('building.title')"
+    :locationLabel="t('building.location')"
+    :descriptionLabel="t('building.description')"
+    @submit="onSubmit"
+    @update:titleMatchesLocation="(v) => (titleMatchesLocation = v)"
+  >
+    <template #fields="{ form }">
+      <!-- DIN 277 -->
+      <Fieldset :legend="t('building.din277.legend')">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
+          <!-- Brutto-Grundfläche BGF -->
           <div class="flex flex-col gap-1">
-            <label for="title" class="font-medium">{{ t('building.title') }}*</label>
-            <InputText
-              id="title"
-              name="title"
+            <label for="grossFloorArea" class="font-medium">{{ t('building.grossFloorArea') }}</label>
+            <InputNumber
+              id="grossFloorArea"
+              name="grossFloorArea"
+              :min="0"
+              :maxFractionDigits="2"
+              suffix=" m²"
               fluid
-              @update:modelValue="(v) => (currentValues.title = v as string)"
+              @update:modelValue="(v) => (currentValues.grossFloorArea = v as number | null)"
             />
             <Message
-              v-if="$form.title?.invalid && $form.title?.touched"
+              v-if="form.grossFloorArea?.invalid && form.grossFloorArea?.touched"
               severity="error"
               size="small"
               variant="simple"
             >
-              {{ $form.title.error?.message }}
+              {{ form.grossFloorArea.error?.message }}
             </Message>
           </div>
 
-          <!-- Lage/Standort -->
+          <!-- Netto-Raumfläche NRF -->
           <div class="flex flex-col gap-1">
-            <label for="location" class="font-medium">{{ t('building.location') }}</label>
-            <InputText
-              id="location"
-              name="location"
+            <label for="netFloorArea" class="font-medium">{{ t('building.netFloorArea') }}</label>
+            <InputNumber
+              id="netFloorArea"
+              name="netFloorArea"
+              :min="0"
+              :maxFractionDigits="2"
+              suffix=" m²"
               fluid
-              :disabled="titleMatchesLocation"
-              @update:modelValue="(v) => (currentValues.location = v as string)"
-            />
-            <div class="flex items-center gap-2 mt-1">
-              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
-              <label for="titleMatchesLocation" class="text-sm text-surface-600">
-                {{ t('rentableUnits.form.locationMatchesTitle') }}
-              </label>
-            </div>
-          </div>
-
-          <!-- Beschreibung -->
-          <div class="flex flex-col gap-1">
-            <label for="description" class="font-medium">{{ t('building.description') }}</label>
-            <Textarea
-              id="description"
-              name="description"
-              :rows="3"
-              autoResize
-              fluid
-              @update:modelValue="(v) => (currentValues.description = v as string)"
+              @update:modelValue="(v) => (currentValues.netFloorArea = v as number | null)"
             />
             <Message
-              v-if="$form.description?.invalid && $form.description?.touched"
+              v-if="form.netFloorArea?.invalid && form.netFloorArea?.touched"
               severity="error"
               size="small"
               variant="simple"
             >
-              {{ $form.description.error?.message }}
+              {{ form.netFloorArea.error?.message }}
             </Message>
           </div>
 
-          <!-- DIN 277 -->
-          <Fieldset :legend="t('building.din277.legend')">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
-              <!-- Brutto-Grundfläche BGF -->
-              <div class="flex flex-col gap-1">
-                <label for="grossFloorArea" class="font-medium">{{ t('building.grossFloorArea') }}</label>
-                <InputNumber
-                  id="grossFloorArea"
-                  name="grossFloorArea"
-                  :min="0"
-                  :maxFractionDigits="2"
-                  suffix=" m²"
-                  fluid
-                  @update:modelValue="(v) => (currentValues.grossFloorArea = v as number | null)"
-                />
-                <Message
-                  v-if="$form.grossFloorArea?.invalid && $form.grossFloorArea?.touched"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                >
-                  {{ $form.grossFloorArea.error?.message }}
-                </Message>
-              </div>
-
-              <!-- Netto-Raumfläche NRF -->
-              <div class="flex flex-col gap-1">
-                <label for="netFloorArea" class="font-medium">{{ t('building.netFloorArea') }}</label>
-                <InputNumber
-                  id="netFloorArea"
-                  name="netFloorArea"
-                  :min="0"
-                  :maxFractionDigits="2"
-                  suffix=" m²"
-                  fluid
-                  @update:modelValue="(v) => (currentValues.netFloorArea = v as number | null)"
-                />
-                <Message
-                  v-if="$form.netFloorArea?.invalid && $form.netFloorArea?.touched"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                >
-                  {{ $form.netFloorArea.error?.message }}
-                </Message>
-              </div>
-
-              <!-- Konstruktions-Grundfläche KGF -->
-              <div class="flex flex-col gap-1">
-                <label for="constructionFloorArea" class="font-medium">{{ t('building.constructionFloorArea') }}</label>
-                <InputNumber
-                  id="constructionFloorArea"
-                  name="constructionFloorArea"
-                  :min="0"
-                  :maxFractionDigits="2"
-                  suffix=" m²"
-                  fluid
-                  @update:modelValue="(v) => (currentValues.constructionFloorArea = v as number | null)"
-                />
-                <Message
-                  v-if="$form.constructionFloorArea?.invalid && $form.constructionFloorArea?.touched"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                >
-                  {{ $form.constructionFloorArea.error?.message }}
-                </Message>
-              </div>
-            </div>
-          </Fieldset>
-
-          <!-- WoFlV -->
-          <Fieldset :legend="t('building.woflv.legend')">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
-              <!-- Wohnfläche -->
-              <div class="flex flex-col gap-1">
-                <label for="livingSpace" class="font-medium">{{ t('building.livingSpace') }}</label>
-                <InputNumber
-                  id="livingSpace"
-                  name="livingSpace"
-                  :min="0"
-                  :maxFractionDigits="2"
-                  suffix=" m²"
-                  fluid
-                  @update:modelValue="(v) => (currentValues.livingSpace = v as number | null)"
-                />
-                <Message
-                  v-if="$form.livingSpace?.invalid && $form.livingSpace?.touched"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                >
-                  {{ $form.livingSpace.error?.message }}
-                </Message>
-              </div>
-
-              <!-- Nutzfläche -->
-              <div class="flex flex-col gap-1">
-                <label for="usableSpace" class="font-medium">{{ t('building.usableSpace') }}</label>
-                <InputNumber
-                  id="usableSpace"
-                  name="usableSpace"
-                  :min="0"
-                  :maxFractionDigits="2"
-                  suffix=" m²"
-                  fluid
-                  @update:modelValue="(v) => (currentValues.usableSpace = v as number | null)"
-                />
-                <Message
-                  v-if="$form.usableSpace?.invalid && $form.usableSpace?.touched"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                >
-                  {{ $form.usableSpace.error?.message }}
-                </Message>
-              </div>
-
-              <!-- Heizfläche -->
-              <div class="flex flex-col gap-1">
-                <label for="heatingSpace" class="font-medium">{{ t('building.heatingSpace') }}</label>
-                <InputNumber
-                  id="heatingSpace"
-                  name="heatingSpace"
-                  :min="0"
-                  :maxFractionDigits="2"
-                  suffix=" m²"
-                  fluid
-                  @update:modelValue="(v) => (currentValues.heatingSpace = v as number | null)"
-                />
-                <Message
-                  v-if="$form.heatingSpace?.invalid && $form.heatingSpace?.touched"
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                >
-                  {{ $form.heatingSpace.error?.message }}
-                </Message>
-              </div>
-            </div>
-          </Fieldset>
-
-          <Message size="small" severity="secondary" variant="simple">
-            {{ t('accountSettings.userProfile.requiredFields') }}
-          </Message>
-
-          <!-- Speichern -->
-          <div class="flex justify-end">
-            <Button
-              type="submit"
-              :label="t('button.save')"
-              icon="pi pi-save"
-              :disabled="!isDirty"
+          <!-- Konstruktions-Grundfläche KGF -->
+          <div class="flex flex-col gap-1">
+            <label for="constructionFloorArea" class="font-medium">{{ t('building.constructionFloorArea') }}</label>
+            <InputNumber
+              id="constructionFloorArea"
+              name="constructionFloorArea"
+              :min="0"
+              :maxFractionDigits="2"
+              suffix=" m²"
+              fluid
+              @update:modelValue="(v) => (currentValues.constructionFloorArea = v as number | null)"
             />
+            <Message
+              v-if="form.constructionFloorArea?.invalid && form.constructionFloorArea?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ form.constructionFloorArea.error?.message }}
+            </Message>
           </div>
         </div>
-      </Form>
+      </Fieldset>
+
+      <!-- WoFlV -->
+      <Fieldset :legend="t('building.woflv.legend')">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
+          <!-- Wohnfläche -->
+          <div class="flex flex-col gap-1">
+            <label for="livingSpace" class="font-medium">{{ t('building.livingSpace') }}</label>
+            <InputNumber
+              id="livingSpace"
+              name="livingSpace"
+              :min="0"
+              :maxFractionDigits="2"
+              suffix=" m²"
+              fluid
+              @update:modelValue="(v) => (currentValues.livingSpace = v as number | null)"
+            />
+            <Message
+              v-if="form.livingSpace?.invalid && form.livingSpace?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ form.livingSpace.error?.message }}
+            </Message>
+          </div>
+
+          <!-- Nutzfläche -->
+          <div class="flex flex-col gap-1">
+            <label for="usableSpace" class="font-medium">{{ t('building.usableSpace') }}</label>
+            <InputNumber
+              id="usableSpace"
+              name="usableSpace"
+              :min="0"
+              :maxFractionDigits="2"
+              suffix=" m²"
+              fluid
+              @update:modelValue="(v) => (currentValues.usableSpace = v as number | null)"
+            />
+            <Message
+              v-if="form.usableSpace?.invalid && form.usableSpace?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ form.usableSpace.error?.message }}
+            </Message>
+          </div>
+
+          <!-- Heizfläche -->
+          <div class="flex flex-col gap-1">
+            <label for="heatingSpace" class="font-medium">{{ t('building.heatingSpace') }}</label>
+            <InputNumber
+              id="heatingSpace"
+              name="heatingSpace"
+              :min="0"
+              :maxFractionDigits="2"
+              suffix=" m²"
+              fluid
+              @update:modelValue="(v) => (currentValues.heatingSpace = v as number | null)"
+            />
+            <Message
+              v-if="form.heatingSpace?.invalid && form.heatingSpace?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ form.heatingSpace.error?.message }}
+            </Message>
+          </div>
+        </div>
+      </Fieldset>
     </template>
-  </BaseCard>
+  </RentableUnitBaseDataCard>
 </template>

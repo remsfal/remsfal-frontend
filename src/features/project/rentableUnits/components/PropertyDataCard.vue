@@ -1,29 +1,26 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue';
+import { reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
-// PrimeVue Components
-import Button from 'primevue/button';
 import Select from 'primevue/select';
 import Message from 'primevue/message';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-import Checkbox from 'primevue/checkbox';
-import Textarea from 'primevue/textarea';
 
-import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import BaseCard from '@/components/common/BaseCard.vue';
 
-// Services & Types
+import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
+import {
+  useRentableUnitForm,
+  createBaseRentableUnitSchema,
+} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
 import { propertyService } from '@/services/PropertyService.ts';
 import type { PropertyJson } from '@/services/PropertyService.ts';
 import { showSavingErrorToast } from '@/helper/viewHelper.ts';
 
-// Props & Emits
 const props = defineProps<{
   projectId: string;
   unitId: string;
@@ -95,8 +92,7 @@ const usageOptions = [
 ];
 
 const schema = z.object({
-  title: z.string().trim().min(3, { message: t('validation.minLength', { min: 3 }) }),
-  description: z.string().trim().max(500, { message: t('validation.maxLength', { max: 500 }) }).optional().or(z.literal('')),
+  ...createBaseRentableUnitSchema(t),
   cadastralDistrict: z.string().trim().optional().or(z.literal('')),
   sheetNumber: z.string().trim().optional().or(z.literal('')),
   cadastralSection: z.string().trim().optional().or(z.literal('')),
@@ -104,7 +100,6 @@ const schema = z.object({
   plotNumber: z.number().int().positive({ message: t('validation.minValue', { min: 1 }) }).nullable().optional(),
   landRegistry: z.string().trim().optional().or(z.literal('')),
   economyType: z.string().nullable().optional(),
-  location: z.string().trim().optional().or(z.literal('')),
   plotArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   space: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
 });
@@ -119,25 +114,7 @@ const serverValues = reactive({
 });
 
 const currentValues = reactive({ ...serverValues });
-
-const initialValues = ref({ ...currentValues });
-const formKey = ref(0);
-
-const titleMatchesLocation = ref(false);
-
-watch(titleMatchesLocation, (checked) => {
-  if (checked) {
-    currentValues.location = currentValues.title;
-    initialValues.value = { ...currentValues };
-    formKey.value++;
-  }
-});
-
-watch(() => currentValues.title, (newTitle) => {
-  if (titleMatchesLocation.value) {
-    currentValues.location = newTitle;
-  }
-});
+const { titleMatchesLocation, formKey, initialValues, syncState } = useRentableUnitForm(currentValues);
 
 const isDirty = computed(() =>
   currentValues.title !== serverValues.title ||
@@ -156,17 +133,12 @@ const isDirty = computed(() =>
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn',
-      summary: t('error.general'),
-      detail: t('property.noId'),
-      life: 6000,
-    });
+    toast.add({ severity: 'warn', summary: t('error.general'), detail: t('property.noId'), life: 6000 });
     return;
   }
   try {
     const data = await propertyService.getProperty(props.projectId, props.unitId);
-    const loaded = {
+    syncState(serverValues, currentValues, {
       title: data.title || '',
       description: data.description || '',
       cadastralDistrict: data.cadastralDistrict || '',
@@ -179,20 +151,10 @@ onMounted(async () => {
       location: data.location || '',
       plotArea: data.plotArea ?? null,
       space: data.space ?? null,
-    };
-    Object.assign(serverValues, loaded);
-    Object.assign(currentValues, loaded);
-    initialValues.value = { ...loaded };
-    titleMatchesLocation.value = !!(loaded.title && loaded.location && loaded.title === loaded.location);
-    formKey.value++;
+    });
   } catch (err) {
     console.error('Fehler beim Laden der Grundstücksdaten:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('property.loadError'),
-      life: 6000,
-    });
+    toast.add({ severity: 'error', summary: t('error.general'), detail: t('property.loadError'), life: 6000 });
   }
 });
 
@@ -215,7 +177,7 @@ async function onSubmit(event: FormSubmitEvent) {
   };
   try {
     await propertyService.updateProperty(props.projectId, props.unitId, payload);
-    const saved = {
+    syncState(serverValues, currentValues, {
       title: payload.title || '',
       description: payload.description || '',
       cadastralDistrict: payload.cadastralDistrict || '',
@@ -228,17 +190,8 @@ async function onSubmit(event: FormSubmitEvent) {
       location: payload.location || '',
       plotArea: payload.plotArea ?? null,
       space: payload.space ?? null,
-    };
-    Object.assign(serverValues, saved);
-    Object.assign(currentValues, saved);
-    initialValues.value = { ...saved };
-    formKey.value++;
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('property.saveSuccess'),
-      life: 3000,
     });
+    toast.add({ severity: 'success', summary: t('success.saved'), detail: t('property.saveSuccess'), life: 3000 });
   } catch (err) {
     console.error('Fehler beim Speichern der Grundstücksdaten:', err);
     showSavingErrorToast(toast, t('property.saveError'));
@@ -247,228 +200,158 @@ async function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <BaseCard>
-    <template #title>
-      {{ t('property.cardTitle') }}
-    </template>
-
-    <template #content>
-      <Form
-        :key="formKey"
-        v-slot="$form"
-        :initialValues
-        :resolver
-        @submit="onSubmit"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          <!-- Titel -->
-          <div class="col-span-2 flex flex-col gap-1">
-            <label for="title" class="font-medium">{{ t('property.title') }}*</label>
-            <InputText
-              id="title"
-              name="title"
-              fluid
-              @update:modelValue="(v) => (currentValues.title = v as string)"
-            />
-            <Message
-              v-if="$form.title?.invalid && $form.title?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.title.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Lage/Standort -->
-          <div class="col-span-2 flex flex-col gap-1">
-            <label for="location" class="font-medium">{{ t('property.location') }}</label>
-            <InputText
-              id="location"
-              name="location"
-              fluid
-              :disabled="titleMatchesLocation"
-              @update:modelValue="(v) => (currentValues.location = v as string)"
-            />
-            <div class="flex items-center gap-2 mt-1">
-              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
-              <label for="titleMatchesLocation" class="text-sm text-surface-600">
-                {{ t('rentableUnits.form.locationMatchesTitle') }}
-              </label>
-            </div>
-          </div>
-
-          <!-- Beschreibung -->
-          <div class="col-span-2 flex flex-col gap-1">
-            <label for="description" class="font-medium">{{ t('property.description') }}</label>
-            <Textarea
-              id="description"
-              name="description"
-              :rows="3"
-              autoResize
-              fluid
-              @update:modelValue="(v) => (currentValues.description = v as string)"
-            />
-            <Message
-              v-if="$form.description?.invalid && $form.description?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.description.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Gemarkung -->
-          <div class="flex flex-col gap-1">
-            <label for="cadastralDistrict" class="font-medium">{{ t('property.cadastralDistrict') }}</label>
-            <InputText
-              id="cadastralDistrict"
-              name="cadastralDistrict"
-              fluid
-              @update:modelValue="(v) => (currentValues.cadastralDistrict = v as string)"
-            />
-          </div>
-
-          <!-- Blattnummer -->
-          <div class="flex flex-col gap-1">
-            <label for="sheetNumber" class="font-medium">{{ t('property.sheetNumber') }}</label>
-            <InputText
-              id="sheetNumber"
-              name="sheetNumber"
-              fluid
-              @update:modelValue="(v) => (currentValues.sheetNumber = v as string)"
-            />
-          </div>
-
-          <!-- Flur -->
-          <div class="flex flex-col gap-1">
-            <label for="cadastralSection" class="font-medium">{{ t('property.cadastralSection') }}</label>
-            <InputText
-              id="cadastralSection"
-              name="cadastralSection"
-              fluid
-              @update:modelValue="(v) => (currentValues.cadastralSection = v as string)"
-            />
-          </div>
-
-          <!-- Flurstück -->
-          <div class="flex flex-col gap-1">
-            <label for="plot" class="font-medium">{{ t('property.plot') }}</label>
-            <InputText
-              id="plot"
-              name="plot"
-              fluid
-              @update:modelValue="(v) => (currentValues.plot = v as string)"
-            />
-          </div>
-
-          <!-- Flurstücksnummer -->
-          <div class="flex flex-col gap-1">
-            <label for="plotNumber" class="font-medium">{{ t('property.plotNumber') }}</label>
-            <InputNumber
-              id="plotNumber"
-              name="plotNumber"
-              :minFractionDigits="0"
-              :maxFractionDigits="0"
-              :min="1"
-              fluid
-              @update:modelValue="(v) => (currentValues.plotNumber = v as number | null)"
-            />
-            <Message
-              v-if="$form.plotNumber?.invalid && $form.plotNumber?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.plotNumber.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Liegenschaftsbuch -->
-          <div class="flex flex-col gap-1">
-            <label for="landRegistry" class="font-medium">{{ t('property.landRegister') }}</label>
-            <InputText
-              id="landRegistry"
-              name="landRegistry"
-              fluid
-              @update:modelValue="(v) => (currentValues.landRegistry = v as string)"
-            />
-          </div>
-
-          <!-- Wirtschaftsart -->
-          <div class="col-span-2 flex flex-col gap-1">
-            <label for="economyType" class="font-medium">{{ t('property.economyType') }}</label>
-            <Select
-              id="economyType"
-              name="economyType"
-              :options="usageOptions"
-              optionLabel="label"
-              optionValue="value"
-              showClear
-              filter
-              fluid
-              @update:modelValue="(v) => (currentValues.economyType = v as string | null)"
-            />
-          </div>
-
-          <!-- Grundstücksfläche -->
-          <div class="flex flex-col gap-1">
-            <label for="plotArea" class="font-medium">{{ t('property.plotArea') }}</label>
-            <InputNumber
-              id="plotArea"
-              name="plotArea"
-              :min="0"
-              :maxFractionDigits="2"
-              fluid
-              @update:modelValue="(v) => (currentValues.plotArea = v as number | null)"
-            />
-            <Message
-              v-if="$form.plotArea?.invalid && $form.plotArea?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.plotArea.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Nutzfläche -->
-          <div class="flex flex-col gap-1">
-            <label for="space" class="font-medium">{{ t('property.space') }}</label>
-            <InputNumber
-              id="space"
-              name="space"
-              :min="0"
-              :maxFractionDigits="2"
-              fluid
-              @update:modelValue="(v) => (currentValues.space = v as number | null)"
-            />
-            <Message
-              v-if="$form.space?.invalid && $form.space?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.space.error?.message }}
-            </Message>
-          </div>
-
-          <Message size="small" severity="secondary" variant="simple" class="col-span-2">
-            {{ t('accountSettings.userProfile.requiredFields') }}
-          </Message>
-
-          <!-- Speichern -->
-          <div class="col-span-2 flex justify-end">
-            <Button
-              type="submit"
-              :label="t('button.save')"
-              icon="pi pi-save"
-              :disabled="!isDirty"
-            />
-          </div>
+  <RentableUnitBaseDataCard
+    :cardTitle="t('property.cardTitle')"
+    :formKey
+    :initialValues
+    :resolver
+    :isDirty
+    :titleMatchesLocation
+    :currentValues
+    :titleLabel="t('property.title')"
+    :locationLabel="t('property.location')"
+    :descriptionLabel="t('property.description')"
+    @submit="onSubmit"
+    @update:titleMatchesLocation="(v) => (titleMatchesLocation = v)"
+  >
+    <template #fields="{ form }">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+        <!-- Gemarkung -->
+        <div class="flex flex-col gap-1">
+          <label for="cadastralDistrict" class="font-medium">{{ t('property.cadastralDistrict') }}</label>
+          <InputText
+            id="cadastralDistrict"
+            name="cadastralDistrict"
+            fluid
+            @update:modelValue="(v) => (currentValues.cadastralDistrict = v as string)"
+          />
         </div>
-      </Form>
+
+        <!-- Blattnummer -->
+        <div class="flex flex-col gap-1">
+          <label for="sheetNumber" class="font-medium">{{ t('property.sheetNumber') }}</label>
+          <InputText
+            id="sheetNumber"
+            name="sheetNumber"
+            fluid
+            @update:modelValue="(v) => (currentValues.sheetNumber = v as string)"
+          />
+        </div>
+
+        <!-- Flur -->
+        <div class="flex flex-col gap-1">
+          <label for="cadastralSection" class="font-medium">{{ t('property.cadastralSection') }}</label>
+          <InputText
+            id="cadastralSection"
+            name="cadastralSection"
+            fluid
+            @update:modelValue="(v) => (currentValues.cadastralSection = v as string)"
+          />
+        </div>
+
+        <!-- Flurstück -->
+        <div class="flex flex-col gap-1">
+          <label for="plot" class="font-medium">{{ t('property.plot') }}</label>
+          <InputText
+            id="plot"
+            name="plot"
+            fluid
+            @update:modelValue="(v) => (currentValues.plot = v as string)"
+          />
+        </div>
+
+        <!-- Flurstücksnummer -->
+        <div class="flex flex-col gap-1">
+          <label for="plotNumber" class="font-medium">{{ t('property.plotNumber') }}</label>
+          <InputNumber
+            id="plotNumber"
+            name="plotNumber"
+            :minFractionDigits="0"
+            :maxFractionDigits="0"
+            :min="1"
+            fluid
+            @update:modelValue="(v) => (currentValues.plotNumber = v as number | null)"
+          />
+          <Message
+            v-if="form.plotNumber?.invalid && form.plotNumber?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ form.plotNumber.error?.message }}
+          </Message>
+        </div>
+
+        <!-- Liegenschaftsbuch -->
+        <div class="flex flex-col gap-1">
+          <label for="landRegistry" class="font-medium">{{ t('property.landRegister') }}</label>
+          <InputText
+            id="landRegistry"
+            name="landRegistry"
+            fluid
+            @update:modelValue="(v) => (currentValues.landRegistry = v as string)"
+          />
+        </div>
+
+        <!-- Wirtschaftsart -->
+        <div class="col-span-2 flex flex-col gap-1">
+          <label for="economyType" class="font-medium">{{ t('property.economyType') }}</label>
+          <Select
+            id="economyType"
+            name="economyType"
+            :options="usageOptions"
+            optionLabel="label"
+            optionValue="value"
+            showClear
+            filter
+            fluid
+            @update:modelValue="(v) => (currentValues.economyType = v as string | null)"
+          />
+        </div>
+
+        <!-- Grundstücksfläche -->
+        <div class="flex flex-col gap-1">
+          <label for="plotArea" class="font-medium">{{ t('property.plotArea') }}</label>
+          <InputNumber
+            id="plotArea"
+            name="plotArea"
+            :min="0"
+            :maxFractionDigits="2"
+            fluid
+            @update:modelValue="(v) => (currentValues.plotArea = v as number | null)"
+          />
+          <Message
+            v-if="form.plotArea?.invalid && form.plotArea?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ form.plotArea.error?.message }}
+          </Message>
+        </div>
+
+        <!-- Nutzfläche -->
+        <div class="flex flex-col gap-1">
+          <label for="space" class="font-medium">{{ t('property.space') }}</label>
+          <InputNumber
+            id="space"
+            name="space"
+            :min="0"
+            :maxFractionDigits="2"
+            fluid
+            @update:modelValue="(v) => (currentValues.space = v as number | null)"
+          />
+          <Message
+            v-if="form.space?.invalid && form.space?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ form.space.error?.message }}
+          </Message>
+        </div>
+
+      </div>
     </template>
-  </BaseCard>
+  </RentableUnitBaseDataCard>
 </template>

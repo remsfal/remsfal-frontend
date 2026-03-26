@@ -206,4 +206,43 @@ describe('CommercialDataCard.vue', () => {
     expect(wrapper.find('input[name="usableFloorArea"]').exists()).toBe(true);
     expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(false);
   });
+
+  it('location input is disabled when title matches location on load', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({ ...mockCommercial, title: 'Same', location: 'Same' });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('save button becomes enabled after location field changes', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    await wrapper.find('input[name="location"]').setValue('Neue Lage');
+    await flushPromises();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('title watcher enables save button when titleMatchesLocation is true and title changes', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({ ...mockCommercial, title: 'Same', location: 'Same' });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('submit sends title as location when titleMatchesLocation is true', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({ ...mockCommercial, title: 'Same', location: 'Same' });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ location: 'Neuer Titel' }),
+    );
+  });
 });

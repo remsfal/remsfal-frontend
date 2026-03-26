@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from 'vue';
+import { reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-import Textarea from 'primevue/textarea';
-import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
 
-import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
-import BaseCard from '@/components/common/BaseCard.vue';
+import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
+import {
+  useRentableUnitForm,
+  createBaseRentableUnitSchema,
+} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
 import { siteService } from '@/services/SiteService.ts';
 import type { SiteJson } from '@/services/SiteService.ts';
 import { showSavingErrorToast } from '@/helper/viewHelper.ts';
@@ -29,9 +28,7 @@ const { t } = useI18n();
 const toast = useToast();
 
 const schema = z.object({
-  title: z.string().trim().min(3, { message: t('validation.minLength', { min: 3 }) }),
-  description: z.string().trim().max(500, { message: t('validation.maxLength', { max: 500 }) }).optional().or(z.literal('')),
-  location: z.string().trim().optional().or(z.literal('')),
+  ...createBaseRentableUnitSchema(t),
   outdoorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   space: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
 });
@@ -47,24 +44,7 @@ const serverValues = reactive({
 });
 
 const currentValues = reactive({ ...serverValues });
-const initialValues = ref({ ...currentValues });
-const formKey = ref(0);
-
-const titleMatchesLocation = ref(false);
-
-watch(titleMatchesLocation, (checked) => {
-  if (checked) {
-    currentValues.location = currentValues.title;
-    initialValues.value = { ...currentValues };
-    formKey.value++;
-  }
-});
-
-watch(() => currentValues.title, (newTitle) => {
-  if (titleMatchesLocation.value) {
-    currentValues.location = newTitle;
-  }
-});
+const { titleMatchesLocation, formKey, initialValues, syncState } = useRentableUnitForm(currentValues);
 
 const isDirty = computed(() =>
   currentValues.title !== serverValues.title ||
@@ -76,36 +56,21 @@ const isDirty = computed(() =>
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({
-      severity: 'warn',
-      summary: t('error.general'),
-      detail: t('site.noId'),
-      life: 6000,
-    });
+    toast.add({ severity: 'warn', summary: t('error.general'), detail: t('site.noId'), life: 6000 });
     return;
   }
   try {
     const data = await siteService.getSite(props.projectId, props.unitId);
-    const loaded = {
+    syncState(serverValues, currentValues, {
       title: data.title || '',
       description: data.description || '',
       location: data.location || '',
       outdoorArea: data.outdoorArea ?? null,
       space: data.space ?? null,
-    };
-    Object.assign(serverValues, loaded);
-    Object.assign(currentValues, loaded);
-    initialValues.value = { ...loaded };
-    titleMatchesLocation.value = !!(loaded.title && loaded.location && loaded.title === loaded.location);
-    formKey.value++;
+    });
   } catch (err) {
     console.error('Fehler beim Laden der Außenanlage:', err);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('site.loadError'),
-      life: 6000,
-    });
+    toast.add({ severity: 'error', summary: t('error.general'), detail: t('site.loadError'), life: 6000 });
   }
 });
 
@@ -121,23 +86,14 @@ async function onSubmit(event: FormSubmitEvent) {
   };
   try {
     await siteService.updateSite(props.projectId, props.unitId, payload);
-    const saved = {
+    syncState(serverValues, currentValues, {
       title: payload.title || '',
       description: payload.description || '',
       location: payload.location || '',
       outdoorArea: payload.outdoorArea ?? null,
       space: payload.space ?? null,
-    };
-    Object.assign(serverValues, saved);
-    Object.assign(currentValues, saved);
-    initialValues.value = { ...saved };
-    formKey.value++;
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('site.saveSuccess'),
-      life: 3000,
     });
+    toast.add({ severity: 'success', summary: t('success.saved'), detail: t('site.saveSuccess'), life: 3000 });
   } catch (err) {
     console.error('Fehler beim Speichern der Außenanlage:', err);
     showSavingErrorToast(toast, t('site.saveError'));
@@ -146,148 +102,66 @@ async function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <BaseCard>
-    <template #title>
-      {{ t('site.cardTitle') }}
-    </template>
-
-    <template #content>
-      <Form
-        :key="formKey"
-        v-slot="$form"
-        :initialValues
-        :resolver
-        @submit="onSubmit"
-      >
-        <div class="flex flex-col gap-6">
-          <!-- Titel -->
-          <div class="flex flex-col gap-1">
-            <label for="title" class="font-medium">{{ t('site.title') }}*</label>
-            <InputText
-              id="title"
-              name="title"
-              fluid
-              @update:modelValue="(v) => (currentValues.title = v as string)"
-            />
-            <Message
-              v-if="$form.title?.invalid && $form.title?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.title.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Lage/Standort -->
-          <div class="flex flex-col gap-1">
-            <label for="location" class="font-medium">{{ t('site.location') }}</label>
-            <InputText
-              id="location"
-              name="location"
-              fluid
-              :disabled="titleMatchesLocation"
-              @update:modelValue="(v) => (currentValues.location = v as string)"
-            />
-            <div class="flex items-center gap-2 mt-1">
-              <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
-              <label for="titleMatchesLocation" class="text-sm text-surface-600">
-                {{ t('rentableUnits.form.locationMatchesTitle') }}
-              </label>
-            </div>
-            <Message
-              v-if="$form.location?.invalid && $form.location?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.location.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Beschreibung -->
-          <div class="flex flex-col gap-1">
-            <label for="description" class="font-medium">{{ t('site.description') }}</label>
-            <Textarea
-              id="description"
-              name="description"
-              :rows="3"
-              autoResize
-              fluid
-              @update:modelValue="(v) => (currentValues.description = v as string)"
-            />
-            <Message
-              v-if="$form.description?.invalid && $form.description?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ $form.description.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Flächen -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            <!-- Außenfläche -->
-            <div class="flex flex-col gap-1">
-              <label for="outdoorArea" class="font-medium">{{ t('site.outdoorArea') }}</label>
-              <InputNumber
-                id="outdoorArea"
-                name="outdoorArea"
-                :min="0"
-                :maxFractionDigits="2"
-                suffix=" m²"
-                fluid
-                @update:modelValue="(v) => (currentValues.outdoorArea = v as number | null)"
-              />
-              <Message
-                v-if="$form.outdoorArea?.invalid && $form.outdoorArea?.touched"
-                severity="error"
-                size="small"
-                variant="simple"
-              >
-                {{ $form.outdoorArea.error?.message }}
-              </Message>
-            </div>
-
-            <!-- Nutzfläche -->
-            <div class="flex flex-col gap-1">
-              <label for="space" class="font-medium">{{ t('site.space') }}</label>
-              <InputNumber
-                id="space"
-                name="space"
-                :min="0"
-                :maxFractionDigits="2"
-                suffix=" m²"
-                fluid
-                @update:modelValue="(v) => (currentValues.space = v as number | null)"
-              />
-              <Message
-                v-if="$form.space?.invalid && $form.space?.touched"
-                severity="error"
-                size="small"
-                variant="simple"
-              >
-                {{ $form.space.error?.message }}
-              </Message>
-            </div>
-          </div>
-
-          <Message size="small" severity="secondary" variant="simple">
-            {{ t('accountSettings.userProfile.requiredFields') }}
+  <RentableUnitBaseDataCard
+    :cardTitle="t('site.cardTitle')"
+    :formKey
+    :initialValues
+    :resolver
+    :isDirty
+    :titleMatchesLocation
+    :currentValues
+    :titleLabel="t('site.title')"
+    :locationLabel="t('site.location')"
+    :descriptionLabel="t('site.description')"
+    @submit="onSubmit"
+    @update:titleMatchesLocation="(v) => (titleMatchesLocation = v)"
+  >
+    <template #fields="{ form }">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <!-- Außenfläche -->
+        <div class="flex flex-col gap-1">
+          <label for="outdoorArea" class="font-medium">{{ t('site.outdoorArea') }}</label>
+          <InputNumber
+            id="outdoorArea"
+            name="outdoorArea"
+            :min="0"
+            :maxFractionDigits="2"
+            suffix=" m²"
+            fluid
+            @update:modelValue="(v) => (currentValues.outdoorArea = v as number | null)"
+          />
+          <Message
+            v-if="form.outdoorArea?.invalid && form.outdoorArea?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ form.outdoorArea.error?.message }}
           </Message>
-
-          <!-- Speichern -->
-          <div class="flex justify-end">
-            <Button
-              type="submit"
-              :label="t('button.save')"
-              icon="pi pi-save"
-              :disabled="!isDirty"
-            />
-          </div>
         </div>
-      </Form>
+
+        <!-- Nutzfläche -->
+        <div class="flex flex-col gap-1">
+          <label for="space" class="font-medium">{{ t('site.space') }}</label>
+          <InputNumber
+            id="space"
+            name="space"
+            :min="0"
+            :maxFractionDigits="2"
+            suffix=" m²"
+            fluid
+            @update:modelValue="(v) => (currentValues.space = v as number | null)"
+          />
+          <Message
+            v-if="form.space?.invalid && form.space?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ form.space.error?.message }}
+          </Message>
+        </div>
+      </div>
     </template>
-  </BaseCard>
+  </RentableUnitBaseDataCard>
 </template>
