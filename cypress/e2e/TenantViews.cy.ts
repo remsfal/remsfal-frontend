@@ -119,17 +119,17 @@ describe('Tenant Views E2E Tests', () => {
     });
 
     it('should display loading spinner initially', () => {
-      // Delay API response to test loading state
+      // Delay API response to test loading state - use long delay for reliable spinner detection
       cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
         statusCode: 200,
-        delay: 500,
+        delay: 2000,
         body: { tenants: [] },
       }).as('getDelayedTenants');
 
       cy.visit(`/projects/${projectId}/tenants`);
 
-      // Loading spinner should be visible
-      cy.get('.p-progressspinner', { timeout: 1000 }).should('exist');
+      // Loading spinner should be visible during the delayed response
+      cy.get('.p-progressspinner', { timeout: 2500 }).should('exist');
     });
 
     it('should display tenant cards in a grid', () => {
@@ -359,10 +359,10 @@ describe('Tenant Views E2E Tests', () => {
     });
 
     it('should display loading spinner while loading tenant data', () => {
-      // Delay API response
+      // Delay API response - use long delay for reliable spinner detection
       cy.intercept('GET', `/api/v1/projects/${projectId}/tenants/${tenantId}`, {
         statusCode: 200,
-        delay: 500,
+        delay: 2000,
         body: {
           id: tenantId,
           firstName: 'John',
@@ -373,8 +373,8 @@ describe('Tenant Views E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/tenants/${tenantId}`);
 
-      // Loading spinner should be visible
-      cy.get('.p-progressspinner', { timeout: 1000 }).should('exist');
+      // Loading spinner should be visible during the delayed response
+      cy.get('.p-progressspinner', { timeout: 2500 }).should('exist');
     });
 
     it('should populate form fields with tenant data', () => {
