@@ -299,7 +299,7 @@ describe('Tenant Views E2E Tests', () => {
         cy.get('.p-tag').should('have.length', 5); // 3 unit tags + 1 "more" tag + 1 status tag
 
         // Should show "+ 1 more" message
-        cy.contains(/\+.*weitere|\+.*more/i).should('exist');
+        cy.contains(/\+[^+]*weitere|\+[^+]*more/i).should('exist');
       });
     });
 
