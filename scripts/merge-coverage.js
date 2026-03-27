@@ -3,8 +3,8 @@
 /**
  * Script to merge coverage from both Vitest unit tests and Cypress E2E tests using NYC
  */
-import { execSync } from 'child_process';
-import { existsSync, mkdirSync, cpSync, readdirSync, rmSync, writeFileSync } from 'fs';
+import { execSync } from 'node:child_process';
+import { existsSync, mkdirSync, cpSync, readdirSync, rmSync } from 'node:fs';
 
 const nycInput = '.nyc_input';
 const nycOutput = '.nyc_output';
