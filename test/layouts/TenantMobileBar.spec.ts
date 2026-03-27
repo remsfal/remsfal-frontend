@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount, config } from '@vue/test-utils';
 import TenantMobileBar from '@/layouts/components/TenantMobileBar.vue';
-import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
@@ -23,7 +22,6 @@ describe('TenantMobileBar.vue', () => {
 
         const wrapper = mount(TenantMobileBar, {
             global: {
-                plugins: [PrimeVue],
                 provide: { [routeLocationKey as symbol]: route },
                 stubs: {
                     TenantMenu: true,

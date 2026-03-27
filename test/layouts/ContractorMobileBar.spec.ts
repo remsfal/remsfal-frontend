@@ -9,7 +9,6 @@ vi.mock('@/layouts/components/ContractorMenu.vue', () => ({ default: { name: 'Co
 
 import { mount, config } from '@vue/test-utils';
 import ContractorMobileBar from '@/layouts/components/ContractorMobileBar.vue';
-import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
@@ -31,7 +30,6 @@ describe('ContractorMobileBar.vue', () => {
 
         const wrapper = mount(ContractorMobileBar, {
             global: {
-                plugins: [PrimeVue],
                 provide: { [routeLocationKey as symbol]: route },
                 stubs: {
                     ContractorMenu: true,

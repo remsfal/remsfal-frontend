@@ -14,7 +14,6 @@ useProjectStore: () => ({
 
 import { mount, config } from '@vue/test-utils';
 import ProjectMobileBar from '@/layouts/components/ProjectMobileBar.vue';
-import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
@@ -40,7 +39,6 @@ describe('ProjectMobileBar.vue', () => {
     const route = reactive(initialRoute);
     const wrapper = mount(ProjectMobileBar, {
       global: {
-        plugins: [PrimeVue],
         provide: { [routeLocationKey as symbol]: route },
         components: { FontAwesomeIcon },
         stubs: {

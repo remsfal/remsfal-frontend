@@ -9,7 +9,6 @@ vi.mock('@/layouts/components/ManagerMenu.vue', () => ({ default: { name: 'Manag
 
 import { mount, config } from '@vue/test-utils';
 import ManagerMobileBar from '@/layouts/components/ManagerMobileBar.vue';
-import PrimeVue from 'primevue/config';
 import { reactive } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
@@ -33,7 +32,6 @@ describe('ManagerMobileBar.vue', () => {
 
         const wrapper = mount(ManagerMobileBar, {
             global: {
-                plugins: [PrimeVue],
                 provide: { [routeLocationKey as symbol]: route },
                 stubs: {
                     ManagerMenu: true,

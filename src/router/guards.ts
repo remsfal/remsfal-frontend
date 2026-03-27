@@ -12,22 +12,20 @@ export function setupRouterGuards(router: Router) {
     }
   })
 
-  router.beforeEach((to, _from, next) => {
+  router.beforeEach((to) => {
     const sessionStore = useUserSessionStore()
     const isLoggedIn = !!sessionStore.user
 
     if (to.meta.requiresAuth && !isLoggedIn) {
-      return next({ name: 'LandingPage', query: { redirect: to.fullPath } })
+      return { name: 'LandingPage', query: { redirect: to.fullPath } }
     }
 
     if (to.name === 'LandingPage' && isLoggedIn) {
       const roles = sessionStore.user?.userContexts || []
-      if (roles.includes('MANAGER')) return next({ name: 'ProjectSelection' })
-      if (roles.includes('CONTRACTOR')) return next({ name: 'ContractorDashboard' })
-      if (roles.includes('TENANT')) return next({ name: 'TenantDashboard' })
-      return next({ name: 'ProjectSelection' })
+      if (roles.includes('MANAGER')) return { name: 'ProjectSelection' }
+      if (roles.includes('CONTRACTOR')) return { name: 'ContractorDashboard' }
+      if (roles.includes('TENANT')) return { name: 'TenantDashboard' }
+      return { name: 'ProjectSelection' }
     }
-
-    next()
   })
 }

@@ -28,7 +28,7 @@
     "cypress": "cypress open",
     "cypress:dev": "run-s test:e2e:dev",
     "coverage": "run-s coverage:clean coverage:unit coverage:e2e coverage:merge",
-    "coverage:clean": "rm -rf coverage coverage-vitest coverage-cypress .nyc_output",
+    "coverage:clean": "rm -rf coverage coverage-vitest coverage-cypress .nyc_output .nyc_input .nyc_report",
     "coverage:unit": "vitest run --coverage",
     "coverage:e2e": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress run --e2e'",
     "coverage:merge": "node scripts/merge-coverage.js",

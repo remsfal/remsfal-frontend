@@ -3,7 +3,6 @@ import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import TopbarUserActions from '@/components/TopbarUserActions.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
-import PrimeVue from 'primevue/config';
 import { createI18n } from 'vue-i18n';
 
 // Mock vue-router
@@ -52,7 +51,7 @@ describe('TopbarUserActions.vue', () => {
         store.user = user ?? null;
 
         return {
-            wrapper: mount(TopbarUserActions, { global: { plugins: [pinia, PrimeVue, i18n], }, }),
+            wrapper: mount(TopbarUserActions, { global: { plugins: [pinia, i18n], }, }),
             store,
         };
     };
