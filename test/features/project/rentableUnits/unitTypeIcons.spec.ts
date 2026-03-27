@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { UNIT_TYPE_ICONS, getIconForUnitType } from '@/features/project/rentableUnits/unitTypeIcons';
+import type { UnitType } from '@/services/PropertyService';
 
 describe('unitTypeIcons', () => {
   describe('UNIT_TYPE_ICONS', () => {
@@ -54,7 +55,7 @@ describe('unitTypeIcons', () => {
     });
 
     it('returns fallback icon for unknown type', () => {
-      expect(getIconForUnitType(undefined as any)).toBe('pi pi-shop');
+      expect(getIconForUnitType(undefined as unknown as UnitType)).toBe('pi pi-shop');
     });
   });
 });

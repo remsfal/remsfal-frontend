@@ -56,5 +56,7 @@ export function useRentableUnitForm<T extends { title: string; location: string 
     formKey.value++;
   }
 
-  return { titleMatchesLocation, formKey, initialValues, syncState };
+  return {
+ titleMatchesLocation, formKey, initialValues, syncState 
+};
 }

@@ -174,7 +174,9 @@ describe('ApartmentDataCard.vue', () => {
   });
 
   it('location input is disabled when title matches location on load', async () => {
-    vi.mocked(apartmentService.getApartment).mockResolvedValue({ ...mockApartment, title: 'Same', location: 'Same' });
+    vi.mocked(apartmentService.getApartment).mockResolvedValue({
+ ...mockApartment, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
     expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
@@ -189,7 +191,9 @@ describe('ApartmentDataCard.vue', () => {
   });
 
   it('title watcher enables save button when titleMatchesLocation is true and title changes', async () => {
-    vi.mocked(apartmentService.getApartment).mockResolvedValue({ ...mockApartment, title: 'Same', location: 'Same' });
+    vi.mocked(apartmentService.getApartment).mockResolvedValue({
+ ...mockApartment, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -198,7 +202,9 @@ describe('ApartmentDataCard.vue', () => {
   });
 
   it('submit sends title as location when titleMatchesLocation is true', async () => {
-    vi.mocked(apartmentService.getApartment).mockResolvedValue({ ...mockApartment, title: 'Same', location: 'Same' });
+    vi.mocked(apartmentService.getApartment).mockResolvedValue({
+ ...mockApartment, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(ApartmentDataCard, { props: defaultProps });
     await flushPromises();
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');

@@ -13,10 +13,8 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
-import {
-  useRentableUnitForm,
-  createBaseRentableUnitSchema,
-} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
+import {useRentableUnitForm,
+  createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
 import { commercialService } from '@/services/CommercialService.ts';
 import type { CommercialJson } from '@/services/CommercialService.ts';
 import { showSavingErrorToast } from '@/helper/viewHelper.ts';
@@ -93,7 +91,9 @@ watch(din277Mode, (newMode) => {
 // ─── Load ─────────────────────────────────────────────────────────────────────
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({ severity: 'warn', summary: t('error.general'), detail: t('commercial.noId'), life: 6000 });
+    toast.add({
+ severity: 'warn', summary: t('error.general'), detail: t('commercial.noId'), life: 6000 
+});
     return;
   }
   try {
@@ -114,7 +114,9 @@ onMounted(async () => {
     }
   } catch (err) {
     console.error('Fehler beim Laden der Gewerbeeinheit:', err);
-    toast.add({ severity: 'error', summary: t('error.general'), detail: t('commercial.loadError'), life: 6000 });
+    toast.add({
+ severity: 'error', summary: t('error.general'), detail: t('commercial.loadError'), life: 6000 
+});
   }
 });
 
@@ -156,7 +158,9 @@ async function onSubmit(event: FormSubmitEvent) {
       heatingSpace: payload.heatingSpace ?? null,
       space: payload.space ?? null,
     });
-    toast.add({ severity: 'success', summary: t('success.saved'), detail: t('commercial.saveSuccess'), life: 3000 });
+    toast.add({
+ severity: 'success', summary: t('success.saved'), detail: t('commercial.saveSuccess'), life: 3000 
+});
   } catch (err) {
     console.error('Fehler beim Speichern der Gewerbeeinheit:', err);
     showSavingErrorToast(toast, t('commercial.saveError'));
@@ -172,12 +176,14 @@ async function onSubmit(event: FormSubmitEvent) {
     :resolver
     :isDirty
     :titleMatchesLocation
-    :currentValues
     :titleLabel="t('commercial.title')"
     :locationLabel="t('commercial.location')"
     :descriptionLabel="t('commercial.description')"
     @submit="onSubmit"
     @update:titleMatchesLocation="(v) => (titleMatchesLocation = v)"
+    @update:title="(v) => (currentValues.title = v)"
+    @update:location="(v) => (currentValues.location = v)"
+    @update:description="(v) => (currentValues.description = v)"
   >
     <template #fields="{ form }">
       <!-- DIN 277 -->

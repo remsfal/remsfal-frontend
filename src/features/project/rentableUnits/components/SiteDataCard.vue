@@ -11,10 +11,8 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
-import {
-  useRentableUnitForm,
-  createBaseRentableUnitSchema,
-} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
+import {useRentableUnitForm,
+  createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
 import { siteService } from '@/services/SiteService.ts';
 import type { SiteJson } from '@/services/SiteService.ts';
 import { showSavingErrorToast } from '@/helper/viewHelper.ts';
@@ -56,7 +54,9 @@ const isDirty = computed(() =>
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({ severity: 'warn', summary: t('error.general'), detail: t('site.noId'), life: 6000 });
+    toast.add({
+ severity: 'warn', summary: t('error.general'), detail: t('site.noId'), life: 6000 
+});
     return;
   }
   try {
@@ -70,7 +70,9 @@ onMounted(async () => {
     });
   } catch (err) {
     console.error('Fehler beim Laden der Außenanlage:', err);
-    toast.add({ severity: 'error', summary: t('error.general'), detail: t('site.loadError'), life: 6000 });
+    toast.add({
+ severity: 'error', summary: t('error.general'), detail: t('site.loadError'), life: 6000 
+});
   }
 });
 
@@ -93,7 +95,9 @@ async function onSubmit(event: FormSubmitEvent) {
       outdoorArea: payload.outdoorArea ?? null,
       space: payload.space ?? null,
     });
-    toast.add({ severity: 'success', summary: t('success.saved'), detail: t('site.saveSuccess'), life: 3000 });
+    toast.add({
+ severity: 'success', summary: t('success.saved'), detail: t('site.saveSuccess'), life: 3000 
+});
   } catch (err) {
     console.error('Fehler beim Speichern der Außenanlage:', err);
     showSavingErrorToast(toast, t('site.saveError'));
@@ -109,12 +113,14 @@ async function onSubmit(event: FormSubmitEvent) {
     :resolver
     :isDirty
     :titleMatchesLocation
-    :currentValues
     :titleLabel="t('site.title')"
     :locationLabel="t('site.location')"
     :descriptionLabel="t('site.description')"
     @submit="onSubmit"
     @update:titleMatchesLocation="(v) => (titleMatchesLocation = v)"
+    @update:title="(v) => (currentValues.title = v)"
+    @update:location="(v) => (currentValues.location = v)"
+    @update:description="(v) => (currentValues.description = v)"
   >
     <template #fields="{ form }">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">

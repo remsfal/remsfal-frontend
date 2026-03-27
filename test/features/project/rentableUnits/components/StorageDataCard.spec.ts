@@ -164,7 +164,9 @@ describe('StorageDataCard.vue', () => {
   });
 
   it('location input is disabled when title matches location on load', async () => {
-    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, title: 'Same', location: 'Same' });
+    vi.mocked(storageService.getStorage).mockResolvedValue({
+ ...mockStorage, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(StorageDataCard, { props: defaultProps });
     await flushPromises();
     expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
@@ -179,7 +181,9 @@ describe('StorageDataCard.vue', () => {
   });
 
   it('title watcher enables save button when titleMatchesLocation is true and title changes', async () => {
-    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, title: 'Same', location: 'Same' });
+    vi.mocked(storageService.getStorage).mockResolvedValue({
+ ...mockStorage, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(StorageDataCard, { props: defaultProps });
     await flushPromises();
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -188,7 +192,9 @@ describe('StorageDataCard.vue', () => {
   });
 
   it('submit sends title as location when titleMatchesLocation is true', async () => {
-    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, title: 'Same', location: 'Same' });
+    vi.mocked(storageService.getStorage).mockResolvedValue({
+ ...mockStorage, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(StorageDataCard, { props: defaultProps });
     await flushPromises();
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');

@@ -13,10 +13,8 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
-import {
-  useRentableUnitForm,
-  createBaseRentableUnitSchema,
-} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
+import {useRentableUnitForm,
+  createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
 import { propertyService } from '@/services/PropertyService.ts';
 import type { PropertyJson } from '@/services/PropertyService.ts';
 import { showSavingErrorToast } from '@/helper/viewHelper.ts';
@@ -133,7 +131,9 @@ const isDirty = computed(() =>
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({ severity: 'warn', summary: t('error.general'), detail: t('property.noId'), life: 6000 });
+    toast.add({
+ severity: 'warn', summary: t('error.general'), detail: t('property.noId'), life: 6000 
+});
     return;
   }
   try {
@@ -154,7 +154,9 @@ onMounted(async () => {
     });
   } catch (err) {
     console.error('Fehler beim Laden der Grundstücksdaten:', err);
-    toast.add({ severity: 'error', summary: t('error.general'), detail: t('property.loadError'), life: 6000 });
+    toast.add({
+ severity: 'error', summary: t('error.general'), detail: t('property.loadError'), life: 6000 
+});
   }
 });
 
@@ -191,7 +193,9 @@ async function onSubmit(event: FormSubmitEvent) {
       plotArea: payload.plotArea ?? null,
       space: payload.space ?? null,
     });
-    toast.add({ severity: 'success', summary: t('success.saved'), detail: t('property.saveSuccess'), life: 3000 });
+    toast.add({
+ severity: 'success', summary: t('success.saved'), detail: t('property.saveSuccess'), life: 3000 
+});
   } catch (err) {
     console.error('Fehler beim Speichern der Grundstücksdaten:', err);
     showSavingErrorToast(toast, t('property.saveError'));
@@ -207,12 +211,14 @@ async function onSubmit(event: FormSubmitEvent) {
     :resolver
     :isDirty
     :titleMatchesLocation
-    :currentValues
     :titleLabel="t('property.title')"
     :locationLabel="t('property.location')"
     :descriptionLabel="t('property.description')"
     @submit="onSubmit"
     @update:titleMatchesLocation="(v) => (titleMatchesLocation = v)"
+    @update:title="(v) => (currentValues.title = v)"
+    @update:location="(v) => (currentValues.location = v)"
+    @update:description="(v) => (currentValues.description = v)"
   >
     <template #fields="{ form }">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
@@ -350,7 +356,6 @@ async function onSubmit(event: FormSubmitEvent) {
             {{ form.space.error?.message }}
           </Message>
         </div>
-
       </div>
     </template>
   </RentableUnitBaseDataCard>

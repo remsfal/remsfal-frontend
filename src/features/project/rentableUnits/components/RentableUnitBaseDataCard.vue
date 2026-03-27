@@ -8,18 +8,17 @@ import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
 
 import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import type { FormSubmitEvent, FormProps } from '@primevue/forms';
 
 import BaseCard from '@/components/common/BaseCard.vue';
 
-const props = defineProps<{
+defineProps<{
   cardTitle: string;
   formKey: number;
   initialValues: Record<string, unknown>;
-  resolver: unknown;
+  resolver: NonNullable<FormProps['resolver']>;
   isDirty: boolean;
   titleMatchesLocation: boolean;
-  currentValues: { title: string; location: string; description: string };
   titleLabel: string;
   locationLabel: string;
   descriptionLabel: string;
@@ -28,6 +27,9 @@ const props = defineProps<{
 const emit = defineEmits<{
   submit: [event: FormSubmitEvent];
   'update:titleMatchesLocation': [value: boolean];
+  'update:title': [value: string];
+  'update:location': [value: string];
+  'update:description': [value: string];
 }>();
 
 const { t } = useI18n();
@@ -55,7 +57,7 @@ const { t } = useI18n();
               id="title"
               name="title"
               fluid
-              @update:modelValue="(v) => (props.currentValues.title = v as string)"
+              @update:modelValue="(v) => emit('update:title', v as string)"
             />
             <Message
               v-if="$form.title?.invalid && $form.title?.touched"
@@ -75,7 +77,7 @@ const { t } = useI18n();
               name="location"
               fluid
               :disabled="titleMatchesLocation"
-              @update:modelValue="(v) => (props.currentValues.location = v as string)"
+              @update:modelValue="(v) => emit('update:location', v as string)"
             />
             <div class="flex items-center gap-2 mt-1">
               <Checkbox
@@ -107,7 +109,7 @@ const { t } = useI18n();
               :rows="3"
               autoResize
               fluid
-              @update:modelValue="(v) => (props.currentValues.description = v as string)"
+              @update:modelValue="(v) => emit('update:description', v as string)"
             />
             <Message
               v-if="$form.description?.invalid && $form.description?.touched"

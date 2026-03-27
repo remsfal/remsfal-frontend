@@ -11,10 +11,8 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
-import {
-  useRentableUnitForm,
-  createBaseRentableUnitSchema,
-} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
+import {useRentableUnitForm,
+  createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
 import { storageService } from '@/services/StorageService.ts';
 import type { StorageJson } from '@/services/StorageService.ts';
 import { showSavingErrorToast } from '@/helper/viewHelper.ts';
@@ -59,7 +57,9 @@ const isDirty = computed(() =>
 
 onMounted(async () => {
   if (!props.unitId) {
-    toast.add({ severity: 'warn', summary: t('error.general'), detail: t('storage.noId'), life: 6000 });
+    toast.add({
+ severity: 'warn', summary: t('error.general'), detail: t('storage.noId'), life: 6000 
+});
     return;
   }
   try {
@@ -74,7 +74,9 @@ onMounted(async () => {
     });
   } catch (err) {
     console.error('Fehler beim Laden des Lagers:', err);
-    toast.add({ severity: 'error', summary: t('error.general'), detail: t('storage.loadError'), life: 6000 });
+    toast.add({
+ severity: 'error', summary: t('error.general'), detail: t('storage.loadError'), life: 6000 
+});
   }
 });
 
@@ -99,7 +101,9 @@ async function onSubmit(event: FormSubmitEvent) {
       heatingSpace: payload.heatingSpace ?? null,
       space: payload.space ?? null,
     });
-    toast.add({ severity: 'success', summary: t('success.saved'), detail: t('storage.saveSuccess'), life: 3000 });
+    toast.add({
+ severity: 'success', summary: t('success.saved'), detail: t('storage.saveSuccess'), life: 3000 
+});
   } catch (err) {
     console.error('Fehler beim Speichern des Lagers:', err);
     showSavingErrorToast(toast, t('storage.saveError'));
@@ -115,12 +119,14 @@ async function onSubmit(event: FormSubmitEvent) {
     :resolver
     :isDirty
     :titleMatchesLocation
-    :currentValues
     :titleLabel="t('storage.title')"
     :locationLabel="t('storage.location')"
     :descriptionLabel="t('storage.description')"
     @submit="onSubmit"
     @update:titleMatchesLocation="(v) => (titleMatchesLocation = v)"
+    @update:title="(v) => (currentValues.title = v)"
+    @update:location="(v) => (currentValues.location = v)"
+    @update:description="(v) => (currentValues.description = v)"
   >
     <template #fields="{ form }">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">

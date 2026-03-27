@@ -178,7 +178,9 @@ describe('BuildingDataCard.vue', () => {
   });
 
   it('location input is disabled when title matches location on load', async () => {
-    vi.mocked(buildingService.getBuilding).mockResolvedValue({ ...mockBuilding, title: 'Same', location: 'Same' });
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+ ...mockBuilding, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(BuildingDataCard, { props: defaultProps });
     await flushPromises();
     expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
@@ -193,7 +195,9 @@ describe('BuildingDataCard.vue', () => {
   });
 
   it('title watcher enables save button when titleMatchesLocation is true and title changes', async () => {
-    vi.mocked(buildingService.getBuilding).mockResolvedValue({ ...mockBuilding, title: 'Same', location: 'Same' });
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+ ...mockBuilding, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(BuildingDataCard, { props: defaultProps });
     await flushPromises();
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -202,7 +206,9 @@ describe('BuildingDataCard.vue', () => {
   });
 
   it('submit sends title as location when titleMatchesLocation is true', async () => {
-    vi.mocked(buildingService.getBuilding).mockResolvedValue({ ...mockBuilding, title: 'Same', location: 'Same' });
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+ ...mockBuilding, title: 'Same', location: 'Same' 
+});
     const wrapper = mount(BuildingDataCard, { props: defaultProps });
     await flushPromises();
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');

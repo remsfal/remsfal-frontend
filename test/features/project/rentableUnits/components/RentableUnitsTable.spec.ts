@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import RentableUnitsTable from '@/features/project/rentableUnits/components/RentableUnitsTable.vue';
-import type { RentalUnitTreeNodeJson } from '@/services/PropertyService';
+import type { RentalUnitTreeNodeJson, RentalUnitNodeDataJson } from '@/services/PropertyService';
 
 // ---- Mock Data ----
 const mockTreeData: RentalUnitTreeNodeJson[] = [
@@ -189,7 +189,7 @@ describe('RentableUnitsTable.vue', () => {
       title: 'My Building',
       location: 'Floor 3',
       description: undefined,
-    } as any);
+    } as RentalUnitNodeDataJson);
     expect(result).toBe('Floor 3');
   });
 
@@ -198,7 +198,7 @@ describe('RentableUnitsTable.vue', () => {
       title: 'Same',
       location: 'Same',
       description: 'Some description',
-    } as any);
+    } as RentalUnitNodeDataJson);
     expect(result).toBe('Some description');
   });
 });
