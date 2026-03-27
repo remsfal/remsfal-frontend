@@ -6,7 +6,7 @@ import DataView from 'primevue/dataview';
 import type { InboxMessage } from '@/services/InboxService';
 import InboxMessageItem from './InboxMessageItem.vue';
 import InboxEmptyState from './InboxEmptyState.vue';
-import { useLayout } from '@/layout/composables/layout';
+import { useLayout } from '@/layouts/composables/layout';
 
 const props = defineProps<{
   messages: InboxMessage[];

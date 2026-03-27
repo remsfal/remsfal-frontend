@@ -33,12 +33,12 @@ src/
 │   ├── project.vue             # ProjectMenu + ProjectTopbar + ProjectMobileBar
 │   ├── tenant.vue              # TenantMenu + AppSimpleTopbar + TenantMobileBar
 │   ├── contractor.vue          # ContractorMenu + AppSimpleTopbar + ContractorMobileBar
-│   └── public.vue              # AppSimpleTopbar + AppFooter (Landing, Legal, Privacy)
+│   ├── public.vue              # AppSimpleTopbar + AppFooter (Landing, Legal, Privacy)
+│   ├── components/             # Layout chrome sub-components (Topbars, Menus, MobileBars)
+│   └── composables/            # useLayout(), useMobileBarActiveState()
 │
 ├── pages/                      # File-based routes via unplugin-vue-router
 │   ├── index.vue               →  /                    (layout: public)
-│   ├── legal-notice.vue        →  /legal-notice        (layout: public)
-│   ├── privacy.vue             →  /privacy             (layout: public)
 │   ├── inbox/
 │   │   ├── index.vue           →  /inbox               (layout: manager)
 │   │   └── [id].vue            →  /inbox/:id           (layout: manager)
@@ -122,8 +122,8 @@ src/
 │       ├── services/           # InboxService
 │       └── index.ts
 │
-├── shared/                     # Code used by ≥2 features
-│   ├── components/             # BaseCard, UserContactDataCard, UserAddressCard, StatCard, MemberAutoComplete
+├── shared/                     # Code used by ≥2 features (target for Phase 3 completion)
+│   ├── components/             # → until migration complete: use src/components/common/
 │   ├── composables/            # useTopbarUserActions
 │   ├── services/               # ApiClient.ts, AuthService.ts (infrastructure)
 │   ├── stores/                 # UserSession.ts, EventStore.ts (app-wide state)
@@ -131,9 +131,6 @@ src/
 │   ├── types/                  # Shared TypeScript types
 │   ├── helpers/                # viewHelper, platform, indexeddb, service-worker-init
 │   └── constants/              # countries.ts
-│
-├── layout/                     # LEGACY — layout chrome components (not deleted yet)
-│   └── composables/            # useLayout(), useMobileBarActiveState()
 │
 ├── App.vue                     # Root: resolves route.meta.layout → renders <component>
 ├── main.ts                     # Bootstrap only
@@ -305,12 +302,42 @@ declare module 'vue-router' {
 - Never reach into a feature's internals from outside — use `index.ts` as the public API
 - `shared/` is for code actually used by ≥2 features; when in doubt, start in the feature
 
+**Shared components during migration**:
+- Until `src/shared/` is fully established, all shared components (used by ≥2 features) go into `src/components/common/`
+- `src/components/` (root level) remains for app-wide non-common components (e.g. `ProjectDangerZoneCard.vue`)
+- When Phase 3 migration is complete, `src/components/common/` contents move to `src/shared/components/`
+
 ```ts
 // ✅ Correct — import through public API
 import { TenantCard } from '@/features/project/tenants'
 
 // ❌ Wrong — reaching into internals
 import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
+```
+
+**Import order** — follow the pattern established in `PropertyDataCard.vue`:
+```ts
+// 1. Vue core
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
+
+// 2. PrimeVue Components
+import Button from 'primevue/button';
+// ...
+
+// 3. Third-party (forms, validation, etc.)
+import { Form } from '@primevue/forms';
+import { z } from 'zod';
+
+// 4. Internal shared components
+import BaseCard from '@/components/common/BaseCard.vue';
+
+// 5. Services & Types
+import { myService } from '@/services/MyService';
+import type { MyType } from '@/services/MyService';
+
+// Props & Emits defined directly in <script setup> (no import section)
 ```
 
 **Priority order for migration** (highest impact first):
@@ -328,7 +355,7 @@ import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔲 Not started | Incremental; new code goes into `src/features/` |
+| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` complete; incremental for other domains |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -509,7 +536,7 @@ Use lazy loading for routes: `component: () => import('@/views/ViewName.vue')`
 - Use PrimeVue components when available instead of custom implementations
 - Toast/dialog/confirm services available globally
 
-**BaseCard Component** (`src/components/BaseCard.vue`):
+**BaseCard Component** (`src/components/common/BaseCard.vue`):
 - Standardized wrapper around PrimeVue Card with consistent styling
 - Default classes: `flex flex-col gap-4 basis-full`
 - Default title styling: `font-semibold text-xl`
@@ -768,7 +795,9 @@ Key environment variables in `.env`:
 ## Code Quality Standards
 
 ### TypeScript Guidelines
-- Avoid `any` type - use proper type definitions
+- **Never use `any`** — not in production code, not in tests. ESLint enforces `@typescript-eslint/no-explicit-any`.
+  - In tests: import the real type from the service and annotate mock data directly (e.g. `const mockTree: PropertyListJson = { ... }`) instead of casting with `as any`.
+  - If a cast is truly unavoidable, use `as unknown as TargetType` and add a comment explaining why.
 - Create interfaces in `src/types/` for complex types
 - Use type imports: `import type { ComponentType } from './types'`
 - Prefer `interface` over `type` for object definitions

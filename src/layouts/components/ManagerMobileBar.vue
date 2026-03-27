@@ -1,0 +1,53 @@
+<script setup lang="ts">
+import { RouterLink } from 'vue-router';
+import Drawer from 'primevue/drawer';
+import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
+import { useMobileBarActiveState, type MobileNavItem } from '@/layouts/composables/useMobileBarActiveState';
+
+const { isActive, sidebarVisible, toggleSidebar } = useMobileBarActiveState();
+
+const navItems: MobileNavItem[] = [
+  {
+    label: 'Projekte',
+    to: { name: 'ProjectSelection' },
+    icon: 'pi-briefcase'
+  },
+  {
+    label: 'Einstellungen',
+    to: { name: 'ManagerAccountSettings' },
+    icon: 'pi-cog'
+  }
+];
+</script>
+
+<template>
+  <div class="mobile-nav-bar">
+    <RouterLink
+      v-for="item in navItems"
+      :key="item.label"
+      :to="item.to"
+      class="nav-item"
+      :class="{ active: isActive(item) }"
+    >
+      <i
+        class="pi"
+        :class="typeof item.icon === 'string' ? item.icon : ''"
+        style="font-size: 1.2rem;"
+      />
+      <span class="sr-only">{{ item.label }}</span>
+    </RouterLink>
+
+    <button type="button" class="nav-item more-btn" @click="toggleSidebar">
+      <i class="pi pi-ellipsis-h" style="font-size: 1.2rem;" />
+    </button>
+
+    <Drawer
+      v-model:visible="sidebarVisible"
+      position="right"
+      class="mobile-sidebar-drawer"
+      style="width: 80vw; max-width: 300px;"
+    >
+      <ManagerMenu />
+    </Drawer>
+  </div>
+</template>

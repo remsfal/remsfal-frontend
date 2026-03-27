@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import PublicLayout from '@/layouts/public.vue'
-import ManagerTopbar from '@/layout/ManagerTopbar.vue'
-import AppFooter from '@/layout/AppFooter.vue'
+import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
+import AppFooter from '@/layouts/components/AppFooter.vue'
 
 const mocks = vi.hoisted(() => ({ setFullscreen: vi.fn() }))
 
-vi.mock('@/layout/composables/layout', () => ({useLayout: () => ({setFullscreen: mocks.setFullscreen,}),}))
+vi.mock('@/layouts/composables/layout', () => ({useLayout: () => ({setFullscreen: mocks.setFullscreen,}),}))
 
-vi.mock('@/layout/ManagerTopbar.vue', () => ({ default: { template: '<div data-test="manager-topbar" />' } }))
-vi.mock('@/layout/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
+vi.mock('@/layouts/components/ManagerTopbar.vue', () => ({ default: { template: '<div data-test="manager-topbar" />' } }))
+vi.mock('@/layouts/components/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
 
 describe('layouts/public.vue', () => {
   beforeEach(() => vi.clearAllMocks())
