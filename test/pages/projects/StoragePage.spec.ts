@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import StoragePage from '@/pages/projects/[projectId]/units/storage/[unitId].vue';
-import StorageDataCard from '@/components/storage/StorageDataCard.vue';
+import StorageDataCard from '@/features/project/rentableUnits/components/StorageDataCard.vue';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -12,7 +12,7 @@ vi.mock('vue-router', async (importOriginal) => {
   };
 });
 
-vi.mock('@/components/storage/StorageDataCard.vue', () => ({
+vi.mock('@/features/project/rentableUnits/components/StorageDataCard.vue', () => ({
   default: {
     name: 'StorageDataCard',
     props: ['projectId', 'unitId'],

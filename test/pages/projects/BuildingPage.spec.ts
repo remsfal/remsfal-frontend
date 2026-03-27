@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import BuildingPage from '@/pages/projects/[projectId]/units/building/[unitId].vue';
-import BuildingDataCard from '@/components/building/BuildingDataCard.vue';
+import BuildingDataCard from '@/features/project/rentableUnits/components/BuildingDataCard.vue';
 import FacilityAddressCard from '@/components/FacilityAddressCard.vue';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -13,7 +13,7 @@ vi.mock('vue-router', async (importOriginal) => {
   };
 });
 
-vi.mock('@/components/building/BuildingDataCard.vue', () => ({
+vi.mock('@/features/project/rentableUnits/components/BuildingDataCard.vue', () => ({
   default: {
     name: 'BuildingDataCard',
     props: ['projectId', 'unitId'],

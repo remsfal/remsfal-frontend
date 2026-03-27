@@ -2,14 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import ContractorLayout from '@/layouts/contractor.vue'
-import AppSimpleTopbar from '@/layout/AppSimpleTopbar.vue'
-import ContractorMenu from '@/layout/ContractorMenu.vue'
-import ContractorMobileBar from '@/layout/ContractorMobileBar.vue'
-import AppFooter from '@/layout/AppFooter.vue'
+import AppSimpleTopbar from '@/layouts/components/AppSimpleTopbar.vue'
+import ContractorMenu from '@/layouts/components/ContractorMenu.vue'
+import ContractorMobileBar from '@/layouts/components/ContractorMobileBar.vue'
+import AppFooter from '@/layouts/components/AppFooter.vue'
 
 const mocks = vi.hoisted(() => ({ setFullscreen: vi.fn() }))
 
-vi.mock('@/layout/composables/layout', () => ({
+vi.mock('@/layouts/composables/layout', () => ({
   useLayout: () => ({
     layoutConfig: { menuMode: 'static' },
     layoutState: {
@@ -20,10 +20,14 @@ vi.mock('@/layout/composables/layout', () => ({
   }),
 }))
 
-vi.mock('@/layout/AppSimpleTopbar.vue', () => ({ default: { template: '<div data-test="app-simple-topbar" />' } }))
-vi.mock('@/layout/ContractorMenu.vue', () => ({ default: { template: '<div data-test="contractor-menu" />' } }))
-vi.mock('@/layout/ContractorMobileBar.vue', () => ({ default: { template: '<div data-test="contractor-mobilebar" />' } }))
-vi.mock('@/layout/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
+vi.mock('@/layouts/components/AppSimpleTopbar.vue',
+  () => ({ default: { template: '<div data-test="app-simple-topbar" />' } }))
+vi.mock('@/layouts/components/ContractorMenu.vue',
+  () => ({ default: { template: '<div data-test="contractor-menu" />' } }))
+vi.mock('@/layouts/components/ContractorMobileBar.vue',
+  () => ({ default: { template: '<div data-test="contractor-mobilebar" />' } }))
+vi.mock('@/layouts/components/AppFooter.vue',
+  () => ({ default: { template: '<div data-test="app-footer" />' } }))
 
 describe('layouts/contractor.vue', () => {
   beforeEach(() => vi.clearAllMocks())

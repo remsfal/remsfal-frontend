@@ -7,8 +7,7 @@ meta:
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
-import BuildingDataCard from '@/components/building/BuildingDataCard.vue';
+import { UnitBreadcrumb, BuildingDataCard, RentableUnitDangerZoneCard } from '@/features/project/rentableUnits';
 import FacilityAddressCard from '@/components/FacilityAddressCard.vue';
 
 const route = useRoute('BuildingView');
@@ -18,8 +17,6 @@ const route = useRoute('BuildingView');
   <UnitBreadcrumb
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
-    currentTitle=""
-    mode="edit"
   />
 
   <BuildingDataCard
@@ -31,5 +28,11 @@ const route = useRoute('BuildingView');
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
     facilityType="building"
+  />
+
+  <RentableUnitDangerZoneCard
+    :projectId="(route.params.projectId as string)"
+    :unitId="(route.params.unitId as string)"
+    unitType="BUILDING"
   />
 </template>

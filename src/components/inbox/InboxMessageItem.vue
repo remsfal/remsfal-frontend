@@ -6,7 +6,7 @@ import Checkbox from 'primevue/checkbox';
 import Tag from 'primevue/tag';
 import type { InboxMessage } from '@/services/InboxService';
 import { getRelativeTime, getStatusColor, getStatusIcon } from './composables/useInboxHelpers';
-import { useLayout } from '@/layout/composables/layout';
+import { useLayout } from '@/layouts/composables/layout';
 
 const props = defineProps<{
   message: InboxMessage;

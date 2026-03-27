@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import App from '@/App.vue';
-import PrimeVue from 'primevue/config';
 
 
 vi.mock('vue-router', () => ({
@@ -23,7 +22,6 @@ describe('App.vue', () => {
   it('renders RouterView inside a layout', () => {
     const wrapper = mount(App, {
       global: {
-        plugins: [PrimeVue],
         stubs: {
           Toast: true,
           ConfirmDialog: true,
@@ -39,7 +37,6 @@ describe('App.vue', () => {
   it('uses public layout when route has no meta.layout', () => {
     const wrapper = mount(App, {
       global: {
-        plugins: [PrimeVue],
         stubs: {
           Toast: true,
           ConfirmDialog: true,

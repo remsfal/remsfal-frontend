@@ -6,9 +6,8 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import UnitBreadcrumb from "@/components/UnitBreadcrumb.vue";
-import PropertyDataCard from "@/components/property/PropertyDataCard.vue";
+import { useRoute } from 'vue-router';
+import { UnitBreadcrumb, PropertyDataCard, RentableUnitDangerZoneCard } from '@/features/project/rentableUnits';
 const route = useRoute('PropertyView')
 </script>
 
@@ -16,12 +15,16 @@ const route = useRoute('PropertyView')
   <UnitBreadcrumb
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
-    currentTitle=""
-    mode="edit"
   />
 
   <PropertyDataCard
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
+  />
+
+  <RentableUnitDangerZoneCard
+    :projectId="(route.params.projectId as string)"
+    :unitId="(route.params.unitId as string)"
+    unitType="PROPERTY"
   />
 </template>

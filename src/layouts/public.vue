@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onBeforeUpdate, onMounted } from 'vue'
-import { useLayout } from '@/layout/composables/layout'
-import ManagerTopbar from '@/layout/ManagerTopbar.vue'
-import AppFooter from '@/layout/AppFooter.vue'
+import { useLayout } from '@/layouts/composables/layout'
+import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
+import AppFooter from '@/layouts/components/AppFooter.vue'
 
 const { setFullscreen } = useLayout()
 onMounted(() => setFullscreen(true))

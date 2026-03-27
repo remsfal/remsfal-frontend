@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { watch, ref, onBeforeUpdate, onMounted, computed } from 'vue'
-import { useLayout } from '@/layout/composables/layout'
-import AppSimpleTopbar from '@/layout/AppSimpleTopbar.vue'
-import TenantMenu from '@/layout/TenantMenu.vue'
-import TenantMobileBar from '@/layout/TenantMobileBar.vue'
-import AppFooter from '@/layout/AppFooter.vue'
+import { useLayout } from '@/layouts/composables/layout'
+import AppSimpleTopbar from '@/layouts/components/AppSimpleTopbar.vue'
+import TenantMenu from '@/layouts/components/TenantMenu.vue'
+import TenantMobileBar from '@/layouts/components/TenantMobileBar.vue'
+import AppFooter from '@/layouts/components/AppFooter.vue'
 
 const { layoutConfig, layoutState, isSidebarActive, setFullscreen } = useLayout()
 

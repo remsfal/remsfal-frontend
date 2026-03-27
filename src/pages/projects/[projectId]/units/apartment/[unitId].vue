@@ -7,23 +7,23 @@ meta:
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import UnitBreadcrumb from '@/components/UnitBreadcrumb.vue';
-import ApartmentDataCard from '@/components/apartment/ApartmentDataCard.vue';
+import { UnitBreadcrumb, ApartmentDataCard, RentableUnitDangerZoneCard } from '@/features/project/rentableUnits';
 
 const route = useRoute('ApartmentView');
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
-    <UnitBreadcrumb
-      :projectId="(route.params.projectId as string)"
-      :unitId="(route.params.unitId as string)"
-      currentTitle=""
-      mode="edit"
-    />
-    <ApartmentDataCard
-      :projectId="(route.params.projectId as string)"
-      :unitId="(route.params.unitId as string)"
-    />
-  </div>
+  <UnitBreadcrumb
+    :projectId="(route.params.projectId as string)"
+    :unitId="(route.params.unitId as string)"
+  />
+  <ApartmentDataCard
+    :projectId="(route.params.projectId as string)"
+    :unitId="(route.params.unitId as string)"
+  />
+  <RentableUnitDangerZoneCard
+    :projectId="(route.params.projectId as string)"
+    :unitId="(route.params.unitId as string)"
+    unitType="APARTMENT"
+  />
 </template>

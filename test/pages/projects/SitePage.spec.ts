@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import SitePage from '@/pages/projects/[projectId]/units/site/[unitId].vue';
-import SiteDataCard from '@/components/site/SiteDataCard.vue';
-import RentableUnitTenantsCard from '@/components/site/RentableUnitTenantsCard.vue';
+import SiteDataCard from '@/features/project/rentableUnits/components/SiteDataCard.vue';
+import RentableUnitTenantsCard from '@/features/project/rentableUnits/components/RentableUnitTenantsCard.vue';
 import FacilityAddressCard from '@/components/FacilityAddressCard.vue';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -14,7 +14,7 @@ vi.mock('vue-router', async (importOriginal) => {
   };
 });
 
-vi.mock('@/components/site/SiteDataCard.vue', () => ({
+vi.mock('@/features/project/rentableUnits/components/SiteDataCard.vue', () => ({
   default: {
     name: 'SiteDataCard',
     props: ['projectId', 'unitId'],
@@ -22,7 +22,7 @@ vi.mock('@/components/site/SiteDataCard.vue', () => ({
   },
 }));
 
-vi.mock('@/components/site/RentableUnitTenantsCard.vue', () => ({
+vi.mock('@/features/project/rentableUnits/components/RentableUnitTenantsCard.vue', () => ({
   default: {
     name: 'RentableUnitTenantsCard',
     props: ['projectId', 'unitId'],

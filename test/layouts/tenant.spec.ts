@@ -2,14 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import TenantLayout from '@/layouts/tenant.vue'
-import AppSimpleTopbar from '@/layout/AppSimpleTopbar.vue'
-import TenantMenu from '@/layout/TenantMenu.vue'
-import TenantMobileBar from '@/layout/TenantMobileBar.vue'
-import AppFooter from '@/layout/AppFooter.vue'
+import AppSimpleTopbar from '@/layouts/components/AppSimpleTopbar.vue'
+import TenantMenu from '@/layouts/components/TenantMenu.vue'
+import TenantMobileBar from '@/layouts/components/TenantMobileBar.vue'
+import AppFooter from '@/layouts/components/AppFooter.vue'
 
 const mocks = vi.hoisted(() => ({ setFullscreen: vi.fn() }))
 
-vi.mock('@/layout/composables/layout', () => ({
+vi.mock('@/layouts/composables/layout', () => ({
   useLayout: () => ({
     layoutConfig: { menuMode: 'static' },
     layoutState: {
@@ -20,10 +20,10 @@ vi.mock('@/layout/composables/layout', () => ({
   }),
 }))
 
-vi.mock('@/layout/AppSimpleTopbar.vue', () => ({ default: { template: '<div data-test="app-simple-topbar" />' } }))
-vi.mock('@/layout/TenantMenu.vue', () => ({ default: { template: '<div data-test="tenant-menu" />' } }))
-vi.mock('@/layout/TenantMobileBar.vue', () => ({ default: { template: '<div data-test="tenant-mobilebar" />' } }))
-vi.mock('@/layout/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
+vi.mock('@/layouts/components/AppSimpleTopbar.vue', () => ({ default: { template: '<div data-test="app-simple-topbar" />' } }))
+vi.mock('@/layouts/components/TenantMenu.vue', () => ({ default: { template: '<div data-test="tenant-menu" />' } }))
+vi.mock('@/layouts/components/TenantMobileBar.vue', () => ({ default: { template: '<div data-test="tenant-mobilebar" />' } }))
+vi.mock('@/layouts/components/AppFooter.vue', () => ({ default: { template: '<div data-test="app-footer" />' } }))
 
 describe('layouts/tenant.vue', () => {
   beforeEach(() => vi.clearAllMocks())
