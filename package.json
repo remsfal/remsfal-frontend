@@ -89,7 +89,7 @@
     "eslint-plugin-cypress": "^6.2.0",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.4.0",
-    "jsdom": "^28.1.0",
+    "jsdom": "^29.0.1",
     "msw": "^2.12.7",
     "npm-run-all2": "^8.0.4",
     "nyc": "^17.1.0",
