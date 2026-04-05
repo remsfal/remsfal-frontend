@@ -88,7 +88,7 @@
     "eslint": "^9.39.2",
     "eslint-plugin-cypress": "^6.2.0",
     "eslint-plugin-vue": "^10.8.0",
-    "globals": "^16.4.0",
+    "globals": "^17.4.0",
     "jsdom": "^28.1.0",
     "msw": "^2.12.7",
     "npm-run-all2": "^8.0.4",
@@ -117,6 +117,6 @@
     "glob": "^9.3.2"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.56.0"
+    "@rollup/rollup-linux-x64-gnu": "^4.60.1"
   }
 }
