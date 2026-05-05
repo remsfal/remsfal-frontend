@@ -73,7 +73,7 @@
     "@pinia/testing": "^1.0.3",
     "@primevue/auto-import-resolver": "^4.5.4",
     "@stylistic/eslint-plugin": "^5.7.1",
-    "@tailwindcss/postcss": "^4.2.0",
+    "@tailwindcss/postcss": "^4.2.4",
     "@tsconfig/node-lts": "^24.0.0",
     "@types/jsdom": "^28.0.0",
     "@types/node": "^25.5.2",
