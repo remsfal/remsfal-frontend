@@ -97,7 +97,7 @@
     "postcss": "^8.5.14",
     "sass": "^1.99.0",
     "start-server-and-test": "^2.1.5",
-    "stylelint": "^17.4.0",
+    "stylelint": "^17.11.0",
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard": "^40.0.0",
     "tailwindcss": "^4.2.1",
