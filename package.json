@@ -84,7 +84,7 @@
     "autoprefixer": "^10.4.27",
     "baseline-browser-mapping": "^2.10.12",
     "chai": "^6.2.2",
-    "cypress": "^15.10.0",
+    "cypress": "^15.14.2",
     "eslint": "^9.39.2",
     "eslint-plugin-cypress": "^6.2.0",
     "eslint-plugin-vue": "^10.8.0",
