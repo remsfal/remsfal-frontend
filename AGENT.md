@@ -11,28 +11,382 @@ This is the frontend for Remsfal, an open-source facility management software bu
 
 **Live Version**: https://remsfal.de
 
-## Project Structure
+## Architecture Roadmap
+
+The project is undergoing a planned architectural modernization in three phases.
+**New code must follow the target architecture.** Existing code is migrated incrementally when touched.
+
+### Guiding Principles
+
+- **Feature Cohesion over Technical Layering** — code that changes together lives together
+- **Nuxt-Inspired Conventions in Vite** — layout system and file-based routing without framework migration
+- **Incremental Migration** — never rewrite everything at once; phases are independent and additive
+
+---
+
+### Target Directory Structure
 
 ```
 src/
-├── components/          # Reusable Vue components
-├── views/              # Page-level Vue components (route targets)
-├── layout/             # Layout components (topbar, sidebar, mobile bar)
-├── stores/             # Pinia stores for state management
-├── services/           # API services and business logic
-├── router/             # Vue Router configuration
-├── i18n/               # Internationalization files
-├── types/              # TypeScript type definitions
-├── helper/             # Utility functions
-├── assets/             # Static assets
-└── mocks/              # MSW mocks for backend mocking
+├── layouts/                    # Role-based layout components (Nuxt-inspired)
+│   ├── manager.vue             # ManagerMenu + ManagerTopbar + ManagerMobileBar
+│   ├── project.vue             # ProjectMenu + ProjectTopbar + ProjectMobileBar
+│   ├── tenant.vue              # TenantMenu + AppSimpleTopbar + TenantMobileBar
+│   ├── contractor.vue          # ContractorMenu + AppSimpleTopbar + ContractorMobileBar
+│   ├── public.vue              # AppSimpleTopbar + AppFooter (Landing, Legal, Privacy)
+│   ├── components/             # Layout chrome sub-components (Topbars, Menus, MobileBars)
+│   └── composables/            # useLayout(), useMobileBarActiveState()
+│
+├── pages/                      # File-based routes via unplugin-vue-router
+│   ├── index.vue               →  /                    (layout: public)
+│   ├── inbox/
+│   │   ├── index.vue           →  /inbox               (layout: manager)
+│   │   └── [id].vue            →  /inbox/:id           (layout: manager)
+│   ├── manager/
+│   │   ├── index.vue           →  /manager             (layout: manager)
+│   │   ├── settings.vue        →  /manager/settings    (layout: manager)
+│   │   └── organizations.vue   →  /manager/organizations
+│   ├── projects/
+│   │   └── [projectId]/
+│   │       ├── index.vue       →  /projects/:projectId          (layout: project)
+│   │       ├── settings.vue
+│   │       ├── chat.vue
+│   │       ├── issues/
+│   │       │   ├── index.vue
+│   │       │   └── [issueId]/
+│   │       │       └── index.vue
+│   │       ├── units/
+│   │       │   ├── index.vue
+│   │       │   ├── property/[unitId].vue
+│   │       │   ├── building/[unitId].vue
+│   │       │   ├── apartment/[unitId].vue
+│   │       │   ├── site/[unitId].vue
+│   │       │   ├── storage/[unitId].vue
+│   │       │   └── commercial/[unitId].vue
+│   │       ├── tenants/
+│   │       │   ├── index.vue
+│   │       │   └── [tenantId].vue
+│   │       ├── rental-agreements/
+│   │       │   ├── index.vue
+│   │       │   └── [agreementId].vue
+│   │       └── contractors/
+│   │           └── index.vue
+│   ├── tenancies/
+│   │   ├── index.vue           →  /tenancies           (layout: tenant)
+│   │   ├── issues/
+│   │   │   └── index.vue
+│   │   └── account-settings.vue
+│   └── contractor/
+│       ├── index.vue           →  /contractor          (layout: contractor)
+│       ├── issues/
+│       │   └── index.vue
+│       └── clients/
+│           └── index.vue
+│
+├── features/                   # Domain-based feature slices
+│   ├── manager/
+│   │   ├── components/         # ProjectSelectionTable, NewProjectDialog, ...
+│   │   ├── stores/             # ProjectStore (belongs to manager domain)
+│   │   └── index.ts            # Public API of this feature
+│   ├── project/
+│   │   ├── units/
+│   │   │   ├── components/     # RentableUnitsTable, UnitBreadcrumb, ...
+│   │   │   ├── services/       # PropertyService, BuildingService, ApartmentService, ...
+│   │   │   └── index.ts
+│   │   ├── tenants/
+│   │   │   ├── components/     # TenantCard, TenantToolbar, TenantContactButtons
+│   │   │   ├── services/       # TenantService
+│   │   │   └── index.ts
+│   │   ├── rental-agreements/
+│   │   │   ├── components/     # Step1..Step4Forms, RentalDetailsForm
+│   │   │   ├── services/       # RentalAgreementService, TenancyService
+│   │   │   └── index.ts
+│   │   ├── issues/
+│   │   │   ├── components/     # IssueTable, IssueDetailsCard, IssueDescriptionCard
+│   │   │   ├── services/       # IssueService
+│   │   │   └── index.ts
+│   │   └── contractors/
+│   │       ├── components/     # ContractorTable
+│   │       ├── services/       # ContractorService, ProjectMemberService
+│   │       └── index.ts
+│   ├── tenant/
+│   │   ├── components/         # TenantIssueList, tenancyDetails/*, tenantIssue/*
+│   │   ├── services/           # TenancyService (tenant-side)
+│   │   └── index.ts
+│   ├── contractor/
+│   │   ├── components/
+│   │   └── index.ts
+│   └── inbox/
+│       ├── components/         # InboxSidebar, InboxMessageList, InboxToolbar, ...
+│       ├── stores/             # InboxStore (belongs to inbox domain)
+│       ├── services/           # InboxService
+│       └── index.ts
+│
+├── shared/                     # Code used by ≥2 features (target for Phase 3 completion)
+│   ├── components/             # → until migration complete: use src/components/common/
+│   ├── composables/            # useTopbarUserActions
+│   ├── services/               # ApiClient.ts, AuthService.ts (infrastructure)
+│   ├── stores/                 # UserSession.ts, EventStore.ts (app-wide state)
+│   ├── i18n/                   # i18n config + locale files
+│   ├── types/                  # Shared TypeScript types
+│   ├── helpers/                # viewHelper, platform, indexeddb, service-worker-init
+│   └── constants/              # countries.ts
+│
+├── App.vue                     # Root: resolves route.meta.layout → renders <component>
+├── main.ts                     # Bootstrap only
+└── mocks/                      # MSW service worker
+
+test/                           # Mirrors src/ structure (pages/ + features/ + shared/)
+```
+
+---
+
+### Phase 1 — File-Based Routing (Vue Router v5)
+
+**Goal**: Replace the manual `src/router/index.ts` (currently 392 lines) with auto-generated routes from file structure.
+
+> **Note**: File-based routing was previously provided by the separate `unplugin-vue-router` package.
+> As of Vue Router v5, it is built into the core — no extra package needed.
+
+**`vite.config.ts`** — add plugin **before** `Vue()`:
+```ts
+import VueRouter from 'vue-router/vite'
+
+export default defineConfig({
+  plugins: [
+    VueRouter({ routesFolder: 'src/pages' }),
+    Vue(),
+  ],
+})
+```
+
+**`src/router/index.ts`** becomes a thin wrapper:
+```ts
+import { createRouter, createWebHistory } from 'vue-router/auto'
+import { routes } from 'vue-router/auto-routes'
+import { setupRouterGuards } from './guards'
+
+export const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
+})
+
+setupRouterGuards(router)
+```
+
+**`src/router/guards.ts`** — extracted `beforeEach` logic:
+```ts
+import type { Router } from 'vue-router'
+import { useUserSessionStore } from '@/shared/stores/UserSession'
+
+export function setupRouterGuards(router: Router) {
+  router.beforeEach((to) => {
+    const sessionStore = useUserSessionStore()
+    if (to.meta.requiresAuth && !sessionStore.user) {
+      return { path: '/', query: { redirect: to.fullPath } }
+    }
+    if (to.path === '/' && sessionStore.user) {
+      return { path: '/manager' }
+    }
+  })
+}
+```
+
+**Each page declares its own meta** via `<route>` block:
+```vue
+<!-- src/pages/manager/index.vue -->
+<route lang="yaml">
+meta:
+  layout: manager
+  requiresAuth: true
+</route>
+
+<script setup lang="ts">
+// page code
+</script>
+```
+
+**Typed route names**: Vue Router v5 generates a `RouteNamedMap` — no more string-typos in `router.push({ name: '...' })`.
+
+---
+
+### Phase 2 — Nuxt-Inspired Layout System
+
+**Goal**: Replace named router slots (`components: { topbar, sidebar, mobilebar }`) with dynamic layout components resolved from `route.meta.layout`.
+
+**Create `src/layouts/`** — one file per role, each wraps `<slot>` with role chrome:
+
+```vue
+<!-- src/layouts/manager.vue -->
+<template>
+  <div class="layout-wrapper" :class="containerClass">
+    <ManagerTopbar />
+    <ManagerMenu />
+    <div class="layout-main-container">
+      <div class="layout-main">
+        <slot />
+      </div>
+    </div>
+    <ManagerMobileBar />
+  </div>
+</template>
+
+<script setup lang="ts">
+const { layoutState } = useLayout()
+const containerClass = computed(() => ({
+  'layout-overlay': layoutState.menuMode === 'overlay',
+  'layout-static': layoutState.menuMode === 'static',
+  'layout-static-inactive': layoutState.menuMode === 'static' && !layoutState.staticMenuActive,
+}))
+</script>
+```
+
+**`src/App.vue`** — resolves layout dynamically:
+
+```vue
+<template>
+  <component :is="currentLayout">
+    <RouterView />
+  </component>
+  <Toast />
+</template>
+
+<script setup lang="ts">
+import type { Component } from 'vue'
+import ManagerLayout from '@/layouts/manager.vue'
+import ProjectLayout from '@/layouts/project.vue'
+import TenantLayout from '@/layouts/tenant.vue'
+import ContractorLayout from '@/layouts/contractor.vue'
+import PublicLayout from '@/layouts/public.vue'
+
+type LayoutKey = 'manager' | 'project' | 'tenant' | 'contractor' | 'public'
+
+const layouts: Record<LayoutKey, Component> = {
+  manager: ManagerLayout,
+  project: ProjectLayout,
+  tenant: TenantLayout,
+  contractor: ContractorLayout,
+  public: PublicLayout,
+}
+
+const route = useRoute()
+const currentLayout = computed(
+  () => layouts[(route.meta.layout as LayoutKey) ?? 'public']
+)
+
+// EventStore listeners (toast, session-expired) remain here
+</script>
+```
+
+**Extend `vue-router` types** for typed meta:
+```ts
+// src/router/typed-meta.d.ts
+import 'vue-router'
+declare module 'vue-router' {
+  interface RouteMeta {
+    layout?: 'manager' | 'project' | 'tenant' | 'contractor' | 'public'
+    requiresAuth?: boolean
+  }
+}
+```
+
+---
+
+### Phase 3 — Feature-Sliced Structure (incremental)
+
+**Goal**: Co-locate components, services, and stores by domain instead of by technical type.
+
+**Rules**:
+- New features are created in `src/features/<domain>/`
+- Existing code moves to its feature slice when the file is next modified
+- Never reach into a feature's internals from outside — use `index.ts` as the public API
+- `shared/` is for code actually used by ≥2 features; when in doubt, start in the feature
+
+**Shared components during migration**:
+- Until `src/shared/` is fully established, all shared components (used by ≥2 features) go into `src/components/common/`
+- `src/components/` (root level) remains for app-wide non-common components (e.g. `ProjectDangerZoneCard.vue`)
+- When Phase 3 migration is complete, `src/components/common/` contents move to `src/shared/components/`
+
+```ts
+// ✅ Correct — import through public API
+import { TenantCard } from '@/features/project/tenants'
+
+// ❌ Wrong — reaching into internals
+import TenantCard from '@/features/project/tenants/components/TenantCard.vue'
+```
+
+**Import order** — follow the pattern established in `PropertyDataCard.vue`:
+```ts
+// 1. Vue core
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
+
+// 2. PrimeVue Components
+import Button from 'primevue/button';
+// ...
+
+// 3. Third-party (forms, validation, etc.)
+import { Form } from '@primevue/forms';
+import { z } from 'zod';
+
+// 4. Internal shared components
+import BaseCard from '@/components/common/BaseCard.vue';
+
+// 5. Services & Types
+import { myService } from '@/services/MyService';
+import type { MyType } from '@/services/MyService';
+
+// Props & Emits defined directly in <script setup> (no import section)
+```
+
+**Priority order for migration** (highest impact first):
+1. `src/services/` → split into feature slices (most files, clearest ownership)
+2. `src/components/` subdirectories → already partially organized, finish the grouping
+3. `src/stores/ProjectStore.ts` → move to `features/manager/`
+4. `src/stores/InboxStore.ts` → move to `features/inbox/`
+5. `src/views/` → replaced by `src/pages/` in Phase 1, then co-located with features
+
+---
+
+### Migration Status
+
+| Phase | Status | Description |
+|-------|--------|-------------|
+| 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
+| 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
+| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` complete; incremental for other domains |
+
+**Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
+
+---
+
+## Current Project Structure
+
+> **Note**: This reflects the *current* state. The target structure is described in the Architecture Roadmap above.
+> During migration, both structures coexist — legacy code in the flat directories, new/migrated code in `features/` and `pages/`.
+
+```
+src/
+├── components/          # Reusable Vue components (→ features/ or shared/components/)
+├── views/               # Page-level components (→ pages/ + features/)
+├── layout/              # Layout components (→ layouts/ + features/*/layout/)
+├── stores/              # Pinia stores (→ shared/stores/ or features/*/stores/)
+├── services/            # API services (→ shared/services/ or features/*/services/)
+├── router/              # Vue Router config (→ thin wrapper after Phase 1)
+├── i18n/                # i18n config + locales (→ shared/i18n/)
+├── types/               # TypeScript types (→ shared/types/)
+├── helper/              # Utility functions (→ shared/helpers/)
+├── assets/              # Static assets
+├── constants/           # App constants (→ shared/constants/)
+└── mocks/               # MSW service worker
 
 test/
-├── components/         # Component tests
-├── views/              # View tests
-├── services/           # Service tests
-├── setup/              # Test configuration
-└── mocks/              # MSW mocks and fixtures
+├── components/          # Component tests
+├── views/               # View tests
+├── services/            # Service tests
+├── setup/               # Test configuration
+└── mocks/               # MSW handlers and fixtures
 ```
 
 ## Development Commands
@@ -182,7 +536,7 @@ Use lazy loading for routes: `component: () => import('@/views/ViewName.vue')`
 - Use PrimeVue components when available instead of custom implementations
 - Toast/dialog/confirm services available globally
 
-**BaseCard Component** (`src/components/BaseCard.vue`):
+**BaseCard Component** (`src/components/common/BaseCard.vue`):
 - Standardized wrapper around PrimeVue Card with consistent styling
 - Default classes: `flex flex-col gap-4 basis-full`
 - Default title styling: `font-semibold text-xl`
@@ -311,6 +665,12 @@ const onSubmit = (event: FormSubmitEvent) => {
 - Form validates on submit
 - Errors only appear after first blur or submit attempt
 
+**Unit suffixes on numeric fields:** Physical units (m², €, kg, etc.) must **not** be written into i18n label keys. Instead, pass the unit as the `suffix` prop on `InputNumber`:
+```html
+<InputNumber name="grossFloorArea" suffix=" m²" :min="0" :maxFractionDigits="2" fluid />
+```
+Labels stay clean (e.g. `"building.grossFloorArea": "Brutto-Grundfläche BGF"`), and the unit is rendered consistently by PrimeVue.
+
 **Known Issues:**
 - Issue [#6789](https://github.com/primefaces/primevue/issues/6789): `event.values` can be undefined in submit event
 - **Workaround:** Extract values from `event.states.[fieldName].value` instead of `event.values`
@@ -435,7 +795,9 @@ Key environment variables in `.env`:
 ## Code Quality Standards
 
 ### TypeScript Guidelines
-- Avoid `any` type - use proper type definitions
+- **Never use `any`** — not in production code, not in tests. ESLint enforces `@typescript-eslint/no-explicit-any`.
+  - In tests: import the real type from the service and annotate mock data directly (e.g. `const mockTree: PropertyListJson = { ... }`) instead of casting with `as any`.
+  - If a cast is truly unavoidable, use `as unknown as TargetType` and add a comment explaining why.
 - Create interfaces in `src/types/` for complex types
 - Use type imports: `import type { ComponentType } from './types'`
 - Prefer `interface` over `type` for object definitions

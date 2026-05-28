@@ -22,7 +22,7 @@ export default class SiteService {
   }
 
   // Update a site
-  async updateSite(projectId: string, siteId: string, data: SiteJson): Promise<SiteJson> {
+  async updateSite(projectId: string, siteId: string, data: Partial<SiteJson>): Promise<SiteJson> {
     const updated = await apiClient.patch(
       '/api/v1/projects/{projectId}/sites/{siteId}',
       data,

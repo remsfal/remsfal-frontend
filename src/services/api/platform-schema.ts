@@ -4764,11 +4764,11 @@ export interface components {
   schemas: {
     /** @description The address of a customer, a building or a site */
     AddressJson: {
-      street?: string;
-      city?: string;
-      province?: string;
-      zip?: string;
-      countryCode?: string;
+      street: string;
+      city: string;
+      province: string;
+      zip: string;
+      countryCode: string;
     };
     /** @description An apartment inside a building according to WoFIV */
     ApartmentJson: {
@@ -5436,7 +5436,7 @@ export interface components {
       readonly id?: components["schemas"]["UUID"];
       readonly userContexts?: components["schemas"]["UserContext"][];
       /** @example user@example.com */
-      email?: string;
+      readonly email?: string;
       firstName?: string;
       lastName?: string;
       address?: components["schemas"]["AddressJson"];

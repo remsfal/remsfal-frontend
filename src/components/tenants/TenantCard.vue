@@ -6,6 +6,8 @@ import TenantContactButtons from './TenantContactButtons.vue';
 import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';
+import { getIconForUnitType } from '@/features/project/rentableUnits';
+import type { UnitType } from '@/services/PropertyService';
 
 const props = defineProps<{
   tenant: TenantItemJson;
@@ -36,21 +38,8 @@ const hasRentalUnits = computed(() => {
   return props.tenant.rentalUnits && props.tenant.rentalUnits.length > 0;
 });
 
-// Icon mapping for UnitTypes (like in UnitBreadcrumb.vue)
-const getUnitIcon = (type?: string): string => {
-  if (!type) return 'pi pi-question-circle';
-
-  const icons: Record<string, string> = {
-    PROPERTY: 'pi pi-map',
-    BUILDING: 'pi pi-building',
-    APARTMENT: 'pi pi-home',
-    COMMERCIAL: 'pi pi-briefcase',
-    STORAGE: 'pi pi-box',
-    SITE: 'pi pi-tree',
-  };
-
-  return icons[type] || 'pi pi-question-circle';
-};
+const getUnitIcon = (type?: string): string =>
+  type ? getIconForUnitType(type as UnitType) : 'pi pi-question-circle';
 
 // Improved unitLabel function with fallbacks
 const unitLabel = (unit: { type?: string; title?: string; location?: string }) => {

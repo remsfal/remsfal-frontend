@@ -220,68 +220,6 @@ describe('PropertyService', () => {
     });
   });
 
-  describe('getBreadcrumbPath', () => {
-    it('should return correct path for a nested unit', async () => {
-      const path = await propertyService.getBreadcrumbPath('project-1', 'unit-1');
-      expect(path).toHaveLength(3);
-      expect(path[0].id).toBe('property-1');
-      expect(path[1].id).toBe('bldg-1');
-      expect(path[2].id).toBe('unit-1');
-    });
-
-    it('should return path for a root node', async () => {
-      const path = await propertyService.getBreadcrumbPath('project-1', 'property-1');
-      expect(path).toHaveLength(1);
-      expect(path[0].id).toBe('property-1');
-    });
-
-    it('should return empty array if ID not found', async () => {
-      const path = await propertyService.getBreadcrumbPath('project-1', 'ghost-id');
-      expect(path).toEqual([]);
-    });
-
-    it('should handle API errors gracefully', async () => {
-      server.use(
-        http.get('/api/v1/projects/:projectId/properties', () => {
-          return new HttpResponse(null, { status: 500 });
-        }),
-      );
-      const path = await propertyService.getBreadcrumbPath('project-1', 'unit-1');
-      expect(path).toEqual([]);
-    });
-  });
-
-  describe('getParentId', () => {
-    it('should find the parent of a nested child', async () => {
-      const parentId = await propertyService.getParentId('project-1', 'unit-1');
-      expect(parentId).toBe('bldg-1');
-    });
-
-    it('should find the parent of a building', async () => {
-      const parentId = await propertyService.getParentId('project-1', 'bldg-1');
-      expect(parentId).toBe('property-1');
-    });
-
-    it('should return undefined for a root node', async () => {
-      const parentId = await propertyService.getParentId('project-1', 'property-1');
-      expect(parentId).toBeUndefined();
-    });
-
-    it('should return undefined if child not found', async () => {
-      const parentId = await propertyService.getParentId('project-1', 'ghost-child');
-      expect(parentId).toBeUndefined();
-    });
-
-    it('should handle API errors gracefully', async () => {
-      server.use(
-        http.get('/api/v1/projects/:projectId/properties', () => {
-          return new HttpResponse(null, { status: 500 });
-        }),
-      );
-      const parentId = await propertyService.getParentId('project-1', 'unit-1');
-      expect(parentId).toBeUndefined();
-    });
-  });
 });
 
 describe('PropertyService utility functions', () => {

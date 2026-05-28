@@ -46,12 +46,12 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           name: eslint-${{ github.event.workflow_run.id }}
-          path: ${{ runner.temp }}/artifacts/eslint
+          path: ${{ runner.temp }}/artifacts/reports
       - name: Prepare ESLint directory and move eslint-report.json
         run: |
           mkdir -p reports
-          if [ -f "${{ runner.temp }}/artifacts/eslint/eslint-report.json" ]; then
-            mv "${{ runner.temp }}/artifacts/eslint/eslint-report.json" reports/
+          if [ -f "${{ runner.temp }}/artifacts/reports/eslint-report.json" ]; then
+            mv "${{ runner.temp }}/artifacts/reports/eslint-report.json" reports/
           else
             echo "Error: eslint-report.json not found in reports artifact." >&2
             exit 1
@@ -78,7 +78,7 @@ jobs:
           echo "baseRef=$(echo "$pr_json" | jq -r '.[0].baseRefName')" >> "$GITHUB_OUTPUT"
       - name: SonarCloud Scan (PR decoration)
         if: ${{ github.event.workflow_run.event == 'pull_request' }}
-        uses: SonarSource/sonarqube-scan-action@v7
+        uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,7 +93,7 @@ jobs:
       # --- Sonar -> PUSH on main ---
       - name: SonarCloud Scan (main branch analysis)
         if: ${{ github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
-        uses: SonarSource/sonarqube-scan-action@v7
+        uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:

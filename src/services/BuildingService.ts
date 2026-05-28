@@ -25,7 +25,7 @@ export default class BuildingService {
   }
 
   // Update a building
-  async updateBuilding(projectId: string, buildingId: string, building: BuildingJson): Promise<BuildingJson> {
+  async updateBuilding(projectId: string, buildingId: string, building: Partial<BuildingJson>): Promise<BuildingJson> {
     const updated = await apiClient.patch(
       '/api/v1/projects/{projectId}/buildings/{buildingId}',
       building,

@@ -3,12 +3,17 @@ import { mount, flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import TopbarUserActions from '@/components/TopbarUserActions.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
-import PrimeVue from 'primevue/config';
 import { createI18n } from 'vue-i18n';
 
 // Mock vue-router
 const mockPush = vi.fn();
-vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }), }));
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: mockPush }),
+  useRoute: () => ({
+ params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
+}),
+  RouterLink: { template: '<a><slot /></a>' },
+}));
 
 
 // Mock platform helper to NOT show dev login by default, but allow overriding
@@ -46,7 +51,7 @@ describe('TopbarUserActions.vue', () => {
         store.user = user ?? null;
 
         return {
-            wrapper: mount(TopbarUserActions, { global: { plugins: [pinia, PrimeVue, i18n], }, }),
+            wrapper: mount(TopbarUserActions, { global: { plugins: [pinia, i18n], }, }),
             store,
         };
     };

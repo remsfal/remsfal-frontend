@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: eslint-${{ github.run_id }}
-          path: reports/eslint-report.json
+          path: reports/
           retention-days: 1
           if-no-files-found: error
 

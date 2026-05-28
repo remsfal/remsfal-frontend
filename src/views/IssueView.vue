@@ -80,7 +80,7 @@ const loadMyIssues = async () => {
 
 // --- Handle row selection ---
 const onIssueSelect = (issue: IssueItemJson) => {
-  router.push({ name: 'IssueDetails', params: { issueId: issue.id } });
+  router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: issue.id ?? '' } });
 };
 
 // --- Initialize on mount ---

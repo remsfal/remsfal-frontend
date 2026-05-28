@@ -34,6 +34,8 @@ test-results/
 
 # nyc test coverage
 .nyc_output
+.nyc_input
+.nyc_report
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt

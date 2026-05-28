@@ -12,7 +12,7 @@ import Card from 'primevue/card';
 import StatCard from '@/components/StatCard.vue';
 const chartPlugins = [ChartDataLabels];
 const { t } = useI18n();
-const route = useRoute();
+const route = useRoute('ProjectDashboard');
 const projectId = route.params.projectId as string;
 
 const statCards = [
