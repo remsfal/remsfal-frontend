@@ -97,9 +97,16 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ManagerOrganizationSettings': RouteRecordInfo<
+      'ManagerOrganizationSettings',
+      '/manager/organizations/:organizationId',
+      { organizationId: ParamValue<true> },
+      { organizationId: ParamValue<false> },
+      | never
+    >,
     'ManagerOrganizations': RouteRecordInfo<
       'ManagerOrganizations',
-      '/manager/organizations',
+      '/manager/organizations/new',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -331,7 +338,13 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/manager/organizations.vue': {
+    'src/pages/manager/organizations/[organizationId].vue': {
+      routes:
+        | 'ManagerOrganizationSettings'
+      views:
+        | never
+    }
+    'src/pages/manager/organizations/new.vue': {
       routes:
         | 'ManagerOrganizations'
       views:

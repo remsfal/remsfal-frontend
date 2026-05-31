@@ -1,4 +1,5 @@
 import { userHandlers } from './user.handlers';
+import { organizationHandlers } from './organization.handlers';
 import { projectHandlers } from './project.handlers';
 import { projectMemberHandlers } from './project-member.handlers';
 import { propertyHandlers } from './property.handlers';
@@ -15,6 +16,7 @@ import { inboxHandlers } from './inbox.handlers';
 
 export const handlers = [
   ...userHandlers,
+  ...organizationHandlers,
   ...projectHandlers,
   ...projectMemberHandlers,
   ...propertyHandlers,

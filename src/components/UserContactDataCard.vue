@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import { Form } from '@primevue/forms';
@@ -7,6 +7,7 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseCard from '@/components/common/BaseCard.vue';
+import PhoneInput from '@/components/common/PhoneInput.vue';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
@@ -20,7 +21,7 @@ const i18n = useI18n();
 const toast = useToast();
 
 const nameRegex = /^[A-Za-zÄÖÜäöüß\s]+$/;
-const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
 const schema = z.object({
   firstName: z
@@ -33,35 +34,36 @@ const schema = z.object({
       .trim()
       .min(1, { message: t('validation.required') })
       .regex(nameRegex, { message: t('accountSettings.validation.nameInvalid') }),
-  mobilePhoneNumber: z
-      .string()
-      .regex(phoneRegex, { message: t('validation.phone') })
-      .or(z.literal(''))
-      .optional(),
-  businessPhoneNumber: z
-      .string()
-      .regex(phoneRegex, { message: t('validation.phone') })
-      .or(z.literal(''))
-      .optional(),
-  privatePhoneNumber: z
-      .string()
-      .regex(phoneRegex, { message: t('validation.phone') })
-      .or(z.literal(''))
-      .optional(),
   locale: z.string(),
 });
 
 const resolver = zodResolver(schema);
 const formKey = ref(0);
-const formFields = ['firstName', 'lastName', 'mobilePhoneNumber', 'businessPhoneNumber', 'privatePhoneNumber', 'locale'];
+const formFields = ['firstName', 'lastName', 'locale'];
 const initialValues = ref<Record<string, string>>({
   firstName: '',
   lastName: '',
-  mobilePhoneNumber: '',
-  businessPhoneNumber: '',
-  privatePhoneNumber: '',
   locale: i18n.locale.value,
 });
+
+// Phone fields tracked separately (not via PrimeVue Forms)
+const serverPhones = reactive({ mobile: '', business: '', private: '' });
+const currentPhones = reactive({ mobile: '', business: '', private: '' });
+
+const phoneDirty = computed(
+  () =>
+    currentPhones.mobile !== serverPhones.mobile ||
+    currentPhones.business !== serverPhones.business ||
+    currentPhones.private !== serverPhones.private,
+);
+
+function phoneFieldError(val: string) {
+  return val && !phoneRegex.test(val) ? t('validation.phone') : null;
+}
+const mobilePhoneError = computed(() => phoneFieldError(currentPhones.mobile));
+const businessPhoneError = computed(() => phoneFieldError(currentPhones.business));
+const privatePhoneError = computed(() => phoneFieldError(currentPhones.private));
+const hasPhoneError = computed(() => !!mobilePhoneError.value || !!businessPhoneError.value || !!privatePhoneError.value);
 
 const email = ref('');
 const additionalEmails = ref<string[]>([]);
@@ -69,7 +71,6 @@ const altEmailDirty = ref(false);
 const altEmailSuccess = ref(false);
 const altEmailError = ref(false);
 
-// Alternative email dialog state
 const dialogVisible = ref(false);
 const alternativeEmailInput = ref('');
 const isEmailInvalid = ref(false);
@@ -91,14 +92,18 @@ onMounted(async () => {
     initialValues.value = {
       firstName: profile.firstName || '',
       lastName: profile.lastName || '',
-      mobilePhoneNumber: profile.mobilePhoneNumber || '',
-      businessPhoneNumber: profile.businessPhoneNumber || '',
-      privatePhoneNumber: profile.privatePhoneNumber || '',
       locale: profile.locale ? validateLocale(profile.locale) : i18n.locale.value,
     };
     if (profile.locale) {
       i18n.locale.value = validateLocale(profile.locale);
     }
+    const phones = {
+      mobile: profile.mobilePhoneNumber || '',
+      business: profile.businessPhoneNumber || '',
+      private: profile.privatePhoneNumber || '',
+    };
+    Object.assign(serverPhones, phones);
+    Object.assign(currentPhones, phones);
     additionalEmails.value = Array.isArray(profile.additionalEmails)
         ? [...profile.additionalEmails]
         : [];
@@ -154,29 +159,33 @@ function deleteAlternativeEmail() {
 }
 
 async function onSubmit(event: FormSubmitEvent) {
-  if (!event.valid) return;
+  if (!event.valid || hasPhoneError.value) return;
   const s = event.states;
   try {
     const updatedUser = await userService.updateUser({
       firstName: s.firstName?.value || undefined,
       lastName: s.lastName?.value || undefined,
-      mobilePhoneNumber: s.mobilePhoneNumber?.value ?? undefined,
-      businessPhoneNumber: s.businessPhoneNumber?.value ?? undefined,
-      privatePhoneNumber: s.privatePhoneNumber?.value ?? undefined,
+      mobilePhoneNumber: currentPhones.mobile || undefined,
+      businessPhoneNumber: currentPhones.business || undefined,
+      privatePhoneNumber: currentPhones.private || undefined,
       locale: s.locale?.value || undefined,
       additionalEmails: altEmailDirty.value ? additionalEmails.value : undefined,
     });
 
-    // Reset form to saved values to clear dirty state
     initialValues.value = {
       firstName: updatedUser.firstName || '',
       lastName: updatedUser.lastName || '',
-      mobilePhoneNumber: updatedUser.mobilePhoneNumber || '',
-      businessPhoneNumber: updatedUser.businessPhoneNumber || '',
-      privatePhoneNumber: updatedUser.privatePhoneNumber || '',
       locale: updatedUser.locale ? validateLocale(updatedUser.locale) : i18n.locale.value,
     };
     formKey.value++;
+
+    const savedPhones = {
+      mobile: updatedUser.mobilePhoneNumber || '',
+      business: updatedUser.businessPhoneNumber || '',
+      private: updatedUser.privatePhoneNumber || '',
+    };
+    Object.assign(serverPhones, savedPhones);
+    Object.assign(currentPhones, savedPhones);
 
     additionalEmails.value = Array.isArray(updatedUser.additionalEmails)
         ? [...updatedUser.additionalEmails]
@@ -290,49 +299,58 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <!-- Mobile Phone -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium" for="mobilePhoneNumber">
+              <label class="font-medium">
                 {{ t('accountSettings.userProfile.mobilePhone') }}
               </label>
-              <InputText id="mobilePhoneNumber" fluid name="mobilePhoneNumber" />
+              <PhoneInput
+                :modelValue="currentPhones.mobile"
+                @update:modelValue="(v) => (currentPhones.mobile = v)"
+              />
               <Message
-                v-if="$form.mobilePhoneNumber?.invalid && $form.mobilePhoneNumber?.touched"
+                v-if="mobilePhoneError && currentPhones.mobile"
                 severity="error"
                 size="small"
                 variant="simple"
               >
-                {{ $form.mobilePhoneNumber.error?.message }}
+                {{ mobilePhoneError }}
               </Message>
             </div>
 
             <!-- Business Phone -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium" for="businessPhoneNumber">
+              <label class="font-medium">
                 {{ t('accountSettings.userProfile.businessPhone') }}
               </label>
-              <InputText id="businessPhoneNumber" fluid name="businessPhoneNumber" />
+              <PhoneInput
+                :modelValue="currentPhones.business"
+                @update:modelValue="(v) => (currentPhones.business = v)"
+              />
               <Message
-                v-if="$form.businessPhoneNumber?.invalid && $form.businessPhoneNumber?.touched"
+                v-if="businessPhoneError && currentPhones.business"
                 severity="error"
                 size="small"
                 variant="simple"
               >
-                {{ $form.businessPhoneNumber.error?.message }}
+                {{ businessPhoneError }}
               </Message>
             </div>
 
             <!-- Private Phone -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium" for="privatePhoneNumber">
+              <label class="font-medium">
                 {{ t('accountSettings.userProfile.privatePhone') }}
               </label>
-              <InputText id="privatePhoneNumber" fluid name="privatePhoneNumber" />
+              <PhoneInput
+                :modelValue="currentPhones.private"
+                @update:modelValue="(v) => (currentPhones.private = v)"
+              />
               <Message
-                v-if="$form.privatePhoneNumber?.invalid && $form.privatePhoneNumber?.touched"
+                v-if="privatePhoneError && currentPhones.private"
                 severity="error"
                 size="small"
                 variant="simple"
               >
-                {{ $form.privatePhoneNumber.error?.message }}
+                {{ privatePhoneError }}
               </Message>
             </div>
 
@@ -360,7 +378,7 @@ async function onSubmit(event: FormSubmitEvent) {
           <!-- Save Button -->
           <div class="flex justify-end">
             <Button
-              :disabled="!(formFields.some(k => $form[k]?.dirty) || altEmailDirty)"
+              :disabled="!(formFields.some(k => $form[k]?.dirty) || altEmailDirty || phoneDirty) || hasPhoneError"
               :label="t('button.save')"
               icon="pi pi-save"
               type="submit"
