@@ -275,7 +275,7 @@ async function onSubmit(event: FormSubmitEvent) {
                 @update:modelValue="(v) => (currentValues.countryCode = v as string)"
               >
                 <template #value="{ value }">
-                  <span v-if="value">{{ countryFlagEmoji(value.code) }} {{ value.displayName }}</span>
+                  <span v-if="value">{{ countryFlagEmoji(value) }} {{ countryDisplayName(value, locale) }}</span>
                 </template>
                 <template #option="{ option }">
                   <span>{{ countryFlagEmoji(option.code) }} {{ option.displayName }}</span>
