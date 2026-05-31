@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import Select from 'primevue/select';
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
-import { PHONE_DIAL_CODES, type PhoneDialCode } from '@/constants/phoneDialCodes';
+import { COUNTRIES, type Country } from '@/constants/countries';
+import { countryFlagEmoji, countryDisplayName } from '@/helper/countryHelper';
 
 const props = defineProps<{
   modelValue?: string;
@@ -12,17 +14,17 @@ const props = defineProps<{
 
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 
-function flagEmoji(code: string): string {
-  return [...code.toUpperCase()]
-    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
-    .join('');
-}
+const { locale } = useI18n();
 
-const defaultCountry = PHONE_DIAL_CODES.find(c => c.code === 'DE') ?? PHONE_DIAL_CODES[0];
+const localizedCountries = computed(() =>
+  COUNTRIES.map(c => ({ ...c, displayName: countryDisplayName(c.code, locale.value) })),
+);
 
-function parseE164(value?: string): { country: PhoneDialCode; local: string } | null {
+const defaultCountry = COUNTRIES.find(c => c.code === 'DE') ?? COUNTRIES[0];
+
+function parseE164(value?: string): { country: Country; local: string } | null {
   if (!value?.startsWith('+')) return null;
-  const sorted = [...PHONE_DIAL_CODES].sort((a, b) => b.dialCode.length - a.dialCode.length);
+  const sorted = [...COUNTRIES].sort((a, b) => b.dialCode.length - a.dialCode.length);
   for (const country of sorted) {
     if (value?.startsWith(country.dialCode)) {
       return { country, local: value.slice(country.dialCode.length) };
@@ -31,7 +33,7 @@ function parseE164(value?: string): { country: PhoneDialCode; local: string } | 
   return null;
 }
 
-const selectedCountry = ref<PhoneDialCode>(defaultCountry);
+const selectedCountry = ref<Country>(defaultCountry);
 const localNumber = ref('');
 let _applyingExternal = false;
 
@@ -60,8 +62,8 @@ function emitCombined() {
   emit('update:modelValue', digits ? selectedCountry.value.dialCode + digits : '');
 }
 
-function onLocalInput(val: string) {
-  localNumber.value = val;
+function onLocalInput(val: string | undefined) {
+  localNumber.value = val ?? '';
   emitCombined();
 }
 </script>
@@ -70,10 +72,10 @@ function onLocalInput(val: string) {
   <InputGroup>
     <Select
       v-model="selectedCountry"
-      :options="PHONE_DIAL_CODES"
-      optionLabel="name"
+      :options="localizedCountries"
+      optionLabel="displayName"
       filter
-      :filterFields="['name', 'dialCode']"
+      :filterFields="['displayName', 'dialCode']"
       :disabled="disabled"
       class="w-28! min-w-0! flex-none!"
       :pt="{
@@ -83,10 +85,10 @@ function onLocalInput(val: string) {
       @change="emitCombined"
     >
       <template #value="{ value }">
-        <span>{{ flagEmoji(value.code) }} {{ value.dialCode }}</span>
+        <span>{{ countryFlagEmoji(value.code) }} {{ value.dialCode }}</span>
       </template>
       <template #option="{ option }">
-        <span>{{ flagEmoji(option.code) }} {{ option.dialCode }} {{ option.name }}</span>
+        <span>{{ countryFlagEmoji(option.code) }} {{ option.dialCode }} {{ option.displayName }}</span>
       </template>
     </Select>
     <InputText

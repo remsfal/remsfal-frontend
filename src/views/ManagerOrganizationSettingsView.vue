@@ -7,7 +7,7 @@ import AddressCard from '@/components/AddressCard.vue';
 import { organizationService } from '@/services/OrganizationService';
 import type { AddressJson } from '@/services/AddressService';
 
-const route = useRoute();
+const route = useRoute('ManagerOrganizationSettings');
 const organizationStore = useOrganizationStore();
 
 const organizationId = computed(() => route.params.organizationId as string);
