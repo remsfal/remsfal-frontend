@@ -303,10 +303,11 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <!-- Mobile Phone -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium">
+              <label for="mobile-phone" class="font-medium">
                 {{ t('accountSettings.userProfile.mobilePhone') }}
               </label>
               <PhoneInput
+                inputId="mobile-phone"
                 :modelValue="currentPhones.mobile"
                 @update:modelValue="(v) => (currentPhones.mobile = v)"
               />
@@ -322,10 +323,11 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <!-- Business Phone -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium">
+              <label for="business-phone" class="font-medium">
                 {{ t('accountSettings.userProfile.businessPhone') }}
               </label>
               <PhoneInput
+                inputId="business-phone"
                 :modelValue="currentPhones.business"
                 @update:modelValue="(v) => (currentPhones.business = v)"
               />
@@ -341,10 +343,11 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <!-- Private Phone -->
             <div class="flex flex-col gap-1">
-              <label class="font-medium">
+              <label for="private-phone" class="font-medium">
                 {{ t('accountSettings.userProfile.privatePhone') }}
               </label>
               <PhoneInput
+                inputId="private-phone"
                 :modelValue="currentPhones.private"
                 @update:modelValue="(v) => (currentPhones.private = v)"
               />

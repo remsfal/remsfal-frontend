@@ -10,6 +10,7 @@ import { countryFlagEmoji, countryDisplayName } from '@/helper/countryHelper';
 const props = defineProps<{
   modelValue?: string;
   disabled?: boolean;
+  inputId?: string;
 }>();
 
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
@@ -92,6 +93,7 @@ function onLocalInput(val: string | undefined) {
       </template>
     </Select>
     <InputText
+      :id="inputId"
       :value="localNumber"
       type="tel"
       fluid

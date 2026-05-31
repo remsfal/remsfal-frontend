@@ -536,6 +536,24 @@ Use lazy loading for routes: `component: () => import('@/views/ViewName.vue')`
 - Use PrimeVue components when available instead of custom implementations
 - Toast/dialog/confirm services available globally
 
+**Accessibility — Label Association**:
+- Always associate `<label>` with its control via a matching `for` / `id` pair (SonarCloud rule Web:S6853)
+- For native inputs: `<label for="field-id">` + `<InputText id="field-id" />`
+- For custom composite components (e.g. `PhoneInput`): follow the PrimeVue convention of an `inputId` prop that is bound to the inner `<input>` element, then pass it from the parent
+
+```vue
+<!-- PhoneInput.vue -->
+const props = defineProps<{ inputId?: string }>()
+<InputText :id="inputId" ... />
+
+<!-- parent template -->
+<label for="org-phone" class="font-medium">{{ t('organization.phone') }}</label>
+<PhoneInput inputId="org-phone" v-model="phone" />
+```
+
+- Existing composite components with this pattern: `PhoneInput` (`src/components/common/PhoneInput.vue`)
+- Apply the same `inputId` prop to every new composite input component
+
 **BaseCard Component** (`src/components/common/BaseCard.vue`):
 - Standardized wrapper around PrimeVue Card with consistent styling
 - Default classes: `flex flex-col gap-4 basis-full`

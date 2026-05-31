@@ -128,8 +128,8 @@ function onHide() {
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="font-medium">{{ t('organization.phone') }}</label>
-          <PhoneInput v-model="phoneValue" />
+          <label for="org-phone" class="font-medium">{{ t('organization.phone') }}</label>
+          <PhoneInput v-model="phoneValue" inputId="org-phone" />
           <Message
             v-if="phoneError && phoneValue"
             severity="error"

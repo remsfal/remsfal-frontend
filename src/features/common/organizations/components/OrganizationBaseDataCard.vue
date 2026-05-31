@@ -160,9 +160,10 @@ async function onSubmit(event: FormSubmitEvent) {
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="flex flex-col gap-1">
-              <label class="font-medium">{{ t('organization.phone') }}</label>
+              <label for="org-phone" class="font-medium">{{ t('organization.phone') }}</label>
               <PhoneInput
                 :modelValue="currentValues.phone"
+                inputId="org-phone"
                 @update:modelValue="(v) => (currentValues.phone = v)"
               />
               <Message
