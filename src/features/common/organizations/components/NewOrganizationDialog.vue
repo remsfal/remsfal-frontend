@@ -28,7 +28,9 @@ const submitting = ref(false);
 const phoneValue = ref('');
 const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
-const initialValues = reactive({ name: '', email: '', trade: '' });
+const initialValues = reactive({
+ name: '', email: '', trade: '' 
+});
 
 const phoneError = computed(() => {
   if (!phoneValue.value) return null;
@@ -41,9 +43,7 @@ const schema = z.object({
     .string()
     .trim()
     .optional()
-    .refine((v) => !v || z.string().email().safeParse(v).success, {
-      message: t('organization.validation.emailInvalid'),
-    }),
+    .refine((v) => !v || z.string().email().safeParse(v).success, {message: t('organization.validation.emailInvalid'),}),
   trade: z.string().trim().optional(),
 });
 
@@ -86,7 +86,9 @@ async function onSubmit(event: FormSubmitEvent) {
 }
 
 function onHide() {
-  Object.assign(initialValues, { name: '', email: '', trade: '' });
+  Object.assign(initialValues, {
+ name: '', email: '', trade: '' 
+});
   phoneValue.value = '';
   formKey.value++;
   emit('update:visible', false);
@@ -101,7 +103,11 @@ function onHide() {
     :style="{ width: '32rem' }"
     @update:visible="onHide"
   >
-    <Form :key="formKey" v-slot="$form" :initialValues :resolver @submit="onSubmit">
+    <Form
+      :key="formKey" v-slot="$form"
+      :initialValues :resolver
+      @submit="onSubmit"
+    >
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
           <label for="org-name" class="font-medium">{{ t('organization.name') }}*</label>

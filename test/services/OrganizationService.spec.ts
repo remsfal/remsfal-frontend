@@ -37,17 +37,13 @@ describe('OrganizationService with MSW', () => {
   });
 
   test('updateOrganization merges request body into response', async () => {
-    const updated = await service.updateOrganization('org-123', {
-      name: 'Aktualisierte GmbH',
-    });
+    const updated = await service.updateOrganization('org-123', {name: 'Aktualisierte GmbH',});
     expect(updated.name).toBe('Aktualisierte GmbH');
     expect(updated.id).toBe('org-123');
   });
 
   test('updateOrganization preserves unchanged fields', async () => {
-    const updated = await service.updateOrganization('org-123', {
-      phone: '+4930123456',
-    });
+    const updated = await service.updateOrganization('org-123', {phone: '+4930123456',});
     expect(updated.phone).toBe('+4930123456');
     expect(updated.name).toBeDefined();
   });

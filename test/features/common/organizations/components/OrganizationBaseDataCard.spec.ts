@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import OrganizationBaseDataCard from '@/features/common/organizations/components/OrganizationBaseDataCard.vue';
 import { organizationService } from '@/services/OrganizationService';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
 import { setActivePinia, createPinia } from 'pinia';
 
 const mockOrg = {
@@ -22,9 +21,7 @@ describe('OrganizationBaseDataCard', () => {
   const mountCard = () =>
     mount(OrganizationBaseDataCard, {
       props: { organizationId: 'org-123' },
-      global: {
-        stubs: { PhoneInput: true },
-      },
+      global: {stubs: { PhoneInput: true },},
     });
 
   it('calls getOrganization with the provided id on mount', async () => {

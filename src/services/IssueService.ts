@@ -61,6 +61,7 @@ class IssueService {
       formData.append(`attachment${index}`, file);
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return apiClient.post('/ticketing/v1/issues', formData as any,
       {config: { headers: { 'Content-Type': 'multipart/form-data' } },}) as Promise<IssueJson>;
   }

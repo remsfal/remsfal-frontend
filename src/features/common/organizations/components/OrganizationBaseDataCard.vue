@@ -28,17 +28,21 @@ const schema = z.object({
     .string()
     .trim()
     .optional()
-    .refine((v) => !v || z.string().email().safeParse(v).success, {
-      message: t('organization.validation.emailInvalid'),
-    }),
+    .refine((v) => !v || z.string().email().safeParse(v).success, {message: t('organization.validation.emailInvalid'),}),
   trade: z.string().trim().optional(),
 });
 
 const resolver = zodResolver(schema);
 
-const serverValues = reactive({ name: '', phone: '', email: '', trade: '' });
-const currentValues = reactive({ name: '', phone: '', email: '', trade: '' });
-const initialValues = ref({ name: '', email: '', trade: '' });
+const serverValues = reactive({
+ name: '', phone: '', email: '', trade: '' 
+});
+const currentValues = reactive({
+ name: '', phone: '', email: '', trade: '' 
+});
+const initialValues = ref({
+ name: '', email: '', trade: '' 
+});
 const formKey = ref(0);
 
 const isDirty = computed(
@@ -66,7 +70,9 @@ onMounted(async () => {
     };
     Object.assign(serverValues, loaded);
     Object.assign(currentValues, loaded);
-    initialValues.value = { name: loaded.name, email: loaded.email, trade: loaded.trade };
+    initialValues.value = {
+ name: loaded.name, email: loaded.email, trade: loaded.trade 
+};
     formKey.value++;
   } catch {
     // silently ignore load error — form stays empty
@@ -92,7 +98,9 @@ async function onSubmit(event: FormSubmitEvent) {
     };
     Object.assign(serverValues, saved);
     Object.assign(currentValues, saved);
-    initialValues.value = { name: saved.name, email: saved.email, trade: saved.trade };
+    initialValues.value = {
+ name: saved.name, email: saved.email, trade: saved.trade 
+};
     formKey.value++;
     organizationStore.setOrganization(updated);
     toast.add({
@@ -116,7 +124,11 @@ async function onSubmit(event: FormSubmitEvent) {
       {{ t('organization.settings.title') }}
     </template>
     <template #content>
-      <Form :key="formKey" v-slot="$form" :initialValues :resolver @submit="onSubmit">
+      <Form
+        :key="formKey" v-slot="$form"
+        :initialValues :resolver
+        @submit="onSubmit"
+      >
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-1">
             <label for="org-name" class="font-medium">{{ t('organization.name') }}*</label>

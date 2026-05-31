@@ -21,15 +21,11 @@ export class OrganizationService {
   }
 
   async getOrganization(id: string): Promise<OrganizationJson> {
-    return apiClient.get('/api/v1/organization/{organizationId}', {
-      pathParams: { organizationId: id },
-    });
+    return apiClient.get('/api/v1/organization/{organizationId}', {pathParams: { organizationId: id },});
   }
 
   async updateOrganization(id: string, data: OrganizationUpdateRequest): Promise<OrganizationJson> {
-    return apiClient.patch('/api/v1/organization/{organizationId}', data, {
-      pathParams: { organizationId: id },
-    });
+    return apiClient.patch('/api/v1/organization/{organizationId}', data, {pathParams: { organizationId: id },});
   }
 }
 

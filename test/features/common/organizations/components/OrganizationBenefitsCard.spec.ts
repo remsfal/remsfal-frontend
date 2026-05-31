@@ -4,11 +4,7 @@ import OrganizationBenefitsCard from '@/features/common/organizations/components
 
 describe('OrganizationBenefitsCard', () => {
   const mountCard = () =>
-    mount(OrganizationBenefitsCard, {
-      global: {
-        stubs: { NewOrganizationDialog: true, BaseCard: false },
-      },
-    });
+    mount(OrganizationBenefitsCard, {global: {stubs: { NewOrganizationDialog: true, BaseCard: false },},});
 
   it('renders the card title for organizations', () => {
     const wrapper = mountCard();

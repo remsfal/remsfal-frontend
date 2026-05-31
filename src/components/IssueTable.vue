@@ -11,7 +11,7 @@ const emit = defineEmits<{
   rowSelect: [issue: IssueItemJson];
 }>();
 
-const onRowSelect = (event: any) => {
+const onRowSelect = (event: { data: IssueItemJson }) => {
   emit('rowSelect', event.data);
 };
 </script>

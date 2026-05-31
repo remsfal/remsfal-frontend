@@ -54,7 +54,9 @@ export const organizationHandlers = [
   http.patch(`${API_BASE}/organization/:organizationId`, async ({ params, request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json(
-      { ...mockOrganization, ...body, id: params.organizationId },
+      {
+ ...mockOrganization, ...body, id: params.organizationId 
+},
       { status: 200 },
     );
   }),

@@ -6,9 +6,7 @@ export const useOrganizationStore = defineStore('organization', {
     userOrganizations: [] as OrganizationJson[],
     initialized: false,
   }),
-  getters: {
-    hasOrganization: (state): boolean => state.userOrganizations.length > 0,
-  },
+  getters: {hasOrganization: (state): boolean => state.userOrganizations.length > 0,},
   actions: {
     async fetchUserOrganization() {
       try {

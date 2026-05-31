@@ -1,3 +1,4 @@
+/* eslint-disable vue/one-component-per-file, vue/require-default-prop */
 import { describe, it, expect } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { defineComponent } from 'vue';
@@ -5,13 +6,27 @@ import PhoneInput from '@/components/common/PhoneInput.vue';
 
 // Stub PrimeVue components to avoid complex rendering
 const InputTextStub = defineComponent({
-  props: ['value', 'disabled', 'type', 'fluid'],
+  props: {
+    value: { type: String },
+    disabled: { type: Boolean },
+    type: { type: String },
+    fluid: { type: Boolean },
+  },
   emits: ['update:modelValue'],
-  template: `<input class="phone-local-input" :value="value" :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" />`,
+  template:
+    '<input class="phone-local-input" :value="value" :disabled="disabled"' +
+    ' @input="$emit(\'update:modelValue\', $event.target.value)" />',
 });
 
 const SelectStub = defineComponent({
-  props: ['modelValue', 'options', 'optionLabel', 'filter', 'filterFields', 'disabled'],
+  props: {
+    modelValue: { type: Object },
+    options: { type: Array },
+    optionLabel: { type: String },
+    filter: { type: Boolean },
+    filterFields: { type: Array },
+    disabled: { type: Boolean },
+  },
   emits: ['update:modelValue', 'change'],
   template: `<div class="phone-country-select">{{ modelValue?.dialCode }}</div>`,
 });

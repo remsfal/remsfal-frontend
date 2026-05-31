@@ -47,8 +47,12 @@ const initialValues = ref<Record<string, string>>({
 });
 
 // Phone fields tracked separately (not via PrimeVue Forms)
-const serverPhones = reactive({ mobile: '', business: '', private: '' });
-const currentPhones = reactive({ mobile: '', business: '', private: '' });
+const serverPhones = reactive({
+ mobile: '', business: '', private: '' 
+});
+const currentPhones = reactive({
+ mobile: '', business: '', private: '' 
+});
 
 const phoneDirty = computed(
   () =>
