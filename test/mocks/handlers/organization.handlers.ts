@@ -18,40 +18,40 @@ export const mockOrganization = {
 };
 
 export const organizationHandlers = [
-  // GET /organization/employments — must come before /:organizationId
-  http.get(`${API_BASE}/organization/employments`, () => {
+  // GET /organizations/employments — must come before /:organizationId
+  http.get(`${API_BASE}/organizations/employments`, () => {
     return HttpResponse.json(
       { organizations: [mockOrganization], total: 1 },
       { status: 200 },
     );
   }),
 
-  // GET /organization (all owned)
-  http.get(`${API_BASE}/organization`, () => {
+  // GET /organizations (all owned)
+  http.get(`${API_BASE}/organizations`, () => {
     return HttpResponse.json(
       { organizations: [mockOrganization], total: 1 },
       { status: 200 },
     );
   }),
 
-  // POST /organization
-  http.post(`${API_BASE}/organization`, () => {
+  // POST /organizations
+  http.post(`${API_BASE}/organizations`, () => {
     return new HttpResponse(null, {
       status: 201,
-      headers: { Location: `${API_BASE}/organization/org-123` },
+      headers: { Location: `${API_BASE}/organizations/org-123` },
     });
   }),
 
-  // GET /organization/:organizationId
-  http.get(`${API_BASE}/organization/:organizationId`, ({ params }) => {
+  // GET /organizations/:organizationId
+  http.get(`${API_BASE}/organizations/:organizationId`, ({ params }) => {
     return HttpResponse.json(
       { ...mockOrganization, id: params.organizationId },
       { status: 200 },
     );
   }),
 
-  // PATCH /organization/:organizationId
-  http.patch(`${API_BASE}/organization/:organizationId`, async ({ params, request }) => {
+  // PATCH /organizations/:organizationId
+  http.patch(`${API_BASE}/organizations/:organizationId`, async ({ params, request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json(
       {
