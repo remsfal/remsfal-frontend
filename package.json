@@ -78,7 +78,7 @@
     "@types/jsdom": "^28.0.0",
     "@types/node": "^25.5.2",
     "@vitejs/plugin-vue": "^6.0.6",
-    "@vitest/coverage-istanbul": "^4.0.18",
+    "@vitest/coverage-istanbul": "^4.1.8",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.9.1",
     "autoprefixer": "^10.4.27",
@@ -108,7 +108,7 @@
     "vite": "^7.3.2",
     "vite-plugin-istanbul": "^7.2.1",
     "vite-plugin-vue-devtools": "^8.1.2",
-    "vitest": "^4.0.3",
+    "vitest": "^4.1.8",
     "vue-eslint-parser": "^10.4.0",
     "vue-i18n-extract": "^2.0.7",
     "vue-tsc": "^3.2.5"
