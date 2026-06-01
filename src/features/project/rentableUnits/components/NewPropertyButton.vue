@@ -157,7 +157,7 @@ async function onSubmit(event: FormSubmitEvent) {
           />
         </div>
 
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2 mt-6">
           <Button
             type="button"
             :label="t('button.cancel')"

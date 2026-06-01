@@ -5,11 +5,11 @@ import { useToast } from 'primevue/usetoast';
 
 // PrimeVue Components
 import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Select from 'primevue/select';
-import Message from 'primevue/message';
+import BaseDialog from '@/components/common/BaseDialog.vue';
+import DialogFormField from '@/components/common/DialogFormField.vue';
 
 // PrimeVue Forms
 import { Form } from '@primevue/forms';
@@ -165,6 +165,10 @@ async function createIssue(data: {
   }
 }
 
+function formError(field: { invalid?: boolean; touched?: boolean; error?: { message?: string } } | undefined) {
+  return field?.invalid && field?.touched ? field.error?.message : undefined;
+}
+
 // Cancel Handler
 function abort() {
   emit('update:visible', false);
@@ -172,22 +176,21 @@ function abort() {
 </script>
 
 <template>
-  <Dialog
+  <BaseDialog
     :visible="visible"
-    modal
     :header="dialogHeader"
-    class="w-full max-w-md sm:max-w-lg md:max-w-xl"
     closable
     @update:visible="emit('update:visible', $event)"
     @hide="abort"
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
-        <!-- Title Field -->
-        <div class="flex flex-col gap-2">
-          <label for="issueTitle" class="font-semibold">
-            {{ t('newIssueDialog.title.label') }}
-          </label>
+        <DialogFormField
+          inputId="issueTitle"
+          :label="t('newIssueDialog.title.label')"
+          required
+          :errorMessage="formError($form.issueTitle)"
+        >
           <InputText
             id="issueTitle"
             name="issueTitle"
@@ -197,21 +200,13 @@ function abort() {
             autofocus
             fluid
           />
-          <Message
-            v-if="$form.issueTitle?.invalid && $form.issueTitle?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.issueTitle.error.message }}
-          </Message>
-        </div>
+        </DialogFormField>
 
-        <!-- Description Field (Textarea) -->
-        <div class="flex flex-col gap-2">
-          <label for="issueDescription" class="font-semibold">
-            {{ t('newIssueDialog.description.label') }}
-          </label>
+        <DialogFormField
+          inputId="issueDescription"
+          :label="t('newIssueDialog.description.label')"
+          :errorMessage="formError($form.issueDescription)"
+        >
           <Textarea
             id="issueDescription"
             name="issueDescription"
@@ -220,21 +215,13 @@ function abort() {
             :class="{ 'p-invalid': $form.issueDescription?.invalid && $form.issueDescription?.touched }"
             fluid
           />
-          <Message
-            v-if="$form.issueDescription?.invalid && $form.issueDescription?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.issueDescription.error.message }}
-          </Message>
-        </div>
+        </DialogFormField>
 
-        <!-- Type Select -->
-        <div class="flex flex-col gap-2">
-          <label for="issueType" class="font-semibold">
-            {{ t('newIssueDialog.type.label') }}
-          </label>
+        <DialogFormField
+          inputId="issueType"
+          :label="t('newIssueDialog.type.label')"
+          :errorMessage="formError($form.issueType)"
+        >
           <Select
             id="issueType"
             name="issueType"
@@ -245,21 +232,13 @@ function abort() {
             :class="{ 'p-invalid': $form.issueType?.invalid && $form.issueType?.touched }"
             fluid
           />
-          <Message
-            v-if="$form.issueType?.invalid && $form.issueType?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.issueType.error.message }}
-          </Message>
-        </div>
+        </DialogFormField>
 
-        <!-- Priority Select -->
-        <div class="flex flex-col gap-2">
-          <label for="issuePriority" class="font-semibold">
-            {{ t('newIssueDialog.priority.label') }}
-          </label>
+        <DialogFormField
+          inputId="issuePriority"
+          :label="t('newIssueDialog.priority.label')"
+          :errorMessage="formError($form.issuePriority)"
+        >
           <Select
             id="issuePriority"
             name="issuePriority"
@@ -270,19 +249,10 @@ function abort() {
             :class="{ 'p-invalid': $form.issuePriority?.invalid && $form.issuePriority?.touched }"
             fluid
           />
-          <Message
-            v-if="$form.issuePriority?.invalid && $form.issuePriority?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.issuePriority.error.message }}
-          </Message>
-        </div>
+        </DialogFormField>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex justify-end gap-3 mt-6">
+      <div class="flex justify-end gap-2 mt-6">
         <Button
           type="button"
           :label="t('button.cancel')"
@@ -297,5 +267,5 @@ function abort() {
         />
       </div>
     </Form>
-  </Dialog>
+  </BaseDialog>
 </template>
