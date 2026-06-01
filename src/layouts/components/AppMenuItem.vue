@@ -16,6 +16,7 @@ const { t } = useI18n();
 
 export interface MenuItem {
   label: string;
+  rawLabel?: string;
   icon?: { type: 'pi' | 'fa'; name: string | [string, string] } | null;
   to?: string;
   url?: string;
@@ -98,7 +99,7 @@ const checkActiveRoute = (item: MenuItem) => {
 <template>
   <li :class="{ 'layout-root-menuitem': root, 'active-menuitem': isActiveMenu }">
     <div v-if="root && item.visible !== false" class="layout-menuitem-root-text">
-      {{ t(item.label) }}
+      {{ item.rawLabel ?? t(item.label) }}
     </div>
     <a
       v-if="(!item.to || item.items) && item.visible !== false"
@@ -115,7 +116,7 @@ const checkActiveRoute = (item: MenuItem) => {
           class="layout-menuitem-icon"
         />
       </template>
-      <span class="layout-menuitem-text">{{ t(item.label) }}</span>
+      <span class="layout-menuitem-text">{{ item.rawLabel ?? t(item.label) }}</span>
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler" />
     </a>
     <RouterLink
@@ -133,7 +134,7 @@ const checkActiveRoute = (item: MenuItem) => {
           class="layout-menuitem-icon"
         />
       </template>
-      <span class="layout-menuitem-text">{{ t(item.label) }}</span>
+      <span class="layout-menuitem-text">{{ item.rawLabel ?? t(item.label) }}</span>
       <i v-if="item.items" class="pi pi-fw pi-angle-down layout-submenu-toggler" />
     </RouterLink>
     <Transition v-if="item.items && item.visible !== false" name="layout-submenu">

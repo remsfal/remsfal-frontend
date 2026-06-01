@@ -1,7 +1,9 @@
 <script setup lang="ts">
-// TODO: Implement manager organizations view
+import { OrganizationBenefitsCard } from '@/features/common/organizations';
 </script>
 
 <template>
-  <div />
+  <div class="grid grid-cols-1 gap-6">
+    <OrganizationBenefitsCard />
+  </div>
 </template>

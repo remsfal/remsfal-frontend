@@ -66,7 +66,7 @@ const removeMember = async (memberId: string) => {
     await fetchMembers();
     console.log('Member removed successfully');
   } catch (error) {
-    const err = error as { response?: { data: any }; message: string };
+    const err = error as { response?: { data: unknown }; message: string };
     console.error('Failed to remove member:', err.response?.data || err.message);
   }
 };

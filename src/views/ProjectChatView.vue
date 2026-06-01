@@ -125,6 +125,7 @@ function handleFileUpload(event: Event) {
           <button
             v-for="emoji in emojis"
             :key="emoji"
+            type="button"
             data-testid="emoji-button"
             @click="newMessage += ` ${emoji}`"
           >

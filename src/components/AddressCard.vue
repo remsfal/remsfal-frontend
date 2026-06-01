@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { countryFlagEmoji, countryDisplayName } from '@/helper/countryHelper';
 import { useToast } from 'primevue/usetoast';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
@@ -23,7 +24,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+const localizedCountries = computed(() =>
+  COUNTRIES.map(c => ({ ...c, displayName: countryDisplayName(c.code, locale.value) })),
+);
 const toast = useToast();
 const addressService = new AddressService();
 
@@ -261,14 +266,21 @@ async function onSubmit(event: FormSubmitEvent) {
               <Select
                 id="countryCode"
                 name="countryCode"
-                :options="COUNTRIES"
-                optionLabel="name"
+                :options="localizedCountries"
                 optionValue="code"
+                :filterFields="['displayName']"
                 :placeholder="t('address.selectCountry')"
                 filter
                 fluid
                 @update:modelValue="(v) => (currentValues.countryCode = v as string)"
-              />
+              >
+                <template #value="{ value }">
+                  <span v-if="value">{{ countryFlagEmoji(value) }} {{ countryDisplayName(value, locale) }}</span>
+                </template>
+                <template #option="{ option }">
+                  <span>{{ countryFlagEmoji(option.code) }} {{ option.displayName }}</span>
+                </template>
+              </Select>
               <Message
                 v-if="$form.countryCode?.invalid && $form.countryCode?.touched"
                 severity="error"

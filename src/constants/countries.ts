@@ -1,198 +1,235 @@
 export interface Country {
   name: string;
   code: string;
+  dialCode: string;
 }
 
 export const COUNTRIES: Country[] = [
-  { name: 'Afghanistan', code: 'AF' },
-  { name: 'Albanien', code: 'AL' },
-  { name: 'Algerien', code: 'DZ' },
-  { name: 'Andorra', code: 'AD' },
-  { name: 'Angola', code: 'AO' },
-  { name: 'Antigua und Barbuda', code: 'AG' },
-  { name: 'Argentinien', code: 'AR' },
-  { name: 'Armenien', code: 'AM' },
-  { name: 'Australien', code: 'AU' },
-  { name: 'Österreich', code: 'AT' },
-  { name: 'Aserbaidschan', code: 'AZ' },
-  { name: 'Bahamas', code: 'BS' },
-  { name: 'Bahrain', code: 'BH' },
-  { name: 'Bangladesch', code: 'BD' },
-  { name: 'Barbados', code: 'BB' },
-  { name: 'Weißrussland', code: 'BY' },
-  { name: 'Belgien', code: 'BE' },
-  { name: 'Belize', code: 'BZ' },
-  { name: 'Benin', code: 'BJ' },
-  { name: 'Bhutan', code: 'BT' },
-  { name: 'Bolivien', code: 'BO' },
-  { name: 'Bosnien und Herzegowina', code: 'BA' },
-  { name: 'Botswana', code: 'BW' },
-  { name: 'Brasilien', code: 'BR' },
-  { name: 'Brunei', code: 'BN' },
-  { name: 'Bulgarien', code: 'BG' },
-  { name: 'Burkina Faso', code: 'BF' },
-  { name: 'Burundi', code: 'BI' },
-  { name: 'Kambodscha', code: 'KH' },
-  { name: 'Kamerun', code: 'CM' },
-  { name: 'Kanada', code: 'CA' },
-  { name: 'Kap Verde', code: 'CV' },
-  { name: 'Zentralafrikanische Republik', code: 'CF' },
-  { name: 'Tschad', code: 'TD' },
-  { name: 'Chile', code: 'CL' },
-  { name: 'China', code: 'CN' },
-  { name: 'Kolumbien', code: 'CO' },
-  { name: 'Komoren', code: 'KM' },
-  { name: 'Kongo (Brazzaville)', code: 'CG' },
-  { name: 'Kongo (Kinshasa)', code: 'CD' },
-  { name: 'Costa Rica', code: 'CR' },
-  { name: 'Kroatien', code: 'HR' },
-  { name: 'Kuba', code: 'CU' },
-  { name: 'Zypern', code: 'CY' },
-  { name: 'Tschechien', code: 'CZ' },
-  { name: 'Dänemark', code: 'DK' },
-  { name: 'Dschibuti', code: 'DJ' },
-  { name: 'Dominica', code: 'DM' },
-  { name: 'Dominikanische Republik', code: 'DO' },
-  { name: 'Ecuador', code: 'EC' },
-  { name: 'Ägypten', code: 'EG' },
-  { name: 'El Salvador', code: 'SV' },
-  { name: 'Äquatorialguinea', code: 'GQ' },
-  { name: 'Eritrea', code: 'ER' },
-  { name: 'Estland', code: 'EE' },
-  { name: 'Eswatini', code: 'SZ' },
-  { name: 'Äthiopien', code: 'ET' },
-  { name: 'Fidschi', code: 'FJ' },
-  { name: 'Finnland', code: 'FI' },
-  { name: 'Frankreich', code: 'FR' },
-  { name: 'Gabun', code: 'GA' },
-  { name: 'Gambia', code: 'GM' },
-  { name: 'Georgien', code: 'GE' },
-  { name: 'Deutschland', code: 'DE' },
-  { name: 'Ghana', code: 'GH' },
-  { name: 'Griechenland', code: 'GR' },
-  { name: 'Grenada', code: 'GD' },
-  { name: 'Guatemala', code: 'GT' },
-  { name: 'Guinea', code: 'GN' },
-  { name: 'Guinea-Bissau', code: 'GW' },
-  { name: 'Guyana', code: 'GY' },
-  { name: 'Haiti', code: 'HT' },
-  { name: 'Honduras', code: 'HN' },
-  { name: 'Ungarn', code: 'HU' },
-  { name: 'Island', code: 'IS' },
-  { name: 'Indien', code: 'IN' },
-  { name: 'Indonesien', code: 'ID' },
-  { name: 'Iran', code: 'IR' },
-  { name: 'Irak', code: 'IQ' },
-  { name: 'Irland', code: 'IE' },
-  { name: 'Israel', code: 'IL' },
-  { name: 'Italien', code: 'IT' },
-  { name: 'Jamaika', code: 'JM' },
-  { name: 'Japan', code: 'JP' },
-  { name: 'Jordanien', code: 'JO' },
-  { name: 'Kasachstan', code: 'KZ' },
-  { name: 'Kenia', code: 'KE' },
-  { name: 'Kiribati', code: 'KI' },
-  { name: 'Nordkorea', code: 'KP' },
-  { name: 'Südkorea', code: 'KR' },
-  { name: 'Kuwait', code: 'KW' },
-  { name: 'Kirgisistan', code: 'KG' },
-  { name: 'Laos', code: 'LA' },
-  { name: 'Lettland', code: 'LV' },
-  { name: 'Libanon', code: 'LB' },
-  { name: 'Lesotho', code: 'LS' },
-  { name: 'Liberia', code: 'LR' },
-  { name: 'Libyen', code: 'LY' },
-  { name: 'Liechtenstein', code: 'LI' },
-  { name: 'Litauen', code: 'LT' },
-  { name: 'Luxemburg', code: 'LU' },
-  { name: 'Madagaskar', code: 'MG' },
-  { name: 'Malawi', code: 'MW' },
-  { name: 'Malaysia', code: 'MY' },
-  { name: 'Malediven', code: 'MV' },
-  { name: 'Mali', code: 'ML' },
-  { name: 'Malta', code: 'MT' },
-  { name: 'Marshallinseln', code: 'MH' },
-  { name: 'Mauretanien', code: 'MR' },
-  { name: 'Mauritius', code: 'MU' },
-  { name: 'Mexiko', code: 'MX' },
-  { name: 'Mikronesien', code: 'FM' },
-  { name: 'Moldawien', code: 'MD' },
-  { name: 'Monaco', code: 'MC' },
-  { name: 'Mongolei', code: 'MN' },
-  { name: 'Montenegro', code: 'ME' },
-  { name: 'Marokko', code: 'MA' },
-  { name: 'Mosambik', code: 'MZ' },
-  { name: 'Myanmar', code: 'MM' },
-  { name: 'Namibia', code: 'NA' },
-  { name: 'Nauru', code: 'NR' },
-  { name: 'Nepal', code: 'NP' },
-  { name: 'Niederlande', code: 'NL' },
-  { name: 'Neuseeland', code: 'NZ' },
-  { name: 'Nicaragua', code: 'NI' },
-  { name: 'Niger', code: 'NE' },
-  { name: 'Nigeria', code: 'NG' },
-  { name: 'Norwegen', code: 'NO' },
-  { name: 'Oman', code: 'OM' },
-  { name: 'Pakistan', code: 'PK' },
-  { name: 'Palau', code: 'PW' },
-  { name: 'Panama', code: 'PA' },
-  { name: 'Papua-Neuguinea', code: 'PG' },
-  { name: 'Paraguay', code: 'PY' },
-  { name: 'Peru', code: 'PE' },
-  { name: 'Philippinen', code: 'PH' },
-  { name: 'Polen', code: 'PL' },
-  { name: 'Portugal', code: 'PT' },
-  { name: 'Katar', code: 'QA' },
-  { name: 'Rumänien', code: 'RO' },
-  { name: 'Russland', code: 'RU' },
-  { name: 'Ruanda', code: 'RW' },
-  { name: 'St. Kitts und Nevis', code: 'KN' },
-  { name: 'St. Lucia', code: 'LC' },
-  { name: 'St. Vincent und die Grenadinen', code: 'VC' },
-  { name: 'Samoa', code: 'WS' },
-  { name: 'San Marino', code: 'SM' },
-  { name: 'Sao Tome und Principe', code: 'ST' },
-  { name: 'Saudi-Arabien', code: 'SA' },
-  { name: 'Senegal', code: 'SN' },
-  { name: 'Serbien', code: 'RS' },
-  { name: 'Seychellen', code: 'SC' },
-  { name: 'Sierra Leone', code: 'SL' },
-  { name: 'Singapur', code: 'SG' },
-  { name: 'Slowakei', code: 'SK' },
-  { name: 'Slowenien', code: 'SI' },
-  { name: 'Salomonen', code: 'SB' },
-  { name: 'Somalia', code: 'SO' },
-  { name: 'Südafrika', code: 'ZA' },
-  { name: 'Spanien', code: 'ES' },
-  { name: 'Sri Lanka', code: 'LK' },
-  { name: 'Sudan', code: 'SD' },
-  { name: 'Südsudan', code: 'SS' },
-  { name: 'Suriname', code: 'SR' },
-  { name: 'Schweden', code: 'SE' },
-  { name: 'Schweiz', code: 'CH' },
-  { name: 'Syrien', code: 'SY' },
-  { name: 'Taiwan', code: 'TW' },
-  { name: 'Tadschikistan', code: 'TJ' },
-  { name: 'Tansania', code: 'TZ' },
-  { name: 'Thailand', code: 'TH' },
-  { name: 'Togo', code: 'TG' },
-  { name: 'Tonga', code: 'TO' },
-  { name: 'Trinidad und Tobago', code: 'TT' },
-  { name: 'Tunesien', code: 'TN' },
-  { name: 'Türkei', code: 'TR' },
-  { name: 'Turkmenistan', code: 'TM' },
-  { name: 'Tuvalu', code: 'TV' },
-  { name: 'Uganda', code: 'UG' },
-  { name: 'Ukraine', code: 'UA' },
-  { name: 'Vereinigte Arabische Emirate', code: 'AE' },
-  { name: 'Vereinigtes Königreich', code: 'GB' },
-  { name: 'Vereinigte Staaten', code: 'US' },
-  { name: 'Uruguay', code: 'UY' },
-  { name: 'Usbekistan', code: 'UZ' },
-  { name: 'Vanuatu', code: 'VU' },
-  { name: 'Venezuela', code: 'VE' },
-  { name: 'Vietnam', code: 'VN' },
-  { name: 'Jemen', code: 'YE' },
-  { name: 'Sambia', code: 'ZM' },
-  { name: 'Simbabwe', code: 'ZW' },
+  // DACH first
+  {
+ name: 'Deutschland', code: 'DE', dialCode: '+49' 
+},
+  {
+ name: 'Österreich', code: 'AT', dialCode: '+43' 
+},
+  {
+ name: 'Schweiz', code: 'CH', dialCode: '+41' 
+},
+  // Europe
+  {
+ name: 'Albanien', code: 'AL', dialCode: '+355' 
+},
+  {
+ name: 'Belgien', code: 'BE', dialCode: '+32' 
+},
+  {
+ name: 'Bosnien-Herzegowina', code: 'BA', dialCode: '+387' 
+},
+  {
+ name: 'Bulgarien', code: 'BG', dialCode: '+359' 
+},
+  {
+ name: 'Dänemark', code: 'DK', dialCode: '+45' 
+},
+  {
+ name: 'Estland', code: 'EE', dialCode: '+372' 
+},
+  {
+ name: 'Finnland', code: 'FI', dialCode: '+358' 
+},
+  {
+ name: 'Frankreich', code: 'FR', dialCode: '+33' 
+},
+  {
+ name: 'Griechenland', code: 'GR', dialCode: '+30' 
+},
+  {
+ name: 'Irland', code: 'IE', dialCode: '+353' 
+},
+  {
+ name: 'Island', code: 'IS', dialCode: '+354' 
+},
+  {
+ name: 'Italien', code: 'IT', dialCode: '+39' 
+},
+  {
+ name: 'Kosovo', code: 'XK', dialCode: '+383' 
+},
+  {
+ name: 'Kroatien', code: 'HR', dialCode: '+385' 
+},
+  {
+ name: 'Lettland', code: 'LV', dialCode: '+371' 
+},
+  {
+ name: 'Liechtenstein', code: 'LI', dialCode: '+423' 
+},
+  {
+ name: 'Litauen', code: 'LT', dialCode: '+370' 
+},
+  {
+ name: 'Luxemburg', code: 'LU', dialCode: '+352' 
+},
+  {
+ name: 'Malta', code: 'MT', dialCode: '+356' 
+},
+  {
+ name: 'Mazedonien', code: 'MK', dialCode: '+389' 
+},
+  {
+ name: 'Moldau', code: 'MD', dialCode: '+373' 
+},
+  {
+ name: 'Montenegro', code: 'ME', dialCode: '+382' 
+},
+  {
+ name: 'Niederlande', code: 'NL', dialCode: '+31' 
+},
+  {
+ name: 'Norwegen', code: 'NO', dialCode: '+47' 
+},
+  {
+ name: 'Polen', code: 'PL', dialCode: '+48' 
+},
+  {
+ name: 'Portugal', code: 'PT', dialCode: '+351' 
+},
+  {
+ name: 'Rumänien', code: 'RO', dialCode: '+40' 
+},
+  {
+ name: 'Russland', code: 'RU', dialCode: '+7' 
+},
+  {
+ name: 'Schweden', code: 'SE', dialCode: '+46' 
+},
+  {
+ name: 'Serbien', code: 'RS', dialCode: '+381' 
+},
+  {
+ name: 'Slowakei', code: 'SK', dialCode: '+421' 
+},
+  {
+ name: 'Slowenien', code: 'SI', dialCode: '+386' 
+},
+  {
+ name: 'Spanien', code: 'ES', dialCode: '+34' 
+},
+  {
+ name: 'Tschechien', code: 'CZ', dialCode: '+420' 
+},
+  {
+ name: 'Türkei', code: 'TR', dialCode: '+90' 
+},
+  {
+ name: 'Ukraine', code: 'UA', dialCode: '+380' 
+},
+  {
+ name: 'Ungarn', code: 'HU', dialCode: '+36' 
+},
+  {
+ name: 'Vereinigtes Königreich', code: 'GB', dialCode: '+44' 
+},
+  {
+ name: 'Weißrussland', code: 'BY', dialCode: '+375' 
+},
+  {
+ name: 'Zypern', code: 'CY', dialCode: '+357' 
+},
+  // Americas
+  {
+ name: 'Argentinien', code: 'AR', dialCode: '+54' 
+},
+  {
+ name: 'Brasilien', code: 'BR', dialCode: '+55' 
+},
+  {
+ name: 'Chile', code: 'CL', dialCode: '+56' 
+},
+  {
+ name: 'Kanada', code: 'CA', dialCode: '+1' 
+},
+  {
+ name: 'Kolumbien', code: 'CO', dialCode: '+57' 
+},
+  {
+ name: 'Mexiko', code: 'MX', dialCode: '+52' 
+},
+  {
+ name: 'Peru', code: 'PE', dialCode: '+51' 
+},
+  {
+ name: 'USA', code: 'US', dialCode: '+1' 
+},
+  {
+ name: 'Venezuela', code: 'VE', dialCode: '+58' 
+},
+  // Africa
+  {
+ name: 'Ägypten', code: 'EG', dialCode: '+20' 
+},
+  {
+ name: 'Kenia', code: 'KE', dialCode: '+254' 
+},
+  {
+ name: 'Marokko', code: 'MA', dialCode: '+212' 
+},
+  {
+ name: 'Nigeria', code: 'NG', dialCode: '+234' 
+},
+  {
+ name: 'Südafrika', code: 'ZA', dialCode: '+27' 
+},
+  {
+ name: 'Tunesien', code: 'TN', dialCode: '+216' 
+},
+  // Middle East & Asia
+  {
+ name: 'Australien', code: 'AU', dialCode: '+61' 
+},
+  {
+ name: 'China', code: 'CN', dialCode: '+86' 
+},
+  {
+ name: 'Indien', code: 'IN', dialCode: '+91' 
+},
+  {
+ name: 'Indonesien', code: 'ID', dialCode: '+62' 
+},
+  {
+ name: 'Israel', code: 'IL', dialCode: '+972' 
+},
+  {
+ name: 'Japan', code: 'JP', dialCode: '+81' 
+},
+  {
+ name: 'Malaysia', code: 'MY', dialCode: '+60' 
+},
+  {
+ name: 'Neuseeland', code: 'NZ', dialCode: '+64' 
+},
+  {
+ name: 'Pakistan', code: 'PK', dialCode: '+92' 
+},
+  {
+ name: 'Philippinen', code: 'PH', dialCode: '+63' 
+},
+  {
+ name: 'Saudi-Arabien', code: 'SA', dialCode: '+966' 
+},
+  {
+ name: 'Singapur', code: 'SG', dialCode: '+65' 
+},
+  {
+ name: 'Südkorea', code: 'KR', dialCode: '+82' 
+},
+  {
+ name: 'Thailand', code: 'TH', dialCode: '+66' 
+},
+  {
+ name: 'Vereinigte Arabische Emirate', code: 'AE', dialCode: '+971' 
+},
+  {
+ name: 'Vietnam', code: 'VN', dialCode: '+84' 
+},
 ];

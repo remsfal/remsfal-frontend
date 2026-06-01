@@ -8,9 +8,9 @@ import { inboxService, type InboxMessage } from '@/services/InboxService';
  * @returns The normalized message with proper Date object
  */
 function normalizeMessage(m: InboxMessage): InboxMessage {
-  const received = (m as any).receivedAt;
-  if (received && !(received instanceof Date)) {
-    (m as any).receivedAt = new Date(received);
+  const raw = m as InboxMessage & { receivedAt: Date | string };
+  if (raw.receivedAt && !(raw.receivedAt instanceof Date)) {
+    raw.receivedAt = new Date(raw.receivedAt as string);
   }
   return m;
 }

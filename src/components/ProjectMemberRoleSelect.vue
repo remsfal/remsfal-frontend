@@ -12,7 +12,11 @@ const props = withDefaults(
     invalid?: boolean;
     name?: string;
   }>(),
-  { modelValue: null },
+  {
+    modelValue: null,
+    class: undefined,
+    name: undefined,
+  },
 );
 const emit = defineEmits<{ 'update:modelValue': [value: MemberRole | null] }>();
 

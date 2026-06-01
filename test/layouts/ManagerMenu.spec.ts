@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
+import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 describe('ManagerMenu.vue', () => {
   let wrapper: VueWrapper;
@@ -75,5 +76,48 @@ describe('ManagerMenu.vue', () => {
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.pi-building').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/manager/projects');
+  });
+});
+
+describe('ManagerMenu.vue — with organization', () => {
+  const mockOrg = { id: 'org-abc', name: 'Muster GmbH' };
+  let wrapper: VueWrapper;
+  let orgStore: ReturnType<typeof useOrganizationStore>;
+
+  beforeEach(async () => {
+    wrapper = mount(ManagerMenu);
+    // Use the same testing-Pinia the component uses; bypass action stubs via direct assignment
+    orgStore = useOrganizationStore();
+    orgStore.userOrganizations = [mockOrg];
+    orgStore.initialized = true;
+    await wrapper.vm.$nextTick();
+  });
+
+  it('renders three root menu sections when user has an organization', () => {
+    const rootItems = wrapper.findAll('.layout-root-menuitem');
+    expect(rootItems.length).toBe(3);
+  });
+
+  it('shows the organization name as the third section label', () => {
+    const rootItems = wrapper.findAll('.layout-root-menuitem');
+    expect(rootItems[2].text()).toContain('Muster GmbH');
+  });
+
+  it('renders "Einstellungen" as submenu item under the org section', () => {
+    const submenus = wrapper.findAll('.layout-submenu');
+    expect(submenus[2].text()).toContain('Einstellungen');
+  });
+
+  it('links org settings to the correct URL including org id', () => {
+    const orgSettingsLink = wrapper.findAll('.layout-submenu').at(2)?.find('a');
+    expect(orgSettingsLink?.attributes('href')).toContain('org-abc');
+  });
+
+  it('renders four sections when user belongs to two organizations', async () => {
+    orgStore.userOrganizations = [mockOrg, { id: 'org-xyz', name: 'Zweite GmbH' }];
+    await wrapper.vm.$nextTick();
+
+    const rootItems = wrapper.findAll('.layout-root-menuitem');
+    expect(rootItems.length).toBe(4);
   });
 });
