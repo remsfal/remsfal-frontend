@@ -1,11 +1,9 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ProjectOrganizationSettings from '@/components/projectMembership/ProjectOrganizationSettings.vue';
-import {
-  projectOrganizationService,
+import {projectOrganizationService,
   type ProjectOrganizationJson,
-  type MemberRole,
-} from '@/services/ProjectOrganizationService';
+  type MemberRole,} from '@/services/ProjectOrganizationService';
 
 vi.mock('../../../src/services/ProjectOrganizationService');
 
@@ -13,16 +11,18 @@ describe('ProjectOrganizationSettings.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof ProjectOrganizationSettings>>;
 
   const mockOrganizations: ProjectOrganizationJson[] = [
-    { organizationId: '11111111-1111-1111-1111-111111111111', organizationName: 'Test GmbH', role: 'MANAGER' as MemberRole },
-    { organizationId: '22222222-2222-2222-2222-222222222222', organizationName: 'Muster AG', role: 'STAFF' as MemberRole },
+    {
+ organizationId: '11111111-1111-1111-1111-111111111111', organizationName: 'Test GmbH', role: 'MANAGER' as MemberRole 
+},
+    {
+ organizationId: '22222222-2222-2222-2222-222222222222', organizationName: 'Muster AG', role: 'STAFF' as MemberRole 
+},
   ];
 
   beforeEach(async () => {
     vi.clearAllMocks();
 
-    vi.mocked(projectOrganizationService.getOrganizations).mockResolvedValue({
-      organizations: mockOrganizations,
-    });
+    vi.mocked(projectOrganizationService.getOrganizations).mockResolvedValue({organizations: mockOrganizations,});
 
     wrapper = mount(ProjectOrganizationSettings, { props: { projectId: 'test-project-id' } });
 

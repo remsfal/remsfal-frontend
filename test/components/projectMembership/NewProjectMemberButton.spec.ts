@@ -6,9 +6,7 @@ import { projectMemberService } from '@/services/ProjectMemberService';
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-vi.mock('../../../src/services/ProjectMemberService', () => ({
-  projectMemberService: { addMember: vi.fn() },
-}));
+vi.mock('../../../src/services/ProjectMemberService', () => ({projectMemberService: { addMember: vi.fn() },}));
 
 describe('NewProjectMemberButton.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof NewProjectMemberButton>>;
@@ -36,8 +34,12 @@ describe('NewProjectMemberButton.vue', () => {
     const event = {
       valid: false,
       states: {
-        email: { value: 'test@example.com', invalid: false, touched: true },
-        role: { value: '', invalid: true, touched: true },
+        email: {
+ value: 'test@example.com', invalid: false, touched: true 
+},
+        role: {
+ value: '', invalid: true, touched: true 
+},
       },
     } as unknown as FormSubmitEvent;
 

@@ -1,11 +1,9 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ProjectMemberSettings from '@/components/projectMembership/ProjectMemberSettings.vue';
-import {
-  projectMemberService,
+import {projectMemberService,
   type ProjectMemberJson,
-  type MemberRole,
-} from '@/services/ProjectMemberService';
+  type MemberRole,} from '@/services/ProjectMemberService';
 
 vi.mock('../../../src/services/ProjectMemberService');
 
@@ -17,8 +15,12 @@ describe('ProjectMemberSettings.vue', () => {
 
     const mockMembers = {
       members: [
-        { id: '1', email: 'test1@example.com', role: 'MANAGER' as MemberRole },
-        { id: '2', email: 'test2@example.com', role: 'STAFF' as MemberRole },
+        {
+ id: '1', email: 'test1@example.com', role: 'MANAGER' as MemberRole 
+},
+        {
+ id: '2', email: 'test2@example.com', role: 'STAFF' as MemberRole 
+},
       ],
     };
     vi.mocked(projectMemberService.getMembers).mockResolvedValue(mockMembers);
@@ -36,7 +38,9 @@ describe('ProjectMemberSettings.vue', () => {
   });
 
   test("updateMemberRole - updates a member's role successfully", async () => {
-    const member: ProjectMemberJson = { id: '1', email: 'test1@example.com', role: 'MANAGER' };
+    const member: ProjectMemberJson = {
+ id: '1', email: 'test1@example.com', role: 'MANAGER' 
+};
 
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 

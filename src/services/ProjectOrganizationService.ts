@@ -13,12 +13,23 @@ class ProjectOrganizationService {
     return apiClient.post('/api/v1/projects/{projectId}/organizations', org, { pathParams: { projectId } });
   }
 
-  async updateOrganizationRole(projectId: string, organizationId: string, org: ProjectOrganizationJson): Promise<ProjectOrganizationJson> {
-    return apiClient.patch('/api/v1/projects/{projectId}/organizations/{organizationId}', org, { pathParams: { projectId, organizationId } });
+  async updateOrganizationRole(
+    projectId: string,
+    organizationId: string,
+    org: ProjectOrganizationJson,
+  ): Promise<ProjectOrganizationJson> {
+    return apiClient.patch(
+      '/api/v1/projects/{projectId}/organizations/{organizationId}',
+      org,
+      { pathParams: { projectId, organizationId } },
+    );
   }
 
   async removeOrganization(projectId: string, organizationId: string): Promise<void> {
-    return apiClient.delete('/api/v1/projects/{projectId}/organizations/{organizationId}', { pathParams: { projectId, organizationId } });
+    return apiClient.delete(
+      '/api/v1/projects/{projectId}/organizations/{organizationId}',
+      { pathParams: { projectId, organizationId } },
+    );
   }
 }
 

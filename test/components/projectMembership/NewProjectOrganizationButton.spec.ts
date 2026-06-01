@@ -3,13 +3,10 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import type { FormSubmitEvent } from '@primevue/forms';
 import NewProjectOrganizationButton from '@/components/projectMembership/NewProjectOrganizationButton.vue';
 import { projectOrganizationService } from '@/services/ProjectOrganizationService';
-import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-vi.mock('../../../src/services/ProjectOrganizationService', () => ({
-  projectOrganizationService: { addOrganization: vi.fn() },
-}));
+vi.mock('@/services/ProjectOrganizationService', () => ({projectOrganizationService: { addOrganization: vi.fn() },}));
 
 vi.mock('../../../src/stores/OrganizationStore', () => ({
   useOrganizationStore: vi.fn(() => ({
@@ -48,8 +45,12 @@ describe('NewProjectOrganizationButton.vue', () => {
     const event = {
       valid: false,
       states: {
-        organizationId: { value: '', invalid: true, touched: true },
-        role: { value: 'MANAGER', invalid: false, touched: true },
+        organizationId: {
+ value: '', invalid: true, touched: true 
+},
+        role: {
+ value: 'MANAGER', invalid: false, touched: true 
+},
       },
     } as unknown as FormSubmitEvent;
 
@@ -62,7 +63,9 @@ describe('NewProjectOrganizationButton.vue', () => {
 
   test('calls service and emits event when valid', async () => {
     const mockAdd = projectOrganizationService.addOrganization as ReturnType<typeof vi.fn>;
-    mockAdd.mockResolvedValueOnce({ organizationId: 'org-1', organizationName: 'Test GmbH', role: 'MANAGER' });
+    mockAdd.mockResolvedValueOnce({
+ organizationId: 'org-1', organizationName: 'Test GmbH', role: 'MANAGER' 
+});
 
     await wrapper.vm.addOrganization('org-1', 'MANAGER');
 
