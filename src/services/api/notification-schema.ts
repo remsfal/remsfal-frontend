@@ -459,6 +459,7 @@ export interface components {
       phone?: string;
       email?: string;
       trade?: string;
+      vatIdentificationNumber?: string;
       address?: components["schemas"]["AddressJson"];
     };
     /** @description A list of organizations */
