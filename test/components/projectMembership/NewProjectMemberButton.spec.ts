@@ -1,14 +1,14 @@
-import {describe, test, expect, beforeEach, vi} from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import type { FormSubmitEvent } from '@primevue/forms';
-import NewProjectMemberButton from '@/components/NewProjectMemberButton.vue';
+import NewProjectMemberButton from '@/components/projectMembership/NewProjectMemberButton.vue';
 import { projectMemberService } from '@/services/ProjectMemberService';
 
-// Mock translation function
-vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) })); // just return key for simplicity
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-// Mock ProjectMemberService
-vi.mock('../../src/services/ProjectMemberService', () => ({projectMemberService: {addMember: vi.fn(),},}));
+vi.mock('../../../src/services/ProjectMemberService', () => ({
+  projectMemberService: { addMember: vi.fn() },
+}));
 
 describe('NewProjectMemberButton.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof NewProjectMemberButton>>;
@@ -16,7 +16,7 @@ describe('NewProjectMemberButton.vue', () => {
   beforeEach(async () => {
     wrapper = mount(NewProjectMemberButton, {
       props: { projectId: 'test-project-id' },
-      attachTo: document.body, // required for PrimeVue Dialog (teleport)
+      attachTo: document.body,
     });
     vi.clearAllMocks();
   });
@@ -33,51 +33,37 @@ describe('NewProjectMemberButton.vue', () => {
   });
 
   test('validates role is required', async () => {
-    // The validation is handled by Zod schema
-    // We can test by calling onSubmit directly with invalid data
     const event = {
       valid: false,
       states: {
-        email: {
-          value: 'test@example.com',
-          invalid: false,
-          touched: true,
-        },
-        role: {
-          value: '',
-          invalid: true,
-          touched: true,
-        },
+        email: { value: 'test@example.com', invalid: false, touched: true },
+        role: { value: '', invalid: true, touched: true },
       },
     } as unknown as FormSubmitEvent;
 
     const mockAdd = projectMemberService.addMember as ReturnType<typeof vi.fn>;
-    
-    // Call onSubmit with invalid data - it should not call addMember
+
     await wrapper.vm.onSubmit(event);
 
     expect(mockAdd).not.toHaveBeenCalled();
   });
 
   test('shows email validation error for invalid email', async () => {
-    // Open dialog
     await wrapper.find('button').trigger('click');
     await wrapper.vm.$nextTick();
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Fill email field with invalid email
     const emailInput = document.querySelector('input[name="email"]') as HTMLInputElement;
     expect(emailInput).toBeTruthy();
     emailInput.value = 'invalid';
     emailInput.dispatchEvent(new Event('input'));
     emailInput.dispatchEvent(new Event('blur'));
     await wrapper.vm.$nextTick();
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Check for validation error message
     const errorMessages = document.querySelectorAll('.p-message');
-    const hasEmailError = Array.from(errorMessages).some(msg => 
-      msg.textContent?.includes('projectSettings.newProjectMemberButton.invalidEmail')
+    const hasEmailError = Array.from(errorMessages).some((msg) =>
+      msg.textContent?.includes('projectSettings.newProjectMemberButton.invalidEmail'),
     );
     expect(hasEmailError).toBe(true);
   });
@@ -86,7 +72,6 @@ describe('NewProjectMemberButton.vue', () => {
     const mockAdd = projectMemberService.addMember as ReturnType<typeof vi.fn>;
     mockAdd.mockResolvedValueOnce({ email: 'user@example.com', role: 'MANAGER' });
 
-    // Call the addMember method directly since form validation is complex to test
     await wrapper.vm.addMember('user@example.com', 'MANAGER');
 
     expect(mockAdd).toHaveBeenCalledWith('test-project-id', {
@@ -100,10 +85,8 @@ describe('NewProjectMemberButton.vue', () => {
   });
 
   test('resets form when dialog is hidden', async () => {
-    // Set initial values
     wrapper.vm.initialValues = { email: 'temp@example.com', role: 'MANAGER' };
-    
-    // Reset form
+
     await wrapper.vm.resetForm();
     await wrapper.vm.$nextTick();
 
@@ -117,7 +100,6 @@ describe('NewProjectMemberButton.vue', () => {
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    // Call addMember directly
     await wrapper.vm.addMember('fail@example.com', 'MANAGER');
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to add member:', 'Backend error');

@@ -9,7 +9,7 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
-import ProjectMemberRoleSelect from '@/components/ProjectMemberRoleSelect.vue';
+import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
 import { type ProjectMemberJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
 
 const props = defineProps<{ projectId: string }>();
@@ -19,7 +19,6 @@ const { t } = useI18n();
 
 const visible = ref(false);
 
-// Zod validation schema
 const validationSchema = z.object({
   email: z
     .string()
@@ -34,7 +33,6 @@ const resolver = zodResolver(validationSchema);
 
 const initialValues = ref({ email: '', role: '' });
 
-// Reset form state
 function resetForm() {
   initialValues.value = { email: '', role: '' };
 }
