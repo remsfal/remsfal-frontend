@@ -98,7 +98,7 @@ describe('NewProjectMemberButton.vue', () => {
 
   test('handles addMember error gracefully', async () => {
     const mockAdd = projectMemberService.addMember as ReturnType<typeof vi.fn>;
-    mockAdd.mockRejectedValueOnce({ message: 'Backend error' });
+    mockAdd.mockRejectedValueOnce(new Error('Backend error'));
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

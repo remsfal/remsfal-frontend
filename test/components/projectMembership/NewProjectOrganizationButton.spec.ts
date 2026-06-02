@@ -91,7 +91,7 @@ describe('NewProjectOrganizationButton.vue', () => {
 
   test('handles addOrganization error gracefully', async () => {
     const mockAdd = projectOrganizationService.addOrganization as ReturnType<typeof vi.fn>;
-    mockAdd.mockRejectedValueOnce({ message: 'Backend error' });
+    mockAdd.mockRejectedValueOnce(new Error('Backend error'));
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
