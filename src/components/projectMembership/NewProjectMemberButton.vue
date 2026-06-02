@@ -63,7 +63,8 @@ const addMember = async (email: string, role: MemberRole) => {
     await projectMemberService.addMember(props.projectId, member);
     emit('newMember', email);
     resetForm();
-  } catch {
+  } catch (error: any) {
+    console.error('Failed to add member:', error?.message ?? error);
     toast.add({
       severity: 'error',
       summary: t('error.general'),

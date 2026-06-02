@@ -63,7 +63,8 @@ const addOrganization = async (organizationId: string, role: MemberRole) => {
     await projectOrganizationService.addOrganization(props.projectId, { organizationId, role });
     emit('newOrganization', organizationName);
     resetForm();
-  } catch {
+  } catch (error: any) {
+    console.error('Failed to add organization:', error?.message ?? error);
     toast.add({
       severity: 'error',
       summary: t('error.general'),

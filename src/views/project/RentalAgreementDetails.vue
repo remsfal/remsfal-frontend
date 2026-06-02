@@ -4,10 +4,11 @@ import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableCompo
 import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
 import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService.ts';
 import type { components } from '@/services/api/platform-schema.ts';
+import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 const props = defineProps<{
@@ -17,6 +18,7 @@ const props = defineProps<{
 
 type RentJson = components['schemas']['RentJson'];
 
+const { t } = useI18n();
 const router = useRouter();
 const toast = useToast();
 
@@ -165,13 +167,11 @@ defineExpose({
   </div>
 
   <!-- Delete confirmation dialog -->
-  <Dialog v-model:visible="confirmationDialogVisible" header="Bestätigung" modal>
-    <div class="p-fluid">
-      <p>Sind Sie sicher, dass Sie den Mietvertrag mit der ID {{ rentalAgreement?.id }} löschen möchten?</p>
-    </div>
+  <BaseDialog v-model:visible="confirmationDialogVisible" :header="t('projectTenancies.dialog.confirmationTitle')">
+    <p>{{ t('rentalAgreement.dialog.confirmDelete', { id: rentalAgreement?.id }) }}</p>
     <template #footer>
-      <Button label="Abbrechen" icon="pi pi-times" @click="confirmationDialogVisible = false" />
-      <Button label="Löschen" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
+      <Button :label="t('button.cancel')" icon="pi pi-times" @click="confirmationDialogVisible = false" />
+      <Button :label="t('button.delete')" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
     </template>
-  </Dialog>
+  </BaseDialog>
 </template>

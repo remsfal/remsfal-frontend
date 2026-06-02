@@ -136,6 +136,10 @@ function onHide() {
           <InputText id="org-email" name="email" fluid :placeholder="t('organization.email')" />
         </DialogFormField>
 
+        <Message severity="secondary" size="small" variant="simple">
+          {{ t('accountSettings.userProfile.requiredFields') }}
+        </Message>
+
         <div class="flex justify-end gap-2 mt-6">
           <Button
             type="button"
