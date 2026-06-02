@@ -2,19 +2,13 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import ProjectOrganizationSettings from '@/components/projectMembership/ProjectOrganizationSettings.vue';
 import NewProjectOrganizationButton from '@/components/projectMembership/NewProjectOrganizationButton.vue';
-import {
-  projectOrganizationService,
+import {projectOrganizationService,
   type ProjectOrganizationJson,
-  type MemberRole,
-} from '@/services/ProjectOrganizationService';
+  type MemberRole,} from '@/services/ProjectOrganizationService';
 
-const { mockToastAdd } = vi.hoisted(() => ({
-  mockToastAdd: vi.fn(),
-}));
+const { mockToastAdd } = vi.hoisted(() => ({mockToastAdd: vi.fn(),}));
 
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({ add: mockToastAdd }),
-}));
+vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}));
 
 vi.mock('../../../src/services/ProjectOrganizationService');
 
@@ -22,8 +16,12 @@ describe('ProjectOrganizationSettings.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof ProjectOrganizationSettings>>;
 
   const mockOrganizations: ProjectOrganizationJson[] = [
-    { organizationId: '11111111-1111-1111-1111-111111111111', organizationName: 'Test GmbH', role: 'MANAGER' as MemberRole },
-    { organizationId: '22222222-2222-2222-2222-222222222222', organizationName: 'Muster AG', role: 'STAFF' as MemberRole },
+    {
+ organizationId: '11111111-1111-1111-1111-111111111111', organizationName: 'Test GmbH', role: 'MANAGER' as MemberRole 
+},
+    {
+ organizationId: '22222222-2222-2222-2222-222222222222', organizationName: 'Muster AG', role: 'STAFF' as MemberRole 
+},
   ];
 
   beforeEach(async () => {

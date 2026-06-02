@@ -2,19 +2,13 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import ProjectMemberSettings from '@/components/projectMembership/ProjectMemberSettings.vue';
 import NewProjectMemberButton from '@/components/projectMembership/NewProjectMemberButton.vue';
-import {
-  projectMemberService,
+import {projectMemberService,
   type ProjectMemberJson,
-  type MemberRole,
-} from '@/services/ProjectMemberService';
+  type MemberRole,} from '@/services/ProjectMemberService';
 
-const { mockToastAdd } = vi.hoisted(() => ({
-  mockToastAdd: vi.fn(),
-}));
+const { mockToastAdd } = vi.hoisted(() => ({mockToastAdd: vi.fn(),}));
 
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({ add: mockToastAdd }),
-}));
+vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}));
 
 vi.mock('../../../src/services/ProjectMemberService');
 
@@ -26,8 +20,12 @@ describe('ProjectMemberSettings.vue', () => {
 
     const mockMembers = {
       members: [
-        { id: '1', email: 'test1@example.com', role: 'MANAGER' as MemberRole },
-        { id: '2', email: 'test2@example.com', role: 'STAFF' as MemberRole },
+        {
+ id: '1', email: 'test1@example.com', role: 'MANAGER' as MemberRole 
+},
+        {
+ id: '2', email: 'test2@example.com', role: 'STAFF' as MemberRole 
+},
       ],
     };
     vi.mocked(projectMemberService.getMembers).mockResolvedValue(mockMembers);
@@ -45,7 +43,9 @@ describe('ProjectMemberSettings.vue', () => {
   });
 
   test("updateMemberRole - updates a member's role successfully", async () => {
-    const member: ProjectMemberJson = { id: '1', email: 'test1@example.com', role: 'MANAGER' };
+    const member: ProjectMemberJson = {
+ id: '1', email: 'test1@example.com', role: 'MANAGER' 
+};
 
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 
@@ -104,7 +104,9 @@ describe('ProjectMemberSettings.vue', () => {
   });
 
   test('updateMemberRole - handles update error gracefully', async () => {
-    const member: ProjectMemberJson = { id: '1', email: 'test@example.com', role: 'MANAGER' };
+    const member: ProjectMemberJson = {
+ id: '1', email: 'test@example.com', role: 'MANAGER' 
+};
     vi.mocked(projectMemberService.updateMemberRole).mockRejectedValueOnce(new Error('Update failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -126,7 +128,9 @@ describe('ProjectMemberSettings.vue', () => {
   });
 
   test('updateMemberRole - shows success toast on successful update', async () => {
-    const member: ProjectMemberJson = { id: '1', email: 'test@example.com', role: 'MANAGER', name: 'Test User' };
+    const member: ProjectMemberJson = {
+ id: '1', email: 'test@example.com', role: 'MANAGER', name: 'Test User' 
+};
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 
     await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).updateMemberRole(member);

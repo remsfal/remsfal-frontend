@@ -9,6 +9,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+import Message from 'primevue/message';
 import PhoneInput from '@/components/common/PhoneInput.vue';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import DialogFormField from '@/components/common/DialogFormField.vue';
