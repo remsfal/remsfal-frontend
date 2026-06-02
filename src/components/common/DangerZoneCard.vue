@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/common/BaseCard.vue';
+import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 
 const props = withDefaults(defineProps<{
   title?: string;
@@ -57,11 +57,9 @@ function onConfirm() {
     </template>
   </BaseCard>
 
-  <Dialog
+  <BaseDialog
     v-model:visible="showDeleteDialog"
     :header="props.confirmTitle"
-    modal
-    :style="{ width: '30rem' }"
   >
     <p class="mb-4">
       {{ props.confirmMessage }}
@@ -79,5 +77,5 @@ function onConfirm() {
         @click="onConfirm"
       />
     </template>
-  </Dialog>
+  </BaseDialog>
 </template>

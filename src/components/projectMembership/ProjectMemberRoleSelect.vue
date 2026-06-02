@@ -1,4 +1,4 @@
-// src/components/MemberRoleSelect.vue
+// src/components/projectMembership/ProjectMemberRoleSelect.vue
 <script setup lang="ts">
 import { computed } from 'vue';
 import Select from 'primevue/select';
@@ -22,7 +22,6 @@ const emit = defineEmits<{ 'update:modelValue': [value: MemberRole | null] }>();
 
 const { t } = useI18n();
 
-// Compute translated role labels
 const memberRoles: { label: string; value: MemberRole }[] = [
   { label: t('roles.proprietor'), value: 'PROPRIETOR' },
   { label: t('roles.manager'), value: 'MANAGER' },
@@ -33,7 +32,7 @@ const memberRoles: { label: string; value: MemberRole }[] = [
 const translatedRoles = computed(() =>
   memberRoles.map((role) => ({
     value: role.value,
-    label: t(`roles.${role.value.toLowerCase()}`), // dynamic i18n key
+    label: t(`roles.${role.value.toLowerCase()}`),
   })),
 );
 </script>
