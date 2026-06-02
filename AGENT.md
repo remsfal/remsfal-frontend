@@ -72,7 +72,7 @@ src/
 │   │       └── contractors/
 │   │           └── index.vue
 │   ├── tenancies/
-│   │   ├── index.vue           →  /tenancies           (layout: tenant)
+│   │   ├── dashboard.vue       →  /tenancies/dashboard (layout: tenant)
 │   │   ├── issues/
 │   │   │   └── index.vue
 │   │   └── account-settings.vue
@@ -110,6 +110,9 @@ src/
 │   │       ├── services/       # ContractorService, ProjectMemberService
 │   │       └── index.ts
 │   ├── tenant/
+│   │   ├── tenancies/
+│   │   │   ├── components/     # Tenant tenancy dashboard cards
+│   │   │   └── index.ts
 │   │   ├── components/         # TenantIssueList, tenancyDetails/*, tenantIssue/*
 │   │   ├── services/           # TenancyService (tenant-side)
 │   │   └── index.ts
@@ -748,7 +751,8 @@ export const projectMemberService = new ProjectMemberService();
   - `StorageService` - For storage units (`/api/v1/projects/{projectId}/storages`)
   - `ProjectMemberService` - For project members
   - `IssueService` - For issues/tickets
-  - `TenancyService` - For tenancies
+  - `TenancyService` - For tenant-context tenancies (`/api/v1/tenancies`)
+  - `RentalAgreementService` - For project-context rental agreements
 - **When implementing CRUD operations**, always use the appropriate service for each resource type
 - **Never bypass services** - Components and views should ONLY call services, never `apiClient` directly
 
