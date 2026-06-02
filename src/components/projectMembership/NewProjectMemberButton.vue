@@ -64,7 +64,7 @@ const addMember = async (email: string, role: MemberRole) => {
     emit('newMember', email);
     resetForm();
   } catch (error) {
-    console.error('Failed to add member:', error?.message ?? error);
+    console.error('Failed to add member:', error instanceof Error ? error.message : error);
     toast.add({
       severity: 'error',
       summary: t('error.general'),

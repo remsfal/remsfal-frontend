@@ -64,7 +64,7 @@ const addOrganization = async (organizationId: string, role: MemberRole) => {
     emit('newOrganization', organizationName);
     resetForm();
   } catch (error) {
-    console.error('Failed to add organization:', error?.message ?? error);
+    console.error('Failed to add organization:', error instanceof Error ? error.message : error);
     toast.add({
       severity: 'error',
       summary: t('error.general'),
