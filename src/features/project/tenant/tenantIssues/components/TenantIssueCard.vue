@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Tag from 'primevue/tag';
+import BaseCard from '@/components/common/BaseCard.vue';
 import type { TenantIssueItem } from '../types';
 
 const props = defineProps<{
@@ -79,35 +80,40 @@ const titleClass = computed(() => {
   <button
     type="button"
     data-testid="tenant-issue-card"
-    class="flex min-h-72 w-full flex-col gap-5 rounded-lg border border-gray-200 p-5 text-left shadow-sm transition-colors
-      hover:border-primary-300 hover:bg-primary-50/20 md:p-6"
+    class="group relative w-full text-left"
     @click="emit('select')"
   >
-    <div class="flex items-start justify-between gap-2">
-      <span class="text-sm text-gray-500 font-mono">
-        {{ t('tenantIssues.card.number') }} {{ issue.id }}
-      </span>
-      <Tag :value="statusLabel" :severity="statusSeverity" rounded />
+    <BaseCard
+      :unstyled="true"
+      cardClass="pointer-events-none absolute inset-0 rounded-lg border border-gray-200 shadow-sm transition-colors group-hover:border-primary-300 group-hover:bg-primary-50/20"
+    />
+    <div class="relative z-10 flex min-h-72 w-full flex-col gap-5 p-5 md:p-6">
+      <div class="flex items-start justify-between gap-2">
+        <span class="text-sm text-gray-500 font-mono">
+          {{ t('tenantIssues.card.number') }} {{ issue.id }}
+        </span>
+        <Tag :value="statusLabel" :severity="statusSeverity" rounded />
+      </div>
+
+      <h3 :class="[titleClass, 'break-words']">
+        {{ issue.title }}
+      </h3>
+
+      <dl class="text-base text-gray-600 space-y-1">
+        <div class="flex justify-between gap-2">
+          <dt class="font-medium text-gray-500">
+            {{ t('tenantIssues.card.category') }}
+          </dt>
+        </div>
+        <div class="flex justify-start gap-2 min-w-0">
+          <dt class="font-medium text-gray-500 shrink-0">
+            {{ t('tenantIssues.card.type') }}
+          </dt>
+          <dd class="text-gray-900 min-w-0 break-words">
+            {{ typeLabel }}
+          </dd>
+        </div>
+      </dl>
     </div>
-
-    <h3 :class="titleClass">
-      {{ issue.title }}
-    </h3>
-
-    <dl class="text-base text-gray-600 space-y-1">
-      <div class="flex justify-between gap-2">
-        <dt class="font-medium text-gray-500">
-          {{ t('tenantIssues.card.category') }}
-        </dt>
-      </div>
-      <div class="flex justify-start gap-2">
-        <dt class="font-medium text-gray-500">
-          {{ t('tenantIssues.card.type') }}
-        </dt>
-        <dd class="text-gray-900">
-          {{ typeLabel }}
-        </dd>
-      </div>
-    </dl>
   </button>
 </template>
