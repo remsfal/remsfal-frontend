@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { TenancyJson } from '@/services/TenancyService.ts';
-import type { IssueStatus, IssueType } from '@/services/IssueService.ts';
+import type { TenancyJson } from '@/services/TenancyService';
+import type { IssueStatus, IssueType } from '@/services/IssueService';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import IconField from 'primevue/iconfield';
@@ -52,18 +52,6 @@ const typeOptions = computed(() => [
   { label: t('inbox.filters.type.maintenance'), value: 'MAINTENANCE' },
 ]);
 
-const onTenancyChange = (value: string | null) => {
-  emit('update:tenancyId', value);
-};
-
-const onStatusChange = (value: IssueStatus | null) => {
-  emit('update:status', value);
-};
-
-const onTypeChange = (value: IssueType | null) => {
-  emit('update:type', value);
-};
-
 const onSearchInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
   emit('update:search', target.value);
@@ -72,13 +60,8 @@ const onSearchInput = (event: Event) => {
 
 <template>
   <div class="flex flex-col gap-4 mb-6">
-    <!-- First Row: New Issue Button and Filters -->
     <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-      <Button
-        :label="t('tenantIssues.newIssue')"
-        icon="pi pi-plus"
-        @click="emit('newIssue')"
-      />
+      <Button :label="t('tenantIssues.newIssue')" icon="pi pi-plus" @click="emit('newIssue')" />
 
       <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
         <Select
@@ -88,7 +71,7 @@ const onSearchInput = (event: Event) => {
           optionValue="value"
           :placeholder="t('tenantIssues.filter.tenancy')"
           class="w-full sm:w-64"
-          @update:modelValue="onTenancyChange"
+          @update:modelValue="emit('update:tenancyId', $event)"
         />
 
         <Select
@@ -98,7 +81,7 @@ const onSearchInput = (event: Event) => {
           optionValue="value"
           :placeholder="t('tenantIssues.filter.status')"
           class="w-full sm:w-48"
-          @update:modelValue="onStatusChange"
+          @update:modelValue="emit('update:status', $event)"
         />
 
         <Select
@@ -108,12 +91,11 @@ const onSearchInput = (event: Event) => {
           optionValue="value"
           :placeholder="t('tenantIssues.filter.type')"
           class="w-full sm:w-48"
-          @update:modelValue="onTypeChange"
+          @update:modelValue="emit('update:type', $event)"
         />
       </div>
     </div>
 
-    <!-- Second Row: Search Field -->
     <div class="flex justify-end">
       <IconField class="w-full sm:w-80">
         <InputIcon class="pi pi-search" />
