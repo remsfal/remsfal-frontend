@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeAll, afterAll, afterEach} from 'vitest';
+import {describe, it, expect} from 'vitest';
 import { server } from '../mocks/server';
 import { siteService, type SiteUnit } from '@/services/SiteService';
 
@@ -18,10 +18,6 @@ const mockSite: SiteUnit = {
   description: 'A description of the new site.',
   space: 1000, 
 };
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
 
 describe('SiteService (MSW)', () => {
   it('should create a site', async () => {
