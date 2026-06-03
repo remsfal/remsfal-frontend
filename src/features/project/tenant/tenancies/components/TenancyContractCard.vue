@@ -11,7 +11,7 @@ defineProps<{
 const { t } = useI18n();
 
 const getSeverity = (active: boolean | undefined) => {
-  return active !== false ? 'success' : 'secondary';
+  return active === false ? 'secondary' : 'success';
 };
 
 const formatCurrency = (value: number) =>
