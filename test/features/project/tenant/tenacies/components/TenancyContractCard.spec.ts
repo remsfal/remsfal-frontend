@@ -35,9 +35,7 @@ describe('TenancyContractCard', () => {
   };
 
   it('renders status, financial details and deduplicated unit tag label', () => {
-    const wrapper = mount(TenancyContractCard, {
-      props: { contract },
-    });
+    const wrapper = mount(TenancyContractCard, { props: { contract }, });
 
     expect(wrapper.find('[data-testid="contract-card"]').exists()).toBe(true);
     expect(wrapper.text()).toContain('Aktiv');
