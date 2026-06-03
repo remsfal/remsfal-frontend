@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
-import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import Message from 'primevue/message';
 import Popover from 'primevue/popover';
 import Textarea from 'primevue/textarea';
 import { Form } from '@primevue/forms';
+import BaseDialog from '@/components/common/BaseDialog.vue';
+import DialogFormField from '@/components/common/DialogFormField.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
@@ -28,6 +29,7 @@ const props = defineProps<{
 const emit = defineEmits<(e: 'newUnit', title: string) => void>();
 
 const { t } = useI18n();
+const toast = useToast();
 
 const visible = ref<boolean>(false);
 const newUnitType = ref<EntityType | undefined>(undefined);
@@ -153,8 +155,13 @@ async function onSubmit(event: FormSubmitEvent) {
       formKey.value++;
       visible.value = false;
     })
-    .catch((err) => {
-      console.error('Failed to create rentable unit:', err);
+    .catch(() => {
+      toast.add({
+        severity: 'error',
+        summary: t('error.general'),
+        detail: t('rentableUnits.errorCreate'),
+        life: 5000,
+      });
     });
 }
 
@@ -267,7 +274,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
     </Popover>
   </template>
 
-  <Dialog v-model:visible="visible" modal :header="t('rentableUnits.dialog.addUnit')" :style="{ width: '35rem' }">
+  <BaseDialog v-model:visible="visible" :header="t('rentableUnits.dialog.addUnit')">
     <Form
       :key="formKey"
       v-slot="$form"
@@ -276,9 +283,12 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
       @submit="onSubmit"
     >
       <div class="flex flex-col gap-6">
-        <!-- Titel -->
-        <div class="flex flex-col gap-1">
-          <label for="title" class="font-semibold">{{ t('rentableUnits.form.title') }}</label>
+        <DialogFormField
+          inputId="title"
+          :label="t('rentableUnits.form.title')"
+          required
+          :errorMessage="$form.title?.invalid && $form.title?.touched ? $form.title.error?.message : undefined"
+        >
           <InputText
             id="title"
             name="title"
@@ -287,19 +297,9 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
             autofocus
             @update:modelValue="(v) => (currentTitle = v as string)"
           />
-          <Message
-            v-if="$form.title?.invalid && $form.title?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.title.error?.message }}
-          </Message>
-        </div>
+        </DialogFormField>
 
-        <!-- Lage/Standort -->
-        <div class="flex flex-col gap-1">
-          <label for="location" class="font-semibold">{{ t('rentableUnits.form.location') }}</label>
+        <DialogFormField inputId="location" :label="t('rentableUnits.form.location')">
           <InputText
             id="location"
             name="location"
@@ -310,19 +310,17 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
             <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
             <label for="titleMatchesLocation" class="text-sm">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
           </div>
-        </div>
+        </DialogFormField>
 
-        <!-- Beschreibung -->
-        <div class="flex flex-col gap-1">
-          <label for="description" class="font-semibold">{{ t('rentableUnits.form.description') }}</label>
+        <DialogFormField inputId="description" :label="t('rentableUnits.form.description')">
           <Textarea
             id="description" name="description"
             :rows="4" autoResize
             fluid
           />
-        </div>
+        </DialogFormField>
 
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2 mt-6">
           <Button
             type="button"
             :label="t('button.cancel')"
@@ -333,5 +331,5 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
         </div>
       </div>
     </Form>
-  </Dialog>
+  </BaseDialog>
 </template>

@@ -15,6 +15,7 @@ describe('ProjectSettingsView.vue', () => {
         stubs: {
           ProjectSettings: true,
           ProjectMemberSettings: true,
+          ProjectOrganizationSettings: true,
           ProjectDangerZoneCard: true,
         },
       },
@@ -33,6 +34,11 @@ describe('ProjectSettingsView.vue', () => {
     expect(memberSettings.exists()).toBe(true);
   });
 
+  test('renders ProjectOrganizationSettings component', () => {
+    const orgSettings = wrapper.findComponent({ name: 'ProjectOrganizationSettings' });
+    expect(orgSettings.exists()).toBe(true);
+  });
+
   test('renders ProjectDangerZoneCard component', () => {
     const dangerZoneCard = wrapper.findComponent({ name: 'ProjectDangerZoneCard' });
     expect(dangerZoneCard.exists()).toBe(true);
@@ -41,10 +47,12 @@ describe('ProjectSettingsView.vue', () => {
   test('passes projectId to all child components', () => {
     const projectSettings = wrapper.findComponent({ name: 'ProjectSettings' });
     const memberSettings = wrapper.findComponent({ name: 'ProjectMemberSettings' });
+    const orgSettings = wrapper.findComponent({ name: 'ProjectOrganizationSettings' });
     const dangerZoneCard = wrapper.findComponent({ name: 'ProjectDangerZoneCard' });
 
     expect(projectSettings.props('projectId')).toBe('test-project-id');
     expect(memberSettings.props('projectId')).toBe('test-project-id');
+    expect(orgSettings.props('projectId')).toBe('test-project-id');
     expect(dangerZoneCard.props('projectId')).toBe('test-project-id');
   });
 });

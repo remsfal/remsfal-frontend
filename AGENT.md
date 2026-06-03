@@ -601,6 +601,30 @@ Props:
 - `titleClass` (string): CSS classes for the title wrapper div. Default: `'font-semibold text-xl'`
 - `unstyled` (boolean): Disable automatic title wrapper. Default: `false`
 
+**BaseDialog Component** (`src/components/common/BaseDialog.vue`):
+- Standardized wrapper around PrimeVue Dialog with consistent styling
+- Default: `modal: true`, `dialogClass: 'w-full max-w-lg'`
+- All PrimeVue Dialog slots and attributes are forwarded via `v-bind="$attrs"`
+- **Use BaseDialog instead of PrimeVue Dialog directly** — exception: dialogs that contain a Stepper may use Dialog directly
+- Do NOT set `dialogClass` unless there is a specific layout reason; use the default
+
+Usage example:
+```vue
+<BaseDialog v-model:visible="visible" :header="t('my.dialog.title')">
+  <template #default>
+    <!-- dialog content -->
+  </template>
+  <template #footer>
+    <Button :label="t('button.cancel')" severity="secondary" @click="visible = false" />
+    <Button :label="t('button.save')" @click="onSave" />
+  </template>
+</BaseDialog>
+```
+
+Props:
+- `dialogClass` (string | null): CSS classes for the dialog. Default: `'w-full max-w-lg'`
+- `modal` (boolean): Whether the dialog is modal. Default: `true`
+
 ### Form Validation Pattern
 
 **Standard:** All forms use **PrimeVue Forms + Zod Resolver** for schema-based validation with **PrimeVue Message** component for error display.
@@ -900,6 +924,7 @@ When working on this codebase:
 - Suggest Vue 3 Composition API solutions with `<script setup>`
 - Recommend PrimeVue components when applicable
 - **Use BaseCard instead of PrimeVue Card** for consistent styling across the application
+- **Use BaseDialog instead of PrimeVue Dialog** for dialogs without a Stepper
 - Ensure TypeScript type safety (avoid `any`)
 - Include proper error handling and loading states
 - Follow established project structure and patterns

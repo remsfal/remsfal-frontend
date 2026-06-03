@@ -12,7 +12,7 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
-import Dialog from 'primevue/dialog';
+import BaseDialog from '@/components/common/BaseDialog.vue';
 import { userService } from '@/services/UserService';
 import { type Locale } from '@/i18n/i18n';
 
@@ -397,11 +397,9 @@ async function onSubmit(event: FormSubmitEvent) {
   </BaseCard>
 
   <!-- Alternative Email Dialog -->
-  <Dialog
+  <BaseDialog
     v-model:visible="dialogVisible"
     :header="t('accountSettings.userProfile.addAlternativeEmail')"
-    :style="{ width: '35rem' }"
-    modal
     @hide="resetAltEmailDialog"
   >
     <div class="flex flex-col gap-4">
@@ -436,5 +434,5 @@ async function onSubmit(event: FormSubmitEvent) {
         />
       </div>
     </div>
-  </Dialog>
+  </BaseDialog>
 </template>

@@ -2,10 +2,10 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import Message from "primevue/message";
 import { Form } from '@primevue/forms';
+import BaseDialog from '@/components/common/BaseDialog.vue';
+import DialogFormField from '@/components/common/DialogFormField.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
@@ -111,6 +111,10 @@ async function createProject(title: string) {
   }
 }
 
+function formError(field: { invalid?: boolean; touched?: boolean; error?: { message?: string } } | undefined) {
+  return field?.invalid && field?.touched ? field.error?.message : undefined;
+}
+
 function abort() {
   router.push({ name: 'ProjectSelection' });
   emit('update:visible', false);
@@ -118,36 +122,33 @@ function abort() {
 </script>
 
 <template>
-  <Dialog
+  <BaseDialog
     :visible="visible"
-    modal
     :header="t('projectSelection.add')"
-    class="w-full max-w-md sm:max-w-lg md:max-w-xl"
     closable
     @update:visible="emit('update:visible', $event)"
     @hide="abort"
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
-      <div class="flex flex-col gap-4">
-        <label for="projectTitle" class="font-semibold">
-          {{ t('newProjectForm.input.name') }}
-        </label>
-
-        <InputText
-          id="projectTitle"
-          name="projectTitle"
-          type="text"
-          :placeholder="t('newProjectForm.input.exampleAddress')"
-          :class="{ 'p-invalid': $form.projectTitle?.invalid && $form.projectTitle?.touched }"
-          autofocus
-          fluid
-        />
-        <Message v-if="$form.projectTitle?.invalid" severity="error" size="small" variant="simple">
-          {{ $form.projectTitle.error.message }}
-        </Message>
+      <div class="flex flex-col gap-6">
+        <DialogFormField
+          inputId="projectTitle"
+          :label="t('newProjectForm.input.name')"
+          :errorMessage="formError($form.projectTitle)"
+        >
+          <InputText
+            id="projectTitle"
+            name="projectTitle"
+            type="text"
+            :placeholder="t('newProjectForm.input.exampleAddress')"
+            :class="{ 'p-invalid': $form.projectTitle?.invalid && $form.projectTitle?.touched }"
+            autofocus
+            fluid
+          />
+        </DialogFormField>
       </div>
 
-      <div class="flex justify-end gap-3 mt-6">
+      <div class="flex justify-end gap-2 mt-6">
         <Button type="button" :label="t('button.cancel')" severity="secondary" @click="abort" />
         <Button
           type="submit"
@@ -157,7 +158,7 @@ function abort() {
         />
       </div>
     </Form>
-  </Dialog>
+  </BaseDialog>
 </template>
 
 <style scoped>

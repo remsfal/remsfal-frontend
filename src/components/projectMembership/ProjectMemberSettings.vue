@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import NewProjectMemberButton from '@/components/NewProjectMemberButton.vue';
+import NewProjectMemberButton from '@/components/projectMembership/NewProjectMemberButton.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { onMounted, ref } from 'vue';
 import { type ProjectMemberJson, projectMemberService } from '@/services/ProjectMemberService';
-import ProjectMemberRoleSelect from '@/components/ProjectMemberRoleSelect.vue';
+import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
 
 const props = defineProps<{
   projectId: string;
@@ -23,7 +23,6 @@ const fetchMembers = async () => {
   await projectMemberService
     .getMembers(props.projectId)
     .then((list) => {
-      // TEMP FIX: cast to expected type until backend spec is fixed
       members.value = (list as { members: ProjectMemberJson[] }).members;
     })
     .catch((error) => {
@@ -33,17 +32,16 @@ const fetchMembers = async () => {
 
 const updateMemberRole = async (member: ProjectMemberJson) => {
   try {
-    // TEMP FIX: pass memberId and a body with role
     if (!member.id) {
       console.error('Member ID is undefined, cannot update role');
       return;
     }
 
-    await projectMemberService.updateMemberRole(props.projectId, member.id, {role: member.role,});
+    await projectMemberService.updateMemberRole(props.projectId, member.id, { role: member.role });
     toast.add({
       severity: 'success',
-      summary: 'Rolle aktualisiert',
-      detail: `Die Rolle von ${member.name} wurde erfolgreich geändert.`,
+      summary: t('projectSettings.updateRoleSuccess'),
+      detail: t('projectSettings.updateRoleDetail', [member.name]),
       life: 3000,
     });
   } catch (error) {
@@ -53,8 +51,6 @@ const updateMemberRole = async (member: ProjectMemberJson) => {
 };
 
 const removeMember = async (memberId: string) => {
-  console.log('Removing member with projectId:', props.projectId, 'memberId:', memberId);
-
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(memberId)) {
     console.error('Invalid memberId format:', memberId);
@@ -64,7 +60,6 @@ const removeMember = async (memberId: string) => {
   try {
     await projectMemberService.removeMember(props.projectId, memberId);
     await fetchMembers();
-    console.log('Member removed successfully');
   } catch (error) {
     const err = error as { response?: { data: unknown }; message: string };
     console.error('Failed to remove member:', err.response?.data || err.message);
@@ -79,8 +74,8 @@ function onNewMember(email: string) {
   fetchMembers();
   toast.add({
     severity: 'success',
-    summary: 'Neues Mitglied hinzugefügt',
-    detail: `Ein Neues Mitglied mit der E-Mail Adresse ${email} wurde erfolgreich hinzugefügt`,
+    summary: t('projectSettings.newMemberAdded'),
+    detail: t('projectSettings.newMemberAddedDetail', [email]),
     life: 3000,
   });
 }
@@ -94,16 +89,16 @@ function onNewMember(email: string) {
     <template #content>
       <div class="flex flex-col gap-2">
         <DataTable :value="members">
-          <Column field="email" header="Email" />
-          <Column header="Rolle">
+          <Column field="email" :header="t('projectSettings.projectMemberTable.columnEmail')" />
+          <Column :header="t('projectSettings.projectMemberTable.columnRole')">
             <template #body="slotProps">
               <ProjectMemberRoleSelect v-model="slotProps.data.role" @change="updateMemberRole(slotProps.data)" />
             </template>
           </Column>
-          <Column header="Optionen">
+          <Column :header="t('projectSettings.projectMemberTable.columnOptions')">
             <template #body="slotProps">
               <Button
-                label="Löschen"
+                :label="t('button.delete')"
                 class="deactivate-btn"
                 severity="danger"
                 @click="removeMember(slotProps.data.id ?? '')"

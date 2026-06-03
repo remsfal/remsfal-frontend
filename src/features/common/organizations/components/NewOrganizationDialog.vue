@@ -7,11 +7,12 @@ import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import Message from 'primevue/message';
 import Button from 'primevue/button';
+import Message from 'primevue/message';
 import PhoneInput from '@/components/common/PhoneInput.vue';
+import BaseDialog from '@/components/common/BaseDialog.vue';
+import DialogFormField from '@/components/common/DialogFormField.vue';
 import { organizationService } from '@/services/OrganizationService';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 
@@ -96,11 +97,9 @@ function onHide() {
 </script>
 
 <template>
-  <Dialog
+  <BaseDialog
     :visible="props.visible"
     :header="t('organization.newOrganization')"
-    modal
-    :style="{ width: '32rem' }"
     @update:visible="onHide"
   >
     <Form
@@ -108,56 +107,41 @@ function onHide() {
       :initialValues :resolver
       @submit="onSubmit"
     >
-      <div class="flex flex-col gap-4">
-        <div class="flex flex-col gap-1">
-          <label for="org-name" class="font-medium">{{ t('organization.name') }}*</label>
+      <div class="flex flex-col gap-6">
+        <DialogFormField
+          inputId="org-name"
+          :label="t('organization.name')"
+          required
+          :errorMessage="$form.name?.invalid && $form.name?.touched ? $form.name.error?.message : undefined"
+        >
           <InputText id="org-name" name="name" fluid :placeholder="t('organization.name')" />
-          <Message
-            v-if="$form.name?.invalid && $form.name?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.name.error?.message }}
-          </Message>
-        </div>
+        </DialogFormField>
 
-        <div class="flex flex-col gap-1">
-          <label for="org-trade" class="font-medium">{{ t('organization.trade') }}</label>
+        <DialogFormField inputId="org-trade" :label="t('organization.trade')">
           <InputText id="org-trade" name="trade" fluid :placeholder="t('organization.trade')" />
-        </div>
+        </DialogFormField>
 
-        <div class="flex flex-col gap-1">
-          <label for="org-phone" class="font-medium">{{ t('organization.phone') }}</label>
+        <DialogFormField
+          inputId="org-phone"
+          :label="t('organization.phone')"
+          :errorMessage="phoneError && phoneValue ? phoneError : undefined"
+        >
           <PhoneInput v-model="phoneValue" inputId="org-phone" />
-          <Message
-            v-if="phoneError && phoneValue"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ phoneError }}
-          </Message>
-        </div>
+        </DialogFormField>
 
-        <div class="flex flex-col gap-1">
-          <label for="org-email" class="font-medium">{{ t('organization.email') }}</label>
+        <DialogFormField
+          inputId="org-email"
+          :label="t('organization.email')"
+          :errorMessage="$form.email?.invalid && $form.email?.touched ? $form.email.error?.message : undefined"
+        >
           <InputText id="org-email" name="email" fluid :placeholder="t('organization.email')" />
-          <Message
-            v-if="$form.email?.invalid && $form.email?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.email.error?.message }}
-          </Message>
-        </div>
+        </DialogFormField>
 
-        <Message size="small" severity="secondary" variant="simple">
+        <Message severity="secondary" size="small" variant="simple">
           {{ t('accountSettings.userProfile.requiredFields') }}
         </Message>
 
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2 mt-6">
           <Button
             type="button"
             :label="t('button.cancel')"
@@ -173,5 +157,5 @@ function onHide() {
         </div>
       </div>
     </Form>
-  </Dialog>
+  </BaseDialog>
 </template>
