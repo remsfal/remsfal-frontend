@@ -38,7 +38,7 @@ const { t } = useI18n();
         {{ error }}
       </Message>
 
-      <div v-if="contracts.length" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 mt-4">
+      <div v-if="contracts.length" class="mt-4 grid gap-5 md:grid-cols-2">
         <TenancyContractCard
           v-for="contract in contracts"
           :key="contract.agreementId"
