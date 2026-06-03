@@ -5,7 +5,7 @@ import { rentalAgreementService, type RentalAgreementJson, type TenantJson } fro
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
+import BaseDialog from '@/components/common/BaseDialog.vue';
 import NewRentalAgreementDialog from '@/components/NewRentalAgreementDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -128,7 +128,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <Dialog v-model:visible="confirmationDialogVisible" :header="t('projectTenancies.dialog.confirmationTitle')" modal>
+    <BaseDialog v-model:visible="confirmationDialogVisible" :header="t('projectTenancies.dialog.confirmationTitle')">
       <div class="p-fluid">
         <p>
           {{
@@ -143,7 +143,7 @@ onMounted(async () => {
         <Button :label="t('projectTenancies.dialog.cancel')" icon="pi pi-times" @click="confirmationDialogVisible = false" />
         <Button :label="t('projectTenancies.dialog.delete')" icon="pi pi-check" severity="danger" @click="confirmDeletion" />
       </template>
-    </Dialog>
+    </BaseDialog>
 
     <!-- New Rental Agreement Dialog -->
     <NewRentalAgreementDialog

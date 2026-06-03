@@ -29,8 +29,6 @@ async function saveAddress(addr: AddressJson): Promise<void> {
 </script>
 
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <OrganizationBaseDataCard :organizationId="organizationId" />
-    <AddressCard :loadAddress :saveAddress />
-  </div>
+  <OrganizationBaseDataCard :organizationId="organizationId" />
+  <AddressCard :loadAddress :saveAddress />
 </template>
