@@ -7,7 +7,7 @@ import Message from 'primevue/message';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { issueService, type IssueStatus, type IssueType, type IssueJson } from '@/services/IssueService';
 import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
-import type { TenantIssueItem } from './types';
+import type { IssueItemJson } from '@/services/IssueService';
 import TenantIssueToolbar from './components/TenantIssueToolbar.vue';
 import TenantIssueList from './components/TenantIssueList.vue';
 
