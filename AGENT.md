@@ -93,7 +93,7 @@ src/
 │   │   │   ├── components/     # RentableUnitsTable, UnitBreadcrumb, ...
 │   │   │   ├── services/       # PropertyService, BuildingService, ApartmentService, ...
 │   │   │   └── index.ts
-│   │   ├── tenant/
+│   │   ├── tenants/
 │   │   │   ├── components/     # TenantCard, TenantToolbar, TenantContactButtons
 │   │   │   ├── services/       # TenantService
 │   │   │   └── index.ts
