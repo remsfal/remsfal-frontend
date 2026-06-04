@@ -1,12 +1,11 @@
-import {describe, it, expect, beforeAll, afterAll, afterEach} from 'vitest';
-import { server } from '../mocks/server';
-import { siteService, type SiteUnit } from '@/services/SiteService';
+import {describe, it, expect} from 'vitest';
+import { siteService, type SiteJson } from '@/services/SiteService';
 
 const projectId = 'project123';
 const propertyId = 'property456';
 const siteId = 'site789';
 
-const mockSite: SiteUnit = {
+const mockSite: SiteJson = {
   address: {
     street: 'Main St',
     city: 'Sample City',
@@ -18,10 +17,6 @@ const mockSite: SiteUnit = {
   description: 'A description of the new site.',
   space: 1000, 
 };
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
 
 describe('SiteService (MSW)', () => {
   it('should create a site', async () => {
