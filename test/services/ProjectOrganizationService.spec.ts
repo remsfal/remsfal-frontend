@@ -1,9 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { projectOrganizationService, type ProjectOrganizationJson } from '@/services/ProjectOrganizationService';
 import { server } from '../mocks/server';
-import { testErrorHandling, useTestServer } from '../utils/testHelpers';
-
-useTestServer(server);
+import { testErrorHandling } from '../utils/testHelpers';
 
 describe('projectOrganizationService (MSW)', () => {
   const projectId = 'project123';
