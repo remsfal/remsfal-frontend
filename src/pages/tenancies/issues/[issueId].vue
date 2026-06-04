@@ -7,7 +7,7 @@ meta:
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { TenantIssueDetails } from '@/features/project/tenant/tenantIssues';
+import { TenantIssueDetails } from '@/features/tenant/tenantIssues';
 
 const route = useRoute('TenantIssueDetails');
 </script>

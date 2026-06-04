@@ -74,7 +74,7 @@ describe('TenantIssues feature', () => {
       ],
     });
 
-    const { default: TenantIssues } = await import('@/features/project/tenant/tenantIssues/TenantIssues.vue');
+    const { default: TenantIssues } = await import('@/features/tenant/tenantIssues/TenantIssues.vue');
     const wrapper = mount(TenantIssues, { global: { stubs: { NewTenancyIssueDialog: true } } });
 
     await flushPromises();
