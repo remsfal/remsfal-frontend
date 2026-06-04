@@ -80,40 +80,50 @@ const titleClass = computed(() => {
   <button
     type="button"
     data-testid="tenant-issue-card"
-    class="group relative w-full text-left"
+    class="tenant-issue-card group w-full text-left"
     @click="emit('select')"
   >
     <BaseCard
       :unstyled="true"
-      cardClass="pointer-events-none absolute inset-0 rounded-lg border border-gray-200 shadow-sm transition-colors group-hover:border-primary-300 group-hover:bg-primary-50/20"
-    />
-    <div class="relative z-10 flex min-h-72 w-full flex-col gap-5 p-5 md:p-6">
-      <div class="flex items-start justify-between gap-2">
-        <span class="text-sm text-gray-500 font-mono">
-          {{ t('tenantIssues.card.number') }} {{ issue.id }}
-        </span>
-        <Tag :value="statusLabel" :severity="statusSeverity" rounded />
-      </div>
+      cardClass="w-full rounded-lg border border-gray-200 shadow-sm transition-colors group-hover:border-primary-300 group-hover:bg-primary-50/20"
+    >
+      <template #content>
+        <div class="flex h-full min-h-72 w-full flex-col p-5 md:p-6">
+          <div class="flex items-start justify-between gap-2">
+            <span class="font-mono text-sm text-gray-500">
+              {{ t('tenantIssues.card.number') }} {{ issue.id }}
+            </span>
+            <Tag :value="statusLabel" :severity="statusSeverity" rounded />
+          </div>
 
-      <h3 :class="[titleClass, 'break-words']">
-        {{ issue.title }}
-      </h3>
+          <h3 :class="[titleClass, 'mt-5 break-words']">
+            {{ issue.title }}
+          </h3>
 
-      <dl class="text-base text-gray-600 space-y-1">
-        <div class="flex justify-between gap-2">
-          <dt class="font-medium text-gray-500">
-            {{ t('tenantIssues.card.category') }}
-          </dt>
+          <dl class="mt-auto space-y-1 pt-5 text-base text-gray-600">
+            <div class="flex justify-between gap-2">
+              <dt class="font-medium text-gray-500">
+                {{ t('tenantIssues.card.category') }}
+              </dt>
+            </div>
+            <div class="flex min-w-0 justify-start gap-2">
+              <dt class="shrink-0 font-medium text-gray-500">
+                {{ t('tenantIssues.card.type') }}
+              </dt>
+              <dd class="min-w-0 break-words text-gray-900">
+                {{ typeLabel }}
+              </dd>
+            </div>
+          </dl>
         </div>
-        <div class="flex justify-start gap-2 min-w-0">
-          <dt class="font-medium text-gray-500 shrink-0">
-            {{ t('tenantIssues.card.type') }}
-          </dt>
-          <dd class="text-gray-900 min-w-0 break-words">
-            {{ typeLabel }}
-          </dd>
-        </div>
-      </dl>
-    </div>
+      </template>
+    </BaseCard>
   </button>
 </template>
+
+<style scoped>
+.tenant-issue-card :deep(.p-card-body),
+.tenant-issue-card :deep(.p-card-content) {
+  padding: 0;
+}
+</style>

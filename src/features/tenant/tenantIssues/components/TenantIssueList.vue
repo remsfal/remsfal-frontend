@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import DataView from 'primevue/dataview';
 import type { TenantIssueItem } from '../types';
 import TenantIssueCard from './TenantIssueCard.vue';
 
@@ -15,18 +14,14 @@ const { t } = useI18n();
 
 <template>
   <div class="mt-4">
-    <DataView v-if="issues.length > 0" :value="issues" layout="grid">
-      <template #grid="{ items }">
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <TenantIssueCard
-            v-for="issue in items"
-            :key="issue.id"
-            :issue="issue"
-            @select="emit('select', issue)"
-          />
-        </div>
-      </template>
-    </DataView>
+    <div v-if="issues.length > 0" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <TenantIssueCard
+        v-for="issue in issues"
+        :key="issue.id"
+        :issue="issue"
+        @select="emit('select', issue)"
+      />
+    </div>
 
     <div
       v-else
