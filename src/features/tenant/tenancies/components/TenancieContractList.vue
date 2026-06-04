@@ -3,7 +3,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 import type { TenancyJson } from '@/services/TenancyService';
-import TenancyContractCard from './TenancyContractCard.vue';
+import TenancieContractCard from './TenancieContractCard.vue';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{
@@ -35,7 +35,7 @@ const { t } = useI18n();
     </Message>
 
     <div v-if="contracts.length" class="mt-4 grid gap-5 md:grid-cols-2">
-      <TenancyContractCard
+      <TenancieContractCard
         v-for="contract in contracts"
         :key="contract.agreementId"
         :contract="contract"

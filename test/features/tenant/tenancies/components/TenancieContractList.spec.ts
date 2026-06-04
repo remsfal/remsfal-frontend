@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import TenancyHeader from '@/features/tenant/tenancies/components/TenancyHeader.vue';
+import TenancieContractList from '@/features/tenant/tenancies/components/TenancieContractList.vue';
 import type { TenancyJson } from '@/services/TenancyService';
 
-describe('TenancyHeader', () => {
+describe('TenancieContractList', () => {
   const contracts: TenancyJson[] = [
     {
       agreementId: 'aaaaaaaa-0000-0000-0000-000000000001',
@@ -47,7 +47,7 @@ describe('TenancyHeader', () => {
   ];
 
   it('renders a contract card for each contract', () => {
-    const wrapper = mount(TenancyHeader, {
+    const wrapper = mount(TenancieContractList, {
       props: {
         contracts,
         loading: false,
@@ -60,7 +60,7 @@ describe('TenancyHeader', () => {
   });
 
   it('shows loading state and hides empty state while loading', () => {
-    const wrapper = mount(TenancyHeader, {
+    const wrapper = mount(TenancieContractList, {
       props: {
         contracts: [],
         loading: true,

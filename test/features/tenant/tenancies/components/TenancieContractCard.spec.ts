@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import TenancyContractCard from '@/features/tenant/tenancies/components/TenancyContractCard.vue';
+import TenancieContractCard from '@/features/tenant/tenancies/components/TenancieContractCard.vue';
 import type { TenancyJson } from '@/services/TenancyService';
 
-describe('TenancyContractCard', () => {
+describe('TenancieContractCard', () => {
   const contract: TenancyJson = {
     agreementId: 'aaaaaaaa-0000-0000-0000-000000000001',
     active: true,
@@ -35,7 +35,7 @@ describe('TenancyContractCard', () => {
   };
 
   it('renders status, financial details and deduplicated unit tag label', () => {
-    const wrapper = mount(TenancyContractCard, { props: { contract }, });
+    const wrapper = mount(TenancieContractCard, { props: { contract }, });
 
     expect(wrapper.find('[data-testid="contract-card"]').exists()).toBe(true);
     expect(wrapper.text()).toContain('Aktiv');
@@ -48,7 +48,7 @@ describe('TenancyContractCard', () => {
   });
 
   it('shows expired status and hides financial block when values are missing', () => {
-    const wrapper = mount(TenancyContractCard, {
+    const wrapper = mount(TenancieContractCard, {
       props: {
         contract: {
           ...contract,
