@@ -7,7 +7,7 @@ import Message from 'primevue/message';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { issueService, type IssueStatus, type IssueType, type IssueJson } from '@/services/IssueService';
 import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
-import type { TenantIssueItem } from './types';
+import type { IssueItemJson } from '@/services/IssueService';
 import TenantIssueToolbar from './components/TenantIssueToolbar.vue';
 import TenantIssueList from './components/TenantIssueList.vue';
 
@@ -15,7 +15,7 @@ const { t } = useI18n();
 const router = useRouter();
 
 const contracts = ref<TenancyJson[]>([]);
-const issues = ref<TenantIssueItem[]>([]);
+const issues = ref<IssueItemJson[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const showNewIssueDialog = ref(false);
@@ -56,7 +56,7 @@ const loadIssues = async () => {
       filters.value.tenancyId || undefined,
     );
 
-    issues.value = (issueList?.issues ?? []) as TenantIssueItem[];
+    issues.value = (issueList?.issues ?? []) as IssueItemJson[];
   } catch (err) {
     console.error('Error loading issues:', err);
     error.value = t('error.general');
@@ -91,10 +91,10 @@ watch(
 );
 
 const handleIssueCreated = (newIssue: IssueJson) => {
-  issues.value = [newIssue as TenantIssueItem, ...issues.value];
+  issues.value = [newIssue as IssueItemJson, ...issues.value];
 };
 
-const openIssue = (issue: TenantIssueItem) => {
+const openIssue = (issue: IssueItemJson) => {
   if (!issue.id) {
     return;
   }
