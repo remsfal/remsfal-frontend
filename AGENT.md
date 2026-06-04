@@ -94,9 +94,6 @@ src/
 │   │   │   ├── services/       # PropertyService, BuildingService, ApartmentService, ...
 │   │   │   └── index.ts
 │   │   ├── tenant/
-│   │   │   ├── tenancies/
-│   │   │   │   ├── components/     # Tenant tenancy dashboard cards
-│   │   │   │   └── index.ts
 │   │   │   ├── components/     # TenantCard, TenantToolbar, TenantContactButtons
 │   │   │   ├── services/       # TenantService
 │   │   │   └── index.ts
@@ -113,6 +110,9 @@ src/
 │   │       ├── services/       # ContractorService, ProjectMemberService
 │   │       └── index.ts
 │   ├── tenant/
+│   │   ├── tenancies/
+│   │   │   ├── components/     # Tenant tenancy dashboard cards
+│   │   │   └── index.ts
 │   │   ├── components/         # TenantIssueList, tenancyDetails/*, tenantIssue/*
 │   │   ├── services/           # TenancyService (tenant-side)
 │   │   └── index.ts

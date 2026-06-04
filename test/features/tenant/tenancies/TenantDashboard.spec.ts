@@ -64,7 +64,7 @@ describe('TenantDashboard', () => {
 
   it('renders contracts from API', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue(mockContracts);
-    const { default: TenantDashboard } = await import('@/features/project/tenant/tenancies/TenantDashboard.vue');
+    const { default: TenantDashboard } = await import('@/features/tenant/tenancies/TenantDashboard.vue');
 
     const wrapper = mount(TenantDashboard);
     await flushPromises();
@@ -79,7 +79,7 @@ describe('TenantDashboard', () => {
 
   it('shows financial data when available', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue(mockContracts);
-    const { default: TenantDashboard } = await import('@/features/project/tenant/tenancies/TenantDashboard.vue');
+    const { default: TenantDashboard } = await import('@/features/tenant/tenancies/TenantDashboard.vue');
 
     const wrapper = mount(TenantDashboard);
     await flushPromises();
@@ -91,7 +91,7 @@ describe('TenantDashboard', () => {
 
   it('shows rental start date', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue(mockContracts);
-    const { default: TenantDashboard } = await import('@/features/project/tenant/tenancies/TenantDashboard.vue');
+    const { default: TenantDashboard } = await import('@/features/tenant/tenancies/TenantDashboard.vue');
 
     const wrapper = mount(TenantDashboard);
     await flushPromises();
@@ -101,7 +101,7 @@ describe('TenantDashboard', () => {
 
   it('shows co-tenant names', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue(mockContracts);
-    const { default: TenantDashboard } = await import('@/features/project/tenant/tenancies/TenantDashboard.vue');
+    const { default: TenantDashboard } = await import('@/features/tenant/tenancies/TenantDashboard.vue');
 
     const wrapper = mount(TenantDashboard);
     await flushPromises();
@@ -111,7 +111,7 @@ describe('TenantDashboard', () => {
 
   it('shows error notice when fetch fails', async () => {
     vi.mocked(tenancyService.getTenancies).mockRejectedValue(new Error('fail'));
-    const { default: TenantDashboard } = await import('@/features/project/tenant/tenancies/TenantDashboard.vue');
+    const { default: TenantDashboard } = await import('@/features/tenant/tenancies/TenantDashboard.vue');
 
     const wrapper = mount(TenantDashboard);
     await flushPromises();
@@ -121,7 +121,7 @@ describe('TenantDashboard', () => {
 
   it('shows empty state when no contracts returned', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    const { default: TenantDashboard } = await import('@/features/project/tenant/tenancies/TenantDashboard.vue');
+    const { default: TenantDashboard } = await import('@/features/tenant/tenancies/TenantDashboard.vue');
 
     const wrapper = mount(TenantDashboard);
     await flushPromises();
@@ -131,7 +131,7 @@ describe('TenantDashboard', () => {
 
   it('shows rental units as tags and hides contract number', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue(mockContracts);
-    const { default: TenantDashboard } = await import('@/features/project/tenant/tenancies/TenantDashboard.vue');
+    const { default: TenantDashboard } = await import('@/features/tenant/tenancies/TenantDashboard.vue');
 
     const wrapper = mount(TenantDashboard);
     await flushPromises();

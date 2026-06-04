@@ -719,7 +719,7 @@
   "tenantDashboard.field.agreementId": "Contract number",
   "tenantDashboard.field.start": "Start of rental",
   "tenantDashboard.field.end": "End of rental",
-  "tenantDashboard.field.ongoing": "Ongoing",
+  "tenantDashboard.field.ongoing": "Indefinitely",
   "tenantDashboard.section.financials": "Costs & Rent",
   "tenantDashboard.field.basicRent": "Basic rent",
   "tenantDashboard.field.operatingCosts": "Operating costs",

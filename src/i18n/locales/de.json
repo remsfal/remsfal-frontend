@@ -722,7 +722,7 @@
   "tenantDashboard.field.agreementId": "Vertragsnummer",
   "tenantDashboard.field.start": "Mietbeginn",
   "tenantDashboard.field.end": "Mietende",
-  "tenantDashboard.field.ongoing": "Laufend",
+  "tenantDashboard.field.ongoing": "Unbefristet",
   "tenantDashboard.section.financials": "Kosten & Miete",
   "tenantDashboard.field.basicRent": "Kaltmiete",
   "tenantDashboard.field.operatingCosts": "Betriebskosten",

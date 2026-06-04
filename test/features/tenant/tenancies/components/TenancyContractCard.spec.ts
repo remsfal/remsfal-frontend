@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import TenancyContractCard from '@/features/project/tenant/tenancies/components/TenancyContractCard.vue';
+import TenancyContractCard from '@/features/tenant/tenancies/components/TenancyContractCard.vue';
 import type { TenancyJson } from '@/services/TenancyService';
 
 describe('TenancyContractCard', () => {
@@ -39,7 +39,7 @@ describe('TenancyContractCard', () => {
 
     expect(wrapper.find('[data-testid="contract-card"]').exists()).toBe(true);
     expect(wrapper.text()).toContain('Aktiv');
-    expect(wrapper.text()).toContain('Laufend');
+    expect(wrapper.text()).toContain('Unbefristet');
     expect(wrapper.text()).toContain('Kosten & Miete');
     expect(wrapper.text()).toContain('Gesamtmiete (warm)');
     expect(wrapper.text()).toContain('Max Mustermann');

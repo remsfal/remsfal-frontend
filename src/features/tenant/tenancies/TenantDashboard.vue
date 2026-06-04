@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
-import TenancyDashboardCard from './components/TenancyDashboardCard.vue';
+import TenancyHeader from './components/TenancyHeader.vue';
 
 const { t } = useI18n();
 
@@ -39,7 +39,7 @@ onMounted(loadContracts);
       </div>
 
       <div class="col-span-12">
-        <TenancyDashboardCard :contracts="contracts" :loading="loading" :error="error" />
+        <TenancyHeader :contracts="contracts" :loading="loading" :error="error" />
       </div>
     </div>
   </main>
