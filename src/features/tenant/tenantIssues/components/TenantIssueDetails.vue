@@ -5,7 +5,6 @@ import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import BaseCard from '@/components/common/BaseCard.vue';
-import Tag from 'primevue/tag';
 import { issueService, type IssueJson } from '@/services/IssueService';
 
 const props = defineProps<{ issueId: string }>();
@@ -72,7 +71,6 @@ watch(
           <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
             <div>
               <span class="text-xl font-semibold">{{ issue.title || t('tenantIssues.detail.untitled') }}</span>
-              <Tag :value="statusLabel" :severity="statusSeverity" rounded />
               <p class="text-base text-gray-500 font-normal mt-1">
                 {{ t('tenantIssues.detail.number') }} {{ issue.id || '—' }}
               </p>

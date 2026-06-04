@@ -31,7 +31,7 @@ describe('TenantIssueDetails feature', () => {
       description: 'Rohr unter der Spüle undicht.',
     });
 
-    const { default: TenantIssueDetails } = await import('@/features/tenant/tenantIssues/TenantIssueDetails.vue');
+    const { default: TenantIssueDetails } = await import('@/features/tenant/tenantIssues/components/TenantIssueDetails.vue');
     const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-42' } });
 
     await flushPromises();

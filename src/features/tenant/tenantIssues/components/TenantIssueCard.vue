@@ -85,7 +85,8 @@ const titleClass = computed(() => {
   >
     <BaseCard
       :unstyled="true"
-      cardClass="w-full rounded-lg border border-gray-200 shadow-sm transition-colors group-hover:border-primary-300 group-hover:bg-primary-50/20"
+      cardClass="w-full rounded-lg border border-gray-200 shadow-sm 
+      transition-colors group-hover:border-primary-300 group-hover:bg-primary-50/20"
     >
       <template #content>
         <div class="flex h-full min-h-72 w-full flex-col p-5 md:p-6">
