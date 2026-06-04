@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import type { TenantIssueItem } from '../types';
+import type { IssueItemJson } from '@/services/IssueService';
 import TenantIssueCard from './TenantIssueCard.vue';
 
 defineProps<{
-  issues: TenantIssueItem[];
+  issues: IssueItemJson[];
 }>();
 
-const emit = defineEmits<{ select: [issue: TenantIssueItem] }>();
+const emit = defineEmits<{ select: [issue: IssueItemJson] }>();
 
 const { t } = useI18n();
 </script>

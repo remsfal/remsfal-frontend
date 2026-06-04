@@ -3,10 +3,10 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
-import type { TenantIssueItem } from '../types';
+import type { IssueItemJson } from '@/services/IssueService';
 
 const props = defineProps<{
-  issue: TenantIssueItem;
+  issue: IssueItemJson;
 }>();
 
 const emit = defineEmits<{ select: [] }>();
