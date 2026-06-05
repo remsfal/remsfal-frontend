@@ -351,22 +351,17 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Retrieve a list of all organizations */
+    /** @description Retrieve all organizations the authenticated user owns */
     get: {
       parameters: {
-        query: {
-          /** @description Maximum number of contractors to return */
-          limit: number;
-          /** @description Offset of the first contractor to return */
-          offset: number;
-        };
+        query?: never;
         header?: never;
         path?: never;
         cookie?: never;
       };
       requestBody?: never;
       responses: {
-        /** @description List of all organizations was successfully returned */
+        /** @description List of owned organizations was successfully returned */
         200: {
           headers: {
             [name: string]: unknown;
@@ -384,13 +379,6 @@ export interface paths {
         };
         /** @description Not Allowed */
         403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The organization with the requested id doesn't exist */
-        404: {
           headers: {
             [name: string]: unknown;
           };
@@ -444,24 +432,29 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/organizations/employments": {
+  "/api/v1/organizations/contractors": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** @description Retrieve a list of all organizations where the user is an employee */
+    /** @description Retrieve all organizations acting as contractors in projects accessible to the user */
     get: {
       parameters: {
-        query?: never;
+        query: {
+          /** @description Maximum number of organizations to return */
+          limit: number;
+          /** @description Offset of the first organization to return */
+          offset: number;
+        };
         header?: never;
         path?: never;
         cookie?: never;
       };
       requestBody?: never;
       responses: {
-        /** @description An organization was successfully returned */
+        /** @description List of contractor organizations was successfully returned */
         200: {
           headers: {
             [name: string]: unknown;
@@ -484,8 +477,115 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description List of organizations with the requested id doesn't exist */
-        404: {
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/organizations/employments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Retrieve all organizations the user is employed in, including the user's role */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description A list of organization employments was successfully returned */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["OrganizationEmployeeListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/organizations/search": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Search organizations by name (min. 3 characters) */
+    get: {
+      parameters: {
+        query: {
+          /** @description Maximum number of organizations to return */
+          limit: number;
+          /** @description Name search query (min. 3 characters) */
+          name: string;
+          /** @description Offset of the first organization to return */
+          offset: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Matching organizations were successfully returned */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["OrganizationListJson"];
+          };
+        };
+        /** @description Name parameter too short (min. 3 characters) */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
           headers: {
             [name: string]: unknown;
           };
@@ -4872,12 +4972,18 @@ export interface components {
     };
     /** @description A contractor */
     ContractorJson: {
-      id?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
+      organizationId?: components["schemas"]["UUID"];
+      /** @description Unique identifier of the organization (generated by server) */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description ID of the project this contractor belongs to */
+      readonly projectId?: components["schemas"]["UUID"];
       companyName?: string;
       phone?: string;
       email?: string;
       trade?: string;
+      contactPerson?: string;
+      remarks?: string;
+      organization?: components["schemas"]["OrganizationJson"];
       address?: components["schemas"]["AddressJson"];
     };
     ContractorListJson: {
@@ -5059,6 +5165,8 @@ export interface components {
     /** @description Employee information in context of an organization */
     OrganizationEmployeeJson: {
       readonly id?: components["schemas"]["UUID"];
+      readonly organizationId?: components["schemas"]["UUID"];
+      readonly organizationName?: string;
       name?: string;
       email?: string;
       active?: boolean;
