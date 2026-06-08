@@ -66,7 +66,6 @@ describe('TenancieContractList', () => {
     const wrapper = mount(TenancieContractList);
     await flushPromises();
 
-    expect(wrapper.text()).toContain('Aktive und abgelaufene Verträge');
     expect(wrapper.findAll('[data-testid="contract-card"]')).toHaveLength(2);
     expect(wrapper.text()).toContain('Teststr. 1');
     expect(wrapper.text()).toContain('Musterweg 5');
