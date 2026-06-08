@@ -48,7 +48,8 @@ onMounted(loadContracts);
         {{ error }}
       </Message>
 
-       <div v-if="contracts.length" class="mt-6 grid content-start gap-5" style="grid-template-columns: repeat(auto-fit, minmax(400px, 600px));">
+       <div v-if="contracts.length" class="mt-6 grid content-start gap-5" 
+       	style="grid-template-columns: repeat(auto-fit, minmax(400px, 600px));">
         <TenancieContractCard
           v-for="contract in contracts"
           :key="contract.agreementId"
