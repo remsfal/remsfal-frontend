@@ -1530,6 +1530,21 @@ paths:
           description: Tokens are set as cookies
         "401":
           description: Unauthorized - Invalid token
+  /api/v1/authentication/verify-additional-email:
+    get:
+      summary: Verify an additional user email address using a verification token.
+      parameters:
+      - name: token
+        in: query
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Additional email verified successfully
+        "400":
+          description: Verification token is missing or expired
+        "404":
+          description: Verification token is invalid
   /api/v1/organizations:
     get:
       description: Retrieve all organizations the authenticated user owns
