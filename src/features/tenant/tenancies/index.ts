@@ -1,1 +1,1 @@
-export { default as TenantDashboard } from './TenantDashboard.vue';
+export { default as TenancieContractList } from './TenancieContractList.vue';
