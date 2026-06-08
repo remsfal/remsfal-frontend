@@ -1,1 +1,1 @@
-export { default as TenancieContractList } from './TenancieContractList.vue';
+export { default as TenancieContractList } from './components/TenancieContractList.vue';

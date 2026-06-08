@@ -5,7 +5,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
-import TenancieContractCard from './components/TenancieContractCard.vue';
+import TenancieContractCard from './TenancieContractCard.vue';
 
 const { t } = useI18n();
 
@@ -48,7 +48,7 @@ onMounted(loadContracts);
         {{ error }}
       </Message>
 
-      <div v-if="contracts.length" class="mt-4 grid gap-5 md:grid-cols-2">
+       <div v-if="contracts.length" class="mt-6 grid content-start gap-5" style="grid-template-columns: repeat(auto-fit, minmax(400px, 600px));">
         <TenancieContractCard
           v-for="contract in contracts"
           :key="contract.agreementId"

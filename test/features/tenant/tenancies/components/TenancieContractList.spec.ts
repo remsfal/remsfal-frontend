@@ -2,7 +2,7 @@ import { describe, expect, it, vi, afterEach } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 
-import TenancieContractList from '@/features/tenant/tenancies/TenancieContractList.vue';
+import TenancieContractList from '@/features/tenant/tenancies/components/TenancieContractList.vue';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 
 describe('TenancieContractList', () => {
