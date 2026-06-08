@@ -1,26 +1,27 @@
 import { defineStore } from 'pinia';
-import { organizationService, type OrganizationJson } from '@/services/OrganizationService';
+import {organizationService,
+  type OrganizationJson,
+  type OrganizationEmployeeJson,} from '@/services/OrganizationService';
 
 export const useOrganizationStore = defineStore('organization', {
   state: () => ({
     userOrganizations: [] as OrganizationJson[],
+    userEmployments: [] as OrganizationEmployeeJson[],
     initialized: false,
   }),
   getters: {hasOrganization: (state): boolean => state.userOrganizations.length > 0,},
   actions: {
     async fetchUserOrganization() {
       try {
-        // Try owner-scoped list first (creator is always the owner)
-        const owned = await organizationService.getOrganizations();
-        if (owned.organizations?.length) {
-          this.userOrganizations = owned.organizations;
-          return;
-        }
-        // Fall back to employment-scoped list (employee / co-worker)
-        const employed = await organizationService.getEmployments();
-        this.userOrganizations = employed.organizations ?? [];
+        const [owned, employed] = await Promise.all([
+          organizationService.getOrganizations(),
+          organizationService.getEmployments(),
+        ]);
+        this.userOrganizations = owned.organizations ?? [];
+        this.userEmployments = employed.employees ?? [];
       } catch {
         this.userOrganizations = [];
+        this.userEmployments = [];
       } finally {
         this.initialized = true;
       }

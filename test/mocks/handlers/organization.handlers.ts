@@ -17,11 +17,21 @@ export const mockOrganization = {
   },
 };
 
+export const mockEmployee = {
+  id: 'emp-1',
+  organizationId: 'org-123',
+  organizationName: 'Test GmbH',
+  name: 'Max Mustermann',
+  email: 'max@test-gmbh.de',
+  active: true,
+  employeeRole: 'OWNER' as const,
+};
+
 export const organizationHandlers = [
   // GET /organizations/employments — must come before /:organizationId
   http.get(`${API_BASE}/organizations/employments`, () => {
     return HttpResponse.json(
-      { organizations: [mockOrganization], total: 1 },
+      { employees: [mockEmployee] },
       { status: 200 },
     );
   }),
