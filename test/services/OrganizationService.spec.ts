@@ -18,10 +18,20 @@ describe('OrganizationService with MSW', () => {
     expect(org.name).toBe('Test GmbH');
   });
 
-  test('getEmployments returns list with organizations array', async () => {
+  test('getEmployments returns list with employees array', async () => {
     const result = await service.getEmployments();
-    expect(result.organizations).toBeDefined();
-    expect(Array.isArray(result.organizations)).toBe(true);
+    expect(result.employees).toBeDefined();
+    expect(Array.isArray(result.employees)).toBe(true);
+    expect(result.employees.length).toBeGreaterThan(0);
+  });
+
+  test('getEmployments returns employee with expected fields', async () => {
+    const result = await service.getEmployments();
+    const emp = result.employees[0]!;
+    expect(emp.organizationId).toBe('org-123');
+    expect(emp.organizationName).toBe('Test GmbH');
+    expect(emp.employeeRole).toBe('OWNER');
+    expect(emp.active).toBe(true);
   });
 
   test('createOrganization resolves without error', async () => {

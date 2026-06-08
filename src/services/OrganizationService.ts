@@ -2,6 +2,9 @@ import { apiClient, type ApiComponents, type ApiPaths } from '@/services/ApiClie
 
 export type OrganizationJson = ApiComponents['schemas']['OrganizationJson'];
 export type OrganizationListJson = ApiComponents['schemas']['OrganizationListJson'];
+export type OrganizationEmployeeJson = ApiComponents['schemas']['OrganizationEmployeeJson'];
+export type OrganizationEmployeeListJson = ApiComponents['schemas']['OrganizationEmployeeListJson'];
+export type EmployeeRole = ApiComponents['schemas']['EmployeeRole'];
 export type OrganizationCreateRequest =
   ApiPaths['/api/v1/organizations']['post']['requestBody']['content']['application/json'];
 export type OrganizationUpdateRequest =
@@ -12,7 +15,7 @@ export class OrganizationService {
     return apiClient.get('/api/v1/organizations');
   }
 
-  async getEmployments(): Promise<OrganizationListJson> {
+  async getEmployments(): Promise<OrganizationEmployeeListJson> {
     return apiClient.get('/api/v1/organizations/employments');
   }
 
