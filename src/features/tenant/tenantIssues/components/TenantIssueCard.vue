@@ -62,6 +62,23 @@ const typeLabel = computed(() => {
   }
 });
 
+const issueNodeId = computed(() => props.issue.id?.split('-')[0] || props.issue.id);
+
+const typestatus = computed(() => {
+  switch (props.issue.type) {
+    case 'APPLICATION':
+      return 'info';
+    case 'TASK':
+      return 'secondary';
+    case 'DEFECT':
+      return 'danger';
+    case 'MAINTENANCE':
+      return 'warn';
+    default:
+      return 'secondary';
+  }
+});
+
 const titleClass = computed(() => {
   const classes = ['text-xl', 'font-semibold'];
 
@@ -85,29 +102,15 @@ const titleClass = computed(() => {
   >
     <BaseCard>
       <template #content>
-        <div class="flex h-full min-h-72 w-full flex-col p-5 md:p-6">
-          <div class="flex items-start justify-between gap-2">
-            <span class="font-mono text-sm text-gray-500">
-              {{ t('tenantIssues.card.number') }} {{ issue.id }}
-            </span>
-            <Tag :value="statusLabel" :severity="statusSeverity" rounded />
-          </div>
-
+        <div class="flex flex-col p-5 md:p-6">
           <h3 :class="[titleClass, 'mt-5 break-words']">
             {{ issue.title }}
           </h3>
-
-          <dl class="mt-auto grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 pt-5 text-base">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.card.category') }}
-              </dt>
-              <dt class="shrink-0 font-medium text-gray-500">
-                {{ t('tenantIssues.card.type') }}
-              </dt>
-              <dd class="min-w-0 break-words text-gray-900">
-                {{ typeLabel }}
-              </dd>
-          </dl>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit"/>
+            <Tag :value="issueNodeId" severity="contrast" class="inline-flex w-fit" />
+            <Tag :value="typeLabel" :severity="typestatus" class="inline-flex w-fit" />
+          </div>
         </div>
       </template>
     </BaseCard>

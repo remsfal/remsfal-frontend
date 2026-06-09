@@ -210,7 +210,10 @@ onMounted(async () => {
     </div>
 
     <div v-else class="col-span-12 mt-4">
-      <div v-if="filteredIssues.length > 0" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div
+        v-if="filteredIssues.length > 0"
+        class="mt-6 grid content-start gap-5"
+      >
         <TenantIssueCard
           v-for="issue in filteredIssues"
           :key="issue.id"
