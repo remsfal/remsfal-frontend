@@ -7,12 +7,14 @@ meta:
 </route>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { TenantIssueDetails } from '@/features/tenant/tenantIssues';
 
-const route = useRoute('TenantIssueDetails');
+const route = useRoute();
+const issueId = computed(() => String(route.params.issueId || ''));
 </script>
 
 <template>
-  <TenantIssueDetails :issueId="(route.params.issueId as string)" />
+  <TenantIssueDetails :issueId="issueId" />
 </template>
