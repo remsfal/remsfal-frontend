@@ -58,6 +58,23 @@ const typeOptions = computed(() => [
   { label: t('inbox.filters.type.maintenance'), value: 'MAINTENANCE' },
 ]);
 
+const getStatusOrder = (status: string | undefined) => {
+  switch (status) {
+    case 'PENDING':
+      return 1;
+    case 'OPEN':
+      return 2;
+    case 'IN_PROGRESS':
+      return 3;
+    case 'CLOSED':
+      return 4;
+    case 'REJECTED':
+      return 5;
+    default:
+      return 99;
+  }
+};
+
 const filteredIssues = computed(() => {
   let result = issues.value;
 
@@ -65,15 +82,19 @@ const filteredIssues = computed(() => {
     result = result.filter((issue) => issue.type === filters.value.type);
   }
 
-  if (!searchQuery.value) {
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    result = result.filter(issue =>
+      issue.title?.toLowerCase().includes(query) ||
+      issue.id?.toLowerCase().includes(query)
+    );
+  }
+
+  if (filters.value.status) {
     return result;
   }
 
-  const query = searchQuery.value.toLowerCase();
-  return result.filter(issue =>
-    issue.title?.toLowerCase().includes(query) ||
-    issue.id?.toLowerCase().includes(query)
-  );
+  return [...result].sort((a, b) => getStatusOrder(a.status) - getStatusOrder(b.status));
 });
 
 const loadContracts = async () => {
@@ -157,17 +178,15 @@ onMounted(async () => {
     </Message>
 
     <div class="col-span-12 flex flex-col gap-4 mb-6">
-      <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <Button :label="t('tenantIssues.newIssue')" icon="pi pi-plus" @click="showNewIssueDialog = true" />
-
-        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+      <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
+        <div class="grid w-full grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
           <Select
             v-model="filters.tenancyId"
             :options="tenancyOptions"
             optionLabel="label"
             optionValue="value"
             :placeholder="t('tenantIssues.filter.tenancy')"
-            class="w-full sm:w-64"
+            class="w-full"
           />
 
           <Select
@@ -176,7 +195,7 @@ onMounted(async () => {
             optionLabel="label"
             optionValue="value"
             :placeholder="t('tenantIssues.filter.status')"
-            class="w-full sm:w-48"
+            class="w-full"
           />
 
           <Select
@@ -185,23 +204,29 @@ onMounted(async () => {
             optionLabel="label"
             optionValue="value"
             :placeholder="t('tenantIssues.filter.type')"
-            class="w-full sm:w-48"
+            class="w-full"
           />
+
+          <IconField class="w-full">
+            <InputIcon class="pi pi-search" />
+            <InputText
+              :modelValue="searchQuery"
+              :placeholder="t('tenantIssues.search.placeholder')"
+              type="text"
+              fluid
+              @input="onSearchInput"
+            />
+          </IconField>
         </div>
+
+        <Button
+          :label="t('tenantIssues.newIssue')"
+          icon="pi pi-plus"
+          class="self-start xl:ml-auto xl:self-auto shrink-0"
+          @click="showNewIssueDialog = true"
+        />
       </div>
 
-      <div class="flex justify-end">
-        <IconField class="w-full sm:w-80">
-          <InputIcon class="pi pi-search" />
-          <InputText
-            :modelValue="searchQuery"
-            :placeholder="t('tenantIssues.search.placeholder')"
-            type="text"
-            fluid
-            @input="onSearchInput"
-          />
-        </IconField>
-      </div>
     </div>
 
     <div v-if="loading" class="col-span-12 flex items-center justify-center py-12">

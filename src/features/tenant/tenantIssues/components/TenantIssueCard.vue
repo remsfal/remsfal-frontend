@@ -62,7 +62,7 @@ const typeLabel = computed(() => {
   }
 });
 
-const issueNodeId = computed(() => props.issue.id?.split('-')[0] || props.issue.id);
+const issueNodeId = computed(() => props.issue.id?.split('-').pop() || props.issue.id);
 
 const typestatus = computed(() => {
   switch (props.issue.type) {
@@ -75,7 +75,7 @@ const typestatus = computed(() => {
     case 'MAINTENANCE':
       return 'warn';
     default:
-      return 'secondary';
+      return 'info';
   }
 });
 
