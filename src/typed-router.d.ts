@@ -268,8 +268,8 @@ declare module 'vue-router/auto-routes' {
     'TenantIssueDetails': RouteRecordInfo<
       'TenantIssueDetails',
       '/tenancies/issues/:issueId',
-      Record<never, never>,
-      Record<never, never>,
+      { issueId: ParamValue<true> },
+      { issueId: ParamValue<false> },
       | never
     >,
   }
@@ -489,7 +489,7 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/tenancies/issues/issueDetails.vue': {
+    'src/pages/tenancies/issues/[issueId].vue': {
       routes:
         | 'TenantIssueDetails'
       views:

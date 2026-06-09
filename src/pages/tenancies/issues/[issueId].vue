@@ -1,5 +1,4 @@
 <route lang="yaml">
-path: /tenancies/issues/:issueId
 name: TenantIssueDetails
 meta:
   layout: tenant
@@ -7,14 +6,12 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { TenantIssueDetails } from '@/features/tenant/tenantIssues';
 
-const route = useRoute();
-const issueId = computed(() => String(route.params.issueId || ''));
+const route = useRoute('TenantIssueDetails');
 </script>
 
 <template>
-  <TenantIssueDetails :issueId="issueId" />
+  <TenantIssueDetails :issueId="(route.params.issueId as string)" />
 </template>
