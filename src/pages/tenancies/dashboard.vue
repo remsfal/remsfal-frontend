@@ -6,9 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { TenantIssueList } from '@/features/tenant/tenantIssues'
+import TenancieContractList from '@/features/tenant/tenancies/components/TenancieContractList.vue'
 </script>
 
 <template>
-  <TenantIssueList />
+   <TenancieContractList />
 </template>
