@@ -145,96 +145,96 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main>
-    <div class="flex flex-col gap-4">
-      <div>
-        <h1 class="text-2xl font-semibold text-gray-900">
-          {{ t('tenantIssues.title') }}
-        </h1>
-      </div>
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12">
+      <h1 class="text-2xl font-semibold text-gray-900">
+        {{ t('tenantIssues.title') }}
+      </h1>
+    </div>
 
-      <Message v-if="error" severity="error" :closable="false">
-        {{ error }}
-      </Message>
+    <Message v-if="error" severity="error" :closable="false" class="col-span-12">
+      {{ error }}
+    </Message>
 
-      <div class="flex flex-col gap-4 mb-6">
-        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-          <Button :label="t('tenantIssues.newIssue')" icon="pi pi-plus" @click="showNewIssueDialog = true" />
+    <div class="col-span-12 flex flex-col gap-4 mb-6">
+      <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+        <Button :label="t('tenantIssues.newIssue')" icon="pi pi-plus" @click="showNewIssueDialog = true" />
 
-          <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <Select
-              v-model="filters.tenancyId"
-              :options="tenancyOptions"
-              optionLabel="label"
-              optionValue="value"
-              :placeholder="t('tenantIssues.filter.tenancy')"
-              class="w-full sm:w-64"
-            />
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Select
+            v-model="filters.tenancyId"
+            :options="tenancyOptions"
+            optionLabel="label"
+            optionValue="value"
+            :placeholder="t('tenantIssues.filter.tenancy')"
+            class="w-full sm:w-64"
+          />
 
-            <Select
-              v-model="filters.status"
-              :options="statusOptions"
-              optionLabel="label"
-              optionValue="value"
-              :placeholder="t('tenantIssues.filter.status')"
-              class="w-full sm:w-48"
-            />
+          <Select
+            v-model="filters.status"
+            :options="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            :placeholder="t('tenantIssues.filter.status')"
+            class="w-full sm:w-48"
+          />
 
-            <Select
-              v-model="filters.type"
-              :options="typeOptions"
-              optionLabel="label"
-              optionValue="value"
-              :placeholder="t('tenantIssues.filter.type')"
-              class="w-full sm:w-48"
-            />
-          </div>
-        </div>
-
-        <div class="flex justify-end">
-          <IconField class="w-full sm:w-80">
-            <InputIcon class="pi pi-search" />
-            <InputText
-              :modelValue="searchQuery"
-              :placeholder="t('tenantIssues.search.placeholder')"
-              type="text"
-              fluid
-              @input="onSearchInput"
-            />
-          </IconField>
-        </div>
-      </div>
-
-      <div v-if="loading" class="flex items-center justify-center py-12">
-        <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
-        <span class="ml-3 text-gray-600">{{ t('tenantIssues.loading') }}</span>
-      </div>
-
-      <div v-else class="mt-4">
-        <div v-if="filteredIssues.length > 0" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <TenantIssueCard
-            v-for="issue in filteredIssues"
-            :key="issue.id"
-            :issue="issue"
-            @select="openIssue(issue)"
+          <Select
+            v-model="filters.type"
+            :options="typeOptions"
+            optionLabel="label"
+            optionValue="value"
+            :placeholder="t('tenantIssues.filter.type')"
+            class="w-full sm:w-48"
           />
         </div>
-
-        <div
-          v-else
-          class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-12 text-center text-gray-500"
-        >
-          <i class="pi pi-inbox text-4xl mb-4 text-gray-400" />
-          <p class="text-lg">
-            {{ t('tenantIssues.empty') }}
-          </p>
-        </div>
       </div>
 
+      <div class="flex justify-end">
+        <IconField class="w-full sm:w-80">
+          <InputIcon class="pi pi-search" />
+          <InputText
+            :modelValue="searchQuery"
+            :placeholder="t('tenantIssues.search.placeholder')"
+            type="text"
+            fluid
+            @input="onSearchInput"
+          />
+        </IconField>
+      </div>
+    </div>
+
+    <div v-if="loading" class="col-span-12 flex items-center justify-center py-12">
+      <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
+      <span class="ml-3 text-gray-600">{{ t('tenantIssues.loading') }}</span>
+    </div>
+
+    <div v-else class="col-span-12 mt-4">
+      <div v-if="filteredIssues.length > 0" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <TenantIssueCard
+          v-for="issue in filteredIssues"
+          :key="issue.id"
+          :issue="issue"
+          @select="openIssue(issue)"
+        />
+      </div>
+
+      <div
+        v-else
+        class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-12 text-center text-gray-500"
+      >
+        <i class="pi pi-inbox text-4xl mb-4 text-gray-400" />
+        <p class="text-lg">
+          {{ t('tenantIssues.empty') }}
+        </p>
+      </div>
+    </div>
+
+    <div class="col-span-12">
       <NewTenancyIssueDialog
         v-model:visible="showNewIssueDialog"
         @issueCreated="handleIssueCreated"
       />
     </div>
-  </main>
+  </div>
 </template>

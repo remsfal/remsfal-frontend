@@ -1,4 +1,5 @@
 <route lang="yaml">
+path: /tenancies/issues/:issueId
 name: TenantIssueDetails
 meta:
   layout: tenant

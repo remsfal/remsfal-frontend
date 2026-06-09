@@ -83,11 +83,7 @@ const titleClass = computed(() => {
     class="tenant-issue-card group w-full text-left"
     @click="emit('select')"
   >
-    <BaseCard
-      :unstyled="true"
-      cardClass="w-full rounded-lg border border-gray-200 shadow-sm 
-      transition-colors group-hover:border-primary-300 group-hover:bg-primary-50/20"
-    >
+    <BaseCard>
       <template #content>
         <div class="flex h-full min-h-72 w-full flex-col p-5 md:p-6">
           <div class="flex items-start justify-between gap-2">
@@ -101,20 +97,16 @@ const titleClass = computed(() => {
             {{ issue.title }}
           </h3>
 
-          <dl class="mt-auto space-y-1 pt-5 text-base text-gray-600">
-            <div class="flex justify-between gap-2">
+          <dl class="mt-auto grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 pt-5 text-base">
               <dt class="font-medium text-gray-500">
                 {{ t('tenantIssues.card.category') }}
               </dt>
-            </div>
-            <div class="flex min-w-0 justify-start gap-2">
               <dt class="shrink-0 font-medium text-gray-500">
                 {{ t('tenantIssues.card.type') }}
               </dt>
               <dd class="min-w-0 break-words text-gray-900">
                 {{ typeLabel }}
               </dd>
-            </div>
           </dl>
         </div>
       </template>
