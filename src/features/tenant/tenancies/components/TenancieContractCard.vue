@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Tag from 'primevue/tag';
+import Divider from 'primevue/divider';
 
 import BaseCard from '@/components/common/BaseCard.vue';
 import { formatTenancyLabel, type TenancyJson } from '@/services/TenancyService';
@@ -47,7 +48,7 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
 
 <template>
   <div data-testid="contract-card" class="h-full">
-    <BaseCard cardClass="h-full min-h-72">
+    <BaseCard>
       <template #content>
         <div class="flex flex-col gap-5">
           <div class="flex items-start justify-between gap-2">
@@ -74,74 +75,89 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
             />
           </div>
 
-          <dl class="space-y-1 text-lg text-gray-600">
-            <div v-if="contract.startOfRental" class="flex justify-between gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantDashboard.field.start') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ formatDate(contract.startOfRental) }}
-              </dd>
+          <div class="flex flex-col gap-4 xl:flex-row lg:items-stretch">
+            <div class="lg:flex-1">
+                <p class="mb-2 text-lg font-semibold text-gray-700">
+                  {{ t('tenantDashboard.section.allDates') }}
+                </p>
+              <dl class="space-y-1 text-lg text-gray-600">
+                <div v-if="contract.startOfRental" class="flex justify-between gap-2">
+                  <dt class="font-medium text-gray-500">
+                    {{ t('tenantDashboard.field.start') }}
+                  </dt>
+                  <dd class="text-gray-900">
+                    {{ formatDate(contract.startOfRental) }}
+                  </dd>
+                </div>
+                <div class="flex justify-between gap-2">
+                  <dt class="font-medium text-gray-500">
+                    {{ t('tenantDashboard.field.end') }}
+                  </dt>
+                  <dd class="text-gray-900">
+                    {{ contract.endOfRental ? formatDate(contract.endOfRental) : t('tenantDashboard.field.ongoing') }}
+                  </dd>
+                </div>
+              </dl>
             </div>
-            <div class="flex justify-between gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantDashboard.field.end') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ contract.endOfRental ? formatDate(contract.endOfRental) : t('tenantDashboard.field.ongoing') }}
-              </dd>
-            </div>
-          </dl>
 
-          <div v-if="hasFinancials(contract)" class="border-t border-gray-100 pt-3">
-            <p class="mb-2 text-lg font-semibold text-gray-700">
-              {{ t('tenantDashboard.section.financials') }}
-            </p>
-            <dl class="space-y-1 text-lg text-gray-600">
-              <div v-if="contract.basicRent != null" class="flex justify-between">
-                <dt class="text-gray-500">
-                  {{ t('tenantDashboard.field.basicRent') }}
-                </dt>
-                <dd class="text-gray-900">
-                  {{ formatCurrency(contract.basicRent) }}
-                </dd>
+            <template v-if="hasFinancials(contract)">
+              <Divider layout="vertical" class="hidden lg:flex" />
+              
+              <div class="lg:flex-1">
+                <p class="mb-2 text-lg font-semibold text-gray-700">
+                  {{ t('tenantDashboard.section.financials') }}
+                </p>
+                <dl class="space-y-1 text-lg text-gray-600">
+                  <div v-if="contract.basicRent != null" class="flex justify-between">
+                    <dt class="text-gray-500">
+                      {{ t('tenantDashboard.field.basicRent') }}
+                    </dt>
+                    <dd class="text-gray-900">
+                      {{ formatCurrency(contract.basicRent) }}
+                    </dd>
+                  </div>
+                  <div v-if="contract.operatingCostsPrepayment != null" class="flex justify-between">
+                    <dt class="text-gray-500">
+                      {{ t('tenantDashboard.field.operatingCosts') }}
+                    </dt>
+                    <dd class="text-gray-900">
+                      {{ formatCurrency(contract.operatingCostsPrepayment) }}
+                    </dd>
+                  </div>
+                  <div v-if="contract.heatingCostsPrepayment != null" class="flex justify-between">
+                    <dt class="text-gray-500">
+                      {{ t('tenantDashboard.field.heatingCosts') }}
+                    </dt>
+                    <dd class="text-gray-900">
+                      {{ formatCurrency(contract.heatingCostsPrepayment) }}
+                    </dd>
+                  </div>
+                  <div class="mt-1 flex justify-between border-t border-gray-200 pt-1 font-semibold">
+                    <dt class="text-gray-700">
+                      {{ t('tenantDashboard.field.totalRent') }}
+                    </dt>
+                    <dd class="text-gray-900">
+                      {{ formatCurrency(totalRent(contract)) }}
+                    </dd>
+                  </div>
+                </dl>
               </div>
-              <div v-if="contract.operatingCostsPrepayment != null" class="flex justify-between">
-                <dt class="text-gray-500">
-                  {{ t('tenantDashboard.field.operatingCosts') }}
-                </dt>
-                <dd class="text-gray-900">
-                  {{ formatCurrency(contract.operatingCostsPrepayment) }}
-                </dd>
-              </div>
-              <div v-if="contract.heatingCostsPrepayment != null" class="flex justify-between">
-                <dt class="text-gray-500">
-                  {{ t('tenantDashboard.field.heatingCosts') }}
-                </dt>
-                <dd class="text-gray-900">
-                  {{ formatCurrency(contract.heatingCostsPrepayment) }}
-                </dd>
-              </div>
-              <div class="mt-1 flex justify-between border-t border-gray-200 pt-1 font-semibold">
-                <dt class="text-gray-700">
-                  {{ t('tenantDashboard.field.totalRent') }}
-                </dt>
-                <dd class="text-gray-900">
-                  {{ formatCurrency(totalRent(contract)) }}
-                </dd>
-              </div>
-            </dl>
-          </div>
+            </template>
 
-          <div v-if="contract.tenants?.length" class="border-t border-gray-100 pt-3">
-            <p class="mb-2 text-lg font-semibold text-gray-700">
-              {{ t('tenantDashboard.section.coTenants') }}
-            </p>
-            <ul class="space-y-1 text-lg text-gray-600">
-              <li v-for="tenant in contract.tenants" :key="tenant.id">
-                {{ [tenant.firstName, tenant.lastName].filter(Boolean).join(' ') }}
-              </li>
-            </ul>
+            <template v-if="contract.tenants?.length">
+              <Divider layout="vertical" class="hidden lg:flex" />
+
+              <div class="lg:flex-1">
+                <p class="mb-2 text-lg font-semibold text-gray-700">
+                  {{ t('tenantDashboard.section.coTenants') }}
+                </p>
+                <ul class="space-y-1 text-lg text-gray-600">
+                  <li v-for="tenant in contract.tenants" :key="tenant.id">
+                    {{ [tenant.firstName, tenant.lastName].filter(Boolean).join(' ') }}
+                  </li>
+                </ul>
+              </div>
+            </template>
           </div>
         </div>
       </template>

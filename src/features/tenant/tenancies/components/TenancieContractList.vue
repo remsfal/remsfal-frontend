@@ -49,7 +49,7 @@ onMounted(loadContracts);
       </Message>
 
        <div v-if="contracts.length" class="mt-6 grid content-start gap-5" 
-       	style="grid-template-columns: repeat(auto-fit, minmax(400px, 600px));">
+       	style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
         <TenancieContractCard
           v-for="contract in contracts"
           :key="contract.agreementId"
