@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { issueService } from '@/services/IssueService';
 import { tenancyService } from '@/services/TenancyService';
+import Select from 'primevue/select';
 
 const pushMock = vi.fn();
 
@@ -91,5 +92,62 @@ describe('TenantIssueList feature', () => {
       name: 'TenantIssueDetails',
       params: { issueId: 'issue-1' },
     });
+  });
+
+  it('shows empty state when no issues are returned', async () => {
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
+    vi.mocked(issueService.getIssues).mockResolvedValue({
+      first: 0,
+      size: 0,
+      issues: [],
+    });
+
+    const { default: TenantIssueList } = await import(
+      '@/features/tenant/tenantIssues/components/TenantIssueList.vue'
+    );
+    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+
+    await flushPromises();
+
+    expect(wrapper.findAll('[data-testid="tenant-issue-card"]')).toHaveLength(0);
+    expect(wrapper.find('.pi.pi-inbox').exists()).toBe(true);
+  });
+
+  it('reloads issues when status filter changes', async () => {
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
+    vi.mocked(issueService.getIssues)
+      .mockResolvedValueOnce({
+        first: 0,
+        size: 0,
+        issues: [],
+      })
+      .mockResolvedValueOnce({
+        first: 0,
+        size: 1,
+        issues: [
+          {
+            id: 'issue-open',
+            title: 'Tür klemmt',
+            status: 'OPEN',
+            type: 'DEFECT',
+            createdAt: '2026-01-02T10:00:00.000Z',
+            modifiedAt: '2026-01-03T10:00:00.000Z',
+            tenancyId: 'agreement-1',
+          },
+        ],
+      });
+
+    const { default: TenantIssueList } = await import(
+      '@/features/tenant/tenantIssues/components/TenantIssueList.vue'
+    );
+    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+
+    await flushPromises();
+
+    const selects = wrapper.findAllComponents(Select);
+    await selects[1].vm.$emit('update:modelValue', 'OPEN');
+    await flushPromises();
+
+    expect(issueService.getIssues).toHaveBeenNthCalledWith(2, undefined, true, 'OPEN', undefined, undefined);
   });
 });
