@@ -107,8 +107,8 @@ const titleClass = computed(() => {
             {{ issue.title }}
           </h3>
           <div class="mt-3 flex flex-wrap gap-2">
+            <Tag :value="issueNodeId" severity="info" class="inline-flex w-fit" />
             <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit"/>
-            <Tag :value="issueNodeId" severity="contrast" class="inline-flex w-fit" />
             <Tag :value="typeLabel" :severity="typestatus" class="inline-flex w-fit" />
           </div>
         </div>
