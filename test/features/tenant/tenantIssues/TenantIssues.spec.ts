@@ -38,7 +38,7 @@ vi.mock('@/services/IssueService', async () => {
   };
 });
 
-describe('TenantIssues feature', () => {
+describe('TenantIssueList feature', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -74,8 +74,10 @@ describe('TenantIssues feature', () => {
       ],
     });
 
-    const { default: TenantIssues } = await import('@/features/tenant/tenantIssues/TenantIssues.vue');
-    const wrapper = mount(TenantIssues, { global: { stubs: { NewTenancyIssueDialog: true } } });
+    const { default: TenantIssueList } = await import(
+      '@/features/tenant/tenantIssues/components/TenantIssueList.vue'
+    );
+    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
 
     await flushPromises();
 

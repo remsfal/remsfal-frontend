@@ -16,7 +16,7 @@ vi.mock('@/services/IssueService', async () => {
   };
 });
 
-describe('TenantIssueDetails feature', () => {
+describe('TenantIssueDetails component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
