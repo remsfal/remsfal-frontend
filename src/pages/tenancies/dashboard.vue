@@ -6,9 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import TenantDashboard from '@/views/tenant/TenantDashboard.vue'
+import { TenantIssueList } from '@/features/tenant/tenantIssues'
 </script>
 
 <template>
-  <TenantDashboard />
+  <TenantIssueList />
 </template>

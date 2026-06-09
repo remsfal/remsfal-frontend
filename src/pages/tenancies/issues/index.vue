@@ -6,9 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { TenantIssues } from '@/features/tenant/tenantIssues'
+import { TenantIssueList } from '@/features/tenant/tenantIssues'
 </script>
 
 <template>
-  <TenantIssues />
+  <TenantIssueList />
 </template>
