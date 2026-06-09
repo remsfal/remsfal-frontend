@@ -36,7 +36,7 @@ describe('TenantIssueDetails component', () => {
       description: 'Rohr unter der Spüle undicht.',
     });
 
-    const { default: TenantIssueDetails } = await import('@/features/tenant/tenantIssues/components/TenantIssueDetails.vue');
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-42' } });
 
     await flushPromises();
@@ -65,7 +65,7 @@ describe('TenantIssueDetails component', () => {
         description: 'Leck im Bad.',
       });
 
-    const { default: TenantIssueDetails } = await import('@/features/tenant/tenantIssues/components/TenantIssueDetails.vue');
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-1' } });
 
     await flushPromises();
@@ -80,7 +80,7 @@ describe('TenantIssueDetails component', () => {
   it('shows toast when loading issue details fails', async () => {
     vi.mocked(issueService.getIssue).mockRejectedValue(new Error('request failed'));
 
-    const { default: TenantIssueDetails } = await import('@/features/tenant/tenantIssues/components/TenantIssueDetails.vue');
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-42' } });
 
     await flushPromises();

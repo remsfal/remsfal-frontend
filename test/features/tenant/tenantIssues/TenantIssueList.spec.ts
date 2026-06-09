@@ -75,9 +75,7 @@ describe('TenantIssueList feature', () => {
       ],
     });
 
-    const { default: TenantIssueList } = await import(
-      '@/features/tenant/tenantIssues/components/TenantIssueList.vue'
-    );
+    const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
 
     await flushPromises();
@@ -102,9 +100,7 @@ describe('TenantIssueList feature', () => {
       issues: [],
     });
 
-    const { default: TenantIssueList } = await import(
-      '@/features/tenant/tenantIssues/components/TenantIssueList.vue'
-    );
+    const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
 
     await flushPromises();
@@ -137,9 +133,7 @@ describe('TenantIssueList feature', () => {
         ],
       });
 
-    const { default: TenantIssueList } = await import(
-      '@/features/tenant/tenantIssues/components/TenantIssueList.vue'
-    );
+    const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
 
     await flushPromises();
