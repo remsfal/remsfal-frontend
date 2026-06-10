@@ -8,7 +8,7 @@ import type { AddressJson } from '@/services/AddressService';
 interface Props {
   projectId: string;
   unitId: string;
-  facilityType: 'building' | 'site';
+  facilityType: 'BUILDING' | 'SITE';
   title?: string;
 }
 
@@ -16,7 +16,7 @@ const props = defineProps<Props>();
 const { t } = useI18n();
 
 async function loadAddress(): Promise<AddressJson | undefined> {
-  if (props.facilityType === 'building') {
+  if (props.facilityType === 'BUILDING') {
     const building = await buildingService.getBuilding(props.projectId, props.unitId);
     return building.address;
   } else {
@@ -26,7 +26,7 @@ async function loadAddress(): Promise<AddressJson | undefined> {
 }
 
 async function saveAddress(addr: AddressJson): Promise<void> {
-  if (props.facilityType === 'building') {
+  if (props.facilityType === 'BUILDING') {
     await buildingService.updateBuilding(props.projectId, props.unitId, { address: addr });
   } else {
     await siteService.updateSite(props.projectId, props.unitId, { address: addr });

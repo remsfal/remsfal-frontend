@@ -33,10 +33,10 @@ describe('ManagerMenu.vue', () => {
     expect(rootItems[1].text()).toContain('Organisationen');
   });
 
-  it('renders four submenu items under "Meine Daten"', async () => {
+  it('renders five submenu items under "Meine Daten"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[0].findAll('.layout-menuitem-text').length).toBe(4);
+    expect(submenus[0].findAll('.layout-menuitem-text').length).toBe(5);
   });
 
   it('renders one submenu item under "Organisationen"', async () => {

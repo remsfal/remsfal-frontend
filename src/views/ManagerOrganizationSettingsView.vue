@@ -2,7 +2,7 @@
 import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
-import { OrganizationBaseDataCard } from '@/features/common/organizations';
+import { OrganizationBaseDataCard, OrganizationMemberCard } from '@/features/common/organizations';
 import AddressCard from '@/components/AddressCard.vue';
 import { organizationService } from '@/services/OrganizationService';
 import type { AddressJson } from '@/services/AddressService';
@@ -30,5 +30,6 @@ async function saveAddress(addr: AddressJson): Promise<void> {
 
 <template>
   <OrganizationBaseDataCard :organizationId="organizationId" />
+  <OrganizationMemberCard :organizationId="organizationId" />
   <AddressCard :loadAddress :saveAddress />
 </template>
