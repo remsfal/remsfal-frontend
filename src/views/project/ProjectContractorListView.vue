@@ -1,7 +1,9 @@
 <script setup lang="ts">
-// TODO: Implement project contractor list view
+import { ContractorListCard } from '@/features/project/contractors';
+
+defineProps<{ projectId: string }>();
 </script>
 
 <template>
-  <div />
+  <ContractorListCard :projectId="projectId" />
 </template>

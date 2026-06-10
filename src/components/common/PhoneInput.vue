@@ -64,7 +64,7 @@ function emitCombined() {
 }
 
 function onLocalInput(val: string | undefined) {
-  localNumber.value = val ?? '';
+  localNumber.value = (val ?? '').replace(/\D/g, '');
   emitCombined();
 }
 </script>

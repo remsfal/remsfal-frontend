@@ -31,6 +31,11 @@ const model = computed<MenuItem[]>(() => {
           to: '/manager/projects',
         },
         {
+          label: 'managerMenu.myData.contractors',
+          icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+          to: '/manager/contractors',
+        },
+        {
           label: 'managerMenu.myData.personalData',
           icon: { type: 'pi', name: 'pi pi-fw pi-user' },
           to: '/manager/account-settings',

@@ -90,6 +90,20 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ManagerContractorList': RouteRecordInfo<
+      'ManagerContractorList',
+      '/manager/contractors',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ManagerContractorDetail': RouteRecordInfo<
+      'ManagerContractorDetail',
+      '/manager/contractors/:organizationId',
+      { organizationId: ParamValue<true> },
+      { organizationId: ParamValue<false> },
+      | never
+    >,
     'ManagerDashboard': RouteRecordInfo<
       'ManagerDashboard',
       '/manager/dashboard',
@@ -151,6 +165,13 @@ declare module 'vue-router/auto-routes' {
       '/projects/:projectId/contractors',
       { projectId: ParamValue<true> },
       { projectId: ParamValue<false> },
+      | never
+    >,
+    'ProjectContractorDetail': RouteRecordInfo<
+      'ProjectContractorDetail',
+      '/projects/:projectId/contractors/:contractorId',
+      { projectId: ParamValue<true>, contractorId: ParamValue<true> },
+      { projectId: ParamValue<false>, contractorId: ParamValue<false> },
       | never
     >,
     'ProjectDashboard': RouteRecordInfo<
@@ -332,6 +353,18 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/manager/contractors/index.vue': {
+      routes:
+        | 'ManagerContractorList'
+      views:
+        | never
+    }
+    'src/pages/manager/contractors/[organizationId].vue': {
+      routes:
+        | 'ManagerContractorDetail'
+      views:
+        | never
+    }
     'src/pages/manager/dashboard.vue': {
       routes:
         | 'ManagerDashboard'
@@ -383,6 +416,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/projects/[projectId]/contractors/index.vue': {
       routes:
         | 'ProjectContractorList'
+      views:
+        | never
+    }
+    'src/pages/projects/[projectId]/contractors/[contractorId].vue': {
+      routes:
+        | 'ProjectContractorDetail'
       views:
         | never
     }
