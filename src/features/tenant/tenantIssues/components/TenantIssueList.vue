@@ -226,7 +226,6 @@ onMounted(async () => {
           @click="showNewIssueDialog = true"
         />
       </div>
-
     </div>
 
     <div v-if="loading" class="col-span-12 flex items-center justify-center py-12">

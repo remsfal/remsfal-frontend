@@ -35,11 +35,11 @@ describe('NewProjectMemberButton.vue', () => {
       valid: false,
       states: {
         email: {
- value: 'test@example.com', invalid: false, touched: true 
-},
+          value: 'test@example.com', invalid: false, touched: true 
+        },
         role: {
- value: '', invalid: true, touched: true 
-},
+          value: '', invalid: true, touched: true 
+        },
       },
     } as unknown as FormSubmitEvent;
 

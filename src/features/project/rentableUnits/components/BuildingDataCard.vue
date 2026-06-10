@@ -68,8 +68,8 @@ const isDirty = computed(() =>
 onMounted(async () => {
   if (!props.unitId) {
     toast.add({
- severity: 'warn', summary: t('error.general'), detail: t('building.noId'), life: 6000 
-});
+      severity: 'warn', summary: t('error.general'), detail: t('building.noId'), life: 6000 
+    });
     return;
   }
   try {
@@ -88,8 +88,8 @@ onMounted(async () => {
   } catch (err) {
     console.error('Fehler beim Laden der Gebäudedaten:', err);
     toast.add({
- severity: 'error', summary: t('error.general'), detail: t('building.loadError'), life: 6000 
-});
+      severity: 'error', summary: t('error.general'), detail: t('building.loadError'), life: 6000 
+    });
   }
 });
 
@@ -121,8 +121,8 @@ async function onSubmit(event: FormSubmitEvent) {
       heatingSpace: payload.heatingSpace ?? null,
     });
     toast.add({
- severity: 'success', summary: t('success.saved'), detail: t('building.saveSuccess'), life: 3000 
-});
+      severity: 'success', summary: t('success.saved'), detail: t('building.saveSuccess'), life: 3000 
+    });
   } catch (err) {
     console.error('Fehler beim Speichern der Gebäudedaten:', err);
     showSavingErrorToast(toast, t('building.saveError'));

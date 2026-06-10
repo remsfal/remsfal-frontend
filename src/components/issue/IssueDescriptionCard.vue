@@ -49,16 +49,16 @@ const handleSave = async () => {
     originalDescription.value = description.value;
 
     toast.add({
- severity: 'success', summary: t('success.saved'), detail: t('issueDetails.descriptionSaveSuccess'), life: 3000 
-});
+      severity: 'success', summary: t('success.saved'), detail: t('issueDetails.descriptionSaveSuccess'), life: 3000 
+    });
 
     // Emit saved event to parent
     emit('saved');
   } catch (error) {
     console.error('Error saving description:', error);
     toast.add({
- severity: 'error', summary: t('error.general'), detail: t('issueDetails.descriptionSaveError'), life: 3000 
-});
+      severity: 'error', summary: t('error.general'), detail: t('issueDetails.descriptionSaveError'), life: 3000 
+    });
   } finally {
     loadingSave.value = false;
   }

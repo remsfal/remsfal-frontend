@@ -57,7 +57,7 @@ const navItems = computed<MobileNavItem[]>(() => {
       },
       icon: 'pi-exclamation-circle'
     },
-     {
+    {
       label: 'Chat',
       to: { name: 'ProjectChatView', params: { projectId: projectId.value } },
       icon: 'pi-comments'
@@ -98,38 +98,38 @@ function isActive(item: MobileNavItem) {
 
   // String Path matching
   if (typeof target === 'string') {
-     return route.path === target || (target !== '/' && route.path.startsWith(target));
+    return route.path === target || (target !== '/' && route.path.startsWith(target));
   }
 
   // Named Route matching
   if (typeof target === 'object' && target !== null && 'name' in target) {
-      if (target.name && route.name !== target.name) return false;
+    if (target.name && route.name !== target.name) return false;
 
-      // Cast safely instead of using any, assuming standard router object structure
-      const targetQuery = (target as { query?: Record<string, string> }).query || {};
+    // Cast safely instead of using any, assuming standard router object structure
+    const targetQuery = (target as { query?: Record<string, string> }).query || {};
 
-      // Determine strictness: if target has no query, do we require route to have no query?
-      // For tasks/defects (same route name, different query), we need rigorous checking.
-      // If we are navigating to IssueOverview with task query, strict mode doesn't matter much as long as we match.
-      // BUT if we navigate to base IssueOverview without query, we shouldn't highlight if we are on task view.
+    // Determine strictness: if target has no query, do we require route to have no query?
+    // For tasks/defects (same route name, different query), we need rigorous checking.
+    // If we are navigating to IssueOverview with task query, strict mode doesn't matter much as long as we match.
+    // BUT if we navigate to base IssueOverview without query, we shouldn't highlight if we are on task view.
 
-      // Original logic was: !target.query && route.name === target.name
-      const strict = !Object.keys(targetQuery).length && route.name === (target as { name?: string }).name;
+    // Original logic was: !target.query && route.name === target.name
+    const strict = !Object.keys(targetQuery).length && route.name === (target as { name?: string }).name;
 
-      return matchesQuery(targetQuery, currentRouteQuery, strict);
+    return matchesQuery(targetQuery, currentRouteQuery, strict);
   }
 
   return true;
 }
 
 function getIconClass(item: MobileNavItem) {
-    if (typeof item.icon === 'string') {
-        return item.icon;
-    }
-    if (item.icon && item.icon.type === 'pi') {
-        return item.icon.name;
-    }
-    return '';
+  if (typeof item.icon === 'string') {
+    return item.icon;
+  }
+  if (item.icon && item.icon.type === 'pi') {
+    return item.icon.name;
+  }
+  return '';
 }
 </script>
 

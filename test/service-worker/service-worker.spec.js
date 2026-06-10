@@ -64,7 +64,7 @@ describe('Service Worker Tests', () => {
     const activateListener = globalThis.eventListeners.activate[0];
     activateListener(activateEvent);
 
-      // eslint-disable-next-line no-undef
+    // eslint-disable-next-line no-undef
     await new Promise((resolve) => setImmediate(resolve));
 
     // Assertions
@@ -105,7 +105,7 @@ describe('Service Worker Tests', () => {
     const getAllProjectsMock = vi
       .fn()
       .mockResolvedValue([{ title: 'Offline Project', createdAt: 123456 }]
-    );
+      );
     globalThis.getAllProjects = getAllProjectsMock;
 
     const deleteProjectMock = vi.fn().mockResolvedValue();

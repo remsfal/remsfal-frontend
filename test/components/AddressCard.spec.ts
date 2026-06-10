@@ -5,7 +5,7 @@ import AddressCard from '@/components/AddressCard.vue';
 vi.mock('@/services/AddressService', () => ({
   default: vi.fn().mockImplementation(() =>
     ({getCityFromZip: vi.fn().mockResolvedValue(null),})),
-  })
+})
 );
 
 const addMock = vi.fn();
@@ -31,10 +31,10 @@ describe('AddressCard.vue', () => {
 
   const mountCard = (overrides?: Partial<{ title: string }>) =>
     mount(AddressCard, {
- props: {
- loadAddress, saveAddress, ...overrides 
-} 
-});
+      props: {
+        loadAddress, saveAddress, ...overrides 
+      } 
+    });
 
   it('renders without Vue errors when a countryCode is pre-loaded', async () => {
     // Regression: #value slot called countryFlagEmoji(value.code), but with

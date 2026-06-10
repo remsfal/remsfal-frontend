@@ -46,11 +46,11 @@ describe('NewProjectOrganizationButton.vue', () => {
       valid: false,
       states: {
         organizationId: {
- value: '', invalid: true, touched: true 
-},
+          value: '', invalid: true, touched: true 
+        },
         role: {
- value: 'MANAGER', invalid: false, touched: true 
-},
+          value: 'MANAGER', invalid: false, touched: true 
+        },
       },
     } as unknown as FormSubmitEvent;
 
@@ -64,8 +64,8 @@ describe('NewProjectOrganizationButton.vue', () => {
   test('calls service and emits event when valid', async () => {
     const mockAdd = projectOrganizationService.addOrganization as ReturnType<typeof vi.fn>;
     mockAdd.mockResolvedValueOnce({
- organizationId: 'org-1', organizationName: 'Test GmbH', role: 'MANAGER' 
-});
+      organizationId: 'org-1', organizationName: 'Test GmbH', role: 'MANAGER' 
+    });
 
     await wrapper.vm.addOrganization('org-1', 'MANAGER');
 

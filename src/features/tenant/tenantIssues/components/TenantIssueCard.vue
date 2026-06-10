@@ -103,13 +103,13 @@ const titleClass = computed(() => {
     <BaseCard cardClass="tenant-issue-card-surface flex flex-col gap-4 basis-full">
       <template #content>
         <div class="flex flex-col p-5 md:p-6">
-          <h3 :class="[titleClass, 'mt-5 break-words']">
+          <h3 class="mt-5 break-words" :class="[titleClass]">
             {{ issue.title }}
           </h3>
           <div class="mt-3 flex flex-wrap gap-2">
             <Tag :value="issueNodeId" severity="info" class="inline-flex w-fit" />
             <Tag :value="typeLabel" :severity="typeSeverity" class="inline-flex w-fit" />
-            <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit"/>
+            <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit" />
           </div>
         </div>
       </template>

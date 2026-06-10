@@ -23,52 +23,52 @@ const emit = defineEmits<{
 const localTenants = ref<TenantJson[]>([]);
 
 watch(
-    () => props.tenants,
-    (newVal) => {
-        localTenants.value = newVal?.map(t => ({ ...t }));
-    },
-    { immediate: true, deep: true }
+  () => props.tenants,
+  (newVal) => {
+    localTenants.value = newVal?.map(t => ({ ...t }));
+  },
+  { immediate: true, deep: true }
 );
 
 const emptyRowTemplate: TenantJson = {
-    firstName: '',
-    lastName: '',
-    email: '',
+  firstName: '',
+  lastName: '',
+  email: '',
 };
 
 
 const addNewRow = () => {
-    const newRow: TenantJson = { ...emptyRowTemplate };
-    localTenants.value.push(newRow);
+  const newRow: TenantJson = { ...emptyRowTemplate };
+  localTenants.value.push(newRow);
 };
 
 const columns = ref([
-    { field: 'firstName', header: 'Vorname' },
-    { field: 'lastName', header: 'Nachname' },
-    { field: 'email', header: 'E-Mail' },
+  { field: 'firstName', header: 'Vorname' },
+  { field: 'lastName', header: 'Nachname' },
+  { field: 'email', header: 'E-Mail' },
 ]);
 
 const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
-    let { newData, index } = event;
-    localTenants.value[index] = newData;
-    emit('onChange', localTenants.value);
+  let { newData, index } = event;
+  localTenants.value[index] = newData;
+  emit('onChange', localTenants.value);
 };
 
 const deleteRow = (index: number) => {
-    localTenants.value.splice(index, 1);
-    emit('onChange', localTenants.value);
+  localTenants.value.splice(index, 1);
+  emit('onChange', localTenants.value);
 };
 
 const displayedColumns = computed(() => {
-    return props.isDeleteButtonEnabled
-        ? [...columns.value, { field: 'actions', header: 'Aktionen' }]
-        : columns.value;
+  return props.isDeleteButtonEnabled
+    ? [...columns.value, { field: 'actions', header: 'Aktionen' }]
+    : columns.value;
 });
 
 onMounted(() => {
-    if (props.isDeleteButtonEnabled) {
-        addNewRow();
-    }
+  if (props.isDeleteButtonEnabled) {
+    addNewRow();
+  }
 });
 </script>
 

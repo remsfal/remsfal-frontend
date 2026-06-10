@@ -13,8 +13,8 @@ vi.mock('@/layouts/composables/layout', () => ({
   useLayout: () => ({
     layoutConfig: { menuMode: 'static' },
     layoutState: {
- staticMenuDesktopInactive: false, overlayMenuActive: false, menuHoverActive: false 
-},
+      staticMenuDesktopInactive: false, overlayMenuActive: false, menuHoverActive: false 
+    },
     isSidebarActive: ref(false),
     setFullscreen: mocks.setFullscreen,
   }),

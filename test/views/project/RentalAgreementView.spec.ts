@@ -27,8 +27,8 @@ describe('RentalAgreementView.vue', () => {
 
   const mockTenants = [
     {
- id: '1', firstName: 'John', lastName: 'Doe'
-},
+      id: '1', firstName: 'John', lastName: 'Doe'
+    },
   ];
   const mockRentalAgreements = [
     {

@@ -23,19 +23,19 @@ describe('RentalAgreementService', () => {
         id: 'a1',
         tenants: [
           {
- firstName: 'John', lastName: 'Doe', email: 'john@example.com' 
-},
+            firstName: 'John', lastName: 'Doe', email: 'john@example.com' 
+          },
           {
- firstName: 'Jane', lastName: 'Doe', email: 'jane@example.com' 
-}
+            firstName: 'Jane', lastName: 'Doe', email: 'jane@example.com' 
+          }
         ]
       },
       {
         id: 'a2',
         tenants: [
           {
- firstName: 'Bob', lastName: 'Smith', email: 'bob@example.com' 
-}
+            firstName: 'Bob', lastName: 'Smith', email: 'bob@example.com' 
+          }
         ]
       }
     ];

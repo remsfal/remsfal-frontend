@@ -5,8 +5,8 @@ import App from '@/App.vue';
 
 vi.mock('vue-router', () => ({
   useRoute: () => ({
- fullPath: '/', meta: {}, params: {}, query: {}, name: undefined 
-}),
+    fullPath: '/', meta: {}, params: {}, query: {}, name: undefined 
+  }),
   useRouter: () => ({ push: vi.fn(), currentRoute: { value: { fullPath: '/' } } }),
   RouterView: { template: '<div id="router-view" />' }
 }));
