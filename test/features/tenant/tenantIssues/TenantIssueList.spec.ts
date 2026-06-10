@@ -144,4 +144,158 @@ describe('TenantIssueList feature', () => {
 
     expect(issueService.getIssues).toHaveBeenNthCalledWith(2, undefined, true, 'OPEN', undefined, undefined);
   });
+
+  it('sorts issues by status when no status filter is active', async () => {
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
+    vi.mocked(issueService.getIssues).mockResolvedValue({
+      first: 0,
+      size: 5,
+      issues: [
+        {
+          id: 'issue-closed',
+          title: 'Closed',
+          status: 'CLOSED',
+          type: 'TASK',
+        },
+        {
+          id: 'issue-rejected',
+          title: 'Rejected',
+          status: 'REJECTED',
+          type: 'TASK',
+        },
+        {
+          id: 'issue-open',
+          title: 'Open',
+          status: 'OPEN',
+          type: 'TASK',
+        },
+        {
+          id: 'issue-in-progress',
+          title: 'In Progress',
+          status: 'IN_PROGRESS',
+          type: 'TASK',
+        },
+        {
+          id: 'issue-pending',
+          title: 'Pending',
+          status: 'PENDING',
+          type: 'TASK',
+        },
+      ],
+    });
+
+    const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+
+    await flushPromises();
+
+    const cardTexts = wrapper.findAll('[data-testid="tenant-issue-card"]').map((card) => card.text());
+    expect(cardTexts).toHaveLength(5);
+    expect(cardTexts[0]).toContain('Pending');
+    expect(cardTexts[1]).toContain('Open');
+    expect(cardTexts[2]).toContain('In Progress');
+    expect(cardTexts[3]).toContain('Closed');
+    expect(cardTexts[4]).toContain('Rejected');
+  });
+
+  it('filters issues by type on the client side', async () => {
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
+    vi.mocked(issueService.getIssues).mockResolvedValue({
+      first: 0,
+      size: 3,
+      issues: [
+        {
+          id: 'issue-defect',
+          title: 'Defect issue',
+          status: 'OPEN',
+          type: 'DEFECT',
+        },
+        {
+          id: 'issue-task',
+          title: 'Task issue',
+          status: 'OPEN',
+          type: 'TASK',
+        },
+        {
+          id: 'issue-maintenance',
+          title: 'Maintenance issue',
+          status: 'OPEN',
+          type: 'MAINTENANCE',
+        },
+      ],
+    });
+
+    const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+
+    await flushPromises();
+
+    const selects = wrapper.findAllComponents(Select);
+    await selects[2].vm.$emit('update:modelValue', 'TASK');
+    await flushPromises();
+
+    const cardTexts = wrapper.findAll('[data-testid="tenant-issue-card"]').map((card) => card.text());
+    expect(cardTexts).toHaveLength(1);
+    expect(cardTexts[0]).toContain('Task issue');
+  });
+
+  it('filters issues by search query over title and id', async () => {
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
+    vi.mocked(issueService.getIssues).mockResolvedValue({
+      first: 0,
+      size: 3,
+      issues: [
+        {
+          id: 'ABC-123',
+          title: 'Heizung kaputt',
+          status: 'OPEN',
+          type: 'DEFECT',
+        },
+        {
+          id: 'DEF-456',
+          title: 'Fenster defekt',
+          status: 'OPEN',
+          type: 'DEFECT',
+        },
+        {
+          id: 'GHI-789',
+          title: 'Wasserleck',
+          status: 'OPEN',
+          type: 'MAINTENANCE',
+        },
+      ],
+    });
+
+    const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+
+    await flushPromises();
+
+    const searchInput = wrapper.get('input[type="text"]');
+
+    await searchInput.setValue('HEIZUNG');
+    await flushPromises();
+    let cardTexts = wrapper.findAll('[data-testid="tenant-issue-card"]').map((card) => card.text());
+    expect(cardTexts).toHaveLength(1);
+    expect(cardTexts[0]).toContain('Heizung kaputt');
+
+    await searchInput.setValue('def-456');
+    await flushPromises();
+    cardTexts = wrapper.findAll('[data-testid="tenant-issue-card"]').map((card) => card.text());
+    expect(cardTexts).toHaveLength(1);
+    expect(cardTexts[0]).toContain('Fenster defekt');
+  });
+
+  it('shows translated error and clears cards when issue loading fails', async () => {
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
+    vi.mocked(issueService.getIssues).mockRejectedValue(new Error('request failed'));
+
+    const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Fehler');
+    expect(wrapper.findAll('[data-testid="tenant-issue-card"]')).toHaveLength(0);
+  });
 });
