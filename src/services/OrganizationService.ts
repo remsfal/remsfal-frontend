@@ -16,9 +16,7 @@ export class OrganizationService {
   }
 
   async getContractorOrganizations(limit = 100, offset = 0): Promise<OrganizationListJson> {
-    return apiClient.get('/api/v1/organizations/contractors', {
-      params: { limit, offset },
-    });
+    return apiClient.get('/api/v1/organizations/contractors', {params: { limit, offset },});
   }
 
   async createOrganization(data: OrganizationJson): Promise<void> {
@@ -34,15 +32,11 @@ export class OrganizationService {
   }
 
   async getEmployees(organizationId: string): Promise<OrganizationEmployeeListJson> {
-    return apiClient.get('/api/v1/organizations/{organizationId}/employees', {
-      pathParams: { organizationId },
-    });
+    return apiClient.get('/api/v1/organizations/{organizationId}/employees', {pathParams: { organizationId },});
   }
 
   async addEmployee(organizationId: string, data: OrganizationEmployeeJson): Promise<OrganizationEmployeeJson> {
-    return apiClient.post('/api/v1/organizations/{organizationId}/employees', data, {
-      pathParams: { organizationId },
-    });
+    return apiClient.post('/api/v1/organizations/{organizationId}/employees', data, {pathParams: { organizationId },});
   }
 
   async updateEmployeeRole(
@@ -58,9 +52,10 @@ export class OrganizationService {
   }
 
   async removeEmployee(organizationId: string, employeeId: string): Promise<void> {
-    await apiClient.delete('/api/v1/organizations/{organizationId}/employees/{employeeId}', {
-      pathParams: { organizationId, employeeId },
-    });
+    await apiClient.delete(
+      '/api/v1/organizations/{organizationId}/employees/{employeeId}',
+      { pathParams: { organizationId, employeeId } },
+    );
   }
 }
 

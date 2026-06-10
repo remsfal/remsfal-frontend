@@ -27,9 +27,7 @@ const schema = z.object({
     .string()
     .trim()
     .optional()
-    .refine((v) => !v || z.string().email().safeParse(v).success, {
-      message: t('contractor.new.validation.email'),
-    }),
+    .refine((v) => !v || z.string().email().safeParse(v).success, {message: t('contractor.new.validation.email'),}),
   contactPerson: z.string().trim().optional(),
   trade: z.string().trim().optional(),
   remarks: z.string().trim().optional(),
@@ -37,9 +35,15 @@ const schema = z.object({
 
 const resolver = zodResolver(schema);
 
-const serverValues = reactive({ companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' });
-const currentValues = reactive({ companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' });
-const initialValues = ref({ companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' });
+const serverValues = reactive({
+ companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+});
+const currentValues = reactive({
+ companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+});
+const initialValues = ref({
+ companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+});
 const formKey = ref(0);
 
 const isDirty = computed(() =>
@@ -99,9 +103,13 @@ async function onSubmit(event: FormSubmitEvent) {
     Object.assign(currentValues, saved);
     initialValues.value = { ...saved };
     formKey.value++;
-    toast.add({ severity: 'success', summary: t('contractor.detail.saveSuccess'), life: 3000 });
+    toast.add({
+ severity: 'success', summary: t('contractor.detail.saveSuccess'), life: 3000 
+});
   } catch {
-    toast.add({ severity: 'error', summary: t('contractor.detail.saveError'), life: 4000 });
+    toast.add({
+ severity: 'error', summary: t('contractor.detail.saveError'), life: 4000 
+});
   }
 }
 </script>
@@ -112,7 +120,11 @@ async function onSubmit(event: FormSubmitEvent) {
       {{ t('contractor.detail.title') }}
     </template>
     <template #content>
-      <Form :key="formKey" v-slot="$form" :initialValues :resolver @submit="onSubmit">
+      <Form
+        :key="formKey" v-slot="$form"
+        :initialValues :resolver
+        @submit="onSubmit"
+      >
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-1">
             <label for="companyName" class="font-medium">{{ t('contractor.detail.companyName') }}*</label>

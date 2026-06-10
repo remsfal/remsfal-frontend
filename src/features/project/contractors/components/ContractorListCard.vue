@@ -52,9 +52,9 @@ function onRowClick(contractor: ContractorJson) {
       <div class="flex flex-col gap-2">
         <DataTable
           :value="sortedContractors"
-          row-hover
+          rowHover
           class="cursor-pointer"
-          @row-click="(e) => onRowClick(e.data)"
+          @rowClick="(e) => onRowClick(e.data)"
         >
           <template #empty>
             <span class="text-muted-color">{{ t('contractor.list.empty') }}</span>

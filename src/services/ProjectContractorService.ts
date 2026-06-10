@@ -12,15 +12,11 @@ class ProjectContractorService {
   }
 
   async createContractor(projectId: string, data: ContractorJson): Promise<void> {
-    await apiClient.post('/api/v1/projects/{projectId}/contractors', data, {
-      pathParams: { projectId },
-    });
+    await apiClient.post('/api/v1/projects/{projectId}/contractors', data, {pathParams: { projectId },});
   }
 
   async getContractor(projectId: string, contractorId: string): Promise<ContractorJson> {
-    return apiClient.get('/api/v1/projects/{projectId}/contractors/{contractorId}', {
-      pathParams: { projectId, contractorId },
-    });
+    return apiClient.get('/api/v1/projects/{projectId}/contractors/{contractorId}', {pathParams: { projectId, contractorId },});
   }
 
   async updateContractor(
@@ -36,9 +32,10 @@ class ProjectContractorService {
   }
 
   async deleteContractor(projectId: string, contractorId: string): Promise<void> {
-    await apiClient.delete('/api/v1/projects/{projectId}/contractors/{contractorId}', {
-      pathParams: { projectId, contractorId },
-    });
+    await apiClient.delete(
+      '/api/v1/projects/{projectId}/contractors/{contractorId}',
+      { pathParams: { projectId, contractorId } },
+    );
   }
 }
 

@@ -40,9 +40,7 @@ const emailOptions = computed<string[]>(() => {
 
 const emailValue = ref(sessionStore.user?.email ?? '');
 
-const initialValues = reactive({
-  name: '', trade: '',
-});
+const initialValues = reactive({name: '', trade: '',});
 
 const phoneError = computed(() => {
   if (!phoneValue.value) return null;

@@ -53,7 +53,9 @@ onMounted(async () => {
 
         <template v-if="org.address">
           <div class="border-t border-surface-200 dark:border-surface-700 pt-4">
-            <p class="font-semibold mb-3">{{ t('managerContractors.detail.address') }}</p>
+            <p class="font-semibold mb-3">
+              {{ t('managerContractors.detail.address') }}
+            </p>
             <div class="grid grid-cols-[auto_1fr] gap-x-8 gap-y-3">
               <template v-if="org.address.street">
                 <span class="font-medium text-muted-color">{{ t('managerContractors.detail.street') }}</span>
@@ -61,7 +63,9 @@ onMounted(async () => {
               </template>
 
               <template v-if="org.address.zip || org.address.city">
-                <span class="font-medium text-muted-color">{{ t('managerContractors.detail.zip') }} / {{ t('managerContractors.detail.city') }}</span>
+                <span class="font-medium text-muted-color">
+                  {{ t('managerContractors.detail.zip') }} / {{ t('managerContractors.detail.city') }}
+                </span>
                 <span>{{ [org.address.zip, org.address.city].filter(Boolean).join(' ') }}</span>
               </template>
 

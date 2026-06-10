@@ -41,9 +41,9 @@ function onRowClick(org: OrganizationJson) {
     <template #content>
       <DataTable
         :value="sortedOrganizations"
-        row-hover
+        rowHover
         class="cursor-pointer"
-        @row-click="(e) => onRowClick(e.data)"
+        @rowClick="(e) => onRowClick(e.data)"
       >
         <template #empty>
           <span class="text-muted-color">{{ t('managerContractors.list.empty') }}</span>

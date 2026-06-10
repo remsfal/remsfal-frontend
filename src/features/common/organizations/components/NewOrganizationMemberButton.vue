@@ -111,7 +111,8 @@ const addMember = async (email: string, employeeRole: EmployeeRole) => {
           inputId="employeeRole"
           :label="t('organization.newMemberButton.roleLabel')"
           required
-          :errorMessage="$form.employeeRole?.invalid && $form.employeeRole?.touched ? $form.employeeRole.error.message : undefined"
+          :errorMessage="$form.employeeRole?.invalid && $form.employeeRole?.touched
+            ? $form.employeeRole.error.message : undefined"
         >
           <EmployeeRoleSelect
             name="employeeRole"

@@ -38,8 +38,12 @@ const emailOptions = computed<string[]>(() => {
   return [...new Set([primary, ...additional].filter(Boolean))] as string[];
 });
 
-const serverValues = reactive({ name: '', phone: '', email: '', trade: '' });
-const currentValues = reactive({ name: '', phone: '', email: '', trade: '' });
+const serverValues = reactive({
+ name: '', phone: '', email: '', trade: '' 
+});
+const currentValues = reactive({
+ name: '', phone: '', email: '', trade: '' 
+});
 const initialValues = ref({ name: '', trade: '' });
 const formKey = ref(0);
 
