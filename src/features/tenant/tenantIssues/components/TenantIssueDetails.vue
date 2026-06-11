@@ -6,7 +6,13 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
-import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import {
+  getIssueCategoryLabel,
+  getIssuePriorityLabel,
+  getIssueStatusLabel,
+  getIssueTypeLabel,
+  getUnitTypeLabel,
+} from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -18,6 +24,10 @@ const issue = ref<IssueJson | null>(null);
 const error = ref<string | null>(null);
 const statusLabel = computed(() => getIssueStatusLabel(issue.value?.status, t));
 const typeLabel = computed(() => getIssueTypeLabel(issue.value?.type, t));
+const categoryLabel = computed(() => getIssueCategoryLabel(issue.value?.category, t));
+const priorityLabel = computed(() => getIssuePriorityLabel(issue.value?.priority, t));
+const rentalUnitTypeLabel = computed(() => getUnitTypeLabel(issue.value?.rentalUnitType, t));
+const issueNodeId = computed(() => issue.value?.id?.split('-').pop() || issue.value?.id || '—');
 
 const fetchIssue = async () => {
   loading.value = true;
@@ -96,6 +106,38 @@ watch(
               </dt>
               <dd class="text-gray-900">
                 {{ typeLabel }}
+              </dd>
+            </div>
+            <div class="flex justify-start gap-2">
+              <dt class="font-medium text-gray-500">
+                {{ t('tenantIssues.detail.category') }}
+              </dt>
+              <dd class="text-gray-900">
+                {{ categoryLabel }}
+              </dd>
+            </div>
+            <div class="flex justify-start gap-2">
+              <dt class="font-medium text-gray-500">
+                {{ t('tenantIssues.detail.priority') }}
+              </dt>
+              <dd class="text-gray-900">
+                {{ priorityLabel }}
+              </dd>
+            </div>
+            <div class="flex justify-start gap-2">
+              <dt class="font-medium text-gray-500">
+                {{ t('tenantIssues.detail.rentalUnitType') }}
+              </dt>
+              <dd class="text-gray-900">
+                {{ rentalUnitTypeLabel }}
+              </dd>
+            </div>
+            <div class="flex justify-start gap-2">
+              <dt class="font-medium text-gray-500">
+                {{ t('tenantIssues.detail.issueNode') }}
+              </dt>
+              <dd class="text-gray-900">
+                {{ issueNodeId }}
               </dd>
             </div>
           </dl>
