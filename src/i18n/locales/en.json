@@ -373,6 +373,8 @@
   "inbox.filters.type.task": "Tasks",
   "inbox.filters.type.defect": "Defects",
   "inbox.filters.type.maintenance": "Maintenance",
+  "inbox.filters.type.termination": "Termination",
+  "inbox.filters.type.inquiry": "Inquiry",
   "inbox.filters.smart.urgent": "Urgent",
   "inbox.filters.smart.pendingApplications": "Pending Applications",
   "inbox.filters.smart.activeMaintenance": "Active Maintenance",

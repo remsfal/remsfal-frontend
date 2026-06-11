@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
+import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -15,6 +16,8 @@ const { t } = useI18n();
 const loading = ref(false);
 const issue = ref<IssueJson | null>(null);
 const error = ref<string | null>(null);
+const statusLabel = computed(() => getIssueStatusLabel(issue.value?.status, t));
+const typeLabel = computed(() => getIssueTypeLabel(issue.value?.type, t));
 
 const fetchIssue = async () => {
   loading.value = true;
@@ -84,7 +87,7 @@ watch(
                 {{ t('tenantIssues.filter.status') }}
               </dt>
               <dd class="text-gray-900">
-                {{ issue.status || '—' }}
+                {{ statusLabel }}
               </dd>
             </div>
             <div class="flex justify-start gap-2">
@@ -92,7 +95,7 @@ watch(
                 {{ t('tenantIssues.card.type') }}
               </dt>
               <dd class="text-gray-900">
-                {{ issue.type || '—' }}
+                {{ typeLabel }}
               </dd>
             </div>
           </dl>

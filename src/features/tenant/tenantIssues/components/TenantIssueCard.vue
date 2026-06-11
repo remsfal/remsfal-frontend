@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { IssueItemJson } from '@/services/IssueService';
+import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{
   issue: IssueItemJson;
@@ -31,35 +32,11 @@ const statusSeverity = computed(() => {
 });
 
 const statusLabel = computed(() => {
-  switch (props.issue.status) {
-    case 'PENDING':
-      return t('inbox.filters.status.pending');
-    case 'OPEN':
-      return t('inbox.filters.status.open');
-    case 'IN_PROGRESS':
-      return t('inbox.filters.status.inProgress');
-    case 'CLOSED':
-      return t('inbox.filters.status.closed');
-    case 'REJECTED':
-      return t('inbox.filters.status.rejected');
-    default:
-      return props.issue.status;
-  }
+  return getIssueStatusLabel(props.issue.status, t);
 });
 
 const typeLabel = computed(() => {
-  switch (props.issue.type) {
-    case 'APPLICATION':
-      return t('inbox.filters.type.application');
-    case 'TASK':
-      return t('inbox.filters.type.task');
-    case 'DEFECT':
-      return t('inbox.filters.type.defect');
-    case 'MAINTENANCE':
-      return t('inbox.filters.type.maintenance');
-    default:
-      return props.issue.type;
-  }
+  return getIssueTypeLabel(props.issue.type, t);
 });
 
 const issueNodeId = computed(() => props.issue.id?.split('-').pop() || props.issue.id);

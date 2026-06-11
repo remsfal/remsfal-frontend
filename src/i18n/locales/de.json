@@ -397,6 +397,8 @@
   "inbox.filters.type.application": "Anträge",
   "inbox.filters.type.task": "Aufgaben",
   "inbox.filters.type.defect": "Mängel",
+  "inbox.filters.type.termination": "Kündigung",
+  "inbox.filters.type.inquiry": "Anfrage",
   "inbox.filters.type.maintenance": "Wartung",
   "inbox.filters.smart.urgent": "Dringend",
   "inbox.filters.smart.pendingApplications": "Ausstehende Anträge",
