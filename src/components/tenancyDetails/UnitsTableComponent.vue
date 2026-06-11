@@ -101,11 +101,11 @@ const addNewRow = () => {
 
 const columns = ref([
   {
- field: 'type', header: 'Mietgegenstand', editor: 'Dropdown' 
-},
+    field: 'type', header: 'Mietgegenstand', editor: 'Dropdown' 
+  },
   {
- field: 'title', header: 'Wohneinheit', editor: 'Dropdown' 
-},
+    field: 'title', header: 'Wohneinheit', editor: 'Dropdown' 
+  },
 ]);
 const onCellEditComplete = async (event: DataTableCellEditCompleteEvent) => {
   const { newData, index } = event;

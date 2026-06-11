@@ -35,13 +35,13 @@ const schema = z.object({
 const resolver = zodResolver(schema);
 
 const serverValues = reactive({
- name: '', phone: '', email: '', trade: '' 
+  name: '', phone: '', email: '', trade: '' 
 });
 const currentValues = reactive({
- name: '', phone: '', email: '', trade: '' 
+  name: '', phone: '', email: '', trade: '' 
 });
 const initialValues = ref({
- name: '', email: '', trade: '' 
+  name: '', email: '', trade: '' 
 });
 const formKey = ref(0);
 
@@ -71,8 +71,8 @@ onMounted(async () => {
     Object.assign(serverValues, loaded);
     Object.assign(currentValues, loaded);
     initialValues.value = {
- name: loaded.name, email: loaded.email, trade: loaded.trade 
-};
+      name: loaded.name, email: loaded.email, trade: loaded.trade 
+    };
     formKey.value++;
   } catch {
     // silently ignore load error — form stays empty
@@ -99,8 +99,8 @@ async function onSubmit(event: FormSubmitEvent) {
     Object.assign(serverValues, saved);
     Object.assign(currentValues, saved);
     initialValues.value = {
- name: saved.name, email: saved.email, trade: saved.trade 
-};
+      name: saved.name, email: saved.email, trade: saved.trade 
+    };
     formKey.value++;
     organizationStore.setOrganization(updated);
     toast.add({

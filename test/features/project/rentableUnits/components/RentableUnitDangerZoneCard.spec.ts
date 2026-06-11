@@ -33,8 +33,8 @@ describe('RentableUnitDangerZoneCard.vue', () => {
   });
 
   const defaultProps = {
- projectId: 'proj-1', unitId: 'unit-1', unitType: 'PROPERTY' as const 
-};
+    projectId: 'proj-1', unitId: 'unit-1', unitType: 'PROPERTY' as const 
+  };
 
   it('passes localized props to DangerZoneCard', () => {
     const wrapper = mount(RentableUnitDangerZoneCard, {

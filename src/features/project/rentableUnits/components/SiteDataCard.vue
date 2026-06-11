@@ -55,8 +55,8 @@ const isDirty = computed(() =>
 onMounted(async () => {
   if (!props.unitId) {
     toast.add({
- severity: 'warn', summary: t('error.general'), detail: t('site.noId'), life: 6000 
-});
+      severity: 'warn', summary: t('error.general'), detail: t('site.noId'), life: 6000 
+    });
     return;
   }
   try {
@@ -71,8 +71,8 @@ onMounted(async () => {
   } catch (err) {
     console.error('Fehler beim Laden der Außenanlage:', err);
     toast.add({
- severity: 'error', summary: t('error.general'), detail: t('site.loadError'), life: 6000 
-});
+      severity: 'error', summary: t('error.general'), detail: t('site.loadError'), life: 6000 
+    });
   }
 });
 
@@ -96,8 +96,8 @@ async function onSubmit(event: FormSubmitEvent) {
       space: payload.space ?? null,
     });
     toast.add({
- severity: 'success', summary: t('success.saved'), detail: t('site.saveSuccess'), life: 3000 
-});
+      severity: 'success', summary: t('success.saved'), detail: t('site.saveSuccess'), life: 3000 
+    });
   } catch (err) {
     console.error('Fehler beim Speichern der Außenanlage:', err);
     showSavingErrorToast(toast, t('site.saveError'));

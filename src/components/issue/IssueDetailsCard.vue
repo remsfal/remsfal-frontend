@@ -189,8 +189,8 @@ const handleSave = async () => {
   } catch (err) {
     console.error(err);
     toast.add({
- severity: 'error', summary: 'Error', detail: 'Failed to save issue details', life: 3000 
-});
+      severity: 'error', summary: 'Error', detail: 'Failed to save issue details', life: 3000 
+    });
   } finally {
     loadingSave.value = false;
   }

@@ -39,7 +39,7 @@ const handleIssueCreated = (newIssue: IssueItemJson) => {
 const loadIssues = async () => {
   try {
     const issueList = await issueService.getIssues(
-        props.projectId,
+      props.projectId,
     );
     issues.value = issueList?.issues ?? [];
   } catch (err) {
@@ -51,8 +51,8 @@ const loadIssues = async () => {
 const loadIssuesWithOpenStatus = async () => {
   try {
     const issueList = await issueService.getIssues(
-        props.projectId,
-        undefined,
+      props.projectId,
+      undefined,
         'OPEN' as IssueStatus,
     );
     issuesByStatusOpen.value = issueList?.issues ?? [];
@@ -65,7 +65,7 @@ const loadIssuesWithOpenStatus = async () => {
 const loadMyIssues = async () => {
   try {
     const issueList = await issueService.getIssues(
-        props.projectId,
+      props.projectId,
     );
 
     myIssues.value =
@@ -92,13 +92,13 @@ onMounted(() => {
 
 // --- Watch for prop changes ---
 watch(
-    () => props,
-    () => {
-      loadIssues();
-      loadIssuesWithOpenStatus();
-      if (props.assigneeId) loadMyIssues();
-    },
-    { deep: true }
+  () => props,
+  () => {
+    loadIssues();
+    loadIssuesWithOpenStatus();
+    if (props.assigneeId) loadMyIssues();
+  },
+  { deep: true }
 );
 </script>
 

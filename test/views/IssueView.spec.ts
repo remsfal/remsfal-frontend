@@ -40,8 +40,8 @@ describe("IssueView.vue", () => {
 
     wrapper = mount(IssueView, {
       props: {
- projectId: "proj-1", assigneeId: "user1", category: 'TASK' as Type
-},
+        projectId: "proj-1", assigneeId: "user1", category: 'TASK' as Type
+      },
       global: {
         stubs: {
           IssueTable: true,
@@ -87,8 +87,8 @@ describe("IssueView.vue", () => {
 
   test("navigates to issue details on row select", () => {
     const issue = {
- id: "123", title: "Sample", status: 'OPEN' as Status 
-};
+      id: "123", title: "Sample", status: 'OPEN' as Status 
+    };
     wrapper.vm.onIssueSelect(issue);
 
     expect(pushMock).toHaveBeenCalledWith({
@@ -100,42 +100,42 @@ describe("IssueView.vue", () => {
   test("renders correct header for assignee + DEFECT category", async () => {
     await wrapper.setProps({
       assigneeId: "user1", category: "DEFECT", status: undefined
-});
+    });
     expect(wrapper.text()).toContain("Meine Mängel");
   });
 
   test("renders correct header for status + DEFECT category", async () => {
     await wrapper.setProps({
       assigneeId: undefined, category: "DEFECT", status: 'OPEN' as Status
-});
+    });
     expect(wrapper.text()).toContain("Offene Mängel");
   });
 
   test("renders correct header for no assignee/status + DEFECT", async () => {
     await wrapper.setProps({
       assigneeId: undefined, category: "DEFECT", status: undefined
-});
+    });
     expect(wrapper.text()).toContain("Alle Mängel");
   });
 
   test("renders correct header for assignee + TASK category", async () => {
     await wrapper.setProps({
       assigneeId: "user1", category: undefined, status: undefined
-});
+    });
     expect(wrapper.text()).toContain("Meine Aufgaben");
   });
 
   test("renders correct header for status + TASK category", async () => {
     await wrapper.setProps({
       assigneeId: undefined, category: undefined, status: 'OPEN' as Status
-});
+    });
     expect(wrapper.text()).toContain("Offene Aufgaben");
   });
 
   test("renders correct header for no assignee/status + TASK", async () => {
     await wrapper.setProps({
       assigneeId: undefined, category: undefined, status: undefined
-});
+    });
     expect(wrapper.text()).toContain("Alle Aufgaben");
   });  
 
@@ -143,8 +143,8 @@ describe("IssueView.vue", () => {
   test("adds issue to myIssues with assignee when assignee prop is set", async () => {
     wrapper.vm.myIssues = [];
     const issue = {
- id: "123", title: "Test", status: 'OPEN' as Status 
-};
+      id: "123", title: "Test", status: 'OPEN' as Status 
+    };
     await wrapper.setProps({ assignee: "testOwner" });
     
     wrapper.vm.myIssues.push({ ...issue, assignee: "testOwner" });
@@ -209,8 +209,8 @@ describe("IssueView.vue", () => {
   test("adds issue to issuesByStatusOpen when status is OPEN", async () => {
     wrapper.vm.issuesByStatusOpen = [];
     const newIssue = {
- id: "999", title: "Test", description: "Desc", status: 'OPEN' as Status 
-};
+      id: "999", title: "Test", description: "Desc", status: 'OPEN' as Status 
+    };
     
     wrapper.vm.issues.push(newIssue);
     wrapper.vm.issuesByStatusOpen.push(newIssue);

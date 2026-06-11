@@ -57,6 +57,6 @@ export function useRentableUnitForm<T extends { title: string; location: string 
   }
 
   return {
- titleMatchesLocation, formKey, initialValues, syncState 
-};
+    titleMatchesLocation, formKey, initialValues, syncState 
+  };
 }

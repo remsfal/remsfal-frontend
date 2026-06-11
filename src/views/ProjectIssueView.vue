@@ -54,8 +54,8 @@ const fetchIssue = async () => {
   } catch (error) {
     console.error('Error fetching issue:', error);
     toast.add({
- severity: 'error', summary: t('error.general'), detail: t('issueDetails.fetchError'), life: 3000 
-});
+      severity: 'error', summary: t('error.general'), detail: t('issueDetails.fetchError'), life: 3000 
+    });
   } finally {
     loadingFetch.value = false;
   }

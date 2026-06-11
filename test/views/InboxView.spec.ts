@@ -79,8 +79,8 @@ describe('InboxView.vue', () => {
   it('handles filter application', async () => {
     const sidebar = wrapper.findComponent(InboxSidebar);
     const filter = {
- id: '1', name: 'Open Defects', icon: 'pi-exclamation-circle', query: 'status:OPEN type:DEFECT' 
-};
+      id: '1', name: 'Open Defects', icon: 'pi-exclamation-circle', query: 'status:OPEN type:DEFECT' 
+    };
     
     await sidebar.vm.$emit('filter-applied', filter);
     await wrapper.vm.$nextTick();

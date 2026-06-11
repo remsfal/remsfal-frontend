@@ -23,7 +23,7 @@ describe('ApiClient', () => {
       http.put('/api/v1/test/:id', async ({ request, params }) => {
         const body = await request.json();
         return HttpResponse.json({
-            ...body, id: params.id, updated: true
+          ...body, id: params.id, updated: true
         });
       }),
       http.patch('/api/v1/test/:id', async ({ request, params }) => {
@@ -101,8 +101,8 @@ describe('ApiClient', () => {
         { pathParams: { id: '456' } },
       );
       expect(result).toEqual({
- name: 'Updated Item', id: '456', updated: true 
-});
+        name: 'Updated Item', id: '456', updated: true 
+      });
     });
   });
 
@@ -114,8 +114,8 @@ describe('ApiClient', () => {
         { pathParams: { id: '789' } },
       );
       expect(result).toEqual({
- name: 'Patched Item', id: '789', patched: true 
-});
+        name: 'Patched Item', id: '789', patched: true 
+      });
     });
   });
 

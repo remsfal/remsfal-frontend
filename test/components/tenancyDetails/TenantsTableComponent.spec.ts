@@ -3,8 +3,8 @@ import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableCompo
 
 describe('TenantsTableComponent', () => {
   const tenantsMock = [{
- id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@test.de'
-}];
+    id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@test.de'
+  }];
 
   it('renders tenant data in table', () => {
     const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: false },});

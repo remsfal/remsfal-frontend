@@ -27,7 +27,7 @@ const visible = ref<boolean>(false);
 const titleMatchesLocation = ref(true);
 const currentTitle = ref('');
 const initialValues = ref({
- title: '', location: '', description: '' 
+  title: '', location: '', description: '' 
 });
 const formKey = ref(0);
 
@@ -65,8 +65,8 @@ async function onSubmit(event: FormSubmitEvent) {
     titleMatchesLocation.value = true;
     currentTitle.value = '';
     initialValues.value = {
- title: '', location: '', description: '' 
-};
+      title: '', location: '', description: '' 
+    };
     formKey.value++;
     visible.value = false;
 

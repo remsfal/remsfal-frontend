@@ -4,7 +4,7 @@ import { useOrganizationStore } from '@/stores/OrganizationStore';
 import { organizationService } from '@/services/OrganizationService';
 
 const mockOrg = {
- id: 'org-1', name: 'Test GmbH', phone: '+4915123456789' 
+  id: 'org-1', name: 'Test GmbH', phone: '+4915123456789' 
 };
 const mockOrg2 = { id: 'org-2', name: 'Second GmbH' };
 

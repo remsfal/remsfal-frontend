@@ -30,7 +30,7 @@ const phoneValue = ref('');
 const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
 const initialValues = reactive({
- name: '', email: '', trade: '' 
+  name: '', email: '', trade: '' 
 });
 
 const phoneError = computed(() => {
@@ -88,8 +88,8 @@ async function onSubmit(event: FormSubmitEvent) {
 
 function onHide() {
   Object.assign(initialValues, {
- name: '', email: '', trade: '' 
-});
+    name: '', email: '', trade: '' 
+  });
   phoneValue.value = '';
   formKey.value++;
   emit('update:visible', false);
