@@ -181,6 +181,7 @@ onMounted(async () => {
       <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
         <div class="grid w-full grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
           <Select
+              id="tenancy-select"
             v-model="filters.tenancyId"
             :options="tenancyOptions"
             optionLabel="label"
@@ -190,6 +191,7 @@ onMounted(async () => {
           />
 
           <Select
+              id="status-select"
             v-model="filters.status"
             :options="statusOptions"
             optionLabel="label"
@@ -199,6 +201,7 @@ onMounted(async () => {
           />
 
           <Select
+              id="type-select"
             v-model="filters.type"
             :options="typeOptions"
             optionLabel="label"
