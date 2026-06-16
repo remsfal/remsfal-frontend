@@ -181,8 +181,8 @@ onMounted(async () => {
       <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
         <div class="grid w-full grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
           <div>
-            <label for="tenancy-select" class="block mb-2">
-              {{ t('tenantIssues.filter.tenacy') }}
+            <label for="tenancy-select" class="hidden">
+              {{ t('tenantIssues.filter.status') }}
             </label>
             <Select
               id="tenancy-select"
@@ -196,7 +196,7 @@ onMounted(async () => {
           </div>
 
           <div>
-            <label for="status-select" class="block mb-2">
+            <label for="status-select" class="hidden">
               {{ t('tenantIssues.filter.status') }}
             </label>
             <Select
@@ -211,7 +211,7 @@ onMounted(async () => {
           </div>
 
           <div>
-            <label for="type-select" class="block mb-2">
+            <label for="type-select" class="hidden">
               {{ t('tenantIssues.filter.type') }}
             </label>
             <Select
