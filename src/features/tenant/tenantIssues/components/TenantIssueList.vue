@@ -180,46 +180,63 @@ onMounted(async () => {
     <div class="col-span-12 flex flex-col gap-4 mb-6">
       <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
         <div class="grid w-full grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-          <Select
+          <div>
+            <label for="tenancy-select" class="block mb-2">
+              {{ t('tenantIssues.filter.tenacy') }}
+            </label>
+            <Select
               id="tenancy-select"
-            v-model="filters.tenancyId"
-            :options="tenancyOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('tenantIssues.filter.tenancy')"
-            class="w-full"
-          />
-
-          <Select
-              id="status-select"
-            v-model="filters.status"
-            :options="statusOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('tenantIssues.filter.status')"
-            class="w-full"
-          />
-
-          <Select
-              id="type-select"
-            v-model="filters.type"
-            :options="typeOptions"
-            optionLabel="label"
-            optionValue="value"
-            :placeholder="t('tenantIssues.filter.type')"
-            class="w-full"
-          />
-
-          <IconField class="w-full">
-            <InputIcon class="pi pi-search" />
-            <InputText
-              :modelValue="searchQuery"
-              :placeholder="t('tenantIssues.search.placeholder')"
-              type="text"
-              fluid
-              @input="onSearchInput"
+              v-model="filters.tenancyId"
+              :options="tenancyOptions"
+              optionLabel="label"
+              optionValue="value"
+              :placeholder="t('tenantIssues.filter.tenancy')"
+              class="w-full"
             />
-          </IconField>
+          </div>
+
+          <div>
+            <label for="status-select" class="block mb-2">
+              {{ t('tenantIssues.filter.status') }}
+            </label>
+            <Select
+              id="status-select"
+              v-model="filters.status"
+              :options="statusOptions"
+              optionLabel="label"
+              optionValue="value"
+              :placeholder="t('tenantIssues.filter.status')"
+              class="w-full"
+            />
+          </div>
+
+          <div>
+            <label for="type-select" class="block mb-2">
+              {{ t('tenantIssues.filter.type') }}
+            </label>
+            <Select
+              id="type-select"
+              v-model="filters.type"
+              :options="typeOptions"
+              optionLabel="label"
+              optionValue="value"
+              :placeholder="t('tenantIssues.filter.type')"
+              class="w-full"
+            />
+          </div>
+
+          <div>
+            <IconField class="w-full">
+              <InputIcon class="pi pi-search" />
+              <InputText
+                :modelValue="searchQuery"
+                :placeholder="t('tenantIssues.search.placeholder')"
+                type="text"
+                fluid
+                @input="onSearchInput"
+              />
+            </IconField>
+          </div>
         </div>
 
         <Button
