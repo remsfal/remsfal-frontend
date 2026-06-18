@@ -35,12 +35,12 @@ onMounted(loadContracts);
 <template>
   <div class="grid grid-cols-12 gap-4">
     <h1 class="col-span-12 mb-1 text-2xl font-semibold text-gray-900">
-  		{{ t('tenantDashboard.title') }}
-	</h1>
+      {{ t('tenantDashboard.title') }}
+    </h1>
 
     <div v-if="loading" class="col-span-12 flex items-center gap-2">
-        <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="4" />
-        <span class="text-sm text-gray-500">{{ t('tenantDashboard.loading') }}</span>
+      <ProgressSpinner style="width: 20px; height: 20px" strokeWidth="4" />
+      <span class="text-sm text-gray-500">{{ t('tenantDashboard.loading') }}</span>
     </div>
 
     <div class="col-span-12">
@@ -48,7 +48,7 @@ onMounted(loadContracts);
         {{ error }}
       </Message>
 
-       <div v-if="contracts.length" class="mt-6 grid content-start gap-5">
+      <div v-if="contracts.length" class="mt-6 grid content-start gap-5">
         <TenancieContractCard
           v-for="contract in contracts"
           :key="contract.agreementId"
@@ -57,7 +57,7 @@ onMounted(loadContracts);
       </div>
 
       <div 
-      	v-else-if="!loading"
+        v-else-if="!loading"
         class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center text-gray-500"
         data-testid="empty-state"
       >

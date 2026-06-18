@@ -10,5 +10,5 @@ import TenancieContractList from '@/features/tenant/tenancies/components/Tenanci
 </script>
 
 <template>
-   <TenancieContractList />
+  <TenancieContractList />
 </template>

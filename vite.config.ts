@@ -59,12 +59,36 @@ export default defineConfig({
       output: {
         codeSplitting: {
           groups: [
-            { name: 'vendor-icons',    test: /@fortawesome/,                       priority: 60 },
-            { name: 'vendor-chart',    test: /chart\.js|chartjs/,                  priority: 50 },
-            { name: 'vendor-primevue', test: /primevue|@primevue/,                 priority: 40 },
-            { name: 'vendor-i18n',     test: /vue-i18n|@intlify/,                  priority: 30 },
-            { name: 'vendor-vue',      test: /\/vue\/|vue-router|\/pinia\/|@vue\//, priority: 20 },
-            { name: 'vendor',          test: /node_modules/,                       priority: 10 },
+            {
+              name: 'vendor-icons',
+              test: /@fortawesome/,
+              priority: 60,
+            },
+            {
+              name: 'vendor-chart',
+              test: /chart\.js|chartjs/,
+              priority: 50,
+            },
+            {
+              name: 'vendor-primevue',
+              test: /primevue|@primevue/,
+              priority: 40,
+            },
+            {
+              name: 'vendor-i18n',
+              test: /vue-i18n|@intlify/,
+              priority: 30,
+            },
+            {
+              name: 'vendor-vue',
+              test: /\/vue\/|vue-router|\/pinia\/|@vue\//,
+              priority: 20,
+            },
+            {
+              name: 'vendor',
+              test: /node_modules/,
+              priority: 10,
+            },
           ],
         },
       },
