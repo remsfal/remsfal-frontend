@@ -388,6 +388,11 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
+        modifiedAt:
+          description: Last modification timestamp of the issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
         name:
           type: string
           description: Title of the issue
@@ -428,6 +433,10 @@ components:
           $ref: "#/components/schemas/UUID"
         projectId:
           $ref: "#/components/schemas/UUID"
+        modifiedAt:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
         title:
           type: string
           maxLength: 255
