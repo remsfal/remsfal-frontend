@@ -1585,6 +1585,8 @@ export interface components {
     IssueItemJson: {
       /** @description Unique identifier of the issue */
       readonly id?: components["schemas"]["UUID"];
+      /** @description Last modification timestamp of the issue */
+      readonly modifiedAt?: components["schemas"]["Instant"];
       /** @description Title of the issue */
       readonly name?: string;
       /** @description Title of the issue */
@@ -1602,6 +1604,7 @@ export interface components {
     IssueJson: {
       readonly id?: components["schemas"]["UUID"];
       projectId?: components["schemas"]["UUID"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
       title?: string;
       type?: components["schemas"]["IssueType"];
       category?: components["schemas"]["IssueCategory"];
