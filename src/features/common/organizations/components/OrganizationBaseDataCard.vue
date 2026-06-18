@@ -39,10 +39,10 @@ const emailOptions = computed<string[]>(() => {
 });
 
 const serverValues = reactive({
- name: '', phone: '', email: '', trade: '' 
+  name: '', phone: '', email: '', trade: '' 
 });
 const currentValues = reactive({
- name: '', phone: '', email: '', trade: '' 
+  name: '', phone: '', email: '', trade: '' 
 });
 const initialValues = ref({ name: '', trade: '' });
 const formKey = ref(0);

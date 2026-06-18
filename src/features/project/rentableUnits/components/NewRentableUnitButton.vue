@@ -36,7 +36,7 @@ const newUnitType = ref<EntityType | undefined>(undefined);
 const titleMatchesLocation = ref(true);
 const currentTitle = ref('');
 const initialValues = ref({
- title: '', location: '', description: '' 
+  title: '', location: '', description: '' 
 });
 const formKey = ref(0);
 
@@ -150,8 +150,8 @@ async function onSubmit(event: FormSubmitEvent) {
       titleMatchesLocation.value = true;
       currentTitle.value = '';
       initialValues.value = {
- title: '', location: '', description: '' 
-};
+        title: '', location: '', description: '' 
+      };
       formKey.value++;
       visible.value = false;
     })
@@ -169,8 +169,8 @@ async function createProperty(title: string, loc: string | undefined, desc: stri
   console.log('createProperty called');
   return propertyService
     .createProperty(props.projectId, {
- title, location: loc, description: desc, plotArea: 0 
-})
+      title, location: loc, description: desc, plotArea: 0 
+    })
     .then((newProperty) => {
       console.log('Property created:', newProperty);
     });
@@ -180,8 +180,8 @@ async function createSite(title: string, loc: string | undefined, desc: string |
   console.log('createSite called');
   return siteService
     .createSite(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc 
+    })
     .then((newSite) => {
       console.log('Site created:', newSite);
     });
@@ -191,8 +191,8 @@ async function createBuilding(title: string, loc: string | undefined, desc: stri
   console.log('createBuilding called');
   return buildingService
     .createBuilding(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc 
+    })
     .then((newBuilding) => {
       console.log('Building created:', newBuilding);
     });
@@ -202,8 +202,8 @@ async function createApartment(title: string, loc: string | undefined, desc: str
   console.log('createApartment called');
   return apartmentService
     .createApartment(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc 
+    })
     .then((newApartment) => {
       console.log('Apartment created:', newApartment);
     });
@@ -213,8 +213,8 @@ async function createCommercial(title: string, loc: string | undefined, desc: st
   console.log('createCommercial called');
   return commercialService
     .createCommercial(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc 
+    })
     .then((newCommercial) => {
       console.log('Commercial created:', newCommercial);
     });
@@ -224,8 +224,8 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
   console.log('createStorage called');
   return storageService
     .createStorage(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc 
+    })
     .then((newStorage) => {
       console.log('Storage created:', newStorage);
     });

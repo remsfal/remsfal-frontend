@@ -59,12 +59,12 @@ const resolver = zodResolver(schema);
 
 // serverValues = baseline from backend (for dirty comparison)
 const serverValues = reactive({
- street: '', zip: '', city: '', province: '', countryCode: '' 
+  street: '', zip: '', city: '', province: '', countryCode: '' 
 });
 
 // currentValues = what the user has typed (tracked via @update:modelValue)
 const currentValues = reactive({
- street: '', zip: '', city: '', province: '', countryCode: '' 
+  street: '', zip: '', city: '', province: '', countryCode: '' 
 });
 
 // initialValues drives what the Form component displays

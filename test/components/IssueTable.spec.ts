@@ -6,14 +6,14 @@ import { type IssueItemJson } from '@/services/IssueService';
 
 const mockIssues: IssueItemJson[] = [
   {
- id: '1', title: 'Issue 1', owner: 'user1', status: 'OPEN', name: 'issue1' 
-},
+    id: '1', title: 'Issue 1', owner: 'user1', status: 'OPEN', name: 'issue1' 
+  },
   {
- id: '2', title: 'Issue 2', owner: 'user2', status: 'CLOSED', name: 'issue2' 
-},
+    id: '2', title: 'Issue 2', owner: 'user2', status: 'CLOSED', name: 'issue2' 
+  },
   {
- id: '3', title: 'Issue 3', owner: 'user3', status: 'IN_PROGRESS', name: 'issue3' 
-},
+    id: '3', title: 'Issue 3', owner: 'user3', status: 'IN_PROGRESS', name: 'issue3' 
+  },
 ];
 
 describe('IssueTable', () => {

@@ -18,8 +18,8 @@ describe('RentableUnitsCard', () => {
         {
           key: '1',
           data: {
- type: 'PROPERTY', title: 'Root', usable_space: 100 
-},
+            type: 'PROPERTY', title: 'Root', usable_space: 100 
+          },
           children: [],
         },
       ],

@@ -77,9 +77,9 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
 
           <div class="flex flex-col gap-4 xl:flex-row lg:items-stretch">
             <div class="lg:flex-1">
-                <p class="mb-2 text-lg font-semibold text-gray-700">
-                  {{ t('tenantDashboard.section.allDates') }}
-                </p>
+              <p class="mb-2 text-lg font-semibold text-gray-700">
+                {{ t('tenantDashboard.section.allDates') }}
+              </p>
               <dl class="space-y-1 text-lg text-gray-600">
                 <div v-if="contract.startOfRental" class="flex justify-between gap-2">
                   <dt class="font-medium text-gray-500">

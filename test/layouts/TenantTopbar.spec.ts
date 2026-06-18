@@ -9,8 +9,8 @@ const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: mockPush }),
   useRoute: () => ({
- params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
-}),
+    params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
+  }),
   RouterLink: { template: '<a><slot /></a>' },
 }));
 
@@ -18,15 +18,15 @@ vi.mock('vue-router', () => ({
 vi.mock('../../src/helper/platform', () => ({ shouldShowDevLogin: vi.fn().mockReturnValue(false), }));
 
 describe('TenantTopbar.vue', () => {
-    it('should render TopbarUserActions', async () => {
-        const pinia = createTestingPinia({ stubActions: false });
-        const userStore = useUserSessionStore(pinia);
-        userStore.user = { email: 'tenant@example.com' } as User;
+  it('should render TopbarUserActions', async () => {
+    const pinia = createTestingPinia({ stubActions: false });
+    const userStore = useUserSessionStore(pinia);
+    userStore.user = { email: 'tenant@example.com' } as User;
 
-        const wrapper = mount(TenantTopbar, { global: { plugins: [pinia] }, });
+    const wrapper = mount(TenantTopbar, { global: { plugins: [pinia] }, });
 
-        await flushPromises();
+    await flushPromises();
 
-        expect(wrapper.text()).toContain('tenant@example.com');
-    });
+    expect(wrapper.text()).toContain('tenant@example.com');
+  });
 });

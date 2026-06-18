@@ -56,7 +56,7 @@ function replacePlaceholders(
   pathParams: AxiosRequestConfig['pathParams'] = {},
   style: AxiosRequestConfig['pathParamsPlaceholderStyle'] = 'curly',
 ): string {
-   // Precompiled safe regex patterns
+  // Precompiled safe regex patterns
   const patterns = {
     curly: /\{(\w+)\}/g,
     colon: /:(\w+)/g,
@@ -90,8 +90,8 @@ function replacePlaceholders(
 function emitToast(severity: string, summary: string, detail: string) {
   const bus = useEventBus();
   bus.emit('toast:translate', {
- severity, summary, detail 
-});
+    severity, summary, detail 
+  });
 }
 /**
  * Axios interceptors
