@@ -55,17 +55,41 @@ export default defineConfig({
   build: {
     // Enable source maps for better stack traces
     sourcemap: true,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return
-          if (id.includes('@fortawesome')) return 'vendor-icons'
-          if (id.includes('chart.js') || id.includes('chartjs')) return 'vendor-chart'
-          if (id.includes('primevue') || id.includes('@primevue')) return 'vendor-primevue'
-          if (id.includes('vue-i18n') || id.includes('@intlify')) return 'vendor-i18n'
-          if (id.includes('/vue/') || id.includes('/vue-router/')
-            || id.includes('/pinia/') || id.includes('@vue/')) return 'vendor-vue'
-          return 'vendor'
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vendor-icons',
+              test: /@fortawesome/,
+              priority: 60,
+            },
+            {
+              name: 'vendor-chart',
+              test: /chart\.js|chartjs/,
+              priority: 50,
+            },
+            {
+              name: 'vendor-primevue',
+              test: /primevue|@primevue/,
+              priority: 40,
+            },
+            {
+              name: 'vendor-i18n',
+              test: /vue-i18n|@intlify/,
+              priority: 30,
+            },
+            {
+              name: 'vendor-vue',
+              test: /\/vue\/|vue-router|\/pinia\/|@vue\//,
+              priority: 20,
+            },
+            {
+              name: 'vendor',
+              test: /node_modules/,
+              priority: 10,
+            },
+          ],
         },
       },
     },
