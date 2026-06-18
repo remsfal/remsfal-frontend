@@ -31,6 +31,10 @@ function onRowClick(org: OrganizationJson) {
   if (!org.id) return;
   router.push({ name: 'ManagerContractorDetail', params: { organizationId: org.id } });
 }
+
+function onTableRowClick(event: { data: OrganizationJson }) {
+  onRowClick(event.data);
+}
 </script>
 
 <template>
@@ -43,7 +47,7 @@ function onRowClick(org: OrganizationJson) {
         :value="sortedOrganizations"
         rowHover
         class="cursor-pointer"
-        @rowClick="(e) => onRowClick(e.data)"
+        @rowClick="onTableRowClick"
       >
         <template #empty>
           <span class="text-muted-color">{{ t('managerContractors.list.empty') }}</span>

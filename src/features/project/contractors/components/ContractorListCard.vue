@@ -41,6 +41,10 @@ function onRowClick(contractor: ContractorJson) {
     params: { projectId: props.projectId, contractorId: contractor.id },
   });
 }
+
+function onTableRowClick(event: { data: ContractorJson }) {
+  onRowClick(event.data);
+}
 </script>
 
 <template>
@@ -54,7 +58,7 @@ function onRowClick(contractor: ContractorJson) {
           :value="sortedContractors"
           rowHover
           class="cursor-pointer"
-          @rowClick="(e) => onRowClick(e.data)"
+          @rowClick="onTableRowClick"
         >
           <template #empty>
             <span class="text-muted-color">{{ t('contractor.list.empty') }}</span>
