@@ -41,6 +41,6 @@ export const useEventBus = defineStore('event-bus', () => {
   }
 
   return {
- on, once, off, emit 
-};
+    on, once, off, emit 
+  };
 });

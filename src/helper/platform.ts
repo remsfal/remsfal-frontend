@@ -4,14 +4,14 @@ import { Capacitor } from '@capacitor/core';
  * Check if the app is running as a native app (iOS/Android via Capacitor)
  */
 export function isNativePlatform(): boolean {
-    return Capacitor.isNativePlatform();
+  return Capacitor.isNativePlatform();
 }
 
 /**
  * Check if the app is running in development mode (Vite dev server)
  */
 export function isDevMode(): boolean {
-    return import.meta.env.DEV;
+  return import.meta.env.DEV;
 }
 
 /**
@@ -20,5 +20,5 @@ export function isDevMode(): boolean {
  * Web always uses normal Google authentication
  */
 export function shouldShowDevLogin(): boolean {
-    return isNativePlatform();
+  return isNativePlatform();
 }

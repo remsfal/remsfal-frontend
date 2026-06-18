@@ -65,8 +65,8 @@ export const organizationHandlers = [
     const body = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json(
       {
- ...mockOrganization, ...body, id: params.organizationId 
-},
+        ...mockOrganization, ...body, id: params.organizationId 
+      },
       { status: 200 },
     );
   }),

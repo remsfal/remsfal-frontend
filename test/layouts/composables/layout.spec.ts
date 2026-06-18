@@ -97,8 +97,8 @@ describe('useLayout composable', () => {
 
     it('toggles staticMenuDesktopInactive on wide viewport', () => {
       Object.defineProperty(window, 'innerWidth', {
- value: 1200, writable: true, configurable: true 
-});
+        value: 1200, writable: true, configurable: true 
+      });
       layout.toggleMenu();
       expect(layout.layoutState.staticMenuDesktopInactive).toBe(true);
     });

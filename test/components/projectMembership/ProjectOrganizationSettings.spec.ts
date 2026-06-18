@@ -17,11 +17,11 @@ describe('ProjectOrganizationSettings.vue', () => {
 
   const mockOrganizations: ProjectOrganizationJson[] = [
     {
- organizationId: '11111111-1111-1111-1111-111111111111', organizationName: 'Test GmbH', role: 'MANAGER' as MemberRole 
-},
+      organizationId: '11111111-1111-1111-1111-111111111111', organizationName: 'Test GmbH', role: 'MANAGER' as MemberRole 
+    },
     {
- organizationId: '22222222-2222-2222-2222-222222222222', organizationName: 'Muster AG', role: 'STAFF' as MemberRole 
-},
+      organizationId: '22222222-2222-2222-2222-222222222222', organizationName: 'Muster AG', role: 'STAFF' as MemberRole 
+    },
   ];
 
   beforeEach(async () => {

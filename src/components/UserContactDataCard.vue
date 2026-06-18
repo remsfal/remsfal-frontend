@@ -25,15 +25,15 @@ const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
 const schema = z.object({
   firstName: z
-      .string()
-      .trim()
-      .min(1, { message: t('validation.required') })
-      .regex(nameRegex, { message: t('accountSettings.validation.nameInvalid') }),
+    .string()
+    .trim()
+    .min(1, { message: t('validation.required') })
+    .regex(nameRegex, { message: t('accountSettings.validation.nameInvalid') }),
   lastName: z
-      .string()
-      .trim()
-      .min(1, { message: t('validation.required') })
-      .regex(nameRegex, { message: t('accountSettings.validation.nameInvalid') }),
+    .string()
+    .trim()
+    .min(1, { message: t('validation.required') })
+    .regex(nameRegex, { message: t('accountSettings.validation.nameInvalid') }),
   locale: z.string(),
 });
 
@@ -48,10 +48,10 @@ const initialValues = ref<Record<string, string>>({
 
 // Phone fields tracked separately (not via PrimeVue Forms)
 const serverPhones = reactive({
- mobile: '', business: '', private: '' 
+  mobile: '', business: '', private: '' 
 });
 const currentPhones = reactive({
- mobile: '', business: '', private: '' 
+  mobile: '', business: '', private: '' 
 });
 
 const phoneDirty = computed(
@@ -109,8 +109,8 @@ onMounted(async () => {
     Object.assign(serverPhones, phones);
     Object.assign(currentPhones, phones);
     additionalEmails.value = Array.isArray(profile.additionalEmails)
-        ? [...profile.additionalEmails]
-        : [];
+      ? [...profile.additionalEmails]
+      : [];
     formKey.value++;
   } catch (error) {
     console.error('Failed to load user profile', error);
@@ -118,7 +118,7 @@ onMounted(async () => {
 });
 
 const displayAlternativeEmail = computed<string | null>(() =>
-    additionalEmails.value.length > 0 ? (additionalEmails.value[0] ?? null) : null,
+  additionalEmails.value.length > 0 ? (additionalEmails.value[0] ?? null) : null,
 );
 
 function validateEmailFormat(emailStr: string) {
@@ -192,8 +192,8 @@ async function onSubmit(event: FormSubmitEvent) {
     Object.assign(currentPhones, savedPhones);
 
     additionalEmails.value = Array.isArray(updatedUser.additionalEmails)
-        ? [...updatedUser.additionalEmails]
-        : [];
+      ? [...updatedUser.additionalEmails]
+      : [];
     altEmailDirty.value = false;
     altEmailSuccess.value = true;
     altEmailError.value = false;
