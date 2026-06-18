@@ -116,7 +116,10 @@
   "overrides": {
     "glob": "^9.3.2"
   },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.60.1"
+  "allowScripts": {
+    "@parcel/watcher@2.5.1": true,
+    "cypress@15.16.0": true,
+    "fsevents@2.3.3": true,
+    "msw@2.14.6": true
   }
 }
