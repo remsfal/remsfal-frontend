@@ -5,9 +5,11 @@ import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import BaseCard from '@/components/common/BaseCard.vue';
+import Tag from 'primevue/tag';
 import { issueService, type IssueJson } from '@/services/IssueService';
-import { getIssueCategoryLabel, getIssuePriorityLabel, getIssueStatusLabel } from '@/features/tenant/tenantIssues/issueLabels';
-import { getIssueTypeLabel, getUnitTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueCategoryLabel, getIssueStatusLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueTypeSeverity } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -20,9 +22,23 @@ const error = ref<string | null>(null);
 const statusLabel = computed(() => getIssueStatusLabel(issue.value?.status, t));
 const typeLabel = computed(() => getIssueTypeLabel(issue.value?.type, t));
 const categoryLabel = computed(() => getIssueCategoryLabel(issue.value?.category, t));
-const priorityLabel = computed(() => getIssuePriorityLabel(issue.value?.priority, t));
-const rentalUnitTypeLabel = computed(() => getUnitTypeLabel(issue.value?.rentalUnitType, t));
+const statusSeverity = computed(() => getIssueStatusSeverity(issue.value?.status));
+const typeSeverity = computed(() => getIssueTypeSeverity(issue.value?.type));
 const issueNodeId = computed(() => issue.value?.id?.split('-').pop() || issue.value?.id || '—');
+const descriptionLabel = computed(() => {
+  const description = issue.value?.description;
+  if (!description) {
+    return null;
+  }
+
+  const cleaned = description
+    .split('\n')
+    .filter(line => !/^\s*(Verursacher|Ort):/i.test(line))
+    .join('\n')
+    .trim();
+
+  return cleaned || null;
+});
 const modifiedAtLabel = computed(() => {
   const modifiedAt = issue.value?.modifiedAt;
   if (!modifiedAt) {
@@ -99,75 +115,77 @@ watch(
           </div>
         </template>
         <template #content>
-          <dl class="text-base text-gray-600 space-y-2">
-            <div v-if="issue.status" class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.filter.status') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ statusLabel }}
-              </dd>
-            </div>
-            <div v-if="issue.type" class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.card.type') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ typeLabel }}
-              </dd>
-            </div>
-            <div v-if="issue.category" class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.detail.category') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ categoryLabel }}
-              </dd>
-            </div>
-            <div v-if="issue.priority" class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.detail.priority') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ priorityLabel }}
-              </dd>
-            </div>
-            <div v-if="issue.rentalUnitType" class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.detail.rentalUnitType') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ rentalUnitTypeLabel }}
-              </dd>
-            </div>
-            <div v-if="issue.id" class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.detail.issueNode') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ issueNodeId }}
-              </dd>
-            </div>
-            <div v-if="modifiedAtLabel" class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.detail.updated') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ modifiedAtLabel }}
-              </dd>
-            </div>
-            <div v-if="issue.description?.trim()" class="flex justify-start gap-2">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <dl class="space-y-2 text-base text-gray-600">
+              <div v-if="issue.id" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.detail.issueNode') }}
+                </dt>
+                <dd class="text-gray-900">
+                  <Tag :value="issueNodeId" severity="info" class="inline-flex w-fit" />
+                </dd>
+              </div>
+              <div v-if="issue.category" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.detail.category') }}
+                </dt>
+                <dd class="text-gray-900">
+                  {{ categoryLabel }}
+                </dd>
+              </div>
+            </dl>
+
+            <dl class="space-y-2 text-base text-gray-600">
+              <div v-if="issue.type" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.card.type') }}
+                </dt>
+                <dd class="text-gray-900">
+                  <Tag :value="typeLabel" :severity="typeSeverity" class="inline-flex w-fit" />
+                </dd>
+              </div>
+              <div v-if="issue.location?.trim()" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.detail.location') }}
+                </dt>
+                <dd class="text-gray-900 break-words">
+                  {{ issue.location }}
+                </dd>
+              </div>
+            </dl>
+
+            <dl class="space-y-2 text-base text-gray-600">
+              <div v-if="issue.status" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.filter.status') }}
+                </dt>
+                <dd class="text-gray-900">
+                  <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit" />
+                </dd>
+              </div>
+              <div v-if="modifiedAtLabel" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.detail.updated') }}
+                </dt>
+                <dd class="text-gray-900">
+                  <Tag v-if="modifiedAtLabel" :value="modifiedAtLabel" severity="info" class="inline-flex w-fit" />
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <dl v-if="descriptionLabel" class="mt-4 text-base text-gray-600">
+            <div class="flex justify-start gap-2">
               <dt class="font-medium text-gray-500">
                 {{ t('tenantIssues.detail.description') }}
               </dt>
               <dd class="text-gray-900 whitespace-pre-line break-words">
-                {{ issue.description }}
+                {{ descriptionLabel }}
               </dd>
             </div>
           </dl>
         </template>
       </BaseCard>
-
       <BaseCard>
         <template #title>
           <span class="text-xl font-semibold">{{ t('tenantIssues.timeline.title') }}</span>

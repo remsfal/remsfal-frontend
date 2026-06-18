@@ -22,6 +22,25 @@ export const getIssueStatusLabel = (
   }
 };
 
+export const getIssueStatusSeverity = (
+  status: IssueStatus | null | undefined,
+): 'secondary' | 'info' | 'warn' | 'success' | 'danger' => {
+  switch (status) {
+    case 'PENDING':
+      return 'secondary';
+    case 'OPEN':
+      return 'info';
+    case 'IN_PROGRESS':
+      return 'warn';
+    case 'CLOSED':
+      return 'success';
+    case 'REJECTED':
+      return 'danger';
+    default:
+      return 'secondary';
+  }
+};
+
 export const getIssueTypeLabel = (
   type: IssueType | null | undefined,
   t: ComposerTranslation,
@@ -41,6 +60,23 @@ export const getIssueTypeLabel = (
       return t('inbox.filters.type.inquiry');
     default:
       return type ?? '—';
+  }
+};
+
+export const getIssueTypeSeverity = (
+  type: IssueType | null | undefined,
+): 'secondary' | 'info' | 'warn' | 'danger' => {
+  switch (type) {
+    case 'APPLICATION':
+      return 'info';
+    case 'TASK':
+      return 'secondary';
+    case 'DEFECT':
+      return 'danger';
+    case 'MAINTENANCE':
+      return 'warn';
+    default:
+      return 'info';
   }
 };
 

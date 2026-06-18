@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n';
 import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { IssueItemJson } from '@/services/IssueService';
-import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueStatusLabel, getIssueStatusSeverity } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueTypeLabel, getIssueTypeSeverity } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{
   issue: IssueItemJson;
@@ -14,22 +15,7 @@ const emit = defineEmits<{ select: [] }>();
 
 const { t, locale } = useI18n();
 
-const statusSeverity = computed(() => {
-  switch (props.issue.status) {
-    case 'PENDING':
-      return 'secondary';
-    case 'OPEN':
-      return 'info';
-    case 'IN_PROGRESS':
-      return 'warn';
-    case 'CLOSED':
-      return 'success';
-    case 'REJECTED':
-      return 'danger';
-    default:
-      return 'secondary';
-  }
-});
+const statusSeverity = computed(() => getIssueStatusSeverity(props.issue.status));
 
 const statusLabel = computed(() => {
   return getIssueStatusLabel(props.issue.status, t);
@@ -54,20 +40,7 @@ const modifiedAtLabel = computed(() => {
   return `${t('tenantIssues.card.updated')} ${date.toLocaleDateString(locale.value)}`;
 });
 
-const typeSeverity = computed(() => {
-  switch (props.issue.type) {
-    case 'APPLICATION':
-      return 'info';
-    case 'TASK':
-      return 'secondary';
-    case 'DEFECT':
-      return 'danger';
-    case 'MAINTENANCE':
-      return 'warn';
-    default:
-      return 'info';
-  }
-});
+const typeSeverity = computed(() => getIssueTypeSeverity(props.issue.type));
 
 const titleClass = computed(() => {
   const classes = ['text-xl', 'font-semibold'];

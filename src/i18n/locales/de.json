@@ -540,6 +540,8 @@
   "tenantIssues.detail.category": "Kategorie:",
   "tenantIssues.detail.priority": "Priorität:",
   "tenantIssues.detail.rentalUnitType": "Einheitstyp:",
+  "tenantIssues.detail.rentalUnitId": "Gebäudenummer:",
+  "tenantIssues.detail.location": "Ort:",
   "tenantIssues.detail.issueNode": "Vorgangsnummer:",
   "tenantIssues.detail.updated": "Aktuallisiert am:",
   "tenantIssues.detail.description": "Beschreibung:",

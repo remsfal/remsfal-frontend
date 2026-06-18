@@ -537,6 +537,8 @@
   "tenantIssues.detail.category": "Category:",
   "tenantIssues.detail.priority": "Priority:",
   "tenantIssues.detail.rentalUnitType": "Unit type:",
+  "tenantIssues.detail.rentalUnitId": "Building number:",
+  "tenantIssues.detail.location": "Location:",
   "tenantIssues.detail.issueNode": "Issue number:",
   "tenantIssues.detail.updated": "Updated at:",
   "tenantIssues.detail.description": "Description:",
