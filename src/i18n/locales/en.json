@@ -538,6 +538,8 @@
   "tenantIssues.detail.priority": "Priority:",
   "tenantIssues.detail.rentalUnitType": "Unit type:",
   "tenantIssues.detail.issueNode": "Issue number:",
+  "tenantIssues.detail.updated": "Updated at:",
+  "tenantIssues.detail.description": "Description:",
   "tenantIssues.timeline.title": "Timeline",
   "tenantIssues.timeline.placeholder": "The timeline will be connected to backend activity entries in a follow-up step.",
   "tenantIssues.loading": "Loading issues…",

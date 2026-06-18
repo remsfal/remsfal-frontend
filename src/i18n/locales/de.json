@@ -541,6 +541,8 @@
   "tenantIssues.detail.priority": "Priorität:",
   "tenantIssues.detail.rentalUnitType": "Einheitstyp:",
   "tenantIssues.detail.issueNode": "Vorgangsnummer:",
+  "tenantIssues.detail.updated": "Aktuallisiert am:",
+  "tenantIssues.detail.description": "Beschreibung:",
   "tenantIssues.timeline.title": "Timeline",
   "tenantIssues.timeline.placeholder": "Die Timeline wird in einem nächsten Schritt mit Verlaufseinträgen aus dem Backend angebunden.",
   "tenantIssues.loading": "Lade Meldungen…",

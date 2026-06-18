@@ -6,18 +6,13 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
-import {
-  getIssueCategoryLabel,
-  getIssuePriorityLabel,
-  getIssueStatusLabel,
-  getIssueTypeLabel,
-  getUnitTypeLabel,
-} from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueCategoryLabel, getIssuePriorityLabel, getIssueStatusLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueTypeLabel, getUnitTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{ issueId: string }>();
 
 const toast = useToast();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const loading = ref(false);
 const issue = ref<IssueJson | null>(null);
@@ -28,6 +23,19 @@ const categoryLabel = computed(() => getIssueCategoryLabel(issue.value?.category
 const priorityLabel = computed(() => getIssuePriorityLabel(issue.value?.priority, t));
 const rentalUnitTypeLabel = computed(() => getUnitTypeLabel(issue.value?.rentalUnitType, t));
 const issueNodeId = computed(() => issue.value?.id?.split('-').pop() || issue.value?.id || '—');
+const modifiedAtLabel = computed(() => {
+  const modifiedAt = issue.value?.modifiedAt;
+  if (!modifiedAt) {
+    return null;
+  }
+
+  const date = new Date(modifiedAt);
+  if (Number.isNaN(date.getTime())) {
+    return modifiedAt;
+  }
+
+  return date.toLocaleDateString(locale.value);
+});
 
 const fetchIssue = async () => {
   loading.value = true;
@@ -92,7 +100,7 @@ watch(
         </template>
         <template #content>
           <dl class="text-base text-gray-600 space-y-2">
-            <div class="flex justify-start gap-2">
+            <div v-if="issue.status" class="flex justify-start gap-2">
               <dt class="font-medium text-gray-500">
                 {{ t('tenantIssues.filter.status') }}
               </dt>
@@ -100,7 +108,7 @@ watch(
                 {{ statusLabel }}
               </dd>
             </div>
-            <div class="flex justify-start gap-2">
+            <div v-if="issue.type" class="flex justify-start gap-2">
               <dt class="font-medium text-gray-500">
                 {{ t('tenantIssues.card.type') }}
               </dt>
@@ -108,7 +116,7 @@ watch(
                 {{ typeLabel }}
               </dd>
             </div>
-            <div class="flex justify-start gap-2">
+            <div v-if="issue.category" class="flex justify-start gap-2">
               <dt class="font-medium text-gray-500">
                 {{ t('tenantIssues.detail.category') }}
               </dt>
@@ -116,7 +124,7 @@ watch(
                 {{ categoryLabel }}
               </dd>
             </div>
-            <div class="flex justify-start gap-2">
+            <div v-if="issue.priority" class="flex justify-start gap-2">
               <dt class="font-medium text-gray-500">
                 {{ t('tenantIssues.detail.priority') }}
               </dt>
@@ -124,7 +132,7 @@ watch(
                 {{ priorityLabel }}
               </dd>
             </div>
-            <div class="flex justify-start gap-2">
+            <div v-if="issue.rentalUnitType" class="flex justify-start gap-2">
               <dt class="font-medium text-gray-500">
                 {{ t('tenantIssues.detail.rentalUnitType') }}
               </dt>
@@ -132,12 +140,28 @@ watch(
                 {{ rentalUnitTypeLabel }}
               </dd>
             </div>
-            <div class="flex justify-start gap-2">
+            <div v-if="issue.id" class="flex justify-start gap-2">
               <dt class="font-medium text-gray-500">
                 {{ t('tenantIssues.detail.issueNode') }}
               </dt>
               <dd class="text-gray-900">
                 {{ issueNodeId }}
+              </dd>
+            </div>
+            <div v-if="modifiedAtLabel" class="flex justify-start gap-2">
+              <dt class="font-medium text-gray-500">
+                {{ t('tenantIssues.detail.updated') }}
+              </dt>
+              <dd class="text-gray-900">
+                {{ modifiedAtLabel }}
+              </dd>
+            </div>
+            <div v-if="issue.description?.trim()" class="flex justify-start gap-2">
+              <dt class="font-medium text-gray-500">
+                {{ t('tenantIssues.detail.description') }}
+              </dt>
+              <dd class="text-gray-900 whitespace-pre-line break-words">
+                {{ issue.description }}
               </dd>
             </div>
           </dl>
