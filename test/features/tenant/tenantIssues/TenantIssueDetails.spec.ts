@@ -175,6 +175,86 @@ describe('TenantIssueDetails component', () => {
     pushSpy.mockRestore();
   });
 
+  it('closes cancel dialog without deleting when cancel is clicked in dialog footer', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-42',
+      title: 'Wasserschaden Küche',
+      status: 'IN_PROGRESS',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      description: 'Rohr unter der Spüle undicht.',
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, {
+      props: { issueId: 'issue-42' },
+      attachTo: document.body,
+    });
+
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-cancel"]').trigger('click');
+    await flushPromises();
+
+    const cancelDialogButton = Array.from(document.querySelectorAll('button'))
+      .find(button => button.textContent?.trim() === 'Abbrechen');
+    expect(cancelDialogButton).toBeTruthy();
+    cancelDialogButton?.click();
+    await flushPromises();
+
+    expect(issueService.deleteIssue).not.toHaveBeenCalled();
+    expect(document.querySelector('[data-testid="tenant-issue-cancel-confirm"]')).toBeNull();
+    wrapper.unmount();
+  });
+
+  it('prevents duplicate delete requests while deletion is in progress', async () => {
+    const pushSpy = vi.spyOn(router, 'push').mockResolvedValue(undefined);
+    let resolveDelete: (() => void) | undefined;
+    const pendingDelete = new Promise<void>((resolve) => {
+      resolveDelete = resolve;
+    });
+
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-42',
+      title: 'Wasserschaden Küche',
+      status: 'IN_PROGRESS',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      description: 'Rohr unter der Spüle undicht.',
+    });
+    vi.mocked(issueService.deleteIssue).mockReturnValue(pendingDelete);
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, {
+      props: { issueId: 'issue-42' },
+      attachTo: document.body,
+    });
+
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-cancel"]').trigger('click');
+    await flushPromises();
+
+    const confirmButton = document.querySelector(
+      '[data-testid="tenant-issue-cancel-confirm"]',
+    ) as HTMLButtonElement | null;
+    expect(confirmButton).not.toBeNull();
+    confirmButton?.click();
+    await flushPromises();
+
+    expect(issueService.deleteIssue).toHaveBeenCalledTimes(1);
+    const cancelButton = wrapper.get('[data-testid="tenant-issue-cancel"]');
+    expect(cancelButton.attributes('disabled')).toBeDefined();
+
+    await cancelButton.trigger('click');
+    await flushPromises();
+    expect(issueService.deleteIssue).toHaveBeenCalledTimes(1);
+
+    resolveDelete?.();
+    await flushPromises();
+
+    wrapper.unmount();
+    pushSpy.mockRestore();
+  });
+
   it('filters Verursacher/Ort lines from description and hides empty cleaned description', async () => {
     vi.mocked(issueService.getIssue)
       .mockResolvedValueOnce({
