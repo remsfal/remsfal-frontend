@@ -4,12 +4,13 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
+import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Tag from 'primevue/tag';
 import { issueService, type IssueJson } from '@/services/IssueService';
 import { getIssueCategoryLabel, getIssueStatusLabel } from '@/features/tenant/tenantIssues/issueLabels';
-import { getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
-import { getIssueTypeSeverity } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueTypeSeverity, getIssueStatusSeverity } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -112,6 +113,7 @@ watch(
                 {{ t('tenantIssues.detail.number') }} {{ issue.id || '—' }}
               </p>
             </div>
+            <Button :label="t('tenantIssues.detail.cancelIssue')" severity="danger" class="shrink-0 self-start" />
           </div>
         </template>
         <template #content>
@@ -125,12 +127,12 @@ watch(
                   <Tag :value="issueNodeId" severity="info" class="inline-flex w-fit" />
                 </dd>
               </div>
-              <div v-if="issue.category" class="flex justify-start gap-2">
+              <div v-if="modifiedAtLabel" class="flex justify-start gap-2">
                 <dt class="font-medium text-gray-500">
-                  {{ t('tenantIssues.detail.category') }}
+                  {{ t('tenantIssues.detail.updated') }}
                 </dt>
                 <dd class="text-gray-900">
-                  {{ categoryLabel }}
+                  <Tag v-if="modifiedAtLabel" :value="modifiedAtLabel" severity="info" class="inline-flex w-fit" />
                 </dd>
               </div>
             </dl>
@@ -163,12 +165,12 @@ watch(
                   <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit" />
                 </dd>
               </div>
-              <div v-if="modifiedAtLabel" class="flex justify-start gap-2">
+              <div v-if="issue.category" class="flex justify-start gap-2">
                 <dt class="font-medium text-gray-500">
-                  {{ t('tenantIssues.detail.updated') }}
+                  {{ t('tenantIssues.detail.category') }}
                 </dt>
                 <dd class="text-gray-900">
-                  <Tag v-if="modifiedAtLabel" :value="modifiedAtLabel" severity="info" class="inline-flex w-fit" />
+                  {{ categoryLabel }}
                 </dd>
               </div>
             </dl>

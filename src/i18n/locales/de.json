@@ -542,6 +542,7 @@
   "tenantIssues.detail.issueNode": "Vorgangsnummer:",
   "tenantIssues.detail.updated": "Aktuallisiert am:",
   "tenantIssues.detail.description": "Beschreibung:",
+  "tenantIssues.detail.cancelIssue": "Vorgang abbrechen",
   "tenantIssues.timeline.title": "Timeline",
   "tenantIssues.timeline.placeholder": "Die Timeline wird in einem nächsten Schritt mit Verlaufseinträgen aus dem Backend angebunden.",
   "tenantIssues.loading": "Lade Meldungen…",

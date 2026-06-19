@@ -4,7 +4,7 @@ import { issueService } from '@/services/IssueService';
 
 const toastAddMock = vi.fn();
 
-vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: toastAddMock }),}));
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
 
 vi.mock('@/services/IssueService', async () => {
   const actual = await vi.importActual<typeof import('@/services/IssueService')>(
@@ -23,7 +23,6 @@ vi.mock('@/services/IssueService', async () => {
 describe('TenantIssueDetails component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    toastAddMock.mockClear();
   });
 
   it('loads issue details and renders timeline placeholder', async () => {
@@ -88,5 +87,76 @@ describe('TenantIssueDetails component', () => {
     expect(issueService.getIssue).toHaveBeenCalledWith('issue-42');
     expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
     expect(wrapper.find('[data-testid="tenant-issue-timeline-placeholder"]').exists()).toBe(false);
+  });
+
+  it('filters Verursacher/Ort lines from description and hides empty cleaned description', async () => {
+    vi.mocked(issueService.getIssue)
+      .mockResolvedValueOnce({
+        id: 'issue-12',
+        title: 'Schaden',
+        status: 'OPEN',
+        type: 'DEFECT',
+        agreementId: 'agreement-1',
+        description: 'Verursacher: Unbekannt\nOrt: Küche\nWasser tropft aus dem Rohr',
+      })
+      .mockResolvedValueOnce({
+        id: 'issue-13',
+        title: 'Ohne Beschreibung',
+        status: 'OPEN',
+        type: 'DEFECT',
+        agreementId: 'agreement-1',
+      });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-12' } });
+
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Wasser tropft aus dem Rohr');
+    expect(wrapper.text()).not.toContain('Verursacher: Unbekannt');
+    expect(wrapper.text()).not.toContain('Ort: Küche');
+
+    await wrapper.setProps({ issueId: 'issue-13' });
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Ohne Beschreibung');
+    expect(wrapper.text()).not.toContain('Wasser tropft aus dem Rohr');
+  });
+
+  it('renders modifiedAt as localized date or raw value when date is invalid', async () => {
+    const validModifiedAt = '2026-01-02T00:00:00.000Z';
+    const invalidModifiedAt = 'invalid-modified-at';
+
+    vi.mocked(issueService.getIssue)
+      .mockResolvedValueOnce({
+        id: 'issue-20',
+        title: 'Mit gültigem Datum',
+        status: 'OPEN',
+        type: 'DEFECT',
+        agreementId: 'agreement-1',
+        description: 'Beschreibung',
+        modifiedAt: validModifiedAt,
+      })
+      .mockResolvedValueOnce({
+        id: 'issue-21',
+        title: 'Mit ungültigem Datum',
+        status: 'OPEN',
+        type: 'DEFECT',
+        agreementId: 'agreement-1',
+        description: 'Beschreibung',
+        modifiedAt: invalidModifiedAt,
+      });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-20' } });
+
+    await flushPromises();
+
+    expect(wrapper.text()).not.toContain(validModifiedAt);
+
+    await wrapper.setProps({ issueId: 'issue-21' });
+    await flushPromises();
+
+    expect(wrapper.text()).toContain(invalidModifiedAt);
   });
 });
