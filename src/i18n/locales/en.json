@@ -540,7 +540,7 @@
   "tenantIssues.detail.updated": "Updated at:",
   "tenantIssues.detail.description": "Description:",
   "tenantIssues.detail.cancelIssue": "Close Issue",
-  "tenantIssues.detail.cancelConfirm": "Are you sure you want to cancel this issue?",
+  "tenantIssues.detail.cancelConfirm": "Are you sure you want to close this issue?",
   "tenantIssues.detail.cancelSuccess": "Issue was cancelled successfully.",
   "tenantIssues.detail.cancelError": "Issue could not be cancelled.",
   "tenantIssues.timeline.title": "Timeline",
