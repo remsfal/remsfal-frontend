@@ -156,7 +156,7 @@ watch(
               </p>
             </div>
             <Button
-              v-if="issue.type !== 'TERMINATION'"
+              v-if="issue.type !== 'TERMINATION' && issue.status !== 'CLOSED' && issue.status !== 'REJECTED'"
               :label="t('tenantIssues.detail.cancelIssue')"
               icon="pi pi-trash"
               severity="danger"
