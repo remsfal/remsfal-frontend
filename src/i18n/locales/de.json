@@ -542,7 +542,7 @@
   "tenantIssues.detail.issueNode": "Vorgangsnummer:",
   "tenantIssues.detail.updated": "Aktuallisiert am:",
   "tenantIssues.detail.description": "Beschreibung:",
-  "tenantIssues.detail.cancelIssue": "Vorgang abbrechen",
+  "tenantIssues.detail.cancelIssue": "Vorgang schließen",
   "tenantIssues.detail.cancelConfirm": "Sind Sie sicher, dass Sie diesen Vorgang abbrechen möchten?",
   "tenantIssues.detail.cancelSuccess": "Vorgang wurde erfolgreich abgebrochen.",
   "tenantIssues.detail.cancelError": "Vorgang konnte nicht abgebrochen werden.",
