@@ -1,5 +1,6 @@
 import { userHandlers } from './user.handlers';
 import { organizationHandlers } from './organization.handlers';
+import { contractorHandlers } from './contractor.handlers';
 import { projectHandlers } from './project.handlers';
 import { projectMemberHandlers } from './project-member.handlers';
 import { projectOrganizationHandlers } from './project-organization.handlers';
@@ -18,6 +19,7 @@ import { inboxHandlers } from './inbox.handlers';
 export const handlers = [
   ...userHandlers,
   ...organizationHandlers,
+  ...contractorHandlers,
   ...projectHandlers,
   ...projectMemberHandlers,
   ...projectOrganizationHandlers,

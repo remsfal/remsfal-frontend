@@ -46,7 +46,7 @@ export class OrganizationService {
   ): Promise<OrganizationEmployeeJson> {
     return apiClient.patch(
       '/api/v1/organizations/{organizationId}/employees/{employeeId}',
-      { employeeRole } as OrganizationEmployeeJson,
+      { employeeRole },
       { pathParams: { organizationId, employeeId } },
     );
   }

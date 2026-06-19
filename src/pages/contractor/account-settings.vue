@@ -1,12 +1,12 @@
 <route lang="yaml">
-name: TenantAccountSettings
+name: ContractorAccountSettings
 meta:
-  layout: tenant
+  layout: contractor
   requiresAuth: true
 </route>
 
 <script setup lang="ts">
-import AccountSettingsView from "@/views/AccountSettingsView.vue";
+import AccountSettingsView from '@/views/AccountSettingsView.vue'
 </script>
 
 <template>

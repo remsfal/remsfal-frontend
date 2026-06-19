@@ -34,6 +34,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ContractorAccountSettings': RouteRecordInfo<
+      'ContractorAccountSettings',
+      '/contractor/account-settings',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'ContractorClientsClosed': RouteRecordInfo<
       'ContractorClientsClosed',
       '/contractor/clients/closed',
@@ -65,6 +72,13 @@ declare module 'vue-router/auto-routes' {
     'ContractorView': RouteRecordInfo<
       'ContractorView',
       '/contractor/issues',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ContractorSettings': RouteRecordInfo<
+      'ContractorSettings',
+      '/contractor/settings',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -312,6 +326,12 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/contractor/account-settings.vue': {
+      routes:
+        | 'ContractorAccountSettings'
+      views:
+        | never
+    }
     'src/pages/contractor/clients/closed.vue': {
       routes:
         | 'ContractorClientsClosed'
@@ -339,6 +359,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/contractor/issues.vue': {
       routes:
         | 'ContractorView'
+      views:
+        | never
+    }
+    'src/pages/contractor/settings.vue': {
+      routes:
+        | 'ContractorSettings'
       views:
         | never
     }

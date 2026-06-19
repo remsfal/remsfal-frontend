@@ -116,6 +116,7 @@ const addMember = async (email: string, employeeRole: EmployeeRole) => {
         >
           <EmployeeRoleSelect
             name="employeeRole"
+            inputId="employeeRole"
             :invalid="$form.employeeRole?.invalid && $form.employeeRole?.touched"
             class="w-full"
           />

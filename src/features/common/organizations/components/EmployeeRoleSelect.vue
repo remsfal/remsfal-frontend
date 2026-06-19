@@ -9,11 +9,13 @@ const props = withDefaults(
     class?: string;
     invalid?: boolean;
     name?: string;
+    inputId?: string;
   }>(),
   {
     modelValue: null,
     class: undefined,
     name: undefined,
+    inputId: undefined,
   },
 );
 const emit = defineEmits<{ 'update:modelValue': [value: EmployeeRole | null] }>();
@@ -30,6 +32,7 @@ const employeeRoles: { label: string; value: EmployeeRole }[] = [
 <template>
   <Select
     :name="props.name"
+    :inputId="props.inputId"
     :placeholder="t('organization.employeeRole.select')"
     :options="employeeRoles"
     optionLabel="label"
