@@ -91,6 +91,7 @@ const cancelIssue = async () => {
       severity: 'success',
       summary: t('success.saved'),
       detail: t('tenantIssues.detail.cancelSuccess'),
+      life: 4000,
     });
     await router.push({ name: 'TenantIssues' });
   } catch (deleteError) {
@@ -99,6 +100,7 @@ const cancelIssue = async () => {
       severity: 'error',
       summary: t('error.general'),
       detail: t('tenantIssues.detail.cancelError'),
+      life: 5000,
     });
   } finally {
     deletingIssue.value = false;
@@ -225,16 +227,12 @@ watch(
             </dl>
           </div>
 
-          <dl v-if="descriptionLabel" class="mt-4 text-base text-gray-600">
-            <div class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.detail.description') }}
-              </dt>
-              <dd class="text-gray-900 whitespace-pre-line break-words">
-                {{ descriptionLabel }}
-              </dd>
-            </div>
-          </dl>
+          <div v-if="descriptionLabel" class="mt-4 text-base text-gray-600">
+            {{ t('tenantIssues.detail.description') }}
+            <span class="text-gray-900 whitespace-pre-line break-words">
+              {{ descriptionLabel }}
+            </span>
+          </div>
         </template>
       </BaseCard>
       <BaseCard>
