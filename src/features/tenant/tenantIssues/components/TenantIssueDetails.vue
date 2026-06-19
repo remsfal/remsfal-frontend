@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
+import BaseDialog from '@/components/common/BaseDialog.vue';
 import Tag from 'primevue/tag';
 import { issueService, type IssueJson } from '@/services/IssueService';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
@@ -13,10 +15,13 @@ import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
 
 const props = defineProps<{ issueId: string }>();
 
+const router = useRouter();
 const toast = useToast();
 const { t, locale } = useI18n();
 
 const loading = ref(false);
+const deletingIssue = ref(false);
+const showCancelDialog = ref(false);
 const issue = ref<IssueJson | null>(null);
 const error = ref<string | null>(null);
 const statusLabel = computed(() => getIssueStatusLabel(issue.value?.status, t));
@@ -73,6 +78,42 @@ const fetchIssue = async () => {
   }
 };
 
+const cancelIssue = async () => {
+  if (deletingIssue.value) {
+    return;
+  }
+
+  deletingIssue.value = true;
+
+  try {
+    await issueService.deleteIssue(issue.value?.id || props.issueId);
+    toast.add({
+      severity: 'success',
+      summary: t('success.saved'),
+      detail: t('tenantIssues.detail.cancelSuccess'),
+    });
+    await router.push({ name: 'TenantIssues' });
+  } catch (deleteError) {
+    console.error('Error deleting tenant issue:', deleteError);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('tenantIssues.detail.cancelError'),
+    });
+  } finally {
+    deletingIssue.value = false;
+  }
+};
+
+const openCancelDialog = () => {
+  showCancelDialog.value = true;
+};
+
+const confirmCancelIssue = () => {
+  showCancelDialog.value = false;
+  cancelIssue();
+};
+
 onMounted(() => {
   fetchIssue();
 });
@@ -112,7 +153,16 @@ watch(
                 {{ t('tenantIssues.detail.number') }} {{ issue.id || '—' }}
               </p>
             </div>
-            <Button :label="t('tenantIssues.detail.cancelIssue')" severity="danger" class="shrink-0 self-start" />
+            <Button
+              :label="t('tenantIssues.detail.cancelIssue')"
+              icon="pi pi-trash"
+              severity="danger"
+              class="shrink-0 self-start"
+              data-testid="tenant-issue-cancel"
+              :loading="deletingIssue"
+              :disabled="deletingIssue"
+              @click="openCancelDialog"
+            />
           </div>
         </template>
         <template #content>
@@ -201,5 +251,30 @@ watch(
         </template>
       </BaseCard>
     </template>
+
+    <BaseDialog
+      v-model:visible="showCancelDialog"
+      :header="t('tenantIssues.detail.cancelIssue')"
+    >
+      <p class="mb-4">
+        {{ t('tenantIssues.detail.cancelConfirm') }}
+      </p>
+      <template #footer>
+        <Button
+          :label="t('button.cancel')"
+          severity="secondary"
+          @click="showCancelDialog = false"
+        />
+        <Button
+          :label="t('tenantIssues.detail.cancelIssue')"
+          severity="danger"
+          icon="pi pi-trash"
+          data-testid="tenant-issue-cancel-confirm"
+          :loading="deletingIssue"
+          :disabled="deletingIssue"
+          @click="confirmCancelIssue"
+        />
+      </template>
+    </BaseDialog>
   </div>
 </template>
