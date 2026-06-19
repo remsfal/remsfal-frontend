@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getIssueCategoryLabel, getIssuePriorityLabel } from '@/features/tenant/tenantIssues/issueLabels';
-import { getIssueStatusLabel, getIssueStatusSeverity } from '@/features/tenant/tenantIssues/issueLabels';
-import { getIssueTypeLabel, getIssueTypeSeverity, getUnitTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity, getIssuePriorityLabel,
+  getIssueStatusSeverity, getIssueTypeLabel, getUnitTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
 type Translator = Parameters<typeof getIssueStatusLabel>[1];
 

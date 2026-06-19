@@ -8,9 +8,8 @@ import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Tag from 'primevue/tag';
 import { issueService, type IssueJson } from '@/services/IssueService';
-import { getIssueCategoryLabel, getIssueStatusLabel } from '@/features/tenant/tenantIssues/issueLabels';
-import { getIssueTypeSeverity, getIssueStatusSeverity } from '@/features/tenant/tenantIssues/issueLabels';
-import { getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
+  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{ issueId: string }>();
 

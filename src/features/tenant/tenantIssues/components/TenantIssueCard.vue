@@ -4,8 +4,8 @@ import { useI18n } from 'vue-i18n';
 import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { IssueItemJson } from '@/services/IssueService';
-import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
-import { getIssueTypeSeverity, getIssueStatusSeverity } from '@/features/tenant/tenantIssues/issueLabels';
+import { getIssueStatusLabel, getIssueTypeSeverity,
+  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 const props = defineProps<{
   issue: IssueItemJson;
 }>();
