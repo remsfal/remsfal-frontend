@@ -87,7 +87,10 @@ describe('TenantIssueDetails component', () => {
     await flushPromises();
 
     expect(issueService.getIssue).toHaveBeenCalledWith('issue-42');
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
+      severity: 'error',
+      life: 3000,
+    }));
     expect(wrapper.find('[data-testid="tenant-issue-timeline-placeholder"]').exists()).toBe(false);
   });
 
@@ -124,7 +127,50 @@ describe('TenantIssueDetails component', () => {
 
     expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-42');
     expect(pushSpy).toHaveBeenCalledWith({ name: 'TenantIssues' });
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
+    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
+      severity: 'success',
+      life: 4000,
+    }));
+    wrapper.unmount();
+    pushSpy.mockRestore();
+  });
+
+  it('shows error toast when deleting issue fails', async () => {
+    const pushSpy = vi.spyOn(router, 'push').mockResolvedValue(undefined);
+
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-42',
+      title: 'Wasserschaden Küche',
+      status: 'IN_PROGRESS',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      description: 'Rohr unter der Spüle undicht.',
+    });
+    vi.mocked(issueService.deleteIssue).mockRejectedValue(new Error('delete failed'));
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, {
+      props: { issueId: 'issue-42' },
+      attachTo: document.body,
+    });
+
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-cancel"]').trigger('click');
+    await flushPromises();
+
+    const confirmButton = document.querySelector(
+      '[data-testid="tenant-issue-cancel-confirm"]',
+    ) as HTMLButtonElement | null;
+    expect(confirmButton).not.toBeNull();
+    confirmButton?.click();
+    await flushPromises();
+
+    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-42');
+    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
+      severity: 'error',
+      life: 5000,
+    }));
+    expect(pushSpy).not.toHaveBeenCalled();
     wrapper.unmount();
     pushSpy.mockRestore();
   });
