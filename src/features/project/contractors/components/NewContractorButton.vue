@@ -24,7 +24,7 @@ const phoneRegex = /^\+[1-9]\d{4,14}$/;
 const visible = ref(false);
 const phone = ref('');
 const initialValues = ref({
- companyName: '', email: '', contactPerson: '', trade: '' 
+  companyName: '', email: '', contactPerson: '', trade: '' 
 });
 
 const validationSchema = z.object({
@@ -47,8 +47,8 @@ const phoneError = computed(() => {
 
 function resetForm() {
   initialValues.value = {
- companyName: '', email: '', contactPerson: '', trade: '' 
-};
+    companyName: '', email: '', contactPerson: '', trade: '' 
+  };
   phone.value = '';
 }
 

@@ -36,13 +36,13 @@ const schema = z.object({
 const resolver = zodResolver(schema);
 
 const serverValues = reactive({
- companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
 });
 const currentValues = reactive({
- companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
 });
 const initialValues = ref({
- companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
 });
 const formKey = ref(0);
 
@@ -104,12 +104,12 @@ async function onSubmit(event: FormSubmitEvent) {
     initialValues.value = { ...saved };
     formKey.value++;
     toast.add({
- severity: 'success', summary: t('contractor.detail.saveSuccess'), life: 3000 
-});
+      severity: 'success', summary: t('contractor.detail.saveSuccess'), life: 3000 
+    });
   } catch {
     toast.add({
- severity: 'error', summary: t('contractor.detail.saveError'), life: 4000 
-});
+      severity: 'error', summary: t('contractor.detail.saveError'), life: 4000 
+    });
   }
 }
 </script>
