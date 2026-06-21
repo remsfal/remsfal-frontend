@@ -185,7 +185,7 @@ async function onSubmit(event: FormSubmitEvent) {
               <Select
                 v-model="currentValues.email"
                 :options="emailOptions"
-                inputId="org-email"
+                id="org-email"
                 fluid
               />
             </div>

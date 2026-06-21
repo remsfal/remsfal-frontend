@@ -32,7 +32,7 @@ const employeeRoles: { label: string; value: EmployeeRole }[] = [
 <template>
   <Select
     :name="props.name"
-    :inputId="props.inputId"
+    :id="props.inputId"
     :placeholder="t('organization.employeeRole.select')"
     :options="employeeRoles"
     optionLabel="label"

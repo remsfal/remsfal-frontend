@@ -56,14 +56,14 @@ describe('EmployeeRoleSelect', () => {
     expect(wrapper.html()).toContain('p-invalid');
   });
 
-  it('passes inputId prop to underlying Select', () => {
+  it('passes inputId as id attribute to underlying Select', () => {
     const wrapper = mount(EmployeeRoleSelect, {
       props: { inputId: 'my-role-select' },
       global: {
         stubs: {
           Select: {
-            template: '<div :id="inputId"></div>',
-            props: ['name', 'inputId', 'modelValue', 'options', 'class', 'placeholder', 'optionLabel', 'optionValue'],
+            template: '<div v-bind="$attrs"></div>',
+            inheritAttrs: false,
           },
         },
       },

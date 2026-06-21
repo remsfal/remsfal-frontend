@@ -133,7 +133,7 @@ function onHide() {
         </DialogFormField>
 
         <DialogFormField inputId="org-email" :label="t('organization.email')">
-          <Select v-model="emailValue" :options="emailOptions" inputId="org-email" fluid />
+          <Select v-model="emailValue" :options="emailOptions" id="org-email" fluid />
         </DialogFormField>
 
         <Message severity="secondary" size="small" variant="simple">
