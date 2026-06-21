@@ -27,7 +27,7 @@ const route = useRoute('BuildingView');
   <FacilityAddressCard
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
-    facilityType="building"
+    facilityType="BUILDING"
   />
 
   <RentableUnitDangerZoneCard

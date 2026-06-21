@@ -5,35 +5,45 @@ import AppMenuItem, { type MenuItem } from './AppMenuItem.vue';
 
 const model = ref([
   {
-    label: 'consultantMenu.home',
+    label: 'contractorMenu.myData',
     items: [
       {
-        label: 'consultantMenu.home.overview',
+        label: 'contractorMenu.myData.overview',
         icon: { type: 'pi', name: 'pi pi-fw pi-home' },
         to: '/contractor/dashboard',
       },
       {
-        label: 'consultantMenu.home.client',
+        label: 'contractorMenu.myData.client',
         icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
         to: '/contractor/issues',
+      },
+      {
+        label: 'contractorMenu.myData.personalData',
+        icon: { type: 'pi', name: 'pi pi-fw pi-user' },
+        to: '/contractor/account-settings',
+      },
+      {
+        label: 'contractorMenu.myData.settings',
+        icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
+        to: '/contractor/settings',
       },
     ],
   },
   {
-    label: 'consultantMenu.clientManagement',
+    label: 'contractorMenu.clientManagement',
     items: [
       {
-        label: 'consultantMenu.clientManagement.open',
+        label: 'contractorMenu.clientManagement.open',
         icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
         to: '/contractor/clients/open',
       },
       {
-        label: 'consultantMenu.clientManagement.ongoing',
+        label: 'contractorMenu.clientManagement.ongoing',
         icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
         to: '/contractor/clients/ongoing',
       },
       {
-        label: 'consultantMenu.clientManagement.closed',
+        label: 'contractorMenu.clientManagement.closed',
         icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
         to: '/contractor/clients/closed',
       },

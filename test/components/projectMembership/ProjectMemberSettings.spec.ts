@@ -39,7 +39,7 @@ describe('ProjectMemberSettings.vue', () => {
     const rows = wrapper.findAll('td');
     expect(rows.length).toBeGreaterThan(0);
     expect(rows.at(0)?.text()).toEqual('test1@example.com');
-    expect(rows.at(3)?.text()).toEqual('test2@example.com');
+    expect(rows.at(4)?.text()).toEqual('test2@example.com');
   });
 
   test("updateMemberRole - updates a member's role successfully", async () => {

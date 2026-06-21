@@ -8,6 +8,7 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import PhoneInput from '@/components/common/PhoneInput.vue';
@@ -15,6 +16,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue';
 import DialogFormField from '@/components/common/DialogFormField.vue';
 import { organizationService } from '@/services/OrganizationService';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ visible: boolean }>();
 const emit = defineEmits<{ 'update:visible': [value: boolean] }>();
@@ -23,15 +25,22 @@ const { t } = useI18n();
 const toast = useToast();
 const router = useRouter();
 const organizationStore = useOrganizationStore();
+const sessionStore = useUserSessionStore();
 
 const formKey = ref(0);
 const submitting = ref(false);
 const phoneValue = ref('');
 const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
-const initialValues = reactive({
-  name: '', email: '', trade: '' 
+const emailOptions = computed<string[]>(() => {
+  const primary = sessionStore.user?.email;
+  const additional = sessionStore.user?.additionalEmails ?? [];
+  return [...new Set([primary, ...additional].filter(Boolean))] as string[];
 });
+
+const emailValue = ref(sessionStore.user?.email ?? '');
+
+const initialValues = reactive({name: '', trade: '',});
 
 const phoneError = computed(() => {
   if (!phoneValue.value) return null;
@@ -40,11 +49,6 @@ const phoneError = computed(() => {
 
 const schema = z.object({
   name: z.string().trim().min(3, { message: t('organization.validation.nameRequired') }),
-  email: z
-    .string()
-    .trim()
-    .optional()
-    .refine((v) => !v || z.string().email().safeParse(v).success, {message: t('organization.validation.emailInvalid'),}),
   trade: z.string().trim().optional(),
 });
 
@@ -58,7 +62,7 @@ async function onSubmit(event: FormSubmitEvent) {
     await organizationService.createOrganization({
       name: event.states.name?.value || undefined,
       phone: phoneValue.value || undefined,
-      email: event.states.email?.value || undefined,
+      email: emailValue.value || undefined,
       trade: event.states.trade?.value || undefined,
     });
     await organizationStore.fetchUserOrganization();
@@ -87,10 +91,9 @@ async function onSubmit(event: FormSubmitEvent) {
 }
 
 function onHide() {
-  Object.assign(initialValues, {
-    name: '', email: '', trade: '' 
-  });
+  Object.assign(initialValues, { name: '', trade: '' });
   phoneValue.value = '';
+  emailValue.value = sessionStore.user?.email ?? '';
   formKey.value++;
   emit('update:visible', false);
 }
@@ -129,12 +132,8 @@ function onHide() {
           <PhoneInput v-model="phoneValue" inputId="org-phone" />
         </DialogFormField>
 
-        <DialogFormField
-          inputId="org-email"
-          :label="t('organization.email')"
-          :errorMessage="$form.email?.invalid && $form.email?.touched ? $form.email.error?.message : undefined"
-        >
-          <InputText id="org-email" name="email" fluid :placeholder="t('organization.email')" />
+        <DialogFormField inputId="org-email" :label="t('organization.email')">
+          <Select v-model="emailValue" :options="emailOptions" id="org-email" fluid />
         </DialogFormField>
 
         <Message severity="secondary" size="small" variant="simple">

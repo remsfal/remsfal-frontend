@@ -17,7 +17,7 @@ describe('ContractorMenu.vue', () => {
 
     const rootMenuItems = wrapper.findAll('.layout-root-menuitem');
     expect(rootMenuItems.length).toBe(2);
-    expect(rootMenuItems[0].text()).toContain('Home');
+    expect(rootMenuItems[0].text()).toContain('Meine Daten');
     expect(rootMenuItems[1].text()).toContain('Auftragsmanagement');
 
     const submenus = wrapper.findAll('.layout-submenu');
@@ -30,8 +30,10 @@ describe('ContractorMenu.vue', () => {
     const submenuLabels = wrapper.findAll('.layout-submenu .layout-menuitem-text');
 
     const expectedSubmenuLabels = [
-      'Überblick',
+      'Meine Übersicht',
       'Auftraggeber',
+      'Persönliche Daten',
+      'Persönliche Einstellungen',
       'Offene Anfragen',
       'Laufende Aufträge',
       'Abgeschlossene Aufträge',

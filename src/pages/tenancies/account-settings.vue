@@ -6,13 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import UserAddressCard from "@/components/UserAddressCard.vue";
-import UserContactDataCard from "@/components/UserContactDataCard.vue";
-import UserDangerZoneCard from "@/components/UserDangerZoneCard.vue";
+import AccountSettingsView from "@/views/AccountSettingsView.vue";
 </script>
 
 <template>
-  <UserContactDataCard />
-  <UserAddressCard />
-  <UserDangerZoneCard />
+  <AccountSettingsView />
 </template>
