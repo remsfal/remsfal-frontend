@@ -29,17 +29,15 @@ describe('ProjectContractorService with MSW', () => {
   });
 
   test('updateContractor merges request body into response', async () => {
-    const updated = await projectContractorService.updateContractor('project-1', 'contractor-1', {
-      companyName: 'Updated GmbH',
-    });
+    const updated = await projectContractorService.updateContractor(
+      'project-1', 'contractor-1', { companyName: 'Updated GmbH' },
+    );
     expect(updated.companyName).toBe('Updated GmbH');
     expect(updated.id).toBe('contractor-1');
   });
 
   test('updateContractor preserves unchanged fields', async () => {
-    const updated = await projectContractorService.updateContractor('project-1', 'contractor-1', {
-      phone: '+4930999888',
-    });
+    const updated = await projectContractorService.updateContractor('project-1', 'contractor-1', {phone: '+4930999888',});
     expect(updated.phone).toBe('+4930999888');
     expect(updated.companyName).toBeDefined();
   });

@@ -25,7 +25,9 @@ vi.mock('@/components/AddressCard.vue', () => ({
   },
 }));
 
-const mockAddress = { street: 'Teststraße 1', zip: '10115', city: 'Berlin', countryCode: 'DE' };
+const mockAddress = {
+  street: 'Teststraße 1', zip: '10115', city: 'Berlin', countryCode: 'DE' 
+};
 
 describe('FacilityAddressCard', () => {
   beforeEach(() => {
@@ -38,7 +40,9 @@ describe('FacilityAddressCard', () => {
 
   const mountCard = (facilityType: 'BUILDING' | 'SITE' = 'BUILDING', title?: string) =>
     mount(FacilityAddressCard, {
-      props: { projectId: 'proj-1', unitId: 'unit-1', facilityType, title },
+      props: {
+        projectId: 'proj-1', unitId: 'unit-1', facilityType, title 
+      },
     });
 
   it('renders without errors for BUILDING type', () => {

@@ -24,14 +24,18 @@ export const contractorHandlers = [
 
   http.get(`${API_BASE}/projects/:projectId/contractors/:contractorId`, ({ params }) => {
     return HttpResponse.json(
-      { ...mockContractor, id: params.contractorId, projectId: params.projectId },
+      {
+        ...mockContractor, id: params.contractorId, projectId: params.projectId 
+      },
       { status: 200 },
     );
   }),
 
   http.patch(`${API_BASE}/projects/:projectId/contractors/:contractorId`, async ({ params, request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({ ...mockContractor, ...body, id: params.contractorId }, { status: 200 });
+    return HttpResponse.json({
+      ...mockContractor, ...body, id: params.contractorId 
+    }, { status: 200 });
   }),
 
   http.delete(`${API_BASE}/projects/:projectId/contractors/:contractorId`, () => {

@@ -128,7 +128,9 @@ describe('NewContractorButton', () => {
     });
     await flushPromises();
 
-    expect(projectContractorService.createContractor).toHaveBeenCalledWith('proj-1', expect.objectContaining({ companyName: 'Test GmbH' }));
+    expect(projectContractorService.createContractor).toHaveBeenCalledWith(
+      'proj-1', expect.objectContaining({ companyName: 'Test GmbH' }),
+    );
     expect(wrapper.emitted('newContractor')).toBeTruthy();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
@@ -165,7 +167,9 @@ describe('NewContractorButton', () => {
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
       valid: true,
-      states: { companyName: { value: 'Test GmbH' }, email: { value: '' }, contactPerson: { value: '' }, trade: { value: '' } },
+      states: {
+        companyName: { value: 'Test GmbH' }, email: { value: '' }, contactPerson: { value: '' }, trade: { value: '' } 
+      },
     });
     await flushPromises();
 

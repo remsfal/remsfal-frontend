@@ -7,8 +7,12 @@ const VALID_UUID_1 = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 const VALID_UUID_2 = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 
 const mockEmployees = [
-  { id: VALID_UUID_1, name: 'Max Muster', email: 'max@test.de', employeeRole: 'OWNER' as const, active: true },
-  { id: VALID_UUID_2, name: undefined, email: 'jane@test.de', employeeRole: 'STAFF' as const, active: false },
+  {
+    id: VALID_UUID_1, name: 'Max Muster', email: 'max@test.de', employeeRole: 'OWNER' as const, active: true 
+  },
+  {
+    id: VALID_UUID_2, name: undefined, email: 'jane@test.de', employeeRole: 'STAFF' as const, active: false 
+  },
 ];
 
 const addMock = vi.fn();
@@ -68,7 +72,9 @@ describe('OrganizationMemberCard', () => {
 
   it('does not show inactive label for active employees', async () => {
     vi.spyOn(organizationService, 'getEmployees').mockResolvedValue({
-      employees: [{ id: 'emp-1', name: 'Active User', email: 'active@test.de', employeeRole: 'OWNER', active: true }],
+      employees: [{
+        id: 'emp-1', name: 'Active User', email: 'active@test.de', employeeRole: 'OWNER', active: true 
+      }],
     });
     const wrapper = mountCard();
     await flushPromises();
@@ -111,9 +117,8 @@ describe('OrganizationMemberCard', () => {
   });
 
   it('logs error when employee id is missing on updateEmployeeRole', async () => {
-    vi.spyOn(organizationService, 'getEmployees').mockResolvedValue({
-      employees: [{ email: 'no-id@test.de', employeeRole: 'STAFF' }],
-    });
+    vi.spyOn(organizationService, 'getEmployees')
+      .mockResolvedValue({employees: [{ email: 'no-id@test.de', employeeRole: 'STAFF' }]});
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountCard();
     await flushPromises();
@@ -138,14 +143,16 @@ describe('OrganizationMemberCard', () => {
   });
 
   it('does not call removeEmployee for invalid employeeId', async () => {
-    const wrapper = mountCard();
+    mountCard();
     await flushPromises();
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     // Manually call with invalid id by finding a stub
     vi.spyOn(organizationService, 'getEmployees').mockResolvedValue({
-      employees: [{ id: 'invalid-id!', email: 'test@test.de', employeeRole: 'STAFF', active: true }],
+      employees: [{
+        id: 'invalid-id!', email: 'test@test.de', employeeRole: 'STAFF', active: true 
+      }],
     });
     const wrapper2 = mountCard();
     await flushPromises();

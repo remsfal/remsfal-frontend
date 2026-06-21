@@ -6,7 +6,14 @@ describe('EmployeeRoleSelect', () => {
   const mountSelect = (props = {}) =>
     mount(EmployeeRoleSelect, {
       props,
-      global: { stubs: { Select: { template: '<select />', props: ['name', 'inputId', 'modelValue', 'options', 'class', 'placeholder', 'optionLabel', 'optionValue'] } } },
+      global: {
+        stubs: {
+          Select: {
+            template: '<select />',
+            props: ['name', 'inputId', 'modelValue', 'options', 'class', 'placeholder', 'optionLabel', 'optionValue'],
+          },
+        },
+      },
     });
 
   it('renders without errors', () => {

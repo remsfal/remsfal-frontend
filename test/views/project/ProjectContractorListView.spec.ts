@@ -3,7 +3,9 @@ import { mount } from '@vue/test-utils';
 import ProjectContractorListView from '@/views/project/ProjectContractorListView.vue';
 
 vi.mock('@/features/project/contractors', () => ({
-  ContractorListCard: { name: 'ContractorListCard', template: '<div data-test="contractor-list-card" />', props: ['projectId'] },
+  ContractorListCard: {
+    name: 'ContractorListCard', template: '<div data-test="contractor-list-card" />', props: ['projectId'] 
+  },
 }));
 
 describe('ProjectContractorListView', () => {

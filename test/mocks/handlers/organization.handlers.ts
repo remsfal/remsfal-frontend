@@ -64,7 +64,9 @@ export const organizationHandlers = [
   // PATCH /organizations/:organizationId/employees/:employeeId
   http.patch(`${API_BASE}/organizations/:organizationId/employees/:employeeId`, async ({ params, request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({ ...mockEmployee, ...body, id: params.employeeId }, { status: 200 });
+    return HttpResponse.json({
+      ...mockEmployee, ...body, id: params.employeeId 
+    }, { status: 200 });
   }),
 
   // DELETE /organizations/:organizationId/employees/:employeeId
@@ -80,6 +82,8 @@ export const organizationHandlers = [
   // PATCH /organizations/:organizationId
   http.patch(`${API_BASE}/organizations/:organizationId`, async ({ params, request }) => {
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({ ...mockOrganization, ...body, id: params.organizationId }, { status: 200 });
+    return HttpResponse.json({
+      ...mockOrganization, ...body, id: params.organizationId 
+    }, { status: 200 });
   }),
 ];
