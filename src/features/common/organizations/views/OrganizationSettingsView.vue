@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { onMounted } from 'vue';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 import { OrganizationBaseDataCard, OrganizationMemberCard } from '@/features/common/organizations';
 import AddressCard from '@/components/AddressCard.vue';
 import { organizationService } from '@/services/OrganizationService';
 import type { AddressJson } from '@/services/AddressService';
 
-const route = useRoute('ManagerOrganizationSettings');
+const props = defineProps<{ organizationId: string }>();
 const organizationStore = useOrganizationStore();
-
-const organizationId = computed(() => route.params.organizationId as string);
 
 onMounted(() => {
   if (!organizationStore.initialized) {
@@ -19,12 +16,12 @@ onMounted(() => {
 });
 
 async function loadAddress(): Promise<AddressJson | undefined> {
-  const org = await organizationService.getOrganization(organizationId.value);
+  const org = await organizationService.getOrganization(props.organizationId);
   return org.address as AddressJson | undefined;
 }
 
 async function saveAddress(addr: AddressJson): Promise<void> {
-  await organizationService.updateOrganization(organizationId.value, { address: addr });
+  await organizationService.updateOrganization(props.organizationId, { address: addr });
 }
 </script>
 

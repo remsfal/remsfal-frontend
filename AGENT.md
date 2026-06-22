@@ -86,6 +86,7 @@ src/
 ├── features/                   # Domain-based feature slices
 │   ├── manager/
 │   │   ├── components/         # ProjectSelectionTable, NewProjectDialog, ...
+│   │   ├── views/              # Feature-specific page-level components (*View.vue)
 │   │   ├── stores/             # ProjectStore (belongs to manager domain)
 │   │   └── index.ts            # Public API of this feature
 │   ├── project/
@@ -304,6 +305,7 @@ declare module 'vue-router' {
 - Existing code moves to its feature slice when the file is next modified
 - Never reach into a feature's internals from outside — use `index.ts` as the public API
 - `shared/` is for code actually used by ≥2 features; when in doubt, start in the feature
+- Feature-specific Views (`*View.vue`) go in `src/features/<domain>/views/` and are exported via `index.ts` — the global `src/views/` is only for Views without a clear feature home
 
 **Shared components during migration**:
 - Until `src/shared/` is fully established, all shared components (used by ≥2 features) go into `src/components/common/`
