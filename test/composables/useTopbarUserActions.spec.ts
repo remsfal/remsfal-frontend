@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useTopbarUserActions } from '@/composables/useTopbarUserActions';
-import { createTestingPinia } from '@pinia/testing';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 
@@ -63,46 +62,40 @@ describe('useTopbarUserActions', () => {
 
   it('login uses redirect query param when present', () => {
     currentQuery = { redirect: '/dashboard' };
-    const pinia = createTestingPinia({ stubActions: false });
-    const wrapper = mount(TestComponent, { global: { plugins: [pinia] } });
+    const wrapper = mount(TestComponent);
     wrapper.vm.login();
     expect(globalThis.location.href).toBe('/api/v1/authentication/login?route=%2Fdashboard');
   });
 
   it('login falls back to current fullPath when no redirect param', () => {
-    const pinia = createTestingPinia({ stubActions: false });
-    const wrapper = mount(TestComponent, { global: { plugins: [pinia] } });
+    const wrapper = mount(TestComponent);
     wrapper.vm.login();
     expect(globalThis.location.href).toBe('/api/v1/authentication/login?route=%2F');
   });
 
   it('logout navigates to correct URL', () => {
-    const pinia = createTestingPinia({ stubActions: false });
-    const wrapper = mount(TestComponent, { global: { plugins: [pinia] } });
+    const wrapper = mount(TestComponent);
     wrapper.vm.logout();
     expect(globalThis.location.pathname).toBe('/api/v1/authentication/logout');
   });
 
   it('navigates to contractor account settings when on contractor route', () => {
     currentPath = '/contractor/dashboard';
-    const pinia = createTestingPinia({ stubActions: false });
-    const wrapper = mount(TestComponent, { global: { plugins: [pinia] } });
+    const wrapper = mount(TestComponent);
     wrapper.vm.onAccountSettingsClick();
     expect(mockPush).toHaveBeenCalledWith('/contractor/account-settings');
   });
 
   it('navigates to tenant account settings when on tenancies route', () => {
     currentPath = '/tenancies/dashboard';
-    const pinia = createTestingPinia({ stubActions: false });
-    const wrapper = mount(TestComponent, { global: { plugins: [pinia] } });
+    const wrapper = mount(TestComponent);
     wrapper.vm.onAccountSettingsClick();
     expect(mockPush).toHaveBeenCalledWith('/tenancies/account-settings');
   });
 
   it('navigates to manager account settings when on manager route', () => {
     currentPath = '/manager/dashboard';
-    const pinia = createTestingPinia({ stubActions: false });
-    const wrapper = mount(TestComponent, { global: { plugins: [pinia] } });
+    const wrapper = mount(TestComponent);
     wrapper.vm.onAccountSettingsClick();
     expect(mockPush).toHaveBeenCalledWith('/manager/account-settings');
   });

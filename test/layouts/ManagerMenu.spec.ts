@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
@@ -7,6 +7,9 @@ describe('ManagerMenu.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
+    // Prevent fetchUserOrganization from running so userOrganizations stays empty
+    const orgStore = useOrganizationStore();
+    vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
     wrapper = mount(ManagerMenu);
   });
 
@@ -85,9 +88,10 @@ describe('ManagerMenu.vue — with organization', () => {
   let orgStore: ReturnType<typeof useOrganizationStore>;
 
   beforeEach(async () => {
-    wrapper = mount(ManagerMenu);
-    // Use the same testing-Pinia the component uses; bypass action stubs via direct assignment
     orgStore = useOrganizationStore();
+    // Mock the action so we control the store state explicitly
+    vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
+    wrapper = mount(ManagerMenu);
     orgStore.userOrganizations = [mockOrg];
     orgStore.initialized = true;
     await wrapper.vm.$nextTick();
