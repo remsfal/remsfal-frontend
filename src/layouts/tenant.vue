@@ -7,9 +7,15 @@ import TenantMobileBar from '@/layouts/components/TenantMobileBar.vue'
 
 <template>
   <AppRoleLayout>
-    <template #topbar><AppSimpleTopbar /></template>
-    <template #menu><TenantMenu /></template>
-    <template #mobilebar><TenantMobileBar class="layout-mobile-navbar" /></template>
+    <template #topbar>
+      <AppSimpleTopbar />
+    </template>
+    <template #menu>
+      <TenantMenu />
+    </template>
+    <template #mobilebar>
+      <TenantMobileBar class="layout-mobile-navbar" />
+    </template>
     <slot />
   </AppRoleLayout>
 </template>

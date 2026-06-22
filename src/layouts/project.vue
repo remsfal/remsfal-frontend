@@ -7,9 +7,15 @@ import ProjectMobileBar from '@/layouts/components/ProjectMobileBar.vue'
 
 <template>
   <AppRoleLayout>
-    <template #topbar><ManagerTopbar /></template>
-    <template #menu><ProjectMenu /></template>
-    <template #mobilebar><ProjectMobileBar class="layout-mobile-navbar" /></template>
+    <template #topbar>
+      <ManagerTopbar />
+    </template>
+    <template #menu>
+      <ProjectMenu />
+    </template>
+    <template #mobilebar>
+      <ProjectMobileBar class="layout-mobile-navbar" />
+    </template>
     <slot />
   </AppRoleLayout>
 </template>

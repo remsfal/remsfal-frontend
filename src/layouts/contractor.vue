@@ -7,9 +7,15 @@ import ContractorMobileBar from '@/layouts/components/ContractorMobileBar.vue'
 
 <template>
   <AppRoleLayout>
-    <template #topbar><AppSimpleTopbar /></template>
-    <template #menu><ContractorMenu /></template>
-    <template #mobilebar><ContractorMobileBar class="layout-mobile-navbar" /></template>
+    <template #topbar>
+      <AppSimpleTopbar />
+    </template>
+    <template #menu>
+      <ContractorMenu />
+    </template>
+    <template #mobilebar>
+      <ContractorMobileBar class="layout-mobile-navbar" />
+    </template>
     <slot />
   </AppRoleLayout>
 </template>

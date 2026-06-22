@@ -7,9 +7,15 @@ import ManagerMobileBar from '@/layouts/components/ManagerMobileBar.vue'
 
 <template>
   <AppRoleLayout>
-    <template #topbar><ManagerTopbar /></template>
-    <template #menu><ManagerMenu /></template>
-    <template #mobilebar><ManagerMobileBar class="layout-mobile-navbar" /></template>
+    <template #topbar>
+      <ManagerTopbar />
+    </template>
+    <template #menu>
+      <ManagerMenu />
+    </template>
+    <template #mobilebar>
+      <ManagerMobileBar class="layout-mobile-navbar" />
+    </template>
     <slot />
   </AppRoleLayout>
 </template>
