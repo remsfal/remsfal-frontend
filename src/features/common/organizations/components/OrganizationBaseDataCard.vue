@@ -183,9 +183,9 @@ async function onSubmit(event: FormSubmitEvent) {
             <div class="flex flex-col gap-1">
               <label for="org-email" class="font-medium">{{ t('organization.email') }}</label>
               <Select
+                id="org-email"
                 v-model="currentValues.email"
                 :options="emailOptions"
-                id="org-email"
                 fluid
               />
             </div>
