@@ -1,7 +1,7 @@
 <route lang="yaml">
-name: ManagerOrganizationSettings
+name: ContractorOrganizationSettings
 meta:
-  layout: manager
+  layout: contractor
   requiresAuth: true
 </route>
 
@@ -10,7 +10,7 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { OrganizationSettingsView } from '@/features/common/organizations';
 
-const route = useRoute('ManagerOrganizationSettings');
+const route = useRoute('ContractorOrganizationSettings');
 const organizationId = computed(() => route.params.organizationId as string);
 </script>
 

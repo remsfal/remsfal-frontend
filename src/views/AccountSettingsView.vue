@@ -12,7 +12,7 @@ const { t } = useI18n();
   <UserContactDataCard />
   <UserAddressCard />
   <div class="flex justify-center gap-4 flex-wrap">
-    <Button severity="info" as="router-link" to="/projects">
+    <Button severity="info" as="router-link" to="/manager/projects">
       {{ t('accountSettings.userProfile.managementView') }}
     </Button>
     <Button severity="info" as="router-link" to="/tenancies/dashboard">

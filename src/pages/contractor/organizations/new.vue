@@ -1,7 +1,7 @@
 <route lang="yaml">
-name: ManagerOrganizations
+name: ContractorOrganizations
 meta:
-  layout: manager
+  layout: contractor
   requiresAuth: true
 </route>
 

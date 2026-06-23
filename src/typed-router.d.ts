@@ -76,6 +76,20 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ContractorOrganizationSettings': RouteRecordInfo<
+      'ContractorOrganizationSettings',
+      '/contractor/organizations/:organizationId',
+      { organizationId: ParamValue<true> },
+      { organizationId: ParamValue<false> },
+      | never
+    >,
+    'ContractorOrganizations': RouteRecordInfo<
+      'ContractorOrganizations',
+      '/contractor/organizations/new',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'ContractorSettings': RouteRecordInfo<
       'ContractorSettings',
       '/contractor/settings',
@@ -359,6 +373,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/contractor/issues.vue': {
       routes:
         | 'ContractorView'
+      views:
+        | never
+    }
+    'src/pages/contractor/organizations/[organizationId].vue': {
+      routes:
+        | 'ContractorOrganizationSettings'
+      views:
+        | never
+    }
+    'src/pages/contractor/organizations/new.vue': {
+      routes:
+        | 'ContractorOrganizations'
       views:
         | never
     }
