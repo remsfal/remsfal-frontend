@@ -172,7 +172,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
     // Click close button (X)
     cy.get('[role="dialog"]').within(() => {
-      cy.get('button[aria-label], .p-dialog-header-close').first().click();
+      cy.get('.p-dialog-close-button').click();
     });
 
     // Dialog should be closed
@@ -186,8 +186,9 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     // Fill in start date
     cy.get('input[name="startOfRental"]').type('2024-01-01');
 
-    // Close date picker if open (click outside or escape)
-    cy.get('body').click(0, 0);
+    // Close date picker overlay with Escape, then wait for it to disappear
+    cy.get('input[name="startOfRental"]').type('{esc}');
+    cy.get('.p-datepicker-panel').should('not.exist');
 
     // Click next button
     cy.contains('button', /weiter|next/i).click();
@@ -203,8 +204,9 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     // Complete Step 1
     cy.get('input[name="startOfRental"]').type('2024-01-01');
 
-    // Close date picker if open
-    cy.get('body').click(0, 0);
+    // Close date picker overlay with Escape, then wait for it to disappear
+    cy.get('input[name="startOfRental"]').type('{esc}');
+    cy.get('.p-datepicker-panel').should('not.exist');
 
     cy.contains('button', /weiter|next/i).click();
 
@@ -226,9 +228,13 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     // Fill some data
     cy.get('input[name="startOfRental"]').type('2024-01-01');
 
+    // Close date picker overlay before closing dialog
+    cy.get('input[name="startOfRental"]').type('{esc}');
+    cy.get('.p-datepicker-panel').should('not.exist');
+
     // Close dialog
     cy.get('[role="dialog"]').first().within(() => {
-      cy.get('button[aria-label], .p-dialog-header-close').first().click();
+      cy.get('.p-dialog-close-button').click();
     });
 
     // Open dialog again
@@ -255,8 +261,9 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     // Fill only start date (end date optional)
     cy.get('input[name="startOfRental"]').type('2024-01-01');
 
-    // Close date picker if open
-    cy.get('body').click(0, 0);
+    // Close date picker overlay
+    cy.get('input[name="startOfRental"]').type('{esc}');
+    cy.get('.p-datepicker-panel').should('not.exist');
 
     // Should be able to proceed
     cy.contains('button', /Weiter zu Mieteinheiten|Continue to Units/i).should('not.be.disabled');
