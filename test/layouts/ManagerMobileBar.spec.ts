@@ -50,7 +50,7 @@ describe('ManagerMobileBar.vue', () => {
   it('renders navigation items', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems.length).toBe(2);
+    expect(navItems).toHaveLength(2);
   });
 
   it('renders Projekte and Einstellungen items', () => {

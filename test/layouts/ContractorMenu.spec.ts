@@ -16,13 +16,13 @@ describe('ContractorMenu.vue', () => {
     await wrapper.vm.$nextTick();
 
     const rootMenuItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootMenuItems.length).toBe(3);
+    expect(rootMenuItems).toHaveLength(3);
     expect(rootMenuItems[0].text()).toContain('Meine Daten');
     expect(rootMenuItems[1].text()).toContain('Auftragsmanagement');
     expect(rootMenuItems[2].text()).toContain('Organisationen');
 
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus.length).toBe(3);
+    expect(submenus).toHaveLength(3);
   });
 
 

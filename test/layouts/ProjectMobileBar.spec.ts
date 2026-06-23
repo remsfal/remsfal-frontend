@@ -59,7 +59,7 @@ describe('ProjectMobileBar.vue', () => {
       path: '/', name: 'ProjectSelection', params: {}, query: {} 
     });
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems.length).toBe(2);
+    expect(navItems).toHaveLength(2);
   });
 
   it('renders project navigation items when project is selected', () => {
@@ -70,7 +70,7 @@ describe('ProjectMobileBar.vue', () => {
       query: {},
     });
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems.length).toBe(4);
+    expect(navItems).toHaveLength(4);
   });
 
   it('highlights Dashboard when on project dashboard route', async () => {

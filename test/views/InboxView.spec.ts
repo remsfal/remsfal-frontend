@@ -124,7 +124,7 @@ describe('InboxView.vue', () => {
     await new Promise(resolve => setTimeout(resolve, 0));
     await wrapper.vm.$nextTick();
 
-    expect(store.selectedMessages.length).toBe(0);
+    expect(store.selectedMessages).toHaveLength(0);
   });
 
   it('handles delete for selected messages', async () => {
@@ -143,7 +143,7 @@ describe('InboxView.vue', () => {
     await new Promise(resolve => setTimeout(resolve, 0));
     await wrapper.vm.$nextTick();
 
-    expect(store.selectedMessages.length).toBe(0);
+    expect(store.selectedMessages).toHaveLength(0);
   });
 
   it('handles navigation to issue', async () => {

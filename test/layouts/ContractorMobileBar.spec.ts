@@ -48,7 +48,7 @@ describe('ContractorMobileBar.vue', () => {
   it('renders navigation items correctly', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems.length).toBe(2);
+    expect(navItems).toHaveLength(2);
   });
 
   it('highlights Übersicht when on ContractorDashboard route', async () => {

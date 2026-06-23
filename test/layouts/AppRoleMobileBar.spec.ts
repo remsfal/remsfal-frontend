@@ -56,7 +56,7 @@ const mountBar = (
 describe('AppRoleMobileBar.vue', () => {
   it('renders all nav items', () => {
     const wrapper = mountBar()
-    expect(wrapper.findAll('a.nav-item').length).toBe(2)
+    expect(wrapper.findAll('a.nav-item')).toHaveLength(2)
   })
 
   it('renders the more button', () => {

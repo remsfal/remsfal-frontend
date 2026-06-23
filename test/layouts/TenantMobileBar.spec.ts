@@ -40,7 +40,7 @@ describe('TenantMobileBar.vue', () => {
   it('renders navigation items', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems.length).toBe(2);
+    expect(navItems).toHaveLength(2);
   });
 
   it('highlights Overview active state when on TenantDashboard', async () => {
