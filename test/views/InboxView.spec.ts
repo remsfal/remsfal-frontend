@@ -1,5 +1,4 @@
 import { mount, VueWrapper } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
@@ -46,8 +45,7 @@ describe('InboxView.vue', () => {
 
 
   beforeEach(() => {
-    const pinia = createTestingPinia({ stubActions: false });
-    store = useInboxStore(pinia);
+    store = useInboxStore();
 
     server.use(
       http.get('http://localhost:8080/notification/inbox', () => {
@@ -55,13 +53,12 @@ describe('InboxView.vue', () => {
       }),
     );
 
-    wrapper = mount(InboxView, {global: {plugins: [pinia],},});
+    wrapper = mount(InboxView);
   });
 
   it('calls fetchInbox on mount', async () => {
     const fetchInboxSpy = vi.spyOn(store, 'fetchInbox');
     await wrapper.vm.$nextTick();
-    // fetchInbox is called in onMounted, which happens after mount
     expect(fetchInboxSpy).toHaveBeenCalled();
   });
 
@@ -70,7 +67,6 @@ describe('InboxView.vue', () => {
     const sidebar = wrapper.findComponent(InboxSidebar);
     await sidebar.vm.$emit('update:activeNavItem', 'done');
 
-    // Check that sidebar receives the updated prop
     await wrapper.vm.$nextTick();
     const updatedSidebar = wrapper.findComponent(InboxSidebar);
     expect(updatedSidebar.props('activeNavItem')).toBe('done');
@@ -79,13 +75,12 @@ describe('InboxView.vue', () => {
   it('handles filter application', async () => {
     const sidebar = wrapper.findComponent(InboxSidebar);
     const filter = {
-      id: '1', name: 'Open Defects', icon: 'pi-exclamation-circle', query: 'status:OPEN type:DEFECT' 
+      id: '1', name: 'Open Defects', icon: 'pi-exclamation-circle', query: 'status:OPEN type:DEFECT'
     };
-    
+
     await sidebar.vm.$emit('filter-applied', filter);
     await wrapper.vm.$nextTick();
 
-    // Filter should be applied to store
     expect(store.filterIssueStatus).toContain('OPEN');
     expect(store.filterIssueType).toContain('DEFECT');
   });
@@ -118,7 +113,7 @@ describe('InboxView.vue', () => {
     const messageToMark = { ...mockMessages[0] };
     store.selectedMessages = [messageToMark];
     const toolbar = wrapper.findComponent(InboxToolbar);
-    
+
     server.use(
       http.patch('http://localhost:8080/notification/inbox/:messageId/read', () => {
         return new HttpResponse(null, { status: 204 });
@@ -128,9 +123,8 @@ describe('InboxView.vue', () => {
     await toolbar.vm.$emit('mark-read-selected');
     await new Promise(resolve => setTimeout(resolve, 0));
     await wrapper.vm.$nextTick();
-    
-    // Message should be marked as read and selection cleared
-    expect(store.selectedMessages.length).toBe(0);
+
+    expect(store.selectedMessages).toHaveLength(0);
   });
 
   it('handles delete for selected messages', async () => {
@@ -138,7 +132,7 @@ describe('InboxView.vue', () => {
     const messageToDelete = { ...mockMessages[0] };
     store.selectedMessages = [messageToDelete];
     const toolbar = wrapper.findComponent(InboxToolbar);
-    
+
     server.use(
       http.delete('http://localhost:8080/notification/inbox/:messageId', () => {
         return new HttpResponse(null, { status: 204 });
@@ -148,9 +142,8 @@ describe('InboxView.vue', () => {
     await toolbar.vm.$emit('delete-selected');
     await new Promise(resolve => setTimeout(resolve, 0));
     await wrapper.vm.$nextTick();
-    
-    // Message should be deleted and selection cleared
-    expect(store.selectedMessages.length).toBe(0);
+
+    expect(store.selectedMessages).toHaveLength(0);
   });
 
   it('handles navigation to issue', async () => {

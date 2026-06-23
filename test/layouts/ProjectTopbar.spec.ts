@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
 import ProjectTopbar from '@/layouts/components/ManagerTopbar.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
@@ -11,7 +10,7 @@ const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: mockPush }),
   useRoute: () => ({
-    params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
+    params: {}, query: {}, fullPath: '/', name: undefined, meta: {}
   }),
   RouterLink: { template: '<a><slot /></a>' },
 }));
@@ -33,13 +32,10 @@ describe('ProjectTopbar.vue', () => {
     }) as unknown as User;
 
   const mountComponent = (user: User | null = null) => {
-    const pinia = createTestingPinia({ stubActions: false });
-    const userStore = useUserSessionStore(pinia);
+    const userStore = useUserSessionStore();
     userStore.user = user;
-    const wrapper = mount(ProjectTopbar, { global: { plugins: [pinia] } });
-    return {
-      wrapper, pinia, userStore 
-    };
+    const wrapper = mount(ProjectTopbar);
+    return { wrapper, userStore };
   };
 
   describe('Logged in user interface', () => {
@@ -80,7 +76,6 @@ describe('ProjectTopbar.vue', () => {
     });
   });
 
-
   describe('Project selector', () => {
     it('should show project selector placeholder when logged in', async () => {
       const { wrapper } = mountComponent(createMockUser());
@@ -89,21 +84,20 @@ describe('ProjectTopbar.vue', () => {
     });
 
     it('should render project list when projects are available', async () => {
-      const pinia = createTestingPinia({ stubActions: false });
-      const userStore = useUserSessionStore(pinia);
-      const projectStore = useProjectStore(pinia);
+      const userStore = useUserSessionStore();
+      const projectStore = useProjectStore();
 
       userStore.user = createMockUser();
       projectStore.projects = [
         {
-          id: 'project-1', name: 'Test Project 1', memberRole: 'MANAGER' as const 
+          id: 'project-1', name: 'Test Project 1', memberRole: 'MANAGER' as const,
         } as ProjectItem,
         {
-          id: 'project-2', name: 'Test Project 2', memberRole: 'STAFF' as const 
+          id: 'project-2', name: 'Test Project 2', memberRole: 'STAFF' as const,
         } as ProjectItem,
       ];
 
-      const wrapper = mount(ProjectTopbar, { global: { plugins: [pinia] } });
+      const wrapper = mount(ProjectTopbar);
       await flushPromises();
 
       expect(wrapper.find('[data-pc-name="select"]').exists()).toBe(true);

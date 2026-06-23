@@ -50,7 +50,7 @@ describe('ManagerMobileBar.vue', () => {
   it('renders navigation items', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems.length).toBe(2);
+    expect(navItems).toHaveLength(2);
   });
 
   it('renders Projekte and Einstellungen items', () => {
@@ -97,11 +97,11 @@ describe('ManagerMobileBar.vue', () => {
     const { wrapper } = mountComponent();
     const moreBtn = wrapper.find('.more-btn');
 
-    expect(wrapper.vm.sidebarVisible).toBe(false);
+    expect(wrapper.find('.p-drawer').exists()).toBe(false);
     await moreBtn.trigger('click');
-    expect(wrapper.vm.sidebarVisible).toBe(true);
+    expect(wrapper.find('.p-drawer').exists()).toBe(true);
 
     await moreBtn.trigger('click');
-    expect(wrapper.vm.sidebarVisible).toBe(false);
+    expect(wrapper.find('.p-drawer').exists()).toBe(false);
   });
 });

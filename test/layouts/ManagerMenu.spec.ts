@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
@@ -7,6 +7,9 @@ describe('ManagerMenu.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
+    // Prevent fetchUserOrganization from running so userOrganizations stays empty
+    const orgStore = useOrganizationStore();
+    vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
     wrapper = mount(ManagerMenu);
   });
 
@@ -18,7 +21,7 @@ describe('ManagerMenu.vue', () => {
   it('renders two root menu sections', async () => {
     await wrapper.vm.$nextTick();
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems.length).toBe(2);
+    expect(rootItems).toHaveLength(2);
   });
 
   it('renders "Meine Daten" as the first section label', async () => {
@@ -36,13 +39,13 @@ describe('ManagerMenu.vue', () => {
   it('renders five submenu items under "Meine Daten"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[0].findAll('.layout-menuitem-text').length).toBe(5);
+    expect(submenus[0].findAll('.layout-menuitem-text')).toHaveLength(5);
   });
 
   it('renders one submenu item under "Organisationen"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[1].findAll('.layout-menuitem-text').length).toBe(1);
+    expect(submenus[1].findAll('.layout-menuitem-text')).toHaveLength(1);
   });
 
   it('renders the expected submenu item labels', async () => {
@@ -85,9 +88,10 @@ describe('ManagerMenu.vue — with organization', () => {
   let orgStore: ReturnType<typeof useOrganizationStore>;
 
   beforeEach(async () => {
-    wrapper = mount(ManagerMenu);
-    // Use the same testing-Pinia the component uses; bypass action stubs via direct assignment
     orgStore = useOrganizationStore();
+    // Mock the action so we control the store state explicitly
+    vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
+    wrapper = mount(ManagerMenu);
     orgStore.userOrganizations = [mockOrg];
     orgStore.initialized = true;
     await wrapper.vm.$nextTick();
@@ -95,7 +99,7 @@ describe('ManagerMenu.vue — with organization', () => {
 
   it('renders three root menu sections when user has an organization', () => {
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems.length).toBe(3);
+    expect(rootItems).toHaveLength(3);
   });
 
   it('shows the organization name as the third section label', () => {
@@ -118,6 +122,6 @@ describe('ManagerMenu.vue — with organization', () => {
     await wrapper.vm.$nextTick();
 
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems.length).toBe(4);
+    expect(rootItems).toHaveLength(4);
   });
 });

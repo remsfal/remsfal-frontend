@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
 import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 import { useProjectStore } from '@/stores/ProjectStore';
@@ -11,7 +10,7 @@ const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: mockPush }),
   useRoute: () => ({
-    params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
+    params: {}, query: {}, fullPath: '/', name: undefined, meta: {}
   }),
   RouterLink: { template: '<a><slot /></a>' },
 }));
@@ -32,15 +31,10 @@ describe('ManagerTopbar.vue', () => {
   } as unknown as User);
 
   const mountComponent = (user: User | null = null) => {
-    const pinia = createTestingPinia({ stubActions: false });
-    const userStore = useUserSessionStore(pinia);
+    const userStore = useUserSessionStore();
     userStore.user = user;
-    const wrapper = mount(ManagerTopbar, { global: { plugins: [pinia] } });
-    return {
-      wrapper,
-      pinia,
-      userStore,
-    };
+    const wrapper = mount(ManagerTopbar);
+    return { wrapper, userStore };
   };
 
   describe('Logged in user interface', () => {
@@ -95,30 +89,26 @@ describe('ManagerTopbar.vue', () => {
     });
 
     it('should render project list when projects are available', async () => {
-      // Can't use mountComponent here effectively because we need to set projects on the store
-      // before or after creation.
-      const pinia = createTestingPinia({ stubActions: false });
-      const userStore = useUserSessionStore(pinia);
-      const projectStore = useProjectStore(pinia);
+      const userStore = useUserSessionStore();
+      const projectStore = useProjectStore();
 
       userStore.user = createMockUser();
       projectStore.projects = [
-                {
-                  id: 'project-1',
-                  name: 'Test Project 1',
-                  memberRole: 'MANAGER' as const
-                } as ProjectItem,
-                {
-                  id: 'project-2',
-                  name: 'Test Project 2',
-                  memberRole: 'STAFF' as const
-                } as ProjectItem,
+        {
+          id: 'project-1',
+          name: 'Test Project 1',
+          memberRole: 'MANAGER' as const,
+        } as ProjectItem,
+        {
+          id: 'project-2',
+          name: 'Test Project 2',
+          memberRole: 'STAFF' as const,
+        } as ProjectItem,
       ];
 
-      const wrapper = mount(ManagerTopbar, { global: { plugins: [pinia] } });
+      const wrapper = mount(ManagerTopbar);
       await flushPromises();
 
-      // Selector should be present
       expect(wrapper.find('[data-pc-name="select"]').exists()).toBe(true);
     });
   });
@@ -127,7 +117,6 @@ describe('ManagerTopbar.vue', () => {
     it('should include locale switch component', async () => {
       const { wrapper } = mountComponent(createMockUser());
       await flushPromises();
-      // Check for locale switch presence (German "de" should be visible)
       expect(wrapper.html()).toContain('de');
     });
   });
