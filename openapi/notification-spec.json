@@ -291,6 +291,35 @@
           }
         }
       },
+      "ContractorEmployeeJson" : {
+        "description" : "A contractor employee",
+        "type" : "object",
+        "properties" : {
+          "contractorId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "userId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "responsibility" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "email" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/UserModel"
+          }
+        }
+      },
       "ContractorJson" : {
         "description" : "A contractor",
         "type" : "object",
@@ -343,6 +372,30 @@
           }
         }
       },
+      "ContractorListJson" : {
+        "description" : "A list of contractors",
+        "type" : "object",
+        "properties" : {
+          "offset" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Index of the first element",
+            "readOnly" : true
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Total number of available contractors",
+            "readOnly" : true
+          },
+          "contractors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContractorJson"
+            }
+          }
+        }
+      },
       "CountryItemJson" : {
         "description" : "A country item of a list",
         "type" : "object",
@@ -367,6 +420,24 @@
             "items" : {
               "$ref" : "#/components/schemas/CountryItemJson"
             }
+          }
+        }
+      },
+      "CreateQuotationRequestJson" : {
+        "description" : "A request to create one quotation request per contractor",
+        "type" : "object",
+        "required" : [ "contractors" ],
+        "properties" : {
+          "contractors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContractorJson"
+            },
+            "minItems" : 1
+          },
+          "scopeOfWork" : {
+            "type" : "string",
+            "maxLength" : 5000
           }
         }
       },
@@ -1023,6 +1094,80 @@
           }
         }
       },
+      "QuotationRequestJson" : {
+        "description" : "A request for quotation sent to a contractor",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier of the quotation request",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueId" : {
+            "description" : "ID of the issue this request belongs to",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "description" : "ID of the project this request belongs to",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "triggerId" : {
+            "description" : "ID of the user who triggered this request",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "contractorId" : {
+            "description" : "ID of the contractor this request was sent to",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "organizationId" : {
+            "description" : "ID of the organization of the contractor",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "scopeOfWork" : {
+            "type" : "string",
+            "description" : "Scope of work description for the contractor",
+            "maxLength" : 5000
+          },
+          "status" : {
+            "description" : "Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED",
+            "type" : "string",
+            "$ref" : "#/components/schemas/RequestStatus"
+          },
+          "createdAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          }
+        }
+      },
+      "QuotationRequestListJson" : {
+        "description" : "A list of quotation requests",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/QuotationRequestJson"
+            }
+          }
+        }
+      },
       "RentJson" : {
         "description" : "Rent information for a rentable unit",
         "type" : "object",
@@ -1339,6 +1484,10 @@
             "description" : "Children nodes"
           }
         }
+      },
+      "RequestStatus" : {
+        "type" : "string",
+        "enum" : [ "REQUESTED", "WITHDRAWN", "VIEWING_REQUIRED", "CONSULTATION_REQUIRED", "REJECTED", "SUBMITTED" ]
       },
       "SiteJson" : {
         "description" : "A site as part of a property",
@@ -1701,6 +1850,23 @@
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/LocalDateTime"
+          }
+        }
+      },
+      "UserModel" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "active" : {
+            "type" : "boolean"
           }
         }
       }

@@ -1277,6 +1277,217 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/ticketing/v1/issues/{issueId}/quotation-request": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve all quotation requests for an issue. */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Quotation requests returned successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["QuotationRequestListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to access this issue */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The issue does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /** Create requests for quotation. */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreateQuotationRequestJson"];
+        };
+      };
+      responses: {
+        /** @description Requests for quotation created successfully */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ticketing/v1/issues/{issueId}/quotation-request/{requestId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve a single quotation request. */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+          /** @description ID of the quotation request */
+          requestId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Quotation request returned successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["QuotationRequestJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to access this issue */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The issue or quotation request does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Update a quotation request. */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+          /** @description ID of the quotation request */
+          requestId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["QuotationRequestJson"];
+        };
+      };
+      responses: {
+        /** @description Quotation request updated successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["QuotationRequestJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to update this request */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The issue or quotation request does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    trace?: never;
+  };
   "/ticketing/v1/issues/{issueId}/{relationType}/{relatedIssueId}": {
     parameters: {
       query?: never;
@@ -1371,6 +1582,133 @@ export interface paths {
     options?: never;
     head?: never;
     patch?: never;
+    trace?: never;
+  };
+  "/ticketing/v1/order-management/quotation-requests": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve quotation requests for the authenticated contractor.
+     * @description Returns all quotation requests that were sent to the contractor's organization. Requires at least MANAGER role in the contractor organization.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Quotation requests returned successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["QuotationRequestListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have sufficient organization role */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ticketing/v1/order-management/quotation-requests/{requestId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Update the status of a quotation request as contractor.
+     * @description Allows a contractor to update the status of a quotation request. Allowed values: VIEWING_REQUIRED, CONSULTATION_REQUIRED, REJECTED, SUBMITTED.
+     */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the quotation request */
+          requestId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["QuotationRequestJson"];
+        };
+      };
+      responses: {
+        /** @description Quotation request updated successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["QuotationRequestJson"];
+          };
+        };
+        /** @description Invalid status value */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have sufficient organization role */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Quotation request not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
     trace?: never;
   };
 }
@@ -1485,6 +1823,16 @@ export interface components {
       location?: string;
       description?: string;
     };
+    /** @description A contractor employee */
+    ContractorEmployeeJson: {
+      contractorId?: components["schemas"]["UUID"];
+      userId?: components["schemas"]["UUID"];
+      responsibility?: string;
+      email?: string;
+      name?: string;
+      active?: boolean;
+      user?: components["schemas"]["UserModel"];
+    };
     /** @description A contractor */
     ContractorJson: {
       organizationId?: components["schemas"]["UUID"];
@@ -1501,6 +1849,20 @@ export interface components {
       organization?: components["schemas"]["OrganizationJson"];
       address?: components["schemas"]["AddressJson"];
     };
+    /** @description A list of contractors */
+    ContractorListJson: {
+      /**
+       * Format: int32
+       * @description Index of the first element
+       */
+      readonly offset?: number;
+      /**
+       * Format: int64
+       * @description Total number of available contractors
+       */
+      readonly total?: number;
+      contractors?: components["schemas"]["ContractorJson"][];
+    };
     /** @description A country item of a list */
     CountryItemJson: {
       countryCode: string;
@@ -1509,6 +1871,11 @@ export interface components {
     /** @description A list of countries */
     CountryListJson: {
       countries?: components["schemas"]["CountryItemJson"][];
+    };
+    /** @description A request to create one quotation request per contractor */
+    CreateQuotationRequestJson: {
+      contractors: components["schemas"]["ContractorJson"][];
+      scopeOfWork?: string;
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
@@ -1785,6 +2152,31 @@ export interface components {
     PropertyListJson: {
       readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @description A request for quotation sent to a contractor */
+    QuotationRequestJson: {
+      /** @description Unique identifier of the quotation request */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description ID of the issue this request belongs to */
+      readonly issueId?: components["schemas"]["UUID"];
+      /** @description ID of the project this request belongs to */
+      readonly projectId?: components["schemas"]["UUID"];
+      /** @description ID of the user who triggered this request */
+      readonly triggerId?: components["schemas"]["UUID"];
+      /** @description ID of the contractor this request was sent to */
+      readonly contractorId?: components["schemas"]["UUID"];
+      /** @description ID of the organization of the contractor */
+      readonly organizationId?: components["schemas"]["UUID"];
+      /** @description Scope of work description for the contractor */
+      scopeOfWork?: string;
+      /** @description Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED */
+      status?: components["schemas"]["RequestStatus"];
+      readonly createdAt?: components["schemas"]["Instant"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
+    };
+    /** @description A list of quotation requests */
+    QuotationRequestListJson: {
+      items?: components["schemas"]["QuotationRequestJson"][];
+    };
     /** @description Rent information for a rentable unit */
     RentJson: {
       unitId: components["schemas"]["UUID"];
@@ -1928,6 +2320,8 @@ export interface components {
       /** @description Children nodes */
       children?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @enum {string} */
+    RequestStatus: "REQUESTED" | "WITHDRAWN" | "VIEWING_REQUIRED" | "CONSULTATION_REQUIRED" | "REJECTED" | "SUBMITTED";
     /** @description A site as part of a property */
     SiteJson: {
       type?: components["schemas"]["UnitType"];
@@ -2068,6 +2462,12 @@ export interface components {
       additionalEmails?: string[];
       readonly registeredDate?: components["schemas"]["LocalDate"];
       readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
+    };
+    UserModel: {
+      id?: components["schemas"]["UUID"];
+      email?: string;
+      name?: string;
+      active?: boolean;
     };
   };
   responses: never;
