@@ -268,6 +268,16 @@ export interface components {
       location?: string;
       description?: string;
     };
+    /** @description A contractor employee */
+    ContractorEmployeeJson: {
+      contractorId?: components["schemas"]["UUID"];
+      userId?: components["schemas"]["UUID"];
+      responsibility?: string;
+      email?: string;
+      name?: string;
+      active?: boolean;
+      user?: components["schemas"]["UserModel"];
+    };
     /** @description A contractor */
     ContractorJson: {
       organizationId?: components["schemas"]["UUID"];
@@ -284,6 +294,20 @@ export interface components {
       organization?: components["schemas"]["OrganizationJson"];
       address?: components["schemas"]["AddressJson"];
     };
+    /** @description A list of contractors */
+    ContractorListJson: {
+      /**
+       * Format: int32
+       * @description Index of the first element
+       */
+      readonly offset?: number;
+      /**
+       * Format: int64
+       * @description Total number of available contractors
+       */
+      readonly total?: number;
+      contractors?: components["schemas"]["ContractorJson"][];
+    };
     /** @description A country item of a list */
     CountryItemJson: {
       countryCode: string;
@@ -292,6 +316,11 @@ export interface components {
     /** @description A list of countries */
     CountryListJson: {
       countries?: components["schemas"]["CountryItemJson"][];
+    };
+    /** @description A request to create one quotation request per contractor */
+    CreateQuotationRequestJson: {
+      contractors: components["schemas"]["ContractorJson"][];
+      scopeOfWork?: string;
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
@@ -568,6 +597,31 @@ export interface components {
     PropertyListJson: {
       readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @description A request for quotation sent to a contractor */
+    QuotationRequestJson: {
+      /** @description Unique identifier of the quotation request */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description ID of the issue this request belongs to */
+      readonly issueId?: components["schemas"]["UUID"];
+      /** @description ID of the project this request belongs to */
+      readonly projectId?: components["schemas"]["UUID"];
+      /** @description ID of the user who triggered this request */
+      readonly triggerId?: components["schemas"]["UUID"];
+      /** @description ID of the contractor this request was sent to */
+      readonly contractorId?: components["schemas"]["UUID"];
+      /** @description ID of the organization of the contractor */
+      readonly organizationId?: components["schemas"]["UUID"];
+      /** @description Scope of work description for the contractor */
+      scopeOfWork?: string;
+      /** @description Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED */
+      status?: components["schemas"]["RequestStatus"];
+      readonly createdAt?: components["schemas"]["Instant"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
+    };
+    /** @description A list of quotation requests */
+    QuotationRequestListJson: {
+      items?: components["schemas"]["QuotationRequestJson"][];
+    };
     /** @description Rent information for a rentable unit */
     RentJson: {
       unitId: components["schemas"]["UUID"];
@@ -711,6 +765,8 @@ export interface components {
       /** @description Children nodes */
       children?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @enum {string} */
+    RequestStatus: "REQUESTED" | "WITHDRAWN" | "VIEWING_REQUIRED" | "CONSULTATION_REQUIRED" | "REJECTED" | "SUBMITTED";
     /** @description A site as part of a property */
     SiteJson: {
       type?: components["schemas"]["UnitType"];
@@ -851,6 +907,12 @@ export interface components {
       additionalEmails?: string[];
       readonly registeredDate?: components["schemas"]["LocalDate"];
       readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
+    };
+    UserModel: {
+      id?: components["schemas"]["UUID"];
+      email?: string;
+      name?: string;
+      active?: boolean;
     };
   };
   responses: never;
