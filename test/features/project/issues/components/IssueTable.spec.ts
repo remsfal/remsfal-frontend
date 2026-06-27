@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import IssueTable from '@/components/IssueTable.vue';
+import IssueTable from '@/features/project/issues/components/IssueTable.vue';
 import DataTable from 'primevue/datatable';
 import { type IssueItemJson } from '@/services/IssueService';
 

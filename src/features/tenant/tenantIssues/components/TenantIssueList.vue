@@ -52,10 +52,12 @@ const statusOptions = computed(() => [
 
 const typeOptions = computed(() => [
   { label: t('tenantIssues.filter.allTypes'), value: null },
-  { label: t('inbox.filters.type.application'), value: 'APPLICATION' },
-  { label: t('inbox.filters.type.task'), value: 'TASK' },
-  { label: t('inbox.filters.type.defect'), value: 'DEFECT' },
-  { label: t('inbox.filters.type.maintenance'), value: 'MAINTENANCE' },
+  { label: t('issueType.application'), value: 'APPLICATION' },
+  { label: t('issueType.task'), value: 'TASK' },
+  { label: t('issueType.defect'), value: 'DEFECT' },
+  { label: t('issueType.maintenance'), value: 'MAINTENANCE' },
+  { label: t('issueType.termination'), value: 'TERMINATION' },
+  { label: t('issueType.inquiry'), value: 'INQUIRY' },
 ]);
 
 const getStatusOrder = (status: string | undefined) => {

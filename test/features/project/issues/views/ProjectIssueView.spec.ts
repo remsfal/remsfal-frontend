@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { mount, flushPromises, VueWrapper } from "@vue/test-utils";
-import ProjectIssueView from "@/views/ProjectIssueView.vue";
+import ProjectIssueView from "@/features/project/issues/views/ProjectIssueView.vue";
 import { issueService } from "@/services/IssueService";
 
 // ---- Mocks ----

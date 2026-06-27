@@ -2,8 +2,8 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
-import IssueTable from '@/components/IssueTable.vue';
-import NewIssueDialog from '@/components/NewIssueDialog.vue';
+import IssueTable from '../components/IssueTable.vue';
+import NewIssueDialog from '../components/NewIssueDialog.vue';
 import { issueService, type IssueItemJson, type IssueStatus } from '@/services/IssueService';
 
 const props = defineProps<{ projectId: string; assigneeId?: string; status?: IssueStatus; category?: string; }>();

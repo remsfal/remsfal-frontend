@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewIssueDialog from '@/components/NewIssueDialog.vue';
+import NewIssueDialog from '@/features/project/issues/components/NewIssueDialog.vue';
 import { issueService } from '@/services/IssueService';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
@@ -78,7 +78,7 @@ describe('NewIssueDialog.vue', () => {
     const selects = wrapper.findAllComponents(Select);
     const issueTypeSelect = selects[0];
     const selectButton = issueTypeSelect.find('span.p-select-label');
-    expect(selectButton.text()).toContain('Aufgaben');
+    expect(selectButton.text()).toContain('Aufgabe');
   });
 
   it('defaults type to DEFECT when category="DEFECT"', async () => {
@@ -101,7 +101,7 @@ describe('NewIssueDialog.vue', () => {
     const selects = wrapperDefect.findAllComponents(Select);
     const issueTypeSelect = selects[0];
     const selectButton = issueTypeSelect.find('span.p-select-label');
-    expect(selectButton.text()).toContain('Mängel');
+    expect(selectButton.text()).toContain('Mangel');
   });
 
   it('calls createIssue with correct data and emits events', async () => {

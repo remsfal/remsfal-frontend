@@ -4,7 +4,7 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
-import IssueDescription from '@/views/IssueDescription.vue';
+import Textarea from 'primevue/textarea';
 import { issueService, type IssueJson } from '@/services/IssueService';
 
 const props = defineProps<{
@@ -75,7 +75,13 @@ const handleSave = async () => {
 
     <template #content>
       <div class="flex flex-col gap-4">
-        <IssueDescription v-model:description="description" />
+        <Textarea
+          v-model="description"
+          autoResize
+          :rows="8"
+          class="w-full"
+          placeholder="Write markdown description here..."
+        />
         
         <!-- Save Description Button -->
         <div class="flex justify-end">

@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import IssueDetailsCard from '@/components/issue/IssueDetailsCard.vue';
+import IssueDetailsCard from '@/features/project/issues/components/IssueDetailsCard.vue';
 import { issueService } from '@/services/IssueService';
 import { projectMemberService, type ProjectMemberList } from '@/services/ProjectMemberService';
 

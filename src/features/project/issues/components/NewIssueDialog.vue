@@ -50,7 +50,7 @@ const validationSchema = z.object({
     .optional()
     .or(z.literal('')),
 
-  issueType: z.enum(['APPLICATION', 'TASK', 'DEFECT', 'MAINTENANCE']),
+  issueType: z.enum(['APPLICATION', 'TASK', 'DEFECT', 'MAINTENANCE', 'TERMINATION', 'INQUIRY']),
 
   issuePriority: z.enum(['URGENT', 'HIGH', 'MEDIUM', 'LOW', 'UNCLASSIFIED']),
 });
@@ -76,10 +76,12 @@ watch(
 
 // Dropdown Options (computed for i18n reactivity)
 const typeOptions = computed(() => [
-  { label: t('inbox.filters.type.application'), value: 'APPLICATION' as IssueType },
-  { label: t('inbox.filters.type.task'), value: 'TASK' as IssueType },
-  { label: t('inbox.filters.type.defect'), value: 'DEFECT' as IssueType },
-  { label: t('inbox.filters.type.maintenance'), value: 'MAINTENANCE' as IssueType },
+  { label: t('issueType.application'), value: 'APPLICATION' as IssueType },
+  { label: t('issueType.task'),        value: 'TASK'        as IssueType },
+  { label: t('issueType.defect'),      value: 'DEFECT'      as IssueType },
+  { label: t('issueType.maintenance'), value: 'MAINTENANCE' as IssueType },
+  { label: t('issueType.termination'), value: 'TERMINATION' as IssueType },
+  { label: t('issueType.inquiry'),     value: 'INQUIRY'     as IssueType },
 ]);
 
 const priorityOptions = computed(() => [

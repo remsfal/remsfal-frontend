@@ -103,8 +103,8 @@ src/
 │   │   │   ├── services/       # RentalAgreementService, TenancyService
 │   │   │   └── index.ts
 │   │   ├── issues/
-│   │   │   ├── components/     # IssueTable, IssueDetailsCard, IssueDescriptionCard
-│   │   │   ├── services/       # IssueService
+│   │   │   ├── components/     # NewIssueDialog, IssueTable, IssueDetailsCard, IssueDescriptionCard
+│   │   │   ├── views/          # IssueView, ProjectIssueView
 │   │   │   └── index.ts
 │   │   └── contractors/
 │   │       ├── components/     # ContractorTable
@@ -360,7 +360,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` complete; incremental for other domains |
+| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` and `src/features/project/issues/` complete; incremental for other domains |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -824,6 +824,12 @@ npm run test:e2e -- --spec "cypress/e2e/project.cy.ts"
 1. Add key to both `de.json` and `en.json`
 2. Import `useI18n` and destructure `t` in `<script setup>`
 3. Use `t('your.key')` in component
+
+**App-wide domain enums** use flat namespaced keys (not feature-prefixed), so they can be reused across features:
+- `issuePriority.*` — `urgent`, `high`, `medium`, `low`, `unclassified`
+- `issueType.*` — `application`, `task`, `defect`, `maintenance`, `termination`, `inquiry` (singular in German: "Antrag", "Aufgabe", "Mangel", …)
+
+Use singular forms for type labels in selects/dropdowns.
 
 ### Styling Guidelines
 

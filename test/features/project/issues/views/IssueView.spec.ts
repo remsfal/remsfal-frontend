@@ -28,7 +28,7 @@ vi.mock("@/services/IssueService", () => {
 });
 
 // ---- IMPORT COMPONENT AFTER MOCKS ----
-import IssueView from "@/views/IssueView.vue";
+import IssueView from "@/features/project/issues/views/IssueView.vue";
 import type { Status, Type } from "@/services/IssueService";
 
 // ---- TESTS ----
