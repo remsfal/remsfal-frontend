@@ -28,17 +28,17 @@ vi.mock("@/services/IssueService", () => {
 });
 
 // ---- IMPORT COMPONENT AFTER MOCKS ----
-import IssueView from "@/features/project/issues/views/IssueView.vue";
+import IssueListView from "@/features/project/issues/views/IssueListView.vue";
 import type { Status, Type } from "@/services/IssueService";
 
 // ---- TESTS ----
-describe("IssueView.vue", () => {
-  let wrapper: VueWrapper<InstanceType<typeof IssueView>>;
+describe("IssueListView.vue", () => {
+  let wrapper: VueWrapper<InstanceType<typeof IssueListView>>;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    wrapper = mount(IssueView, {
+    wrapper = mount(IssueListView, {
       props: {
         projectId: "proj-1", assigneeId: "user1", category: 'TASK' as Type
       },
