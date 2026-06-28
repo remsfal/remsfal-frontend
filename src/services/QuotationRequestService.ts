@@ -16,6 +16,10 @@ class QuotationRequestService {
       pathParams: { issueId },
     });
   }
+
+  async getContractorQuotationRequests(): Promise<QuotationRequestListJson> {
+    return apiClient.get('/ticketing/v1/order-management/quotation-requests');
+  }
 }
 
 export const quotationRequestService = new QuotationRequestService();

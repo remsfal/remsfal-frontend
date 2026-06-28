@@ -23,4 +23,8 @@ export const quotationRequestHandlers = [
   http.post(`${TICKETING_BASE}/issues/:issueId/quotation-request`, () => {
     return new HttpResponse(null, { status: 201 });
   }),
+
+  http.get(`${TICKETING_BASE}/order-management/quotation-requests`, () => {
+    return HttpResponse.json({ items: [mockQuotationRequest] }, { status: 200 });
+  }),
 ];

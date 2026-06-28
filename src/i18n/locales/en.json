@@ -853,5 +853,7 @@
   "quotationRequest.status.REJECTED": "Rejected",
   "quotationRequest.status.SUBMITTED": "Submitted",
   "quotationRequest.validation.scopeOfWork": "Scope of work is required",
-  "quotationRequest.validation.contractors": "At least one contractor must be selected"
+  "quotationRequest.validation.contractors": "At least one contractor must be selected",
+  "offerManagement.openRequests.title": "Open Requests",
+  "offerManagement.openRequests.empty": "No open requests"
 }

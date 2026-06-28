@@ -856,5 +856,7 @@
   "quotationRequest.status.REJECTED": "Abgelehnt",
   "quotationRequest.status.SUBMITTED": "Eingereicht",
   "quotationRequest.validation.scopeOfWork": "Leistungsbeschreibung ist erforderlich",
-  "quotationRequest.validation.contractors": "Mindestens ein Auftragnehmer muss ausgewählt werden"
+  "quotationRequest.validation.contractors": "Mindestens ein Auftragnehmer muss ausgewählt werden",
+  "offerManagement.openRequests.title": "Offene Anfragen",
+  "offerManagement.openRequests.empty": "Keine offenen Anfragen vorhanden"
 }
