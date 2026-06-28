@@ -1,5 +1,5 @@
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
-import ProjectTenanciesDetails from '@/views/project/RentalAgreementDetails.vue';
+import ProjectTenanciesDetails from '@/features/project/rentalAgreements/views/RentalAgreementDetailView.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { rentalAgreementService } from '@/services/RentalAgreementService';
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TenancyDataComponent from '@/components/tenancyDetails/TenancyDataComponent.vue';
-import TenantsTableComponent from '@/components/tenancyDetails/TenantsTableComponent.vue';
-import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
+import TenancyDataComponent from '../components/TenancyDataComponent.vue';
+import TenantsTableComponent from '../components/TenantsTableComponent.vue';
+import UnitsTableComponent from '../components/UnitsTableComponent.vue';
 import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService.ts';
 import type { components } from '@/services/api/platform-schema.ts';
 import BaseDialog from '@/components/common/BaseDialog.vue';

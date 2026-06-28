@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
-import Step2UnitsForm from '@/components/rentalAgreement/Step2UnitsForm.vue';
-import type { SelectedUnit } from '@/components/rentalAgreement/Step2UnitsForm.vue';
+import Step2UnitsForm from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
+import type { SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import { propertyService } from '@/services/PropertyService';
 
 vi.mock('@/services/PropertyService', () => ({propertyService: {getPropertyTree: vi.fn(),},}));

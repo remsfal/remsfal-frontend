@@ -1,7 +1,7 @@
 import {mount, VueWrapper, flushPromises} from '@vue/test-utils';
 import Dialog from 'primevue/dialog';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import RentalAgreementView from '@/views/project/RentalAgreementView.vue';
+import RentalAgreementView from '@/features/project/rentalAgreements/views/RentalAgreementListView.vue';
 import { rentalAgreementService } from '@/services/RentalAgreementService';
 
 // Fix for "window is not defined" error

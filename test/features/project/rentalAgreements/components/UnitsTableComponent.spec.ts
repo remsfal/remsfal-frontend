@@ -1,4 +1,4 @@
-import UnitsTableComponent from '@/components/tenancyDetails/UnitsTableComponent.vue';
+import UnitsTableComponent from '@/features/project/rentalAgreements/components/UnitsTableComponent.vue';
 import { propertyService } from '@/services/PropertyService';
 import { mount } from '@vue/test-utils';
 import {beforeEach, describe, expect, it, vi} from 'vitest';

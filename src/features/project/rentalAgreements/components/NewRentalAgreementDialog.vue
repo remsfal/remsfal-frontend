@@ -14,13 +14,13 @@ import StepPanel from 'primevue/steppanel';
 // Services & Types
 import { rentalAgreementService, type RentalAgreementJson, type TenantJson } from '@/services/RentalAgreementService';
 import type { ApiComponents } from '@/services/ApiClient';
-import type { SelectedUnit } from './rentalAgreement/Step2UnitsForm.vue';
+import type { SelectedUnit } from './Step2UnitsForm.vue';
 
 // Step Components
-import Step1DatesForm from './rentalAgreement/Step1DatesForm.vue';
-import Step2UnitsForm from './rentalAgreement/Step2UnitsForm.vue';
-import Step3TenantsForm from './rentalAgreement/Step3TenantsForm.vue';
-import Step4Summary from './rentalAgreement/Step4Summary.vue';
+import Step1DatesForm from './Step1DatesForm.vue';
+import Step2UnitsForm from './Step2UnitsForm.vue';
+import Step3TenantsForm from './Step3TenantsForm.vue';
+import Step4Summary from './Step4Summary.vue';
 
 // Extract RentJson type from API
 type RentJson = ApiComponents['schemas']['RentJson'];

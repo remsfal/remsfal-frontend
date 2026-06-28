@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import RentalDetailsForm from '@/components/rentalAgreement/RentalDetailsForm.vue';
+import RentalDetailsForm from '@/features/project/rentalAgreements/components/RentalDetailsForm.vue';
 
 describe('RentalDetailsForm', () => {
   let wrapper: VueWrapper;

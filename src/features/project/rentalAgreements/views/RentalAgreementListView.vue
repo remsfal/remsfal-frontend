@@ -6,7 +6,7 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import NewRentalAgreementDialog from '@/components/NewRentalAgreementDialog.vue';
+import NewRentalAgreementDialog from '../components/NewRentalAgreementDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
