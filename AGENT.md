@@ -819,6 +819,9 @@ npm run test:e2e -- --spec "cypress/e2e/project.cy.ts"
 - Translation files: `src/i18n/locales/{de,en}.json`
 - Use `$t('key')` in templates or `t('key')` in composition functions
 - Translation keys should be hierarchical and descriptive
+- **Currency and numeric output:** Use `vue-i18n` number formatting (`n()` / `$n()`) with named formats from `src/i18n/numberFormats.ts` (for example `n(amount, 'currency')`) for all user-facing money values.
+- Do **not** format currency with `toFixed()` or ad-hoc `Intl.NumberFormat` inside components when a shared i18n number format exists.
+- Do **not** append `€` manually when using `n(..., 'currency')`; the locale formatter already renders currency symbol and spacing.
 
 **Adding translations**:
 1. Add key to both `de.json` and `en.json`

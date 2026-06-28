@@ -94,7 +94,7 @@ describe('Step2UnitsForm', () => {
     const unitCards = wrapper.findAll('.bg-gray-50');
     expect(unitCards.length).toBe(1);
     expect(unitCards[0].text()).toContain('Apartment 101');
-    expect(unitCards[0].text()).toContain('1000.00 €');
+    expect(unitCards[0].text()).toContain('1.000,00');
   });
 
   it('removes unit from list when trash button is clicked', async () => {
@@ -162,9 +162,9 @@ describe('Step2UnitsForm', () => {
     await wrapper.vm.$nextTick();
 
     const unitCard = wrapper.find('.bg-gray-50');
-    expect(unitCard.text()).toContain('1000.00 €');
-    expect(unitCard.text()).toContain('150.00 €');
-    expect(unitCard.text()).toContain('100.00 €');
+    expect(unitCard.text()).toContain('1.000,00');
+    expect(unitCard.text()).toContain('150,00');
+    expect(unitCard.text()).toContain('100,00');
   });
 
   it('shows unit type correctly', async () => {
@@ -215,7 +215,7 @@ describe('Step2UnitsForm', () => {
     await wrapper.vm.$nextTick();
 
     const unitCard = wrapper.find('.bg-gray-50');
-    expect(unitCard.text()).toContain('1234.50 €');
+    expect(unitCard.text()).toContain('1.234,50');
   });
 
   it('shows only rent fields that are defined', async () => {
@@ -234,7 +234,7 @@ describe('Step2UnitsForm', () => {
     await wrapper.vm.$nextTick();
 
     const unitCard = wrapper.find('.bg-gray-50');
-    expect(unitCard.text()).toContain('1000.00 €');
+    expect(unitCard.text()).toContain('1.000,00');
     // Operating costs and heating costs should not be shown
     expect(unitCard.text()).not.toContain('Betriebskostenvorauszahlung');
   });

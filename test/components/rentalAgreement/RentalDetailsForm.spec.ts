@@ -86,7 +86,7 @@ describe('RentalDetailsForm', () => {
       .findAll('button')
       .find((btn) => btn.attributes('type') === 'submit');
     expect(submitButton).toBeDefined();
-    expect(submitButton?.text()).toContain('Weitere Einheit hinzufügen');
+    expect(submitButton?.text()).toContain('Einheit hinzufügen');
   });
 
   it('renders optional fields without required marker', () => {

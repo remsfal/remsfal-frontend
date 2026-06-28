@@ -37,7 +37,7 @@ const emit = defineEmits<{
   next: [];
 }>();
 
-const { t } = useI18n();
+const { t, n } = useI18n();
 
 // State
 const propertyTree = ref<TreeNode[]>([]);
@@ -191,13 +191,13 @@ const canProceed = computed(() => {
           <p class="text-sm text-gray-600">
             {{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}
             <span v-if="unit.basicRent !== undefined">
-              • {{ t('rentalAgreement.step2.basicRent') }} {{ unit.basicRent.toFixed(2) }} €
+              • {{ t('rentalAgreement.step2.basicRent') }} {{ n(unit.basicRent, 'currency') }}
             </span>
             <span v-if="unit.operatingCostsPrepayment !== undefined">
-              • {{ t('rentalAgreement.step2.operatingCosts') }} {{ unit.operatingCostsPrepayment.toFixed(2) }} €
+              • {{ t('rentalAgreement.step2.operatingCosts') }} {{ n(unit.operatingCostsPrepayment, 'currency') }}
             </span>
             <span v-if="unit.heatingCostsPrepayment !== undefined">
-              • {{ t('rentalAgreement.step2.heatingCosts') }} {{ unit.heatingCostsPrepayment.toFixed(2) }} €
+              • {{ t('rentalAgreement.step2.heatingCosts') }} {{ n(unit.heatingCostsPrepayment, 'currency') }}
             </span>
           </p>
         </div>

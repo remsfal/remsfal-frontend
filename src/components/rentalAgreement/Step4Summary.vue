@@ -26,7 +26,7 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const { t, d } = useI18n();
+const { t, d, n } = useI18n();
 
 // Format Date Helper
 function formatDate(dateString: string | null | undefined): string {
@@ -134,7 +134,7 @@ const totalRent = computed(() => {
                   {{ t('rentalAgreement.step2.basicRent') }}
                 </dt>
                 <dd class="font-semibold">
-                  {{ unit.basicRent.toFixed(2) }} €
+                  {{ n(unit.basicRent, 'currency') }}
                 </dd>
               </div>
               <div v-if="unit.operatingCostsPrepayment !== undefined && unit.operatingCostsPrepayment !== null">
@@ -142,7 +142,7 @@ const totalRent = computed(() => {
                   {{ t('rentalAgreement.step2.operatingCosts') }}
                 </dt>
                 <dd class="font-semibold">
-                  {{ unit.operatingCostsPrepayment.toFixed(2) }} €
+                  {{ n(unit.operatingCostsPrepayment, 'currency') }}
                 </dd>
               </div>
               <div v-if="unit.heatingCostsPrepayment !== undefined && unit.heatingCostsPrepayment !== null">
@@ -150,7 +150,7 @@ const totalRent = computed(() => {
                   {{ t('rentalAgreement.step2.heatingCosts') }}
                 </dt>
                 <dd class="font-semibold">
-                  {{ unit.heatingCostsPrepayment.toFixed(2) }} €
+                  {{ n(unit.heatingCostsPrepayment, 'currency') }}
                 </dd>
               </div>
             </dl>
@@ -160,7 +160,7 @@ const totalRent = computed(() => {
           <div v-if="totalRent > 0" class="pt-3 border-t">
             <div class="flex justify-between items-center font-semibold">
               <span>Gesamt:</span>
-              <span class="text-lg">{{ totalRent.toFixed(2) }} €</span>
+              <span class="text-lg">{{ n(totalRent, 'currency') }}</span>
             </div>
           </div>
         </div>
