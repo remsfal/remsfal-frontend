@@ -5357,6 +5357,29 @@ export interface components {
     PropertyListJson: {
       readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @description A quotation response submitted by a contractor */
+    QuotationJson: {
+      /** @description Unique identifier of the quotation */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description ID of the issue this quotation belongs to */
+      readonly issueId?: components["schemas"]["UUID"];
+      /** @description ID of the quotation request this quotation responds to */
+      readonly requestId?: components["schemas"]["UUID"];
+      /** @description ID of the project this quotation belongs to */
+      readonly projectId?: components["schemas"]["UUID"];
+      /** @description ID of the user who triggered the original quotation request */
+      readonly triggerId?: components["schemas"]["UUID"];
+      /** @description ID of the contractor submitting the quotation */
+      readonly contractorId?: components["schemas"]["UUID"];
+      /** @description Attachment IDs associated with the quotation */
+      attachments?: string[];
+      /** @description Timestamp until which the quotation is valid */
+      validUntil?: components["schemas"]["Instant"];
+      /** @description Status of the quotation: VALID, INVALID, ACCEPTED, REJECTED */
+      status?: components["schemas"]["QuotationStatus"];
+      readonly createdAt?: components["schemas"]["Instant"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
+    };
     /** @description A request for quotation sent to a contractor */
     QuotationRequestJson: {
       /** @description Unique identifier of the quotation request */
@@ -5371,6 +5394,8 @@ export interface components {
       readonly contractorId?: components["schemas"]["UUID"];
       /** @description ID of the organization of the contractor */
       readonly organizationId?: components["schemas"]["UUID"];
+      /** @description Company name of the contractor */
+      readonly contractorName?: string;
       /** @description Scope of work description for the contractor */
       scopeOfWork?: string;
       /** @description Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED */
@@ -5382,6 +5407,8 @@ export interface components {
     QuotationRequestListJson: {
       items?: components["schemas"]["QuotationRequestJson"][];
     };
+    /** @enum {string} */
+    QuotationStatus: "VALID" | "INVALID" | "ACCEPTED" | "REJECTED";
     /** @description Rent information for a rentable unit */
     RentJson: {
       unitId: components["schemas"]["UUID"];
