@@ -5,8 +5,16 @@
       "AddressJson" : {
         "description" : "The address of a customer, a building or a site",
         "type" : "object",
-        "required" : [ "street", "city", "province", "zip", "countryCode" ],
         "properties" : {
+          "addressLine1" : {
+            "type" : "string"
+          },
+          "addressLine2" : {
+            "type" : "string"
+          },
+          "addressLine3" : {
+            "type" : "string"
+          },
           "street" : {
             "type" : "string",
             "pattern" : "\\S"
@@ -29,7 +37,8 @@
             "minLength" : 2,
             "maxLength" : 2
           }
-        }
+        },
+        "required" : [ "street", "city", "province", "zip", "countryCode" ]
       },
       "ApartmentJson" : {
         "description" : "An apartment inside a building according to WoFIV",
@@ -438,6 +447,17 @@
           "scopeOfWork" : {
             "type" : "string",
             "maxLength" : 5000
+          },
+          "projectOwner" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "projectCareOf" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "billingAddress" : {
+            "$ref" : "#/components/schemas/AddressJson"
           }
         }
       },
@@ -907,6 +927,17 @@
             "minLength" : 1,
             "maxLength" : 99
           },
+          "owner" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "careOf" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/AddressJson"
+          },
           "members" : {
             "type" : "array",
             "uniqueItems" : true,
@@ -1214,6 +1245,31 @@
             "type" : "string",
             "description" : "Scope of work description for the contractor",
             "maxLength" : 5000
+          },
+          "projectOwner" : {
+            "type" : "string",
+            "description" : "Name of the project owner / billing recipient",
+            "readOnly" : true
+          },
+          "projectCareOf" : {
+            "type" : "string",
+            "description" : "Care of / representative on behalf of",
+            "readOnly" : true
+          },
+          "projectBillingAddress1" : {
+            "type" : "string",
+            "description" : "First billing address line (street)",
+            "readOnly" : true
+          },
+          "projectBillingAddress2" : {
+            "type" : "string",
+            "description" : "Second billing address line (zip and city)",
+            "readOnly" : true
+          },
+          "projectBillingAddress3" : {
+            "type" : "string",
+            "description" : "Third billing address line (province and country)",
+            "readOnly" : true
           },
           "status" : {
             "description" : "Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED",
