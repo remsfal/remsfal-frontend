@@ -33,9 +33,7 @@ describe('QuotationRequestService with MSW', () => {
 
   test('createQuotationRequest resolves when scopeOfWork is omitted', async () => {
     await expect(
-      quotationRequestService.createQuotationRequest('issue-1', {
-        contractors: [{ companyName: 'Test GmbH' }],
-      }),
+      quotationRequestService.createQuotationRequest('issue-1', {contractors: [{ companyName: 'Test GmbH' }],}),
     ).resolves.not.toThrow();
   });
 });

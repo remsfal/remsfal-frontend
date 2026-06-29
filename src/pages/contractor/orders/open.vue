@@ -1,5 +1,5 @@
 <route lang="yaml">
-name: ContractorClientsClosed
+name: ContractorOrdersOpen
 meta:
   layout: contractor
   requiresAuth: true

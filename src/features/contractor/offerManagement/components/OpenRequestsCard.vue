@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
 
-const { t } = useI18n();
+const { t, d } = useI18n();
 
 const requests = ref<QuotationRequestJson[]>([]);
 
@@ -42,7 +44,11 @@ onMounted(() => {
           </template>
         </Column>
         <Column field="scopeOfWork" :header="t('quotationRequest.table.scopeOfWork')" />
-        <Column field="createdAt" :header="t('quotationRequest.table.createdAt')" />
+        <Column field="createdAt" :header="t('quotationRequest.table.createdAt')">
+          <template #body="{ data }">
+            {{ data.createdAt ? d(new Date(data.createdAt), 'shortFormat') : '' }}
+          </template>
+        </Column>
       </DataTable>
     </template>
   </BaseCard>

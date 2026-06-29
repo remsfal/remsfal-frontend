@@ -6,9 +6,15 @@ import { issueService } from "@/services/IssueService";
 // ---- Mocks ----
 const toastAddMock = vi.fn();
 
-vi.mock("@/services/IssueService", () => ({issueService: {getIssue: vi.fn(),},}));
-vi.mock("@/services/QuotationRequestService", () => ({quotationRequestService: {getQuotationRequests: vi.fn().mockResolvedValue({ items: [] }),},}));
-vi.mock("@/services/ProjectContractorService", () => ({projectContractorService: {getContractors: vi.fn().mockResolvedValue({ contractors: [] }),},}));
+vi.mock("@/services/IssueService", () => ({issueService: { getIssue: vi.fn() },}));
+vi.mock(
+  "@/services/QuotationRequestService",
+  () => ({quotationRequestService: {getQuotationRequests: vi.fn().mockResolvedValue({ items: [] }),},})
+);
+vi.mock(
+  "@/services/ProjectContractorService",
+  () => ({projectContractorService: {getContractors: vi.fn().mockResolvedValue({ contractors: [] }),},})
+);
 
 vi.mock("primevue/usetoast", () => ({useToast: () => ({add: toastAddMock,}),}));
 
@@ -76,7 +82,11 @@ describe("ProjectIssueView.vue", () => {
   
     mount(ProjectIssueView, {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
-      global: { stubs: { IssueDetailsCard: true, IssueDescriptionCard: true, QuotationRequestCard: true } },
+      global: {
+        stubs: {
+          IssueDetailsCard: true, IssueDescriptionCard: true, QuotationRequestCard: true 
+        } 
+      },
     });
   
     expect(issueService.getIssue).toHaveBeenCalled();
@@ -140,7 +150,11 @@ describe("ProjectIssueView.vue", () => {
   
     const tempWrapper = mount(ProjectIssueView, {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
-      global: { stubs: { IssueDetailsCard: true, IssueDescriptionCard: true, QuotationRequestCard: true } },
+      global: {
+        stubs: {
+          IssueDetailsCard: true, IssueDescriptionCard: true, QuotationRequestCard: true 
+        } 
+      },
     });
   
     // Wait for next tick so loadingFetch is set to true

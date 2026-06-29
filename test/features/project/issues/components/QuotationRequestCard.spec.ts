@@ -74,7 +74,9 @@ describe('QuotationRequestCard', () => {
 
   it('renders empty string for items without status', async () => {
     vi.spyOn(quotationRequestService, 'getQuotationRequests').mockResolvedValue({
-      items: [{ id: 'qr-3', scopeOfWork: 'Test', status: undefined }],
+      items: [{
+        id: 'qr-3', scopeOfWork: 'Test', status: undefined 
+      }],
     });
     const wrapper = mountCard();
     await flushPromises();

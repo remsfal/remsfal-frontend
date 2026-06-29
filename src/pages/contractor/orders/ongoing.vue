@@ -1,5 +1,5 @@
 <route lang="yaml">
-name: ContractorView
+name: ContractorOrdersOngoing
 meta:
   layout: contractor
   requiresAuth: true

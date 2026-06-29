@@ -29,7 +29,11 @@ describe('NewQuotationRequestDialog', () => {
   const mountDialog = (props = { projectId: 'proj-1', issueId: 'issue-1' }) =>
     mount(NewQuotationRequestDialog, {
       props,
-      global: { stubs: { BaseDialog: BaseDialogStub, Textarea: true, MultiSelect: true } },
+      global: {
+        stubs: {
+          BaseDialog: BaseDialogStub, Textarea: true, MultiSelect: true 
+        } 
+      },
     });
 
   it('renders trigger button with label "Neues Angebot anfragen"', () => {

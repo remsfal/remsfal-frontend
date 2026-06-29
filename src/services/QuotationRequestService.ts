@@ -6,15 +6,11 @@ export type CreateQuotationRequestJson = ApiComponents['schemas']['CreateQuotati
 
 class QuotationRequestService {
   async getQuotationRequests(issueId: string): Promise<QuotationRequestListJson> {
-    return apiClient.get('/ticketing/v1/issues/{issueId}/quotation-request', {
-      pathParams: { issueId },
-    });
+    return apiClient.get('/ticketing/v1/issues/{issueId}/quotation-request', {pathParams: { issueId },});
   }
 
   async createQuotationRequest(issueId: string, data: CreateQuotationRequestJson): Promise<void> {
-    await apiClient.post('/ticketing/v1/issues/{issueId}/quotation-request', data, {
-      pathParams: { issueId },
-    });
+    await apiClient.post('/ticketing/v1/issues/{issueId}/quotation-request', data, {pathParams: { issueId },});
   }
 
   async getContractorQuotationRequests(): Promise<QuotationRequestListJson> {

@@ -21,9 +21,7 @@ const mockRequests = [
 describe('OpenRequestsCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({
-      items: mockRequests,
-    });
+    vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({items: mockRequests,});
   });
 
   const mountCard = () => mount(OpenRequestsCard);
@@ -55,7 +53,9 @@ describe('OpenRequestsCard', () => {
 
   it('shows empty message when no open requests exist', async () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({
-      items: [{ id: 'qr-1', status: 'SUBMITTED', scopeOfWork: 'Test' }],
+      items: [{
+        id: 'qr-1', status: 'SUBMITTED', scopeOfWork: 'Test' 
+      }],
     });
     const wrapper = mountCard();
     await flushPromises();
@@ -63,9 +63,7 @@ describe('OpenRequestsCard', () => {
   });
 
   it('handles undefined items from API gracefully', async () => {
-    vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({
-      items: undefined,
-    });
+    vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({items: undefined,});
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.exists()).toBe(true);

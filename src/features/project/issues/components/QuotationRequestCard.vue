@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 import BaseCard from '@/components/common/BaseCard.vue';
 import NewQuotationRequestDialog from './NewQuotationRequestDialog.vue';
 import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
