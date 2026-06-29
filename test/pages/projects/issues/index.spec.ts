@@ -8,7 +8,9 @@ vi.mock('vue-router', async (importOriginal) => {
     ...actual,
     useRoute: () => ({
       params: { projectId: 'proj-1' },
-      query: { owner: 'user-1', status: 'OPEN', category: 'MAINTENANCE' },
+      query: {
+        owner: 'user-1', status: 'OPEN', category: 'MAINTENANCE' 
+      },
     }),
   };
 });
