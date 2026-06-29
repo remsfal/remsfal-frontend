@@ -4,6 +4,7 @@ import { Form } from '@primevue/forms';
 import NewQuotationRequestDialog from '@/features/project/issues/components/NewQuotationRequestDialog.vue';
 import { quotationRequestService } from '@/services/QuotationRequestService';
 import { projectContractorService } from '@/services/ProjectContractorService';
+import { projectService } from '@/services/ProjectService';
 
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
@@ -18,12 +19,25 @@ const mockContractors = [
   { id: 'c-1', companyName: 'Alpha Bau GmbH' },
   { id: 'c-2', companyName: 'Beta Elektro GmbH' },
 ];
+const mockProject = {
+  title: 'Projekt 1',
+  owner: 'Muster Eigentümer GmbH',
+  careOf: 'Max Mustermann',
+  address: {
+    street: 'Musterstraße 1',
+    zip: '12345',
+    city: 'Berlin',
+    province: 'Berlin',
+    countryCode: 'DE',
+  },
+};
 
 describe('NewQuotationRequestDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(quotationRequestService, 'createQuotationRequest').mockResolvedValue(undefined);
     vi.spyOn(projectContractorService, 'getContractors').mockResolvedValue({ contractors: mockContractors });
+    vi.spyOn(projectService, 'getProject').mockResolvedValue(mockProject);
   });
 
   const mountDialog = (props = { projectId: 'proj-1', issueId: 'issue-1' }) =>
@@ -58,6 +72,12 @@ describe('NewQuotationRequestDialog', () => {
     mountDialog();
     await flushPromises();
     expect(projectContractorService.getContractors).toHaveBeenCalledWith('proj-1');
+  });
+
+  it('fetches billing recipient data on mount', async () => {
+    mountDialog();
+    await flushPromises();
+    expect(projectService.getProject).toHaveBeenCalledWith('proj-1');
   });
 
   it('renders form field labels', () => {
@@ -98,6 +118,9 @@ describe('NewQuotationRequestDialog', () => {
       expect.objectContaining({
         scopeOfWork: 'Dachrinne reparieren',
         contractors: selectedContractors,
+        projectOwner: 'Muster Eigentümer GmbH',
+        projectCareOf: 'Max Mustermann',
+        billingAddress: mockProject.address,
       }),
     );
   });
