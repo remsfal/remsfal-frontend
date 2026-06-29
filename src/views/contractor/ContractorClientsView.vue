@@ -1,7 +1,9 @@
 <script setup lang="ts">
-// TODO: Implement contractor clients view
+import { OpenRequestsCard } from '@/features/contractor/offerManagement';
 </script>
 
 <template>
-  <div />
+  <div class="flex flex-col gap-4">
+    <OpenRequestsCard />
+  </div>
 </template>

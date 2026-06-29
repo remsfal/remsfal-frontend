@@ -5,14 +5,19 @@ import type { MobileNavItem } from '@/layouts/composables/useMobileBarActiveStat
 
 const navItems: MobileNavItem[] = [
   {
-    label: 'Übersicht',
+    label: 'contractorMenu.orderManagement.overview',
     to: { name: 'ContractorDashboard' },
     icon: 'pi-home',
   },
   {
-    label: 'Auftraggeber',
-    to: { name: 'ContractorView' },
-    icon: 'pi-id-card',
+    label: 'contractorMenu.orderManagement.open',
+    icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
+    to: '/contractor/orders/open',
+  },
+  {
+    label: 'contractorMenu.orderManagement.ongoing',
+    icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
+    to: '/contractor/orders/ongoing',
   },
 ]
 </script>

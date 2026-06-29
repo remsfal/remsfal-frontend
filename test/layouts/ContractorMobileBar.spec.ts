@@ -48,7 +48,7 @@ describe('ContractorMobileBar.vue', () => {
   it('renders navigation items correctly', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems).toHaveLength(2);
+    expect(navItems).toHaveLength(3);
   });
 
   it('highlights Übersicht when on ContractorDashboard route', async () => {
@@ -58,15 +58,27 @@ describe('ContractorMobileBar.vue', () => {
     const navItems = wrapper.findAll('a.nav-item');
     expect(navItems[0].classes()).toContain('active');
     expect(navItems[1].classes()).not.toContain('active');
+    expect(navItems[2].classes()).not.toContain('active');
   });
 
-  it('highlights Auftraggeber when on ContractorView route', async () => {
-    const { wrapper } = mountComponent({ path: '/contractor/issues', name: 'ContractorView' });
+  it('highlights Offene Anfragen when on ContractorOrdersOpen route', async () => {
+    const { wrapper } = mountComponent({ path: '/contractor/orders/open', name: 'ContractorOrdersOpen' });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
     expect(navItems[0].classes()).not.toContain('active');
     expect(navItems[1].classes()).toContain('active');
+    expect(navItems[2].classes()).not.toContain('active');
+  });
+
+  it('highlights Laufende Aufträge when on ContractorOrdersOngoing route', async () => {
+    const { wrapper } = mountComponent({ path: '/contractor/orders/ongoing', name: 'ContractorOrdersOngoing' });
+    await wrapper.vm.$nextTick();
+
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[0].classes()).not.toContain('active');
+    expect(navItems[1].classes()).not.toContain('active');
+    expect(navItems[2].classes()).toContain('active');
   });
 
   it('does not highlight any item when on an unrelated route', async () => {
@@ -76,6 +88,7 @@ describe('ContractorMobileBar.vue', () => {
     const navItems = wrapper.findAll('a.nav-item');
     expect(navItems[0].classes()).not.toContain('active');
     expect(navItems[1].classes()).not.toContain('active');
+    expect(navItems[2].classes()).not.toContain('active');
   });
 
   it('toggles sidebar when more button is clicked', async () => {

@@ -4,12 +4,12 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import DialogFormField from '@/components/common/DialogFormField.vue';
 import PhoneInput from '@/components/common/PhoneInput.vue';
 import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
 
@@ -24,7 +24,7 @@ const phoneRegex = /^\+[1-9]\d{4,14}$/;
 const visible = ref(false);
 const phone = ref('');
 const initialValues = ref({
-  companyName: '', email: '', contactPerson: '', trade: '' 
+  companyName: '', email: '', contactPerson: '', trade: ''
 });
 
 const validationSchema = z.object({
@@ -47,7 +47,7 @@ const phoneError = computed(() => {
 
 function resetForm() {
   initialValues.value = {
-    companyName: '', email: '', contactPerson: '', trade: '' 
+    companyName: '', email: '', contactPerson: '', trade: ''
   };
   phone.value = '';
 }
@@ -104,12 +104,10 @@ const onSubmit = async (event: FormSubmitEvent) => {
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
-        <DialogFormField
-          inputId="companyName"
-          :label="t('contractor.new.companyName')"
-          required
-          :errorMessage="$form.companyName?.invalid && $form.companyName?.touched ? $form.companyName.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="companyName" class="font-semibold">
+            {{ t('contractor.new.companyName') }}<span aria-hidden="true"> *</span>
+          </label>
           <InputText
             id="companyName"
             name="companyName"
@@ -119,13 +117,18 @@ const onSubmit = async (event: FormSubmitEvent) => {
             autofocus
             fluid
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.companyName?.invalid && $form.companyName?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.companyName?.error?.message }}
+          </Message>
+        </div>
 
-        <DialogFormField
-          inputId="email"
-          :label="t('contractor.new.email')"
-          :errorMessage="$form.email?.invalid && $form.email?.touched ? $form.email.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="email" class="font-semibold">{{ t('contractor.new.email') }}</label>
           <InputText
             id="email"
             name="email"
@@ -134,27 +137,37 @@ const onSubmit = async (event: FormSubmitEvent) => {
             autocomplete="off"
             fluid
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.email?.invalid && $form.email?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.email?.error?.message }}
+          </Message>
+        </div>
 
-        <DialogFormField
-          inputId="phone"
-          :label="t('contractor.new.phone')"
-          :errorMessage="phoneError ?? undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="phone" class="font-semibold">{{ t('contractor.new.phone') }}</label>
           <PhoneInput
             :modelValue="phone"
             inputId="phone"
             @update:modelValue="(v) => (phone = v)"
           />
-        </DialogFormField>
+          <Message v-if="phoneError" severity="error" size="small" variant="simple">
+            {{ phoneError }}
+          </Message>
+        </div>
 
-        <DialogFormField inputId="contactPerson" :label="t('contractor.new.contactPerson')">
+        <div class="flex flex-col gap-1">
+          <label for="contactPerson" class="font-semibold">{{ t('contractor.new.contactPerson') }}</label>
           <InputText id="contactPerson" name="contactPerson" fluid />
-        </DialogFormField>
+        </div>
 
-        <DialogFormField inputId="trade" :label="t('contractor.new.trade')">
+        <div class="flex flex-col gap-1">
+          <label for="trade" class="font-semibold">{{ t('contractor.new.trade') }}</label>
           <InputText id="trade" name="trade" fluid />
-        </DialogFormField>
+        </div>
       </div>
 
       <div class="flex justify-end gap-2 mt-6">

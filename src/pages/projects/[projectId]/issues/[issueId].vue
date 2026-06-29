@@ -6,7 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ProjectIssueView from '@/views/ProjectIssueView.vue'
+import { ProjectIssueView } from '@/features/project/issues'
 import { useRoute } from 'vue-router'
 const route = useRoute('IssueDetails')
 </script>

@@ -5,11 +5,11 @@ import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 import Popover from 'primevue/popover';
 import Textarea from 'primevue/textarea';
 import { Form } from '@primevue/forms';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import DialogFormField from '@/components/common/DialogFormField.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
@@ -36,7 +36,7 @@ const newUnitType = ref<EntityType | undefined>(undefined);
 const titleMatchesLocation = ref(true);
 const currentTitle = ref('');
 const initialValues = ref({
-  title: '', location: '', description: '' 
+  title: '', location: '', description: ''
 });
 const formKey = ref(0);
 
@@ -150,7 +150,7 @@ async function onSubmit(event: FormSubmitEvent) {
       titleMatchesLocation.value = true;
       currentTitle.value = '';
       initialValues.value = {
-        title: '', location: '', description: '' 
+        title: '', location: '', description: ''
       };
       formKey.value++;
       visible.value = false;
@@ -169,7 +169,7 @@ async function createProperty(title: string, loc: string | undefined, desc: stri
   console.log('createProperty called');
   return propertyService
     .createProperty(props.projectId, {
-      title, location: loc, description: desc, plotArea: 0 
+      title, location: loc, description: desc, plotArea: 0
     })
     .then((newProperty) => {
       console.log('Property created:', newProperty);
@@ -180,7 +180,7 @@ async function createSite(title: string, loc: string | undefined, desc: string |
   console.log('createSite called');
   return siteService
     .createSite(props.projectId, props.parentId!, {
-      title, location: loc, description: desc 
+      title, location: loc, description: desc
     })
     .then((newSite) => {
       console.log('Site created:', newSite);
@@ -191,7 +191,7 @@ async function createBuilding(title: string, loc: string | undefined, desc: stri
   console.log('createBuilding called');
   return buildingService
     .createBuilding(props.projectId, props.parentId!, {
-      title, location: loc, description: desc 
+      title, location: loc, description: desc
     })
     .then((newBuilding) => {
       console.log('Building created:', newBuilding);
@@ -202,7 +202,7 @@ async function createApartment(title: string, loc: string | undefined, desc: str
   console.log('createApartment called');
   return apartmentService
     .createApartment(props.projectId, props.parentId!, {
-      title, location: loc, description: desc 
+      title, location: loc, description: desc
     })
     .then((newApartment) => {
       console.log('Apartment created:', newApartment);
@@ -213,7 +213,7 @@ async function createCommercial(title: string, loc: string | undefined, desc: st
   console.log('createCommercial called');
   return commercialService
     .createCommercial(props.projectId, props.parentId!, {
-      title, location: loc, description: desc 
+      title, location: loc, description: desc
     })
     .then((newCommercial) => {
       console.log('Commercial created:', newCommercial);
@@ -224,7 +224,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
   console.log('createStorage called');
   return storageService
     .createStorage(props.projectId, props.parentId!, {
-      title, location: loc, description: desc 
+      title, location: loc, description: desc
     })
     .then((newStorage) => {
       console.log('Storage created:', newStorage);
@@ -283,12 +283,10 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
       @submit="onSubmit"
     >
       <div class="flex flex-col gap-6">
-        <DialogFormField
-          inputId="title"
-          :label="t('rentableUnits.form.title')"
-          required
-          :errorMessage="$form.title?.invalid && $form.title?.touched ? $form.title.error?.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="title" class="font-semibold">
+            {{ t('rentableUnits.form.title') }}<span aria-hidden="true"> *</span>
+          </label>
           <InputText
             id="title"
             name="title"
@@ -297,9 +295,18 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
             autofocus
             @update:modelValue="(v) => (currentTitle = v as string)"
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.title?.invalid && $form.title?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.title?.error?.message }}
+          </Message>
+        </div>
 
-        <DialogFormField inputId="location" :label="t('rentableUnits.form.location')">
+        <div class="flex flex-col gap-1">
+          <label for="location" class="font-semibold">{{ t('rentableUnits.form.location') }}</label>
           <InputText
             id="location"
             name="location"
@@ -310,15 +317,16 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
             <Checkbox v-model="titleMatchesLocation" inputId="titleMatchesLocation" binary />
             <label for="titleMatchesLocation" class="text-sm">{{ t('rentableUnits.form.locationMatchesTitle') }}</label>
           </div>
-        </DialogFormField>
+        </div>
 
-        <DialogFormField inputId="description" :label="t('rentableUnits.form.description')">
+        <div class="flex flex-col gap-1">
+          <label for="description" class="font-semibold">{{ t('rentableUnits.form.description') }}</label>
           <Textarea
             id="description" name="description"
             :rows="4" autoResize
             fluid
           />
-        </DialogFormField>
+        </div>
 
         <div class="flex justify-end gap-2 mt-6">
           <Button

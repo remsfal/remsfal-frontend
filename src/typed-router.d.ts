@@ -41,27 +41,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    'ContractorClientsClosed': RouteRecordInfo<
-      'ContractorClientsClosed',
-      '/contractor/clients/closed',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    'ContractorClientsOngoing': RouteRecordInfo<
-      'ContractorClientsOngoing',
-      '/contractor/clients/ongoing',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    'ContractorClientsOpen': RouteRecordInfo<
-      'ContractorClientsOpen',
-      '/contractor/clients/open',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     'ContractorDashboard': RouteRecordInfo<
       'ContractorDashboard',
       '/contractor/dashboard',
@@ -69,9 +48,23 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    'ContractorView': RouteRecordInfo<
-      'ContractorView',
-      '/contractor/issues',
+    'ContractorOrdersClosed': RouteRecordInfo<
+      'ContractorOrdersClosed',
+      '/contractor/orders/closed',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ContractorOrdersOngoing': RouteRecordInfo<
+      'ContractorOrdersOngoing',
+      '/contractor/orders/ongoing',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ContractorOrdersOpen': RouteRecordInfo<
+      'ContractorOrdersOpen',
+      '/contractor/orders/open',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -346,33 +339,27 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/contractor/clients/closed.vue': {
-      routes:
-        | 'ContractorClientsClosed'
-      views:
-        | never
-    }
-    'src/pages/contractor/clients/ongoing.vue': {
-      routes:
-        | 'ContractorClientsOngoing'
-      views:
-        | never
-    }
-    'src/pages/contractor/clients/open.vue': {
-      routes:
-        | 'ContractorClientsOpen'
-      views:
-        | never
-    }
     'src/pages/contractor/dashboard.vue': {
       routes:
         | 'ContractorDashboard'
       views:
         | never
     }
-    'src/pages/contractor/issues.vue': {
+    'src/pages/contractor/orders/closed.vue': {
       routes:
-        | 'ContractorView'
+        | 'ContractorOrdersClosed'
+      views:
+        | never
+    }
+    'src/pages/contractor/orders/ongoing.vue': {
+      routes:
+        | 'ContractorOrdersOngoing'
+      views:
+        | never
+    }
+    'src/pages/contractor/orders/open.vue': {
+      routes:
+        | 'ContractorOrdersOpen'
       views:
         | never
     }

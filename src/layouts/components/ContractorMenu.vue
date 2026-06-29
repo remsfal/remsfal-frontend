@@ -18,18 +18,33 @@ onMounted(() => {
 const model = computed<MenuItem[]>(() => {
   const items: MenuItem[] = [
     {
-      label: 'contractorMenu.myData',
+      label: 'contractorMenu.orderManagement',
       items: [
         {
-          label: 'contractorMenu.myData.overview',
+          label: 'contractorMenu.orderManagement.overview',
           icon: { type: 'pi', name: 'pi pi-fw pi-home' },
           to: '/contractor/dashboard',
         },
         {
-          label: 'contractorMenu.myData.client',
+          label: 'contractorMenu.orderManagement.open',
           icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
-          to: '/contractor/issues',
+          to: '/contractor/orders/open',
         },
+        {
+          label: 'contractorMenu.orderManagement.ongoing',
+          icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
+          to: '/contractor/orders/ongoing',
+        },
+        {
+          label: 'contractorMenu.orderManagement.closed',
+          icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
+          to: '/contractor/orders/closed',
+        },
+      ],
+    },
+    {
+      label: 'contractorMenu.myData',
+      items: [
         {
           label: 'contractorMenu.myData.personalData',
           icon: { type: 'pi', name: 'pi pi-fw pi-user' },
@@ -39,26 +54,6 @@ const model = computed<MenuItem[]>(() => {
           label: 'contractorMenu.myData.settings',
           icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
           to: '/contractor/settings',
-        },
-      ],
-    },
-    {
-      label: 'contractorMenu.clientManagement',
-      items: [
-        {
-          label: 'contractorMenu.clientManagement.open',
-          icon: { type: 'pi', name: 'pi pi-fw pi-id-card' },
-          to: '/contractor/clients/open',
-        },
-        {
-          label: 'contractorMenu.clientManagement.ongoing',
-          icon: { type: 'pi', name: 'pi pi-fw pi-check-square' },
-          to: '/contractor/clients/ongoing',
-        },
-        {
-          label: 'contractorMenu.clientManagement.closed',
-          icon: { type: 'pi', name: 'pi pi-fw pi-bookmark' },
-          to: '/contractor/clients/closed',
         },
       ],
     },
