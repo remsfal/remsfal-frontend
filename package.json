@@ -91,7 +91,7 @@
     "globals": "^17.6.0",
     "jsdom": "^29.1.1",
     "msw": "^2.14.6",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.2",
     "nyc": "^18.0.0",
     "openapi-typescript": "^7.10.1",
     "postcss": "^8.5.14",
