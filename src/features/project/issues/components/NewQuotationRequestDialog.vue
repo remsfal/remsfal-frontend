@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
+import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
 import MultiSelect from 'primevue/multiselect';
 import { Form } from '@primevue/forms';
@@ -10,7 +11,6 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import DialogFormField from '@/components/common/DialogFormField.vue';
 import { quotationRequestService, type CreateQuotationRequestJson } from '@/services/QuotationRequestService';
 import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
 
@@ -95,12 +95,10 @@ const onSubmit = async (event: FormSubmitEvent) => {
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
-        <DialogFormField
-          inputId="scopeOfWork"
-          :label="t('quotationRequest.dialog.scopeOfWork')"
-          required
-          :errorMessage="$form.scopeOfWork?.invalid && $form.scopeOfWork?.touched ? $form.scopeOfWork.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="scopeOfWork" class="font-semibold">
+            {{ t('quotationRequest.dialog.scopeOfWork') }}<span aria-hidden="true"> *</span>
+          </label>
           <Textarea
             id="scopeOfWork"
             name="scopeOfWork"
@@ -110,14 +108,20 @@ const onSubmit = async (event: FormSubmitEvent) => {
             autoResize
             fluid
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.scopeOfWork?.invalid && $form.scopeOfWork?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.scopeOfWork?.error?.message }}
+          </Message>
+        </div>
 
-        <DialogFormField
-          inputId="contractors"
-          :label="t('quotationRequest.dialog.contractors')"
-          required
-          :errorMessage="$form.contractors?.invalid && $form.contractors?.touched ? $form.contractors.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="contractors" class="font-semibold">
+            {{ t('quotationRequest.dialog.contractors') }}<span aria-hidden="true"> *</span>
+          </label>
           <MultiSelect
             id="contractors"
             name="contractors"
@@ -128,7 +132,15 @@ const onSubmit = async (event: FormSubmitEvent) => {
             display="chip"
             fluid
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.contractors?.invalid && $form.contractors?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.contractors?.error?.message }}
+          </Message>
+        </div>
       </div>
 
       <div class="flex justify-end gap-2 mt-6">

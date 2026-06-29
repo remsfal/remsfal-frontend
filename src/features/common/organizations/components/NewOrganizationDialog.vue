@@ -13,7 +13,6 @@ import Button from 'primevue/button';
 import Message from 'primevue/message';
 import PhoneInput from '@/components/common/PhoneInput.vue';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import DialogFormField from '@/components/common/DialogFormField.vue';
 import { organizationService } from '@/services/OrganizationService';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 import { useUserSessionStore } from '@/stores/UserSession';
@@ -111,30 +110,38 @@ function onHide() {
       @submit="onSubmit"
     >
       <div class="flex flex-col gap-6">
-        <DialogFormField
-          inputId="org-name"
-          :label="t('organization.name')"
-          required
-          :errorMessage="$form.name?.invalid && $form.name?.touched ? $form.name.error?.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="org-name" class="font-semibold">
+            {{ t('organization.name') }}<span aria-hidden="true"> *</span>
+          </label>
           <InputText id="org-name" name="name" fluid :placeholder="t('organization.name')" />
-        </DialogFormField>
+          <Message
+            v-if="$form.name?.invalid && $form.name?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.name?.error?.message }}
+          </Message>
+        </div>
 
-        <DialogFormField inputId="org-trade" :label="t('organization.trade')">
+        <div class="flex flex-col gap-1">
+          <label for="org-trade" class="font-semibold">{{ t('organization.trade') }}</label>
           <InputText id="org-trade" name="trade" fluid :placeholder="t('organization.trade')" />
-        </DialogFormField>
+        </div>
 
-        <DialogFormField
-          inputId="org-phone"
-          :label="t('organization.phone')"
-          :errorMessage="phoneError && phoneValue ? phoneError : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="org-phone" class="font-semibold">{{ t('organization.phone') }}</label>
           <PhoneInput v-model="phoneValue" inputId="org-phone" />
-        </DialogFormField>
+          <Message v-if="phoneError && phoneValue" severity="error" size="small" variant="simple">
+            {{ phoneError }}
+          </Message>
+        </div>
 
-        <DialogFormField inputId="org-email" :label="t('organization.email')">
+        <div class="flex flex-col gap-1">
+          <label for="org-email" class="font-semibold">{{ t('organization.email') }}</label>
           <Select id="org-email" v-model="emailValue" :options="emailOptions" fluid />
-        </DialogFormField>
+        </div>
 
         <Message severity="secondary" size="small" variant="simple">
           {{ t('accountSettings.userProfile.requiredFields') }}

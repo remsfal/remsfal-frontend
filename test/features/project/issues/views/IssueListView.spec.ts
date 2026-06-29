@@ -69,9 +69,9 @@ describe("IssueListView.vue", () => {
     wrapper.vm.issuesByStatusOpen.push(newIssue);
     wrapper.vm.myIssues.push(newIssue);
 
-    expect(wrapper.vm.issues.length).toBe(1);
-    expect(wrapper.vm.issuesByStatusOpen.length).toBe(1);
-    expect(wrapper.vm.myIssues.length).toBe(1);
+    expect(wrapper.vm.issues).toHaveLength(1);
+    expect(wrapper.vm.issuesByStatusOpen).toHaveLength(1);
+    expect(wrapper.vm.myIssues).toHaveLength(1);
   });
 
   test("opens create issue dialog", () => {

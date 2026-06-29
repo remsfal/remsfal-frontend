@@ -79,14 +79,14 @@ describe('RentalAgreementView.vue', () => {
 
     wrapper.vm.confirmDeletion();
     expect(wrapper.vm.confirmationDialogVisible).toBe(false);
-    expect(wrapper.vm.tenantData.length).toBe(0); // tenant deleted
+    expect(wrapper.vm.tenantData).toHaveLength(0); // tenant deleted
   });
 
   it('does nothing if tenantToDelete is null', () => {
     wrapper.vm.tenantToDelete = null;
     const initialLength = wrapper.vm.tenantData.length;
     wrapper.vm.confirmDeletion();
-    expect(wrapper.vm.tenantData.length).toBe(initialLength);
+    expect(wrapper.vm.tenantData).toHaveLength(initialLength);
   });
 
   it('navigates to rental agreement details on row click', async () => {

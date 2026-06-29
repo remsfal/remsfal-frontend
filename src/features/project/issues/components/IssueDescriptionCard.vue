@@ -41,15 +41,15 @@ const handleSave = async () => {
   loadingSave.value = true;
   try {
     const payload: Partial<IssueJson> = { description: description.value };
-          
+
     // Call backend API
     await issueService.updateIssue(props.issueId, payload);
-    
+
     // Update reference state after successful save
     originalDescription.value = description.value;
 
     toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('issueDetails.descriptionSaveSuccess'), life: 3000 
+      severity: 'success', summary: t('success.saved'), detail: t('issueDetails.descriptionSaveSuccess'), life: 3000
     });
 
     // Emit saved event to parent
@@ -57,7 +57,7 @@ const handleSave = async () => {
   } catch (error) {
     console.error('Error saving description:', error);
     toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('issueDetails.descriptionSaveError'), life: 3000 
+      severity: 'error', summary: t('error.general'), detail: t('issueDetails.descriptionSaveError'), life: 3000
     });
   } finally {
     loadingSave.value = false;
@@ -68,21 +68,22 @@ const handleSave = async () => {
 <template>
   <Card class="flex flex-col gap-4 basis-full">
     <template #title>
-      <div class="font-semibold text-xl">
+      <label for="issue-description" class="font-semibold text-xl">
         Description
-      </div>
+      </label>
     </template>
 
     <template #content>
       <div class="flex flex-col gap-4">
         <Textarea
+          id="issue-description"
           v-model="description"
           autoResize
           :rows="8"
           class="w-full"
           placeholder="Write markdown description here..."
         />
-        
+
         <!-- Save Description Button -->
         <div class="flex justify-end">
           <Button

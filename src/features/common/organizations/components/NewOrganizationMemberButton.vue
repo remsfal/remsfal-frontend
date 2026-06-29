@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -11,7 +12,6 @@ import { useToast } from 'primevue/usetoast';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
 import { type OrganizationEmployeeJson, type EmployeeRole, organizationService } from '@/services/OrganizationService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import DialogFormField from '@/components/common/DialogFormField.vue';
 
 const props = defineProps<{ organizationId: string }>();
 const emit = defineEmits<(e: 'newMember', email: string) => void>();
@@ -89,12 +89,10 @@ const addMember = async (email: string, employeeRole: EmployeeRole) => {
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
-        <DialogFormField
-          inputId="email"
-          :label="t('organization.newMemberButton.emailLabel')"
-          required
-          :errorMessage="$form.email?.invalid && $form.email?.touched ? $form.email.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="email" class="font-semibold">
+            {{ t('organization.newMemberButton.emailLabel') }}<span aria-hidden="true"> *</span>
+          </label>
           <InputText
             id="email"
             name="email"
@@ -105,22 +103,35 @@ const addMember = async (email: string, employeeRole: EmployeeRole) => {
             autofocus
             fluid
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.email?.invalid && $form.email?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.email?.error?.message }}
+          </Message>
+        </div>
 
-        <DialogFormField
-          inputId="employeeRole"
-          :label="t('organization.newMemberButton.roleLabel')"
-          required
-          :errorMessage="$form.employeeRole?.invalid && $form.employeeRole?.touched
-            ? $form.employeeRole.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="employeeRole" class="font-semibold">
+            {{ t('organization.newMemberButton.roleLabel') }}<span aria-hidden="true"> *</span>
+          </label>
           <EmployeeRoleSelect
             name="employeeRole"
             inputId="employeeRole"
             :invalid="$form.employeeRole?.invalid && $form.employeeRole?.touched"
             class="w-full"
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.employeeRole?.invalid && $form.employeeRole?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.employeeRole?.error?.message }}
+          </Message>
+        </div>
       </div>
 
       <div class="flex justify-end gap-2 mt-6">
