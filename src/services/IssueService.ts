@@ -74,6 +74,23 @@ class IssueService {
     return apiClient.delete('/ticketing/v1/issues/{issueId}/attachments/{attachmentId}',
       {pathParams: { issueId, attachmentId },});
   }
+
+  async uploadAttachments(issueId: string, files: File[]): Promise<void> {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('attachment', file);
+    });
+
+    const response = await fetch(`/ticketing/v1/issues/${encodeURIComponent(issueId)}/attachments`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to upload attachments: ${response.status}`);
+    }
+  }
 }
 
 export const issueService = new IssueService();
