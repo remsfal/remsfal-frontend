@@ -1,7 +1,8 @@
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import {describe, it, expect, beforeEach, vi} from 'vitest';
 import ContractorMenu from '@/layouts/components/ContractorMenu.vue';
 import { useUserSessionStore } from '@/stores/UserSession';
+import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 describe('ContractorMenu.vue', () => {
   let wrapper: VueWrapper;
@@ -61,6 +62,38 @@ describe('ContractorMenu.vue', () => {
 
     await wrapper.find('.pi-home').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/contractor/dashboard');
+  });
+
+  it('calls fetchUserOrganization on mount when store is not initialized', async () => {
+    const orgStore = useOrganizationStore();
+    orgStore.initialized = false;
+    const fetchSpy = vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
+
+    mount(ContractorMenu);
+
+    expect(fetchSpy).toHaveBeenCalledOnce();
+  });
+
+  it('renders organization menu item when userOrganizations is populated', async () => {
+    const orgStore = useOrganizationStore();
+    orgStore.userOrganizations = [{ id: 'org-1', name: 'Test GmbH' }];
+
+    const localWrapper = mount(ContractorMenu);
+    await flushPromises();
+
+    expect(localWrapper.text()).toContain('Test GmbH');
+  });
+
+  it('renders organization settings link for each organization', async () => {
+    const orgStore = useOrganizationStore();
+    orgStore.userOrganizations = [{ id: 'org-1', name: 'Test GmbH' }];
+
+    const localWrapper = mount(ContractorMenu);
+    await flushPromises();
+
+    const links = localWrapper.findAll('a');
+    const orgSettingsLink = links.find(l => l.attributes('href')?.includes('/contractor/organizations/org-1'));
+    expect(orgSettingsLink).toBeDefined();
   });
 
 });
