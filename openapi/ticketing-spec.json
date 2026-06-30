@@ -548,8 +548,11 @@
           "objectName" : {
             "type" : "string"
           },
-          "uploadedBy" : {
+          "uploaderId" : {
             "$ref" : "#/components/schemas/UUID"
+          },
+          "uploadedBy" : {
+            "type" : "string"
           },
           "createdAt" : {
             "$ref" : "#/components/schemas/Instant"
@@ -649,6 +652,9 @@
           },
           "reporterId" : {
             "$ref" : "#/components/schemas/UUID"
+          },
+          "reportedBy" : {
+            "type" : "string"
           },
           "agreementId" : {
             "$ref" : "#/components/schemas/UUID"
@@ -1153,11 +1159,16 @@
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
-          "triggerId" : {
-            "description" : "ID of the user who triggered the original quotation request",
+          "offererId" : {
+            "description" : "ID of the user who submitted this quotation",
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
+          },
+          "offeredBy" : {
+            "type" : "string",
+            "description" : "Name of the user who submitted this quotation",
+            "readOnly" : true
           },
           "contractorId" : {
             "description" : "ID of the contractor submitting the quotation",
@@ -1218,11 +1229,16 @@
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
-          "triggerId" : {
-            "description" : "ID of the user who triggered this request",
+          "initiatorId" : {
+            "description" : "ID of the user who initiated this request",
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
+          },
+          "initiatedBy" : {
+            "type" : "string",
+            "description" : "Name of the user who initiated this request",
+            "readOnly" : true
           },
           "contractorId" : {
             "description" : "ID of the contractor this request was sent to",
