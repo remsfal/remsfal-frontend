@@ -5131,7 +5131,8 @@ export interface components {
       fileName?: string;
       contentType?: string;
       objectName?: string;
-      uploadedBy?: components["schemas"]["UUID"];
+      uploaderId?: components["schemas"]["UUID"];
+      uploadedBy?: string;
       createdAt?: components["schemas"]["Instant"];
     };
     /** @enum {string} */
@@ -5189,6 +5190,7 @@ export interface components {
       status?: components["schemas"]["IssueStatus"];
       priority?: components["schemas"]["IssuePriority"];
       reporterId?: components["schemas"]["UUID"];
+      reportedBy?: string;
       agreementId?: components["schemas"]["UUID"];
       visibleToTenants?: boolean;
       rentalUnitId?: components["schemas"]["UUID"];
@@ -5376,8 +5378,10 @@ export interface components {
       readonly requestId?: components["schemas"]["UUID"];
       /** @description ID of the project this quotation belongs to */
       readonly projectId?: components["schemas"]["UUID"];
-      /** @description ID of the user who triggered the original quotation request */
-      readonly triggerId?: components["schemas"]["UUID"];
+      /** @description ID of the user who submitted this quotation */
+      readonly offererId?: components["schemas"]["UUID"];
+      /** @description Name of the user who submitted this quotation */
+      readonly offeredBy?: string;
       /** @description ID of the contractor submitting the quotation */
       readonly contractorId?: components["schemas"]["UUID"];
       /** @description Attachment IDs associated with the quotation */
@@ -5397,8 +5401,10 @@ export interface components {
       readonly issueId?: components["schemas"]["UUID"];
       /** @description ID of the project this request belongs to */
       readonly projectId?: components["schemas"]["UUID"];
-      /** @description ID of the user who triggered this request */
-      readonly triggerId?: components["schemas"]["UUID"];
+      /** @description ID of the user who initiated this request */
+      readonly initiatorId?: components["schemas"]["UUID"];
+      /** @description Name of the user who initiated this request */
+      readonly initiatedBy?: string;
       /** @description ID of the contractor this request was sent to */
       readonly contractorId?: components["schemas"]["UUID"];
       /** @description ID of the organization of the contractor */
