@@ -154,6 +154,31 @@ describe('IssueAttachmentCard.vue', () => {
     expect(wrapper.emitted('saved')).toBeFalsy();
   });
 
+  test('renders indicator tiles for non-image attachments grouped by extension', async () => {
+    const wrapper = mountCard([
+      {
+        attachmentId: 'a1', fileName: 'report.pdf', contentType: 'application/pdf' 
+      },
+      {
+        attachmentId: 'a2', fileName: 'invoice.pdf', contentType: 'application/pdf' 
+      },
+      {
+        attachmentId: 'a3', fileName: 'video.mov', contentType: 'video/quicktime' 
+      },
+    ]);
+
+    await flushPromises();
+
+    const tiles = wrapper.findAll('[data-test="non-image-tile"]');
+    expect(tiles).toHaveLength(2);
+
+    const pdfTile = tiles.find(t => t.text().includes('PDF'));
+    const movTile = tiles.find(t => t.text().includes('MOV'));
+
+    expect(pdfTile?.text()).toContain('+2');
+    expect(movTile?.text()).toContain('+1');
+  });
+
   test('renders fallback values for image preview and download url', async () => {
     const wrapper = mountCard([
       {

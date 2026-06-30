@@ -26,6 +26,16 @@ const imageAttachments = computed(() => props.attachments.filter(
   attachment => attachment.contentType?.startsWith('image/')
 ));
 
+const nonImageAttachmentGroups = computed(() => {
+  const groups = new Map<string, number>();
+  for (const attachment of props.attachments) {
+    if (attachment.contentType?.startsWith('image/')) continue;
+    const ext = attachment.fileName?.split('.').pop()?.toUpperCase() ?? '?';
+    groups.set(ext, (groups.get(ext) ?? 0) + 1);
+  }
+  return Array.from(groups.entries()).map(([ext, count]) => ({ ext, count }));
+});
+
 function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
   const fileName = attachment.fileName ?? '';
   const attachmentId = attachment.attachmentId ?? '';
@@ -99,26 +109,11 @@ async function handleDelete(attachment: IssueAttachmentJson) {
 
     <template #content>
       <div class="flex flex-col gap-4">
-        <FileUpload
-          mode="advanced"
-          name="attachment"
-          :chooseLabel="t('issueDetails.attachmentsUploadButton')"
-          :uploadLabel="t('issueDetails.attachmentsUploadStartButton')"
-          multiple
-          customUpload
-          accept="image/*,application/pdf"
-          :maxFileSize="10485760"
-          :fileLimit="10"
-          :showCancelButton="false"
-          :disabled="loadingUpload"
-          @uploader="handleUpload"
-        />
-
         <div v-if="attachments.length === 0" class="text-sm text-gray-500">
           {{ t('issueDetails.noAttachments') }}
         </div>
 
-        <div v-if="imageAttachments.length > 0" class="flex flex-wrap gap-2">
+        <div v-if="imageAttachments.length > 0 || nonImageAttachmentGroups.length > 0" class="flex flex-wrap gap-2">
           <Image
             v-for="attachment in imageAttachments"
             :key="attachment.attachmentId"
@@ -127,7 +122,34 @@ async function handleDelete(attachment: IssueAttachmentJson) {
             preview
             imageClass="h-24 w-24 object-cover rounded"
           />
+          <div
+            v-for="group in nonImageAttachmentGroups"
+            :key="group.ext"
+            data-test="non-image-tile"
+            class="h-24 w-24 flex flex-col items-center justify-center gap-1 rounded
+                   border border-surface-200 bg-surface-100 text-surface-500 text-xs font-medium"
+            :aria-label="t('issueDetails.nonImageAttachmentsAriaLabel', { count: group.count, ext: group.ext })"
+          >
+            <i class="pi pi-file text-2xl" />
+            <span>+{{ group.count }}</span>
+            <span>{{ group.ext }}</span>
+          </div>
         </div>
+
+        <FileUpload
+          mode="basic"
+          name="attachment"
+          :chooseLabel="t('issueDetails.attachmentsUploadButton')"
+          chooseIcon="pi pi-upload"
+          multiple
+          auto
+          customUpload
+          accept="image/*,application/pdf"
+          :maxFileSize="10485760"
+          :fileLimit="10"
+          :disabled="loadingUpload"
+          @uploader="handleUpload"
+        />
 
         <div
           v-for="attachment in attachments"
