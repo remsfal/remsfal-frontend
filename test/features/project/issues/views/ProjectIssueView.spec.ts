@@ -30,6 +30,13 @@ const mockIssue = {
   tenancyId: "tenant-1",
   type: "BUG",
   description: "Test description",
+  attachments: [
+    {
+      attachmentId: "att-1",
+      fileName: "test-image.png",
+      contentType: "image/png",
+    },
+  ],
 };
 
 // ---- Test Suite ----
@@ -55,6 +62,10 @@ describe("ProjectIssueView.vue", () => {
             template:
               '<div data-test="description" @click="$emit(\'saved\')" />',
           },
+          IssueAttachmentCard: {
+            template:
+              '<div data-test="attachments" @click="$emit(\'saved\')" />',
+          },
           QuotationRequestCard: true,
         },
       },
@@ -68,9 +79,10 @@ describe("ProjectIssueView.vue", () => {
     expect(issueService.getIssue).toHaveBeenCalledWith("ISSUE-1");
   });
 
-  test("renders IssueDetailsCard and IssueDescriptionCard", () => {
+  test("renders IssueDetailsCard, IssueDescriptionCard and IssueAttachmentCard", () => {
     expect(wrapper.find('[data-test="details"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="description"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="attachments"]').exists()).toBe(true);
   });
 
   // ---- Loader Tests ----
@@ -84,7 +96,7 @@ describe("ProjectIssueView.vue", () => {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
-          IssueDetailsCard: true, IssueDescriptionCard: true, QuotationRequestCard: true 
+          IssueDetailsCard: true, IssueDescriptionCard: true, IssueAttachmentCard: true, QuotationRequestCard: true 
         } 
       },
     });
@@ -107,6 +119,7 @@ describe("ProjectIssueView.vue", () => {
         stubs: {
           IssueDetailsCard: true,
           IssueDescriptionCard: true,
+          IssueAttachmentCard: true,
           QuotationRequestCard: true,
         },
       },
@@ -152,7 +165,7 @@ describe("ProjectIssueView.vue", () => {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
-          IssueDetailsCard: true, IssueDescriptionCard: true, QuotationRequestCard: true 
+          IssueDetailsCard: true, IssueDescriptionCard: true, IssueAttachmentCard: true, QuotationRequestCard: true 
         } 
       },
     });
@@ -169,6 +182,13 @@ describe("ProjectIssueView.vue", () => {
     await wrapper.find('[data-test="description"]').trigger("click");
     await flushPromises();
   
+    expect(issueService.getIssue).toHaveBeenCalledTimes(2);
+  });
+
+  test("refetches issue when attachment card emits saved", async () => {
+    await wrapper.find('[data-test="attachments"]').trigger("click");
+    await flushPromises();
+
     expect(issueService.getIssue).toHaveBeenCalledTimes(2);
   });
   
