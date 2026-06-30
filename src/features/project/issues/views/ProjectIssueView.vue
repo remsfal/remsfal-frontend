@@ -4,8 +4,9 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
+import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
 import QuotationRequestCard from '../components/QuotationRequestCard.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
 
 /* Props */
 const props = defineProps<{ projectId: string; issueId: string }>();
@@ -30,14 +31,13 @@ type IssueUI = {
 const loadingFetch = ref(false);
 const issueDetailsData = ref<IssueUI | null>(null);
 const description = ref('');
+const attachments = ref<IssueAttachmentJson[]>([]);
 
 /* Fetch issue from API and map to UI type */
 const fetchIssue = async () => {
   loadingFetch.value = true;
   try {
     const issue: IssueJson = await issueService.getIssue(props.issueId);
-    console.log('#######', issue);
-
     // Map API response to UI-friendly format
     issueDetailsData.value = {
       issueId: issue.id ?? '',
@@ -49,9 +49,8 @@ const fetchIssue = async () => {
       issueType: issue.type,
       tenancy: issue.agreementId ?? '',
     };
-    console.log('Fetched assigneeId:', issue);
-
     description.value = issue.description ?? '';
+    attachments.value = issue.attachments ?? [];
   } catch (error) {
     console.error('Error fetching issue:', error);
     toast.add({
@@ -69,6 +68,10 @@ const handleDetailsSaved = () => {
 
 const handleDescriptionSaved = () => {
   fetchIssue(); // refresh after saving description
+};
+
+const handleAttachmentsSaved = () => {
+  fetchIssue(); // refresh after attachment changes
 };
 
 /* Fetch issue on mount and when props change */
@@ -101,6 +104,13 @@ watch(
       :issueId="issueId"
       :initialDescription="description"
       @saved="handleDescriptionSaved"
+    />
+
+    <!-- Issue Attachment Card -->
+    <IssueAttachmentCard
+      :issueId="issueId"
+      :attachments="attachments"
+      @saved="handleAttachmentsSaved"
     />
 
     <!-- Quotation Request Card -->
