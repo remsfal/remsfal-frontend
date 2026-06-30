@@ -6,7 +6,7 @@ import Card from 'primevue/card';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import type { FileUploadUploaderEvent } from 'primevue/fileupload';
-import Galleria from 'primevue/galleria';
+import Image from 'primevue/image';
 import { issueService, type IssueAttachmentJson } from '@/services/IssueService';
 
 const props = defineProps<{
@@ -118,33 +118,16 @@ async function handleDelete(attachment: IssueAttachmentJson) {
           {{ t('issueDetails.noAttachments') }}
         </div>
 
-        <Galleria
-          v-if="imageAttachments.length > 0"
-          :value="imageAttachments"
-          :numVisible="5"
-          :showItemNavigators="true"
-          :showThumbnails="true"
-          :showIndicators="false"
-          :fullScreen="false"
-          :circular="false"
-          containerStyle="max-width: 100%"
-          class="w-full"
-        >
-          <template #item="{ item }">
-            <img
-              :src="getAttachmentDownloadUrl(item)"
-              :alt="item.fileName ?? 'issue-attachment'"
-              class="w-full max-h-96 object-contain"
-            >
-          </template>
-          <template #thumbnail="{ item }">
-            <img
-              :src="getAttachmentDownloadUrl(item)"
-              :alt="item.fileName ?? 'issue-attachment-thumbnail'"
-              class="w-full h-20 object-cover"
-            >
-          </template>
-        </Galleria>
+        <div v-if="imageAttachments.length > 0" class="flex flex-wrap gap-2">
+          <Image
+            v-for="attachment in imageAttachments"
+            :key="attachment.attachmentId"
+            :src="getAttachmentDownloadUrl(attachment)"
+            :alt="attachment.fileName ?? 'issue-attachment'"
+            preview
+            imageClass="h-24 w-24 object-cover rounded"
+          />
+        </div>
 
         <div
           v-for="attachment in attachments"

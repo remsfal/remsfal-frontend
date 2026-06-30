@@ -29,13 +29,9 @@ describe('IssueAttachmentCard.vue', () => {
         '<button data-test="upload"' +
         ' @click="$emit(\'uploader\', { files: [{ name: \'doc.pdf\', type: \'application/pdf\' }] })" />',
     },
-    Galleria: {
-      props: ['value'],
-      template:
-        '<div data-test="galleria">' +
-        '<slot name="item" :item="value[0]" />' +
-        '<slot name="thumbnail" :item="value[0]" />' +
-        '</div>',
+    Image: {
+      props: ['src', 'alt', 'preview', 'imageClass'],
+      template: '<img :src="src" :alt="alt" />',
     },
     Button: { template: '<button @click="$emit(\'click\')" />' },
   };
@@ -172,6 +168,5 @@ describe('IssueAttachmentCard.vue', () => {
     const links = wrapper.findAll('a');
     expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue-1/attachments//');
     expect(wrapper.find('img[alt="issue-attachment"]').exists()).toBe(true);
-    expect(wrapper.find('img[alt="issue-attachment-thumbnail"]').exists()).toBe(true);
   });
 });

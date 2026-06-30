@@ -7,7 +7,7 @@ Central AI instructions for the remsfal-frontend repository.
 
 This is the frontend for Remsfal, an open-source facility management software built as a Vue 3 single-page application (SPA) using Vite. It manages real estate projects and works in conjunction with the [`remsfal-backend`](https://github.com/remsfal/remsfal-backend) repository.
 
-**Technology Stack**: Vue 3 (Composition API), TypeScript, Vite, PrimeVue 4, TailwindCSS 4, Pinia, Vue Router 4, Vitest, Cypress
+**Technology Stack**: Vue 3 (Composition API), TypeScript, Vite, PrimeVue 4 (pinned to `<5.0.0`), TailwindCSS 4, Pinia, Vue Router 4, Vitest, Cypress
 
 **Live Version**: https://remsfal.de
 
@@ -540,6 +540,7 @@ Use lazy loading for routes: `component: () => import('@/views/ViewName.vue')`
 - Theme: Aura (PrimeVue 4.3+)
 - Use PrimeVue components when available instead of custom implementations
 - Toast/dialog/confirm services available globally
+- **Do NOT upgrade to PrimeVue v5.** PrimeVue 5 is no longer MIT-licensed — it requires a paid PrimeUI Commercial license ($599/developer, rising to $799 in 2027). PrimeVue 4.x is MIT-licensed and stays MIT forever. All four PrimeVue packages are pinned to `>=4.x <5.0.0` in `package.json`. Deprecation warnings for `Galleria` and `Image` in v4 point to v5 components that are behind a paywall — do not act on these warnings.
 
 **Accessibility — Label Association**:
 - Always associate `<label>` with its control via a matching `for` / `id` pair (SonarCloud rule Web:S6853)
