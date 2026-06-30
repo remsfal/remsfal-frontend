@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
@@ -54,7 +54,7 @@ const fetchIssue = async () => {
   } catch (error) {
     console.error('Error fetching issue:', error);
     toast.add({
-      severity: 'error', summary: t('error.general'), detail: t('issueDetails.fetchError'), life: 3000 
+      severity: 'error', summary: t('error.general'), detail: t('issueDetails.fetchError'), life: 3000
     });
   } finally {
     loadingFetch.value = false;
@@ -88,35 +88,33 @@ watch(
     <i class="pi pi-spin pi-spinner text-4xl text-primary" />
   </div>
 
-  <div v-else class="flex flex-col gap-4">
-    <!-- Issue Details Card -->
-    <IssueDetailsCard
-      v-if="issueDetailsData"
-      :projectId="projectId"
-      :issueId="issueId"
-      :initialData="issueDetailsData"
-      @saved="handleDetailsSaved"
-    />
+  <!-- Issue Details Card -->
+  <IssueDetailsCard
+    v-if="issueDetailsData"
+    :initialData="issueDetailsData"
+    :issueId="issueId"
+    :projectId="projectId"
+    @saved="handleDetailsSaved"
+  />
 
-    <!-- Issue Description Card -->
-    <IssueDescriptionCard
-      :projectId="projectId"
-      :issueId="issueId"
-      :initialDescription="description"
-      @saved="handleDescriptionSaved"
-    />
+  <!-- Issue Description Card -->
+  <IssueDescriptionCard
+    :initialDescription="description"
+    :issueId="issueId"
+    :projectId="projectId"
+    @saved="handleDescriptionSaved"
+  />
 
-    <!-- Issue Attachment Card -->
-    <IssueAttachmentCard
-      :issueId="issueId"
-      :attachments="attachments"
-      @saved="handleAttachmentsSaved"
-    />
+  <!-- Issue Attachment Card -->
+  <IssueAttachmentCard
+    :attachments="attachments"
+    :issueId="issueId"
+    @saved="handleAttachmentsSaved"
+  />
 
-    <!-- Quotation Request Card -->
-    <QuotationRequestCard
-      :projectId="projectId"
-      :issueId="issueId"
-    />
-  </div>
+  <!-- Quotation Request Card -->
+  <QuotationRequestCard
+    :issueId="issueId"
+    :projectId="projectId"
+  />
 </template>

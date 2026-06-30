@@ -204,6 +204,10 @@ describe("IssueListView.vue", () => {
         assigneeId: "user1",
       })
     );
+    expect(pushMock).toHaveBeenCalledWith({
+      name: 'IssueDetails',
+      params: { projectId: 'proj-1', issueId: 'new-123' },
+    });
   });
 
   test("adds issue to issuesByStatusOpen when status is OPEN", async () => {

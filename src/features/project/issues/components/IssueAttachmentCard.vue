@@ -136,21 +136,6 @@ async function handleDelete(attachment: IssueAttachmentJson) {
           </div>
         </div>
 
-        <FileUpload
-          mode="basic"
-          name="attachment"
-          :chooseLabel="t('issueDetails.attachmentsUploadButton')"
-          chooseIcon="pi pi-upload"
-          multiple
-          auto
-          customUpload
-          accept="image/*,application/pdf"
-          :maxFileSize="10485760"
-          :fileLimit="10"
-          :disabled="loadingUpload"
-          @uploader="handleUpload"
-        />
-
         <div
           v-for="attachment in attachments"
           :key="attachment.attachmentId"
@@ -166,12 +151,31 @@ async function handleDelete(attachment: IssueAttachmentJson) {
           </a>
           <Button
             icon="pi pi-trash"
+            :label="t('button.delete')"
             severity="danger"
-            text
-            rounded
+            outlined
+            size="small"
+            :pt="{ label: { class: 'hidden sm:block' } }"
             :disabled="!attachment.attachmentId || deletingAttachmentId !== null"
             :loading="deletingAttachmentId === attachment.attachmentId"
             @click="handleDelete(attachment)"
+          />
+        </div>
+
+        <div class="flex justify-end">
+          <FileUpload
+            mode="basic"
+            name="attachment"
+            :chooseLabel="t('issueDetails.attachmentsUploadButton')"
+            chooseIcon="pi pi-upload"
+            multiple
+            auto
+            customUpload
+            accept="image/*,application/pdf"
+            :maxFileSize="10485760"
+            :fileLimit="10"
+            :disabled="loadingUpload"
+            @uploader="handleUpload"
           />
         </div>
       </div>

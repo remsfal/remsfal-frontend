@@ -33,6 +33,8 @@ const handleIssueCreated = (newIssue: IssueItemJson) => {
       },
     ];
   }
+
+  router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: newIssue.id ?? '' } });
 };
 
 // --- Load all issues ---

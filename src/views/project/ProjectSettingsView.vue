@@ -21,5 +21,3 @@ const props = defineProps<{
 
   <ProjectDangerZoneCard :projectId="props.projectId" />
 </template>
-
-<style scoped></style>
