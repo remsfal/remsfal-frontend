@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
-import { mount, VueWrapper } from "@vue/test-utils";
+import { mount, VueWrapper, flushPromises } from "@vue/test-utils";
 
 // ---- MOCK ROUTER ----
 const pushMock = vi.fn();
@@ -213,13 +213,79 @@ describe("IssueListView.vue", () => {
   test("adds issue to issuesByStatusOpen when status is OPEN", async () => {
     wrapper.vm.issuesByStatusOpen = [];
     const newIssue = {
-      id: "999", title: "Test", description: "Desc", status: 'OPEN' as Status 
+      id: "999", title: "Test", description: "Desc", status: 'OPEN' as Status
     };
-    
+
     wrapper.vm.issues.push(newIssue);
     wrapper.vm.issuesByStatusOpen.push(newIssue);
-    
+
     expect(wrapper.vm.issuesByStatusOpen).toHaveLength(1);
     expect(wrapper.vm.issuesByStatusOpen[0].status).toBe('OPEN' as Status);
+  });
+
+  test("handleIssueCreated does not touch issuesByStatusOpen/myIssues when status is not OPEN and no assignee", async () => {
+    await wrapper.setProps({ assigneeId: undefined });
+
+    const newIssue = {
+      id: "closed-1",
+      title: "Closed Issue",
+      status: 'CLOSED' as Status,
+    };
+
+    wrapper.vm.handleIssueCreated(newIssue);
+
+    expect(wrapper.vm.issues).toContainEqual(newIssue);
+    expect(wrapper.vm.issuesByStatusOpen).not.toContainEqual(newIssue);
+    expect(wrapper.vm.myIssues).not.toContainEqual(newIssue);
+    expect(pushMock).toHaveBeenCalledWith({
+      name: 'IssueDetails',
+      params: { projectId: 'proj-1', issueId: 'closed-1' },
+    });
+  });
+
+  test("handleIssueCreated falls back to empty issueId when id is missing", () => {
+    const newIssue = {
+      title: "No Id Issue",
+      status: 'OPEN' as Status,
+    };
+
+    wrapper.vm.handleIssueCreated(newIssue);
+
+    expect(pushMock).toHaveBeenCalledWith({
+      name: 'IssueDetails',
+      params: { projectId: 'proj-1', issueId: '' },
+    });
+  });
+
+  test("onIssueSelect falls back to empty issueId when id is missing", () => {
+    const issue = { title: "No Id Issue", status: 'OPEN' as Status };
+
+    wrapper.vm.onIssueSelect(issue);
+
+    expect(pushMock).toHaveBeenCalledWith({
+      name: 'IssueDetails',
+      params: { projectId: 'proj-1', issueId: '' },
+    });
+  });
+
+  test("does not load myIssues on mount when assigneeId prop is not set", async () => {
+    const { issueService: mockedIssueService } = await import("@/services/IssueService");
+    vi.clearAllMocks();
+
+    const localWrapper = mount(IssueListView, {
+      props: { projectId: "proj-1", category: 'TASK' as Type },
+      global: {
+        stubs: {
+          IssueTable: true,
+          NewIssueDialog: true,
+          Button: false,
+        },
+      },
+    });
+
+    await flushPromises();
+
+    expect(mockedIssueService.getIssues).toHaveBeenCalledTimes(2);
+    expect(localWrapper.vm.myIssues).toHaveLength(0);
   });
 });
