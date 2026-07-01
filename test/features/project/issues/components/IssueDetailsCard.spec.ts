@@ -76,15 +76,16 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('renders Issue Details title', () => {
-    expect(wrapper.text()).toContain('Issue Details');
+  test('renders issue title in card header', () => {
+    expect(wrapper.text()).toContain('Old title');
+    expect(wrapper.text()).toContain('Vorgangs-ID');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('save button is disabled when no changes are made', async () => {
     await wrapper.vm.$nextTick();
     const buttons = wrapper.findAll('button');
-    const saveButton = buttons.find(b => b.text().includes('Save'));
+    const saveButton = buttons.find(b => b.text().includes('Speichern'));
     expect(saveButton?.attributes('disabled')).toBeDefined();
   });
 
@@ -127,8 +128,8 @@ describe('IssueDetailsCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(
       expect.objectContaining({
         severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to save issue details',
+        summary: 'Fehler',
+        detail: 'Fehler beim Speichern der Aufgabendetails',
       }),
     );
   });

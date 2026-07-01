@@ -11,6 +11,7 @@ const props = defineProps<{
   invalid?: boolean;
   placeholder?: string;
   customClass?: string;
+  inputId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -89,6 +90,7 @@ watch(() => props.projectId, () => {
 <template>
   <AutoComplete
     :modelValue="selectedMember"
+    :inputId="inputId"
     :suggestions="filteredMembers"
     :invalid="invalid"
     :virtualScrollerOptions="{ itemSize: 38 }"

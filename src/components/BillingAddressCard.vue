@@ -1,39 +1,73 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { countryFlagEmoji, countryDisplayName } from '@/helper/countryHelper';
 import { Form } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
+import { z } from 'zod';
 import BaseCard from '@/components/common/BaseCard.vue';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
-import type { AddressJson } from '@/services/AddressService';
+import { projectService } from '@/services/ProjectService';
 import { useAddressForm, buildAddressSchema } from '@/composables/useAddressForm';
 
 interface Props {
-  loadAddress: () => Promise<AddressJson | undefined>;
-  saveAddress: (addr: AddressJson) => Promise<void>;
-  title?: string;
+  projectId: string;
 }
 
 const props = defineProps<Props>();
 
 const { t, locale } = useI18n();
 
-const schema = buildAddressSchema(t);
+const schema = buildAddressSchema(t, {
+  owner: z.string().trim().optional(),
+  careOf: z.string().trim().optional(),
+});
 const resolver = zodResolver(schema);
 
+// Not part of the form itself, but required by ProjectJson on save — captured on load, re-sent unchanged.
+const projectTitle = ref('');
+
 const {currentValues, initialValues, formKey, isDirty, localizedCountries, handleZipBlur, onSubmit,} = useAddressForm({
-  load: props.loadAddress,
-  save: props.saveAddress,
+  extraFieldDefaults: { owner: '', careOf: '' },
+  load: async () => {
+    const project = await projectService.getProject(props.projectId);
+    projectTitle.value = project.title || '';
+    return {
+      owner: project.owner || '',
+      careOf: project.careOf || '',
+      street: project.address?.street || '',
+      zip: project.address?.zip || '',
+      city: project.address?.city || '',
+      province: project.address?.province || '',
+      countryCode: project.address?.countryCode || '',
+    };
+  },
+  save: async (payload) => {
+    await projectService.updateProject(props.projectId, {
+      title: projectTitle.value,
+      owner: payload.owner || undefined,
+      careOf: payload.careOf || undefined,
+      address: {
+        street: payload.street,
+        zip: payload.zip,
+        city: payload.city,
+        province: payload.province,
+        countryCode: payload.countryCode,
+      },
+    });
+  },
+  loadErrorLogLabel: 'Failed to load billing recipient data',
+  errorLogLabel: 'Failed to save billing recipient data',
 });
 </script>
 
 <template>
   <BaseCard>
     <template #title>
-      {{ title ?? t('address.title') }}
+      {{ t('projectSettings.billingAddress.title') }}
     </template>
 
     <template #content>
@@ -45,7 +79,30 @@ const {currentValues, initialValues, formKey, isDirty, localizedCountries, handl
         @submit="onSubmit"
       >
         <div class="flex flex-col gap-4">
-          <!-- Street -->
+          <div class="flex flex-col gap-1">
+            <label for="owner" class="font-medium">
+              {{ t('projectSettings.billingAddress.owner') }}
+            </label>
+            <InputText
+              id="owner"
+              name="owner"
+              fluid
+              @update:modelValue="(v) => (currentValues.owner = v as string)"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="careOf" class="font-medium">
+              {{ t('projectSettings.billingAddress.careOf') }}
+            </label>
+            <InputText
+              id="careOf"
+              name="careOf"
+              fluid
+              @update:modelValue="(v) => (currentValues.careOf = v as string)"
+            />
+          </div>
+
           <div class="flex flex-col gap-1">
             <label for="street" class="font-medium">
               {{ t('address.street') }}*
@@ -67,7 +124,6 @@ const {currentValues, initialValues, formKey, isDirty, localizedCountries, handl
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- ZIP -->
             <div class="flex flex-col gap-1">
               <label for="zip" class="font-medium">
                 {{ t('address.zip') }}*
@@ -89,7 +145,6 @@ const {currentValues, initialValues, formKey, isDirty, localizedCountries, handl
               </Message>
             </div>
 
-            <!-- City -->
             <div class="flex flex-col gap-1">
               <label for="city" class="font-medium">
                 {{ t('address.city') }}*
@@ -110,7 +165,6 @@ const {currentValues, initialValues, formKey, isDirty, localizedCountries, handl
               </Message>
             </div>
 
-            <!-- Province -->
             <div class="flex flex-col gap-1">
               <label for="province" class="font-medium">
                 {{ t('address.province') }}*
@@ -131,7 +185,6 @@ const {currentValues, initialValues, formKey, isDirty, localizedCountries, handl
               </Message>
             </div>
 
-            <!-- Country -->
             <div class="flex flex-col gap-1">
               <label for="countryCode" class="font-medium">
                 {{ t('address.countryCode') }}*
@@ -169,7 +222,6 @@ const {currentValues, initialValues, formKey, isDirty, localizedCountries, handl
             {{ t('accountSettings.userProfile.requiredFields') }}
           </Message>
 
-          <!-- Save Button -->
           <div class="flex justify-end">
             <Button
               type="submit"

@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
-import Card from 'primevue/card';
+import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import { issueService, type IssueJson } from '@/services/IssueService';
@@ -66,11 +66,9 @@ const handleSave = async () => {
 </script>
 
 <template>
-  <Card class="flex flex-col gap-4 basis-full">
+  <BaseCard>
     <template #title>
-      <label for="issue-description" class="font-semibold text-xl">
-        Description
-      </label>
+      <label for="issue-description">{{ t('issueDetails.description.title') }}</label>
     </template>
 
     <template #content>
@@ -81,13 +79,12 @@ const handleSave = async () => {
           autoResize
           :rows="8"
           class="w-full"
-          placeholder="Write markdown description here..."
+          :placeholder="t('issueDetails.description.placeholder')"
         />
 
-        <!-- Save Description Button -->
         <div class="flex justify-end">
           <Button
-            label="Save Description"
+            :label="t('button.save')"
             icon="pi pi-save"
             :disabled="!canSave || loadingSave"
             :loading="loadingSave"
@@ -96,5 +93,5 @@ const handleSave = async () => {
         </div>
       </div>
     </template>
-  </Card>
+  </BaseCard>
 </template>

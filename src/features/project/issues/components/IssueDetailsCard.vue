@@ -2,10 +2,10 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
-import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
+import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import { issueService, type IssueJson, type IssueType } from '@/services/IssueService';
 import { projectMemberService, type ProjectMemberJson } from '@/services/ProjectMemberService';
@@ -81,28 +81,28 @@ const reporterName = computed(() => {
   const member = members.value.find(m => m.id === reporter.value);
   return member ? member.name : reporter.value; // Fallback to ID if not found
 });
+
 /* =========================
      Dropdown Options
   ========================= */
-const statusOptions = [
-  { label: 'Open', value: 'OPEN' },
-  { label: 'Pending', value: 'PENDING' },
-  { label: 'In Progress', value: 'IN_PROGRESS' },
-  { label: 'Closed', value: 'CLOSED' },
-  { label: 'Rejected', value: 'REJECTED' },
-];
+const statusOptions = computed(() => [
+  { label: t('inbox.filters.status.open'), value: 'OPEN' },
+  { label: t('inbox.filters.status.pending'), value: 'PENDING' },
+  { label: t('inbox.filters.status.inProgress'), value: 'IN_PROGRESS' },
+  { label: t('inbox.filters.status.closed'), value: 'CLOSED' },
+  { label: t('inbox.filters.status.rejected'), value: 'REJECTED' },
+]);
 
-const typeOptions = [
-  { label: 'Task', value: 'TASK' as IssueType },
-  { label: 'Application', value: 'APPLICATION' as IssueType },
-  { label: 'Defect', value: 'DEFECT' as IssueType },
-  { label: 'Maintenance', value: 'MAINTENANCE' as IssueType },
-];
+const typeOptions = computed(() => [
+  { label: t('issueType.task'), value: 'TASK' as IssueType },
+  { label: t('issueType.application'), value: 'APPLICATION' as IssueType },
+  { label: t('issueType.defect'), value: 'DEFECT' as IssueType },
+  { label: t('issueType.maintenance'), value: 'MAINTENANCE' as IssueType },
+]);
 
 /* =========================
      Fetch Members
   ========================= */
-// Fetch project members for name resolution
 const fetchMembers = async () => {
   loadingMembers.value = true;
   try {
@@ -179,9 +179,9 @@ const handleSave = async () => {
     originalIssueType.value = issueType.value;
     originalTenancy.value = tenancy.value;
     toast.add({
-      severity: "success",
-      summary: "Saved",
-      detail: "Issue details updated successfully",
+      severity: 'success',
+      summary: t('success.saved'),
+      detail: t('issueDetails.saveSuccess'),
       life: 3000,
     });
 
@@ -189,7 +189,10 @@ const handleSave = async () => {
   } catch (err) {
     console.error(err);
     toast.add({
-      severity: 'error', summary: 'Error', detail: 'Failed to save issue details', life: 3000 
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('issueDetails.saveError'),
+      life: 3000,
     });
   } finally {
     loadingSave.value = false;
@@ -198,48 +201,49 @@ const handleSave = async () => {
 </script>
 
 <template>
-  <Card class="flex flex-col gap-4 basis-full">
+  <BaseCard>
     <template #title>
-      <div class="font-semibold text-xl">
-        Issue Details
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
+        <div>
+          <span class="text-xl font-semibold">{{ title || t('issueDetails.fields.untitled') }}</span>
+          <p class="text-base text-gray-500 font-normal mt-1">
+            {{ t('issueDetails.fields.issueId') }} {{ issueId || '—' }}
+          </p>
+        </div>
       </div>
     </template>
 
     <template #content>
       <div class="flex flex-col gap-4">
-        <!-- Issue ID -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-600">Issue ID</label>
-          <InputText v-model="issueId" disabled />
-        </div>
-
         <!-- Title -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-600">Title</label>
-          <InputText v-model="title" placeholder="Enter issue title" />
+          <label for="issue-title" class="text-sm text-gray-600">{{ t('issueDetails.fields.title') }}</label>
+          <InputText id="issue-title" v-model="title" :placeholder="t('issueDetails.fields.titlePlaceholder')" />
         </div>
 
         <!-- Status & Type -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">Status</label>
+            <label for="issue-status" class="text-sm text-gray-600">{{ t('issueDetails.fields.status') }}</label>
             <Select
               v-model="status"
+              inputId="issue-status"
               :options="statusOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Select status"
+              :placeholder="t('issueDetails.fields.statusPlaceholder')"
             />
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">Type</label>
+            <label for="issue-type" class="text-sm text-gray-600">{{ t('issueDetails.fields.type') }}</label>
             <Select
               v-model="issueType"
+              inputId="issue-type"
               :options="typeOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Select type"
+              :placeholder="t('issueDetails.fields.typePlaceholder')"
             />
           </div>
         </div>
@@ -247,8 +251,9 @@ const handleSave = async () => {
         <!-- Reporter & Owner -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.reporter') }}</label>
+            <label for="issue-reporter" class="text-sm text-gray-600">{{ t('issueDetails.fields.reporter') }}</label>
             <InputText
+              id="issue-reporter"
               :modelValue="reporterName"
               disabled
               :placeholder="t('issueDetails.fields.noReporter')"
@@ -256,9 +261,10 @@ const handleSave = async () => {
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.assignee') }}</label>
+            <label for="issue-assignee" class="text-sm text-gray-600">{{ t('issueDetails.fields.assignee') }}</label>
             <MemberAutoComplete
               v-model="assigneeId"
+              inputId="issue-assignee"
               :projectId="projectId"
               :placeholder="t('issueDetails.fields.selectAssignee')"
               :disabled="loadingMembers"
@@ -269,22 +275,23 @@ const handleSave = async () => {
         <!-- Project & Tenancy -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">Project</label>
+            <label for="issue-project" class="text-sm text-gray-600">{{ t('issueDetails.fields.project') }}</label>
             <InputText
+              id="issue-project"
               :modelValue="projectStore.selectedProject?.name ?? ''"
             />
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">Tenancy</label>
-            <InputText v-model="tenancy" />
+            <label for="issue-tenancy" class="text-sm text-gray-600">{{ t('issueDetails.fields.tenancy') }}</label>
+            <InputText id="issue-tenancy" v-model="tenancy" />
           </div>
         </div>
 
         <!-- Save Button -->
         <div class="flex justify-end pt-2">
           <Button
-            label="Save"
+            :label="t('button.save')"
             icon="pi pi-save"
             :disabled="!canSave || loadingSave"
             :loading="loadingSave"
@@ -293,7 +300,7 @@ const handleSave = async () => {
         </div>
       </div>
     </template>
-  </Card>
+  </BaseCard>
 </template>
 
 <style scoped>

@@ -13,6 +13,8 @@ import { z } from 'zod';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import { quotationRequestService, type CreateQuotationRequestJson } from '@/services/QuotationRequestService';
 import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
+import { projectService } from '@/services/ProjectService';
+import type { AddressJson } from '@/services/AddressService';
 
 const props = defineProps<{ projectId: string; issueId: string }>();
 const emit = defineEmits<(e: 'created') => void>();
@@ -23,6 +25,9 @@ const toast = useToast();
 const visible = ref(false);
 const contractors = ref<ContractorJson[]>([]);
 const initialValues = ref({ scopeOfWork: '', contractors: [] as ContractorJson[] });
+const billingAddress = ref<AddressJson | undefined>(undefined);
+const projectOwner = ref<string | undefined>(undefined);
+const projectCareOf = ref<string | undefined>(undefined);
 
 const validationSchema = z.object({
   scopeOfWork: z.string().trim().min(1, { message: t('quotationRequest.validation.scopeOfWork') }),
@@ -40,8 +45,27 @@ async function fetchContractors() {
   }
 }
 
+async function fetchBillingRecipientData() {
+  try {
+    const project = await projectService.getProject(props.projectId);
+    projectOwner.value = project.owner;
+    projectCareOf.value = project.careOf;
+    billingAddress.value = project.address;
+  } catch (error) {
+    console.error('Failed to fetch billing recipient data:', error);
+  }
+}
+
+async function ensureBillingRecipientDataLoaded() {
+  if (projectOwner.value !== undefined || projectCareOf.value !== undefined || billingAddress.value !== undefined) {
+    return;
+  }
+  await fetchBillingRecipientData();
+}
+
 onMounted(() => {
   fetchContractors();
+  fetchBillingRecipientData();
 });
 
 function resetForm() {
@@ -50,11 +74,15 @@ function resetForm() {
 
 const onSubmit = async (event: FormSubmitEvent) => {
   if (!event.valid) return;
+  await ensureBillingRecipientDataLoaded();
 
   const s = event.states;
   const data: CreateQuotationRequestJson = {
     scopeOfWork: s.scopeOfWork?.value?.trim(),
     contractors: s.contractors?.value ?? [],
+    projectOwner: projectOwner.value,
+    projectCareOf: projectCareOf.value,
+    billingAddress: billingAddress.value,
   };
 
   try {
