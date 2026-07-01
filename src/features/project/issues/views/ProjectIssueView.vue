@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
 import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
+import IssueRelationshipsCard from '../components/IssueRelationshipsCard.vue';
 import QuotationRequestCard from '../components/QuotationRequestCard.vue';
 import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
 
@@ -32,6 +33,21 @@ const loadingFetch = ref(false);
 const issueDetailsData = ref<IssueUI | null>(null);
 const description = ref('');
 const attachments = ref<IssueAttachmentJson[]>([]);
+const relations = ref<{
+  relatedTo: string[];
+  duplicateOf: string[];
+  blockedBy: string[];
+  blocks: string[];
+  childrenIssues: string[];
+  parentIssue: string | undefined;
+}>({
+  relatedTo: [],
+  duplicateOf: [],
+  blockedBy: [],
+  blocks: [],
+  childrenIssues: [],
+  parentIssue: undefined,
+});
 
 /* Fetch issue from API and map to UI type */
 const fetchIssue = async () => {
@@ -51,6 +67,14 @@ const fetchIssue = async () => {
     };
     description.value = issue.description ?? '';
     attachments.value = issue.attachments ?? [];
+    relations.value = {
+      relatedTo: issue.relatedTo ?? [],
+      duplicateOf: issue.duplicateOf ?? [],
+      blockedBy: issue.blockedBy ?? [],
+      blocks: issue.blocks ?? [],
+      childrenIssues: issue.childrenIssues ?? [],
+      parentIssue: issue.parentIssue,
+    };
   } catch (error) {
     console.error('Error fetching issue:', error);
     toast.add({
@@ -72,6 +96,10 @@ const handleDescriptionSaved = () => {
 
 const handleAttachmentsSaved = () => {
   fetchIssue(); // refresh after attachment changes
+};
+
+const handleRelationshipsSaved = () => {
+  fetchIssue(); // refresh after relationship changes
 };
 
 /* Fetch issue on mount and when props change */
@@ -110,6 +138,19 @@ watch(
     :attachments="attachments"
     :issueId="issueId"
     @saved="handleAttachmentsSaved"
+  />
+
+  <!-- Issue Relationships Card -->
+  <IssueRelationshipsCard
+    :issueId="issueId"
+    :projectId="projectId"
+    :relatedTo="relations.relatedTo"
+    :duplicateOf="relations.duplicateOf"
+    :blockedBy="relations.blockedBy"
+    :blocks="relations.blocks"
+    :childrenIssues="relations.childrenIssues"
+    :parentIssue="relations.parentIssue"
+    @saved="handleRelationshipsSaved"
   />
 
   <!-- Quotation Request Card -->
