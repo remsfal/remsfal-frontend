@@ -543,8 +543,9 @@ Use lazy loading for routes: `component: () => import('@/views/ViewName.vue')`
 - **Do NOT upgrade to PrimeVue v5.** PrimeVue 5 is no longer MIT-licensed — it requires a paid PrimeUI Commercial license ($599/developer, rising to $799 in 2027). PrimeVue 4.x is MIT-licensed and stays MIT forever. All four PrimeVue packages are pinned to `>=4.x <5.0.0` in `package.json`. Deprecation warnings for `Galleria` and `Image` in v4 point to v5 components that are behind a paywall — do not act on these warnings.
 
 **Accessibility — Label Association**:
-- Always associate `<label>` with its control via a matching `for` / `id` pair (SonarCloud rule Web:S6853)
+- Always associate `<label>` with its control via a matching `for` / `id` pair (SonarCloud rule Web:S6853) — applies to every new form field, not just the ones already flagged
 - For native inputs: `<label for="field-id">` + `<InputText id="field-id" />`
+- For PrimeVue components that already expose their own `inputId` prop (e.g. `Select`, `AutoComplete`, `MultiSelect`, `DatePicker`): bind `<label for="field-id">` + `inputId="field-id"` directly — do not use a plain `id`, it does not reach the inner control
 - For custom composite components (e.g. `PhoneInput`): follow the PrimeVue convention of an `inputId` prop that is bound to the inner `<input>` element, then pass it from the parent
 
 ```vue
@@ -557,7 +558,7 @@ const props = defineProps<{ inputId?: string }>()
 <PhoneInput inputId="org-phone" v-model="phone" />
 ```
 
-- Existing composite components with this pattern: `PhoneInput` (`src/components/common/PhoneInput.vue`)
+- Existing composite components with this pattern: `PhoneInput` (`src/components/common/PhoneInput.vue`), `MemberAutoComplete` (`src/components/MemberAutoComplete.vue`)
 - Apply the same `inputId` prop to every new composite input component
 
 **BaseCard Component** (`src/components/common/BaseCard.vue`):

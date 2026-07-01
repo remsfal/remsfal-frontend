@@ -217,16 +217,17 @@ const handleSave = async () => {
       <div class="flex flex-col gap-4">
         <!-- Title -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-600">{{ t('issueDetails.fields.title') }}</label>
-          <InputText v-model="title" :placeholder="t('issueDetails.fields.titlePlaceholder')" />
+          <label for="issue-title" class="text-sm text-gray-600">{{ t('issueDetails.fields.title') }}</label>
+          <InputText id="issue-title" v-model="title" :placeholder="t('issueDetails.fields.titlePlaceholder')" />
         </div>
 
         <!-- Status & Type -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.status') }}</label>
+            <label for="issue-status" class="text-sm text-gray-600">{{ t('issueDetails.fields.status') }}</label>
             <Select
               v-model="status"
+              inputId="issue-status"
               :options="statusOptions"
               optionLabel="label"
               optionValue="value"
@@ -235,9 +236,10 @@ const handleSave = async () => {
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.type') }}</label>
+            <label for="issue-type" class="text-sm text-gray-600">{{ t('issueDetails.fields.type') }}</label>
             <Select
               v-model="issueType"
+              inputId="issue-type"
               :options="typeOptions"
               optionLabel="label"
               optionValue="value"
@@ -249,8 +251,9 @@ const handleSave = async () => {
         <!-- Reporter & Owner -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.reporter') }}</label>
+            <label for="issue-reporter" class="text-sm text-gray-600">{{ t('issueDetails.fields.reporter') }}</label>
             <InputText
+              id="issue-reporter"
               :modelValue="reporterName"
               disabled
               :placeholder="t('issueDetails.fields.noReporter')"
@@ -258,9 +261,10 @@ const handleSave = async () => {
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.assignee') }}</label>
+            <label for="issue-assignee" class="text-sm text-gray-600">{{ t('issueDetails.fields.assignee') }}</label>
             <MemberAutoComplete
               v-model="assigneeId"
+              inputId="issue-assignee"
               :projectId="projectId"
               :placeholder="t('issueDetails.fields.selectAssignee')"
               :disabled="loadingMembers"
@@ -271,15 +275,16 @@ const handleSave = async () => {
         <!-- Project & Tenancy -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.project') }}</label>
+            <label for="issue-project" class="text-sm text-gray-600">{{ t('issueDetails.fields.project') }}</label>
             <InputText
+              id="issue-project"
               :modelValue="projectStore.selectedProject?.name ?? ''"
             />
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
-            <label class="text-sm text-gray-600">{{ t('issueDetails.fields.tenancy') }}</label>
-            <InputText v-model="tenancy" />
+            <label for="issue-tenancy" class="text-sm text-gray-600">{{ t('issueDetails.fields.tenancy') }}</label>
+            <InputText id="issue-tenancy" v-model="tenancy" />
           </div>
         </div>
 
