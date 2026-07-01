@@ -517,9 +517,14 @@ components:
         priority:
           $ref: "#/components/schemas/IssuePriority"
         reporterId:
+          description: ID of the user who reported this issue
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         reportedBy:
           type: string
+          description: Name of the user who reported this issue
+          readOnly: true
         agreementId:
           $ref: "#/components/schemas/UUID"
         visibleToTenants:
@@ -650,6 +655,112 @@ components:
       format: date-time
       examples:
       - 2022-03-10T12:15:50-04:00
+    OrderAttachmentJson:
+      description: "An attachment associated with a quotation request, quotation,\
+        \ or order placement"
+      type: object
+      properties:
+        processPhase:
+          $ref: "#/components/schemas/OrderProcessPhase"
+        processId:
+          $ref: "#/components/schemas/UUID"
+        attachmentId:
+          $ref: "#/components/schemas/UUID"
+        fileName:
+          type: string
+        contentType:
+          type: string
+        objectName:
+          type: string
+        uploaderId:
+          $ref: "#/components/schemas/UUID"
+        uploadedBy:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+    OrderPlacementJson:
+      description: An order placement created by a manager based on a quotation
+      type: object
+      properties:
+        organizationId:
+          $ref: "#/components/schemas/UUID"
+        id:
+          $ref: "#/components/schemas/UUID"
+        issueId:
+          $ref: "#/components/schemas/UUID"
+        projectId:
+          $ref: "#/components/schemas/UUID"
+        projectOwner:
+          type: string
+        projectCareOf:
+          type: string
+        projectBillingAddress1:
+          type: string
+        projectBillingAddress2:
+          type: string
+        projectBillingAddress3:
+          type: string
+        contractorId:
+          $ref: "#/components/schemas/UUID"
+        contractorName:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
+          $ref: "#/components/schemas/Instant"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderAttachmentJson"
+        quotationId:
+          description: ID of the quotation this order is based on
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        ordererId:
+          description: ID of the user who placed the order
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        orderedBy:
+          type: string
+          description: Name of the user who placed the order
+          readOnly: true
+        status:
+          description: "Status of the order placement: PLACED, CONFIRMED, REJECTED,\
+            \ WITHDRAWN"
+          type: string
+          $ref: "#/components/schemas/OrderPlacementStatus"
+        confirmorId:
+          description: ID of the user who confirmed or rejected the order
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        confirmedBy:
+          type: string
+          description: Name of the user who confirmed or rejected the order
+          readOnly: true
+    OrderPlacementListJson:
+      description: A list of order placements
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderPlacementJson"
+    OrderPlacementStatus:
+      type: string
+      enum:
+      - PLACED
+      - CONFIRMED
+      - REJECTED
+      - WITHDRAWN
+    OrderProcessPhase:
+      type: string
+      enum:
+      - QUOTATION_REQUEST
+      - QUOTATION
+      - ORDER_PLACEMENT
     OrganizationEmployeeJson:
       description: Employee information in context of an organization
       type: object
@@ -918,22 +1029,37 @@ components:
       type: object
       properties:
         id:
-          description: Unique identifier of the quotation
-          readOnly: true
-          type: string
           $ref: "#/components/schemas/UUID"
         issueId:
-          description: ID of the issue this quotation belongs to
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UUID"
-        requestId:
-          description: ID of the quotation request this quotation responds to
-          readOnly: true
-          type: string
           $ref: "#/components/schemas/UUID"
         projectId:
-          description: ID of the project this quotation belongs to
+          $ref: "#/components/schemas/UUID"
+        projectOwner:
+          type: string
+        projectCareOf:
+          type: string
+        projectBillingAddress1:
+          type: string
+        projectBillingAddress2:
+          type: string
+        projectBillingAddress3:
+          type: string
+        contractorId:
+          $ref: "#/components/schemas/UUID"
+        contractorName:
+          type: string
+        organizationId:
+          $ref: "#/components/schemas/UUID"
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
+          $ref: "#/components/schemas/Instant"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderAttachmentJson"
+        requestId:
+          description: ID of the quotation request this quotation responds to
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
@@ -946,53 +1072,56 @@ components:
           type: string
           description: Name of the user who submitted this quotation
           readOnly: true
-        contractorId:
-          description: ID of the contractor submitting the quotation
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UUID"
-        attachments:
-          type: array
-          items:
-            type: string
-            format: uuid
-            pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-          description: Attachment IDs associated with the quotation
-        validUntil:
-          description: Timestamp until which the quotation is valid
-          type: string
-          $ref: "#/components/schemas/Instant"
         status:
           description: "Status of the quotation: VALID, INVALID, ACCEPTED, REJECTED"
           type: string
           $ref: "#/components/schemas/QuotationStatus"
-        createdAt:
-          readOnly: true
+        validUntil:
+          description: Timestamp until which the quotation is valid
           type: string
           $ref: "#/components/schemas/Instant"
-        modifiedAt:
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/Instant"
+    QuotationListJson:
+      description: A list of quotations
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuotationJson"
     QuotationRequestJson:
       description: A request for quotation sent to a contractor
       type: object
       properties:
         id:
-          description: Unique identifier of the quotation request
-          readOnly: true
-          type: string
           $ref: "#/components/schemas/UUID"
         issueId:
-          description: ID of the issue this request belongs to
-          readOnly: true
-          type: string
           $ref: "#/components/schemas/UUID"
         projectId:
-          description: ID of the project this request belongs to
-          readOnly: true
-          type: string
           $ref: "#/components/schemas/UUID"
+        projectOwner:
+          type: string
+        projectCareOf:
+          type: string
+        projectBillingAddress1:
+          type: string
+        projectBillingAddress2:
+          type: string
+        projectBillingAddress3:
+          type: string
+        contractorId:
+          $ref: "#/components/schemas/UUID"
+        contractorName:
+          type: string
+        organizationId:
+          $ref: "#/components/schemas/UUID"
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
+          $ref: "#/components/schemas/Instant"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderAttachmentJson"
         initiatorId:
           description: ID of the user who initiated this request
           readOnly: true
@@ -1002,57 +1131,15 @@ components:
           type: string
           description: Name of the user who initiated this request
           readOnly: true
-        contractorId:
-          description: ID of the contractor this request was sent to
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UUID"
-        organizationId:
-          description: ID of the organization of the contractor
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/UUID"
-        contractorName:
-          type: string
-          description: Company name of the contractor
-          readOnly: true
-        scopeOfWork:
-          type: string
-          description: Scope of work description for the contractor
-          maxLength: 5000
-        projectOwner:
-          type: string
-          description: Name of the project owner / billing recipient
-          readOnly: true
-        projectCareOf:
-          type: string
-          description: Care of / representative on behalf of
-          readOnly: true
-        projectBillingAddress1:
-          type: string
-          description: First billing address line (street)
-          readOnly: true
-        projectBillingAddress2:
-          type: string
-          description: Second billing address line (zip and city)
-          readOnly: true
-        projectBillingAddress3:
-          type: string
-          description: Third billing address line (province and country)
-          readOnly: true
         status:
           description: "Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED,\
             \ REJECTED, SUBMITTED"
           type: string
           $ref: "#/components/schemas/RequestStatus"
-        createdAt:
-          readOnly: true
+        scopeOfWork:
           type: string
-          $ref: "#/components/schemas/Instant"
-        modifiedAt:
-          readOnly: true
-          type: string
-          $ref: "#/components/schemas/Instant"
+          description: Scope of work description for the contractor
+          maxLength: 5000
     QuotationRequestListJson:
       description: A list of quotation requests
       type: object
