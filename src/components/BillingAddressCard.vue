@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { countryFlagEmoji, countryDisplayName } from '@/helper/countryHelper';
-import { useToast } from 'primevue/usetoast';
 import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseCard from '@/components/common/BaseCard.vue';
@@ -12,10 +10,8 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
-import AddressService from '@/services/AddressService';
-import type { AddressJson } from '@/services/AddressService';
 import { projectService } from '@/services/ProjectService';
-import { COUNTRIES } from '@/constants/countries';
+import { useAddressForm, buildAddressSchema } from '@/composables/useAddressForm';
 
 interface Props {
   projectId: string;
@@ -25,69 +21,21 @@ const props = defineProps<Props>();
 
 const { t, locale } = useI18n();
 
-const localizedCountries = computed(() =>
-  COUNTRIES.map(c => ({ ...c, displayName: countryDisplayName(c.code, locale.value) })),
-);
-const toast = useToast();
-const addressService = new AddressService();
-
-const streetRegex = /^(?=.*[A-Za-zÄÖÜäöüß])(?=.*\d)[A-Za-zÄÖÜäöüß0-9\s./-]+$/;
-const schema = z.object({
+const schema = buildAddressSchema(t, {
   owner: z.string().trim().optional(),
   careOf: z.string().trim().optional(),
-  street: z
-    .string()
-    .trim()
-    .min(1, { message: t('validation.required') })
-    .regex(streetRegex, { message: t('address.validation.streetInvalid') }),
-  zip: z.string().trim().min(1, { message: t('validation.required') }),
-  city: z.string().trim().min(1, { message: t('validation.required') }),
-  province: z.string().trim().min(1, { message: t('validation.required') }),
-  countryCode: z.string().min(2, { message: t('address.validation.countryRequired') }),
 });
-
 const resolver = zodResolver(schema);
 
-const serverValues = reactive({
-  title: '',
-  owner: '',
-  careOf: '',
-  street: '',
-  zip: '',
-  city: '',
-  province: '',
-  countryCode: '',
-});
+// Not part of the form itself, but required by ProjectJson on save — captured on load, re-sent unchanged.
+const projectTitle = ref('');
 
-const currentValues = reactive({
-  owner: '',
-  careOf: '',
-  street: '',
-  zip: '',
-  city: '',
-  province: '',
-  countryCode: '',
-});
-
-const initialValues = ref({ ...currentValues });
-const formKey = ref(0);
-
-const isDirty = computed(
-  () =>
-    currentValues.owner !== serverValues.owner ||
-    currentValues.careOf !== serverValues.careOf ||
-    currentValues.street !== serverValues.street ||
-    currentValues.zip !== serverValues.zip ||
-    currentValues.city !== serverValues.city ||
-    currentValues.province !== serverValues.province ||
-    currentValues.countryCode !== serverValues.countryCode,
-);
-
-onMounted(async () => {
-  try {
+const {currentValues, initialValues, formKey, isDirty, localizedCountries, handleZipBlur, onSubmit,} = useAddressForm({
+  extraFieldDefaults: { owner: '', careOf: '' },
+  load: async () => {
     const project = await projectService.getProject(props.projectId);
-    const loaded = {
-      title: project.title || '',
+    projectTitle.value = project.title || '';
+    return {
       owner: project.owner || '',
       careOf: project.careOf || '',
       street: project.address?.street || '',
@@ -96,81 +44,24 @@ onMounted(async () => {
       province: project.address?.province || '',
       countryCode: project.address?.countryCode || '',
     };
-    Object.assign(serverValues, loaded);
-    Object.assign(currentValues, loaded);
-    initialValues.value = { ...currentValues };
-    formKey.value++;
-  } catch (error) {
-    console.error('Failed to load billing recipient data', error);
-  }
+  },
+  save: async (payload) => {
+    await projectService.updateProject(props.projectId, {
+      title: projectTitle.value,
+      owner: payload.owner || undefined,
+      careOf: payload.careOf || undefined,
+      address: {
+        street: payload.street,
+        zip: payload.zip,
+        city: payload.city,
+        province: payload.province,
+        countryCode: payload.countryCode,
+      },
+    });
+  },
+  loadErrorLogLabel: 'Failed to load billing recipient data',
+  errorLogLabel: 'Failed to save billing recipient data',
 });
-
-async function handleZipBlur() {
-  const zip = currentValues.zip;
-  if (!zip) return;
-  try {
-    const result = await addressService.getCityFromZip(zip);
-    if (result?.city) {
-      currentValues.city = result.city;
-      currentValues.province = result.province || '';
-      currentValues.countryCode = result.countryCode || '';
-      initialValues.value = { ...currentValues };
-      formKey.value++;
-    }
-  } catch (error) {
-    console.error('ZIP lookup failed', error);
-  }
-}
-
-async function onSubmit(event: FormSubmitEvent) {
-  if (!event.valid) return;
-  const s = event.states;
-  const address: AddressJson = {
-    street: s.street?.value || undefined,
-    zip: s.zip?.value || undefined,
-    city: s.city?.value || undefined,
-    province: s.province?.value || undefined,
-    countryCode: s.countryCode?.value || undefined,
-  };
-
-  try {
-    const updatedProject = {
-      title: serverValues.title,
-      owner: s.owner?.value?.trim() || undefined,
-      careOf: s.careOf?.value?.trim() || undefined,
-      address,
-    };
-    await projectService.updateProject(props.projectId, updatedProject);
-
-    const saved = {
-      owner: updatedProject.owner || '',
-      careOf: updatedProject.careOf || '',
-      street: address.street || '',
-      zip: address.zip || '',
-      city: address.city || '',
-      province: address.province || '',
-      countryCode: address.countryCode || '',
-    };
-    Object.assign(serverValues, saved);
-    Object.assign(currentValues, saved);
-    initialValues.value = { ...currentValues };
-    formKey.value++;
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('address.saveSuccess'),
-      life: 3000,
-    });
-  } catch (error) {
-    console.error('Failed to save billing recipient data', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('address.saveError'),
-      life: 4000,
-    });
-  }
-}
 </script>
 
 <template>

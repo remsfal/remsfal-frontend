@@ -107,6 +107,19 @@ describe('BillingAddressCard.vue', () => {
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
   });
 
+  it('rejects city values with digits (validation reconciled with AddressCard)', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    await wrapper.find('input[name="city"]').setValue('Berlin1');
+    await wrapper.find('input[name="city"]').trigger('blur');
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Nur Buchstaben und Leerzeichen erlaubt');
+    expect(projectService.updateProject).not.toHaveBeenCalled();
+  });
+
   it('handles project loading failure', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(projectService, 'getProject').mockRejectedValue(new Error('load failed'));
