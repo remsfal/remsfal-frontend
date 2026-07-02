@@ -112,10 +112,11 @@ class IssueService {
         parentIssueId,
       },
     }) as Promise<IssueJson>;
+  }
 
   async deleteAttachment(issueId: string, attachmentId: string): Promise<void> {
-    return apiClient.delete('/ticketing/v1/issues/{issueId}/attachments/{attachmentId}',
-      {pathParams: { issueId, attachmentId },});
+    const path = '/ticketing/v1/issues/{issueId}/attachments/{attachmentId}';
+    return apiClient.delete(path, { pathParams: { issueId, attachmentId } });
   }
 
   async uploadAttachments(issueId: string, files: File[]): Promise<void> {

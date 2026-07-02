@@ -189,7 +189,9 @@ watch(() => props.projectId, () => fetchProjectIssues());
         </div>
 
         <div v-for="group in groupDefs" v-show="group.ids.length > 0" :key="group.key" class="flex flex-col gap-2">
-          <div class="text-sm font-semibold text-gray-600">{{ t(group.titleKey) }}</div>
+          <div class="text-sm font-semibold text-gray-600">
+            {{ t(group.titleKey) }}
+          </div>
 
           <div
             v-for="row in group.rows"
