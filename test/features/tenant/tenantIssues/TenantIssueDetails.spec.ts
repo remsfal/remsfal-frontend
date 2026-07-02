@@ -382,4 +382,71 @@ describe('TenantIssueDetails component', () => {
     wrapper.unmount();
     pushSpy.mockRestore();
   });
+
+  it('renders indicator tiles for non-image attachments grouped by extension', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-1',
+      title: 'Mit Anhängen',
+      status: 'OPEN',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      attachments: [
+        {
+          attachmentId: 'a1',
+          fileName: 'report.pdf',
+          contentType: 'application/pdf',
+        },
+        {
+          attachmentId: 'a2',
+          fileName: 'invoice.pdf',
+          contentType: 'application/pdf',
+        },
+        {
+          attachmentId: 'a3',
+          fileName: 'video.mov',
+          contentType: 'video/quicktime',
+        },
+      ],
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-1' } });
+
+    await flushPromises();
+
+    const tiles = wrapper.findAll('[data-test="non-image-tile"]');
+    expect(tiles).toHaveLength(2);
+
+    const pdfTile = tiles.find(t => t.text().includes('PDF'));
+    const movTile = tiles.find(t => t.text().includes('MOV'));
+
+    expect(pdfTile?.text()).toContain('+2');
+    expect(movTile?.text()).toContain('+1');
+  });
+
+  it('renders fallback values for image preview and download url', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-1',
+      title: 'Fallback Attachment',
+      status: 'OPEN',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      attachments: [
+        {
+          attachmentId: undefined,
+          fileName: undefined,
+          contentType: 'image/png',
+        },
+      ],
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-1' } });
+
+    await flushPromises();
+
+    const links = wrapper.findAll('a');
+    expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue-1/attachments//');
+    expect(wrapper.find('img[alt="issue-attachment"]').exists()).toBe(true);
+  });
 });

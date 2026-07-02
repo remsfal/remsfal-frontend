@@ -83,6 +83,7 @@ const attachments = computed(() => issue.value?.attachments ?? []);
 const imageAttachments = computed(() => attachments.value.filter(
   attachment => attachment.contentType?.startsWith('image/')
 ));
+
 const nonImageAttachmentGroups = computed(() => {
   const groups = new Map<string, number>();
   for (const attachment of attachments.value) {
@@ -102,6 +103,7 @@ function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
   const encodedFileName = encodeURIComponent(fileName);
   return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
 }
+
 const cancelIssue = async () => {
   if (deletingIssue.value) {
     return;
