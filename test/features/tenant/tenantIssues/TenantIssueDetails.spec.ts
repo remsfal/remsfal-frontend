@@ -27,6 +27,65 @@ describe('TenantIssueDetails component', () => {
     vi.clearAllMocks();
   });
 
+  it('imports TenantIssueDetails from tenantIssues index', async () => {
+    const module = await import('@/features/tenant/tenantIssues');
+
+    expect(module.TenantIssueDetails).toBeDefined();
+  });
+
+  it('resolves all TenantIssueDetails imports', async () => {
+    const [
+      vue,
+      vueRouter,
+      vueI18n,
+      primeToast,
+      primeMessage,
+      primeSpinner,
+      primeButton,
+      baseCard,
+      primeImage,
+      issueServiceModule,
+      baseDialog,
+      primeTag,
+      issueLabels,
+    ] = await Promise.all([
+      import('vue'),
+      import('vue-router'),
+      import('vue-i18n'),
+      import('primevue/usetoast'),
+      import('primevue/message'),
+      import('primevue/progressspinner'),
+      import('primevue/button'),
+      import('@/components/common/BaseCard.vue'),
+      import('primevue/image'),
+      import('@/services/IssueService'),
+      import('@/components/common/BaseDialog.vue'),
+      import('primevue/tag'),
+      import('@/features/tenant/tenantIssues/issueLabels'),
+    ]);
+
+    expect(vue.computed).toBeDefined();
+    expect(vue.onMounted).toBeDefined();
+    expect(vue.ref).toBeDefined();
+    expect(vue.watch).toBeDefined();
+    expect(vueRouter.useRouter).toBeDefined();
+    expect(vueI18n.useI18n).toBeDefined();
+    expect(primeToast.useToast).toBeDefined();
+    expect(primeMessage.default).toBeDefined();
+    expect(primeSpinner.default).toBeDefined();
+    expect(primeButton.default).toBeDefined();
+    expect(baseCard.default).toBeDefined();
+    expect(primeImage.default).toBeDefined();
+    expect(issueServiceModule.issueService).toBeDefined();
+    expect(baseDialog.default).toBeDefined();
+    expect(primeTag.default).toBeDefined();
+    expect(issueLabels.getIssueCategoryLabel).toBeDefined();
+    expect(issueLabels.getIssueStatusLabel).toBeDefined();
+    expect(issueLabels.getIssueTypeSeverity).toBeDefined();
+    expect(issueLabels.getIssueStatusSeverity).toBeDefined();
+    expect(issueLabels.getIssueTypeLabel).toBeDefined();
+  });
+
   it('loads issue details', async () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-42',
@@ -381,5 +440,72 @@ describe('TenantIssueDetails component', () => {
 
     wrapper.unmount();
     pushSpy.mockRestore();
+  });
+
+  it('renders indicator tiles for non-image attachments grouped by extension', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-1',
+      title: 'Mit Anhängen',
+      status: 'OPEN',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      attachments: [
+        {
+          attachmentId: 'a1',
+          fileName: 'report.pdf',
+          contentType: 'application/pdf',
+        },
+        {
+          attachmentId: 'a2',
+          fileName: 'invoice.pdf',
+          contentType: 'application/pdf',
+        },
+        {
+          attachmentId: 'a3',
+          fileName: 'video.mov',
+          contentType: 'video/quicktime',
+        },
+      ],
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-1' } });
+
+    await flushPromises();
+
+    const tiles = wrapper.findAll('[data-test="non-image-tile"]');
+    expect(tiles).toHaveLength(2);
+
+    const pdfTile = tiles.find(t => t.text().includes('PDF'));
+    const movTile = tiles.find(t => t.text().includes('MOV'));
+
+    expect(pdfTile?.text()).toContain('+2');
+    expect(movTile?.text()).toContain('+1');
+  });
+
+  it('renders fallback values for image preview and download url', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-1',
+      title: 'Fallback Attachment',
+      status: 'OPEN',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      attachments: [
+        {
+          attachmentId: undefined,
+          fileName: undefined,
+          contentType: 'image/png',
+        },
+      ],
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-1' } });
+
+    await flushPromises();
+
+    const links = wrapper.findAll('a');
+    expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue-1/attachments//');
+    expect(wrapper.find('img[alt="issue-attachment"]').exists()).toBe(true);
   });
 });
