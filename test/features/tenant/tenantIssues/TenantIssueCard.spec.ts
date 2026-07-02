@@ -33,14 +33,14 @@ describe('TenantIssueCard component', () => {
     const tags = wrapper.findAllComponents(Tag);
     expect(tags).toHaveLength(3);
     expect(tags[0].props('severity')).toBe('info');
-    expect(tags[1].props('severity')).toBe('danger');
+    expect(tags[1].props('severity')).toBe('warn');
     expect(tags[2].props('severity')).toBe('info');
   });
 
   it.each([
     ['IN_PROGRESS', 'warn'],
     ['CLOSED', 'success'],
-    ['REJECTED', 'danger'],
+    ['REJECTED', 'secondary'],
     [undefined, 'secondary'],
   ] as const)('maps status %s to severity %s', async (status, expectedSeverity) => {
     const wrapper = await mountCard({
