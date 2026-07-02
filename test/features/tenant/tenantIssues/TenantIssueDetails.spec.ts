@@ -325,4 +325,62 @@ describe('TenantIssueDetails component', () => {
 
     expect(wrapper.text()).toContain(invalidModifiedAt);
   });
+
+  it.each([
+    ['TERMINATION', 'OPEN'],
+    ['DEFECT', 'CLOSED'],
+    ['DEFECT', 'REJECTED'],
+  ] as const)('hides cancel action for type %s and status %s', async (type, status) => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-30',
+      title: 'Nicht stornierbar',
+      status,
+      type,
+      agreementId: 'agreement-1',
+      description: 'Beschreibung',
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-30' } });
+
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="tenant-issue-cancel"]').exists()).toBe(false);
+  });
+
+  it('uses route issueId for deletion when loaded issue has no id', async () => {
+    const pushSpy = vi.spyOn(router, 'push').mockResolvedValue(undefined);
+
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      title: 'Ohne ID',
+      status: 'OPEN',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      description: 'Beschreibung',
+    });
+    vi.mocked(issueService.deleteIssue).mockResolvedValue(undefined);
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, {
+      props: { issueId: 'issue-31' },
+      attachTo: document.body,
+    });
+
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-cancel"]').trigger('click');
+    await flushPromises();
+
+    const confirmButton = document.querySelector(
+      '[data-testid="tenant-issue-cancel-confirm"]',
+    ) as HTMLButtonElement | null;
+    expect(confirmButton).not.toBeNull();
+    confirmButton?.click();
+    await flushPromises();
+
+    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-31');
+    expect(pushSpy).toHaveBeenCalledWith({ name: 'TenantIssues' });
+
+    wrapper.unmount();
+    pushSpy.mockRestore();
+  });
 });
