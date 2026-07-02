@@ -27,6 +27,65 @@ describe('TenantIssueDetails component', () => {
     vi.clearAllMocks();
   });
 
+  it('imports TenantIssueDetails from tenantIssues index', async () => {
+    const module = await import('@/features/tenant/tenantIssues');
+
+    expect(module.TenantIssueDetails).toBeDefined();
+  });
+
+  it('resolves all TenantIssueDetails imports', async () => {
+    const [
+      vue,
+      vueRouter,
+      vueI18n,
+      primeToast,
+      primeMessage,
+      primeSpinner,
+      primeButton,
+      baseCard,
+      primeImage,
+      issueServiceModule,
+      baseDialog,
+      primeTag,
+      issueLabels,
+    ] = await Promise.all([
+      import('vue'),
+      import('vue-router'),
+      import('vue-i18n'),
+      import('primevue/usetoast'),
+      import('primevue/message'),
+      import('primevue/progressspinner'),
+      import('primevue/button'),
+      import('@/components/common/BaseCard.vue'),
+      import('primevue/image'),
+      import('@/services/IssueService'),
+      import('@/components/common/BaseDialog.vue'),
+      import('primevue/tag'),
+      import('@/features/tenant/tenantIssues/issueLabels'),
+    ]);
+
+    expect(vue.computed).toBeDefined();
+    expect(vue.onMounted).toBeDefined();
+    expect(vue.ref).toBeDefined();
+    expect(vue.watch).toBeDefined();
+    expect(vueRouter.useRouter).toBeDefined();
+    expect(vueI18n.useI18n).toBeDefined();
+    expect(primeToast.useToast).toBeDefined();
+    expect(primeMessage.default).toBeDefined();
+    expect(primeSpinner.default).toBeDefined();
+    expect(primeButton.default).toBeDefined();
+    expect(baseCard.default).toBeDefined();
+    expect(primeImage.default).toBeDefined();
+    expect(issueServiceModule.issueService).toBeDefined();
+    expect(baseDialog.default).toBeDefined();
+    expect(primeTag.default).toBeDefined();
+    expect(issueLabels.getIssueCategoryLabel).toBeDefined();
+    expect(issueLabels.getIssueStatusLabel).toBeDefined();
+    expect(issueLabels.getIssueTypeSeverity).toBeDefined();
+    expect(issueLabels.getIssueStatusSeverity).toBeDefined();
+    expect(issueLabels.getIssueTypeLabel).toBeDefined();
+  });
+
   it('loads issue details', async () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-42',
