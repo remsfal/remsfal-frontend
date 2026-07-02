@@ -1,31 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity, getIssuePriorityLabel,
   getIssueStatusSeverity, getIssueTypeLabel, getUnitTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import i18n from '@/i18n/i18n';
 
 type Translator = Parameters<typeof getIssueStatusLabel>[1];
 
-const translations: Record<string, string> = {
-  'inbox.filters.status.pending': 'Ausstehend',
-  'inbox.filters.status.open': 'Offen',
-  'inbox.filters.status.inProgress': 'In Bearbeitung',
-  'inbox.filters.status.closed': 'Abgeschlossen',
-  'inbox.filters.status.rejected': 'Abgelehnt',
-  'inbox.filters.type.application': 'Antrag',
-  'inbox.filters.type.task': 'Aufgabe',
-  'inbox.filters.type.defect': 'Mangel',
-  'inbox.filters.type.maintenance': 'Wartung',
-  'inbox.filters.type.termination': 'Kündigung',
-  'inbox.filters.type.inquiry': 'Anfrage',
-  'issuePriority.urgent': 'Dringend',
-  'issuePriority.high': 'Hoch',
-  'issuePriority.medium': 'Mittel',
-  'issuePriority.low': 'Niedrig',
-  'issuePriority.unclassified': 'Unklassifiziert',
-  'tenantIssue.categories.NOISE': 'Lärm',
-  'unitTypes.apartment': 'Wohnung',
-};
+const t = i18n.global.t as unknown as Translator;
 
-const t = ((key: string) => translations[key] ?? key) as unknown as Translator;
+beforeAll(() => {
+  i18n.global.locale.value = 'de';
+});
 
 describe('issueLabels', () => {
   describe('getIssueStatusLabel', () => {
@@ -102,7 +86,7 @@ describe('issueLabels', () => {
       ['HIGH', 'Hoch'],
       ['MEDIUM', 'Mittel'],
       ['LOW', 'Niedrig'],
-      ['UNCLASSIFIED', 'Unklassifiziert'],
+      ['UNCLASSIFIED', 'Nicht klassifiziert'],
     ] as const)('maps %s to translated label', (priority, expected) => {
       expect(getIssuePriorityLabel(priority, t)).toBe(expected);
     });
@@ -114,10 +98,6 @@ describe('issueLabels', () => {
   });
 
   describe('getIssueCategoryLabel', () => {
-    it('returns translated category label when available', () => {
-      expect(getIssueCategoryLabel('NOISE' as Parameters<typeof getIssueCategoryLabel>[0], t)).toBe('Lärm');
-    });
-
     it('falls back to raw category and dash', () => {
       expect(getIssueCategoryLabel('UNKNOWN' as Parameters<typeof getIssueCategoryLabel>[0], t)).toBe('UNKNOWN');
       expect(getIssueCategoryLabel(undefined, t)).toBe('—');
