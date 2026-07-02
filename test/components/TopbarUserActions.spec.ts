@@ -19,7 +19,7 @@ const platformMocks = vi.hoisted(() => ({shouldShowDevLogin: vi.fn(() => false),
 vi.mock('@/helper/platform', () => ({ shouldShowDevLogin: platformMocks.shouldShowDevLogin }));
 
 // Mock AccountSettingsView to prevent loading it (and its side effects/imports)
-vi.mock('@/views/AccountSettingsView.vue', () => ({ default: { template: '<div>Mocked View</div>' } }));
+vi.mock('@/features/common/users/views/AccountSettingsView.vue', () => ({ default: { template: '<div>Mocked View</div>' } }));
 
 describe('TopbarUserActions.vue', () => {
   beforeEach(() => {

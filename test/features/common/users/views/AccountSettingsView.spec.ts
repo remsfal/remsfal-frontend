@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import AccountSettingsView from '@/views/AccountSettingsView.vue';
+import AccountSettingsView from '@/features/common/users/views/AccountSettingsView.vue';
 
 describe('AccountSettingsView', () => {
   let wrapper: VueWrapper;
@@ -12,7 +12,7 @@ describe('AccountSettingsView', () => {
           UserContactDataCard: true,
           UserAddressCard: true,
           UserDangerZoneCard: true,
-          RouterLink: true,
+          RouterLink: { template: '<a><slot /></a>' },
         },
       },
     });
@@ -32,5 +32,12 @@ describe('AccountSettingsView', () => {
 
   test('renders UserDangerZoneCard', () => {
     expect(wrapper.findComponent({ name: 'UserDangerZoneCard' }).exists()).toBe(true);
+  });
+
+  test('renders navigation buttons to management, tenancies and contractor views', () => {
+    const text = wrapper.text();
+    expect(text).toContain('Zur Verwalter Ansicht');
+    expect(text).toContain('Zur Mieter Ansicht');
+    expect(text).toContain('Zur Auftragnehmer Ansicht');
   });
 });
