@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import UserContactDataCard from '@/components/UserContactDataCard.vue';
+import UserContactDataCard from '@/features/common/users/components/UserContactDataCard.vue';
 import { nextTick } from 'vue';
 
 vi.mock('@/services/UserService', () => ({

@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import AccountSettingsView from '@/views/AccountSettingsView.vue';
+import AccountSettingsView from '@/features/common/users/views/AccountSettingsView.vue';
 
 describe('AccountSettingsView', () => {
   let wrapper: VueWrapper;

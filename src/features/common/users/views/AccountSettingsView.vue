@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
-import UserContactDataCard from '@/components/UserContactDataCard.vue';
-import UserAddressCard from '@/components/UserAddressCard.vue';
-import UserDangerZoneCard from '@/components/UserDangerZoneCard.vue';
+import { UserContactDataCard, UserAddressCard, UserDangerZoneCard } from '@/features/common/users';
 
 const { t } = useI18n();
 </script>
