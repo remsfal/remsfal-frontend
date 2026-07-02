@@ -35,7 +35,7 @@ describe('issueLabels', () => {
       ['OPEN', 'info'],
       ['IN_PROGRESS', 'warn'],
       ['CLOSED', 'success'],
-      ['REJECTED', 'danger'],
+      ['REJECTED', 'secondary'],
     ] as const)('maps %s to severity %s', (status, expected) => {
       expect(getIssueStatusSeverity(status)).toBe(expected);
     });
@@ -66,10 +66,10 @@ describe('issueLabels', () => {
 
   describe('getIssueTypeSeverity', () => {
     it.each([
-      ['APPLICATION', 'info'],
-      ['TASK', 'secondary'],
-      ['DEFECT', 'danger'],
-      ['MAINTENANCE', 'warn'],
+      ['APPLICATION', 'secondary'],
+      ['TASK', 'contrast'],
+      ['DEFECT', 'warn'],
+      ['MAINTENANCE', 'success'],
     ] as const)('maps %s to severity %s', (type, expected) => {
       expect(getIssueTypeSeverity(type)).toBe(expected);
     });
