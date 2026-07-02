@@ -13,14 +13,18 @@ import BaseDialog from '@/components/common/BaseDialog.vue';
 import Tag from 'primevue/tag';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
   getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import FileUpload from 'primevue/fileupload';
+import type { FileUploadUploaderEvent } from 'primevue/fileupload';
 
 const props = defineProps<{ issueId: string }>();
+const emit = defineEmits<{ saved: [] }>();
 
 const router = useRouter();
 const toast = useToast();
 const { t, locale } = useI18n();
 
 const loading = ref(false);
+const loadingUpload = ref(false);
 const deletingIssue = ref(false);
 const showCancelDialog = ref(false);
 const issue = ref<IssueJson | null>(null);
@@ -102,6 +106,33 @@ function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
   const encodedAttachmentId = encodeURIComponent(attachmentId);
   const encodedFileName = encodeURIComponent(fileName);
   return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+}
+
+async function handleUpload(event: FileUploadUploaderEvent) {
+  const files = Array.isArray(event.files) ? event.files : [];
+  if (files.length === 0 || loadingUpload.value) return;
+
+  loadingUpload.value = true;
+  try {
+    await issueService.uploadAttachments(props.issueId, files as File[]);
+    toast.add({
+      severity: 'success',
+      summary: t('success.saved'),
+      detail: t('issueDetails.attachmentsUploadSuccess'),
+      life: 3000,
+    });
+    emit('saved');
+  } catch (error) {
+    console.error('Error uploading attachments:', error);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('issueDetails.attachmentsUploadError'),
+      life: 3000,
+    });
+  } finally {
+    loadingUpload.value = false;
+  }
 }
 
 const cancelIssue = async () => {
@@ -325,6 +356,22 @@ watch(
               >
                 {{ attachment.fileName }}
               </a>
+            </div>
+            <div class="flex justify-end">
+              <FileUpload
+                mode="basic"
+                name="attachment"
+                :chooseLabel="t('issueDetails.attachmentsUploadButton')"
+                chooseIcon="pi pi-upload"
+                multiple
+                auto
+                customUpload
+                accept="image/*,application/pdf"
+                :maxFileSize="10485760"
+                :fileLimit="10"
+                :disabled="loadingUpload"
+                @uploader="handleUpload"
+              />
             </div>
           </div>
         </template>
