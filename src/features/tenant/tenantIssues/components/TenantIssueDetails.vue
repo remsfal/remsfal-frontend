@@ -1,24 +1,63 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
+import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Image from 'primevue/image';
 import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
-import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import BaseDialog from '@/components/common/BaseDialog.vue';
+import Tag from 'primevue/tag';
+import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
+  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{ issueId: string }>();
 
+const router = useRouter();
 const toast = useToast();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const loading = ref(false);
+const deletingIssue = ref(false);
+const showCancelDialog = ref(false);
 const issue = ref<IssueJson | null>(null);
 const error = ref<string | null>(null);
 const statusLabel = computed(() => getIssueStatusLabel(issue.value?.status, t));
 const typeLabel = computed(() => getIssueTypeLabel(issue.value?.type, t));
+const categoryLabel = computed(() => getIssueCategoryLabel(issue.value?.category, t));
+const statusSeverity = computed(() => getIssueStatusSeverity(issue.value?.status));
+const typeSeverity = computed(() => getIssueTypeSeverity(issue.value?.type));
+const issueNodeId = computed(() => issue.value?.id?.split('-').pop() || issue.value?.id || '—');
+const descriptionLabel = computed(() => {
+  const description = issue.value?.description;
+  if (!description) {
+    return null;
+  }
+
+  const cleaned = description
+    .split('\n')
+    .filter(line => !/^\s*(Verursacher|Ort):/i.test(line))
+    .join('\n')
+    .trim();
+
+  return cleaned || null;
+});
+const modifiedAtLabel = computed(() => {
+  const modifiedAt = issue.value?.modifiedAt;
+  if (!modifiedAt) {
+    return null;
+  }
+
+  const date = new Date(modifiedAt);
+  if (Number.isNaN(date.getTime())) {
+    return modifiedAt;
+  }
+
+  return date.toLocaleDateString(locale.value);
+});
 
 const fetchIssue = async () => {
   loading.value = true;
@@ -63,6 +102,43 @@ function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
   const encodedFileName = encodeURIComponent(fileName);
   return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
 }
+const cancelIssue = async () => {
+  if (deletingIssue.value) {
+    return;
+  }
+
+  deletingIssue.value = true;
+
+  try {
+    await issueService.deleteIssue(issue.value?.id || props.issueId);
+    toast.add({
+      severity: 'success',
+      summary: t('success.saved'),
+      detail: t('tenantIssues.detail.cancelSuccess'),
+      life: 4000,
+    });
+    await router.push({ name: 'TenantIssues' });
+  } catch (deleteError) {
+    console.error('Error deleting tenant issue:', deleteError);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('tenantIssues.detail.cancelError'),
+      life: 5000,
+    });
+  } finally {
+    deletingIssue.value = false;
+  }
+};
+
+const openCancelDialog = () => {
+  showCancelDialog.value = true;
+};
+
+const confirmCancelIssue = () => {
+  showCancelDialog.value = false;
+  cancelIssue();
+};
 
 onMounted(() => {
   fetchIssue();
@@ -103,30 +179,87 @@ watch(
                 {{ t('tenantIssues.detail.number') }} {{ issue.id || '—' }}
               </p>
             </div>
+            <Button
+              v-if="issue.type !== 'TERMINATION' && issue.status !== 'CLOSED' && issue.status !== 'REJECTED'"
+              :label="t('tenantIssues.detail.cancelIssue')"
+              icon="pi pi-trash"
+              severity="danger"
+              class="shrink-0 self-start"
+              data-testid="tenant-issue-cancel"
+              :loading="deletingIssue"
+              :disabled="deletingIssue"
+              @click="openCancelDialog"
+            />
           </div>
         </template>
         <template #content>
-          <dl class="text-base text-gray-600 space-y-2">
-            <div class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.filter.status') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ statusLabel }}
-              </dd>
-            </div>
-            <div class="flex justify-start gap-2">
-              <dt class="font-medium text-gray-500">
-                {{ t('tenantIssues.card.type') }}
-              </dt>
-              <dd class="text-gray-900">
-                {{ typeLabel }}
-              </dd>
-            </div>
-          </dl>
+          <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 ">
+            <dl class="space-y-2 text-base text-gray-600">
+              <div v-if="issue.id" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.detail.issueNode') }}
+                </dt>
+                <dd class="text-gray-900">
+                  <Tag :value="issueNodeId" severity="info" class="inline-flex w-fit" />
+                </dd>
+              </div>
+              <div v-if="modifiedAtLabel" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.detail.updated') }}
+                </dt>
+                <dd class="text-gray-900">
+                  <Tag v-if="modifiedAtLabel" :value="modifiedAtLabel" severity="info" class="inline-flex w-fit" />
+                </dd>
+              </div>
+            </dl>
+
+            <dl class="space-y-2 text-base text-gray-600">
+              <div v-if="issue.type" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.card.type') }}
+                </dt>
+                <dd class="text-gray-900">
+                  <Tag :value="typeLabel" :severity="typeSeverity" class="inline-flex w-fit" />
+                </dd>
+              </div>
+              <div v-if="issue.location?.trim()" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.detail.location') }}
+                </dt>
+                <dd class="text-gray-900 break-words">
+                  {{ issue.location }}
+                </dd>
+              </div>
+            </dl>
+
+            <dl class="space-y-2 text-base text-gray-600">
+              <div v-if="issue.status" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.filter.status') }}
+                </dt>
+                <dd class="text-gray-900">
+                  <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit" />
+                </dd>
+              </div>
+              <div v-if="issue.category" class="flex justify-start gap-2">
+                <dt class="font-medium text-gray-500">
+                  {{ t('tenantIssues.detail.category') }}
+                </dt>
+                <dd class="text-gray-900">
+                  {{ categoryLabel }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <div v-if="descriptionLabel" class="mt-4 text-base text-gray-600">
+            {{ t('tenantIssues.detail.description') }}
+            <span class="text-gray-900 whitespace-pre-line break-words">
+              {{ descriptionLabel }}
+            </span>
+          </div>
         </template>
       </BaseCard>
-
       <BaseCard>
         <template #title>
           <span class="text-xl font-semibold">{{ t('tenantIssues.timeline.title') }}</span>
@@ -195,5 +328,30 @@ watch(
         </template>
       </BaseCard>
     </template>
+
+    <BaseDialog
+      v-model:visible="showCancelDialog"
+      :header="t('tenantIssues.detail.cancelIssue')"
+    >
+      <p class="mb-4">
+        {{ t('tenantIssues.detail.cancelConfirm') }}
+      </p>
+      <template #footer>
+        <Button
+          :label="t('button.cancel')"
+          severity="secondary"
+          @click="showCancelDialog = false"
+        />
+        <Button
+          :label="t('tenantIssues.detail.cancelIssue')"
+          severity="danger"
+          icon="pi pi-trash"
+          data-testid="tenant-issue-cancel-confirm"
+          :loading="deletingIssue"
+          :disabled="deletingIssue"
+          @click="confirmCancelIssue"
+        />
+      </template>
+    </BaseDialog>
   </div>
 </template>
