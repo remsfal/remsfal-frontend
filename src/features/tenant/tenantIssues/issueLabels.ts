@@ -1,6 +1,7 @@
 import type { ComposerTranslation } from 'vue-i18n';
 import type { IssueCategory, IssuePriority, IssueStatus, IssueType } from '@/services/IssueService.ts';
 import type { UnitType } from '@/services/PropertyService';
+import type { HintedString } from "@primevue/core";
 
 export const getIssueStatusLabel = (
   status: IssueStatus | null | undefined,
@@ -24,7 +25,7 @@ export const getIssueStatusLabel = (
 
 export const getIssueStatusSeverity = (
   status: IssueStatus | null | undefined,
-): 'secondary' | 'info' | 'warn' | 'success' | 'danger' => {
+): HintedString<'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast'> => {
   switch (status) {
     case 'PENDING':
       return 'secondary';
@@ -35,7 +36,7 @@ export const getIssueStatusSeverity = (
     case 'CLOSED':
       return 'success';
     case 'REJECTED':
-      return 'danger';
+      return 'secondary';
     default:
       return 'secondary';
   }
@@ -65,16 +66,20 @@ export const getIssueTypeLabel = (
 
 export const getIssueTypeSeverity = (
   type: IssueType | null | undefined,
-): 'secondary' | 'info' | 'warn' | 'danger' => {
+): HintedString<'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast'> => {
   switch (type) {
     case 'APPLICATION':
-      return 'info';
-    case 'TASK':
       return 'secondary';
+    case 'TASK':
+      return 'contrast';
     case 'DEFECT':
-      return 'danger';
-    case 'MAINTENANCE':
       return 'warn';
+    case 'MAINTENANCE':
+      return 'success';
+    case 'TERMINATION':
+      return 'danger';
+    case 'INQUIRY':
+      return 'info';
     default:
       return 'info';
   }

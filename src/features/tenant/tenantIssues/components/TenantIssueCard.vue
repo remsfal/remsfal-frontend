@@ -44,7 +44,8 @@ const typeSeverity = computed(() => getIssueTypeSeverity(props.issue.type));
 const titleClass = computed(() => {
   const classes = ['text-xl', 'font-semibold'];
 
-  if (props.issue.status === 'CLOSED') {
+  if (props.issue.status === 'CLOSED' ||
+      props.issue.status === 'REJECTED') {
     classes.push('line-through', 'text-gray-500');
   } else {
     classes.push('text-gray-900');
