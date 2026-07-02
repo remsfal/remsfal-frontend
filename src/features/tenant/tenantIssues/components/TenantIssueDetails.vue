@@ -5,10 +5,9 @@ import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import BaseCard from '@/components/common/BaseCard.vue';
-import {issueService, type IssueJson, IssueAttachmentJson} from '@/services/IssueService';
+import Image from 'primevue/image';
+import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
 import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
-import Card from "primevue/card";
-import Image from "primevue/image";
 
 const props = defineProps<{ issueId: string }>();
 
@@ -43,7 +42,7 @@ const fetchIssue = async () => {
 
 const attachments = computed(() => issue.value?.attachments ?? []);
 const imageAttachments = computed(() => attachments.value.filter(
-    attachment => attachment.contentType?.startsWith('image/')
+  attachment => attachment.contentType?.startsWith('image/')
 ));
 const nonImageAttachmentGroups = computed(() => {
   const groups = new Map<string, number>();
@@ -157,20 +156,20 @@ watch(
 
             <div v-if="imageAttachments.length > 0 || nonImageAttachmentGroups.length > 0" class="flex flex-wrap gap-2">
               <Image
-                  v-for="attachment in imageAttachments"
-                  :key="attachment.attachmentId"
-                  :src="getAttachmentDownloadUrl(attachment)"
-                  :alt="attachment.fileName ?? 'issue-attachment'"
-                  preview
-                  imageClass="h-24 w-24 object-cover rounded"
+                v-for="attachment in imageAttachments"
+                :key="attachment.attachmentId"
+                :src="getAttachmentDownloadUrl(attachment)"
+                :alt="attachment.fileName ?? 'issue-attachment'"
+                preview
+                imageClass="h-24 w-24 object-cover rounded"
               />
               <div
-                  v-for="group in nonImageAttachmentGroups"
-                  :key="group.ext"
-                  data-test="non-image-tile"
-                  class="h-24 w-24 flex flex-col items-center justify-center gap-1 rounded
+                v-for="group in nonImageAttachmentGroups"
+                :key="group.ext"
+                data-test="non-image-tile"
+                class="h-24 w-24 flex flex-col items-center justify-center gap-1 rounded
                    border border-surface-200 bg-surface-100 text-surface-500 text-xs font-medium"
-                  :aria-label="t('issueDetails.nonImageAttachmentsAriaLabel', { count: group.count, ext: group.ext })"
+                :aria-label="t('issueDetails.nonImageAttachmentsAriaLabel', { count: group.count, ext: group.ext })"
               >
                 <i class="pi pi-file text-2xl" />
                 <span>+{{ group.count }}</span>
@@ -179,15 +178,15 @@ watch(
             </div>
 
             <div
-                v-for="attachment in attachments"
-                :key="attachment.attachmentId"
-                class="flex items-center justify-between gap-3 border border-surface-200 rounded-md p-2"
+              v-for="attachment in attachments"
+              :key="attachment.attachmentId"
+              class="flex items-center justify-between gap-3 border border-surface-200 rounded-md p-2"
             >
               <a
-                  :href="getAttachmentDownloadUrl(attachment)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-sm text-primary hover:underline truncate"
+                :href="getAttachmentDownloadUrl(attachment)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-primary hover:underline truncate"
               >
                 {{ attachment.fileName }}
               </a>
