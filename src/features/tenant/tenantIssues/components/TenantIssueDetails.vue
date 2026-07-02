@@ -41,13 +41,13 @@ const fetchIssue = async () => {
   }
 };
 
-const imageAttachments = computed(() => props.attachments.filter(
+const attachments = computed(() => issue.value?.attachments ?? []);
+const imageAttachments = computed(() => attachments.value.filter(
     attachment => attachment.contentType?.startsWith('image/')
 ));
-
 const nonImageAttachmentGroups = computed(() => {
   const groups = new Map<string, number>();
-  for (const attachment of props.attachments) {
+  for (const attachment of attachments.value) {
     if (attachment.contentType?.startsWith('image/')) continue;
     const ext = attachment.fileName?.split('.').pop()?.toUpperCase() ?? '?';
     groups.set(ext, (groups.get(ext) ?? 0) + 1);
@@ -58,7 +58,8 @@ const nonImageAttachmentGroups = computed(() => {
 function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
   const fileName = attachment.fileName ?? '';
   const attachmentId = attachment.attachmentId ?? '';
-  const encodedIssueId = encodeURIComponent(props.issueId);
+  const issueId = attachment.issueId ?? issue.value?.id ?? props.issueId;
+  const encodedIssueId = encodeURIComponent(issueId);
   const encodedAttachmentId = encodeURIComponent(attachmentId);
   const encodedFileName = encodeURIComponent(fileName);
   return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
