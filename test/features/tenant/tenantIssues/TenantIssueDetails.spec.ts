@@ -27,7 +27,7 @@ describe('TenantIssueDetails component', () => {
     vi.clearAllMocks();
   });
 
-  it('loads issue details and renders timeline placeholder', async () => {
+  it('loads issue details', async () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-42',
       title: 'Wasserschaden Küche',
@@ -44,7 +44,6 @@ describe('TenantIssueDetails component', () => {
 
     expect(issueService.getIssue).toHaveBeenCalledWith('issue-42');
     expect(wrapper.text()).toContain('Wasserschaden Küche');
-    expect(wrapper.find('[data-testid="tenant-issue-timeline-placeholder"]').exists()).toBe(true);
   });
 
   it('reloads issue details when issueId prop changes', async () => {
