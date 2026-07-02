@@ -19,16 +19,11 @@ export function useTopbarUserActions(): {
   const sessionStore = useUserSessionStore();
 
   const onAccountSettingsClick = () => {
-    // Redirect users to their role-specific view
-    const roles = sessionStore.user?.userContexts || [];
-    if (roles.includes('MANAGER')) {
-      router.push('/manager/account-settings');
-    } else if (roles.includes('CONTRACTOR')) {
+    if (route.path.startsWith('/contractor')) {
       router.push('/contractor/account-settings');
-    } else if (roles.includes('TENANT')) {
+    } else if (route.path.startsWith('/tenancies')) {
       router.push('/tenancies/account-settings');
     } else {
-      // default to manager view if no specific role is found
       router.push('/manager/account-settings');
     }
   };

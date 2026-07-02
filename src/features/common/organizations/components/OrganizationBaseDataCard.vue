@@ -7,32 +7,36 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import PhoneInput from '@/components/common/PhoneInput.vue';
 import { organizationService } from '@/services/OrganizationService';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ organizationId: string }>();
 
 const { t } = useI18n();
 const toast = useToast();
 const organizationStore = useOrganizationStore();
+const sessionStore = useUserSessionStore();
 
 const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
 const schema = z.object({
   name: z.string().trim().min(3, { message: t('organization.validation.nameRequired') }),
-  email: z
-    .string()
-    .trim()
-    .optional()
-    .refine((v) => !v || z.string().email().safeParse(v).success, {message: t('organization.validation.emailInvalid'),}),
   trade: z.string().trim().optional(),
 });
 
 const resolver = zodResolver(schema);
+
+const emailOptions = computed<string[]>(() => {
+  const primary = sessionStore.user?.email;
+  const additional = sessionStore.user?.additionalEmails ?? [];
+  return [...new Set([primary, ...additional].filter(Boolean))] as string[];
+});
 
 const serverValues = reactive({
   name: '', phone: '', email: '', trade: '' 
@@ -40,9 +44,7 @@ const serverValues = reactive({
 const currentValues = reactive({
   name: '', phone: '', email: '', trade: '' 
 });
-const initialValues = ref({
-  name: '', email: '', trade: '' 
-});
+const initialValues = ref({ name: '', trade: '' });
 const formKey = ref(0);
 
 const isDirty = computed(
@@ -68,11 +70,15 @@ onMounted(async () => {
       email: org.email ?? '',
       trade: org.trade ?? '',
     };
-    Object.assign(serverValues, loaded);
-    Object.assign(currentValues, loaded);
-    initialValues.value = {
-      name: loaded.name, email: loaded.email, trade: loaded.trade 
-    };
+    const effectiveEmail = emailOptions.value.includes(loaded.email)
+      ? loaded.email
+      : (sessionStore.user?.email ?? '');
+    Object.assign(serverValues, { ...loaded, email: effectiveEmail });
+    currentValues.email = effectiveEmail;
+    currentValues.name = loaded.name;
+    currentValues.phone = loaded.phone;
+    currentValues.trade = loaded.trade;
+    initialValues.value = { name: loaded.name, trade: loaded.trade };
     formKey.value++;
   } catch {
     // silently ignore load error — form stays empty
@@ -85,7 +91,7 @@ async function onSubmit(event: FormSubmitEvent) {
   const payload = {
     name: s.name?.value || undefined,
     phone: currentValues.phone || undefined,
-    email: s.email?.value || undefined,
+    email: currentValues.email || undefined,
     trade: s.trade?.value || undefined,
   };
   try {
@@ -98,9 +104,7 @@ async function onSubmit(event: FormSubmitEvent) {
     };
     Object.assign(serverValues, saved);
     Object.assign(currentValues, saved);
-    initialValues.value = {
-      name: saved.name, email: saved.email, trade: saved.trade 
-    };
+    initialValues.value = { name: saved.name, trade: saved.trade };
     formKey.value++;
     organizationStore.setOrganization(updated);
     toast.add({
@@ -178,20 +182,12 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <div class="flex flex-col gap-1">
               <label for="org-email" class="font-medium">{{ t('organization.email') }}</label>
-              <InputText
+              <Select
                 id="org-email"
-                name="email"
+                v-model="currentValues.email"
+                :options="emailOptions"
                 fluid
-                @update:modelValue="(v) => (currentValues.email = v as string)"
               />
-              <Message
-                v-if="$form.email?.invalid && $form.email?.touched"
-                severity="error"
-                size="small"
-                variant="simple"
-              >
-                {{ $form.email.error?.message }}
-              </Message>
             </div>
           </div>
 

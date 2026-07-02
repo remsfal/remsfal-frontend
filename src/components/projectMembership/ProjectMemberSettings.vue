@@ -89,6 +89,14 @@ function onNewMember(email: string) {
     <template #content>
       <div class="flex flex-col gap-2">
         <DataTable :value="members">
+          <Column :header="t('projectSettings.projectMemberTable.columnName')">
+            <template #body="slotProps">
+              <span :class="{ 'text-gray-400': slotProps.data.active === false }">
+                {{ slotProps.data.name || slotProps.data.email }}
+                <span v-if="slotProps.data.active === false"> ({{ t('managerSettings.memberships.status.inactive') }})</span>
+              </span>
+            </template>
+          </Column>
           <Column field="email" :header="t('projectSettings.projectMemberTable.columnEmail')" />
           <Column :header="t('projectSettings.projectMemberTable.columnRole')">
             <template #body="slotProps">

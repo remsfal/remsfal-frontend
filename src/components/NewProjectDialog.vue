@@ -3,9 +3,9 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import DialogFormField from '@/components/common/DialogFormField.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
@@ -111,10 +111,6 @@ async function createProject(title: string) {
   }
 }
 
-function formError(field: { invalid?: boolean; touched?: boolean; error?: { message?: string } } | undefined) {
-  return field?.invalid && field?.touched ? field.error?.message : undefined;
-}
-
 function abort() {
   router.push({ name: 'ProjectSelection' });
   emit('update:visible', false);
@@ -131,11 +127,8 @@ function abort() {
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
-        <DialogFormField
-          inputId="projectTitle"
-          :label="t('newProjectForm.input.name')"
-          :errorMessage="formError($form.projectTitle)"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="projectTitle" class="font-semibold">{{ t('newProjectForm.input.name') }}</label>
           <InputText
             id="projectTitle"
             name="projectTitle"
@@ -145,7 +138,15 @@ function abort() {
             autofocus
             fluid
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.projectTitle?.invalid && $form.projectTitle?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.projectTitle?.error?.message }}
+          </Message>
+        </div>
       </div>
 
       <div class="flex justify-end gap-2 mt-6">

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -11,7 +12,6 @@ import { useToast } from 'primevue/usetoast';
 import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
 import { type ProjectMemberJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import DialogFormField from '@/components/common/DialogFormField.vue';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newMember', email: string) => void>();
@@ -90,12 +90,10 @@ const addMember = async (email: string, role: MemberRole) => {
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
-        <DialogFormField
-          inputId="email"
-          :label="t('projectSettings.newProjectMemberButton.emailLabel')"
-          required
-          :errorMessage="$form.email?.invalid && $form.email?.touched ? $form.email.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="email" class="font-semibold">
+            {{ t('projectSettings.newProjectMemberButton.emailLabel') }}<span aria-hidden="true"> *</span>
+          </label>
           <InputText
             id="email"
             name="email"
@@ -106,20 +104,34 @@ const addMember = async (email: string, role: MemberRole) => {
             autofocus
             fluid
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.email?.invalid && $form.email?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.email?.error?.message }}
+          </Message>
+        </div>
 
-        <DialogFormField
-          inputId="role"
-          :label="t('projectSettings.newProjectMemberButton.roleLabel')"
-          required
-          :errorMessage="$form.role?.invalid && $form.role?.touched ? $form.role.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="role" class="font-semibold">
+            {{ t('projectSettings.newProjectMemberButton.roleLabel') }}<span aria-hidden="true"> *</span>
+          </label>
           <ProjectMemberRoleSelect
             name="role"
             :invalid="$form.role?.invalid && $form.role?.touched"
             class="w-full"
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.role?.invalid && $form.role?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.role?.error?.message }}
+          </Message>
+        </div>
       </div>
 
       <div class="flex justify-end gap-2 mt-6">

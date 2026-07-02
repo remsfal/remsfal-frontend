@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils'
-import { createTestingPinia } from '@pinia/testing'
 import { it, expect, vi } from 'vitest'
 import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
 import { useInboxStore } from '@/stores/InboxStore'
@@ -10,24 +9,23 @@ const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: mockPush }),
   useRoute: () => ({
-    params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
+    params: {}, query: {}, fullPath: '/', name: undefined, meta: {}
   }),
   RouterLink: { template: '<a><slot /></a>' },
 }))
 
 it('updates unread count in topbar when messages change in inbox', async () => {
-  const pinia = createTestingPinia({ stubActions: false })
-  const inboxStore = useInboxStore(pinia)
-  const userStore = useUserSessionStore(pinia)
+  const inboxStore = useInboxStore()
+  const userStore = useUserSessionStore()
 
-  userStore.user = { email: 'test@example.com' } as unknown as typeof userStore.user // Mock login
+  userStore.user = { email: 'test@example.com' } as unknown as typeof userStore.user
 
   inboxStore.messages = [
     { id: '1', isRead: false },
     { id: '2', isRead: false },
   ] as unknown as typeof inboxStore.messages
 
-  const topbar = mount(ManagerTopbar, { global: { plugins: [pinia] } })
+  const topbar = mount(ManagerTopbar)
 
   // Should now see badge with '2'
   expect(topbar.text()).toContain('2')

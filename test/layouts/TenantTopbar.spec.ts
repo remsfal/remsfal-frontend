@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
 import TenantTopbar from '@/layouts/components/AppSimpleTopbar.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 
@@ -9,7 +8,7 @@ const mockPush = vi.fn();
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: mockPush }),
   useRoute: () => ({
-    params: {}, query: {}, fullPath: '/', name: undefined, meta: {} 
+    params: {}, query: {}, fullPath: '/', name: undefined, meta: {}
   }),
   RouterLink: { template: '<a><slot /></a>' },
 }));
@@ -19,11 +18,10 @@ vi.mock('../../src/helper/platform', () => ({ shouldShowDevLogin: vi.fn().mockRe
 
 describe('TenantTopbar.vue', () => {
   it('should render TopbarUserActions', async () => {
-    const pinia = createTestingPinia({ stubActions: false });
-    const userStore = useUserSessionStore(pinia);
+    const userStore = useUserSessionStore();
     userStore.user = { email: 'tenant@example.com' } as User;
 
-    const wrapper = mount(TenantTopbar, { global: { plugins: [pinia] }, });
+    const wrapper = mount(TenantTopbar);
 
     await flushPromises();
 

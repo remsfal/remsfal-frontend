@@ -57,4 +57,52 @@ describe('OrganizationService with MSW', () => {
     expect(updated.phone).toBe('+4930123456');
     expect(updated.name).toBeDefined();
   });
+
+  test('getContractorOrganizations returns list with organizations array', async () => {
+    const result = await service.getContractorOrganizations();
+    expect(result.organizations).toBeDefined();
+    expect(Array.isArray(result.organizations)).toBe(true);
+    expect(result.organizations.length).toBeGreaterThan(0);
+  });
+
+  test('getContractorOrganizations returns org with expected fields', async () => {
+    const result = await service.getContractorOrganizations();
+    const org = result.organizations[0]!;
+    expect(org.id).toBe('org-123');
+    expect(org.name).toBe('Test GmbH');
+  });
+
+  test('getEmployees returns employee list for an organization', async () => {
+    const result = await service.getEmployees('org-123');
+    expect(result.employees).toBeDefined();
+    expect(Array.isArray(result.employees)).toBe(true);
+    expect(result.employees.length).toBeGreaterThan(0);
+  });
+
+  test('getEmployees returns employee with expected fields', async () => {
+    const result = await service.getEmployees('org-123');
+    const emp = result.employees[0]!;
+    expect(emp.email).toBe('max@test-gmbh.de');
+    expect(emp.employeeRole).toBe('OWNER');
+  });
+
+  test('addEmployee resolves with employee data', async () => {
+    const member = await service.addEmployee('org-123', {
+      email: 'new@test-gmbh.de',
+      employeeRole: 'STAFF',
+    });
+    expect(member).toBeDefined();
+    expect(member.id).toBeDefined();
+  });
+
+  test('updateEmployeeRole returns updated employee', async () => {
+    const updated = await service.updateEmployeeRole('org-123', 'emp-1', 'MANAGER');
+    expect(updated).toBeDefined();
+  });
+
+  test('removeEmployee resolves without error', async () => {
+    await expect(
+      service.removeEmployee('org-123', 'emp-1'),
+    ).resolves.not.toThrow();
+  });
 });

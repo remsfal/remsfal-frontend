@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
+import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -13,7 +14,6 @@ import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMembe
 import { type MemberRole } from '@/services/ProjectMemberService';
 import { projectOrganizationService } from '@/services/ProjectOrganizationService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import DialogFormField from '@/components/common/DialogFormField.vue';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newOrganization', organizationName: string) => void>();
@@ -74,10 +74,6 @@ const addOrganization = async (organizationId: string, role: MemberRole) => {
   }
 };
 
-function formError(field: { invalid?: boolean; touched?: boolean; error?: { message?: string } } | undefined) {
-  return field?.invalid && field?.touched ? field.error?.message : undefined;
-}
-
 onMounted(async () => {
   if (!organizationStore.initialized) {
     await organizationStore.fetchUserOrganization();
@@ -100,12 +96,10 @@ onMounted(async () => {
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
-        <DialogFormField
-          inputId="organizationId"
-          :label="t('projectSettings.newProjectOrganizationButton.organizationLabel')"
-          required
-          :errorMessage="formError($form.organizationId)"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="organizationId" class="font-semibold">
+            {{ t('projectSettings.newProjectOrganizationButton.organizationLabel') }}<span aria-hidden="true"> *</span>
+          </label>
           <Select
             id="organizationId"
             name="organizationId"
@@ -116,20 +110,34 @@ onMounted(async () => {
             :class="{ 'p-invalid': $form.organizationId?.invalid && $form.organizationId?.touched }"
             fluid
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.organizationId?.invalid && $form.organizationId?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.organizationId?.error?.message }}
+          </Message>
+        </div>
 
-        <DialogFormField
-          inputId="role"
-          :label="t('projectSettings.newProjectOrganizationButton.roleLabel')"
-          required
-          :errorMessage="$form.role?.invalid && $form.role?.touched ? $form.role.error.message : undefined"
-        >
+        <div class="flex flex-col gap-1">
+          <label for="role" class="font-semibold">
+            {{ t('projectSettings.newProjectOrganizationButton.roleLabel') }}<span aria-hidden="true"> *</span>
+          </label>
           <ProjectMemberRoleSelect
             name="role"
             :invalid="$form.role?.invalid && $form.role?.touched"
             class="w-full"
           />
-        </DialogFormField>
+          <Message
+            v-if="$form.role?.invalid && $form.role?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ $form.role?.error?.message }}
+          </Message>
+        </div>
       </div>
 
       <div class="flex justify-end gap-2 mt-6">

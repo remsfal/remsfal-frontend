@@ -4914,6 +4914,9 @@ export interface components {
   schemas: {
     /** @description The address of a customer, a building or a site */
     AddressJson: {
+      addressLine1?: string;
+      addressLine2?: string;
+      addressLine3?: string;
       street: string;
       city: string;
       province: string;
@@ -5020,6 +5023,16 @@ export interface components {
       location?: string;
       description?: string;
     };
+    /** @description A contractor employee */
+    ContractorEmployeeJson: {
+      contractorId?: components["schemas"]["UUID"];
+      userId?: components["schemas"]["UUID"];
+      responsibility?: string;
+      email?: string;
+      name?: string;
+      active?: boolean;
+      user?: components["schemas"]["UserModel"];
+    };
     /** @description A contractor */
     ContractorJson: {
       organizationId?: components["schemas"]["UUID"];
@@ -5036,12 +5049,19 @@ export interface components {
       organization?: components["schemas"]["OrganizationJson"];
       address?: components["schemas"]["AddressJson"];
     };
+    /** @description A list of contractors */
     ContractorListJson: {
+      /**
+       * Format: int32
+       * @description Index of the first element
+       */
+      readonly offset?: number;
+      /**
+       * Format: int64
+       * @description Total number of available contractors
+       */
+      readonly total?: number;
       contractors?: components["schemas"]["ContractorJson"][];
-      /** Format: int32 */
-      offset?: number;
-      /** Format: int64 */
-      total?: number;
     };
     Cookie: {
       name?: string;
@@ -5059,6 +5079,14 @@ export interface components {
     /** @description A list of countries */
     CountryListJson: {
       countries?: components["schemas"]["CountryItemJson"][];
+    };
+    /** @description A request to create one quotation request per contractor */
+    CreateQuotationRequestJson: {
+      contractors: components["schemas"]["ContractorJson"][];
+      scopeOfWork?: string;
+      projectOwner?: string;
+      projectCareOf?: string;
+      billingAddress?: components["schemas"]["AddressJson"];
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
@@ -5103,7 +5131,8 @@ export interface components {
       fileName?: string;
       contentType?: string;
       objectName?: string;
-      uploadedBy?: components["schemas"]["UUID"];
+      uploaderId?: components["schemas"]["UUID"];
+      uploadedBy?: string;
       createdAt?: components["schemas"]["Instant"];
     };
     /** @enum {string} */
@@ -5160,7 +5189,10 @@ export interface components {
       category?: components["schemas"]["IssueCategory"];
       status?: components["schemas"]["IssueStatus"];
       priority?: components["schemas"]["IssuePriority"];
-      reporterId?: components["schemas"]["UUID"];
+      /** @description ID of the user who reported this issue */
+      readonly reporterId?: components["schemas"]["UUID"];
+      /** @description Name of the user who reported this issue */
+      readonly reportedBy?: string;
       agreementId?: components["schemas"]["UUID"];
       visibleToTenants?: boolean;
       rentalUnitId?: components["schemas"]["UUID"];
@@ -5215,6 +5247,55 @@ export interface components {
      * @example 2022-03-10T12:15:50-04:00
      */
     OffsetDateTime: string;
+    /** @description An attachment associated with a quotation request, quotation, or order placement */
+    OrderAttachmentJson: {
+      processPhase?: components["schemas"]["OrderProcessPhase"];
+      processId?: components["schemas"]["UUID"];
+      attachmentId?: components["schemas"]["UUID"];
+      fileName?: string;
+      contentType?: string;
+      objectName?: string;
+      uploaderId?: components["schemas"]["UUID"];
+      uploadedBy?: string;
+      createdAt?: components["schemas"]["Instant"];
+    };
+    /** @description An order placement created by a manager based on a quotation */
+    OrderPlacementJson: {
+      organizationId?: components["schemas"]["UUID"];
+      id?: components["schemas"]["UUID"];
+      issueId?: components["schemas"]["UUID"];
+      projectId?: components["schemas"]["UUID"];
+      projectOwner?: string;
+      projectCareOf?: string;
+      projectBillingAddress1?: string;
+      projectBillingAddress2?: string;
+      projectBillingAddress3?: string;
+      contractorId?: components["schemas"]["UUID"];
+      contractorName?: string;
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      /** @description ID of the quotation this order is based on */
+      readonly quotationId?: components["schemas"]["UUID"];
+      /** @description ID of the user who placed the order */
+      readonly ordererId?: components["schemas"]["UUID"];
+      /** @description Name of the user who placed the order */
+      readonly orderedBy?: string;
+      /** @description Status of the order placement: PLACED, CONFIRMED, REJECTED, WITHDRAWN */
+      status?: components["schemas"]["OrderPlacementStatus"];
+      /** @description ID of the user who confirmed or rejected the order */
+      readonly confirmorId?: components["schemas"]["UUID"];
+      /** @description Name of the user who confirmed or rejected the order */
+      readonly confirmedBy?: string;
+    };
+    /** @description A list of order placements */
+    OrderPlacementListJson: {
+      items?: components["schemas"]["OrderPlacementJson"][];
+    };
+    /** @enum {string} */
+    OrderPlacementStatus: "PLACED" | "CONFIRMED" | "REJECTED" | "WITHDRAWN";
+    /** @enum {string} */
+    OrderProcessPhase: "QUOTATION_REQUEST" | "QUOTATION" | "ORDER_PLACEMENT";
     /** @description Employee information in context of an organization */
     OrganizationEmployeeJson: {
       /** @description Unique identifier of the employee (generated by server) */
@@ -5261,6 +5342,9 @@ export interface components {
       /** @description Unique identifier of the project (generated by server) */
       readonly id?: components["schemas"]["UUID"];
       title: string;
+      owner?: string;
+      careOf?: string;
+      address?: components["schemas"]["AddressJson"];
       /** @description Project members (managed separately via members endpoint) */
       readonly members?: components["schemas"]["ProjectMemberJson"][];
     };
@@ -5335,6 +5419,68 @@ export interface components {
     PropertyListJson: {
       readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @description A quotation response submitted by a contractor */
+    QuotationJson: {
+      id?: components["schemas"]["UUID"];
+      issueId?: components["schemas"]["UUID"];
+      projectId?: components["schemas"]["UUID"];
+      projectOwner?: string;
+      projectCareOf?: string;
+      projectBillingAddress1?: string;
+      projectBillingAddress2?: string;
+      projectBillingAddress3?: string;
+      contractorId?: components["schemas"]["UUID"];
+      contractorName?: string;
+      organizationId?: components["schemas"]["UUID"];
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      /** @description ID of the quotation request this quotation responds to */
+      readonly requestId?: components["schemas"]["UUID"];
+      /** @description ID of the user who submitted this quotation */
+      readonly offererId?: components["schemas"]["UUID"];
+      /** @description Name of the user who submitted this quotation */
+      readonly offeredBy?: string;
+      /** @description Status of the quotation: VALID, INVALID, ACCEPTED, REJECTED */
+      status?: components["schemas"]["QuotationStatus"];
+      /** @description Timestamp until which the quotation is valid */
+      validUntil?: components["schemas"]["Instant"];
+    };
+    /** @description A list of quotations */
+    QuotationListJson: {
+      items?: components["schemas"]["QuotationJson"][];
+    };
+    /** @description A request for quotation sent to a contractor */
+    QuotationRequestJson: {
+      id?: components["schemas"]["UUID"];
+      issueId?: components["schemas"]["UUID"];
+      projectId?: components["schemas"]["UUID"];
+      projectOwner?: string;
+      projectCareOf?: string;
+      projectBillingAddress1?: string;
+      projectBillingAddress2?: string;
+      projectBillingAddress3?: string;
+      contractorId?: components["schemas"]["UUID"];
+      contractorName?: string;
+      organizationId?: components["schemas"]["UUID"];
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      /** @description ID of the user who initiated this request */
+      readonly initiatorId?: components["schemas"]["UUID"];
+      /** @description Name of the user who initiated this request */
+      readonly initiatedBy?: string;
+      /** @description Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED */
+      status?: components["schemas"]["RequestStatus"];
+      /** @description Scope of work description for the contractor */
+      scopeOfWork?: string;
+    };
+    /** @description A list of quotation requests */
+    QuotationRequestListJson: {
+      items?: components["schemas"]["QuotationRequestJson"][];
+    };
+    /** @enum {string} */
+    QuotationStatus: "VALID" | "INVALID" | "ACCEPTED" | "REJECTED";
     /** @description Rent information for a rentable unit */
     RentJson: {
       unitId: components["schemas"]["UUID"];
@@ -5478,6 +5624,8 @@ export interface components {
       /** @description Children nodes */
       children?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @enum {string} */
+    RequestStatus: "REQUESTED" | "WITHDRAWN" | "VIEWING_REQUIRED" | "CONSULTATION_REQUIRED" | "REJECTED" | "SUBMITTED";
     /** @description A site as part of a property */
     SiteJson: {
       type?: components["schemas"]["UnitType"];
@@ -5618,6 +5766,12 @@ export interface components {
       additionalEmails?: string[];
       readonly registeredDate?: components["schemas"]["LocalDate"];
       readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
+    };
+    UserModel: {
+      id?: components["schemas"]["UUID"];
+      email?: string;
+      name?: string;
+      active?: boolean;
     };
   };
   responses: never;

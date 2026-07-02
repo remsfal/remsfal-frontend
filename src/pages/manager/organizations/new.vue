@@ -6,9 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ManagerOrganizationsView from '@/views/ManagerOrganizationsView.vue';
+import { OrganizationsView } from '@/features/common/organizations';
 </script>
 
 <template>
-  <ManagerOrganizationsView />
+  <OrganizationsView />
 </template>

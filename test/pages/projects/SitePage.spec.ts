@@ -59,6 +59,6 @@ describe('SitePage', () => {
     const card = wrapper.findComponent(FacilityAddressCard);
     expect(card.props('projectId')).toBe('project1');
     expect(card.props('unitId')).toBe('unit1');
-    expect(card.props('facilityType')).toBe('site');
+    expect(card.props('facilityType')).toBe('SITE');
   });
 });

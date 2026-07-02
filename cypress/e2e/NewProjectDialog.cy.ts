@@ -130,7 +130,7 @@ describe('NewProjectDialog E2E Tests', () => {
   it('should close dialog when clicking close button and redirect', () => {
     // Find and click the close button (X button)
     cy.get('[role="dialog"]').within(() => {
-      cy.get('button[aria-label], .p-dialog-header-close').first().click();
+      cy.get('.p-dialog-close-button').click();
     });
 
     // Should redirect to project selection

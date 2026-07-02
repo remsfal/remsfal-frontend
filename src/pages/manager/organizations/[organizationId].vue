@@ -6,9 +6,14 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ManagerOrganizationSettingsView from '@/views/ManagerOrganizationSettingsView.vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { OrganizationSettingsView } from '@/features/common/organizations';
+
+const route = useRoute('ManagerOrganizationSettings');
+const organizationId = computed(() => route.params.organizationId as string);
 </script>
 
 <template>
-  <ManagerOrganizationSettingsView />
+  <OrganizationSettingsView :organizationId="organizationId" />
 </template>

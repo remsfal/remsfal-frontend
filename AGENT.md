@@ -7,7 +7,7 @@ Central AI instructions for the remsfal-frontend repository.
 
 This is the frontend for Remsfal, an open-source facility management software built as a Vue 3 single-page application (SPA) using Vite. It manages real estate projects and works in conjunction with the [`remsfal-backend`](https://github.com/remsfal/remsfal-backend) repository.
 
-**Technology Stack**: Vue 3 (Composition API), TypeScript, Vite, PrimeVue 4, TailwindCSS 4, Pinia, Vue Router 4, Vitest, Cypress
+**Technology Stack**: Vue 3 (Composition API), TypeScript, Vite, PrimeVue 4 (pinned to `<5.0.0`), TailwindCSS 4, Pinia, Vue Router 4, Vitest, Cypress
 
 **Live Version**: https://remsfal.de
 
@@ -86,6 +86,7 @@ src/
 ├── features/                   # Domain-based feature slices
 │   ├── manager/
 │   │   ├── components/         # ProjectSelectionTable, NewProjectDialog, ...
+│   │   ├── views/              # Feature-specific page-level components (*View.vue)
 │   │   ├── stores/             # ProjectStore (belongs to manager domain)
 │   │   └── index.ts            # Public API of this feature
 │   ├── project/
@@ -102,8 +103,8 @@ src/
 │   │   │   ├── services/       # RentalAgreementService, TenancyService
 │   │   │   └── index.ts
 │   │   ├── issues/
-│   │   │   ├── components/     # IssueTable, IssueDetailsCard, IssueDescriptionCard
-│   │   │   ├── services/       # IssueService
+│   │   │   ├── components/     # NewIssueDialog, IssueTable, IssueDetailsCard, IssueDescriptionCard
+│   │   │   ├── views/          # IssueView, ProjectIssueView
 │   │   │   └── index.ts
 │   │   └── contractors/
 │   │       ├── components/     # ContractorTable
@@ -304,6 +305,7 @@ declare module 'vue-router' {
 - Existing code moves to its feature slice when the file is next modified
 - Never reach into a feature's internals from outside — use `index.ts` as the public API
 - `shared/` is for code actually used by ≥2 features; when in doubt, start in the feature
+- Feature-specific Views (`*View.vue`) go in `src/features/<domain>/views/` and are exported via `index.ts` — the global `src/views/` is only for Views without a clear feature home
 
 **Shared components during migration**:
 - Until `src/shared/` is fully established, all shared components (used by ≥2 features) go into `src/components/common/`
@@ -358,7 +360,7 @@ import type { MyType } from '@/services/MyService';
 |-------|--------|-------------|
 | 1 — File-Based Routing | ✅ Done | Vue Router v5 built-in, `src/pages/`, `src/router/guards.ts` |
 | 2 — Layout System | ✅ Done | `src/layouts/`, `App.vue` uses `route.meta.layout` |
-| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` complete; incremental for other domains |
+| 3 — Feature-Sliced | 🔄 In progress | `src/features/project/rentableUnits/` and `src/features/project/issues/` complete; incremental for other domains |
 
 **Update this table** as work is completed. Use ✅ for done, 🔄 for in-progress, 🔲 for planned.
 
@@ -538,10 +540,12 @@ Use lazy loading for routes: `component: () => import('@/views/ViewName.vue')`
 - Theme: Aura (PrimeVue 4.3+)
 - Use PrimeVue components when available instead of custom implementations
 - Toast/dialog/confirm services available globally
+- **Do NOT upgrade to PrimeVue v5.** PrimeVue 5 is no longer MIT-licensed — it requires a paid PrimeUI Commercial license ($599/developer, rising to $799 in 2027). PrimeVue 4.x is MIT-licensed and stays MIT forever. All four PrimeVue packages are pinned to `>=4.x <5.0.0` in `package.json`. Deprecation warnings for `Galleria` and `Image` in v4 point to v5 components that are behind a paywall — do not act on these warnings.
 
 **Accessibility — Label Association**:
-- Always associate `<label>` with its control via a matching `for` / `id` pair (SonarCloud rule Web:S6853)
+- Always associate `<label>` with its control via a matching `for` / `id` pair (SonarCloud rule Web:S6853) — applies to every new form field, not just the ones already flagged
 - For native inputs: `<label for="field-id">` + `<InputText id="field-id" />`
+- For PrimeVue components that already expose their own `inputId` prop (e.g. `Select`, `AutoComplete`, `MultiSelect`, `DatePicker`): bind `<label for="field-id">` + `inputId="field-id"` directly — do not use a plain `id`, it does not reach the inner control
 - For custom composite components (e.g. `PhoneInput`): follow the PrimeVue convention of an `inputId` prop that is bound to the inner `<input>` element, then pass it from the parent
 
 ```vue
@@ -554,7 +558,7 @@ const props = defineProps<{ inputId?: string }>()
 <PhoneInput inputId="org-phone" v-model="phone" />
 ```
 
-- Existing composite components with this pattern: `PhoneInput` (`src/components/common/PhoneInput.vue`)
+- Existing composite components with this pattern: `PhoneInput` (`src/components/common/PhoneInput.vue`), `MemberAutoComplete` (`src/components/MemberAutoComplete.vue`)
 - Apply the same `inputId` prop to every new composite input component
 
 **BaseCard Component** (`src/components/common/BaseCard.vue`):
@@ -817,11 +821,20 @@ npm run test:e2e -- --spec "cypress/e2e/project.cy.ts"
 - Translation files: `src/i18n/locales/{de,en}.json`
 - Use `$t('key')` in templates or `t('key')` in composition functions
 - Translation keys should be hierarchical and descriptive
+- **Currency and numeric output:** Use `vue-i18n` number formatting (`n()` / `$n()`) with named formats from `src/i18n/numberFormats.ts` (for example `n(amount, 'currency')`) for all user-facing money values.
+- Do **not** format currency with `toFixed()` or ad-hoc `Intl.NumberFormat` inside components when a shared i18n number format exists.
+- Do **not** append `€` manually when using `n(..., 'currency')`; the locale formatter already renders currency symbol and spacing.
 
 **Adding translations**:
 1. Add key to both `de.json` and `en.json`
 2. Import `useI18n` and destructure `t` in `<script setup>`
 3. Use `t('your.key')` in component
+
+**App-wide domain enums** use flat namespaced keys (not feature-prefixed), so they can be reused across features:
+- `issuePriority.*` — `urgent`, `high`, `medium`, `low`, `unclassified`
+- `issueType.*` — `application`, `task`, `defect`, `maintenance`, `termination`, `inquiry` (singular in German: "Antrag", "Aufgabe", "Mangel", …)
+
+Use singular forms for type labels in selects/dropdowns.
 
 ### Styling Guidelines
 

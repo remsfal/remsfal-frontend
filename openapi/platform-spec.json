@@ -5,8 +5,16 @@
       "AddressJson" : {
         "description" : "The address of a customer, a building or a site",
         "type" : "object",
-        "required" : [ "street", "city", "province", "zip", "countryCode" ],
         "properties" : {
+          "addressLine1" : {
+            "type" : "string"
+          },
+          "addressLine2" : {
+            "type" : "string"
+          },
+          "addressLine3" : {
+            "type" : "string"
+          },
           "street" : {
             "type" : "string",
             "pattern" : "\\S"
@@ -29,7 +37,8 @@
             "minLength" : 2,
             "maxLength" : 2
           }
-        }
+        },
+        "required" : [ "street", "city", "province", "zip", "countryCode" ]
       },
       "ApartmentJson" : {
         "description" : "An apartment inside a building according to WoFIV",
@@ -291,6 +300,35 @@
           }
         }
       },
+      "ContractorEmployeeJson" : {
+        "description" : "A contractor employee",
+        "type" : "object",
+        "properties" : {
+          "contractorId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "userId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "responsibility" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "email" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "active" : {
+            "type" : "boolean"
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/UserModel"
+          }
+        }
+      },
       "ContractorJson" : {
         "description" : "A contractor",
         "type" : "object",
@@ -344,21 +382,26 @@
         }
       },
       "ContractorListJson" : {
+        "description" : "A list of contractors",
         "type" : "object",
         "properties" : {
+          "offset" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Index of the first element",
+            "readOnly" : true
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "Total number of available contractors",
+            "readOnly" : true
+          },
           "contractors" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/ContractorJson"
             }
-          },
-          "offset" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "total" : {
-            "type" : "integer",
-            "format" : "int64"
           }
         }
       },
@@ -407,6 +450,35 @@
             "items" : {
               "$ref" : "#/components/schemas/CountryItemJson"
             }
+          }
+        }
+      },
+      "CreateQuotationRequestJson" : {
+        "description" : "A request to create one quotation request per contractor",
+        "type" : "object",
+        "required" : [ "contractors" ],
+        "properties" : {
+          "contractors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContractorJson"
+            },
+            "minItems" : 1
+          },
+          "scopeOfWork" : {
+            "type" : "string",
+            "maxLength" : 5000
+          },
+          "projectOwner" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "projectCareOf" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "billingAddress" : {
+            "$ref" : "#/components/schemas/AddressJson"
           }
         }
       },
@@ -497,8 +569,11 @@
           "objectName" : {
             "type" : "string"
           },
-          "uploadedBy" : {
+          "uploaderId" : {
             "$ref" : "#/components/schemas/UUID"
+          },
+          "uploadedBy" : {
+            "type" : "string"
           },
           "createdAt" : {
             "$ref" : "#/components/schemas/Instant"
@@ -597,7 +672,15 @@
             "$ref" : "#/components/schemas/IssuePriority"
           },
           "reporterId" : {
+            "description" : "ID of the user who reported this issue",
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
+          },
+          "reportedBy" : {
+            "type" : "string",
+            "description" : "Name of the user who reported this issue",
+            "readOnly" : true
           },
           "agreementId" : {
             "$ref" : "#/components/schemas/UUID"
@@ -735,6 +818,143 @@
         "type" : "string",
         "format" : "date-time",
         "examples" : [ "2022-03-10T12:15:50-04:00" ]
+      },
+      "OrderAttachmentJson" : {
+        "description" : "An attachment associated with a quotation request, quotation, or order placement",
+        "type" : "object",
+        "properties" : {
+          "processPhase" : {
+            "$ref" : "#/components/schemas/OrderProcessPhase"
+          },
+          "processId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "attachmentId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "fileName" : {
+            "type" : "string"
+          },
+          "contentType" : {
+            "type" : "string"
+          },
+          "objectName" : {
+            "type" : "string"
+          },
+          "uploaderId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "uploadedBy" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          }
+        }
+      },
+      "OrderPlacementJson" : {
+        "description" : "An order placement created by a manager based on a quotation",
+        "type" : "object",
+        "properties" : {
+          "organizationId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectOwner" : {
+            "type" : "string"
+          },
+          "projectCareOf" : {
+            "type" : "string"
+          },
+          "projectBillingAddress1" : {
+            "type" : "string"
+          },
+          "projectBillingAddress2" : {
+            "type" : "string"
+          },
+          "projectBillingAddress3" : {
+            "type" : "string"
+          },
+          "contractorId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "contractorName" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderAttachmentJson"
+            }
+          },
+          "quotationId" : {
+            "description" : "ID of the quotation this order is based on",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "ordererId" : {
+            "description" : "ID of the user who placed the order",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "orderedBy" : {
+            "type" : "string",
+            "description" : "Name of the user who placed the order",
+            "readOnly" : true
+          },
+          "status" : {
+            "description" : "Status of the order placement: PLACED, CONFIRMED, REJECTED, WITHDRAWN",
+            "type" : "string",
+            "$ref" : "#/components/schemas/OrderPlacementStatus"
+          },
+          "confirmorId" : {
+            "description" : "ID of the user who confirmed or rejected the order",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "confirmedBy" : {
+            "type" : "string",
+            "description" : "Name of the user who confirmed or rejected the order",
+            "readOnly" : true
+          }
+        }
+      },
+      "OrderPlacementListJson" : {
+        "description" : "A list of order placements",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderPlacementJson"
+            }
+          }
+        }
+      },
+      "OrderPlacementStatus" : {
+        "type" : "string",
+        "enum" : [ "PLACED", "CONFIRMED", "REJECTED", "WITHDRAWN" ]
+      },
+      "OrderProcessPhase" : {
+        "type" : "string",
+        "enum" : [ "QUOTATION_REQUEST", "QUOTATION", "ORDER_PLACEMENT" ]
       },
       "OrganizationEmployeeJson" : {
         "description" : "Employee information in context of an organization",
@@ -875,6 +1095,17 @@
             "pattern" : "\\S",
             "minLength" : 1,
             "maxLength" : 99
+          },
+          "owner" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "careOf" : {
+            "type" : "string",
+            "maxLength" : 255
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/AddressJson"
           },
           "members" : {
             "type" : "array",
@@ -1062,6 +1293,184 @@
             "readOnly" : true
           }
         }
+      },
+      "QuotationJson" : {
+        "description" : "A quotation response submitted by a contractor",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectOwner" : {
+            "type" : "string"
+          },
+          "projectCareOf" : {
+            "type" : "string"
+          },
+          "projectBillingAddress1" : {
+            "type" : "string"
+          },
+          "projectBillingAddress2" : {
+            "type" : "string"
+          },
+          "projectBillingAddress3" : {
+            "type" : "string"
+          },
+          "contractorId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "contractorName" : {
+            "type" : "string"
+          },
+          "organizationId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderAttachmentJson"
+            }
+          },
+          "requestId" : {
+            "description" : "ID of the quotation request this quotation responds to",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "offererId" : {
+            "description" : "ID of the user who submitted this quotation",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "offeredBy" : {
+            "type" : "string",
+            "description" : "Name of the user who submitted this quotation",
+            "readOnly" : true
+          },
+          "status" : {
+            "description" : "Status of the quotation: VALID, INVALID, ACCEPTED, REJECTED",
+            "type" : "string",
+            "$ref" : "#/components/schemas/QuotationStatus"
+          },
+          "validUntil" : {
+            "description" : "Timestamp until which the quotation is valid",
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          }
+        }
+      },
+      "QuotationListJson" : {
+        "description" : "A list of quotations",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/QuotationJson"
+            }
+          }
+        }
+      },
+      "QuotationRequestJson" : {
+        "description" : "A request for quotation sent to a contractor",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "issueId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectOwner" : {
+            "type" : "string"
+          },
+          "projectCareOf" : {
+            "type" : "string"
+          },
+          "projectBillingAddress1" : {
+            "type" : "string"
+          },
+          "projectBillingAddress2" : {
+            "type" : "string"
+          },
+          "projectBillingAddress3" : {
+            "type" : "string"
+          },
+          "contractorId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "contractorName" : {
+            "type" : "string"
+          },
+          "organizationId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrderAttachmentJson"
+            }
+          },
+          "initiatorId" : {
+            "description" : "ID of the user who initiated this request",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "initiatedBy" : {
+            "type" : "string",
+            "description" : "Name of the user who initiated this request",
+            "readOnly" : true
+          },
+          "status" : {
+            "description" : "Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED",
+            "type" : "string",
+            "$ref" : "#/components/schemas/RequestStatus"
+          },
+          "scopeOfWork" : {
+            "type" : "string",
+            "description" : "Scope of work description for the contractor",
+            "maxLength" : 5000
+          }
+        }
+      },
+      "QuotationRequestListJson" : {
+        "description" : "A list of quotation requests",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/QuotationRequestJson"
+            }
+          }
+        }
+      },
+      "QuotationStatus" : {
+        "type" : "string",
+        "enum" : [ "VALID", "INVALID", "ACCEPTED", "REJECTED" ]
       },
       "RentJson" : {
         "description" : "Rent information for a rentable unit",
@@ -1379,6 +1788,10 @@
             "description" : "Children nodes"
           }
         }
+      },
+      "RequestStatus" : {
+        "type" : "string",
+        "enum" : [ "REQUESTED", "WITHDRAWN", "VIEWING_REQUIRED", "CONSULTATION_REQUIRED", "REJECTED", "SUBMITTED" ]
       },
       "SiteJson" : {
         "description" : "A site as part of a property",
@@ -1741,6 +2154,23 @@
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/LocalDateTime"
+          }
+        }
+      },
+      "UserModel" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "active" : {
+            "type" : "boolean"
           }
         }
       }

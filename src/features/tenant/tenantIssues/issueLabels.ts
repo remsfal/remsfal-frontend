@@ -47,17 +47,17 @@ export const getIssueTypeLabel = (
 ): string => {
   switch (type) {
     case 'APPLICATION':
-      return t('inbox.filters.type.application');
+      return t('issueType.application');
     case 'TASK':
-      return t('inbox.filters.type.task');
+      return t('issueType.task');
     case 'DEFECT':
-      return t('inbox.filters.type.defect');
+      return t('issueType.defect');
     case 'MAINTENANCE':
-      return t('inbox.filters.type.maintenance');
+      return t('issueType.maintenance');
     case 'TERMINATION':
-      return t('inbox.filters.type.termination');
+      return t('issueType.termination');
     case 'INQUIRY':
-      return t('inbox.filters.type.inquiry');
+      return t('issueType.inquiry');
     default:
       return type ?? '—';
   }
