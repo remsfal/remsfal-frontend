@@ -101,4 +101,35 @@ export const issueHandlers = [
     }
     return HttpResponse.json({}, { status: 204 });
   }),
+
+  // POST create an issue relation (ticketing microservice)
+  http.post(`${TICKETING_BASE}/issues/:issueId/:relationType/:relatedIssueId`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.issueId,
+      title: 'Test Issue',
+      description: 'A test issue description',
+      status: 'OPEN',
+      ownerId: 'owner1',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }),
+
+  // DELETE an issue relation (ticketing microservice)
+  http.delete(`${TICKETING_BASE}/issues/:issueId/:relationType/:relatedIssueId`, () => {
+    return HttpResponse.json({}, { status: 204 });
+  }),
+
+  // PUT set the parent issue (ticketing microservice)
+  http.put(`${TICKETING_BASE}/issues/:issueId/parent/:parentIssueId`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.issueId,
+      title: 'Test Issue',
+      description: 'A test issue description',
+      status: 'OPEN',
+      ownerId: 'owner1',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }),
 ];
