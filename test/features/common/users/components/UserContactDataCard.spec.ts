@@ -1,32 +1,30 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, flushPromises, DOMWrapper, VueWrapper } from '@vue/test-utils';
+import { Form } from '@primevue/forms';
+import Select from 'primevue/select';
 import UserContactDataCard from '@/features/common/users/components/UserContactDataCard.vue';
-import { nextTick } from 'vue';
+import { userService } from '@/services/UserService';
 
 vi.mock('@/services/UserService', () => ({
   userService: {
-    getUser: vi.fn().mockResolvedValue({
-      email: 'primary@example.com',
-      firstName: 'Max',
-      lastName: 'Mustermann',
-      mobilePhoneNumber: '',
-      businessPhoneNumber: '',
-      privatePhoneNumber: '',
-      locale: 'de',
-      additionalEmails: [],
-    }),
-    updateUser: vi.fn().mockResolvedValue({
-      email: 'primary@example.com',
-      firstName: 'Max',
-      lastName: 'Mustermann',
-      mobilePhoneNumber: '',
-      businessPhoneNumber: '',
-      privatePhoneNumber: '',
-      locale: 'de',
-      additionalEmails: [],
-    }),
+    getUser: vi.fn(),
+    updateUser: vi.fn(),
   },
 }));
+
+const addMock = vi.fn();
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
+
+const mockProfile = {
+  email: 'primary@example.com',
+  firstName: 'Max',
+  lastName: 'Mustermann',
+  mobilePhoneNumber: '',
+  businessPhoneNumber: '',
+  privatePhoneNumber: '',
+  locale: 'de',
+  additionalEmails: [] as string[],
+};
 
 type UserContactDataCardVm = {
   email: string;
@@ -48,16 +46,194 @@ describe('UserContactDataCard', () => {
 
   const vm = (): UserContactDataCardVm => wrapper.vm as unknown as UserContactDataCardVm;
 
+  const mountCard = () => mount(UserContactDataCard, { global: { stubs: { PhoneInput: true } } });
+
   beforeEach(() => {
-    wrapper = mount(UserContactDataCard);
+    vi.mocked(userService.getUser).mockResolvedValue({ ...mockProfile });
+    vi.mocked(userService.updateUser).mockResolvedValue({ ...mockProfile });
+    wrapper = mountCard();
   });
 
   test('renders without errors', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
+  test('loads the user profile on mount', async () => {
+    await flushPromises();
+
+    expect(userService.getUser).toHaveBeenCalled();
+    expect((wrapper.find('input#primaryEmail').element as HTMLInputElement).value).toBe(
+      'primary@example.com',
+    );
+    expect((wrapper.find('input[name="firstName"]').element as HTMLInputElement).value).toBe(
+      'Max',
+    );
+  });
+
+  test('falls back to the current locale when the profile has no locale', async () => {
+    vi.mocked(userService.getUser).mockResolvedValue({ ...mockProfile, locale: undefined });
+    wrapper = mountCard();
+    await flushPromises();
+
+    expect(wrapper.exists()).toBe(true);
+  });
+
+  test('falls back to English for an unsupported locale', async () => {
+    vi.mocked(userService.getUser).mockResolvedValue({ ...mockProfile, locale: 'fr' });
+    wrapper = mountCard();
+    await flushPromises();
+
+    expect(wrapper.exists()).toBe(true);
+  });
+
+  test('logs an error when loading the profile fails', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(userService.getUser).mockRejectedValue(new Error('load failed'));
+
+    wrapper = mountCard();
+    await flushPromises();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load user profile', expect.any(Error));
+    consoleErrorSpy.mockRestore();
+  });
+
+  test('shows a validation error for an invalid first name', async () => {
+    await flushPromises();
+
+    await wrapper.find('input[name="firstName"]').setValue('123');
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Nur Buchstaben und Leerzeichen erlaubt');
+    expect(userService.updateUser).not.toHaveBeenCalled();
+  });
+
+  test('shows a validation error for an invalid last name', async () => {
+    await flushPromises();
+
+    await wrapper.find('input[name="lastName"]').setValue('456');
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Nur Buchstaben und Leerzeichen erlaubt');
+    expect(userService.updateUser).not.toHaveBeenCalled();
+  });
+
+  test('updates the mobile, business and private phone numbers', async () => {
+    await flushPromises();
+
+    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
+    await phoneInputs[0].vm.$emit('update:modelValue', '+491511234567');
+    await phoneInputs[1].vm.$emit('update:modelValue', '+491511234568');
+    await phoneInputs[2].vm.$emit('update:modelValue', '+491511234569');
+    await flushPromises();
+
+    expect(wrapper.text()).not.toContain('Ungültiges Telefonformat');
+  });
+
+  test('shows phone validation errors for invalid numbers', async () => {
+    await flushPromises();
+
+    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
+    await phoneInputs[0].vm.$emit('update:modelValue', 'invalid');
+    await phoneInputs[1].vm.$emit('update:modelValue', 'invalid');
+    await phoneInputs[2].vm.$emit('update:modelValue', 'invalid');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Ungültiges Telefonformat');
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' } 
+      },
+    });
+    await flushPromises();
+
+    expect(userService.updateUser).not.toHaveBeenCalled();
+  });
+
+  test('changes the locale via the language select', async () => {
+    await flushPromises();
+
+    const select = wrapper.findComponent(Select);
+    await select.vm.$emit('change', { value: 'en' });
+    await flushPromises();
+
+    expect(wrapper.exists()).toBe(true);
+  });
+
+  test('submits the form successfully and updates state', async () => {
+    await flushPromises();
+    vi.mocked(userService.updateUser).mockResolvedValue({
+      ...mockProfile,
+      firstName: 'Erika',
+      mobilePhoneNumber: '+491511234567',
+      additionalEmails: ['alt@example.com'],
+    });
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Erika' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' } 
+      },
+    });
+    await flushPromises();
+
+    expect(userService.updateUser).toHaveBeenCalledWith(
+      expect.objectContaining({ firstName: 'Erika' }),
+    );
+    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
+  });
+
+  test('does not submit when the form is invalid', async () => {
+    await flushPromises();
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', { valid: false, states: {} });
+    await flushPromises();
+
+    expect(userService.updateUser).not.toHaveBeenCalled();
+  });
+
+  test('shows an error toast when saving fails', async () => {
+    await flushPromises();
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(userService.updateUser).mockRejectedValue(new Error('save failed'));
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' } 
+      },
+    });
+    await flushPromises();
+
+    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    consoleErrorSpy.mockRestore();
+  });
+
+  test('opens and closes the alternative email dialog through the UI', async () => {
+    await flushPromises();
+    const body = new DOMWrapper(document.body);
+
+    await wrapper.find('button[aria-label="Alternative E-Mail hinzufügen"]').trigger('click');
+    await flushPromises();
+    expect(vm().dialogVisible).toBe(true);
+
+    await body.find('#alt-email-input').setValue('alt@example.com');
+    await body.find('button[aria-label="Abbrechen"]').trigger('click');
+    await flushPromises();
+
+    expect(vm().dialogVisible).toBe(false);
+  });
+
   describe('Alternative email dialog', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
+      await flushPromises();
       const v = vm();
       v.email = 'primary@example.com';
       v.additionalEmails = [];
@@ -76,7 +252,7 @@ describe('UserContactDataCard', () => {
       v.alternativeEmailInput = 'not-an-email';
 
       v.saveAlternativeEmail();
-      await nextTick();
+      await flushPromises();
 
       expect(v.isEmailInvalid).toBe(true);
       expect(v.emailErrorMessage).not.toBe('');
@@ -91,7 +267,7 @@ describe('UserContactDataCard', () => {
       v.alternativeEmailInput = 'same@example.com';
 
       v.saveAlternativeEmail();
-      await nextTick();
+      await flushPromises();
 
       expect(v.isEmailInvalid).toBe(true);
       expect(v.emailErrorMessage).not.toBe('');
@@ -105,7 +281,7 @@ describe('UserContactDataCard', () => {
       v.alternativeEmailInput = 'alt@example.com';
 
       v.saveAlternativeEmail();
-      await nextTick();
+      await flushPromises();
 
       expect(v.additionalEmails).toEqual(['alt@example.com']);
       expect(v.altEmailDirty).toBe(true);
@@ -123,7 +299,7 @@ describe('UserContactDataCard', () => {
       v.alternativeEmailInput = '   alt@example.com   ';
 
       v.saveAlternativeEmail();
-      await nextTick();
+      await flushPromises();
 
       expect(v.additionalEmails).toEqual(['alt@example.com']);
       expect(v.dialogVisible).toBe(false);
@@ -135,7 +311,7 @@ describe('UserContactDataCard', () => {
       v.alternativeEmailInput = '   ';
 
       v.saveAlternativeEmail();
-      await nextTick();
+      await flushPromises();
 
       expect(v.isEmailInvalid).toBe(true);
       expect(v.dialogVisible).toBe(true);
@@ -149,7 +325,7 @@ describe('UserContactDataCard', () => {
       v.altEmailError = true;
 
       v.deleteAlternativeEmail();
-      await nextTick();
+      await flushPromises();
 
       expect(v.additionalEmails).toEqual([]);
       expect(v.altEmailDirty).toBe(true);
@@ -163,7 +339,7 @@ describe('UserContactDataCard', () => {
       v.altEmailDirty = false;
 
       v.deleteAlternativeEmail();
-      await nextTick();
+      await flushPromises();
 
       expect(v.altEmailDirty).toBe(true);
     });
@@ -175,7 +351,7 @@ describe('UserContactDataCard', () => {
       v.emailErrorMessage = 'Fehler';
 
       v.resetAltEmailDialog();
-      await nextTick();
+      await flushPromises();
 
       expect(v.alternativeEmailInput).toBe('');
       expect(v.isEmailInvalid).toBe(false);
@@ -189,11 +365,22 @@ describe('UserContactDataCard', () => {
       v.emailErrorMessage = '';
 
       v.resetAltEmailDialog();
-      await nextTick();
+      await flushPromises();
 
       expect(v.alternativeEmailInput).toBe('');
       expect(v.isEmailInvalid).toBe(false);
       expect(v.emailErrorMessage).toBe('');
+    });
+
+    test('deleting the alternative email is reflected in the UI', async () => {
+      const v = vm();
+      v.additionalEmails = ['alt@example.com'];
+      await flushPromises();
+
+      await wrapper.find('.pi-trash').element.closest('button')!.click();
+      await flushPromises();
+
+      expect(v.additionalEmails).toEqual([]);
     });
   });
 });
