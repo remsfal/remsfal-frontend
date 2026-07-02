@@ -68,6 +68,10 @@ class IssueService {
     return apiClient.patch('/ticketing/v1/issues/{issueId}', body, { pathParams: { issueId } }) as Promise<IssueJson>;
   }
 
+  async deleteIssue(issueId: string): Promise<void> {
+    return apiClient.delete('/ticketing/v1/issues/{issueId}', { pathParams: { issueId } });
+  }
+
   async deleteAttachment(issueId: string, attachmentId: string): Promise<void> {
     return apiClient.delete('/ticketing/v1/issues/{issueId}/attachments/{attachmentId}',
       {pathParams: { issueId, attachmentId },});

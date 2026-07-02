@@ -226,7 +226,6 @@ onMounted(async () => {
               class="w-full"
             />
           </div>
-
           <div>
             <IconField class="w-full">
               <InputIcon class="pi pi-search" />
