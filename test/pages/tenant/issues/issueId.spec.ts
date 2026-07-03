@@ -6,9 +6,7 @@ vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
   return {
     ...actual,
-    useRoute: () => ({
-      params: { issueId: 'issue-123' },
-    }),
+    useRoute: () => ({ params: { issueId: 'issue-123' }, }),
   };
 });
 
