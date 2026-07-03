@@ -406,6 +406,11 @@ describe('TenantIssueDetails component', () => {
           fileName: 'video.mov',
           contentType: 'video/quicktime',
         },
+        {
+          attachmentId: 'a4',
+          fileName: undefined,
+          contentType: 'application/octet-stream',
+        },
       ],
     });
 
@@ -415,13 +420,15 @@ describe('TenantIssueDetails component', () => {
     await flushPromises();
 
     const tiles = wrapper.findAll('[data-test="non-image-tile"]');
-    expect(tiles).toHaveLength(2);
+    expect(tiles).toHaveLength(3);
 
     const pdfTile = tiles.find(t => t.text().includes('PDF'));
     const movTile = tiles.find(t => t.text().includes('MOV'));
+    const unknownExtTile = tiles.find(t => t.text().includes('?'));
 
     expect(pdfTile?.text()).toContain('+2');
     expect(movTile?.text()).toContain('+1');
+    expect(unknownExtTile?.text()).toContain('+1');
   });
 
   it('renders fallback values for image preview and download url', async () => {
