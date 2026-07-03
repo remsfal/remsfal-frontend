@@ -449,4 +449,30 @@ describe('TenantIssueDetails component', () => {
     expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue-1/attachments//');
     expect(wrapper.find('img[alt="issue-attachment"]').exists()).toBe(true);
   });
+
+  it('builds encoded download url and prefers attachment.issueId', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-from-entity',
+      title: 'Encoded Attachment',
+      status: 'OPEN',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      attachments: [
+        {
+          issueId: 'issue with space',
+          attachmentId: 'att/1',
+          fileName: 'my file.pdf',
+          contentType: 'application/pdf',
+        },
+      ],
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-from-props' } });
+
+    await flushPromises();
+
+    const links = wrapper.findAll('a');
+    expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue%20with%20space/attachments/att%2F1/my%20file.pdf');
+  });
 });
