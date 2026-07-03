@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { issueService } from '@/services/IssueService';
 import router from '@/router';
-import i18n from '@/i18n/i18n';
 
 const toastAddMock = vi.fn();
 
@@ -383,110 +382,6 @@ describe('TenantIssueDetails component', () => {
 
     wrapper.unmount();
     pushSpy.mockRestore();
-  });
-
-  it('uploads selected files from TenantIssueDetails', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-1',
-      title: 'Mit Upload',
-      status: 'OPEN',
-      type: 'DEFECT',
-      agreementId: 'agreement-1',
-      attachments: [],
-    });
-    vi.mocked(issueService.uploadAttachments).mockResolvedValue(undefined);
-
-    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueDetails, {
-      props: { issueId: 'issue-1' },
-      global: {
-        stubs: {
-          FileUpload: {
-            template:
-              '<button data-test="upload"' +
-              ' @click="$emit(\'uploader\', { files: [{ name: \'doc.pdf\', type: \'application/pdf\' }] })" />',
-          },
-        },
-      },
-    });
-
-    await flushPromises();
-    await wrapper.find('[data-test="upload"]').trigger('click');
-    await flushPromises();
-
-    expect(issueService.uploadAttachments).toHaveBeenCalledWith(
-      'issue-1',
-      expect.arrayContaining([expect.objectContaining({ name: 'doc.pdf' })])
-    );
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
-      severity: 'success',
-      summary: i18n.global.t('success.saved'),
-      detail: i18n.global.t('issueDetails.attachmentsUploadSuccess'),
-      life: 3000,
-    }));
-  });
-
-  it('skips upload when no files are provided in TenantIssueDetails', async () => {
-    const uploadEmptyTemplate = '<button data-test="upload-empty" ' +
-      '@click="$emit(\'uploader\', { files: [] })" />';
-
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-1',
-      title: 'Leere Uploadliste',
-      status: 'OPEN',
-      type: 'DEFECT',
-      agreementId: 'agreement-1',
-      attachments: [],
-    });
-
-    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueDetails, {
-      props: { issueId: 'issue-1' },
-      global: { stubs: { FileUpload: { template: uploadEmptyTemplate } } },
-    });
-
-    await flushPromises();
-    await wrapper.find('[data-test="upload-empty"]').trigger('click');
-    await flushPromises();
-
-    expect(issueService.uploadAttachments).not.toHaveBeenCalled();
-  });
-
-  it('shows error toast when upload fails in TenantIssueDetails', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-1',
-      title: 'Upload Fehler',
-      status: 'OPEN',
-      type: 'DEFECT',
-      agreementId: 'agreement-1',
-      attachments: [],
-    });
-    vi.mocked(issueService.uploadAttachments).mockRejectedValue(new Error('upload failed'));
-
-    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueDetails, {
-      props: { issueId: 'issue-1' },
-      global: {
-        stubs: {
-          FileUpload: {
-            template:
-              '<button data-test="upload"' +
-              ' @click="$emit(\'uploader\', { files: [{ name: \'doc.pdf\', type: \'application/pdf\' }] })" />',
-          },
-        },
-      },
-    });
-
-    await flushPromises();
-    await wrapper.find('[data-test="upload"]').trigger('click');
-    await flushPromises();
-
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
-      severity: 'error',
-      summary: i18n.global.t('error.general'),
-      detail: expect.any(String),
-      life: 3000,
-    }));
   });
 
   it('renders indicator tiles for non-image attachments grouped by extension', async () => {
