@@ -10,12 +10,12 @@ const model = ref([
       {
         label: 'tenantMenu.tenancies.overview',
         icon: { type: 'pi', name: 'pi pi-fw pi-info-circle' },
-        to: '/tenancies/dashboard',
+        to: '/tenant/dashboard',
       },
       {
         label: 'tenantMenu.tenancies.reports',
         icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-        to: '/tenancies/issues',
+        to: '/tenant/issues',
       },
     ],
   },
@@ -25,7 +25,7 @@ const model = ref([
       {
         label: 'tenantMenu.settings.personalData',
         icon: { type: 'pi', name: 'pi pi-fw pi-user' },
-        to: '/tenancies/account-settings',
+        to: '/tenant/account-settings',
       },
     ],
   },
