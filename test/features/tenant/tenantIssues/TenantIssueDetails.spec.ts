@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { issueService } from '@/services/IssueService';
 import router from '@/router';
+import i18n from '@/i18n/i18n';
 
 const toastAddMock = vi.fn();
 
@@ -417,6 +418,12 @@ describe('TenantIssueDetails component', () => {
       'issue-1',
       expect.arrayContaining([expect.objectContaining({ name: 'doc.pdf' })])
     );
+    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
+      severity: 'success',
+      summary: i18n.global.t('success.saved'),
+      detail: i18n.global.t('issueDetails.attachmentsUploadSuccess'),
+      life: 3000,
+    }));
   });
 
   it('skips upload when no files are provided in TenantIssueDetails', async () => {
@@ -476,6 +483,7 @@ describe('TenantIssueDetails component', () => {
 
     expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'error',
+      summary: i18n.global.t('error.general'),
       detail: expect.any(String),
       life: 3000,
     }));
