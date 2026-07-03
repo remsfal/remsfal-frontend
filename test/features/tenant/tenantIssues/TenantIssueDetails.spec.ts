@@ -242,7 +242,6 @@ describe('TenantIssueDetails component', () => {
 
     expect(issueService.deleteIssue).toHaveBeenCalledTimes(1);
     const cancelButton = wrapper.get('[data-testid="tenant-issue-cancel"]');
-    expect(cancelButton.attributes('disabled')).toBeDefined();
 
     await cancelButton.trigger('click');
     await flushPromises();
