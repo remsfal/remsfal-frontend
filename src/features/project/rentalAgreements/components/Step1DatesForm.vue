@@ -65,6 +65,7 @@ const initialValues = ref({
 function toISODateString(date: Date | string | null | undefined): string | null {
   if (!date) return null;
   const d = date instanceof Date ? date : new Date(date);
+  d.setHours(12, 0, 0, 0);
   return d.toISOString().split('T')[0] as string;
 }
 
