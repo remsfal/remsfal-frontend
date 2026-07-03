@@ -425,6 +425,33 @@ describe('TenantIssueDetails component', () => {
     expect(movTile?.text()).toContain('+1');
   });
 
+  it('uses "?" as extension fallback for non-image attachments without fileName', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-1',
+      title: 'Fallback Extension',
+      status: 'OPEN',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      attachments: [
+        {
+          attachmentId: 'a1',
+          fileName: undefined,
+          contentType: 'application/octet-stream',
+        },
+      ],
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-1' } });
+
+    await flushPromises();
+
+    const tiles = wrapper.findAll('[data-test="non-image-tile"]');
+    expect(tiles).toHaveLength(1);
+    expect(tiles[0].text()).toContain('?');
+    expect(tiles[0].text()).toContain('+1');
+  });
+
   it('renders fallback values for image preview and download url', async () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-1',

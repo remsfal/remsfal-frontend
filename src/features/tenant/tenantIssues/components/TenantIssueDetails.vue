@@ -105,7 +105,9 @@ function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
 }
 
 const cancelIssue = async () => {
-  deletingIssue.value = true;
+  if (deletingIssue.value) {
+    return;
+  }
 
   try {
     await issueService.deleteIssue(issue.value?.id || props.issueId);
