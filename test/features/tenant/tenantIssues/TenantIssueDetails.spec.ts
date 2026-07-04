@@ -482,4 +482,42 @@ describe('TenantIssueDetails component', () => {
     const links = wrapper.findAll('a');
     expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue%20with%20space/attachments/att%2F1/my%20file.pdf');
   });
+
+  it('falls back to route issueId for attachment urls and skips images in non-image groups', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      title: 'Attachment fallback',
+      status: 'OPEN',
+      type: 'DEFECT',
+      agreementId: 'agreement-1',
+      attachments: [
+        {
+          attachmentId: 'img-1',
+          fileName: 'photo.png',
+          contentType: 'image/png',
+        },
+        {
+          attachmentId: 'doc-1',
+          fileName: 'report.pdf',
+          contentType: 'application/pdf',
+        },
+      ],
+    });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-from-props' } });
+
+    await flushPromises();
+
+    const tiles = wrapper.findAll('[data-test="non-image-tile"]');
+    expect(tiles).toHaveLength(1);
+    expect(tiles[0].text()).toContain('PDF');
+    expect(tiles[0].text()).toContain('+1');
+
+    const links = wrapper.findAll('a');
+    expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue-from-props/attachments/img-1/photo.png');
+    expect(links[1].attributes('href')).toBe('/ticketing/v1/issues/issue-from-props/attachments/doc-1/report.pdf');
+
+    expect(wrapper.find('img[alt="photo.png"]').attributes('src'))
+      .toBe('/ticketing/v1/issues/issue-from-props/attachments/img-1/photo.png');
+  });
 });
