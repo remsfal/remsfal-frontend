@@ -54,7 +54,7 @@
     "@fortawesome/vue-fontawesome": "^3.2.0",
     "@primevue/forms": ">=4.5.5 <5.0.0",
     "@primevue/themes": ">=4.5.4 <5.0.0",
-    "axios": "^1.16.0",
+    "axios": "^1.18.1",
     "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "idb": "^8.0.3",
