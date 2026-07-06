@@ -99,8 +99,8 @@ function onSubmit(event: FormSubmitEvent) {
     operatingCostsPrepayment: formState.operatingCostsPrepayment?.value || undefined,
     heatingCostsPrepayment: formState.heatingCostsPrepayment?.value || undefined,
     billingCycle: formState.billingCycle?.value,
-    firstPaymentDate: toISODateString(firstPaymentDateValue.value) || null,
-    lastPaymentDate: toISODateString(lastPaymentDateValue.value) || null,
+    firstPaymentDate: toISODateString(firstPaymentDateValue.value) || undefined,
+    lastPaymentDate: toISODateString(lastPaymentDateValue.value) || undefined,
   });
 
   // Reset form
