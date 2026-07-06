@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectSettings from '@/features/project/settings/components/ProjectSettings.vue';
+import ProjectSettingsCard from '@/features/project/settings/components/ProjectSettingsCard.vue';
 import { projectService } from '@/services/ProjectService';
 
 // ---- Mocks ----
@@ -9,8 +9,8 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({useToast: () => ({add: addMock,}),}));
 
 // ---- Test Suite ----
-describe('ProjectSettings.vue', () => {
-  let wrapper: VueWrapper<InstanceType<typeof ProjectSettings>>;
+describe('ProjectSettingsCard.vue', () => {
+  let wrapper: VueWrapper<InstanceType<typeof ProjectSettingsCard>>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -18,7 +18,7 @@ describe('ProjectSettings.vue', () => {
     vi.spyOn(projectService, 'getProject').mockResolvedValue({ title: 'Old Project' });
     vi.spyOn(projectService, 'updateProject').mockResolvedValue({});
 
-    wrapper = mount(ProjectSettings, {props: { projectId: 'test-project-id' },});
+    wrapper = mount(ProjectSettingsCard, {props: { projectId: 'test-project-id' },});
 
     await flushPromises();
   });

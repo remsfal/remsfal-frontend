@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectMemberSettings from '@/features/project/settings/components/ProjectMemberSettings.vue';
+import ProjectMemberSettingsCard from '@/features/project/settings/components/ProjectMemberSettingsCard.vue';
 import NewProjectMemberButton from '@/features/project/settings/components/NewProjectMemberButton.vue';
 import {projectMemberService,
   type ProjectMemberJson,
@@ -12,8 +12,8 @@ vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}))
 
 vi.mock('@/services/ProjectMemberService');
 
-describe('ProjectMemberSettings.vue', () => {
-  let wrapper: VueWrapper<InstanceType<typeof ProjectMemberSettings>>;
+describe('ProjectMemberSettingsCard.vue', () => {
+  let wrapper: VueWrapper<InstanceType<typeof ProjectMemberSettingsCard>>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -30,7 +30,7 @@ describe('ProjectMemberSettings.vue', () => {
     };
     vi.mocked(projectMemberService.getMembers).mockResolvedValue(mockMembers);
 
-    wrapper = mount(ProjectMemberSettings, { props: { projectId: 'test-project-id' } });
+    wrapper = mount(ProjectMemberSettingsCard, { props: { projectId: 'test-project-id' } });
 
     await wrapper.vm.$nextTick();
   });
@@ -49,7 +49,7 @@ describe('ProjectMemberSettings.vue', () => {
 
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).updateMemberRole(member);
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).updateMemberRole(member);
 
     expect(projectMemberService.updateMemberRole).toHaveBeenCalledWith('test-project-id', '1', { role: 'MANAGER' });
   });
@@ -60,7 +60,7 @@ describe('ProjectMemberSettings.vue', () => {
     const removeMock = vi.mocked(projectMemberService.removeMember).mockResolvedValueOnce();
     vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce({ members: [] });
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).removeMember(memberId);
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).removeMember(memberId);
 
     expect(removeMock).toHaveBeenCalledWith('test-project-id', memberId);
     expect(projectMemberService.getMembers).toHaveBeenCalledWith('test-project-id');
@@ -75,7 +75,7 @@ describe('ProjectMemberSettings.vue', () => {
     const removeMock = vi.mocked(projectMemberService.removeMember);
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).removeMember('invalid-id');
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).removeMember('invalid-id');
 
     expect(removeMock).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalledWith('Invalid memberId format:', 'invalid-id');
@@ -86,7 +86,7 @@ describe('ProjectMemberSettings.vue', () => {
     const member: ProjectMemberJson = { email: 'test@example.com', role: 'MANAGER' };
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).updateMemberRole(member);
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).updateMemberRole(member);
 
     expect(projectMemberService.updateMemberRole).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalledWith('Member ID is undefined, cannot update role');
@@ -97,7 +97,7 @@ describe('ProjectMemberSettings.vue', () => {
     vi.mocked(projectMemberService.getMembers).mockRejectedValueOnce(new Error('Network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).fetchMembers();
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).fetchMembers();
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch members', expect.any(Error));
     consoleSpy.mockRestore();
@@ -110,7 +110,7 @@ describe('ProjectMemberSettings.vue', () => {
     vi.mocked(projectMemberService.updateMemberRole).mockRejectedValueOnce(new Error('Update failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).updateMemberRole(member);
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).updateMemberRole(member);
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to update member role:', expect.anything());
     consoleSpy.mockRestore();
@@ -121,7 +121,7 @@ describe('ProjectMemberSettings.vue', () => {
     vi.mocked(projectMemberService.removeMember).mockRejectedValueOnce(new Error('Remove failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).removeMember(memberId);
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).removeMember(memberId);
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to remove member:', expect.anything());
     consoleSpy.mockRestore();
@@ -133,7 +133,7 @@ describe('ProjectMemberSettings.vue', () => {
     };
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettings>).updateMemberRole(member);
+    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).updateMemberRole(member);
 
     expect(mockToastAdd).toHaveBeenCalledWith(
       expect.objectContaining({ severity: 'success' }),

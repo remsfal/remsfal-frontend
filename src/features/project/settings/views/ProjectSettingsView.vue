@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ProjectSettings, BillingAddressCard, ProjectMemberSettings } from '@/features/project/settings';
-import { OrganizationMemberSettings, ProjectDangerZoneCard } from '@/features/project/settings';
+import { ProjectSettingsCard, BillingAddressCard, ProjectMemberSettingsCard } from '@/features/project/settings';
+import { OrganizationMemberSettingsCard, ProjectDangerZoneCard } from '@/features/project/settings';
 
 const props = defineProps<{
   projectId: string;
@@ -8,13 +8,13 @@ const props = defineProps<{
 </script>
 
 <template>
-  <ProjectSettings :projectId="props.projectId" />
+  <ProjectSettingsCard :projectId="props.projectId" />
 
   <BillingAddressCard :projectId="props.projectId" />
 
-  <ProjectMemberSettings :projectId="props.projectId" />
+  <ProjectMemberSettingsCard :projectId="props.projectId" />
 
-  <OrganizationMemberSettings :projectId="props.projectId" />
+  <OrganizationMemberSettingsCard :projectId="props.projectId" />
 
   <ProjectDangerZoneCard :projectId="props.projectId" />
 </template>

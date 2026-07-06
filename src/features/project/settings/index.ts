@@ -1,8 +1,8 @@
-export { default as ProjectSettings } from './components/ProjectSettings.vue';
+export { default as ProjectSettingsCard } from './components/ProjectSettingsCard.vue';
 export { default as BillingAddressCard } from './components/BillingAddressCard.vue';
 export { default as ProjectDangerZoneCard } from './components/ProjectDangerZoneCard.vue';
-export { default as ProjectMemberSettings } from './components/ProjectMemberSettings.vue';
-export { default as OrganizationMemberSettings } from './components/OrganizationMemberSettings.vue';
+export { default as ProjectMemberSettingsCard } from './components/ProjectMemberSettingsCard.vue';
+export { default as OrganizationMemberSettingsCard } from './components/OrganizationMemberSettingsCard.vue';
 export { default as NewProjectMemberButton } from './components/NewProjectMemberButton.vue';
 export { default as NewOrganizationMemberButton } from './components/NewOrganizationMemberButton.vue';
 export { default as ProjectMemberRoleSelect } from './components/ProjectMemberRoleSelect.vue';

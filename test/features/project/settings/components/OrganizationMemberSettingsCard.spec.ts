@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import OrganizationMemberSettings from '@/features/project/settings/components/OrganizationMemberSettings.vue';
+import OrganizationMemberSettingsCard from '@/features/project/settings/components/OrganizationMemberSettingsCard.vue';
 import NewOrganizationMemberButton from '@/features/project/settings/components/NewOrganizationMemberButton.vue';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import {organizationMemberService,
@@ -14,8 +14,8 @@ vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}))
 
 vi.mock('@/services/OrganizationMemberService');
 
-describe('OrganizationMemberSettings.vue', () => {
-  let wrapper: VueWrapper<InstanceType<typeof OrganizationMemberSettings>>;
+describe('OrganizationMemberSettingsCard.vue', () => {
+  let wrapper: VueWrapper<InstanceType<typeof OrganizationMemberSettingsCard>>;
 
   const mockOrganizations: OrganizationMemberJson[] = [
     {
@@ -31,7 +31,7 @@ describe('OrganizationMemberSettings.vue', () => {
 
     vi.mocked(organizationMemberService.getOrganizations).mockResolvedValue({ organizations: mockOrganizations });
 
-    wrapper = mount(OrganizationMemberSettings, { props: { projectId: 'test-project-id' } });
+    wrapper = mount(OrganizationMemberSettingsCard, { props: { projectId: 'test-project-id' } });
 
     await wrapper.vm.$nextTick();
   });
@@ -52,7 +52,7 @@ describe('OrganizationMemberSettings.vue', () => {
 
     vi.mocked(organizationMemberService.updateOrganizationRole).mockResolvedValueOnce(org);
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).updateOrganizationRole(org);
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).updateOrganizationRole(org);
 
     expect(organizationMemberService.updateOrganizationRole).toHaveBeenCalledWith(
       'test-project-id',
@@ -67,7 +67,7 @@ describe('OrganizationMemberSettings.vue', () => {
     const removeMock = vi.mocked(organizationMemberService.removeOrganization).mockResolvedValueOnce();
     vi.mocked(organizationMemberService.getOrganizations).mockResolvedValueOnce({ organizations: [] });
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).removeOrganization(orgId);
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).removeOrganization(orgId);
 
     expect(removeMock).toHaveBeenCalledWith('test-project-id', orgId);
     expect(organizationMemberService.getOrganizations).toHaveBeenCalledWith('test-project-id');
@@ -77,7 +77,7 @@ describe('OrganizationMemberSettings.vue', () => {
     const removeMock = vi.mocked(organizationMemberService.removeOrganization);
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).removeOrganization('invalid-id');
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).removeOrganization('invalid-id');
 
     expect(removeMock).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalledWith('Invalid organizationId format:', 'invalid-id');
@@ -94,7 +94,7 @@ describe('OrganizationMemberSettings.vue', () => {
     const org: OrganizationMemberJson = { organizationName: 'Test GmbH', role: 'MANAGER' };
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).updateOrganizationRole(org);
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).updateOrganizationRole(org);
 
     expect(organizationMemberService.updateOrganizationRole).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalledWith('Organization ID is undefined, cannot update role');
@@ -105,7 +105,7 @@ describe('OrganizationMemberSettings.vue', () => {
     vi.mocked(organizationMemberService.getOrganizations).mockRejectedValueOnce(new Error('Network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).fetchOrganizations();
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).fetchOrganizations();
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch organizations', expect.any(Error));
     consoleSpy.mockRestore();
@@ -114,7 +114,7 @@ describe('OrganizationMemberSettings.vue', () => {
   test('fetchOrganizations - treats undefined organizations list as empty array', async () => {
     vi.mocked(organizationMemberService.getOrganizations).mockResolvedValueOnce({ organizations: undefined });
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).fetchOrganizations();
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).fetchOrganizations();
     await flushPromises();
 
     const nameCells = wrapper.findAll('td').filter((td) => td.text() === 'Test GmbH' || td.text() === 'Muster AG');
@@ -130,7 +130,7 @@ describe('OrganizationMemberSettings.vue', () => {
     vi.mocked(organizationMemberService.updateOrganizationRole).mockRejectedValueOnce(new Error('Update failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).updateOrganizationRole(org);
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).updateOrganizationRole(org);
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to update organization role:', expect.anything());
     consoleSpy.mockRestore();
@@ -141,7 +141,7 @@ describe('OrganizationMemberSettings.vue', () => {
     vi.mocked(organizationMemberService.removeOrganization).mockRejectedValueOnce(new Error('Remove failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).removeOrganization(orgId);
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).removeOrganization(orgId);
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to remove organization:', expect.anything());
     consoleSpy.mockRestore();
@@ -155,7 +155,7 @@ describe('OrganizationMemberSettings.vue', () => {
     };
     vi.mocked(organizationMemberService.updateOrganizationRole).mockResolvedValueOnce(org);
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).updateOrganizationRole(org);
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).updateOrganizationRole(org);
 
     expect(mockToastAdd).toHaveBeenCalledWith(
       expect.objectContaining({ severity: 'success' }),
@@ -176,8 +176,8 @@ describe('OrganizationMemberSettings.vue', () => {
   });
 });
 
-describe('OrganizationMemberSettings.vue - member rows', () => {
-  let wrapper: VueWrapper<InstanceType<typeof OrganizationMemberSettings>>;
+describe('OrganizationMemberSettingsCard.vue - member rows', () => {
+  let wrapper: VueWrapper<InstanceType<typeof OrganizationMemberSettingsCard>>;
 
   const mockOrganizationsWithMembers: OrganizationMemberJson[] = [
     {
@@ -200,7 +200,7 @@ describe('OrganizationMemberSettings.vue - member rows', () => {
 
     vi.mocked(organizationMemberService.getOrganizations).mockResolvedValue({ organizations: mockOrganizationsWithMembers });
 
-    wrapper = mount(OrganizationMemberSettings, { props: { projectId: 'test-project-id' } });
+    wrapper = mount(OrganizationMemberSettingsCard, { props: { projectId: 'test-project-id' } });
 
     await flushPromises();
   });
@@ -230,7 +230,7 @@ describe('OrganizationMemberSettings.vue - member rows', () => {
     const org = mockOrganizationsWithMembers[0];
     vi.mocked(organizationMemberService.updateOrganizationRole).mockResolvedValueOnce(org);
 
-    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).updateOrganizationRole(org);
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettingsCard>).updateOrganizationRole(org);
 
     expect(organizationMemberService.updateOrganizationRole).toHaveBeenCalledWith(
       'test-project-id',
