@@ -171,7 +171,7 @@ watch(
         <template #content>
           <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 ">
             <dl class="space-y-2 text-base text-gray-600">
-              <div v-if="issue.id" class="flex justify-start gap-2">
+              <div v-if="issue.id" class="flex items-center justify-start gap-2">
                 <dt class="font-medium text-gray-500">
                   {{ t('tenantIssues.detail.issueNode') }}
                 </dt>
@@ -179,7 +179,7 @@ watch(
                   <Tag :value="issueNodeId" severity="info" class="inline-flex w-fit" />
                 </dd>
               </div>
-              <div v-if="modifiedAtLabel" class="flex justify-start gap-2">
+              <div v-if="modifiedAtLabel" class="flex items-center justify-start gap-2">
                 <dt class="font-medium text-gray-500">
                   {{ t('tenantIssues.detail.updated') }}
                 </dt>
@@ -190,7 +190,7 @@ watch(
             </dl>
 
             <dl class="space-y-2 text-base text-gray-600">
-              <div v-if="issue.type" class="flex justify-start gap-2">
+              <div v-if="issue.type" class="flex items-center justify-start gap-2">
                 <dt class="font-medium text-gray-500">
                   {{ t('tenantIssues.card.type') }}
                 </dt>
@@ -209,7 +209,7 @@ watch(
             </dl>
 
             <dl class="space-y-2 text-base text-gray-600">
-              <div v-if="issue.status" class="flex justify-start gap-2">
+              <div v-if="issue.status" class="flex items-center justify-start gap-2">
                 <dt class="font-medium text-gray-500">
                   {{ t('tenantIssues.filter.status') }}
                 </dt>
