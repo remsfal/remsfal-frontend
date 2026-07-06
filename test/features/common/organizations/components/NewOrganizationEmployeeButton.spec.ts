@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
-import NewOrganizationMemberButton from '@/features/common/organizations/components/NewOrganizationMemberButton.vue';
+import NewOrganizationEmployeeButton from '@/features/common/organizations/components/NewOrganizationEmployeeButton.vue';
 import { organizationService } from '@/services/OrganizationService';
 
 const addMock = vi.fn();
@@ -13,7 +13,7 @@ const BaseDialogStub = {
   template: '<div data-testid="dialog" :data-visible="String($attrs.visible)"><slot /></div>',
 };
 
-describe('NewOrganizationMemberButton', () => {
+describe('NewOrganizationEmployeeButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(organizationService, 'addEmployee').mockResolvedValue({
@@ -24,7 +24,7 @@ describe('NewOrganizationMemberButton', () => {
   });
 
   const mountButton = (organizationId = 'org-123') =>
-    mount(NewOrganizationMemberButton, {
+    mount(NewOrganizationEmployeeButton, {
       props: { organizationId },
       global: {
         stubs: {
@@ -101,7 +101,7 @@ describe('NewOrganizationMemberButton', () => {
     });
   });
 
-  it('emits newMember after successful addEmployee', async () => {
+  it('emits newEmployee after successful addEmployee', async () => {
     const wrapper = mountButton();
 
     const form = wrapper.findComponent(Form);
@@ -111,8 +111,8 @@ describe('NewOrganizationMemberButton', () => {
     });
     await flushPromises();
 
-    expect(wrapper.emitted('newMember')).toBeTruthy();
-    expect(wrapper.emitted('newMember')![0]).toEqual(['new@test.de']);
+    expect(wrapper.emitted('newEmployee')).toBeTruthy();
+    expect(wrapper.emitted('newEmployee')![0]).toEqual(['new@test.de']);
   });
 
   it('shows error toast when addEmployee throws', async () => {

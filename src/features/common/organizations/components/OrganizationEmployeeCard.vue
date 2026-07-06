@@ -7,7 +7,7 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import BaseCard from '@/components/common/BaseCard.vue';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
-import NewOrganizationMemberButton from '@/features/common/organizations/components/NewOrganizationMemberButton.vue';
+import NewOrganizationEmployeeButton from '@/features/common/organizations/components/NewOrganizationEmployeeButton.vue';
 import { type OrganizationEmployeeJson, organizationService } from '@/services/OrganizationService';
 
 const props = defineProps<{ organizationId: string }>();
@@ -38,8 +38,8 @@ const updateEmployeeRole = async (employee: OrganizationEmployeeJson) => {
     await organizationService.updateEmployeeRole(props.organizationId, employee.id, employee.employeeRole);
     toast.add({
       severity: 'success',
-      summary: t('organization.members.updateRoleSuccess'),
-      detail: t('organization.members.updateRoleDetail', [employee.email]),
+      summary: t('organization.employees.updateRoleSuccess'),
+      detail: t('organization.employees.updateRoleDetail', [employee.email]),
       life: 3000,
     });
   } catch (error) {
@@ -68,12 +68,12 @@ onMounted(() => {
   fetchEmployees();
 });
 
-function onNewMember(email: string) {
+function onNewEmployee(email: string) {
   fetchEmployees();
   toast.add({
     severity: 'success',
-    summary: t('organization.members.addSuccess'),
-    detail: t('organization.members.addSuccessDetail', [email]),
+    summary: t('organization.employees.addSuccess'),
+    detail: t('organization.employees.addSuccessDetail', [email]),
     life: 3000,
   });
 }
@@ -82,21 +82,21 @@ function onNewMember(email: string) {
 <template>
   <BaseCard>
     <template #title>
-      {{ t('organization.members.title') }}
+      {{ t('organization.employees.title') }}
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
         <DataTable :value="employees">
-          <Column :header="t('organization.members.columnName')">
+          <Column :header="t('organization.employees.columnName')">
             <template #body="slotProps">
               <span :class="{ 'text-gray-400': slotProps.data.active === false }">
                 {{ slotProps.data.name || slotProps.data.email }}
-                <span v-if="slotProps.data.active === false"> ({{ t('managerSettings.memberships.status.inactive') }})</span>
+                <span v-if="slotProps.data.active === false"> ({{ t('managerSettings.employments.status.inactive') }})</span>
               </span>
             </template>
           </Column>
-          <Column field="email" :header="t('organization.members.columnEmail')" />
-          <Column :header="t('organization.members.columnRole')">
+          <Column field="email" :header="t('organization.employees.columnEmail')" />
+          <Column :header="t('organization.employees.columnRole')">
             <template #body="slotProps">
               <EmployeeRoleSelect
                 v-model="slotProps.data.employeeRole"
@@ -104,7 +104,7 @@ function onNewMember(email: string) {
               />
             </template>
           </Column>
-          <Column :header="t('organization.members.columnOptions')">
+          <Column :header="t('organization.employees.columnOptions')">
             <template #body="slotProps">
               <Button
                 :label="t('button.delete')"
@@ -116,7 +116,7 @@ function onNewMember(email: string) {
         </DataTable>
       </div>
       <div class="flex justify-end basis-auto mt-6">
-        <NewOrganizationMemberButton :organizationId="organizationId" @newMember="onNewMember" />
+        <NewOrganizationEmployeeButton :organizationId="organizationId" @newEmployee="onNewEmployee" />
       </div>
     </template>
   </BaseCard>

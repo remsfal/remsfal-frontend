@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { projectOrganizationService, type ProjectOrganizationJson } from '@/services/ProjectOrganizationService';
+import { organizationMemberService, type OrganizationMemberJson } from '@/services/OrganizationMemberService';
 import { server } from '../mocks/server';
 import { testErrorHandling } from '../utils/testHelpers';
 
-describe('projectOrganizationService (MSW)', () => {
+describe('organizationMemberService (MSW)', () => {
   const projectId = 'project123';
-  const org: ProjectOrganizationJson = {
+  const org: OrganizationMemberJson = {
     organizationId: '11111111-1111-1111-1111-111111111111',
     role: 'MANAGER',
   };
 
   it('should fetch organizations for a project', async () => {
-    const result = await projectOrganizationService.getOrganizations(projectId);
+    const result = await organizationMemberService.getOrganizations(projectId);
     expect(result.organizations).toHaveLength(2);
     expect(result.organizations![0]).toMatchObject({ role: 'MANAGER' });
   });
@@ -22,12 +22,12 @@ describe('projectOrganizationService (MSW)', () => {
       '/api/v1/projects/:projectId/organizations',
       'get',
       500,
-      () => projectOrganizationService.getOrganizations(projectId),
+      () => organizationMemberService.getOrganizations(projectId),
     );
   });
 
   it('should add an organization to a project', async () => {
-    const newOrg = await projectOrganizationService.addOrganization(projectId, org);
+    const newOrg = await organizationMemberService.addOrganization(projectId, org);
     expect(newOrg).toMatchObject({ role: org.role });
   });
 
@@ -37,12 +37,12 @@ describe('projectOrganizationService (MSW)', () => {
       '/api/v1/projects/:projectId/organizations',
       'post',
       400,
-      () => projectOrganizationService.addOrganization(projectId, org),
+      () => organizationMemberService.addOrganization(projectId, org),
     );
   });
 
   it('should update an organization role in a project', async () => {
-    const updatedOrg = await projectOrganizationService.updateOrganizationRole(
+    const updatedOrg = await organizationMemberService.updateOrganizationRole(
       projectId,
       '11111111-1111-1111-1111-111111111111',
       { role: org.role },
@@ -56,12 +56,12 @@ describe('projectOrganizationService (MSW)', () => {
       '/api/v1/projects/:projectId/organizations/:organizationId',
       'patch',
       404,
-      () => projectOrganizationService.updateOrganizationRole(projectId, 'org123', { role: org.role }),
+      () => organizationMemberService.updateOrganizationRole(projectId, 'org123', { role: org.role }),
     );
   });
 
   it('should remove an organization from a project', async () => {
-    const response = await projectOrganizationService.removeOrganization(projectId, 'org123');
+    const response = await organizationMemberService.removeOrganization(projectId, 'org123');
     expect(response).toBeDefined();
   });
 
@@ -71,7 +71,7 @@ describe('projectOrganizationService (MSW)', () => {
       '/api/v1/projects/:projectId/organizations/:organizationId',
       'delete',
       403,
-      () => projectOrganizationService.removeOrganization(projectId, 'org123'),
+      () => organizationMemberService.removeOrganization(projectId, 'org123'),
     );
   });
 });

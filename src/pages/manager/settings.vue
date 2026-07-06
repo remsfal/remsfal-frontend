@@ -6,9 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { UserOrganizationMembershipCard } from '@/features/common/organizations';
+import { UserOrganizationEmploymentsCard } from '@/features/common/organizations';
 </script>
 
 <template>
-  <UserOrganizationMembershipCard />
+  <UserOrganizationEmploymentsCard />
 </template>

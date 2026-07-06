@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import NewProjectOrganizationButton from '@/components/projectMembership/NewProjectOrganizationButton.vue';
+import NewOrganizationMemberButton from '@/components/projectMembership/NewOrganizationMemberButton.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { onMounted, ref } from 'vue';
-import { type ProjectOrganizationJson, projectOrganizationService } from '@/services/ProjectOrganizationService';
+import { type OrganizationMemberJson, organizationMemberService } from '@/services/OrganizationMemberService';
 import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
 
 const props = defineProps<{
@@ -17,10 +17,10 @@ const props = defineProps<{
 const { t } = useI18n();
 const toast = useToast();
 
-const organizations = ref<ProjectOrganizationJson[]>([]);
+const organizations = ref<OrganizationMemberJson[]>([]);
 
 const fetchOrganizations = async () => {
-  await projectOrganizationService
+  await organizationMemberService
     .getOrganizations(props.projectId)
     .then((list) => {
       organizations.value = list.organizations ?? [];
@@ -30,14 +30,14 @@ const fetchOrganizations = async () => {
     });
 };
 
-const updateOrganizationRole = async (org: ProjectOrganizationJson) => {
+const updateOrganizationRole = async (org: OrganizationMemberJson) => {
   try {
     if (!org.organizationId) {
       console.error('Organization ID is undefined, cannot update role');
       return;
     }
 
-    await projectOrganizationService.updateOrganizationRole(props.projectId, org.organizationId, { role: org.role });
+    await organizationMemberService.updateOrganizationRole(props.projectId, org.organizationId, { role: org.role });
     toast.add({
       severity: 'success',
       summary: t('projectSettings.updateOrganizationRoleSuccess'),
@@ -45,7 +45,7 @@ const updateOrganizationRole = async (org: ProjectOrganizationJson) => {
       life: 3000,
     });
   } catch (error) {
-    const err = error as { response?: { data: ProjectOrganizationJson }; message: string };
+    const err = error as { response?: { data: OrganizationMemberJson }; message: string };
     console.error('Failed to update organization role:', err.response?.data || err.message);
   }
 };
@@ -58,7 +58,7 @@ const removeOrganization = async (organizationId: string) => {
   }
 
   try {
-    await projectOrganizationService.removeOrganization(props.projectId, organizationId);
+    await organizationMemberService.removeOrganization(props.projectId, organizationId);
     await fetchOrganizations();
   } catch (error) {
     const err = error as { response?: { data: unknown }; message: string };
@@ -84,12 +84,12 @@ function onNewOrganization(organizationName: string) {
 <template>
   <BaseCard>
     <template #title>
-      {{ t('projectSettings.projectOrganizationTable.title') }}
+      {{ t('projectSettings.organizationMemberTable.title') }}
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
         <DataTable :value="organizations">
-          <Column field="organizationName" :header="t('projectSettings.projectOrganizationTable.columnName')" />
+          <Column field="organizationName" :header="t('projectSettings.organizationMemberTable.columnName')" />
           <Column :header="t('projectSettings.projectMemberTable.columnRole')">
             <template #body="slotProps">
               <ProjectMemberRoleSelect v-model="slotProps.data.role" @change="updateOrganizationRole(slotProps.data)" />
@@ -108,7 +108,7 @@ function onNewOrganization(organizationName: string) {
         </DataTable>
       </div>
       <div class="flex justify-end basis-auto mt-6">
-        <NewProjectOrganizationButton :projectId="projectId" @newOrganization="onNewOrganization" />
+        <NewOrganizationMemberButton :projectId="projectId" @newOrganization="onNewOrganization" />
       </div>
     </template>
   </BaseCard>
