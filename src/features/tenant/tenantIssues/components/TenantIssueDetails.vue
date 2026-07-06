@@ -112,12 +112,12 @@ watch(
     <template v-else-if="issue">
       <TenantIssueSummaryCard
         :issue="issue"
-        :deleting-issue="deletingIssue"
+        :deletingIssue="deletingIssue"
         @cancel="openCancelDialog"
       />
       <TenantIssueTimelineCard />
       <TenantIssueAttachmentsCard
-        :issue-id="issue.id || props.issueId"
+        :issueId="issue.id || props.issueId"
         :attachments="issue.attachments ?? []"
       />
     </template>
