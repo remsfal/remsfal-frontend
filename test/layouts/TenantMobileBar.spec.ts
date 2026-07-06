@@ -44,7 +44,7 @@ describe('TenantMobileBar.vue', () => {
   });
 
   it('highlights Overview active state when on TenantDashboard', async () => {
-    const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
+    const { wrapper } = mountComponent({ path: '/tenant/dashboard', name: 'TenantDashboard' });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
@@ -53,7 +53,7 @@ describe('TenantMobileBar.vue', () => {
   });
 
   it('highlights Meldungen active state when on TenantIssues', async () => {
-    const { wrapper } = mountComponent({ path: '/tenancies/issues', name: 'TenantIssues' });
+    const { wrapper } = mountComponent({ path: '/tenant/issues', name: 'TenantIssues' });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
@@ -62,7 +62,7 @@ describe('TenantMobileBar.vue', () => {
   });
 
   it('does not highlight Overview when on an unrelated route', async () => {
-    const { wrapper } = mountComponent({ path: '/tenancies/account-settings', name: 'TenantAccountSettings' });
+    const { wrapper } = mountComponent({ path: '/tenant/account-settings', name: 'TenantAccountSettings' });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
@@ -70,7 +70,7 @@ describe('TenantMobileBar.vue', () => {
   });
 
   it('highlights Overview when route name matches TenantDashboard', async () => {
-    const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
+    const { wrapper } = mountComponent({ path: '/tenant/dashboard', name: 'TenantDashboard' });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
@@ -78,7 +78,7 @@ describe('TenantMobileBar.vue', () => {
   });
 
   it('does not highlight Meldungen when route name differs', async () => {
-    const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
+    const { wrapper } = mountComponent({ path: '/tenant/dashboard', name: 'TenantDashboard' });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
