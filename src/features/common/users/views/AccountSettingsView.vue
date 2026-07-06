@@ -13,7 +13,7 @@ const { t } = useI18n();
     <Button severity="info" as="router-link" to="/manager/projects">
       {{ t('accountSettings.userProfile.managementView') }}
     </Button>
-    <Button severity="info" as="router-link" to="/tenancies/dashboard">
+    <Button severity="info" as="router-link" to="/tenant/dashboard">
       {{ t('accountSettings.userProfile.tenanciesView') }}
     </Button>
     <Button severity="info" as="router-link" to="/contractor/dashboard">
