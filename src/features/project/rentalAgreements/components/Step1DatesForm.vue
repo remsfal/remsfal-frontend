@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { toISODateString} from '@/helper/dataHelper';
+import { toISODateString } from '@/helper/dataHelper';
 
 // PrimeVue Components
 import Button from 'primevue/button';
