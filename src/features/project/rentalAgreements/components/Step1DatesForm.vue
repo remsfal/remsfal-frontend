@@ -78,8 +78,8 @@ const onSubmit = (event: FormSubmitEvent) => {
   const endDateString = toISODateString(endDate);
 
   // Update parent state
-  emit('update:startOfRental', startDateString);
-  emit('update:endOfRental', endDateString);
+  emit('update:startOfRental', startDateString ?? null);
+  emit('update:endOfRental', endDateString ?? null);
   emit('next');
 };
 </script>
