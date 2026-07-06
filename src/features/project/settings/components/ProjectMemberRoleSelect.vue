@@ -1,4 +1,3 @@
-// src/components/projectMembership/ProjectMemberRoleSelect.vue
 <script setup lang="ts">
 import { computed } from 'vue';
 import Select from 'primevue/select';

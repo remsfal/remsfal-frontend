@@ -1,12 +1,12 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import type { FormSubmitEvent } from '@primevue/forms';
-import NewProjectMemberButton from '@/components/projectMembership/NewProjectMemberButton.vue';
+import NewProjectMemberButton from '@/features/project/settings/components/NewProjectMemberButton.vue';
 import { projectMemberService } from '@/services/ProjectMemberService';
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-vi.mock('../../../src/services/ProjectMemberService', () => ({projectMemberService: { addMember: vi.fn() },}));
+vi.mock('@/services/ProjectMemberService', () => ({projectMemberService: { addMember: vi.fn() },}));
 
 describe('NewProjectMemberButton.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof NewProjectMemberButton>>;

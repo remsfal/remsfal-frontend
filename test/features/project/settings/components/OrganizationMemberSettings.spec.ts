@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import OrganizationMemberSettings from '@/components/projectMembership/OrganizationMemberSettings.vue';
-import NewOrganizationMemberButton from '@/components/projectMembership/NewOrganizationMemberButton.vue';
-import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
+import OrganizationMemberSettings from '@/features/project/settings/components/OrganizationMemberSettings.vue';
+import NewOrganizationMemberButton from '@/features/project/settings/components/NewOrganizationMemberButton.vue';
+import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import {organizationMemberService,
   type OrganizationMemberJson,
   type MemberRole,} from '@/services/OrganizationMemberService';
@@ -12,7 +12,7 @@ const { mockToastAdd } = vi.hoisted(() => ({mockToastAdd: vi.fn(),}));
 
 vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}));
 
-vi.mock('../../../src/services/OrganizationMemberService');
+vi.mock('@/services/OrganizationMemberService');
 
 describe('OrganizationMemberSettings.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof OrganizationMemberSettings>>;

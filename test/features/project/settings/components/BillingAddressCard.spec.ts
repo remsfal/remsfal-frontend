@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import BillingAddressCard from '@/components/BillingAddressCard.vue';
+import BillingAddressCard from '@/features/project/settings/components/BillingAddressCard.vue';
 import { projectService } from '@/services/ProjectService';
 
 const { getCityFromZipMock, MockAddressService } = vi.hoisted(() => {

@@ -214,7 +214,7 @@ const handleSave = async () => {
     </template>
 
     <template #content>
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 mt-4">
         <!-- Title -->
         <div class="flex flex-col gap-1">
           <label for="issue-title" class="text-sm text-gray-600">{{ t('issueDetails.fields.title') }}</label>

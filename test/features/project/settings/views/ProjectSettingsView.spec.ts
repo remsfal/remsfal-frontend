@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectSettingsView from '@/views/project/ProjectSettingsView.vue';
+import ProjectSettingsView from '@/features/project/settings/views/ProjectSettingsView.vue';
 
 // ---- Test Suite ----
 describe('ProjectSettingsView.vue', () => {

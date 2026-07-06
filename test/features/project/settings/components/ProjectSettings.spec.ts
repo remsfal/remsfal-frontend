@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectSettings from '@/components/ProjectSettings.vue';
+import ProjectSettings from '@/features/project/settings/components/ProjectSettings.vue';
 import { projectService } from '@/services/ProjectService';
 
 // ---- Mocks ----

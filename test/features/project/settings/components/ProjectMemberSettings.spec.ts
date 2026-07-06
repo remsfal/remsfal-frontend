@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectMemberSettings from '@/components/projectMembership/ProjectMemberSettings.vue';
-import NewProjectMemberButton from '@/components/projectMembership/NewProjectMemberButton.vue';
+import ProjectMemberSettings from '@/features/project/settings/components/ProjectMemberSettings.vue';
+import NewProjectMemberButton from '@/features/project/settings/components/NewProjectMemberButton.vue';
 import {projectMemberService,
   type ProjectMemberJson,
   type MemberRole,} from '@/services/ProjectMemberService';
@@ -10,7 +10,7 @@ const { mockToastAdd } = vi.hoisted(() => ({mockToastAdd: vi.fn(),}));
 
 vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}));
 
-vi.mock('../../../src/services/ProjectMemberService');
+vi.mock('@/services/ProjectMemberService');
 
 describe('ProjectMemberSettings.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof ProjectMemberSettings>>;

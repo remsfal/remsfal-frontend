@@ -1,14 +1,14 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import type { FormSubmitEvent } from '@primevue/forms';
-import NewOrganizationMemberButton from '@/components/projectMembership/NewOrganizationMemberButton.vue';
+import NewOrganizationMemberButton from '@/features/project/settings/components/NewOrganizationMemberButton.vue';
 import { organizationMemberService } from '@/services/OrganizationMemberService';
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
 vi.mock('@/services/OrganizationMemberService', () => ({organizationMemberService: { addOrganization: vi.fn() },}));
 
-vi.mock('../../../src/stores/OrganizationStore', () => ({
+vi.mock('@/stores/OrganizationStore', () => ({
   useOrganizationStore: vi.fn(() => ({
     userOrganizations: [
       { id: 'org-1', name: 'Test GmbH' },

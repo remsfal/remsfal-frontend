@@ -9,7 +9,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
+import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { type ProjectMemberJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 

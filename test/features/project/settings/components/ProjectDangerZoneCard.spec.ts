@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectDangerZoneCard from '@/components/ProjectDangerZoneCard.vue';
+import ProjectDangerZoneCard from '@/features/project/settings/components/ProjectDangerZoneCard.vue';
 import { projectService } from '@/services/ProjectService';
 
 // ---- Mocks ----
