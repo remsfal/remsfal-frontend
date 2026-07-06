@@ -1,23 +1,23 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 
 export type MemberRole = ApiComponents['schemas']['MemberRole'];
-export type ProjectOrganizationJson = ApiComponents['schemas']['ProjectOrganizationJson'];
-export type ProjectOrganizationListJson = ApiComponents['schemas']['ProjectOrganizationListJson'];
+export type OrganizationMemberJson = ApiComponents['schemas']['OrganizationMemberJson'];
+export type OrganizationMemberListJson = ApiComponents['schemas']['OrganizationMemberListJson'];
 
-class ProjectOrganizationService {
-  async getOrganizations(projectId: string): Promise<ProjectOrganizationListJson> {
+class OrganizationMemberService {
+  async getOrganizations(projectId: string): Promise<OrganizationMemberListJson> {
     return apiClient.get('/api/v1/projects/{projectId}/organizations', { pathParams: { projectId } });
   }
 
-  async addOrganization(projectId: string, org: ProjectOrganizationJson): Promise<ProjectOrganizationJson> {
+  async addOrganization(projectId: string, org: OrganizationMemberJson): Promise<OrganizationMemberJson> {
     return apiClient.post('/api/v1/projects/{projectId}/organizations', org, { pathParams: { projectId } });
   }
 
   async updateOrganizationRole(
     projectId: string,
     organizationId: string,
-    org: ProjectOrganizationJson,
-  ): Promise<ProjectOrganizationJson> {
+    org: OrganizationMemberJson,
+  ): Promise<OrganizationMemberJson> {
     return apiClient.patch(
       '/api/v1/projects/{projectId}/organizations/{organizationId}',
       org,
@@ -33,4 +33,4 @@ class ProjectOrganizationService {
   }
 }
 
-export const projectOrganizationService = new ProjectOrganizationService();
+export const organizationMemberService = new OrganizationMemberService();

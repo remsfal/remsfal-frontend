@@ -14,7 +14,7 @@ import { type OrganizationEmployeeJson, type EmployeeRole, organizationService }
 import BaseDialog from '@/components/common/BaseDialog.vue';
 
 const props = defineProps<{ organizationId: string }>();
-const emit = defineEmits<(e: 'newMember', email: string) => void>();
+const emit = defineEmits<(e: 'newEmployee', email: string) => void>();
 
 const { t } = useI18n();
 const toast = useToast();
@@ -25,10 +25,10 @@ const validationSchema = z.object({
   email: z
     .string()
     .trim()
-    .email({ message: t('organization.newMemberButton.invalidEmail') }),
+    .email({ message: t('organization.newEmployeeButton.invalidEmail') }),
   employeeRole: z
     .string()
-    .min(1, { message: t('organization.newMemberButton.invalidRole') }),
+    .min(1, { message: t('organization.newEmployeeButton.invalidRole') }),
 });
 
 const resolver = zodResolver(validationSchema);
@@ -47,27 +47,27 @@ const onSubmit = (event: FormSubmitEvent) => {
     return;
   }
 
-  addMember(email, employeeRole as EmployeeRole);
+  addEmployee(email, employeeRole as EmployeeRole);
 };
 
-const addMember = async (email: string, employeeRole: EmployeeRole) => {
+const addEmployee = async (email: string, employeeRole: EmployeeRole) => {
   visible.value = false;
 
-  const member: OrganizationEmployeeJson = {
+  const employee: OrganizationEmployeeJson = {
     email,
     employeeRole,
   };
 
   try {
-    await organizationService.addEmployee(props.organizationId, member);
-    emit('newMember', email);
+    await organizationService.addEmployee(props.organizationId, employee);
+    emit('newEmployee', email);
     resetForm();
   } catch (error) {
-    console.error('Failed to add member:', error instanceof Error ? error.message : error);
+    console.error('Failed to add employee:', error instanceof Error ? error.message : error);
     toast.add({
       severity: 'error',
       summary: t('error.general'),
-      detail: t('organization.newMemberButton.errorAdd'),
+      detail: t('organization.newEmployeeButton.errorAdd'),
       life: 5000,
     });
   }
@@ -76,7 +76,7 @@ const addMember = async (email: string, employeeRole: EmployeeRole) => {
 
 <template>
   <Button
-    :label="t('organization.newMemberButton.label')"
+    :label="t('organization.newEmployeeButton.label')"
     icon="pi pi-plus"
     style="width: auto"
     @click="visible = true"
@@ -84,20 +84,20 @@ const addMember = async (email: string, employeeRole: EmployeeRole) => {
 
   <BaseDialog
     v-model:visible="visible"
-    :header="t('organization.newMemberButton.label')"
+    :header="t('organization.newEmployeeButton.label')"
     @hide="resetForm"
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
         <div class="flex flex-col gap-1">
           <label for="email" class="font-semibold">
-            {{ t('organization.newMemberButton.emailLabel') }}<span aria-hidden="true"> *</span>
+            {{ t('organization.newEmployeeButton.emailLabel') }}<span aria-hidden="true"> *</span>
           </label>
           <InputText
             id="email"
             name="email"
             type="email"
-            :placeholder="t('organization.newMemberButton.emailPlaceholder')"
+            :placeholder="t('organization.newEmployeeButton.emailPlaceholder')"
             :class="{ 'p-invalid': $form.email?.invalid && $form.email?.touched }"
             autocomplete="off"
             autofocus
@@ -115,7 +115,7 @@ const addMember = async (email: string, employeeRole: EmployeeRole) => {
 
         <div class="flex flex-col gap-1">
           <label for="employeeRole" class="font-semibold">
-            {{ t('organization.newMemberButton.roleLabel') }}<span aria-hidden="true"> *</span>
+            {{ t('organization.newEmployeeButton.roleLabel') }}<span aria-hidden="true"> *</span>
           </label>
           <EmployeeRoleSelect
             name="employeeRole"

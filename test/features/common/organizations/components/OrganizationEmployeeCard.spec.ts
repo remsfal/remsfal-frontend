@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import OrganizationMemberCard from '@/features/common/organizations/components/OrganizationMemberCard.vue';
+import OrganizationEmployeeCard from '@/features/common/organizations/components/OrganizationEmployeeCard.vue';
 import { organizationService } from '@/services/OrganizationService';
 
 const VALID_UUID_1 = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
@@ -18,7 +18,7 @@ const mockEmployees = [
 const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
-describe('OrganizationMemberCard', () => {
+describe('OrganizationEmployeeCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(organizationService, 'getEmployees').mockResolvedValue({ employees: mockEmployees });
@@ -30,12 +30,12 @@ describe('OrganizationMemberCard', () => {
   });
 
   const mountCard = (organizationId = 'org-123') =>
-    mount(OrganizationMemberCard, {
+    mount(OrganizationEmployeeCard, {
       props: { organizationId },
       global: {
         stubs: {
           EmployeeRoleSelect: true,
-          NewOrganizationMemberButton: true,
+          NewOrganizationEmployeeButton: true,
         },
       },
     });
@@ -88,10 +88,10 @@ describe('OrganizationMemberCard', () => {
     expect(selects.length).toBe(mockEmployees.length);
   });
 
-  it('renders NewOrganizationMemberButton', async () => {
+  it('renders NewOrganizationEmployeeButton', async () => {
     const wrapper = mountCard();
     await flushPromises();
-    expect(wrapper.findComponent({ name: 'NewOrganizationMemberButton' }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: 'NewOrganizationEmployeeButton' }).exists()).toBe(true);
   });
 
   it('calls updateEmployeeRole when role select emits change', async () => {
@@ -178,12 +178,12 @@ describe('OrganizationMemberCard', () => {
     expect(fetchSpy).toHaveBeenCalled();
   });
 
-  it('shows success toast when newMember event is emitted', async () => {
+  it('shows success toast when newEmployee event is emitted', async () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const memberBtn = wrapper.findComponent({ name: 'NewOrganizationMemberButton' });
-    await memberBtn.vm.$emit('newMember', 'new@test.de');
+    const employeeBtn = wrapper.findComponent({ name: 'NewOrganizationEmployeeButton' });
+    await employeeBtn.vm.$emit('newEmployee', 'new@test.de');
     await flushPromises();
 
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
