@@ -21,8 +21,8 @@ export function useTopbarUserActions(): {
   const onAccountSettingsClick = () => {
     if (route.path.startsWith('/contractor')) {
       router.push('/contractor/account-settings');
-    } else if (route.path.startsWith('/tenancies')) {
-      router.push('/tenancies/account-settings');
+    } else if (route.path.startsWith('/tenant')) {
+      router.push('/tenant/account-settings');
     } else {
       router.push('/manager/account-settings');
     }
