@@ -83,7 +83,6 @@ const attachments = computed(() => issue.value?.attachments ?? []);
 const imageAttachments = computed(() => attachments.value.filter(
   attachment => attachment.contentType?.startsWith('image/')
 ));
-
 const nonImageAttachmentGroups = computed(() => {
   const groups = new Map<string, number>();
   for (const attachment of attachments.value) {
@@ -93,7 +92,6 @@ const nonImageAttachmentGroups = computed(() => {
   }
   return Array.from(groups.entries()).map(([ext, count]) => ({ ext, count }));
 });
-
 function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
   const fileName = attachment.fileName ?? '';
   const attachmentId = attachment.attachmentId ?? '';
