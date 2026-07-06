@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ProjectSettingsCard, BillingAddressCard, ProjectMemberSettingsCard } from '@/features/project/settings';
-import { OrganizationMemberSettingsCard, ProjectDangerZoneCard } from '@/features/project/settings';
+import { ProjectSettingsCard, BillingAddressCard, ProjectMemberSettingsCard, OrganizationMemberSettingsCard,
+  ProjectDangerZoneCard } from '@/features/project/settings';
 
 const props = defineProps<{
   projectId: string;
