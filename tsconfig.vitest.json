@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.app.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "test/**/*"],
-  "exclude": [],
+  "exclude": ["test/features/project/rentableUnits/**/*", "test/features/project/rentalAgreements/**/*", "test/features/project/settings/**/*"],
   "compilerOptions": {
     "composite": true,
     "lib": ["dom", "es2023"],

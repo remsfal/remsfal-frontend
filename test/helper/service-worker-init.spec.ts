@@ -52,7 +52,7 @@ describe('Service Worker Initialization', () => {
     });
 
     it('should not call sync registration if SyncManager is not supported', async () => {
-      delete window.SyncManager;
+      delete (window as { SyncManager?: unknown }).SyncManager;
 
       await enableBackgroundSync();
 
