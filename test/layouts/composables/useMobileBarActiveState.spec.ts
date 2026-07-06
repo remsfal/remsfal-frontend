@@ -65,16 +65,16 @@ describe('useMobileBarActiveState', () => {
   describe('string path matching', () => {
     it('returns true on exact path match', () => {
       const result = callIsActive(
-        { path: '/tenancies/dashboard', name: 'TenantDashboard' },
-        makeItem('/tenancies/dashboard'),
+        { path: '/tenant/dashboard', name: 'TenantDashboard' },
+        makeItem('/tenant/dashboard'),
       );
       expect(result).toBe(true);
     });
 
     it('returns true when route path starts with item path', () => {
       const result = callIsActive(
-        { path: '/tenancies/dashboard/sub', name: 'TenantSub' },
-        makeItem('/tenancies/dashboard'),
+        { path: '/tenant/dashboard/sub', name: 'TenantSub' },
+        makeItem('/tenant/dashboard'),
       );
       expect(result).toBe(true);
     });
@@ -82,14 +82,14 @@ describe('useMobileBarActiveState', () => {
     it('returns false when path does not match', () => {
       const result = callIsActive(
         { path: '/manager/projects', name: 'ProjectSelection' },
-        makeItem('/tenancies/dashboard'),
+        makeItem('/tenant/dashboard'),
       );
       expect(result).toBe(false);
     });
 
     it('does not match "/" to avoid marking everything as active', () => {
       const result = callIsActive(
-        { path: '/tenancies/dashboard', name: 'TenantDashboard' },
+        { path: '/tenant/dashboard', name: 'TenantDashboard' },
         makeItem('/'),
       );
       expect(result).toBe(false);

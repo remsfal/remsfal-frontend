@@ -86,11 +86,11 @@ describe('useTopbarUserActions', () => {
     expect(mockPush).toHaveBeenCalledWith('/contractor/account-settings');
   });
 
-  it('navigates to tenant account settings when on tenancies route', () => {
-    currentPath = '/tenancies/dashboard';
+  it('navigates to tenant account settings when on tenant route', () => {
+    currentPath = '/tenant/dashboard';
     const wrapper = mount(TestComponent);
     wrapper.vm.onAccountSettingsClick();
-    expect(mockPush).toHaveBeenCalledWith('/tenancies/account-settings');
+    expect(mockPush).toHaveBeenCalledWith('/tenant/account-settings');
   });
 
   it('navigates to manager account settings when on manager route', () => {
