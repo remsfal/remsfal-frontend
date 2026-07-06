@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { toISODateString } from '@/helper/dataHelper';
 
 // PrimeVue Components
 import Button from 'primevue/button';
@@ -61,13 +62,6 @@ const initialValues = ref({
   endOfRental: props.endOfRental ? new Date(props.endOfRental) : (null as Date | null),
 });
 
-// Convert Date to ISO string (YYYY-MM-DD format for LocalDate)
-function toISODateString(date: Date | string | null | undefined): string | null {
-  if (!date) return null;
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toISOString().split('T')[0] as string;
-}
-
 // Form Submit Handler
 const onSubmit = (event: FormSubmitEvent) => {
   const formState = event.states;
@@ -84,8 +78,8 @@ const onSubmit = (event: FormSubmitEvent) => {
   const endDateString = toISODateString(endDate);
 
   // Update parent state
-  emit('update:startOfRental', startDateString);
-  emit('update:endOfRental', endDateString);
+  emit('update:startOfRental', startDateString ?? null);
+  emit('update:endOfRental', endDateString ?? null);
   emit('next');
 };
 </script>

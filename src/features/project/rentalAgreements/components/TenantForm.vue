@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { toISODateString } from '@/helper/dataHelper';
 
 // PrimeVue Components
 import Button from 'primevue/button';
@@ -63,13 +64,6 @@ const initialValues = ref({
   privatePhoneNumber: '',
   placeOfBirth: '',
 });
-
-// Convert Date to ISO string (YYYY-MM-DD format for LocalDate)
-function toISODateString(date: Date | string | null | undefined): string | undefined {
-  if (!date) return undefined;
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toISOString().split('T')[0];
-}
 
 // Form submission
 function onSubmit(event: FormSubmitEvent) {
