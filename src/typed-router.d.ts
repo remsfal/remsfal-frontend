@@ -288,28 +288,28 @@ declare module 'vue-router/auto-routes' {
     >,
     'TenantAccountSettings': RouteRecordInfo<
       'TenantAccountSettings',
-      '/tenancies/account-settings',
+      '/tenant/account-settings',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
     'TenantDashboard': RouteRecordInfo<
       'TenantDashboard',
-      '/tenancies/dashboard',
+      '/tenant/dashboard',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
     'TenantIssues': RouteRecordInfo<
       'TenantIssues',
-      '/tenancies/issues',
+      '/tenant/issues',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
     'TenantIssueDetails': RouteRecordInfo<
       'TenantIssueDetails',
-      '/tenancies/issues/:issueId',
+      '/tenant/issues/:issueId',
       { issueId: ParamValue<true> },
       { issueId: ParamValue<false> },
       | never
@@ -549,25 +549,25 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/tenancies/account-settings.vue': {
+    'src/pages/tenant/account-settings.vue': {
       routes:
         | 'TenantAccountSettings'
       views:
         | never
     }
-    'src/pages/tenancies/dashboard.vue': {
+    'src/pages/tenant/dashboard.vue': {
       routes:
         | 'TenantDashboard'
       views:
         | never
     }
-    'src/pages/tenancies/issues/index.vue': {
+    'src/pages/tenant/issues/index.vue': {
       routes:
         | 'TenantIssues'
       views:
         | never
     }
-    'src/pages/tenancies/issues/[issueId].vue': {
+    'src/pages/tenant/issues/[issueId].vue': {
       routes:
         | 'TenantIssueDetails'
       views:

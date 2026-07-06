@@ -856,6 +856,33 @@ components:
         total:
           type: integer
           format: int64
+    OrganizationMemberJson:
+      description: Organization assignment to a project
+      type: object
+      properties:
+        organizationId:
+          $ref: "#/components/schemas/UUID"
+        organizationName:
+          type: string
+        role:
+          $ref: "#/components/schemas/MemberRole"
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectMemberJson"
+          description: Members of the organization together with their derived role
+            in this project
+          readOnly: true
+      required:
+      - role
+    OrganizationMemberListJson:
+      description: List of organizations assigned to a project
+      type: object
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganizationMemberJson"
     ProjectItemJson:
       description: A project item with the user's member role only
       type: object
@@ -971,26 +998,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProjectMemberJson"
-    ProjectOrganizationJson:
-      description: Organization assignment to a project
-      type: object
-      properties:
-        organizationId:
-          $ref: "#/components/schemas/UUID"
-        organizationName:
-          type: string
-        role:
-          $ref: "#/components/schemas/MemberRole"
-      required:
-      - role
-    ProjectOrganizationListJson:
-      description: List of organizations assigned to a project
-      type: object
-      properties:
-        organizations:
-          type: array
-          items:
-            $ref: "#/components/schemas/ProjectOrganizationJson"
     PropertyJson:
       description: A property
       type: object
@@ -3291,7 +3298,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProjectOrganizationListJson"
+                $ref: "#/components/schemas/OrganizationMemberListJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -3309,7 +3316,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ProjectOrganizationJson"
+              $ref: "#/components/schemas/OrganizationMemberJson"
         required: true
       responses:
         "200":
@@ -3317,7 +3324,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProjectOrganizationJson"
+                $ref: "#/components/schemas/OrganizationMemberJson"
         "400":
           description: Invalid request message
         "401":
@@ -3344,7 +3351,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ProjectOrganizationJson"
+              $ref: "#/components/schemas/OrganizationMemberJson"
         required: true
       responses:
         "200":
@@ -3352,7 +3359,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProjectOrganizationJson"
+                $ref: "#/components/schemas/OrganizationMemberJson"
         "401":
           description: No user authentication provided via session cookie
         "403":

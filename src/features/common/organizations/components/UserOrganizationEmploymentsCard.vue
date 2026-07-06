@@ -19,36 +19,36 @@ onMounted(() => {
 const employments = computed(() => organizationStore.userEmployments);
 
 function roleLabel(role: string): string {
-  return t(`managerSettings.memberships.role.${role}`);
+  return t(`managerSettings.employments.role.${role}`);
 }
 </script>
 
 <template>
   <BaseCard>
     <template #title>
-      {{ t('managerSettings.memberships.title') }}
+      {{ t('managerSettings.employments.title') }}
     </template>
     <template #content>
       <DataTable :value="employments">
         <template #empty>
-          {{ t('managerSettings.memberships.empty') }}
+          {{ t('managerSettings.employments.empty') }}
         </template>
         <Column
           field="organizationName"
-          :header="t('managerSettings.memberships.column.organization')"
+          :header="t('managerSettings.employments.column.organization')"
         />
-        <Column :header="t('managerSettings.memberships.column.role')">
+        <Column :header="t('managerSettings.employments.column.role')">
           <template #body="{ data }">
             {{ roleLabel(data.employeeRole) }}
           </template>
         </Column>
-        <Column :header="t('managerSettings.memberships.column.status')">
+        <Column :header="t('managerSettings.employments.column.status')">
           <template #body="{ data }">
             <Tag
               :severity="data.active ? 'success' : 'secondary'"
               :value="data.active
-                ? t('managerSettings.memberships.status.active')
-                : t('managerSettings.memberships.status.inactive')"
+                ? t('managerSettings.employments.status.active')
+                : t('managerSettings.employments.status.inactive')"
             />
           </template>
         </Column>

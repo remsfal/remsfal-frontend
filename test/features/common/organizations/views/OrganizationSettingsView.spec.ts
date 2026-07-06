@@ -28,8 +28,8 @@ vi.mock('@/features/common/organizations', () => ({
     template: '<div data-test="base-data-card" />',
     props: ['organizationId'],
   },
-  OrganizationMemberCard: {
-    name: 'OrganizationMemberCard',
+  OrganizationEmployeeCard: {
+    name: 'OrganizationEmployeeCard',
     template: '<div data-test="member-card" />',
     props: ['organizationId'],
   },
@@ -82,7 +82,7 @@ describe('OrganizationSettingsView.vue', () => {
     expect(wrapper.find('[data-test="base-data-card"]').exists()).toBe(true)
   })
 
-  it('renders OrganizationMemberCard with correct id', async () => {
+  it('renders OrganizationEmployeeCard with correct id', async () => {
     const wrapper = mountView()
     await flushPromises()
     expect(wrapper.find('[data-test="member-card"]').exists()).toBe(true)
