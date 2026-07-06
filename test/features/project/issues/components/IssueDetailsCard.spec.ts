@@ -2,7 +2,8 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDetailsCard from '@/features/project/issues/components/IssueDetailsCard.vue';
 import { issueService } from '@/services/IssueService';
-import { projectMemberService, type ProjectMemberList } from '@/services/ProjectMemberService';
+import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
+import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
 const addMock = vi.fn();
@@ -18,22 +19,22 @@ vi.mock('@/services/IssueService', async () => {
   };
 });
 
+// MemberAutoComplete (rendered as a real child) loads its own members via these services.
 vi.mock('@/services/ProjectMemberService', async () => {
   const actual = await vi.importActual<typeof import('@/services/ProjectMemberService')>('@/services/ProjectMemberService');
   return {
     ...actual,
-    projectMemberService: {
-      getMembers: vi.fn().mockResolvedValue({
-        members: [
-          {
-            id: 'user-1', name: 'John Doe', email: 'john@example.com', role: 'MANAGER',
-          },
-          {
-            id: 'reporter-1', name: 'Jane Smith', email: 'jane@example.com', role: 'STAFF',
-          },
-        ],
-      }),
-    },
+    projectMemberService: {getMembers: vi.fn(),},
+  };
+});
+
+vi.mock('@/services/OrganizationMemberService', async () => {
+  const actual = await vi.importActual<typeof import('@/services/OrganizationMemberService')>(
+    '@/services/OrganizationMemberService',
+  );
+  return {
+    ...actual,
+    organizationMemberService: {getOrganizations: vi.fn(),},
   };
 });
 
@@ -46,7 +47,7 @@ const baseProps = {
     title: 'Old title',
     status: 'OPEN',
     assigneeId: 'user-1',
-    reporter: 'reporter-1',
+    reportedBy: 'Jane Smith',
     project: 'Project A',
     issueType: 'TASK',
     tenancy: 'tenant-1',
@@ -60,17 +61,16 @@ describe('IssueDetailsCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Re-mock projectMemberService for each test
     vi.spyOn(projectMemberService, 'getMembers').mockResolvedValue({
       members: [
         {
           id: 'user-1', name: 'John Doe', email: 'john@example.com', role: 'MANAGER',
         },
-        {
-          id: 'reporter-1', name: 'Jane Smith', email: 'jane@example.com', role: 'STAFF',
-        },
       ],
-    } as ProjectMemberList);
+    } as ProjectMemberListJson);
+
+    vi.spyOn(organizationMemberService, 'getOrganizations')
+      .mockResolvedValue({ organizations: [] } as OrganizationMemberListJson);
 
     wrapper = mount(IssueDetailsCard, {props: baseProps,});
   });
@@ -335,33 +335,22 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('resolves reporter name from member ID', async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-
+  test('displays reportedBy from initialData as reporter name', () => {
     expect(wrapper.vm.reporterName).toBe('Jane Smith');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('shows UUID fallback if member not found', async () => {
-    const wrapperWithDeletedMember = mount(IssueDetailsCard, {
+  test('shows noReporter fallback when reportedBy is empty', () => {
+    const wrapperWithoutReporter = mount(IssueDetailsCard, {
       props: {
         ...baseProps,
         initialData: {
           ...baseProps.initialData,
-          reporter: 'deleted-user-999',
+          reportedBy: '',
         },
       },
     });
 
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(wrapperWithDeletedMember.vm.reporterName).toBe('deleted-user-999');
-  });
-
-  // ───────────────────────────────────────────────────────────────────────────
-  test('loads members on mount', async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(projectMemberService.getMembers).toHaveBeenCalledWith('project-1');
+    expect(wrapperWithoutReporter.vm.reporterName).toBe('Kein Melder');
   });
 });
