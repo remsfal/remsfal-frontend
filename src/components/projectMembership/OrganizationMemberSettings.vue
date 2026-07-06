@@ -6,9 +6,13 @@ import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { type OrganizationMemberJson, organizationMemberService } from '@/services/OrganizationMemberService';
+import type { ProjectMemberJson } from '@/services/ProjectMemberService';
 import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
+
+type OrganizationRow = { type: 'organization'; key: string; organization: OrganizationMemberJson };
+type MemberRow = { type: 'member'; key: string; member: ProjectMemberJson };
 
 const props = defineProps<{
   projectId: string;
@@ -18,6 +22,19 @@ const { t } = useI18n();
 const toast = useToast();
 
 const organizations = ref<OrganizationMemberJson[]>([]);
+
+const tableRows = computed<(OrganizationRow | MemberRow)[]>(() =>
+  organizations.value.flatMap((organization) => [
+    {
+      type: 'organization', key: `org-${organization.organizationId}`, organization,
+    },
+    ...(organization.members ?? []).map((member, index): MemberRow => ({
+      type: 'member',
+      key: `org-${organization.organizationId}-member-${member.id ?? index}`,
+      member,
+    })),
+  ]),
+);
 
 const fetchOrganizations = async () => {
   await organizationMemberService
@@ -88,20 +105,42 @@ function onNewOrganization(organizationName: string) {
     </template>
     <template #content>
       <div class="flex flex-col gap-2">
-        <DataTable :value="organizations">
-          <Column field="organizationName" :header="t('projectSettings.organizationMemberTable.columnName')" />
+        <DataTable :value="tableRows" dataKey="key">
+          <Column :header="t('projectSettings.organizationMemberTable.columnName')">
+            <template #body="slotProps">
+              <span v-if="slotProps.data.type === 'organization'">
+                {{ slotProps.data.organization.organizationName }}
+              </span>
+              <span
+                v-else
+                class="pl-4"
+                :class="{ 'text-gray-400': slotProps.data.member.active === false }"
+              >
+                {{ slotProps.data.member.name || slotProps.data.member.email }}
+                <span v-if="slotProps.data.member.active === false">
+                  ({{ t('managerSettings.employments.status.inactive') }})
+                </span>
+              </span>
+            </template>
+          </Column>
           <Column :header="t('projectSettings.projectMemberTable.columnRole')">
             <template #body="slotProps">
-              <ProjectMemberRoleSelect v-model="slotProps.data.role" @change="updateOrganizationRole(slotProps.data)" />
+              <ProjectMemberRoleSelect
+                v-if="slotProps.data.type === 'organization'"
+                v-model="slotProps.data.organization.role"
+                @change="updateOrganizationRole(slotProps.data.organization)"
+              />
+              <span v-else>{{ t(`roles.${slotProps.data.member.role.toLowerCase()}`) }}</span>
             </template>
           </Column>
           <Column :header="t('projectSettings.projectMemberTable.columnOptions')">
             <template #body="slotProps">
               <Button
+                v-if="slotProps.data.type === 'organization'"
                 :label="t('button.delete')"
                 class="deactivate-btn"
                 severity="danger"
-                @click="removeOrganization(slotProps.data.organizationId ?? '')"
+                @click="removeOrganization(slotProps.data.organization.organizationId ?? '')"
               />
             </template>
           </Column>
@@ -113,5 +152,3 @@ function onNewOrganization(organizationName: string) {
     </template>
   </BaseCard>
 </template>
-
-<style scoped></style>

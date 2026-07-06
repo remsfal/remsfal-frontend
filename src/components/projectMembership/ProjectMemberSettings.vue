@@ -121,5 +121,3 @@ function onNewMember(email: string) {
     </template>
   </BaseCard>
 </template>
-
-<style scoped></style>

@@ -2,9 +2,11 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import OrganizationMemberSettings from '@/components/projectMembership/OrganizationMemberSettings.vue';
 import NewOrganizationMemberButton from '@/components/projectMembership/NewOrganizationMemberButton.vue';
+import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
 import {organizationMemberService,
   type OrganizationMemberJson,
   type MemberRole,} from '@/services/OrganizationMemberService';
+import type { ProjectMemberJson } from '@/services/ProjectMemberService';
 
 const { mockToastAdd } = vi.hoisted(() => ({mockToastAdd: vi.fn(),}));
 
@@ -170,6 +172,70 @@ describe('OrganizationMemberSettings.vue', () => {
     expect(organizationMemberService.getOrganizations).toHaveBeenCalledWith('test-project-id');
     expect(mockToastAdd).toHaveBeenCalledWith(
       expect.objectContaining({ severity: 'success' }),
+    );
+  });
+});
+
+describe('OrganizationMemberSettings.vue - member rows', () => {
+  let wrapper: VueWrapper<InstanceType<typeof OrganizationMemberSettings>>;
+
+  const mockOrganizationsWithMembers: OrganizationMemberJson[] = [
+    {
+      organizationId: '11111111-1111-1111-1111-111111111111',
+      organizationName: 'Test GmbH',
+      role: 'MANAGER' as MemberRole,
+      members: [
+        {
+          id: 'member-1', name: 'Max Muster', email: 'max@test.de', role: 'MANAGER' as MemberRole, active: true,
+        },
+        {
+          id: 'member-2', name: 'Erika Muster', email: 'erika@test.de', role: 'STAFF' as MemberRole, active: false,
+        },
+      ] as ProjectMemberJson[],
+    },
+  ];
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+
+    vi.mocked(organizationMemberService.getOrganizations).mockResolvedValue({ organizations: mockOrganizationsWithMembers });
+
+    wrapper = mount(OrganizationMemberSettings, { props: { projectId: 'test-project-id' } });
+
+    await flushPromises();
+  });
+
+  test('renders member names and their translated roles', () => {
+    expect(wrapper.text()).toContain('Max Muster');
+    expect(wrapper.text()).toContain('Manager');
+    expect(wrapper.text()).toContain('Erika Muster');
+    expect(wrapper.text()).toContain('Mitarbeiter');
+  });
+
+  test('shows inactive suffix for an inactive member', () => {
+    expect(wrapper.text()).toContain('Inaktiv');
+  });
+
+  test('does not render a role select for individual members', () => {
+    const selects = wrapper.findAllComponents(ProjectMemberRoleSelect);
+    expect(selects.length).toBe(mockOrganizationsWithMembers.length);
+  });
+
+  test('does not render a delete button for individual members', () => {
+    const deleteButtons = wrapper.findAll('button').filter((b) => b.text() === 'Löschen');
+    expect(deleteButtons.length).toBe(mockOrganizationsWithMembers.length);
+  });
+
+  test('updateOrganizationRole still targets the organization when member rows are present', async () => {
+    const org = mockOrganizationsWithMembers[0];
+    vi.mocked(organizationMemberService.updateOrganizationRole).mockResolvedValueOnce(org);
+
+    await (wrapper.vm as InstanceType<typeof OrganizationMemberSettings>).updateOrganizationRole(org);
+
+    expect(organizationMemberService.updateOrganizationRole).toHaveBeenCalledWith(
+      'test-project-id',
+      org.organizationId,
+      { role: org.role },
     );
   });
 });
