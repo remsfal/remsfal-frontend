@@ -533,6 +533,8 @@
   "issueDetails.attachmentsUploadError": "Failed to upload attachments",
   "issueDetails.attachmentDeleteSuccess": "Attachment deleted successfully",
   "issueDetails.attachmentDeleteError": "Failed to delete attachment",
+  "issueDetails.attachmentUploadedBy": "Uploaded by",
+  "issueDetails.attachmentUnknownUploader": "Unknown",
   "issueDetails.nonImageAttachmentsAriaLabel": "{count} {ext} file(s)",
   "issueDetails.fieldsUpdated": "{fields} updated successfully",
   "issueDetails.fields.title": "Title",

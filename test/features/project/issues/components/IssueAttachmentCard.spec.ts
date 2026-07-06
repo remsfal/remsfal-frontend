@@ -194,4 +194,28 @@ describe('IssueAttachmentCard.vue', () => {
     expect(links[0].attributes('href')).toBe('/ticketing/v1/issues/issue-1/attachments//');
     expect(wrapper.find('img[alt="issue-attachment"]').exists()).toBe(true);
   });
+
+  test('renders uploader name next to filename', async () => {
+    const wrapper = mountCard([
+      {
+        attachmentId: 'a1', fileName: 'report.pdf', contentType: 'application/pdf', uploadedBy: 'Jane Doe'
+      },
+    ]);
+
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Jane Doe');
+  });
+
+  test('shows fallback label when uploader is unknown', async () => {
+    const wrapper = mountCard([
+      {
+        attachmentId: 'a2', fileName: 'report.pdf', contentType: 'application/pdf'
+      },
+    ]);
+
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('issueDetails.attachmentUnknownUploader');
+  });
 });

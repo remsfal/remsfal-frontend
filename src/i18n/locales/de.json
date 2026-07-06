@@ -536,6 +536,8 @@
   "issueDetails.attachmentsUploadError": "Fehler beim Hochladen der Anhänge",
   "issueDetails.attachmentDeleteSuccess": "Anhang erfolgreich gelöscht",
   "issueDetails.attachmentDeleteError": "Fehler beim Löschen des Anhangs",
+  "issueDetails.attachmentUploadedBy": "Hochgeladen durch",
+  "issueDetails.attachmentUnknownUploader": "Unbekannt",
   "issueDetails.nonImageAttachmentsAriaLabel": "{count} {ext}-Datei(en)",
   "issueDetails.fieldsUpdated": "{fields} erfolgreich aktualisiert",
   "issueDetails.fields.title": "Titel",
