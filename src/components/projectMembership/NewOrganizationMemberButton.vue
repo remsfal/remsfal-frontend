@@ -12,7 +12,7 @@ import { useToast } from 'primevue/usetoast';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
 import { type MemberRole } from '@/services/ProjectMemberService';
-import { projectOrganizationService } from '@/services/ProjectOrganizationService';
+import { organizationMemberService } from '@/services/OrganizationMemberService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 
 const props = defineProps<{ projectId: string }>();
@@ -27,10 +27,10 @@ const visible = ref(false);
 const validationSchema = z.object({
   organizationId: z
     .string()
-    .min(1, { message: t('projectSettings.newProjectOrganizationButton.invalidOrganization') }),
+    .min(1, { message: t('projectSettings.newOrganizationMemberButton.invalidOrganization') }),
   role: z
     .string()
-    .min(1, { message: t('projectSettings.newProjectOrganizationButton.invalidRole') }),
+    .min(1, { message: t('projectSettings.newOrganizationMemberButton.invalidRole') }),
 });
 
 const resolver = zodResolver(validationSchema);
@@ -60,7 +60,7 @@ const addOrganization = async (organizationId: string, role: MemberRole) => {
   const organizationName = org?.name ?? organizationId;
 
   try {
-    await projectOrganizationService.addOrganization(props.projectId, { organizationId, role });
+    await organizationMemberService.addOrganization(props.projectId, { organizationId, role });
     emit('newOrganization', organizationName);
     resetForm();
   } catch (error) {
@@ -68,7 +68,7 @@ const addOrganization = async (organizationId: string, role: MemberRole) => {
     toast.add({
       severity: 'error',
       summary: t('error.general'),
-      detail: t('projectSettings.newProjectOrganizationButton.errorAdd'),
+      detail: t('projectSettings.newOrganizationMemberButton.errorAdd'),
       life: 5000,
     });
   }
@@ -83,7 +83,7 @@ onMounted(async () => {
 
 <template>
   <Button
-    :label="t('projectSettings.newProjectOrganizationButton.label')"
+    :label="t('projectSettings.newOrganizationMemberButton.label')"
     icon="pi pi-plus"
     style="width: auto"
     @click="visible = true"
@@ -91,14 +91,14 @@ onMounted(async () => {
 
   <BaseDialog
     v-model:visible="visible"
-    :header="t('projectSettings.newProjectOrganizationButton.label')"
+    :header="t('projectSettings.newOrganizationMemberButton.label')"
     @hide="resetForm"
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
         <div class="flex flex-col gap-1">
           <label for="organizationId" class="font-semibold">
-            {{ t('projectSettings.newProjectOrganizationButton.organizationLabel') }}<span aria-hidden="true"> *</span>
+            {{ t('projectSettings.newOrganizationMemberButton.organizationLabel') }}<span aria-hidden="true"> *</span>
           </label>
           <Select
             id="organizationId"
@@ -106,7 +106,7 @@ onMounted(async () => {
             :options="organizationStore.userOrganizations"
             optionLabel="name"
             optionValue="id"
-            :placeholder="t('projectSettings.newProjectOrganizationButton.organizationPlaceholder')"
+            :placeholder="t('projectSettings.newOrganizationMemberButton.organizationPlaceholder')"
             :class="{ 'p-invalid': $form.organizationId?.invalid && $form.organizationId?.touched }"
             fluid
           />
@@ -122,7 +122,7 @@ onMounted(async () => {
 
         <div class="flex flex-col gap-1">
           <label for="role" class="font-semibold">
-            {{ t('projectSettings.newProjectOrganizationButton.roleLabel') }}<span aria-hidden="true"> *</span>
+            {{ t('projectSettings.newOrganizationMemberButton.roleLabel') }}<span aria-hidden="true"> *</span>
           </label>
           <ProjectMemberRoleSelect
             name="role"

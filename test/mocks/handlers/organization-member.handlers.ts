@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 const API_BASE = '/api/v1';
 
-export const projectOrganizationHandlers = [
+export const organizationMemberHandlers = [
   // GET project organizations
   http.get(`${API_BASE}/projects/:projectId/organizations`, () => {
     return HttpResponse.json(

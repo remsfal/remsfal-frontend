@@ -93,7 +93,7 @@ function onNewMember(email: string) {
             <template #body="slotProps">
               <span :class="{ 'text-gray-400': slotProps.data.active === false }">
                 {{ slotProps.data.name || slotProps.data.email }}
-                <span v-if="slotProps.data.active === false"> ({{ t('managerSettings.memberships.status.inactive') }})</span>
+                <span v-if="slotProps.data.active === false"> ({{ t('managerSettings.employments.status.inactive') }})</span>
               </span>
             </template>
           </Column>
@@ -121,5 +121,3 @@ function onNewMember(email: string) {
     </template>
   </BaseCard>
 </template>
-
-<style scoped></style>

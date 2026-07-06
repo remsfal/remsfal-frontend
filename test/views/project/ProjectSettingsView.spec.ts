@@ -16,7 +16,7 @@ describe('ProjectSettingsView.vue', () => {
           ProjectSettings: true,
           BillingAddressCard: true,
           ProjectMemberSettings: true,
-          ProjectOrganizationSettings: true,
+          OrganizationMemberSettings: true,
           ProjectDangerZoneCard: true,
         },
       },
@@ -40,8 +40,8 @@ describe('ProjectSettingsView.vue', () => {
     expect(billingAddressCard.exists()).toBe(true);
   });
 
-  test('renders ProjectOrganizationSettings component', () => {
-    const orgSettings = wrapper.findComponent({ name: 'ProjectOrganizationSettings' });
+  test('renders OrganizationMemberSettings component', () => {
+    const orgSettings = wrapper.findComponent({ name: 'OrganizationMemberSettings' });
     expect(orgSettings.exists()).toBe(true);
   });
 
@@ -54,7 +54,7 @@ describe('ProjectSettingsView.vue', () => {
     const projectSettings = wrapper.findComponent({ name: 'ProjectSettings' });
     const memberSettings = wrapper.findComponent({ name: 'ProjectMemberSettings' });
     const billingAddressCard = wrapper.findComponent({ name: 'BillingAddressCard' });
-    const orgSettings = wrapper.findComponent({ name: 'ProjectOrganizationSettings' });
+    const orgSettings = wrapper.findComponent({ name: 'OrganizationMemberSettings' });
     const dangerZoneCard = wrapper.findComponent({ name: 'ProjectDangerZoneCard' });
 
     expect(projectSettings.props('projectId')).toBe('test-project-id');

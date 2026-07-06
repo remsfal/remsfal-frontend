@@ -1,12 +1,12 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import type { FormSubmitEvent } from '@primevue/forms';
-import NewProjectOrganizationButton from '@/components/projectMembership/NewProjectOrganizationButton.vue';
-import { projectOrganizationService } from '@/services/ProjectOrganizationService';
+import NewOrganizationMemberButton from '@/components/projectMembership/NewOrganizationMemberButton.vue';
+import { organizationMemberService } from '@/services/OrganizationMemberService';
 
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-vi.mock('@/services/ProjectOrganizationService', () => ({projectOrganizationService: { addOrganization: vi.fn() },}));
+vi.mock('@/services/OrganizationMemberService', () => ({organizationMemberService: { addOrganization: vi.fn() },}));
 
 vi.mock('../../../src/stores/OrganizationStore', () => ({
   useOrganizationStore: vi.fn(() => ({
@@ -19,11 +19,11 @@ vi.mock('../../../src/stores/OrganizationStore', () => ({
   })),
 }));
 
-describe('NewProjectOrganizationButton.vue', () => {
-  let wrapper: VueWrapper<InstanceType<typeof NewProjectOrganizationButton>>;
+describe('NewOrganizationMemberButton.vue', () => {
+  let wrapper: VueWrapper<InstanceType<typeof NewOrganizationMemberButton>>;
 
   beforeEach(async () => {
-    wrapper = mount(NewProjectOrganizationButton, {
+    wrapper = mount(NewOrganizationMemberButton, {
       props: { projectId: 'test-project-id' },
       attachTo: document.body,
     });
@@ -54,7 +54,7 @@ describe('NewProjectOrganizationButton.vue', () => {
       },
     } as unknown as FormSubmitEvent;
 
-    const mockAdd = projectOrganizationService.addOrganization as ReturnType<typeof vi.fn>;
+    const mockAdd = organizationMemberService.addOrganization as ReturnType<typeof vi.fn>;
 
     await wrapper.vm.onSubmit(event);
 
@@ -62,7 +62,7 @@ describe('NewProjectOrganizationButton.vue', () => {
   });
 
   test('calls service and emits event when valid', async () => {
-    const mockAdd = projectOrganizationService.addOrganization as ReturnType<typeof vi.fn>;
+    const mockAdd = organizationMemberService.addOrganization as ReturnType<typeof vi.fn>;
     mockAdd.mockResolvedValueOnce({
       organizationId: 'org-1', organizationName: 'Test GmbH', role: 'MANAGER' 
     });
@@ -90,7 +90,7 @@ describe('NewProjectOrganizationButton.vue', () => {
   });
 
   test('handles addOrganization error gracefully', async () => {
-    const mockAdd = projectOrganizationService.addOrganization as ReturnType<typeof vi.fn>;
+    const mockAdd = organizationMemberService.addOrganization as ReturnType<typeof vi.fn>;
     mockAdd.mockRejectedValueOnce(new Error('Backend error'));
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});

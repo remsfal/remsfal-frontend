@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import UserOrganizationMembershipCard from '@/features/common/organizations/components/UserOrganizationMembershipCard.vue';
+import UserOrganizationEmploymentsCard from '@/features/common/organizations/components/UserOrganizationEmploymentsCard.vue';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 const mockOwner = {
@@ -33,7 +33,7 @@ const mockManager = {
   employeeRole: 'MANAGER' as const,
 };
 
-describe('UserOrganizationMembershipCard', () => {
+describe('UserOrganizationEmploymentsCard', () => {
   let orgStore: ReturnType<typeof useOrganizationStore>;
 
   beforeEach(() => {
@@ -45,7 +45,7 @@ describe('UserOrganizationMembershipCard', () => {
     vi.clearAllMocks();
   });
 
-  const mountCard = () => mount(UserOrganizationMembershipCard);
+  const mountCard = () => mount(UserOrganizationEmploymentsCard);
 
   describe('static rendering', () => {
     it('renders the card title', async () => {
