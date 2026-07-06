@@ -2,7 +2,7 @@
  * Shared test utilities and helpers for Issue-related components
  * Reduces code duplication across test files
  */
-import { vi, type Mock } from 'vitest';
+import { vi, expect, type Mock } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 
 // ✅ Static imports (ESLint-friendly)
@@ -55,7 +55,10 @@ export const primeVueStubs = {
 
 // ========== Component Mounting Helpers ==========
 
-export function mountIssueDescriptionCard(props = {}, options: Record<string, unknown> = {}) {
+export function mountIssueDescriptionCard(
+  props: Record<string, unknown> = {},
+  options: Record<string, unknown> & { global?: Record<string, unknown> } = {}
+) {
   return mount(IssueDescriptionCard, {
     props: { ...defaultIssueDescriptionProps, ...props },
     global: {

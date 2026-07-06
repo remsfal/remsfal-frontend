@@ -6,13 +6,13 @@ import { type IssueItemJson } from '@/services/IssueService';
 
 const mockIssues: IssueItemJson[] = [
   {
-    id: '1', title: 'Issue 1', owner: 'user1', status: 'OPEN', name: 'issue1' 
+    id: '1', title: 'Issue 1', assigneeId: 'user1', status: 'OPEN', name: 'issue1'
   },
   {
-    id: '2', title: 'Issue 2', owner: 'user2', status: 'CLOSED', name: 'issue2' 
+    id: '2', title: 'Issue 2', assigneeId: 'user2', status: 'CLOSED', name: 'issue2'
   },
   {
-    id: '3', title: 'Issue 3', owner: 'user3', status: 'IN_PROGRESS', name: 'issue3' 
+    id: '3', title: 'Issue 3', assigneeId: 'user3', status: 'IN_PROGRESS', name: 'issue3'
   },
 ];
 
@@ -35,9 +35,9 @@ describe('IssueTable', () => {
     const rows = wrapper.findAll('.p-datatable-tbody > tr');
     rows.forEach((row, index) => {
       const cells = row.findAll('td');
-      expect(cells[0].text()).toBe(mockIssues[index].title);   // Title column
-      expect(cells[1].text()).toBe(mockIssues[index].owner);   // Owner column
-      expect(cells[2].text()).toBe(mockIssues[index].status);  // Status column
+      expect(cells[0].text()).toBe(mockIssues[index].title);       // Title column
+      expect(cells[1].text()).toBe(mockIssues[index].assigneeId);  // Assignee column
+      expect(cells[2].text()).toBe(mockIssues[index].status);      // Status column
     });
   });
 

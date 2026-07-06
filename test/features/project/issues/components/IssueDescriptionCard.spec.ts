@@ -1,7 +1,7 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { describe, test, expect, beforeEach, vi, type Mock } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDescriptionCard from '@/features/project/issues/components/IssueDescriptionCard.vue';
-import { issueService, type Issue } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/services/IssueService';
 import {primeVueStubs,
   defaultIssueDescriptionProps,
   edgeCaseTestData,
@@ -23,7 +23,7 @@ describe('IssueDescriptionCard.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (issueService.updateIssue as vi.Mock).mockResolvedValue({});
+    (issueService.updateIssue as Mock).mockResolvedValue({});
     wrapper = mountComponent();
   });
 
@@ -37,9 +37,10 @@ describe('IssueDescriptionCard.vue', () => {
     await wrapper.vm.handleSave();
 
     expectModifyIssueCalled(
-      issueService.updateIssue,
+      // issueService is mocked via vi.mock() above, but keeps its real declared type here
+      issueService.updateIssue as unknown as Mock,
       defaultIssueDescriptionProps.issueId,
-      { description: 'Updated description' } as Partial<Issue>
+      { description: 'Updated description' } as Partial<IssueJson>
     );
   });
 
@@ -74,7 +75,7 @@ describe('IssueDescriptionCard.vue', () => {
   });
   
   test('handles error when updateIssue fails', async () => {
-    (issueService.updateIssue as vi.Mock).mockRejectedValueOnce(new Error('API Error'));
+    (issueService.updateIssue as Mock).mockRejectedValueOnce(new Error('API Error'));
   
     wrapper.vm.description = 'Updated description';
     await wrapper.vm.handleSave();
@@ -155,7 +156,7 @@ describe('IssueDescriptionCard.vue', () => {
   });
 
   test('preserves description after failed save', async () => {
-    (issueService.updateIssue as vi.Mock).mockRejectedValueOnce(new Error('Network error'));
+    (issueService.updateIssue as Mock).mockRejectedValueOnce(new Error('Network error'));
     
     const updatedDesc = 'Updated but failed';
     wrapper.vm.description = updatedDesc;

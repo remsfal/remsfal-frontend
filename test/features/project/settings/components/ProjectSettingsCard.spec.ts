@@ -16,7 +16,7 @@ describe('ProjectSettingsCard.vue', () => {
     vi.clearAllMocks();
 
     vi.spyOn(projectService, 'getProject').mockResolvedValue({ title: 'Old Project' });
-    vi.spyOn(projectService, 'updateProject').mockResolvedValue({});
+    vi.spyOn(projectService, 'updateProject').mockResolvedValue({ title: 'Old Project' });
 
     wrapper = mount(ProjectSettingsCard, {props: { projectId: 'test-project-id' },});
 

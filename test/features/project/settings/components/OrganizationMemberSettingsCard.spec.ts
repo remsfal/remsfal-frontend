@@ -15,7 +15,7 @@ vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}))
 vi.mock('@/services/OrganizationMemberService');
 
 // PrimeVue's Select emits 'change' after 'update:modelValue', so simulate both to mirror a real selection.
-async function selectRole(roleSelect: ReturnType<VueWrapper['findComponent']>, role: MemberRole) {
+async function selectRole(roleSelect: VueWrapper<InstanceType<typeof ProjectMemberRoleSelect>>, role: MemberRole) {
   await roleSelect.vm.$emit('update:modelValue', role);
   await roleSelect.vm.$emit('change');
   await flushPromises();

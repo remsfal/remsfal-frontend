@@ -17,7 +17,9 @@ describe('Service Worker Initialization', () => {
     });
 
     it('should not call register if serviceWorker is not supported', () => {
-      delete navigator.serviceWorker; // Simulate unsupported Service Worker
+      // Cast to a type where the property is optional so `delete` is allowed;
+      // `navigator.serviceWorker` is a required property on the real Navigator type.
+      delete (navigator as { serviceWorker?: unknown }).serviceWorker; // Simulate unsupported Service Worker
       registerServiceWorker();
       expect(console.error).not.toHaveBeenCalled();
     });
@@ -42,7 +44,7 @@ describe('Service Worker Initialization', () => {
     });
 
     it('should not call sync registration if serviceWorker is not supported', async () => {
-      delete navigator.serviceWorker;
+      delete (navigator as { serviceWorker?: unknown }).serviceWorker;
 
       await enableBackgroundSync();
 

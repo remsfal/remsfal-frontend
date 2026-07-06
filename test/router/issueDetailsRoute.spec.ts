@@ -105,7 +105,13 @@ describe('Router - Issue Details Route', () => {
       const matchedRoute = route.matched.find(r => r.name === 'IssueDetails');
       expect(matchedRoute).toBeDefined();
       if (matchedRoute && typeof matchedRoute.props.default === 'function') {
-        const props = matchedRoute.props.default(route);
+        // The generated per-route-name overloads on `props.default` don't accept
+        // the generic `RouteLocationResolvedGeneric` returned by `router.resolve()`,
+        // even though at runtime the function only reads `.params`. Cast the
+        // function reference itself (rather than `route`) to a signature that
+        // matches what we're actually passing.
+        const propsFn = matchedRoute.props.default as unknown as (r: typeof route) => Record<string, unknown>;
+        const props = propsFn(route);
         expect(props).toEqual({ projectId: 'test-proj', issueId: 'test-issue' });
       }
     });

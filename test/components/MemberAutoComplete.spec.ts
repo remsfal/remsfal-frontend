@@ -77,7 +77,7 @@ describe('MemberAutoComplete.vue', () => {
 
   it('shows loading state while fetching', async () => {
     // Create a delayed promise to catch loading state
-    let resolvePromise: (value: ProjectMemberListJson) => void;
+    let resolvePromise: ((value: ProjectMemberListJson) => void) | undefined;
     const delayedPromise = new Promise<ProjectMemberListJson>((resolve) => {
       resolvePromise = resolve;
     });
@@ -97,7 +97,9 @@ describe('MemberAutoComplete.vue', () => {
     expect(autoComplete.props('loading')).toBe(true);
 
     // Resolve the promise to clean up
-    resolvePromise({ members: [] });
+    // Non-null assertion: the Promise executor above runs synchronously, so
+    // resolvePromise is always assigned by this point.
+    resolvePromise!({ members: [] });
     await new Promise(resolve => setTimeout(resolve, 10));
   });
 

@@ -1,5 +1,5 @@
 import UnitsTableComponent from '@/features/project/rentalAgreements/components/UnitsTableComponent.vue';
-import { propertyService } from '@/services/PropertyService';
+import { propertyService, type PropertyListJson } from '@/services/PropertyService';
 import { mount } from '@vue/test-utils';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
@@ -19,15 +19,15 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
   });
 
   it('should load and set rentalObjects and unitTypes correctly', async () => {
-    const mockTree = {
+    const mockTree: PropertyListJson = {
       properties: [
         {
           key: '1',
-          data: { title: 'Unit A', type: 'Building' },
+          data: { title: 'Unit A', type: 'BUILDING' },
           children: [
             {
               key: '1-1',
-              data: { title: 'Unit B', type: 'Apartment' },
+              data: { title: 'Unit B', type: 'APARTMENT' },
               children: [],
             },
           ],
@@ -37,7 +37,7 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
 
     vi.mocked(propertyService.getPropertyTree).mockResolvedValueOnce(mockTree);
 
-    const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [],},});
+    const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [], isDeleteButtonEnabled: false},});
 
     // Wait for onMounted and loadDropdownOptions to finish
     await new Promise(setImmediate);
@@ -58,7 +58,7 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
   it('handles fetch error gracefully', async () => {
     vi.mocked(propertyService.getPropertyTree).mockRejectedValueOnce(new Error('fetch failed'));
 
-    const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [],},});
+    const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [], isDeleteButtonEnabled: false},});
 
     await new Promise(setImmediate); // wait for onMounted + promise
 

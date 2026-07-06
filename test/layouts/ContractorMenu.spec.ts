@@ -6,7 +6,7 @@ import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 describe('ContractorMenu.vue', () => {
   let wrapper: VueWrapper;
-  let userSessionStore;
+  let userSessionStore: ReturnType<typeof useUserSessionStore>;
 
   beforeEach(() => {
     userSessionStore = useUserSessionStore();

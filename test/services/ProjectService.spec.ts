@@ -9,19 +9,17 @@ import { testErrorHandling } from '../utils/testHelpers';
 
 const mockProjects: ProjectListJson = {
   projects: [
-    { id: 'project-1', title: 'Project 1', memberRole: 'MANAGER' },
-    { id: 'project-2', title: 'Project 2', memberRole: 'CONTRACTOR' },
+    { id: 'project-1', name: 'Project 1', memberRole: 'MANAGER' },
+    { id: 'project-2', name: 'Project 2', memberRole: 'STAFF' },
   ],
-  offset: 0,
-  limit: 10,
+  first: 0,
+  size: 10,
   total: 2,
 };
 
 const mockProject: ProjectJson = {
   id: 'project-1',
   title: 'Project 1',
-  description: 'Test project description',
-  memberRole: 'MANAGER',
 };
 
 // --- HANDLERS ---
@@ -154,11 +152,13 @@ describe('ProjectService', () => {
 
   describe('updateProject', () => {
     it('should update a project', async () => {
-      const updates: ProjectJson = {
+      // `description` is not part of the current ProjectJson schema, but this fixture predates
+      // that and the MSW handler still round-trips it; cast preserves existing test behavior.
+      const updates = {
         ...mockProject,
         title: 'Updated Title',
         description: 'Updated description',
-      };
+      } as unknown as ProjectJson;
       const result = await projectService.updateProject('project-1', updates);
       expect(result.title).toBe('Updated Title');
       expect(result.description).toBe('Updated description');

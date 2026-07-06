@@ -1,5 +1,6 @@
 import { shallowMount, VueWrapper } from '@vue/test-utils';
-import {beforeEach, describe, expect, it, vi, Mock} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import type { Mock } from 'vitest';
 import ProjectSelectionView from '@/views/ManagerView.vue';
 import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';

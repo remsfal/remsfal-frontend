@@ -12,7 +12,7 @@ const mockTreeData: RentalUnitTreeNodeJson[] = [
       type: 'PROPERTY',
       description: 'A test property',
       tenant: '',
-      usable_space: '',
+      space: undefined,
     },
     children: [
       {
@@ -22,7 +22,7 @@ const mockTreeData: RentalUnitTreeNodeJson[] = [
           type: 'SITE',
           description: 'A test site',
           tenant: '',
-          usable_space: '',
+          space: undefined,
         },
         children: [
           {
@@ -32,7 +32,7 @@ const mockTreeData: RentalUnitTreeNodeJson[] = [
               type: 'BUILDING',
               description: 'A test building',
               tenant: '',
-              usable_space: '',
+              space: undefined,
             },
             children: [
               {
@@ -42,7 +42,7 @@ const mockTreeData: RentalUnitTreeNodeJson[] = [
                   type: 'APARTMENT',
                   description: 'A test apartment',
                   tenant: 'John Doe',
-                  usable_space: '75',
+                  space: 75,
                 },
                 children: [],
               },
@@ -117,7 +117,7 @@ describe('RentableUnitsTable.vue', () => {
         type: 'APARTMENT',
         description: 'A test apartment',
         tenant: 'John Doe',
-        usable_space: '75',
+        space: 75,
       },
       children: [],
     };

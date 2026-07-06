@@ -36,6 +36,10 @@ vi.mock('@/helper/viewHelper', async (importOriginal) => {
 });
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
+// CommercialDataCard.vue tracks "no value" internally as `null` (see its
+// `!== null` detail-mode detection), while the wire type CommercialJson only
+// allows `number | undefined`. The cast preserves the `null` sentinel the
+// component actually relies on while satisfying the mock's declared type.
 const mockCommercial = {
   title: 'Testgewerbe',
   description: 'Eine Beschreibung',
@@ -46,7 +50,7 @@ const mockCommercial = {
   trafficArea: null,
   heatingSpace: 180,
   space: 210,
-};
+} as unknown as CommercialJson;
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
 
@@ -194,7 +198,7 @@ describe('CommercialDataCard.vue', () => {
   it('auto-detects detail mode when API returns detail fields', async () => {
     vi.mocked(commercialService.getCommercial).mockResolvedValue({
       ...mockCommercial,
-      netFloorArea: null,
+      netFloorArea: undefined,
       usableFloorArea: 100,
       technicalServicesArea: 50,
       trafficArea: 30,

@@ -18,6 +18,8 @@ describe('TenancieContractList', () => {
         street: 'Teststr. 1',
         zip: '12345',
         city: 'Berlin',
+        province: 'Berlin',
+        countryCode: 'DE',
       },
       rentalUnits: [
         {
@@ -43,6 +45,8 @@ describe('TenancieContractList', () => {
         street: 'Musterweg 5',
         zip: '12345',
         city: 'Berlin',
+        province: 'Berlin',
+        countryCode: 'DE',
       },
       rentalUnits: [
         {

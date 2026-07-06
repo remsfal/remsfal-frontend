@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import IssueDetailsCard from '@/features/project/issues/components/IssueDetailsCard.vue';
-import { issueService } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/services/IssueService';
 import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
 import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
 
@@ -39,7 +39,20 @@ vi.mock('@/services/OrganizationMemberService', async () => {
 });
 
 // ─── Test Data ───────────────────────────────────────────────────────────────
-const baseProps = {
+const baseProps: {
+  projectId: string;
+  issueId: string;
+  initialData: {
+    issueId: string;
+    title: string;
+    status: IssueJson['status'];
+    assigneeId: string;
+    reportedBy: string;
+    project: string;
+    issueType: IssueJson['type'];
+    tenancy: string;
+  };
+} = {
   projectId: 'project-1',
   issueId: 'issue-1',
   initialData: {
@@ -97,7 +110,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('calls updateIssue and shows success toast on save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     wrapper.vm.title = 'Updated title';
 
@@ -136,7 +149,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('sets loadingSave during save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     wrapper.vm.title = 'Updated title';
 
@@ -150,7 +163,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('updates original values after successful save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     wrapper.vm.title = 'Updated title';
 
@@ -193,7 +206,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('includes only changed fields in API payload', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     wrapper.vm.title = 'New title';
     wrapper.vm.status = 'IN_PROGRESS';
@@ -218,7 +231,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('emits saved event after successful save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     wrapper.vm.title = 'New title';
     await wrapper.vm.handleSave();
@@ -239,7 +252,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('updates all original values after save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     wrapper.vm.title = 'New title';
     wrapper.vm.status = 'CLOSED';
@@ -279,7 +292,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('handles very long title', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     const longTitle = 'A'.repeat(1000);
     wrapper.vm.title = longTitle;
@@ -294,7 +307,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('handles special characters in title', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     wrapper.vm.title = '<script>alert("XSS")</script>';
 
@@ -324,7 +337,7 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('shows correct toast message on successful save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     wrapper.vm.title = 'Updated';
     await wrapper.vm.handleSave();

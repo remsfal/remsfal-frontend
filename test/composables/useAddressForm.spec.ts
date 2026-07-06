@@ -29,6 +29,9 @@ function mockFormEvent(values: Record<string, string>, valid = true): FormSubmit
   } as unknown as FormSubmitEvent;
 }
 
+type LoadFn = Parameters<typeof useAddressForm>[0]['load'];
+type SaveFn = Parameters<typeof useAddressForm>[0]['save'];
+
 function mountForm(options: Parameters<typeof useAddressForm>[0]) {
   const TestComponent = defineComponent({
     setup() {
@@ -40,14 +43,14 @@ function mountForm(options: Parameters<typeof useAddressForm>[0]) {
 }
 
 describe('useAddressForm', () => {
-  let load: ReturnType<typeof vi.fn>;
-  let save: ReturnType<typeof vi.fn>;
+  let load: ReturnType<typeof vi.fn<LoadFn>>;
+  let save: ReturnType<typeof vi.fn<SaveFn>>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     getCityFromZipMock.mockResolvedValue(null);
-    load = vi.fn().mockResolvedValue({ ...mockAddress });
-    save = vi.fn().mockResolvedValue(undefined);
+    load = vi.fn<LoadFn>().mockResolvedValue({ ...mockAddress });
+    save = vi.fn<SaveFn>().mockResolvedValue(undefined);
   });
 
   it('populates currentValues/initialValues from load() on mount', async () => {
@@ -110,7 +113,7 @@ describe('useAddressForm', () => {
   });
 
   it('onSubmit shows an error toast and logs when save() rejects', async () => {
-    save = vi.fn().mockRejectedValue(new Error('boom'));
+    save = vi.fn<SaveFn>().mockRejectedValue(new Error('boom'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const wrapper = mountForm({
       load, save, errorLogLabel: 'custom save error' 
@@ -126,7 +129,7 @@ describe('useAddressForm', () => {
   });
 
   it('logs with loadErrorLogLabel when load() rejects', async () => {
-    load = vi.fn().mockRejectedValue(new Error('load failed'));
+    load = vi.fn<LoadFn>().mockRejectedValue(new Error('load failed'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     mountForm({
@@ -139,8 +142,8 @@ describe('useAddressForm', () => {
   });
 
   it('supports extraFieldDefaults: seeds, tracks dirty state, and includes them in the save payload', async () => {
-    load = vi.fn().mockResolvedValue({
-      ...mockAddress, owner: 'Alice', careOf: 'Bob' 
+    load = vi.fn<LoadFn>().mockResolvedValue({
+      ...mockAddress, owner: 'Alice', careOf: 'Bob'
     });
     const wrapper = mountForm({
       load, save, extraFieldDefaults: { owner: '', careOf: '' },

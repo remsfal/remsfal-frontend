@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, config } from '@vue/test-utils';
 import { reactive, nextTick } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
-import AppMenuItem from '@/layouts/components/AppMenuItem.vue';
+import AppMenuItem, { type MenuItem } from '@/layouts/components/AppMenuItem.vue';
 import { useLayout } from '@/layouts/composables/layout';
 
 // Remove global router - we inject a controlled route via routeLocationKey
@@ -24,7 +24,7 @@ describe('AppMenuItem.vue', () => {
     path: '/', name: 'Home', params: {}, query: {} 
   };
 
-  const mountItem = (item: object, extraProps: object = {}, route = defaultRoute) => {
+  const mountItem = (item: MenuItem, extraProps: object = {}, route = defaultRoute) => {
     const routeRef = reactive(route);
     return mount(AppMenuItem, {
       props: {
@@ -151,7 +151,7 @@ describe('AppMenuItem.vue', () => {
 
   describe('icons', () => {
     it('renders a PrimeIcon <i> element for pi icon type', () => {
-      const item = {
+      const item: MenuItem = {
         label: 'managerMenu.myData.overview',
         to: '/manager/dashboard',
         icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
@@ -163,7 +163,7 @@ describe('AppMenuItem.vue', () => {
     });
 
     it('renders FontAwesomeIcon for fa icon type', () => {
-      const item = {
+      const item: MenuItem = {
         label: 'projectMenu.issueManagement.mine',
         to: '/projects/1/issues',
         icon: { type: 'fa', name: ['fas', 'list'] },

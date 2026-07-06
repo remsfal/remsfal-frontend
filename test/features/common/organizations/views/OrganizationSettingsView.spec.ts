@@ -53,7 +53,7 @@ const mockOrg = {
   id: 'org-123',
   name: 'Test GmbH',
   address: {
-    street: 'Musterstr. 1', city: 'Berlin', zip: '10115', country: 'DE' 
+    street: 'Musterstr. 1', city: 'Berlin', zip: '10115', province: 'Berlin', countryCode: 'DE'
   },
 }
 
@@ -124,7 +124,7 @@ describe('OrganizationSettingsView.vue', () => {
     await flushPromises()
 
     const address: AddressJson = {
-      street: 'Neue Str. 2', city: 'Hamburg', zip: '20095', country: 'DE' 
+      street: 'Neue Str. 2', city: 'Hamburg', zip: '20095', province: 'Hamburg', countryCode: 'DE'
     }
     expect(capturedSaveAddress).toBeDefined()
     await capturedSaveAddress!(address)

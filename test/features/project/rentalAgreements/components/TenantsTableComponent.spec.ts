@@ -1,5 +1,7 @@
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import TenantsTableComponent from '@/features/project/rentalAgreements/components/TenantsTableComponent.vue';
+import type { TenantJson } from '@/services/TenantService';
 
 describe('TenantsTableComponent', () => {
   const tenantsMock = [{
@@ -21,7 +23,9 @@ describe('TenantsTableComponent', () => {
     await wrapper.vm.onCellEditComplete({ newData, index: 0 });
 
     expect(wrapper.emitted('onChange')).toBeTruthy();
-    expect(wrapper.emitted('onChange')![0][0][0].firstName).toBe('Moritz');
+    // emitted() payload types are erased to `unknown` by @vue/test-utils; narrow to the known emit payload shape
+    const onChangePayload = wrapper.emitted('onChange')![0][0] as unknown as TenantJson[];
+    expect(onChangePayload[0].firstName).toBe('Moritz');
   });
 
   it('adds a new row when button is clicked', async () => {

@@ -23,7 +23,7 @@ describe('ProjectContractorDetailView', () => {
       id: 'c-1',
       companyName: 'Test GmbH',
       address: {
-        street: 'Teststr. 1', zip: '10115', city: 'Berlin', countryCode: 'DE' 
+        street: 'Teststr. 1', zip: '10115', city: 'Berlin', province: 'Berlin', countryCode: 'DE'
       },
     });
     vi.spyOn(projectContractorService, 'updateContractor').mockResolvedValue({ id: 'c-1', companyName: 'Test GmbH' });
@@ -62,7 +62,7 @@ describe('ProjectContractorDetailView', () => {
     const result = await loadAddress();
     expect(projectContractorService.getContractor).toHaveBeenCalledWith('proj-1', 'c-1');
     expect(result).toEqual({
-      street: 'Teststr. 1', zip: '10115', city: 'Berlin', countryCode: 'DE' 
+      street: 'Teststr. 1', zip: '10115', city: 'Berlin', province: 'Berlin', countryCode: 'DE'
     });
   });
 
