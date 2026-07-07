@@ -864,6 +864,7 @@
   "contractor.new.phone": "Telefon",
   "contractor.new.contactPerson": "Ansprechpartner",
   "contractor.new.trade": "Gewerk",
+  "contractor.new.remarks": "Bemerkungen",
   "contractor.new.validation.name": "Bitte geben Sie einen Organisationsnamen ein.",
   "contractor.new.validation.email": "Bitte geben Sie eine gültige E-Mail Adresse ein.",
   "contractor.new.success": "Auftragnehmer hinzugefügt",

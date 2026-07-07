@@ -861,6 +861,7 @@
   "contractor.new.phone": "Phone",
   "contractor.new.contactPerson": "Contact Person",
   "contractor.new.trade": "Trade",
+  "contractor.new.remarks": "Remarks",
   "contractor.new.validation.name": "Please enter an organization name.",
   "contractor.new.validation.email": "Please enter a valid email address.",
   "contractor.new.success": "Contractor added",
