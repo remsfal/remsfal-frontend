@@ -56,11 +56,9 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-projects') {
-    event.waitUntil(
-      syncProjects().catch((error) => {
-        console.error('[Service Worker] Sync-projects failed:', error);
-      }),
-    );
+    // syncProjects() catches and logs its own errors internally and never rejects,
+    // so no .catch() is needed here.
+    event.waitUntil(syncProjects());
   } else {
     console.warn('[Service Worker] Unknown sync tag:', event.tag);
   }
