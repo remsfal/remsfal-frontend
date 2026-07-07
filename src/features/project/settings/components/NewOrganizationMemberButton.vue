@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import { useOrganizationStore } from '@/stores/OrganizationStore';
-import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
+import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import { type MemberRole } from '@/services/ProjectMemberService';
 import { organizationMemberService } from '@/services/OrganizationMemberService';
 import BaseDialog from '@/components/common/BaseDialog.vue';

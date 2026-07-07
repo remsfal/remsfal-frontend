@@ -169,7 +169,7 @@ watch(
           </div>
         </template>
         <template #content>
-          <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 ">
+          <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 mt-4">
             <dl class="space-y-2 text-base text-gray-600">
               <div v-if="issue.id" class="flex items-center justify-start gap-2">
                 <dt class="font-medium text-gray-500">

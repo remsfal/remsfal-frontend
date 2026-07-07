@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import QuotationRequestCard from '@/features/project/issues/components/QuotationRequestCard.vue';
-import { quotationRequestService } from '@/services/QuotationRequestService';
+import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
 
-const mockRequests = [
+const mockRequests: QuotationRequestJson[] = [
   {
     id: 'qr-1',
     contractorId: 'c-1',

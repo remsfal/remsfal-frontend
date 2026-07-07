@@ -1,5 +1,8 @@
-import { mount } from '@vue/test-utils';
+import { describe, it, expect } from 'vitest';
+import { mount, flushPromises } from '@vue/test-utils';
+import DataTable from 'primevue/datatable';
 import TenantsTableComponent from '@/features/project/rentalAgreements/components/TenantsTableComponent.vue';
+import type { TenantJson } from '@/services/TenantService';
 
 describe('TenantsTableComponent', () => {
   const tenantsMock = [{
@@ -18,10 +21,12 @@ describe('TenantsTableComponent', () => {
     const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: false },});
 
     const newData = { ...tenantsMock[0], firstName: 'Moritz' };
-    await wrapper.vm.onCellEditComplete({ newData, index: 0 });
+    await wrapper.findComponent(DataTable).vm.$emit('cellEditComplete', { newData, index: 0 });
 
     expect(wrapper.emitted('onChange')).toBeTruthy();
-    expect(wrapper.emitted('onChange')![0][0][0].firstName).toBe('Moritz');
+    // emitted() payload types are erased to `unknown` by @vue/test-utils; narrow to the known emit payload shape
+    const onChangePayload = wrapper.emitted('onChange')![0][0] as unknown as TenantJson[];
+    expect(onChangePayload[0].firstName).toBe('Moritz');
   });
 
   it('adds a new row when button is clicked', async () => {
@@ -30,8 +35,10 @@ describe('TenantsTableComponent', () => {
     await wrapper.find('button').trigger('click');
 
     // toBe(3) because onMounted adds a tenant, tenantsMock adds a tenant and the button click adds another one
-    expect(wrapper.vm.localTenants.length).toBe(3);
-    expect(wrapper.vm.localTenants[1].firstName).toBe('');
+    const rows = wrapper.findAll('tbody tr');
+    expect(rows.length).toBe(3);
+    const secondRowCells = rows[1].findAll('td');
+    expect(secondRowCells[0].text()).toBe('');
   });
 
   it('shows delete button when isDeleteButtonEnabled is true', () => {
@@ -49,10 +56,11 @@ describe('TenantsTableComponent', () => {
   it('deletes a row and emits change', async () => {
     const wrapper = mount(TenantsTableComponent, {props: { tenants: tenantsMock, isDeleteButtonEnabled: true },});
 
-    await wrapper.vm.deleteRow(0);
+    await wrapper.find('[class*="pi-trash"]').trigger('click');
+    await flushPromises();
 
     //same prodecure as above, but now we delete the first row
-    expect(wrapper.vm.localTenants.length).toBe(1);
+    expect(wrapper.findAll('tbody tr').length).toBe(1);
     expect(wrapper.emitted('onChange')).toBeTruthy();
   });
 });

@@ -12,11 +12,27 @@ export const organizationMemberHandlers = [
             organizationId: '11111111-1111-1111-1111-111111111111',
             organizationName: 'Test GmbH',
             role: 'MANAGER',
+            members: [
+              {
+                id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+                name: 'Org Mitglied Eins',
+                email: 'org-member-1@example.com',
+                role: 'MANAGER',
+              },
+            ],
           },
           {
             organizationId: '22222222-2222-2222-2222-222222222222',
             organizationName: 'Muster AG',
             role: 'STAFF',
+            members: [
+              {
+                id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+                name: 'Org Mitglied Zwei',
+                email: 'org-member-2@example.com',
+                role: 'STAFF',
+              },
+            ],
           },
         ],
       },

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import OpenRequestsCard from '@/features/contractor/offerManagement/components/OpenRequestsCard.vue';
-import { quotationRequestService } from '@/services/QuotationRequestService';
+import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
 
-const mockRequests = [
+const mockRequests: QuotationRequestJson[] = [
   {
     id: 'qr-1',
     scopeOfWork: 'Dachrinne reparieren',

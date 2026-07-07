@@ -3,14 +3,14 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
 import Step2UnitsForm from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import type { SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
-import { propertyService } from '@/services/PropertyService';
+import { propertyService, type PropertyListJson } from '@/services/PropertyService';
 
 vi.mock('@/services/PropertyService', () => ({propertyService: {getPropertyTree: vi.fn(),},}));
 
 describe('Step2UnitsForm', () => {
   let wrapper: VueWrapper;
 
-  const mockPropertyTree = {
+  const mockPropertyTree: PropertyListJson = {
     properties: [
       {
         key: 'property-1',

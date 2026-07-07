@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import AddressCard from '@/components/AddressCard.vue';
+import type { AddressJson } from '@/services/AddressService';
 
 vi.mock('@/services/AddressService', () => ({
   default: vi.fn().mockImplementation(() =>
@@ -20,13 +21,13 @@ const mockAddress = {
 };
 
 describe('AddressCard.vue', () => {
-  let loadAddress: ReturnType<typeof vi.fn>;
-  let saveAddress: ReturnType<typeof vi.fn>;
+  let loadAddress: ReturnType<typeof vi.fn<() => Promise<AddressJson | undefined>>>;
+  let saveAddress: ReturnType<typeof vi.fn<(addr: AddressJson) => Promise<void>>>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    loadAddress = vi.fn().mockResolvedValue({ ...mockAddress });
-    saveAddress = vi.fn().mockResolvedValue(undefined);
+    loadAddress = vi.fn<() => Promise<AddressJson | undefined>>().mockResolvedValue({ ...mockAddress });
+    saveAddress = vi.fn<(addr: AddressJson) => Promise<void>>().mockResolvedValue(undefined);
   });
 
   const mountCard = (overrides?: Partial<{ title: string }>) =>
@@ -52,7 +53,7 @@ describe('AddressCard.vue', () => {
   });
 
   it('renders without errors when loadAddress returns undefined', async () => {
-    loadAddress = vi.fn().mockResolvedValue(undefined);
+    loadAddress = vi.fn<() => Promise<AddressJson | undefined>>().mockResolvedValue(undefined);
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.find('form').exists()).toBe(true);
@@ -123,7 +124,7 @@ describe('AddressCard.vue', () => {
   });
 
   it('shows error toast when saveAddress rejects', async () => {
-    saveAddress = vi.fn().mockRejectedValue(new Error('Network error'));
+    saveAddress = vi.fn<(addr: AddressJson) => Promise<void>>().mockRejectedValue(new Error('Network error'));
     const wrapper = mountCard();
     await flushPromises();
     await wrapper.find('input[name="street"]').setValue('Teststraße 1');
@@ -134,7 +135,7 @@ describe('AddressCard.vue', () => {
   });
 
   it('does not throw when loadAddress rejects', async () => {
-    loadAddress = vi.fn().mockRejectedValue(new Error('Not found'));
+    loadAddress = vi.fn<() => Promise<AddressJson | undefined>>().mockRejectedValue(new Error('Not found'));
     const wrapper = mountCard();
     await expect(flushPromises()).resolves.not.toThrow();
     expect(wrapper.exists()).toBe(true);

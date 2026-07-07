@@ -17,7 +17,7 @@ describe('ProjectMenu.vue', () => {
   beforeEach(() => {
     projectStore = useProjectStore();
     sessionStore = useUserSessionStore();
-    projectStore.projectId = undefined;
+    projectStore.selectedProject = undefined;
     sessionStore.user = null;
   });
 
@@ -45,7 +45,7 @@ describe('ProjectMenu.vue', () => {
   });
 
   it('uses "/" as fallback route when no projectId is set', async () => {
-    projectStore.projectId = undefined;
+    projectStore.selectedProject = undefined;
     wrapper = mountMenu();
     await wrapper.vm.$nextTick();
 
@@ -55,7 +55,9 @@ describe('ProjectMenu.vue', () => {
   });
 
   it('builds routes with projectId when projectId is set', async () => {
-    projectStore.projectId = 'proj-123';
+    projectStore.selectedProject = {
+      id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER' 
+    };
     wrapper = mountMenu();
     await wrapper.vm.$nextTick();
 
@@ -66,7 +68,9 @@ describe('ProjectMenu.vue', () => {
   });
 
   it('includes user id in issues URL when user is set', async () => {
-    projectStore.projectId = 'proj-123';
+    projectStore.selectedProject = {
+      id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER' 
+    };
     sessionStore.user = { id: 'user-42', email: 'manager@example.com' } as ReturnType<typeof useUserSessionStore>['user'];
     wrapper = mountMenu();
     await wrapper.vm.$nextTick();
@@ -75,7 +79,7 @@ describe('ProjectMenu.vue', () => {
   });
 
   it('updates menu routes when projectId changes', async () => {
-    projectStore.projectId = undefined;
+    projectStore.selectedProject = undefined;
     wrapper = mountMenu();
     await wrapper.vm.$nextTick();
 
@@ -83,7 +87,9 @@ describe('ProjectMenu.vue', () => {
     expect(wrapper.html()).not.toContain('/projects/proj-456/dashboard');
 
     // Change projectId
-    projectStore.projectId = 'proj-456';
+    projectStore.selectedProject = {
+      id: 'proj-456', name: 'Test Project', memberRole: 'MANAGER' 
+    };
     await flushPromises();
 
     expect(wrapper.html()).toContain('/projects/proj-456/dashboard');

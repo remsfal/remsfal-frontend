@@ -1,7 +1,7 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import RentableUnitsCard from '@/features/project/rentableUnits/components/RentableUnitsCard.vue';
-import { type PropertyList, propertyService } from '@/services/PropertyService';
+import { type PropertyListJson, propertyService } from '@/services/PropertyService';
 
 vi.mock('@/services/PropertyService');
 
@@ -18,15 +18,12 @@ describe('RentableUnitsCard', () => {
         {
           key: '1',
           data: {
-            type: 'PROPERTY', title: 'Root', usable_space: 100 
+            type: 'PROPERTY', title: 'Root', space: 100
           },
           children: [],
         },
       ],
-      first: 0,
-      size: 1,
-      total: 1,
-    } as PropertyList);
+    } as PropertyListJson);
 
     wrapper = mount(RentableUnitsCard, {
       props: { projectId: '123' },

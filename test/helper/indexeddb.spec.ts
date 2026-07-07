@@ -1,6 +1,6 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import * as idbHelper from '@/helper/indexeddb';
-import { openDB } from 'idb';
+import { openDB, type IDBPDatabase } from 'idb';
 
 vi.mock('idb', () => ({openDB: vi.fn(),}));
 
@@ -20,7 +20,8 @@ describe('IndexedDB Helper Functions', () => {
     };
 
     // Mock the implementation of openDB to return the mock database
-    openDB.mockResolvedValue(mockDb);
+    // (mockDb only implements the methods idbHelper actually calls, hence the cast)
+    vi.mocked(openDB).mockResolvedValue(mockDb as unknown as IDBPDatabase<unknown>);
   });
 
   it('should save a project to IndexedDB', async () => {

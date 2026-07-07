@@ -48,7 +48,7 @@ describe('IssueService with MSW (http)', () => {
   test('getIssues handles optional parameters correctly', async () => {
     const issueList = await issueService.getIssues(projectId);
     expect(issueList.issues).toBeDefined();
-    expect(issueList.issues.length).toBeGreaterThan(0);
+    expect(issueList.issues?.length).toBeGreaterThan(0);
     expect(issueList.first).toBeDefined();
     expect(issueList.size).toBeDefined();
   });

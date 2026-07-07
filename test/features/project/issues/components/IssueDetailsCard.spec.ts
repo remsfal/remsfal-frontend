@@ -1,8 +1,12 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import IssueDetailsCard from '@/features/project/issues/components/IssueDetailsCard.vue';
-import { issueService } from '@/services/IssueService';
-import { projectMemberService, type ProjectMemberList } from '@/services/ProjectMemberService';
+import Select from 'primevue/select';
+import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
+import { issueService, type IssueJson } from '@/services/IssueService';
+import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
+import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
 const addMock = vi.fn();
@@ -18,27 +22,47 @@ vi.mock('@/services/IssueService', async () => {
   };
 });
 
+// MemberAutoComplete (rendered as a real child) loads its own members via these services.
 vi.mock('@/services/ProjectMemberService', async () => {
   const actual = await vi.importActual<typeof import('@/services/ProjectMemberService')>('@/services/ProjectMemberService');
   return {
     ...actual,
-    projectMemberService: {
-      getMembers: vi.fn().mockResolvedValue({
-        members: [
-          {
-            id: 'user-1', name: 'John Doe', email: 'john@example.com', role: 'MANAGER',
-          },
-          {
-            id: 'reporter-1', name: 'Jane Smith', email: 'jane@example.com', role: 'STAFF',
-          },
-        ],
-      }),
-    },
+    projectMemberService: {getMembers: vi.fn(),},
   };
 });
 
+vi.mock('@/services/OrganizationMemberService', async () => {
+  const actual = await vi.importActual<typeof import('@/services/OrganizationMemberService')>(
+    '@/services/OrganizationMemberService',
+  );
+  return {
+    ...actual,
+    organizationMemberService: {getOrganizations: vi.fn(),},
+  };
+});
+
+// ─── Test Helpers ────────────────────────────────────────────────────────────
+function findSaveButton(w: VueWrapper) {
+  const button = w.findAll('button').find((b) => b.text().includes('Speichern'));
+  if (!button) throw new Error('Save button not found');
+  return button;
+}
+
 // ─── Test Data ───────────────────────────────────────────────────────────────
-const baseProps = {
+const baseProps: {
+  projectId: string;
+  issueId: string;
+  initialData: {
+    issueId: string;
+    title: string;
+    status: IssueJson['status'];
+    assigneeId: string;
+    reportedBy: string;
+    project: string;
+    issueType: IssueJson['type'];
+    tenancy: string;
+  };
+} = {
   projectId: 'project-1',
   issueId: 'issue-1',
   initialData: {
@@ -46,7 +70,7 @@ const baseProps = {
     title: 'Old title',
     status: 'OPEN',
     assigneeId: 'user-1',
-    reporter: 'reporter-1',
+    reportedBy: 'Jane Smith',
     project: 'Project A',
     issueType: 'TASK',
     tenancy: 'tenant-1',
@@ -60,17 +84,16 @@ describe('IssueDetailsCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Re-mock projectMemberService for each test
     vi.spyOn(projectMemberService, 'getMembers').mockResolvedValue({
       members: [
         {
           id: 'user-1', name: 'John Doe', email: 'john@example.com', role: 'MANAGER',
         },
-        {
-          id: 'reporter-1', name: 'Jane Smith', email: 'jane@example.com', role: 'STAFF',
-        },
       ],
-    } as ProjectMemberList);
+    } as ProjectMemberListJson);
+
+    vi.spyOn(organizationMemberService, 'getOrganizations')
+      .mockResolvedValue({ organizations: [] } as OrganizationMemberListJson);
 
     wrapper = mount(IssueDetailsCard, {props: baseProps,});
   });
@@ -83,25 +106,24 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('save button is disabled when no changes are made', async () => {
-    await wrapper.vm.$nextTick();
-    const buttons = wrapper.findAll('button');
-    const saveButton = buttons.find(b => b.text().includes('Speichern'));
-    expect(saveButton?.attributes('disabled')).toBeDefined();
+    await nextTick();
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('enables save button when title changes', () => {
-    wrapper.vm.title = 'New title';
-    expect(wrapper.vm.canSave).toBe(true);
+  test('enables save button when title changes', async () => {
+    await wrapper.find('#issue-title').setValue('New title');
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('calls updateIssue and shows success toast on save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
-    wrapper.vm.title = 'Updated title';
+    await wrapper.find('#issue-title').setValue('Updated title');
 
-    await wrapper.vm.handleSave();
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       'issue-1',
@@ -121,9 +143,10 @@ describe('IssueDetailsCard.vue', () => {
   test('shows error toast when API call fails', async () => {
     vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
 
-    wrapper.vm.title = 'Broken title';
+    await wrapper.find('#issue-title').setValue('Broken title');
 
-    await wrapper.vm.handleSave();
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expect(addMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -136,69 +159,93 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('sets loadingSave during save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    let resolveUpdate!: (value: IssueJson) => void;
+    vi.spyOn(issueService, 'updateIssue').mockImplementationOnce(
+      () => new Promise<IssueJson>((resolve) => { resolveUpdate = resolve; }),
+    );
 
-    wrapper.vm.title = 'Updated title';
+    await wrapper.find('#issue-title').setValue('Updated title');
+    const saveButton = findSaveButton(wrapper);
 
-    const promise = wrapper.vm.handleSave();
-    expect(wrapper.vm.loadingSave).toBe(true);
+    const clickPromise = saveButton.trigger('click');
+    await nextTick();
+    // Button is disabled during the save either way (loadingSave=true), but the
+    // loading spinner (bound directly to the `loading` prop = loadingSave) is the
+    // signal that isn't also driven by canSave, so it's what actually pins down
+    // loadingSave's own transition rather than the disabled attribute (which stays
+    // true after a successful save anyway, since canSave flips to false too).
+    expect(saveButton.attributes('disabled')).toBeDefined();
+    expect(saveButton.classes()).toContain('p-button-loading');
 
-    await promise;
+    resolveUpdate({} as IssueJson);
+    await clickPromise;
+    await flushPromises();
 
-    expect(wrapper.vm.loadingSave).toBe(false);
+    expect(saveButton.classes()).not.toContain('p-button-loading');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('updates original values after successful save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
-    wrapper.vm.title = 'Updated title';
+    await wrapper.find('#issue-title').setValue('Updated title');
 
-    await wrapper.vm.handleSave();
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
-    expect(wrapper.vm.originalTitle).toBe('Updated title');
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('does not call API when no changes are made', async () => {
-    await wrapper.vm.handleSave();
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expect(issueService.updateIssue).not.toHaveBeenCalled();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('detects change in status field', () => {
-    wrapper.vm.status = 'CLOSED';
-    expect(wrapper.vm.canSave).toBe(true);
+  test('detects change in status field', async () => {
+    await wrapper.findAllComponents(Select)[0].vm.$emit('update:modelValue', 'CLOSED');
+    await nextTick();
+
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('detects change in assigneeId field', () => {
-    wrapper.vm.assigneeId = 'user-2';
-    expect(wrapper.vm.canSave).toBe(true);
+  test('detects change in assigneeId field', async () => {
+    await wrapper.findComponent(MemberAutoComplete).vm.$emit('update:modelValue', 'user-2');
+    await nextTick();
+
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('detects change in issueType field', () => {
-    wrapper.vm.issueType = 'DEFECT';
-    expect(wrapper.vm.canSave).toBe(true);
+  test('detects change in issueType field', async () => {
+    await wrapper.findAllComponents(Select)[1].vm.$emit('update:modelValue', 'DEFECT');
+    await nextTick();
+
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('detects change in tenancy field', () => {
-    wrapper.vm.tenancy = 'tenant-2';
-    expect(wrapper.vm.canSave).toBe(true);
+  test('detects change in tenancy field', async () => {
+    await wrapper.find('#issue-tenancy').setValue('tenant-2');
+
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
 
   // ───────────────────────────────────────────────────────────────────────────
   test('includes only changed fields in API payload', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
-    wrapper.vm.title = 'New title';
-    wrapper.vm.status = 'IN_PROGRESS';
+    await wrapper.find('#issue-title').setValue('New title');
+    await wrapper.findAllComponents(Select)[0].vm.$emit('update:modelValue', 'IN_PROGRESS');
+    await nextTick();
 
-    await wrapper.vm.handleSave();
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       'issue-1',
@@ -207,21 +254,12 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('does not save when loadingSave is true', async () => {
-    wrapper.vm.title = 'New title';
-    wrapper.vm.loadingSave = true;
-
-    await wrapper.vm.handleSave();
-
-    expect(issueService.updateIssue).not.toHaveBeenCalled();
-  });
-
-  // ───────────────────────────────────────────────────────────────────────────
   test('emits saved event after successful save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
-    wrapper.vm.title = 'New title';
-    await wrapper.vm.handleSave();
+    await wrapper.find('#issue-title').setValue('New title');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expect(wrapper.emitted()).toHaveProperty('saved');
     expect(wrapper.emitted('saved')![0]).toEqual([]);
@@ -231,46 +269,45 @@ describe('IssueDetailsCard.vue', () => {
   test('resets loadingSave to false after error', async () => {
     vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
 
-    wrapper.vm.title = 'New title';
-    await wrapper.vm.handleSave();
+    await wrapper.find('#issue-title').setValue('New title');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
-    expect(wrapper.vm.loadingSave).toBe(false);
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('updates all original values after save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
-    wrapper.vm.title = 'New title';
-    wrapper.vm.status = 'CLOSED';
-    wrapper.vm.issueType = 'DEFECT';
+    await wrapper.find('#issue-title').setValue('New title');
+    await wrapper.findAllComponents(Select)[0].vm.$emit('update:modelValue', 'CLOSED');
+    await nextTick();
+    await wrapper.findAllComponents(Select)[1].vm.$emit('update:modelValue', 'DEFECT');
+    await nextTick();
 
-    await wrapper.vm.handleSave();
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
-    expect(wrapper.vm.originalTitle).toBe('New title');
-    expect(wrapper.vm.originalStatus).toBe('CLOSED');
-    expect(wrapper.vm.originalIssueType).toBe('DEFECT');
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('handles empty string values', () => {
-    wrapper.vm.title = '';
-    expect(wrapper.vm.canSave).toBe(true);
-  });
+  test('handles empty string values', async () => {
+    await wrapper.find('#issue-title').setValue('');
 
-  // ───────────────────────────────────────────────────────────────────────────
-  test('handles undefined field values', async () => {
-    wrapper.vm.tenancy = undefined as unknown as string;
-    expect(wrapper.vm.canSave).toBe(true);
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('prevents concurrent saves', async () => {
     vi.spyOn(issueService, 'updateIssue').mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
 
-    wrapper.vm.title = 'First';
-    const promise1 = wrapper.vm.handleSave();
-    const promise2 = wrapper.vm.handleSave();
+    await wrapper.find('#issue-title').setValue('First');
+    const saveButton = findSaveButton(wrapper);
+
+    const promise1 = saveButton.trigger('click');
+    const promise2 = saveButton.trigger('click');
 
     await Promise.all([promise1, promise2]);
 
@@ -279,12 +316,13 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('handles very long title', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     const longTitle = 'A'.repeat(1000);
-    wrapper.vm.title = longTitle;
+    await wrapper.find('#issue-title').setValue(longTitle);
 
-    await wrapper.vm.handleSave();
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       'issue-1',
@@ -294,11 +332,12 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('handles special characters in title', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
-    wrapper.vm.title = '<script>alert("XSS")</script>';
+    await wrapper.find('#issue-title').setValue('<script>alert("XSS")</script>');
 
-    await wrapper.vm.handleSave();
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       'issue-1',
@@ -310,24 +349,21 @@ describe('IssueDetailsCard.vue', () => {
   test('preserves field values after failed save', async () => {
     vi.spyOn(issueService, 'updateIssue').mockRejectedValue(new Error('fail'));
 
-    wrapper.vm.title = 'Failed title';
-    await wrapper.vm.handleSave();
+    await wrapper.find('#issue-title').setValue('Failed title');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
-    expect(wrapper.vm.title).toBe('Failed title');
-    expect(wrapper.vm.originalTitle).toBe('Old title');
-  });
-
-  // ───────────────────────────────────────────────────────────────────────────
-  test('canSave returns false when all fields match originals', () => {
-    expect(wrapper.vm.canSave).toBe(false);
+    expect(wrapper.find<HTMLInputElement>('#issue-title').element.value).toBe('Failed title');
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('shows correct toast message on successful save', async () => {
-    vi.spyOn(issueService, 'updateIssue').mockResolvedValue(undefined);
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
-    wrapper.vm.title = 'Updated';
-    await wrapper.vm.handleSave();
+    await wrapper.find('#issue-title').setValue('Updated');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expect(addMock).toHaveBeenCalledWith(
       expect.objectContaining({severity: 'success',}),
@@ -335,33 +371,22 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('resolves reporter name from member ID', async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(wrapper.vm.reporterName).toBe('Jane Smith');
+  test('displays reportedBy from initialData as reporter name', () => {
+    expect(wrapper.find<HTMLInputElement>('#issue-reporter').element.value).toBe('Jane Smith');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('shows UUID fallback if member not found', async () => {
-    const wrapperWithDeletedMember = mount(IssueDetailsCard, {
+  test('shows noReporter fallback when reportedBy is empty', () => {
+    const wrapperWithoutReporter = mount(IssueDetailsCard, {
       props: {
         ...baseProps,
         initialData: {
           ...baseProps.initialData,
-          reporter: 'deleted-user-999',
+          reportedBy: '',
         },
       },
     });
 
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(wrapperWithDeletedMember.vm.reporterName).toBe('deleted-user-999');
-  });
-
-  // ───────────────────────────────────────────────────────────────────────────
-  test('loads members on mount', async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(projectMemberService.getMembers).toHaveBeenCalledWith('project-1');
+    expect(wrapperWithoutReporter.find<HTMLInputElement>('#issue-reporter').element.value).toBe('Kein Melder');
   });
 });

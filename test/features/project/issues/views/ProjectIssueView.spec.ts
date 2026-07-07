@@ -149,9 +149,27 @@ describe("ProjectIssueView.vue", () => {
     expect(issueService.getIssue).toHaveBeenCalledTimes(2);
   });
 
-  test("sets description after fetching issue", () => {
-    // match the actual mock used in beforeEach
-    expect(wrapper.vm.description).toBe("Test description");
+  test("sets description after fetching issue", async () => {
+    const localWrapper = mount(ProjectIssueView, {
+      props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
+      global: {
+        stubs: {
+          IssueDetailsCard: true,
+          IssueDescriptionCard: {
+            props: ["initialDescription"],
+            template:
+              '<div data-test="description">{{ initialDescription }}</div>',
+          },
+          IssueAttachmentCard: true,
+          QuotationRequestCard: true,
+        },
+      },
+    });
+    await flushPromises();
+
+    expect(localWrapper.find('[data-test="description"]').text()).toBe(
+      "Test description"
+    );
   });
   
   test("loading spinner shows while fetching issue", async () => {
