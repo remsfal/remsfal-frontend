@@ -1,6 +1,6 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewProjectDialog from '@/components/NewProjectDialog.vue';
+import NewProjectDialog from '@/features/manager/projects/components/NewProjectDialog.vue';
 import { projectService } from '@/services/ProjectService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useRouter } from 'vue-router';
