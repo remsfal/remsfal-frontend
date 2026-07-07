@@ -53,6 +53,33 @@ describe('TenantIssueDetails component', () => {
     expect(wrapper.findComponent(TenantIssueAttachmentsCard).exists()).toBe(true);
   });
 
+  it('passes issue.id to attachments card and falls back to route prop issueId', async () => {
+    vi.mocked(issueService.getIssue)
+      .mockResolvedValueOnce({
+        id: 'issue-from-entity',
+        title: 'Mit ID',
+        status: 'OPEN',
+        type: 'DEFECT',
+        agreementId: 'agreement-1',
+      })
+      .mockResolvedValueOnce({
+        title: 'Ohne ID',
+        status: 'OPEN',
+        type: 'DEFECT',
+        agreementId: 'agreement-1',
+      });
+
+    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-from-route' } });
+
+    await flushPromises();
+    expect(wrapper.findComponent(TenantIssueAttachmentsCard).props('issueId')).toBe('issue-from-entity');
+
+    await wrapper.setProps({ issueId: 'issue-from-route-fallback' });
+    await flushPromises();
+    expect(wrapper.findComponent(TenantIssueAttachmentsCard).props('issueId')).toBe('issue-from-route-fallback');
+  });
+
   it('reloads issue details when issueId prop changes', async () => {
     vi.mocked(issueService.getIssue)
       .mockResolvedValueOnce({

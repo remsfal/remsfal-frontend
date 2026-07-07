@@ -6,8 +6,7 @@ vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
 describe('TenantIssueTimelineCard.vue', () => {
   it('renders title and timeline placeholder', () => {
-    const wrapper = mount(TenantIssueTimelineCard,
-      { global: { stubs: { BaseCard: { template: '<div><slot name="title" /><slot name="content" /></div>' } } } });
+    const wrapper = mount(TenantIssueTimelineCard);
 
     expect(wrapper.text()).toContain('tenantIssues.timeline.title');
     expect(wrapper.text()).toContain('tenantIssues.timeline.placeholder');

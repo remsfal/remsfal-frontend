@@ -12,15 +12,6 @@ describe('TenantIssueAttachmentsCard.vue', () => {
         issueId,
         attachments,
       },
-      global: {
-        stubs: {
-          BaseCard: { template: '<div><slot name="title" /><slot name="content" /></div>' },
-          Image: {
-            props: ['src', 'alt'],
-            template: '<img :src="src" :alt="alt" data-test="image-preview" />',
-          },
-        },
-      },
     });
   }
 
@@ -29,7 +20,7 @@ describe('TenantIssueAttachmentsCard.vue', () => {
 
     expect(wrapper.text()).toContain('issueDetails.noAttachments');
     expect(wrapper.find('[data-test="non-image-tile"]').exists()).toBe(false);
-    expect(wrapper.find('[data-test="image-preview"]').exists()).toBe(false);
+    expect(wrapper.find('img').exists()).toBe(false);
   });
 
   it('groups non-image attachments by extension and uses unknown marker fallback', () => {
@@ -88,7 +79,7 @@ describe('TenantIssueAttachmentsCard.vue', () => {
     ], 'issue-from-prop');
 
     const link = wrapper.get('a');
-    const image = wrapper.get('[data-test="image-preview"]');
+    const image = wrapper.get('img');
 
     expect(link.attributes('href')).toBe('/ticketing/v1/issues/issue-from-prop/attachments//');
     expect(image.attributes('src')).toBe('/ticketing/v1/issues/issue-from-prop/attachments//');

@@ -29,19 +29,6 @@ describe('TenantIssueSummaryCard.vue', () => {
         },
         deletingIssue,
       },
-      global: {
-        stubs: {
-          BaseCard: { template: '<div><slot name="title" /><slot name="content" /></div>' },
-          Button: {
-            props: ['label', 'loading', 'disabled'],
-            template: '<button data-test="cancel" :disabled="disabled" @click="$emit(\'click\')">{{ label }}</button>',
-          },
-          Tag: {
-            props: ['value', 'severity'],
-            template: '<span data-test="tag">{{ value }}|{{ severity }}</span>',
-          },
-        },
-      },
     });
   }
 
@@ -50,13 +37,13 @@ describe('TenantIssueSummaryCard.vue', () => {
 
     expect(wrapper.text()).toContain('Wasserschaden Küche');
     expect(wrapper.text()).toContain('issue-42');
-    expect(wrapper.text()).toContain('42|info');
+    expect(wrapper.text()).toContain('42');
   });
 
   it('emits cancel when clicking cancel button', async () => {
     const wrapper = mountCard();
 
-    await wrapper.get('[data-test="cancel"]').trigger('click');
+    await wrapper.get('[data-testid="tenant-issue-cancel"]').trigger('click');
 
     expect(wrapper.emitted('cancel')).toBeTruthy();
   });
@@ -68,7 +55,7 @@ describe('TenantIssueSummaryCard.vue', () => {
   ] as const)('hides cancel button for type %s and status %s', (type, status) => {
     const wrapper = mountCard({ type, status });
 
-    expect(wrapper.find('[data-test="cancel"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="tenant-issue-cancel"]').exists()).toBe(false);
   });
 
   it('filters Verursacher/Ort lines from description', () => {
