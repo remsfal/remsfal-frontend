@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
@@ -8,7 +8,6 @@ import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import { issueService, type IssueJson, type IssueType } from '@/services/IssueService';
-import { projectMemberService, type ProjectMemberJson } from '@/services/ProjectMemberService';
 import { useProjectStore } from '@/stores/ProjectStore';
 
 /* =========================
@@ -22,7 +21,7 @@ const props = defineProps<{
     title: string;
     status: IssueJson["status"];
     assigneeId: string;
-    reporter: string;
+    reportedBy: string;
     project: string;
     issueType: IssueJson["type"];
     tenancy: string;
@@ -45,14 +44,10 @@ const issueId = ref(props.initialData.issueId);
 const title = ref(props.initialData.title);
 const status = ref(props.initialData.status);
 const assigneeId = ref(props.initialData.assigneeId);
-const reporter = ref(props.initialData.reporter);
+const reportedBy = ref(props.initialData.reportedBy);
 const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
 const tenancy = ref(props.initialData.tenancy);
-
-// Member data for name resolution
-const members = ref<ProjectMemberJson[]>([]);
-const loadingMembers = ref(false);
 
 /* =========================
      Original Values (change detection)
@@ -75,12 +70,8 @@ const canSave = computed(() =>
   tenancy.value !== originalTenancy.value
 );
 
-// Resolve reporter name from ID
-const reporterName = computed(() => {
-  if (!reporter.value) return t('issueDetails.fields.noReporter');
-  const member = members.value.find(m => m.id === reporter.value);
-  return member ? member.name : reporter.value; // Fallback to ID if not found
-});
+// Display name for reporter, as provided by the backend
+const reporterName = computed(() => reportedBy.value || t('issueDetails.fields.noReporter'));
 
 /* =========================
      Dropdown Options
@@ -101,33 +92,6 @@ const typeOptions = computed(() => [
 ]);
 
 /* =========================
-     Fetch Members
-  ========================= */
-const fetchMembers = async () => {
-  loadingMembers.value = true;
-  try {
-    const memberList = await projectMemberService.getMembers(props.projectId);
-    // TEMP FIX: Handle nested response structure
-    members.value = (memberList as { members: ProjectMemberJson[] }).members || [];
-  } catch (error) {
-    console.error('Failed to fetch members:', error);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueDetails.membersFetchError'),
-      life: 3000,
-    });
-  } finally {
-    loadingMembers.value = false;
-  }
-};
-
-// Load members on mount
-onMounted(() => {
-  fetchMembers();
-});
-
-/* =========================
      Watch props updates
   ========================= */
 watch(
@@ -137,7 +101,7 @@ watch(
     title.value = newData.title;
     status.value = newData.status;
     assigneeId.value = newData.assigneeId;
-    reporter.value = newData.reporter;
+    reportedBy.value = newData.reportedBy;
     project.value = newData.project;
     issueType.value = newData.issueType;
     tenancy.value = newData.tenancy;
@@ -214,7 +178,7 @@ const handleSave = async () => {
     </template>
 
     <template #content>
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 mt-4">
         <!-- Title -->
         <div class="flex flex-col gap-1">
           <label for="issue-title" class="text-sm text-gray-600">{{ t('issueDetails.fields.title') }}</label>
@@ -266,8 +230,6 @@ const handleSave = async () => {
               v-model="assigneeId"
               inputId="issue-assignee"
               :projectId="projectId"
-              :placeholder="t('issueDetails.fields.selectAssignee')"
-              :disabled="loadingMembers"
             />
           </div>
         </div>

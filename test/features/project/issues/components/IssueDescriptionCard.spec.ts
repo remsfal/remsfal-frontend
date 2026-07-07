@@ -1,29 +1,36 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { describe, test, expect, beforeEach, vi, type Mock } from 'vitest';
+import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import IssueDescriptionCard from '@/features/project/issues/components/IssueDescriptionCard.vue';
-import { issueService, type Issue } from '@/services/IssueService';
-import {primeVueStubs,
-  defaultIssueDescriptionProps,
+import { issueService, type IssueJson } from '@/services/IssueService';
+import {defaultIssueDescriptionProps,
   edgeCaseTestData,
   expectModifyIssueCalled,
-  expectEventEmitted,} from '../../../../setup/issueTestHelpers';
+  expectEventEmitted,
+  setupResizeObserverMock,} from '../../../../setup/issueTestHelpers';
 
 // ---- Mock issueService ----
-vi.mock('@/services/IssueService', () => ({issueService: { updateIssue: vi.fn() },}));
+vi.mock('@/services/IssueService', () => ({ issueService: { updateIssue: vi.fn() } }));
+
+// Textarea's autoResize feature relies on ResizeObserver, which JSDOM does not implement.
+setupResizeObserverMock();
+
+function findSaveButton(w: VueWrapper) {
+  const button = w.findAll('button').find((b) => b.text().includes('Speichern'));
+  if (!button) throw new Error('Save button not found');
+  return button;
+}
 
 // ---- Test Suite ----
 describe('IssueDescriptionCard.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof IssueDescriptionCard>>;
 
   const mountComponent = (props = {}) =>
-    mount(IssueDescriptionCard, {
-      props: { ...defaultIssueDescriptionProps, ...props },
-      global: { stubs: primeVueStubs },
-    });
+    mount(IssueDescriptionCard, { props: { ...defaultIssueDescriptionProps, ...props } });
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (issueService.updateIssue as vi.Mock).mockResolvedValue({});
+    (issueService.updateIssue as Mock).mockResolvedValue({});
     wrapper = mountComponent();
   });
 
@@ -31,167 +38,205 @@ describe('IssueDescriptionCard.vue', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-
   test('calls updateIssue when saving', async () => {
-    wrapper.vm.description = 'Updated description';
-    await wrapper.vm.handleSave();
+    await wrapper.find('#issue-description').setValue('Updated description');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expectModifyIssueCalled(
-      issueService.updateIssue,
+      // issueService is mocked via vi.mock() above, but keeps its real declared type here
+      issueService.updateIssue as unknown as Mock,
       defaultIssueDescriptionProps.issueId,
-      { description: 'Updated description' } as Partial<Issue>
+      { description: 'Updated description' } as Partial<IssueJson>,
     );
   });
 
   test('emits saved event after save', async () => {
-    wrapper.vm.description = 'Updated description';
-    await wrapper.vm.handleSave();
+    await wrapper.find('#issue-description').setValue('Updated description');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
 
     expectEventEmitted(wrapper, 'saved');
   });
 
   test('does not call updateIssue if canSave is false', async () => {
-    wrapper.vm.description = 'Initial description'; // same as original
-    await wrapper.vm.handleSave();
-  
+    await wrapper.find('#issue-description').setValue('Initial description'); // same as original
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
     expect(issueService.updateIssue).not.toHaveBeenCalled();
   });
-  
-  test('does not call updateIssue if loadingSave is true', async () => {
-    wrapper.vm.description = 'Updated description';
-    wrapper.vm.loadingSave = true;
-    await wrapper.vm.handleSave();
-  
-    expect(issueService.updateIssue).not.toHaveBeenCalled();
-  });
-  
+
   test('resets originalDescription after successful save', async () => {
-    wrapper.vm.description = 'Updated description';
-    await wrapper.vm.handleSave();
-  
-    expect(wrapper.vm.description).toBe('Updated description');
-    expect(wrapper.vm.originalDescription).toBe('Updated description');
+    await wrapper.find('#issue-description').setValue('Updated description');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(wrapper.find<HTMLTextAreaElement>('#issue-description').element.value).toBe(
+      'Updated description',
+    );
+    // canSave is now false (description matches the updated originalDescription), so the button is disabled again
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
   });
-  
+
   test('handles error when updateIssue fails', async () => {
-    (issueService.updateIssue as vi.Mock).mockRejectedValueOnce(new Error('API Error'));
-  
-    wrapper.vm.description = 'Updated description';
-    await wrapper.vm.handleSave();
-  
-    expect(wrapper.vm.loadingSave).toBe(false);
+    (issueService.updateIssue as Mock).mockRejectedValueOnce(new Error('API Error'));
+
+    await wrapper.find('#issue-description').setValue('Updated description');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    // loadingSave is back to false, and canSave is still true, so the button must be enabled
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   test('updates description when initialDescription prop changes', async () => {
     await wrapper.setProps({ initialDescription: 'New description from parent' });
-    await wrapper.vm.$nextTick();
-    
-    expect(wrapper.vm.description).toBe('New description from parent');
-    expect(wrapper.vm.originalDescription).toBe('New description from parent');
+    await nextTick();
+
+    expect(wrapper.find<HTMLTextAreaElement>('#issue-description').element.value).toBe(
+      'New description from parent',
+    );
+    // originalDescription was updated to match, so canSave is false and the button is disabled
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
   });
 
-  test('canSave returns true when description differs from original', () => {
-    wrapper.vm.description = 'Different description';
-    expect(wrapper.vm.canSave).toBe(true);
+  test('canSave returns true when description differs from original', async () => {
+    await wrapper.find('#issue-description').setValue('Different description');
+
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
-  test('canSave returns false when description matches original', () => {
-    wrapper.vm.description = 'Initial description';
-    expect(wrapper.vm.canSave).toBe(false);
+  test('canSave returns false when description matches original', async () => {
+    await wrapper.find('#issue-description').setValue('Initial description');
+
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
   });
 
   test('sets loading state to true during save operation', async () => {
-    wrapper.vm.description = 'Updated';
-    
-    const savePromise = wrapper.vm.handleSave();
-    expect(wrapper.vm.loadingSave).toBe(true);
-    
-    await savePromise;
-    expect(wrapper.vm.loadingSave).toBe(false);
+    let resolveUpdate!: (value?: unknown) => void;
+    (issueService.updateIssue as Mock).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveUpdate = resolve;
+        }),
+    );
+
+    await wrapper.find('#issue-description').setValue('Updated');
+    const saveButton = findSaveButton(wrapper);
+    const clickPromise = saveButton.trigger('click');
+    await nextTick();
+
+    expect(saveButton.attributes('disabled')).toBeDefined();
+
+    resolveUpdate();
+    await clickPromise;
+    await flushPromises();
+
+    // The save succeeded, so originalDescription now matches description (canSave is false),
+    // which keeps the button disabled regardless of loadingSave. Change the description again to
+    // isolate and confirm that loadingSave itself was reset to false: if it were still true, the
+    // button would stay disabled even though canSave is now true.
+    await wrapper.find('#issue-description').setValue('Updated again');
+    expect(saveButton.attributes('disabled')).toBeUndefined();
   });
 
-
   test('does not save when description is empty but different', async () => {
-    wrapper.vm.description = edgeCaseTestData.emptyString;
-    await wrapper.vm.handleSave();
-    
+    await wrapper.find('#issue-description').setValue(edgeCaseTestData.emptyString);
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
     // Should still save empty string if it's different
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
-      { description: edgeCaseTestData.emptyString }
+      { description: edgeCaseTestData.emptyString },
     );
   });
 
   test('handles very long description text', async () => {
-    wrapper.vm.description = edgeCaseTestData.longText;
-    await wrapper.vm.handleSave();
-    
+    await wrapper.find('#issue-description').setValue(edgeCaseTestData.longText);
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
-      { description: edgeCaseTestData.longText }
+      { description: edgeCaseTestData.longText },
     );
   });
 
   test('handles special characters in description', async () => {
-    wrapper.vm.description = edgeCaseTestData.specialChars;
-    await wrapper.vm.handleSave();
-    
+    await wrapper.find('#issue-description').setValue(edgeCaseTestData.specialChars);
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    // A real <textarea> element normalizes line endings (lone \r and \r\n both become \n) as part
+    // of its value-sanitization algorithm, so that's what ends up in the DOM (and thus the model)
+    // after setValue - not the raw fixture string.
+    const normalizedSpecialChars = edgeCaseTestData.specialChars.replace(/\r\n?/g, '\n');
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
-      { description: edgeCaseTestData.specialChars }
+      { description: normalizedSpecialChars },
     );
   });
 
   test('handles rapid save attempts (concurrent saves blocked)', async () => {
-    wrapper.vm.description = 'First update';
-    
-    const promise1 = wrapper.vm.handleSave();
-    const promise2 = wrapper.vm.handleSave(); // Should be blocked
-    
-    await Promise.all([promise1, promise2]);
-    
+    await wrapper.find('#issue-description').setValue('First update');
+
+    const saveButton = findSaveButton(wrapper);
+    const click1 = saveButton.trigger('click');
+    const click2 = saveButton.trigger('click'); // Should be blocked
+
+    await Promise.all([click1, click2]);
+    await flushPromises();
+
     // Should only be called once due to loadingSave guard
     expect(issueService.updateIssue).toHaveBeenCalledTimes(1);
   });
 
   test('preserves description after failed save', async () => {
-    (issueService.updateIssue as vi.Mock).mockRejectedValueOnce(new Error('Network error'));
-    
+    (issueService.updateIssue as Mock).mockRejectedValueOnce(new Error('Network error'));
+
     const updatedDesc = 'Updated but failed';
-    wrapper.vm.description = updatedDesc;
-    await wrapper.vm.handleSave();
-    
-    expect(wrapper.vm.description).toBe(updatedDesc);
-    expect(wrapper.vm.originalDescription).toBe('Initial description'); // Should not update
+    await wrapper.find('#issue-description').setValue(updatedDesc);
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(wrapper.find<HTMLTextAreaElement>('#issue-description').element.value).toBe(
+      updatedDesc,
+    );
+    // originalDescription was not updated, so canSave is still true and the button remains enabled
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
 
   test('emit saved event is called exactly once per successful save', async () => {
-    wrapper.vm.description = 'New save';
-    await wrapper.vm.handleSave();
-    
+    await wrapper.find('#issue-description').setValue('New save');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
     const emittedEvents = wrapper.emitted('saved');
     expect(emittedEvents).toHaveLength(1);
     expect(emittedEvents![0]).toEqual([]);
   });
 
   test('handles markdown content in description', async () => {
-    wrapper.vm.description = edgeCaseTestData.markdown;
-    await wrapper.vm.handleSave();
-    
+    await wrapper.find('#issue-description').setValue(edgeCaseTestData.markdown);
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
-      { description: edgeCaseTestData.markdown }
+      { description: edgeCaseTestData.markdown },
     );
   });
 
   test('handles unicode and emoji in description', async () => {
-    wrapper.vm.description = edgeCaseTestData.unicode;
-    await wrapper.vm.handleSave();
-    
+    await wrapper.find('#issue-description').setValue(edgeCaseTestData.unicode);
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
     expect(issueService.updateIssue).toHaveBeenCalledWith(
       defaultIssueDescriptionProps.issueId,
-      { description: edgeCaseTestData.unicode }
+      { description: edgeCaseTestData.unicode },
     );
   });
-  
 });

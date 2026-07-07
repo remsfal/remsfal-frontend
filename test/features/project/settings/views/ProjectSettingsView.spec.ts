@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
-import ProjectSettingsView from '@/views/project/ProjectSettingsView.vue';
+import ProjectSettingsView from '@/features/project/settings/views/ProjectSettingsView.vue';
 
 // ---- Test Suite ----
 describe('ProjectSettingsView.vue', () => {
@@ -13,10 +13,10 @@ describe('ProjectSettingsView.vue', () => {
       props: { projectId: 'test-project-id' },
       global: {
         stubs: {
-          ProjectSettings: true,
+          ProjectSettingsCard: true,
           BillingAddressCard: true,
-          ProjectMemberSettings: true,
-          OrganizationMemberSettings: true,
+          ProjectMemberSettingsCard: true,
+          OrganizationMemberSettingsCard: true,
           ProjectDangerZoneCard: true,
         },
       },
@@ -25,13 +25,13 @@ describe('ProjectSettingsView.vue', () => {
     await flushPromises();
   });
 
-  test('renders ProjectSettings component', () => {
-    const projectSettings = wrapper.findComponent({ name: 'ProjectSettings' });
+  test('renders ProjectSettingsCard component', () => {
+    const projectSettings = wrapper.findComponent({ name: 'ProjectSettingsCard' });
     expect(projectSettings.exists()).toBe(true);
   });
 
-  test('renders ProjectMemberSettings component', () => {
-    const memberSettings = wrapper.findComponent({ name: 'ProjectMemberSettings' });
+  test('renders ProjectMemberSettingsCard component', () => {
+    const memberSettings = wrapper.findComponent({ name: 'ProjectMemberSettingsCard' });
     expect(memberSettings.exists()).toBe(true);
   });
 
@@ -40,8 +40,8 @@ describe('ProjectSettingsView.vue', () => {
     expect(billingAddressCard.exists()).toBe(true);
   });
 
-  test('renders OrganizationMemberSettings component', () => {
-    const orgSettings = wrapper.findComponent({ name: 'OrganizationMemberSettings' });
+  test('renders OrganizationMemberSettingsCard component', () => {
+    const orgSettings = wrapper.findComponent({ name: 'OrganizationMemberSettingsCard' });
     expect(orgSettings.exists()).toBe(true);
   });
 
@@ -51,10 +51,10 @@ describe('ProjectSettingsView.vue', () => {
   });
 
   test('passes projectId to all child components', () => {
-    const projectSettings = wrapper.findComponent({ name: 'ProjectSettings' });
-    const memberSettings = wrapper.findComponent({ name: 'ProjectMemberSettings' });
+    const projectSettings = wrapper.findComponent({ name: 'ProjectSettingsCard' });
+    const memberSettings = wrapper.findComponent({ name: 'ProjectMemberSettingsCard' });
     const billingAddressCard = wrapper.findComponent({ name: 'BillingAddressCard' });
-    const orgSettings = wrapper.findComponent({ name: 'OrganizationMemberSettings' });
+    const orgSettings = wrapper.findComponent({ name: 'OrganizationMemberSettingsCard' });
     const dangerZoneCard = wrapper.findComponent({ name: 'ProjectDangerZoneCard' });
 
     expect(projectSettings.props('projectId')).toBe('test-project-id');

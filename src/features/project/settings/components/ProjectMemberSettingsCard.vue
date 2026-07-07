@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import NewProjectMemberButton from '@/components/projectMembership/NewProjectMemberButton.vue';
+import NewProjectMemberButton from '@/features/project/settings/components/NewProjectMemberButton.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { onMounted, ref } from 'vue';
 import { type ProjectMemberJson, projectMemberService } from '@/services/ProjectMemberService';
-import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
+import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 
 const props = defineProps<{
   projectId: string;

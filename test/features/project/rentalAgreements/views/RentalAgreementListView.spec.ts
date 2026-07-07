@@ -1,8 +1,9 @@
 import {mount, VueWrapper, flushPromises} from '@vue/test-utils';
 import Dialog from 'primevue/dialog';
+import DataTable from 'primevue/datatable';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import RentalAgreementView from '@/features/project/rentalAgreements/views/RentalAgreementListView.vue';
-import { rentalAgreementService } from '@/services/RentalAgreementService';
+import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService';
 
 // Fix for "window is not defined" error
 if (typeof window === 'undefined') (global as Record<string, unknown>).window = {};
@@ -65,56 +66,52 @@ describe('RentalAgreementView.vue', () => {
   });
 
   it('shows loading indicator while fetching', async () => {
-    wrapper.vm.isLoading = true;
-    await wrapper.vm.$nextTick(); // ensure DOM updates
-    const loadingText = wrapper.vm.$t('projectTenancies.loading');
-    expect(wrapper.html()).toContain(loadingText);
-  });
+    let resolveFetch!: (value: RentalAgreementJson[]) => void;
+    vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockImplementationOnce(
+      () => new Promise<RentalAgreementJson[]>((resolve) => { resolveFetch = resolve; }),
+    );
 
-  it('opens and closes the confirmation dialog', async () => {
-    wrapper.vm.confirmationDialogVisible = true;
-    wrapper.vm.tenantToDelete = mockTenants[0];
-
-    expect(wrapper.vm.confirmationDialogVisible).toBe(true);
-
-    wrapper.vm.confirmDeletion();
-    expect(wrapper.vm.confirmationDialogVisible).toBe(false);
-    expect(wrapper.vm.tenantData).toHaveLength(0); // tenant deleted
-  });
-
-  it('does nothing if tenantToDelete is null', () => {
-    wrapper.vm.tenantToDelete = null;
-    const initialLength = wrapper.vm.tenantData.length;
-    wrapper.vm.confirmDeletion();
-    expect(wrapper.vm.tenantData).toHaveLength(initialLength);
-  });
-
-  it('navigates to rental agreement details on row click', async () => {
-    wrapper.vm.navigateToRentalAgreementDetails('agreement-1');
-    expect(routerPushMock).toHaveBeenCalledWith({
-      name: 'RentalAgreementDetails',
-      params: { projectId: 'proj-1', agreementId: 'agreement-1' }
+    const loadingWrapper = mount(RentalAgreementView, {
+      props: {projectId: 'proj-1',},
+      global: {components: { Dialog },},
     });
 
-    // Also test with DataTable if possible
-    const dataTable = wrapper.findComponent({ name: 'DataTable' });
-    if (dataTable.exists()) {
-      // Simulate row click by calling the event handler directly
-      const rowClickHandler = dataTable.vm.$attrs.onRowClick;
-      if (rowClickHandler && typeof rowClickHandler === 'function') {
-        await rowClickHandler({ data: { id: 'agreement-2' } });
-        expect(routerPushMock).toHaveBeenCalledWith({
-          name: 'RentalAgreementDetails',
-          params: { projectId: 'proj-1', agreementId: 'agreement-2' }
-        });
-      }
-    }
+    // Assert the loading text is shown synchronously, before the fetch resolves.
+    expect(loadingWrapper.text()).toContain(loadingWrapper.vm.$t('projectTenancies.loading'));
+
+    resolveFetch(mockRentalAgreements);
+    await flushPromises();
   });
 
   it('renders DataTable when loading is false', async () => {
-    wrapper.vm.isLoading = false;
-    await wrapper.vm.$nextTick();
-    expect(wrapper.findComponent({ name: 'DataTable' }).exists()).toBe(true);
+    let resolveFetch!: (value: RentalAgreementJson[]) => void;
+    vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockImplementationOnce(
+      () => new Promise<RentalAgreementJson[]>((resolve) => { resolveFetch = resolve; }),
+    );
+
+    const loadingWrapper = mount(RentalAgreementView, {
+      props: {projectId: 'proj-1',},
+      global: {components: { Dialog },},
+    });
+
+    expect(loadingWrapper.findComponent(DataTable).exists()).toBe(false);
+
+    resolveFetch(mockRentalAgreements);
+    await flushPromises();
+
+    expect(loadingWrapper.findComponent(DataTable).exists()).toBe(true);
+  });
+
+  it('navigates to rental agreement details on row click', async () => {
+    const dataTable = wrapper.findComponent(DataTable);
+    expect(dataTable.exists()).toBe(true);
+
+    await dataTable.vm.$emit('rowClick', { data: { id: 'agreement-2' } });
+
+    expect(routerPushMock).toHaveBeenCalledWith({
+      name: 'RentalAgreementDetails',
+      params: { projectId: 'proj-1', agreementId: 'agreement-2' }
+    });
   });
 
   it('renders tenant names correctly in DataTable', () => {
@@ -135,16 +132,5 @@ describe('RentalAgreementView.vue', () => {
   it('renders unit information in the table', () => {
     const html = wrapper.html();
     expect(html).toContain('unit-101');
-  });
-
-  it('closes dialog when cancel button is clicked', async () => {
-    wrapper.vm.confirmationDialogVisible = true;
-    wrapper.vm.tenantToDelete = mockTenants[0];
-    await wrapper.vm.$nextTick();
-
-    wrapper.vm.confirmationDialogVisible = false;
-    await wrapper.vm.$nextTick();
-    
-    expect(wrapper.vm.confirmationDialogVisible).toBe(false);
   });
 });

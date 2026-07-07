@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import NewOrganizationMemberButton from '@/components/projectMembership/NewOrganizationMemberButton.vue';
+import NewOrganizationMemberButton from '@/features/project/settings/components/NewOrganizationMemberButton.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -9,7 +9,7 @@ import DataTable from 'primevue/datatable';
 import { computed, onMounted, ref } from 'vue';
 import { type OrganizationMemberJson, organizationMemberService } from '@/services/OrganizationMemberService';
 import type { ProjectMemberJson } from '@/services/ProjectMemberService';
-import ProjectMemberRoleSelect from '@/components/projectMembership/ProjectMemberRoleSelect.vue';
+import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 
 type OrganizationRow = { type: 'organization'; key: string; organization: OrganizationMemberJson };
 type MemberRow = { type: 'member'; key: string; member: ProjectMemberJson };

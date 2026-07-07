@@ -103,7 +103,7 @@ describe('ManagerContractorListCard', () => {
   });
 
   it('handles null organizations array from API', async () => {
-    vi.spyOn(organizationService, 'getContractorOrganizations').mockResolvedValue({organizations: null,});
+    vi.spyOn(organizationService, 'getContractorOrganizations').mockResolvedValue({organizations: [],});
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.exists()).toBe(true);

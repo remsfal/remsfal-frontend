@@ -34,7 +34,7 @@ const onRowSelect = (event: { data: IssueItemJson }) => {
       </div>
     </template>
     <Column field="title" header="Title" sortable />
-    <Column field="owner" header="Owner" sortable />
+    <Column field="assigneeId" header="Assignee" sortable />
     <Column field="status" header="Status" sortable />
   </DataTable>
 </template>

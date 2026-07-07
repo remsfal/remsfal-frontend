@@ -223,7 +223,7 @@ function createAxiosInstance() {
 
 type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
-type PathsForMethod<M extends HttpMethod> = {
+export type PathsForMethod<M extends HttpMethod> = {
   [P in keyof ApiPaths]: M extends keyof ApiPaths[P] ? P : never;
 }[keyof ApiPaths];
 
@@ -277,7 +277,7 @@ type PathParamsConfig<P> = {
 };
 
 // Request options
-type RequestOptions<P extends keyof ApiPaths, M extends HttpMethod> = {
+export type RequestOptions<P extends keyof ApiPaths, M extends HttpMethod> = {
   pathParams?: PathParamsConfig<PathParams<P, M>>;
   params?: QueryParams<P, M>;
   config?: AxiosRequestConfig;

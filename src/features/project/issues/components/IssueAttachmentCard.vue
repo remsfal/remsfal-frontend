@@ -141,14 +141,20 @@ async function handleDelete(attachment: IssueAttachmentJson) {
           :key="attachment.attachmentId"
           class="flex items-center justify-between gap-3 border border-surface-200 rounded-md p-2"
         >
-          <a
-            :href="getAttachmentDownloadUrl(attachment)"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-sm text-primary hover:underline truncate"
-          >
-            {{ attachment.fileName }}
-          </a>
+          <div class="flex items-baseline gap-2 min-w-0">
+            <a
+              :href="getAttachmentDownloadUrl(attachment)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm text-primary hover:underline truncate"
+            >
+              {{ attachment.fileName }}
+            </a>
+            <span class="text-xs text-gray-500 whitespace-nowrap">
+              ({{ t('issueDetails.attachmentUploadedBy') }}
+              {{ attachment.uploadedBy || t('issueDetails.attachmentUnknownUploader') }})
+            </span>
+          </div>
           <Button
             icon="pi pi-trash"
             :label="t('button.delete')"

@@ -797,6 +797,7 @@ export const projectMemberService = new ProjectMemberService();
 - Setup in `test/setup/vitest.setup.ts` configures PrimeVue, router, i18n, Pinia globally
 - Use `createTestingPinia()` from `@pinia/testing` for store tests
 - Mock API calls using MSW (Mock Service Worker)
+- **Don't call `<script setup>` internals via `wrapper.vm` casts** (e.g. `(wrapper.vm as InstanceType<typeof MyComponent>).someInternalFn()`) — those functions aren't part of the component's public type unless explicitly `defineExpose`d, and adding `defineExpose` just to satisfy a test leaks private implementation into the public API. Instead, drive the component the way a user or parent would: trigger DOM elements (`find(...).trigger('click')`) or emit events on child-component wrappers (`childWrapper.vm.$emit(...)`) — see `onNewOrganization` and `updateOrganizationRole` tests in `OrganizationMemberSettingsCard.spec.ts` for examples.
 
 **E2E Tests** (Cypress):
 - Located in `/cypress/e2e`

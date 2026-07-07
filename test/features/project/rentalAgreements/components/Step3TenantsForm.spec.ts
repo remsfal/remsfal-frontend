@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
 import Step3TenantsForm from '@/features/project/rentalAgreements/components/Step3TenantsForm.vue';
-import type { TenantItem } from '@/services/RentalAgreementService';
+import type { TenantJson as TenantItem } from '@/services/RentalAgreementService';
 import { tenantService } from '@/services/TenantService';
 
 vi.mock('@/services/TenantService', () => ({
