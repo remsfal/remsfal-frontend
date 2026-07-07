@@ -105,7 +105,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
   // ─── Setup ───────────────────────────────────────────────────────────────
   beforeEach(() => {
     setupCommonIntercepts();
-    cy.visit('/tenancies/issues');
+    cy.visit('/tenant/issues');
     cy.wait('@getIssues');
   });
 
@@ -169,7 +169,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [] },
       }).as('getEmptyTenancies');
 
-      cy.visit('/tenancies/issues');
+      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
       cy.get('[role="dialog"]').should('be.visible');
       cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverträge');
@@ -181,7 +181,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [] },
       }).as('getEmptyTenancies');
 
-      cy.visit('/tenancies/issues');
+      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
       cy.get('[role="dialog"]').within(() => {
         cy.get('.p-stepper').should('not.exist');
@@ -306,7 +306,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { agreements: [tenancy1] },
       }).as('getSingleTenancy');
 
-      cy.visit('/tenancies/issues');
+      cy.visit('/tenant/issues');
       openDialog();
 
       // PrimeVue 4 marks disabled Select with class `p-disabled` on the root element
@@ -724,7 +724,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { error: 'Server Error' },
       }).as('getTenanciesFail');
 
-      cy.visit('/tenancies/issues');
+      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
       cy.get('[role="dialog"]').should('be.visible');
       cy.get('.p-toast-message-error').should('be.visible');
@@ -736,7 +736,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
         body: { error: 'Server Error' },
       }).as('getTenanciesFail');
 
-      cy.visit('/tenancies/issues');
+      cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
       cy.get('[role="dialog"]').should('be.visible');
       // After the error the tenancies array stays empty → no-contracts message

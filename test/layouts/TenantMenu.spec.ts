@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import TenantMenu from '@/layouts/components/TenantMenu.vue';
 
@@ -75,17 +75,17 @@ describe('TenantMenu.vue', () => {
     expect(wrapper.find('.pi-wrench').exists()).toBe(true);
   });
 
-  it('navigates to /tenancies/dashboard when overview is clicked', async () => {
+  it('navigates to /tenant/dashboard when overview is clicked', async () => {
     await wrapper.vm.$nextTick();
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.pi-info-circle').trigger('click');
-    expect(pushSpy).toHaveBeenCalledWith('/tenancies/dashboard');
+    expect(pushSpy).toHaveBeenCalledWith('/tenant/dashboard');
   });
 
-  it('navigates to /tenancies/account-settings when personal data is clicked', async () => {
+  it('navigates to /tenant/account-settings when personal data is clicked', async () => {
     await wrapper.vm.$nextTick();
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.pi-user').trigger('click');
-    expect(pushSpy).toHaveBeenCalledWith('/tenancies/account-settings');
+    expect(pushSpy).toHaveBeenCalledWith('/tenant/account-settings');
   });
 });

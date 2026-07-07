@@ -26,9 +26,10 @@ describe('InboxToolbar', () => {
 
     const selectButton = wrapper.findComponent(SelectButton);
     expect(selectButton.exists()).toBe(true);
-    expect(selectButton.props('options')).toHaveLength(2);
-    expect(selectButton.props('options')[0].value).toBe('all');
-    expect(selectButton.props('options')[1].value).toBe('unread');
+    const options = selectButton.props('options');
+    expect(options).toHaveLength(2);
+    expect(options?.[0]?.value).toBe('all');
+    expect(options?.[1]?.value).toBe('unread');
   });
 
   it('displays correct active tab', () => {

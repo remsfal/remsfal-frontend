@@ -74,10 +74,18 @@ describe('useLayout composable', () => {
 
     it('uses document.startViewTransition when available', () => {
       const mockTransition = vi.fn((cb: () => void) => cb());
-      (document as Document & { startViewTransition?: (cb: () => void) => void }).startViewTransition = mockTransition;
+      // `Omit` drops the original (non-optional) browser API signature before
+      // re-adding it as optional, so the mock's simplified signature can be
+      // assigned and the property can later be `delete`d. Casting via
+      // `unknown` because the simplified mock signature does not fully model
+      // the real `startViewTransition` overloads.
+      type DocumentWithViewTransition = Omit<Document, 'startViewTransition'> & {
+        startViewTransition?: (cb: () => void) => void;
+      };
+      (document as unknown as DocumentWithViewTransition).startViewTransition = mockTransition;
       layout.toggleDarkMode();
       expect(mockTransition).toHaveBeenCalled();
-      delete (document as Document & { startViewTransition?: (cb: () => void) => void }).startViewTransition;
+      delete (document as unknown as DocumentWithViewTransition).startViewTransition;
     });
   });
 
@@ -97,8 +105,8 @@ describe('useLayout composable', () => {
 
     it('toggles staticMenuDesktopInactive on wide viewport', () => {
       Object.defineProperty(window, 'innerWidth', {
- value: 1200, writable: true, configurable: true 
-});
+        value: 1200, writable: true, configurable: true 
+      });
       layout.toggleMenu();
       expect(layout.layoutState.staticMenuDesktopInactive).toBe(true);
     });

@@ -49,6 +49,6 @@ describe('BuildingPage', () => {
     const card = wrapper.findComponent(FacilityAddressCard);
     expect(card.props('projectId')).toBe('project1');
     expect(card.props('unitId')).toBe('unit1');
-    expect(card.props('facilityType')).toBe('building');
+    expect(card.props('facilityType')).toBe('BUILDING');
   });
 });

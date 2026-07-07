@@ -344,21 +344,18 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/organization": {
+  "/api/v1/authentication/verify-additional-email": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** @description Retrieve a list of all organizations */
+    /** Verify an additional user email address using a verification token. */
     get: {
       parameters: {
-        query: {
-          /** @description Maximum number of contractors to return */
-          limit: number;
-          /** @description Offset of the first contractor to return */
-          offset: number;
+        query?: {
+          token?: string;
         };
         header?: never;
         path?: never;
@@ -366,7 +363,55 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description List of all organizations was successfully returned */
+        /** @description Additional email verified successfully */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Verification token is missing or expired */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Verification token is invalid */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/organizations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Retrieve all organizations the authenticated user owns */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description List of owned organizations was successfully returned */
         200: {
           headers: {
             [name: string]: unknown;
@@ -384,13 +429,6 @@ export interface paths {
         };
         /** @description Not Allowed */
         403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description The organization with the requested id doesn't exist */
-        404: {
           headers: {
             [name: string]: unknown;
           };
@@ -444,24 +482,29 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/organization/employments": {
+  "/api/v1/organizations/contractors": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** @description Retrieve a list of all organizations where the user is an employee */
+    /** @description Retrieve all organizations acting as contractors in projects accessible to the user */
     get: {
       parameters: {
-        query?: never;
+        query: {
+          /** @description Maximum number of organizations to return */
+          limit: number;
+          /** @description Offset of the first organization to return */
+          offset: number;
+        };
         header?: never;
         path?: never;
         cookie?: never;
       };
       requestBody?: never;
       responses: {
-        /** @description An organization was successfully returned */
+        /** @description List of contractor organizations was successfully returned */
         200: {
           headers: {
             [name: string]: unknown;
@@ -484,8 +527,51 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description List of organizations with the requested id doesn't exist */
-        404: {
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/organizations/employments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Retrieve all organizations the user is employed in, including the user's role */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description A list of organization employments was successfully returned */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["OrganizationEmployeeListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
           headers: {
             [name: string]: unknown;
           };
@@ -501,7 +587,71 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/organization/{organizationId}": {
+  "/api/v1/organizations/search": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Search organizations by name (min. 3 characters) */
+    get: {
+      parameters: {
+        query: {
+          /** @description Maximum number of organizations to return */
+          limit: number;
+          /** @description Name search query (min. 3 characters) */
+          name: string;
+          /** @description Offset of the first organization to return */
+          offset: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Matching organizations were successfully returned */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["OrganizationListJson"];
+          };
+        };
+        /** @description Name parameter too short (min. 3 characters) */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/organizations/{organizationId}": {
     parameters: {
       query?: never;
       header?: never;
@@ -651,7 +801,7 @@ export interface paths {
     };
     trace?: never;
   };
-  "/api/v1/organization/{organizationId}/employees": {
+  "/api/v1/organizations/{organizationId}/employees": {
     parameters: {
       query?: never;
       header?: never;
@@ -758,7 +908,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/organization/{organizationId}/employees/{employeeId}": {
+  "/api/v1/organizations/{organizationId}/employees/{employeeId}": {
     parameters: {
       query?: never;
       header?: never;
@@ -2659,7 +2809,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": components["schemas"]["ProjectOrganizationListJson"];
+            "application/json": components["schemas"]["OrganizationMemberListJson"];
           };
         };
         /** @description No user authentication provided via session cookie */
@@ -2692,7 +2842,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["ProjectOrganizationJson"];
+          "application/json": components["schemas"]["OrganizationMemberJson"];
         };
       };
       responses: {
@@ -2702,7 +2852,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": components["schemas"]["ProjectOrganizationJson"];
+            "application/json": components["schemas"]["OrganizationMemberJson"];
           };
         };
         /** @description Invalid request message */
@@ -2806,7 +2956,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["ProjectOrganizationJson"];
+          "application/json": components["schemas"]["OrganizationMemberJson"];
         };
       };
       responses: {
@@ -2816,7 +2966,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": components["schemas"]["ProjectOrganizationJson"];
+            "application/json": components["schemas"]["OrganizationMemberJson"];
           };
         };
         /** @description No user authentication provided via session cookie */
@@ -4764,6 +4914,9 @@ export interface components {
   schemas: {
     /** @description The address of a customer, a building or a site */
     AddressJson: {
+      addressLine1?: string;
+      addressLine2?: string;
+      addressLine3?: string;
       street: string;
       city: string;
       province: string;
@@ -4870,22 +5023,45 @@ export interface components {
       location?: string;
       description?: string;
     };
+    /** @description A contractor employee */
+    ContractorEmployeeJson: {
+      contractorId?: components["schemas"]["UUID"];
+      userId?: components["schemas"]["UUID"];
+      responsibility?: string;
+      email?: string;
+      name?: string;
+      active?: boolean;
+      user?: components["schemas"]["UserModel"];
+    };
     /** @description A contractor */
     ContractorJson: {
-      id?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
+      organizationId?: components["schemas"]["UUID"];
+      /** @description Unique identifier of the organization (generated by server) */
+      readonly id?: components["schemas"]["UUID"];
+      /** @description ID of the project this contractor belongs to */
+      readonly projectId?: components["schemas"]["UUID"];
       companyName?: string;
       phone?: string;
       email?: string;
       trade?: string;
+      contactPerson?: string;
+      remarks?: string;
+      organization?: components["schemas"]["OrganizationJson"];
       address?: components["schemas"]["AddressJson"];
     };
+    /** @description A list of contractors */
     ContractorListJson: {
+      /**
+       * Format: int32
+       * @description Index of the first element
+       */
+      readonly offset?: number;
+      /**
+       * Format: int64
+       * @description Total number of available contractors
+       */
+      readonly total?: number;
       contractors?: components["schemas"]["ContractorJson"][];
-      /** Format: int32 */
-      offset?: number;
-      /** Format: int64 */
-      total?: number;
     };
     Cookie: {
       name?: string;
@@ -4903,6 +5079,14 @@ export interface components {
     /** @description A list of countries */
     CountryListJson: {
       countries?: components["schemas"]["CountryItemJson"][];
+    };
+    /** @description A request to create one quotation request per contractor */
+    CreateQuotationRequestJson: {
+      contractors: components["schemas"]["ContractorJson"][];
+      scopeOfWork?: string;
+      projectOwner?: string;
+      projectCareOf?: string;
+      billingAddress?: components["schemas"]["AddressJson"];
     };
     /** @enum {string} */
     EmployeeRole: "OWNER" | "MANAGER" | "STAFF";
@@ -4947,7 +5131,8 @@ export interface components {
       fileName?: string;
       contentType?: string;
       objectName?: string;
-      uploadedBy?: components["schemas"]["UUID"];
+      uploaderId?: components["schemas"]["UUID"];
+      uploadedBy?: string;
       createdAt?: components["schemas"]["Instant"];
     };
     /** @enum {string} */
@@ -4979,6 +5164,8 @@ export interface components {
     IssueItemJson: {
       /** @description Unique identifier of the issue */
       readonly id?: components["schemas"]["UUID"];
+      /** @description Last modification timestamp of the issue */
+      readonly modifiedAt?: components["schemas"]["Instant"];
       /** @description Title of the issue */
       readonly name?: string;
       /** @description Title of the issue */
@@ -4996,12 +5183,16 @@ export interface components {
     IssueJson: {
       readonly id?: components["schemas"]["UUID"];
       projectId?: components["schemas"]["UUID"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
       title?: string;
       type?: components["schemas"]["IssueType"];
       category?: components["schemas"]["IssueCategory"];
       status?: components["schemas"]["IssueStatus"];
       priority?: components["schemas"]["IssuePriority"];
-      reporterId?: components["schemas"]["UUID"];
+      /** @description ID of the user who reported this issue */
+      readonly reporterId?: components["schemas"]["UUID"];
+      /** @description Name of the user who reported this issue */
+      readonly reportedBy?: string;
       agreementId?: components["schemas"]["UUID"];
       visibleToTenants?: boolean;
       rentalUnitId?: components["schemas"]["UUID"];
@@ -5056,10 +5247,63 @@ export interface components {
      * @example 2022-03-10T12:15:50-04:00
      */
     OffsetDateTime: string;
+    /** @description An attachment associated with a quotation request, quotation, or order placement */
+    OrderAttachmentJson: {
+      processPhase?: components["schemas"]["OrderProcessPhase"];
+      processId?: components["schemas"]["UUID"];
+      attachmentId?: components["schemas"]["UUID"];
+      fileName?: string;
+      contentType?: string;
+      objectName?: string;
+      uploaderId?: components["schemas"]["UUID"];
+      uploadedBy?: string;
+      createdAt?: components["schemas"]["Instant"];
+    };
+    /** @description An order placement created by a manager based on a quotation */
+    OrderPlacementJson: {
+      organizationId?: components["schemas"]["UUID"];
+      id?: components["schemas"]["UUID"];
+      issueId?: components["schemas"]["UUID"];
+      projectId?: components["schemas"]["UUID"];
+      projectOwner?: string;
+      projectCareOf?: string;
+      projectBillingAddress1?: string;
+      projectBillingAddress2?: string;
+      projectBillingAddress3?: string;
+      contractorId?: components["schemas"]["UUID"];
+      contractorName?: string;
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      /** @description ID of the quotation this order is based on */
+      readonly quotationId?: components["schemas"]["UUID"];
+      /** @description ID of the user who placed the order */
+      readonly ordererId?: components["schemas"]["UUID"];
+      /** @description Name of the user who placed the order */
+      readonly orderedBy?: string;
+      /** @description Status of the order placement: PLACED, CONFIRMED, REJECTED, WITHDRAWN */
+      status?: components["schemas"]["OrderPlacementStatus"];
+      /** @description ID of the user who confirmed or rejected the order */
+      readonly confirmorId?: components["schemas"]["UUID"];
+      /** @description Name of the user who confirmed or rejected the order */
+      readonly confirmedBy?: string;
+    };
+    /** @description A list of order placements */
+    OrderPlacementListJson: {
+      items?: components["schemas"]["OrderPlacementJson"][];
+    };
+    /** @enum {string} */
+    OrderPlacementStatus: "PLACED" | "CONFIRMED" | "REJECTED" | "WITHDRAWN";
+    /** @enum {string} */
+    OrderProcessPhase: "QUOTATION_REQUEST" | "QUOTATION" | "ORDER_PLACEMENT";
     /** @description Employee information in context of an organization */
     OrganizationEmployeeJson: {
+      /** @description Unique identifier of the employee (generated by server) */
       readonly id?: components["schemas"]["UUID"];
-      name?: string;
+      readonly organizationId?: components["schemas"]["UUID"];
+      readonly organizationName?: string;
+      /** @description Full name of the employee (retrieved from user profile) */
+      readonly name?: string;
       email?: string;
       active?: boolean;
       employeeRole: components["schemas"]["EmployeeRole"];
@@ -5070,11 +5314,13 @@ export interface components {
     };
     /** @description An organization */
     OrganizationJson: {
-      id?: components["schemas"]["UUID"];
+      /** @description Unique identifier of the organization (generated by server) */
+      readonly id?: components["schemas"]["UUID"];
       name?: string;
       phone?: string;
       email?: string;
       trade?: string;
+      vatIdentificationNumber?: string;
       address?: components["schemas"]["AddressJson"];
     };
     /** @description A list of organizations */
@@ -5084,6 +5330,18 @@ export interface components {
       offset?: number;
       /** Format: int64 */
       total?: number;
+    };
+    /** @description Organization assignment to a project */
+    OrganizationMemberJson: {
+      organizationId?: components["schemas"]["UUID"];
+      organizationName?: string;
+      role: components["schemas"]["MemberRole"];
+      /** @description Members of the organization together with their derived role in this project */
+      readonly members?: components["schemas"]["ProjectMemberJson"][];
+    };
+    /** @description List of organizations assigned to a project */
+    OrganizationMemberListJson: {
+      organizations?: components["schemas"]["OrganizationMemberJson"][];
     };
     /** @description A project item with the user's member role only */
     ProjectItemJson: {
@@ -5096,6 +5354,9 @@ export interface components {
       /** @description Unique identifier of the project (generated by server) */
       readonly id?: components["schemas"]["UUID"];
       title: string;
+      owner?: string;
+      careOf?: string;
+      address?: components["schemas"]["AddressJson"];
       /** @description Project members (managed separately via members endpoint) */
       readonly members?: components["schemas"]["ProjectMemberJson"][];
     };
@@ -5136,16 +5397,6 @@ export interface components {
     ProjectMemberListJson: {
       members: components["schemas"]["ProjectMemberJson"][];
     };
-    /** @description Organization assignment to a project */
-    ProjectOrganizationJson: {
-      organizationId?: components["schemas"]["UUID"];
-      organizationName?: string;
-      role: components["schemas"]["MemberRole"];
-    };
-    /** @description List of organizations assigned to a project */
-    ProjectOrganizationListJson: {
-      organizations?: components["schemas"]["ProjectOrganizationJson"][];
-    };
     /** @description A property */
     PropertyJson: {
       type?: components["schemas"]["UnitType"];
@@ -5170,6 +5421,68 @@ export interface components {
     PropertyListJson: {
       readonly properties?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @description A quotation response submitted by a contractor */
+    QuotationJson: {
+      id?: components["schemas"]["UUID"];
+      issueId?: components["schemas"]["UUID"];
+      projectId?: components["schemas"]["UUID"];
+      projectOwner?: string;
+      projectCareOf?: string;
+      projectBillingAddress1?: string;
+      projectBillingAddress2?: string;
+      projectBillingAddress3?: string;
+      contractorId?: components["schemas"]["UUID"];
+      contractorName?: string;
+      organizationId?: components["schemas"]["UUID"];
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      /** @description ID of the quotation request this quotation responds to */
+      readonly requestId?: components["schemas"]["UUID"];
+      /** @description ID of the user who submitted this quotation */
+      readonly offererId?: components["schemas"]["UUID"];
+      /** @description Name of the user who submitted this quotation */
+      readonly offeredBy?: string;
+      /** @description Status of the quotation: VALID, INVALID, ACCEPTED, REJECTED */
+      status?: components["schemas"]["QuotationStatus"];
+      /** @description Timestamp until which the quotation is valid */
+      validUntil?: components["schemas"]["Instant"];
+    };
+    /** @description A list of quotations */
+    QuotationListJson: {
+      items?: components["schemas"]["QuotationJson"][];
+    };
+    /** @description A request for quotation sent to a contractor */
+    QuotationRequestJson: {
+      id?: components["schemas"]["UUID"];
+      issueId?: components["schemas"]["UUID"];
+      projectId?: components["schemas"]["UUID"];
+      projectOwner?: string;
+      projectCareOf?: string;
+      projectBillingAddress1?: string;
+      projectBillingAddress2?: string;
+      projectBillingAddress3?: string;
+      contractorId?: components["schemas"]["UUID"];
+      contractorName?: string;
+      organizationId?: components["schemas"]["UUID"];
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+      attachments?: components["schemas"]["OrderAttachmentJson"][];
+      /** @description ID of the user who initiated this request */
+      readonly initiatorId?: components["schemas"]["UUID"];
+      /** @description Name of the user who initiated this request */
+      readonly initiatedBy?: string;
+      /** @description Status of the request: REQUESTED, WITHDRAWN, VIEWING_REQUIRED,CONSULTATION_REQUIRED, REJECTED, SUBMITTED */
+      status?: components["schemas"]["RequestStatus"];
+      /** @description Scope of work description for the contractor */
+      scopeOfWork?: string;
+    };
+    /** @description A list of quotation requests */
+    QuotationRequestListJson: {
+      items?: components["schemas"]["QuotationRequestJson"][];
+    };
+    /** @enum {string} */
+    QuotationStatus: "VALID" | "INVALID" | "ACCEPTED" | "REJECTED";
     /** @description Rent information for a rentable unit */
     RentJson: {
       unitId: components["schemas"]["UUID"];
@@ -5313,6 +5626,8 @@ export interface components {
       /** @description Children nodes */
       children?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
+    /** @enum {string} */
+    RequestStatus: "REQUESTED" | "WITHDRAWN" | "VIEWING_REQUIRED" | "CONSULTATION_REQUIRED" | "REJECTED" | "SUBMITTED";
     /** @description A site as part of a property */
     SiteJson: {
       type?: components["schemas"]["UnitType"];
@@ -5453,6 +5768,12 @@ export interface components {
       additionalEmails?: string[];
       readonly registeredDate?: components["schemas"]["LocalDate"];
       readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
+    };
+    UserModel: {
+      id?: components["schemas"]["UUID"];
+      email?: string;
+      name?: string;
+      active?: boolean;
     };
   };
   responses: never;

@@ -6,7 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ProjectSettingsView from '@/views/project/ProjectSettingsView.vue'
+import { ProjectSettingsView } from '@/features/project/settings'
 import { useRoute } from 'vue-router'
 const route = useRoute('ProjectSettings')
 </script>

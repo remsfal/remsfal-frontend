@@ -48,7 +48,7 @@ describe('IssueService with MSW (http)', () => {
   test('getIssues handles optional parameters correctly', async () => {
     const issueList = await issueService.getIssues(projectId);
     expect(issueList.issues).toBeDefined();
-    expect(issueList.issues.length).toBeGreaterThan(0);
+    expect(issueList.issues?.length).toBeGreaterThan(0);
     expect(issueList.first).toBeDefined();
     expect(issueList.size).toBeDefined();
   });
@@ -62,10 +62,24 @@ describe('IssueService with MSW (http)', () => {
     server.use(
       http.get('/ticketing/v1/issues', () => HttpResponse.json({}))
     );
-  
+
     const result = await issueService.getIssues(projectId);
     expect(result.first).toBe(0);
     expect(result.size).toBe(0);
     expect(result.issues).toEqual([]);
+  });
+
+  test('createIssueRelation returns the updated issue', async () => {
+    const relatedIssue = await issueService.createIssueRelation(issueId, 'related-to', 'related-issue');
+    expect(relatedIssue.id).toBe(issueId);
+  });
+
+  test('deleteIssueRelation resolves successfully', async () => {
+    await issueService.deleteIssueRelation(issueId, 'related-to', 'related-issue');
+  });
+
+  test('setParentIssue returns the updated issue', async () => {
+    const updatedIssue = await issueService.setParentIssue(issueId, 'parent-issue');
+    expect(updatedIssue.id).toBe(issueId);
   });
 });

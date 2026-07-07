@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { apiClient } from '@/services/ApiClient';
+import { apiClient, type PathsForMethod, type RequestOptions } from '@/services/ApiClient';
 import { authService } from '@/services/AuthService';
 import { setActivePinia, createPinia } from 'pinia';
 import { useEventBus } from '@/stores/EventStore';
@@ -17,17 +17,17 @@ describe('ApiClient', () => {
         return HttpResponse.json({ id: params.id, message: 'GET with path param' });
       }),
       http.post('/api/v1/test', async ({ request }) => {
-        const body = await request.json();
+        const body = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({ ...body, created: true }, { status: 201 });
       }),
       http.put('/api/v1/test/:id', async ({ request, params }) => {
-        const body = await request.json();
+        const body = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({
-            ...body, id: params.id, updated: true
+          ...body, id: params.id, updated: true
         });
       }),
       http.patch('/api/v1/test/:id', async ({ request, params }) => {
-        const body = await request.json();
+        const body = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json({
           ...body, id: params.id, patched: true
         });
@@ -43,12 +43,17 @@ describe('ApiClient', () => {
 
   describe('GET requests', () => {
     it('should perform a simple GET request', async () => {
-      const result = await apiClient.get('/api/v1/test');
+      // '/api/v1/test' is an intentionally-fake test path, not part of the real OpenAPI paths union.
+      const result = await apiClient.get('/api/v1/test' as unknown as PathsForMethod<'get'>);
       expect(result).toEqual({ message: 'GET success' });
     });
 
     it('should perform a GET request with path parameters', async () => {
-      const result = await apiClient.get('/api/v1/test/{id}', {pathParams: { id: '123' },});
+      // Intentionally-fake test path.
+      const result = await apiClient.get(
+        '/api/v1/test/{id}' as unknown as PathsForMethod<'get'>,
+        {pathParams: { id: '123' },},
+      );
       expect(result).toEqual({ id: '123', message: 'GET with path param' });
     });
 
@@ -61,15 +66,21 @@ describe('ApiClient', () => {
         }),
       );
 
-      const result = await apiClient.get('/api/v1/test', {params: { filter: 'active' },});
+      // Intentionally-fake test path; options cast the same way since the query shape isn't
+      // part of the real OpenAPI types for this fake path.
+      const result = await apiClient.get(
+        '/api/v1/test' as unknown as PathsForMethod<'get'>,
+        {params: { filter: 'active' },} as unknown as RequestOptions<PathsForMethod<'get'>, 'get'>,
+      );
       expect(result).toEqual({ filter: 'active' });
     });
   });
 
   describe('POST requests', () => {
     it('should perform a POST request with body', async () => {
+      // Intentionally-fake test path.
       const result = await apiClient.post(
-        '/api/v1/test',
+        '/api/v1/test' as unknown as PathsForMethod<'post'>,
         { name: 'Test Item' },
         {},
       );
@@ -79,13 +90,14 @@ describe('ApiClient', () => {
     it('should perform a POST request with path parameters', async () => {
       server.use(
         http.post('/api/v1/test/:projectId/items', async ({ request, params }) => {
-          const body = await request.json();
+          const body = (await request.json()) as Record<string, unknown>;
           return HttpResponse.json({ ...body, projectId: params.projectId }, { status: 201 });
         }),
       );
 
+      // Intentionally-fake test path.
       const result = await apiClient.post(
-        '/api/v1/test/{projectId}/items',
+        '/api/v1/test/{projectId}/items' as unknown as PathsForMethod<'post'>,
         { name: 'New Item' },
         { pathParams: { projectId: 'project-123' } },
       );
@@ -95,45 +107,55 @@ describe('ApiClient', () => {
 
   describe('PUT requests', () => {
     it('should perform a PUT request with body and path parameters', async () => {
+      // Intentionally-fake test path.
       const result = await apiClient.put(
-        '/api/v1/test/{id}',
+        '/api/v1/test/{id}' as unknown as PathsForMethod<'put'>,
         { name: 'Updated Item' },
         { pathParams: { id: '456' } },
       );
       expect(result).toEqual({
- name: 'Updated Item', id: '456', updated: true 
-});
+        name: 'Updated Item', id: '456', updated: true 
+      });
     });
   });
 
   describe('PATCH requests', () => {
     it('should perform a PATCH request with body and path parameters', async () => {
+      // Intentionally-fake test path.
       const result = await apiClient.patch(
-        '/api/v1/test/{id}',
+        '/api/v1/test/{id}' as unknown as PathsForMethod<'patch'>,
         { name: 'Patched Item' },
         { pathParams: { id: '789' } },
       );
       expect(result).toEqual({
- name: 'Patched Item', id: '789', patched: true 
-});
+        name: 'Patched Item', id: '789', patched: true 
+      });
     });
   });
 
   describe('DELETE requests', () => {
     it('should perform a DELETE request with path parameters', async () => {
-      const result = await apiClient.delete('/api/v1/test/{id}', {pathParams: { id: '999' },});
+      // Intentionally-fake test path.
+      const result = await apiClient.delete(
+        '/api/v1/test/{id}' as unknown as PathsForMethod<'delete'>,
+        {pathParams: { id: '999' },},
+      );
       expect(result).toEqual({ id: '999', deleted: true });
     });
   });
 
   describe('Error handling', () => {
     it('should handle server errors', async () => {
-      await expect(apiClient.get('/api/v1/error')).rejects.toThrow();
+      // Intentionally-fake test path.
+      await expect(
+        apiClient.get('/api/v1/error' as unknown as PathsForMethod<'get'>),
+      ).rejects.toThrow();
     });
 
     it('should throw error for missing path parameters', async () => {
+      // Intentionally-fake test path.
       await expect(
-        apiClient.get('/api/v1/test/{id}', {pathParams: {},}),
+        apiClient.get('/api/v1/test/{id}' as unknown as PathsForMethod<'get'>, {pathParams: {},}),
       ).rejects.toThrow();
     });
   });
@@ -161,7 +183,8 @@ describe('ApiClient', () => {
       );
       vi.mocked(authService.refreshTokens).mockResolvedValue(true);
 
-      const result = await apiClient.get('/api/v1/retry-test');
+      // Intentionally-fake test path.
+      const result = await apiClient.get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>);
 
       expect(authService.refreshTokens).toHaveBeenCalledOnce();
       expect(result).toEqual({ message: 'retry success' });
@@ -179,7 +202,10 @@ describe('ApiClient', () => {
       const sessionExpiredHandler = vi.fn();
       bus.on('auth:session-expired', sessionExpiredHandler);
 
-      await expect(apiClient.get('/api/v1/retry-test')).rejects.toBeDefined();
+      // Intentionally-fake test path.
+      await expect(
+        apiClient.get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>),
+      ).rejects.toBeDefined();
 
       expect(authService.refreshTokens).toHaveBeenCalledOnce();
       expect(sessionExpiredHandler).toHaveBeenCalledOnce();
@@ -197,7 +223,10 @@ describe('ApiClient', () => {
       const sessionExpiredHandler = vi.fn();
       bus.on('auth:session-expired', sessionExpiredHandler);
 
-      await expect(apiClient.get('/api/v1/retry-test')).rejects.toBeDefined();
+      // Intentionally-fake test path.
+      await expect(
+        apiClient.get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>),
+      ).rejects.toBeDefined();
 
       expect(sessionExpiredHandler).toHaveBeenCalledOnce();
     });
@@ -216,7 +245,10 @@ describe('ApiClient', () => {
 
       // The retry request also returns 401, so the second 401 should NOT trigger another refresh
       // (because _retry is set) and should emit session-expired instead
-      await expect(apiClient.get('/api/v1/retry-test')).rejects.toBeDefined();
+      // Intentionally-fake test path.
+      await expect(
+        apiClient.get('/api/v1/retry-test' as unknown as PathsForMethod<'get'>),
+      ).rejects.toBeDefined();
 
       // refreshTokens was called for the first 401, but the retried request also returns 401
       // The second 401 hits the else branch (non-401 toast) since _retry is set
@@ -232,7 +264,12 @@ describe('ApiClient', () => {
         }),
       );
 
-      const result = await apiClient.get('/api/v1/test/{id}', {pathParams: { id: 123 },});
+      // Intentionally-fake test path; response shape isn't known to the OpenAPI types, so the
+      // result is cast to the shape the mock handler actually returns.
+      const result = (await apiClient.get(
+        '/api/v1/test/{id}' as unknown as PathsForMethod<'get'>,
+        {pathParams: { id: 123 },},
+      )) as { id: string; type: string };
       expect(result.id).toBe('123'); // URL params are always strings
     });
 
@@ -246,8 +283,9 @@ describe('ApiClient', () => {
         }),
       );
 
+      // Intentionally-fake test path.
       const result = await apiClient.get(
-        '/api/v1/projects/{projectId}/items/{itemId}',
+        '/api/v1/projects/{projectId}/items/{itemId}' as unknown as PathsForMethod<'get'>,
         {pathParams: { projectId: 'proj-1', itemId: 'item-1' },},
       );
       expect(result).toEqual({ projectId: 'proj-1', itemId: 'item-1' });
@@ -261,7 +299,11 @@ describe('ApiClient', () => {
         }),
       );
 
-      const result = await apiClient.get('/api/v1/test/{id}', {pathParams: { id: 'test with spaces' },});
+      // Intentionally-fake test path; cast result to the shape the mock handler returns.
+      const result = (await apiClient.get(
+        '/api/v1/test/{id}' as unknown as PathsForMethod<'get'>,
+        {pathParams: { id: 'test with spaces' },},
+      )) as { id: string };
       // MSW decodes the param, so we get the original string back
       expect(result.id).toBe('test with spaces');
     });

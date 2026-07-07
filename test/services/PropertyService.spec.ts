@@ -73,8 +73,8 @@ const handlers = [
   http.patch('/api/v1/projects/:projectId/properties/:propertyId', async ({ request, params }) => {
     const body = (await request.json()) as Partial<PropertyJson>;
     return HttpResponse.json({
-       ...mockProperty, ...body, id: params.propertyId 
-      });
+      ...mockProperty, ...body, id: params.propertyId 
+    });
   }),
 
   http.delete('/api/v1/projects/:projectId/properties/:propertyId', ({ params }) => {

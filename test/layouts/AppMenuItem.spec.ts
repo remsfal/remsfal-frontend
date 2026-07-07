@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount, config } from '@vue/test-utils';
 import { reactive, nextTick } from 'vue';
 import { routeLocationKey } from 'vue-router';
 import router from '@/router';
-import AppMenuItem from '@/layouts/components/AppMenuItem.vue';
+import AppMenuItem, { type MenuItem } from '@/layouts/components/AppMenuItem.vue';
 import { useLayout } from '@/layouts/composables/layout';
 
 // Remove global router - we inject a controlled route via routeLocationKey
@@ -21,15 +21,15 @@ describe('AppMenuItem.vue', () => {
   });
 
   const defaultRoute = {
- path: '/', name: 'Home', params: {}, query: {} 
-};
+    path: '/', name: 'Home', params: {}, query: {} 
+  };
 
-  const mountItem = (item: object, extraProps: object = {}, route = defaultRoute) => {
+  const mountItem = (item: MenuItem, extraProps: object = {}, route = defaultRoute) => {
     const routeRef = reactive(route);
     return mount(AppMenuItem, {
       props: {
- item, root: false, index: 0, ...extraProps 
-},
+        item, root: false, index: 0, ...extraProps 
+      },
       global: {
         provide: { [routeLocationKey as symbol]: routeRef },
         stubs: {
@@ -62,8 +62,8 @@ describe('AppMenuItem.vue', () => {
 
     it('hides root text when visible is false', () => {
       const wrapper = mountItem({
- label: 'managerMenu.myData', visible: false, items: [] 
-}, { root: true });
+        label: 'managerMenu.myData', visible: false, items: [] 
+      }, { root: true });
       expect(wrapper.find('.layout-menuitem-root-text').exists()).toBe(false);
     });
   });
@@ -123,8 +123,8 @@ describe('AppMenuItem.vue', () => {
         leafItem,
         {},
         {
- path: '/manager/dashboard', name: 'ManagerDashboard', params: {}, query: {} 
-},
+          path: '/manager/dashboard', name: 'ManagerDashboard', params: {}, query: {} 
+        },
       );
       expect(wrapper.find('.active-route').exists()).toBe(true);
     });
@@ -134,8 +134,8 @@ describe('AppMenuItem.vue', () => {
         leafItem,
         {},
         {
- path: '/manager/account-settings', name: 'ManagerAccount', params: {}, query: {} 
-},
+          path: '/manager/account-settings', name: 'ManagerAccount', params: {}, query: {} 
+        },
       );
       expect(wrapper.find('.active-route').exists()).toBe(false);
     });
@@ -143,15 +143,15 @@ describe('AppMenuItem.vue', () => {
     it('does not add active-route class for "/" items', () => {
       const rootItem = { label: 'projectMenu.home.label', to: '/' };
       const wrapper = mountItem(rootItem, {}, {
- path: '/', name: 'Home', params: {}, query: {} 
-});
+        path: '/', name: 'Home', params: {}, query: {} 
+      });
       expect(wrapper.find('.active-route').exists()).toBe(false);
     });
   });
 
   describe('icons', () => {
     it('renders a PrimeIcon <i> element for pi icon type', () => {
-      const item = {
+      const item: MenuItem = {
         label: 'managerMenu.myData.overview',
         to: '/manager/dashboard',
         icon: { type: 'pi', name: 'pi pi-fw pi-chart-bar' },
@@ -163,7 +163,7 @@ describe('AppMenuItem.vue', () => {
     });
 
     it('renders FontAwesomeIcon for fa icon type', () => {
-      const item = {
+      const item: MenuItem = {
         label: 'projectMenu.issueManagement.mine',
         to: '/projects/1/issues',
         icon: { type: 'fa', name: ['fas', 'list'] },
@@ -174,8 +174,8 @@ describe('AppMenuItem.vue', () => {
 
     it('does not render icon when icon is null', () => {
       const item = {
- label: 'managerMenu.myData.overview', to: '/manager/dashboard', icon: null 
-};
+        label: 'managerMenu.myData.overview', to: '/manager/dashboard', icon: null 
+      };
       const wrapper = mountItem(item);
       expect(wrapper.find('.layout-menuitem-icon').exists()).toBe(false);
       expect(wrapper.find('.fa-stub').exists()).toBe(false);
@@ -186,8 +186,8 @@ describe('AppMenuItem.vue', () => {
     it('calls command callback on click', async () => {
       const command = vi.fn();
       const item = {
- label: 'managerMenu.myData.overview', to: '/manager/dashboard', command 
-};
+        label: 'managerMenu.myData.overview', to: '/manager/dashboard', command 
+      };
       const wrapper = mountItem(item);
       await wrapper.find('.router-link-stub').trigger('click');
       expect(command).toHaveBeenCalled();
@@ -196,8 +196,8 @@ describe('AppMenuItem.vue', () => {
     it('calls navigate callback on click', async () => {
       const navigate = vi.fn();
       const item = {
- label: 'managerMenu.myData.overview', to: '/manager/dashboard', navigate 
-};
+        label: 'managerMenu.myData.overview', to: '/manager/dashboard', navigate 
+      };
       const wrapper = mountItem(item);
       await wrapper.find('.router-link-stub').trigger('click');
       expect(navigate).toHaveBeenCalled();
@@ -213,8 +213,8 @@ describe('AppMenuItem.vue', () => {
     it('does not call command when item is disabled', async () => {
       const command = vi.fn();
       const item = {
- label: 'managerMenu.myData.overview', to: '/manager/dashboard', command, disabled: true 
-};
+        label: 'managerMenu.myData.overview', to: '/manager/dashboard', command, disabled: true 
+      };
       const wrapper = mountItem(item);
       await wrapper.find('.router-link-stub').trigger('click');
       expect(command).not.toHaveBeenCalled();
@@ -223,8 +223,8 @@ describe('AppMenuItem.vue', () => {
     it('does not call navigate when item is disabled', async () => {
       const navigate = vi.fn();
       const item = {
- label: 'managerMenu.myData.overview', to: '/manager/dashboard', navigate, disabled: true 
-};
+        label: 'managerMenu.myData.overview', to: '/manager/dashboard', navigate, disabled: true 
+      };
       const wrapper = mountItem(item);
       await wrapper.find('.router-link-stub').trigger('click');
       expect(navigate).not.toHaveBeenCalled();

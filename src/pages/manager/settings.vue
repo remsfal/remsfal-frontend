@@ -6,9 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ManagerSettingsView from '@/views/ManagerSettingsView.vue'
+import { UserOrganizationEmploymentsCard } from '@/features/common/organizations';
 </script>
 
 <template>
-  <ManagerSettingsView />
+  <UserOrganizationEmploymentsCard />
 </template>

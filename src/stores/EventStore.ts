@@ -12,6 +12,7 @@ type Handler<K extends Key> = (payload: Events[K]) => void;
 
 export const useEventBus = defineStore('event-bus', () => {
   // Use proper generic typing instead of Function
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const listeners = new Map<Key, Set<Handler<any>>>();
 
   function on<K extends Key>(type: K, handler: Handler<K>) {
@@ -40,6 +41,6 @@ export const useEventBus = defineStore('event-bus', () => {
   }
 
   return {
- on, once, off, emit 
-};
+    on, once, off, emit 
+  };
 });

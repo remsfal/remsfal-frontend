@@ -7,9 +7,9 @@ vi.mock('@/helper/platform', () => ({ isNativePlatform: () => false }));
 vi.mock('@/layouts/components/ProjectMenu.vue', () => ({ default: { name: 'ProjectMenu', template: '<div></div>' } }));
 // Mock ProjectStore used by ProjectMenu
 vi.mock('@/stores/ProjectStore', () => ({
-useProjectStore: () => ({
- projectId: undefined, projectList: [], selectedProject: null 
-}),
+  useProjectStore: () => ({
+    projectId: undefined, projectList: [], selectedProject: null 
+  }),
 }));
 
 import { mount, config } from '@vue/test-utils';
@@ -32,8 +32,8 @@ const RouterLinkStub = {
 
 describe('ProjectMobileBar.vue', () => {
   const defaultRoute = {
- path: '/', name: 'ProjectSelection', params: {}, query: {} 
-};
+    path: '/', name: 'ProjectSelection', params: {}, query: {} 
+  };
 
   const mountComponent = (initialRoute = defaultRoute) => {
     const route = reactive(initialRoute);
@@ -56,10 +56,10 @@ describe('ProjectMobileBar.vue', () => {
 
   it('renders global navigation items when no project is selected', () => {
     const { wrapper } = mountComponent({
- path: '/', name: 'ProjectSelection', params: {}, query: {} 
-});
+      path: '/', name: 'ProjectSelection', params: {}, query: {} 
+    });
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems.length).toBe(2);
+    expect(navItems).toHaveLength(2);
   });
 
   it('renders project navigation items when project is selected', () => {
@@ -70,7 +70,7 @@ describe('ProjectMobileBar.vue', () => {
       query: {},
     });
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems.length).toBe(4);
+    expect(navItems).toHaveLength(4);
   });
 
   it('highlights Dashboard when on project dashboard route', async () => {
@@ -163,9 +163,9 @@ describe('ProjectMobileBar.vue', () => {
   it('toggles sidebar on more button click', async () => {
     const { wrapper } = mountComponent();
     const moreBtn = wrapper.find('.more-btn');
-    expect(wrapper.vm.sidebarVisible).toBe(false);
+    expect(wrapper.find('.p-drawer').exists()).toBe(false);
     await moreBtn.trigger('click');
-    expect(wrapper.vm.sidebarVisible).toBe(true);
+    expect(wrapper.find('.p-drawer').exists()).toBe(true);
   });
 
   it('renders ProjectMenu inside drawer', async () => {

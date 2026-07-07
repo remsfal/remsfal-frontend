@@ -34,23 +34,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    'ContractorClientsClosed': RouteRecordInfo<
-      'ContractorClientsClosed',
-      '/contractor/clients/closed',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    'ContractorClientsOngoing': RouteRecordInfo<
-      'ContractorClientsOngoing',
-      '/contractor/clients/ongoing',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    'ContractorClientsOpen': RouteRecordInfo<
-      'ContractorClientsOpen',
-      '/contractor/clients/open',
+    'ContractorAccountSettings': RouteRecordInfo<
+      'ContractorAccountSettings',
+      '/contractor/account-settings',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -62,9 +48,44 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    'ContractorView': RouteRecordInfo<
-      'ContractorView',
-      '/contractor/issues',
+    'ContractorOrdersClosed': RouteRecordInfo<
+      'ContractorOrdersClosed',
+      '/contractor/orders/closed',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ContractorOrdersOngoing': RouteRecordInfo<
+      'ContractorOrdersOngoing',
+      '/contractor/orders/ongoing',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ContractorOrdersOpen': RouteRecordInfo<
+      'ContractorOrdersOpen',
+      '/contractor/orders/open',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ContractorOrganizationSettings': RouteRecordInfo<
+      'ContractorOrganizationSettings',
+      '/contractor/organizations/:organizationId',
+      { organizationId: ParamValue<true> },
+      { organizationId: ParamValue<false> },
+      | never
+    >,
+    'ContractorOrganizations': RouteRecordInfo<
+      'ContractorOrganizations',
+      '/contractor/organizations/new',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ContractorSettings': RouteRecordInfo<
+      'ContractorSettings',
+      '/contractor/settings',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -90,6 +111,20 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ManagerContractorList': RouteRecordInfo<
+      'ManagerContractorList',
+      '/manager/contractors',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'ManagerContractorDetail': RouteRecordInfo<
+      'ManagerContractorDetail',
+      '/manager/contractors/:organizationId',
+      { organizationId: ParamValue<true> },
+      { organizationId: ParamValue<false> },
+      | never
+    >,
     'ManagerDashboard': RouteRecordInfo<
       'ManagerDashboard',
       '/manager/dashboard',
@@ -97,9 +132,16 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ManagerOrganizationSettings': RouteRecordInfo<
+      'ManagerOrganizationSettings',
+      '/manager/organizations/:organizationId',
+      { organizationId: ParamValue<true> },
+      { organizationId: ParamValue<false> },
+      | never
+    >,
     'ManagerOrganizations': RouteRecordInfo<
       'ManagerOrganizations',
-      '/manager/organizations',
+      '/manager/organizations/new',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -144,6 +186,13 @@ declare module 'vue-router/auto-routes' {
       '/projects/:projectId/contractors',
       { projectId: ParamValue<true> },
       { projectId: ParamValue<false> },
+      | never
+    >,
+    'ProjectContractorDetail': RouteRecordInfo<
+      'ProjectContractorDetail',
+      '/projects/:projectId/contractors/:contractorId',
+      { projectId: ParamValue<true>, contractorId: ParamValue<true> },
+      { projectId: ParamValue<false>, contractorId: ParamValue<false> },
       | never
     >,
     'ProjectDashboard': RouteRecordInfo<
@@ -239,23 +288,30 @@ declare module 'vue-router/auto-routes' {
     >,
     'TenantAccountSettings': RouteRecordInfo<
       'TenantAccountSettings',
-      '/tenancies/account-settings',
+      '/tenant/account-settings',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
     'TenantDashboard': RouteRecordInfo<
       'TenantDashboard',
-      '/tenancies/dashboard',
+      '/tenant/dashboard',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
     'TenantIssues': RouteRecordInfo<
       'TenantIssues',
-      '/tenancies/issues',
+      '/tenant/issues',
       Record<never, never>,
       Record<never, never>,
+      | never
+    >,
+    'TenantIssueDetails': RouteRecordInfo<
+      'TenantIssueDetails',
+      '/tenant/issues/:issueId',
+      { issueId: ParamValue<true> },
+      { issueId: ParamValue<false> },
       | never
     >,
   }
@@ -277,21 +333,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/contractor/clients/closed.vue': {
+    'src/pages/contractor/account-settings.vue': {
       routes:
-        | 'ContractorClientsClosed'
-      views:
-        | never
-    }
-    'src/pages/contractor/clients/ongoing.vue': {
-      routes:
-        | 'ContractorClientsOngoing'
-      views:
-        | never
-    }
-    'src/pages/contractor/clients/open.vue': {
-      routes:
-        | 'ContractorClientsOpen'
+        | 'ContractorAccountSettings'
       views:
         | never
     }
@@ -301,9 +345,39 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/contractor/issues.vue': {
+    'src/pages/contractor/orders/closed.vue': {
       routes:
-        | 'ContractorView'
+        | 'ContractorOrdersClosed'
+      views:
+        | never
+    }
+    'src/pages/contractor/orders/ongoing.vue': {
+      routes:
+        | 'ContractorOrdersOngoing'
+      views:
+        | never
+    }
+    'src/pages/contractor/orders/open.vue': {
+      routes:
+        | 'ContractorOrdersOpen'
+      views:
+        | never
+    }
+    'src/pages/contractor/organizations/[organizationId].vue': {
+      routes:
+        | 'ContractorOrganizationSettings'
+      views:
+        | never
+    }
+    'src/pages/contractor/organizations/new.vue': {
+      routes:
+        | 'ContractorOrganizations'
+      views:
+        | never
+    }
+    'src/pages/contractor/settings.vue': {
+      routes:
+        | 'ContractorSettings'
       views:
         | never
     }
@@ -325,13 +399,31 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/manager/contractors/index.vue': {
+      routes:
+        | 'ManagerContractorList'
+      views:
+        | never
+    }
+    'src/pages/manager/contractors/[organizationId].vue': {
+      routes:
+        | 'ManagerContractorDetail'
+      views:
+        | never
+    }
     'src/pages/manager/dashboard.vue': {
       routes:
         | 'ManagerDashboard'
       views:
         | never
     }
-    'src/pages/manager/organizations.vue': {
+    'src/pages/manager/organizations/[organizationId].vue': {
+      routes:
+        | 'ManagerOrganizationSettings'
+      views:
+        | never
+    }
+    'src/pages/manager/organizations/new.vue': {
       routes:
         | 'ManagerOrganizations'
       views:
@@ -370,6 +462,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/projects/[projectId]/contractors/index.vue': {
       routes:
         | 'ProjectContractorList'
+      views:
+        | never
+    }
+    'src/pages/projects/[projectId]/contractors/[contractorId].vue': {
+      routes:
+        | 'ProjectContractorDetail'
       views:
         | never
     }
@@ -451,21 +549,27 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/tenancies/account-settings.vue': {
+    'src/pages/tenant/account-settings.vue': {
       routes:
         | 'TenantAccountSettings'
       views:
         | never
     }
-    'src/pages/tenancies/dashboard.vue': {
+    'src/pages/tenant/dashboard.vue': {
       routes:
         | 'TenantDashboard'
       views:
         | never
     }
-    'src/pages/tenancies/issues/index.vue': {
+    'src/pages/tenant/issues/index.vue': {
       routes:
         | 'TenantIssues'
+      views:
+        | never
+    }
+    'src/pages/tenant/issues/[issueId].vue': {
+      routes:
+        | 'TenantIssueDetails'
       views:
         | never
     }

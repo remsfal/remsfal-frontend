@@ -1,11 +1,15 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import ManagerMenu from '@/layouts/components/ManagerMenu.vue';
+import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 describe('ManagerMenu.vue', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
+    // Prevent fetchUserOrganization from running so userOrganizations stays empty
+    const orgStore = useOrganizationStore();
+    vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
     wrapper = mount(ManagerMenu);
   });
 
@@ -17,7 +21,7 @@ describe('ManagerMenu.vue', () => {
   it('renders two root menu sections', async () => {
     await wrapper.vm.$nextTick();
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems.length).toBe(2);
+    expect(rootItems).toHaveLength(2);
   });
 
   it('renders "Meine Daten" as the first section label', async () => {
@@ -32,16 +36,16 @@ describe('ManagerMenu.vue', () => {
     expect(rootItems[1].text()).toContain('Organisationen');
   });
 
-  it('renders four submenu items under "Meine Daten"', async () => {
+  it('renders five submenu items under "Meine Daten"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[0].findAll('.layout-menuitem-text').length).toBe(4);
+    expect(submenus[0].findAll('.layout-menuitem-text')).toHaveLength(5);
   });
 
   it('renders one submenu item under "Organisationen"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[1].findAll('.layout-menuitem-text').length).toBe(1);
+    expect(submenus[1].findAll('.layout-menuitem-text')).toHaveLength(1);
   });
 
   it('renders the expected submenu item labels', async () => {
@@ -75,5 +79,49 @@ describe('ManagerMenu.vue', () => {
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.pi-building').trigger('click');
     expect(pushSpy).toHaveBeenCalledWith('/manager/projects');
+  });
+});
+
+describe('ManagerMenu.vue — with organization', () => {
+  const mockOrg = { id: 'org-abc', name: 'Muster GmbH' };
+  let wrapper: VueWrapper;
+  let orgStore: ReturnType<typeof useOrganizationStore>;
+
+  beforeEach(async () => {
+    orgStore = useOrganizationStore();
+    // Mock the action so we control the store state explicitly
+    vi.spyOn(orgStore, 'fetchUserOrganization').mockResolvedValue();
+    wrapper = mount(ManagerMenu);
+    orgStore.userOrganizations = [mockOrg];
+    orgStore.initialized = true;
+    await wrapper.vm.$nextTick();
+  });
+
+  it('renders three root menu sections when user has an organization', () => {
+    const rootItems = wrapper.findAll('.layout-root-menuitem');
+    expect(rootItems).toHaveLength(3);
+  });
+
+  it('shows the organization name as the third section label', () => {
+    const rootItems = wrapper.findAll('.layout-root-menuitem');
+    expect(rootItems[2].text()).toContain('Muster GmbH');
+  });
+
+  it('renders "Einstellungen" as submenu item under the org section', () => {
+    const submenus = wrapper.findAll('.layout-submenu');
+    expect(submenus[2].text()).toContain('Einstellungen');
+  });
+
+  it('links org settings to the correct URL including org id', () => {
+    const orgSettingsLink = wrapper.findAll('.layout-submenu').at(2)?.find('a');
+    expect(orgSettingsLink?.attributes('href')).toContain('org-abc');
+  });
+
+  it('renders four sections when user belongs to two organizations', async () => {
+    orgStore.userOrganizations = [mockOrg, { id: 'org-xyz', name: 'Zweite GmbH' }];
+    await wrapper.vm.$nextTick();
+
+    const rootItems = wrapper.findAll('.layout-root-menuitem');
+    expect(rootItems).toHaveLength(4);
   });
 });

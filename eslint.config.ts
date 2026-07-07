@@ -49,6 +49,7 @@ export default [
       ],
       'vue/define-props-declaration': 'error',
       'vue/html-button-has-type': 'warn',
+      'vue/html-indent': ['error', 2],
       'vue/no-multiple-objects-in-class': 'warn',
       'vue/no-root-v-if': 'error',
       'vue/no-template-target-blank': 'error',
@@ -68,8 +69,8 @@ export default [
       'vue/v-for-delimiter-style': 'error',
       'vue/valid-define-options': 'error',
       'vue/max-attributes-per-line':  ["error", {
-          "singleline": {"max": 4},
-          "multiline": {"max": 2}
+        "singleline": {"max": 4},
+        "multiline": {"max": 2}
       }],
     },
   },
@@ -78,6 +79,8 @@ export default [
   {
     rules: {
       'max-len': ['error', { code: 128 }],
+      'no-tabs': 'error',
+      indent: ['error', 2, { SwitchCase: 1 }],
       'object-curly-newline': [
         'error',
         {

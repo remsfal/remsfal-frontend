@@ -36,6 +36,10 @@ vi.mock('@/helper/viewHelper', async (importOriginal) => {
 });
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
+// CommercialDataCard.vue tracks "no value" internally as `null` (see its
+// `!== null` detail-mode detection), while the wire type CommercialJson only
+// allows `number | undefined`. The cast preserves the `null` sentinel the
+// component actually relies on while satisfying the mock's declared type.
 const mockCommercial = {
   title: 'Testgewerbe',
   description: 'Eine Beschreibung',
@@ -46,7 +50,7 @@ const mockCommercial = {
   trafficArea: null,
   heatingSpace: 180,
   space: 210,
-};
+} as unknown as CommercialJson;
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
 
@@ -194,7 +198,7 @@ describe('CommercialDataCard.vue', () => {
   it('auto-detects detail mode when API returns detail fields', async () => {
     vi.mocked(commercialService.getCommercial).mockResolvedValue({
       ...mockCommercial,
-      netFloorArea: null,
+      netFloorArea: undefined,
       usableFloorArea: 100,
       technicalServicesArea: 50,
       trafficArea: 30,
@@ -209,8 +213,8 @@ describe('CommercialDataCard.vue', () => {
 
   it('location input is disabled when title matches location on load', async () => {
     vi.mocked(commercialService.getCommercial).mockResolvedValue({
- ...mockCommercial, title: 'Same', location: 'Same' 
-});
+      ...mockCommercial, title: 'Same', location: 'Same' 
+    });
     const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
     expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
@@ -226,8 +230,8 @@ describe('CommercialDataCard.vue', () => {
 
   it('title watcher enables save button when titleMatchesLocation is true and title changes', async () => {
     vi.mocked(commercialService.getCommercial).mockResolvedValue({
- ...mockCommercial, title: 'Same', location: 'Same' 
-});
+      ...mockCommercial, title: 'Same', location: 'Same' 
+    });
     const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');
@@ -237,8 +241,8 @@ describe('CommercialDataCard.vue', () => {
 
   it('submit sends title as location when titleMatchesLocation is true', async () => {
     vi.mocked(commercialService.getCommercial).mockResolvedValue({
- ...mockCommercial, title: 'Same', location: 'Same' 
-});
+      ...mockCommercial, title: 'Same', location: 'Same' 
+    });
     const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
     await wrapper.find('input[name="title"]').setValue('Neuer Titel');

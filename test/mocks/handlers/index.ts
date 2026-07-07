@@ -1,6 +1,9 @@
 import { userHandlers } from './user.handlers';
+import { organizationHandlers } from './organization.handlers';
+import { contractorHandlers } from './contractor.handlers';
 import { projectHandlers } from './project.handlers';
 import { projectMemberHandlers } from './project-member.handlers';
+import { organizationMemberHandlers } from './organization-member.handlers';
 import { propertyHandlers } from './property.handlers';
 import { apartmentHandlers } from './apartment.handlers';
 import { buildingHandlers } from './building.handlers';
@@ -12,11 +15,15 @@ import { tenancyHandlers } from './tenancy.handlers';
 import { taskHandlers } from './task.handlers';
 import { issueHandlers } from './issue.handlers';
 import { inboxHandlers } from './inbox.handlers';
+import { quotationRequestHandlers } from './quotation-request.handlers';
 
 export const handlers = [
   ...userHandlers,
+  ...organizationHandlers,
+  ...contractorHandlers,
   ...projectHandlers,
   ...projectMemberHandlers,
+  ...organizationMemberHandlers,
   ...propertyHandlers,
   ...apartmentHandlers,
   ...buildingHandlers,
@@ -28,4 +35,5 @@ export const handlers = [
   ...taskHandlers,
   ...issueHandlers,
   ...inboxHandlers,
+  ...quotationRequestHandlers,
 ];

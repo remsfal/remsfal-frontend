@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
-import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Popover from 'primevue/popover';
 import Textarea from 'primevue/textarea';
 import { Form } from '@primevue/forms';
+import BaseDialog from '@/components/common/BaseDialog.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
@@ -28,13 +29,14 @@ const props = defineProps<{
 const emit = defineEmits<(e: 'newUnit', title: string) => void>();
 
 const { t } = useI18n();
+const toast = useToast();
 
 const visible = ref<boolean>(false);
 const newUnitType = ref<EntityType | undefined>(undefined);
 const titleMatchesLocation = ref(true);
 const currentTitle = ref('');
 const initialValues = ref({
- title: '', location: '', description: '' 
+  title: '', location: '', description: ''
 });
 const formKey = ref(0);
 
@@ -148,13 +150,18 @@ async function onSubmit(event: FormSubmitEvent) {
       titleMatchesLocation.value = true;
       currentTitle.value = '';
       initialValues.value = {
- title: '', location: '', description: '' 
-};
+        title: '', location: '', description: ''
+      };
       formKey.value++;
       visible.value = false;
     })
-    .catch((err) => {
-      console.error('Failed to create rentable unit:', err);
+    .catch(() => {
+      toast.add({
+        severity: 'error',
+        summary: t('error.general'),
+        detail: t('rentableUnits.errorCreate'),
+        life: 5000,
+      });
     });
 }
 
@@ -162,8 +169,8 @@ async function createProperty(title: string, loc: string | undefined, desc: stri
   console.log('createProperty called');
   return propertyService
     .createProperty(props.projectId, {
- title, location: loc, description: desc, plotArea: 0 
-})
+      title, location: loc, description: desc, plotArea: 0
+    })
     .then((newProperty) => {
       console.log('Property created:', newProperty);
     });
@@ -173,8 +180,8 @@ async function createSite(title: string, loc: string | undefined, desc: string |
   console.log('createSite called');
   return siteService
     .createSite(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc
+    })
     .then((newSite) => {
       console.log('Site created:', newSite);
     });
@@ -184,8 +191,8 @@ async function createBuilding(title: string, loc: string | undefined, desc: stri
   console.log('createBuilding called');
   return buildingService
     .createBuilding(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc
+    })
     .then((newBuilding) => {
       console.log('Building created:', newBuilding);
     });
@@ -195,8 +202,8 @@ async function createApartment(title: string, loc: string | undefined, desc: str
   console.log('createApartment called');
   return apartmentService
     .createApartment(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc
+    })
     .then((newApartment) => {
       console.log('Apartment created:', newApartment);
     });
@@ -206,8 +213,8 @@ async function createCommercial(title: string, loc: string | undefined, desc: st
   console.log('createCommercial called');
   return commercialService
     .createCommercial(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc
+    })
     .then((newCommercial) => {
       console.log('Commercial created:', newCommercial);
     });
@@ -217,8 +224,8 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
   console.log('createStorage called');
   return storageService
     .createStorage(props.projectId, props.parentId!, {
- title, location: loc, description: desc 
-})
+      title, location: loc, description: desc
+    })
     .then((newStorage) => {
       console.log('Storage created:', newStorage);
     });
@@ -267,7 +274,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
     </Popover>
   </template>
 
-  <Dialog v-model:visible="visible" modal :header="t('rentableUnits.dialog.addUnit')" :style="{ width: '35rem' }">
+  <BaseDialog v-model:visible="visible" :header="t('rentableUnits.dialog.addUnit')">
     <Form
       :key="formKey"
       v-slot="$form"
@@ -276,9 +283,10 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
       @submit="onSubmit"
     >
       <div class="flex flex-col gap-6">
-        <!-- Titel -->
         <div class="flex flex-col gap-1">
-          <label for="title" class="font-semibold">{{ t('rentableUnits.form.title') }}</label>
+          <label for="title" class="font-semibold">
+            {{ t('rentableUnits.form.title') }}<span aria-hidden="true"> *</span>
+          </label>
           <InputText
             id="title"
             name="title"
@@ -293,11 +301,10 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
             size="small"
             variant="simple"
           >
-            {{ $form.title.error?.message }}
+            {{ $form.title?.error?.message }}
           </Message>
         </div>
 
-        <!-- Lage/Standort -->
         <div class="flex flex-col gap-1">
           <label for="location" class="font-semibold">{{ t('rentableUnits.form.location') }}</label>
           <InputText
@@ -312,7 +319,6 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
           </div>
         </div>
 
-        <!-- Beschreibung -->
         <div class="flex flex-col gap-1">
           <label for="description" class="font-semibold">{{ t('rentableUnits.form.description') }}</label>
           <Textarea
@@ -322,7 +328,7 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
           />
         </div>
 
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2 mt-6">
           <Button
             type="button"
             :label="t('button.cancel')"
@@ -333,5 +339,5 @@ async function createStorage(title: string, loc: string | undefined, desc: strin
         </div>
       </div>
     </Form>
-  </Dialog>
+  </BaseDialog>
 </template>

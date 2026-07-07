@@ -11,90 +11,90 @@ config.global.plugins = config.global.plugins.filter(p => p !== router);
 
 // Stub for RouterLink
 const RouterLinkStub = {
-    template: '<a><slot /></a>',
-    props: ['to']
+  template: '<a><slot /></a>',
+  props: ['to']
 };
 
 describe('TenantMobileBar.vue', () => {
-    const defaultRoute = { path: '/', name: 'TenantView' };
-    const mountComponent = (initialRoute = defaultRoute) => {
-        const route = reactive(initialRoute);
+  const defaultRoute = { path: '/', name: 'TenantView' };
+  const mountComponent = (initialRoute = defaultRoute) => {
+    const route = reactive(initialRoute);
 
-        const wrapper = mount(TenantMobileBar, {
-            global: {
-                provide: { [routeLocationKey as symbol]: route },
-                stubs: {
-                    TenantMenu: true,
-                    Drawer: {
-                        template: '<div class="p-drawer" v-if="visible"><slot /></div>',
-                        props: ['visible']
-                    },
-                    RouterLink: RouterLinkStub
-                }
-            }
-        });
-
-        return { wrapper, route };
-    };
-
-    it('renders navigation items', () => {
-        const { wrapper } = mountComponent();
-        const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems.length).toBe(2);
+    const wrapper = mount(TenantMobileBar, {
+      global: {
+        provide: { [routeLocationKey as symbol]: route },
+        stubs: {
+          TenantMenu: true,
+          Drawer: {
+            template: '<div class="p-drawer" v-if="visible"><slot /></div>',
+            props: ['visible']
+          },
+          RouterLink: RouterLinkStub
+        }
+      }
     });
 
-    it('highlights Overview active state when on TenantDashboard', async () => {
-        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
-        await wrapper.vm.$nextTick();
+    return { wrapper, route };
+  };
 
-        const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[0].classes()).toContain('active');
-        expect(navItems[1].classes()).not.toContain('active');
-    });
+  it('renders navigation items', () => {
+    const { wrapper } = mountComponent();
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems).toHaveLength(2);
+  });
 
-    it('highlights Meldungen active state when on TenantIssues', async () => {
-        const { wrapper } = mountComponent({ path: '/tenancies/issues', name: 'TenantIssues' });
-        await wrapper.vm.$nextTick();
+  it('highlights Overview active state when on TenantDashboard', async () => {
+    const { wrapper } = mountComponent({ path: '/tenant/dashboard', name: 'TenantDashboard' });
+    await wrapper.vm.$nextTick();
 
-        const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[0].classes()).not.toContain('active');
-        expect(navItems[1].classes()).toContain('active');
-    });
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[0].classes()).toContain('active');
+    expect(navItems[1].classes()).not.toContain('active');
+  });
 
-    it('does not highlight Overview when on an unrelated route', async () => {
-        const { wrapper } = mountComponent({ path: '/tenancies/account-settings', name: 'TenantAccountSettings' });
-        await wrapper.vm.$nextTick();
+  it('highlights Meldungen active state when on TenantIssues', async () => {
+    const { wrapper } = mountComponent({ path: '/tenant/issues', name: 'TenantIssues' });
+    await wrapper.vm.$nextTick();
 
-        const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[0].classes()).not.toContain('active');
-    });
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[0].classes()).not.toContain('active');
+    expect(navItems[1].classes()).toContain('active');
+  });
 
-    it('highlights Overview when route name matches TenantDashboard', async () => {
-        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
-        await wrapper.vm.$nextTick();
+  it('does not highlight Overview when on an unrelated route', async () => {
+    const { wrapper } = mountComponent({ path: '/tenant/account-settings', name: 'TenantAccountSettings' });
+    await wrapper.vm.$nextTick();
 
-        const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[0].classes()).toContain('active');
-    });
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[0].classes()).not.toContain('active');
+  });
 
-    it('does not highlight Meldungen when route name differs', async () => {
-        const { wrapper } = mountComponent({ path: '/tenancies/dashboard', name: 'TenantDashboard' });
-        await wrapper.vm.$nextTick();
+  it('highlights Overview when route name matches TenantDashboard', async () => {
+    const { wrapper } = mountComponent({ path: '/tenant/dashboard', name: 'TenantDashboard' });
+    await wrapper.vm.$nextTick();
 
-        const navItems = wrapper.findAll('a.nav-item');
-        expect(navItems[1].classes()).not.toContain('active');
-    });
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[0].classes()).toContain('active');
+  });
 
-    it('toggles sidebar', async () => {
-        const { wrapper } = mountComponent();
+  it('does not highlight Meldungen when route name differs', async () => {
+    const { wrapper } = mountComponent({ path: '/tenant/dashboard', name: 'TenantDashboard' });
+    await wrapper.vm.$nextTick();
 
-        const moreBtn = wrapper.find('.more-btn');
+    const navItems = wrapper.findAll('a.nav-item');
+    expect(navItems[1].classes()).not.toContain('active');
+  });
 
-        expect(wrapper.vm.sidebarVisible).toBe(false);
-        await moreBtn.trigger('click');
-        expect(wrapper.vm.sidebarVisible).toBe(true);
+  it('toggles sidebar', async () => {
+    const { wrapper } = mountComponent();
 
-        await moreBtn.trigger('click');
-        expect(wrapper.vm.sidebarVisible).toBe(false);
-    });
+    const moreBtn = wrapper.find('.more-btn');
+
+    expect(wrapper.find('.p-drawer').exists()).toBe(false);
+    await moreBtn.trigger('click');
+    expect(wrapper.find('.p-drawer').exists()).toBe(true);
+
+    await moreBtn.trigger('click');
+    expect(wrapper.find('.p-drawer').exists()).toBe(false);
+  });
 });

@@ -2,12 +2,11 @@
  * Shared test utilities and helpers for Issue-related components
  * Reduces code duplication across test files
  */
-import { vi, type Mock } from 'vitest';
+import { vi, expect, type Mock } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 
 // ✅ Static imports (ESLint-friendly)
-import IssueDescriptionCard from '@/components/issue/IssueDescriptionCard.vue';
-import IssueDescriptionView from '@/views/IssueDescription.vue';
+import IssueDescriptionCard from '@/features/project/issues/components/IssueDescriptionCard.vue';
 
 // ========== Mock Setup ==========
 
@@ -51,28 +50,19 @@ export const defaultIssueDescriptionViewProps = { description: 'Initial descript
 export const primeVueStubs = {
   Card: true,
   Button: true,
-  IssueDescription: true,
   Textarea: true,
 };
 
 // ========== Component Mounting Helpers ==========
 
-export function mountIssueDescriptionCard(props = {}, options: Record<string, unknown> = {}) {
+export function mountIssueDescriptionCard(
+  props: Record<string, unknown> = {},
+  options: Record<string, unknown> & { global?: Record<string, unknown> } = {}
+) {
   return mount(IssueDescriptionCard, {
     props: { ...defaultIssueDescriptionProps, ...props },
     global: {
       stubs: primeVueStubs,
-      ...options.global,
-    },
-    ...options,
-  });
-}
-
-export function mountIssueDescription(props = {}, options: Record<string, unknown> = {}) {
-  return mount(IssueDescriptionView, {
-    props: { ...defaultIssueDescriptionViewProps, ...props },
-    global: {
-      stubs: { Textarea: true },
       ...options.global,
     },
     ...options,

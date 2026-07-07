@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { apartmentService, type Apartment } from '@/services/ApartmentService';
+import { apartmentService, type ApartmentJson } from '@/services/ApartmentService';
 
-const mockApartment: Apartment = {
+const mockApartment: ApartmentJson = {
   id: 'apartment-1',
   title: 'Apartment 101',
   location: 'First Floor',
@@ -11,7 +11,6 @@ const mockApartment: Apartment = {
   usableSpace: 85,
   livingSpace: 75,
   heatingSpace: 70,
-  rooms: 3,
 };
 
 describe('ApartmentService', () => {
@@ -19,7 +18,7 @@ describe('ApartmentService', () => {
   beforeEach(() => {
     server.use(
       http.post('/api/v1/projects/:projectId/buildings/:buildingId/apartments', async ({ request }) => {
-        const body = (await request.json()) as Apartment;
+        const body = (await request.json()) as ApartmentJson;
         return HttpResponse.json(
           {
             ...body,
@@ -38,7 +37,7 @@ describe('ApartmentService', () => {
         });
       }),
       http.patch('/api/v1/projects/:projectId/apartments/:apartmentId', async ({ request, params }) => {
-        const body = (await request.json()) as Partial<Apartment>;
+        const body = (await request.json()) as Partial<ApartmentJson>;
         return HttpResponse.json({
           ...mockApartment,
           ...body,
@@ -56,14 +55,13 @@ describe('ApartmentService', () => {
 
   describe('createApartment', () => {
     it('should create a new apartment', async () => {
-      const newApartment: Apartment = {
+      const newApartment: ApartmentJson = {
         title: 'New Apartment',
         location: 'Second Floor',
         description: 'Modern apartment',
         usableSpace: 90,
         livingSpace: 80,
         heatingSpace: 75,
-        rooms: 3,
       };
 
       const result = await apartmentService.createApartment('project-1', 'building-1', newApartment);
@@ -109,7 +107,7 @@ describe('ApartmentService', () => {
 
   describe('updateApartment', () => {
     it('should update an apartment', async () => {
-      const updates: Apartment = {
+      const updates: ApartmentJson = {
         ...mockApartment,
         title: 'Updated Apartment',
         usableSpace: 95,
@@ -121,7 +119,7 @@ describe('ApartmentService', () => {
     });
 
     it('should handle partial updates', async () => {
-      const partialUpdate: Apartment = {title: 'Only Title Updated',};
+      const partialUpdate: ApartmentJson = {title: 'Only Title Updated',};
 
       const result = await apartmentService.updateApartment('project-1', 'apartment-1', partialUpdate);
       expect(result.title).toBe('Only Title Updated');

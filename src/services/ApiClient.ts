@@ -56,7 +56,7 @@ function replacePlaceholders(
   pathParams: AxiosRequestConfig['pathParams'] = {},
   style: AxiosRequestConfig['pathParamsPlaceholderStyle'] = 'curly',
 ): string {
-   // Precompiled safe regex patterns
+  // Precompiled safe regex patterns
   const patterns = {
     curly: /\{(\w+)\}/g,
     colon: /:(\w+)/g,
@@ -90,8 +90,8 @@ function replacePlaceholders(
 function emitToast(severity: string, summary: string, detail: string) {
   const bus = useEventBus();
   bus.emit('toast:translate', {
- severity, summary, detail 
-});
+    severity, summary, detail 
+  });
 }
 /**
  * Axios interceptors
@@ -223,7 +223,7 @@ function createAxiosInstance() {
 
 type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
-type PathsForMethod<M extends HttpMethod> = {
+export type PathsForMethod<M extends HttpMethod> = {
   [P in keyof ApiPaths]: M extends keyof ApiPaths[P] ? P : never;
 }[keyof ApiPaths];
 
@@ -277,7 +277,7 @@ type PathParamsConfig<P> = {
 };
 
 // Request options
-type RequestOptions<P extends keyof ApiPaths, M extends HttpMethod> = {
+export type RequestOptions<P extends keyof ApiPaths, M extends HttpMethod> = {
   pathParams?: PathParamsConfig<PathParams<P, M>>;
   params?: QueryParams<P, M>;
   config?: AxiosRequestConfig;

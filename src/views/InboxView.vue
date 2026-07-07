@@ -41,10 +41,12 @@ const customFilters = computed<CustomFilter[]>(() => {
     ['status-inProgress', 'inbox.filters.status.inProgress', 'pi-sync', 'status:IN_PROGRESS'],
     ['status-closed', 'inbox.filters.status.closed', 'pi-check-circle', 'status:CLOSED'],
     ['status-rejected', 'inbox.filters.status.rejected', 'pi-times-circle', 'status:REJECTED'],
-    ['type-application', 'inbox.filters.type.application', 'pi-file-edit', 'type:APPLICATION'],
-    ['type-task', 'inbox.filters.type.task', 'pi-list', 'type:TASK'],
-    ['type-defect', 'inbox.filters.type.defect', 'pi-exclamation-triangle', 'type:DEFECT'],
-    ['type-maintenance', 'inbox.filters.type.maintenance', 'pi-wrench', 'type:MAINTENANCE'],
+    ['type-application', 'issueType.application', 'pi-file-edit', 'type:APPLICATION'],
+    ['type-task', 'issueType.task', 'pi-list', 'type:TASK'],
+    ['type-defect', 'issueType.defect', 'pi-exclamation-triangle', 'type:DEFECT'],
+    ['type-maintenance', 'issueType.maintenance', 'pi-wrench', 'type:MAINTENANCE'],
+    ['type-termination', 'issueType.termination', 'pi-sign-out', 'type:TERMINATION'],
+    ['type-inquiry', 'issueType.inquiry', 'pi-question-circle', 'type:INQUIRY'],
   ];
   return filterData.map(([id, nameKey, icon, query]) => ({
     id: id as string,

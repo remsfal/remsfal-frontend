@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
-import Dialog from 'primevue/dialog';
+import BaseDialog from '@/components/common/BaseDialog.vue';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
@@ -27,7 +27,7 @@ const visible = ref<boolean>(false);
 const titleMatchesLocation = ref(true);
 const currentTitle = ref('');
 const initialValues = ref({
- title: '', location: '', description: '' 
+  title: '', location: '', description: '' 
 });
 const formKey = ref(0);
 
@@ -65,8 +65,8 @@ async function onSubmit(event: FormSubmitEvent) {
     titleMatchesLocation.value = true;
     currentTitle.value = '';
     initialValues.value = {
- title: '', location: '', description: '' 
-};
+      title: '', location: '', description: '' 
+    };
     formKey.value++;
     visible.value = false;
 
@@ -97,11 +97,9 @@ async function onSubmit(event: FormSubmitEvent) {
     @click="visible = true"
   />
 
-  <Dialog
+  <BaseDialog
     v-model:visible="visible"
-    modal
     :header="t('rentableUnits.button.addProperty')"
-    :style="{ width: '35rem' }"
   >
     <Form
       :key="formKey"
@@ -157,7 +155,7 @@ async function onSubmit(event: FormSubmitEvent) {
           />
         </div>
 
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2 mt-6">
           <Button
             type="button"
             :label="t('button.cancel')"
@@ -168,5 +166,5 @@ async function onSubmit(event: FormSubmitEvent) {
         </div>
       </div>
     </Form>
-  </Dialog>
+  </BaseDialog>
 </template>

@@ -32,6 +32,17 @@ describe('NewProjectDialog E2E Tests', () => {
       },
     }).as('getProjects');
 
+    // Mock organizations to prevent 401 → auth:session-expired → redirect
+    cy.intercept('GET', '/api/v1/organizations', {
+      statusCode: 200,
+      body: { organizations: [] },
+    }).as('getOrganizations');
+
+    cy.intercept('GET', '/api/v1/organizations/employments', {
+      statusCode: 200,
+      body: { organizations: [] },
+    }).as('getOrganizationEmployments');
+
     // Mock inbox messages to prevent errors in ManagerTopbar
     cy.intercept('GET', '/api/v1/inbox/messages?offset=0&limit=10', {
       statusCode: 200,
@@ -119,7 +130,7 @@ describe('NewProjectDialog E2E Tests', () => {
   it('should close dialog when clicking close button and redirect', () => {
     // Find and click the close button (X button)
     cy.get('[role="dialog"]').within(() => {
-      cy.get('button[aria-label], .p-dialog-header-close').first().click();
+      cy.get('.p-dialog-close-button').click();
     });
 
     // Should redirect to project selection
