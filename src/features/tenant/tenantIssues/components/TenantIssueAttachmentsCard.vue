@@ -24,7 +24,6 @@ const nonImageAttachmentGroups = computed(() => {
   }
   return Array.from(groups.entries()).map(([ext, count]) => ({ ext, count }));
 });
-
 function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
   const fileName = attachment.fileName ?? '';
   const attachmentId = attachment.attachmentId ?? '';
