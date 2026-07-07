@@ -6,6 +6,7 @@ import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
 import VueRouter from 'vue-router/vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // Proxy-Configurations-Factory
 function createProxyConfig(target: string, backendName: string): ProxyOptions {
@@ -49,6 +50,46 @@ export default defineConfig({
       extension: ['.ts', '.vue'],
       requireEnv: false,
       cypress: true,
+    }),
+    process.env.VITEST ? undefined : VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
+      injectRegister: false,
+      manifest: {
+        name: 'remsfal - Cloud Service for Facility Management',
+        short_name: 'remsfal',
+        description: 'remsfal - Cloud Service for Facility Management',
+        start_url: '/',
+        scope: '/',
+        display: 'standalone',
+        background_color: '#ffffff',
+        theme_color: '#1e5f20',
+        lang: 'en-US',
+        icons: [
+          {
+            src: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' 
+          },
+          {
+            src: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' 
+          },
+          {
+            src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' 
+          },
+          {
+            src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' 
+          },
+          {
+            src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' 
+          },
+        ],
+      },
+      injectManifest: {injectionPoint: 'self.__WB_MANIFEST',},
+      registerType: 'prompt',
+      devOptions: {
+        enabled: process.env.VITE_SERVICE_WORKER_ENABLED === 'true',
+        type: 'module',
+      },
     }),
   ].filter(Boolean),
   resolve: {alias: {'@': fileURLToPath(new URL('./src', import.meta.url)),},},

@@ -1,7 +1,23 @@
 import {describe, it, expect, afterEach, vi} from 'vitest';
 import './setupMocks.js';
 
-import '../../public/service-worker.js';
+const mockPrecacheAndRoute = vi.hoisted(() => vi.fn());
+vi.mock('workbox-precaching', () => ({precacheAndRoute: mockPrecacheAndRoute,}));
+
+const mockGetAllProjects = vi.hoisted(() => vi.fn());
+const mockDeleteProject = vi.hoisted(() => vi.fn());
+vi.mock('@/helper/indexeddb', () => ({
+  getAllProjects: mockGetAllProjects,
+  deleteProject: mockDeleteProject,
+}));
+
+import '../../src/sw.ts';
+
+// precacheAndRoute is invoked once at module load time, before this file's
+// describe/it blocks run — capture the call args into a plain variable here,
+// since vitest's global mockReset/clearMocks config (vitest.config.ts) wipes
+// the mock's own call history before the first test body executes.
+const precacheManifestArg = mockPrecacheAndRoute.mock.calls[0]?.[0];
 
 describe('Service Worker Tests', () => {
   afterEach(() => {
@@ -9,42 +25,8 @@ describe('Service Worker Tests', () => {
     vi.clearAllMocks();
   });
 
-  it('should listen for install event', () => {
-    expect(globalThis.eventListeners.install).toBeDefined();
-    expect(globalThis.eventListeners.install.length).toBeGreaterThan(0);
-  });
-
-  it('should cache files during install event', async () => {
-    const cachesOpenStub = globalThis.caches.open;
-    const addAllStub = vi.fn().mockResolvedValue();
-
-    cachesOpenStub.mockResolvedValue({ addAll: addAllStub });
-
-    const installEvent = {waitUntil: vi.fn(),};
-
-    const installListener = globalThis.eventListeners.install[0];
-    installListener(installEvent);
-
-    // eslint-disable-next-line no-undef
-    await new Promise((resolve) => setImmediate(resolve));
-
-    // Assertions
-    expect(cachesOpenStub).toHaveBeenCalledOnce();
-    expect(cachesOpenStub).toHaveBeenCalledWith('remsfal-v1');
-    expect(addAllStub).toHaveBeenCalledOnce();
-    expect(installEvent.waitUntil).toHaveBeenCalledOnce();
-
-    const expectedFiles = [
-      '/',
-      '/index.html',
-      '/manifest.json',
-      '/styles.css',
-      '/script.js',
-      '/favicon.ico',
-      '/android-chrome-192x192.png',
-      '/android-chrome-512x512.png',
-    ];
-    expect(addAllStub).toHaveBeenCalledWith(expectedFiles);
+  it('precaches the Workbox-generated build manifest on load', () => {
+    expect(precacheManifestArg).toBe(globalThis.self.__WB_MANIFEST);
   });
 
   it('should listen for activate event', () => {
@@ -52,9 +34,13 @@ describe('Service Worker Tests', () => {
     expect(globalThis.eventListeners.activate.length).toBeGreaterThan(0);
   });
 
-  it('should delete old caches during activate event', async () => {
+  it('deletes stale runtime caches during activate but preserves the Workbox precache', async () => {
     const cachesKeysStub = globalThis.caches.keys;
-    cachesKeysStub.mockResolvedValue(['old-cache-v1', 'old-cache-v2']);
+    cachesKeysStub.mockResolvedValue([
+      'remsfal-runtime-v0',
+      'remsfal-runtime-v1',
+      'workbox-precache-v2-https://example.com/',
+    ]);
 
     const deleteStub = globalThis.caches.delete;
     deleteStub.mockResolvedValue(true);
@@ -69,10 +55,10 @@ describe('Service Worker Tests', () => {
 
     // Assertions
     expect(cachesKeysStub).toHaveBeenCalledOnce();
-    expect(deleteStub).toHaveBeenCalledTimes(2);
-    expect(deleteStub).toHaveBeenCalledWith('old-cache-v1');
-    expect(deleteStub).toHaveBeenCalledWith('old-cache-v2');
-    expect(activateEvent.waitUntil).toHaveBeenCalledOnce();
+    expect(deleteStub).toHaveBeenCalledOnce();
+    expect(deleteStub).toHaveBeenCalledWith('remsfal-runtime-v0');
+    expect(activateEvent.waitUntil).toHaveBeenCalledTimes(2);
+    expect(globalThis.self.clients.claim).toHaveBeenCalledOnce();
   });
 
   it('should handle fetch events with cache fallback', async () => {
@@ -102,14 +88,8 @@ describe('Service Worker Tests', () => {
   });
 
   it('should handle sync events with tag "sync-projects"', async () => {
-    const getAllProjectsMock = vi
-      .fn()
-      .mockResolvedValue([{ title: 'Offline Project', createdAt: 123456 }]
-      );
-    globalThis.getAllProjects = getAllProjectsMock;
-
-    const deleteProjectMock = vi.fn().mockResolvedValue();
-    globalThis.deleteProject = deleteProjectMock;
+    mockGetAllProjects.mockResolvedValue([{ title: 'Offline Project', createdAt: 123456 }]);
+    mockDeleteProject.mockResolvedValue(undefined);
 
     const fetchStub = vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true });
 
@@ -131,8 +111,8 @@ describe('Service Worker Tests', () => {
 
     // Assertions
     expect(syncEvent.waitUntil).toHaveBeenCalled();
-    expect(getAllProjectsMock).toHaveBeenCalledOnce();
-    expect(deleteProjectMock).toHaveBeenCalledOnce();
+    expect(mockGetAllProjects).toHaveBeenCalledOnce();
+    expect(mockDeleteProject).toHaveBeenCalledWith(123456);
     expect(fetchStub).toHaveBeenCalledOnce();
     expect(fetchStub).toHaveBeenCalledWith(expect.stringContaining('/api/v1/projects'), expect.any(Object));
   });

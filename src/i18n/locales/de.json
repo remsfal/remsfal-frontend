@@ -462,7 +462,7 @@
   "newIssueDialog.priority.required": "Bitte wählen Sie eine Priorität aus",
   "newIssueDialog.successCreated": "Vorgang erfolgreich erstellt",
   "newIssueDialog.errorCreated": "Fehler beim Erstellen des Vorgangs",
-  "newIssueDialog.offlineSaved": "Vorgang wird später synchronisiert, wenn Sie wieder online sind",
+  "newIssueDialog.offlineSaved": "Sie sind offline. Dieser Vorgang wurde nicht gespeichert — bitte versuchen Sie es erneut, sobald Sie wieder online sind.",
   "issuePriority.urgent": "Dringend",
   "issuePriority.high": "Hoch",
   "issuePriority.medium": "Mittel",

@@ -437,7 +437,7 @@
   "newIssueDialog.priority.required": "Please select a priority",
   "newIssueDialog.successCreated": "Issue successfully created",
   "newIssueDialog.errorCreated": "Failed to create issue",
-  "newIssueDialog.offlineSaved": "Issue will be synchronized when you are back online",
+  "newIssueDialog.offlineSaved": "You appear to be offline. This issue was not saved — please try again once you're back online.",
   "issuePriority.urgent": "Urgent",
   "issuePriority.high": "High",
   "issuePriority.medium": "Medium",

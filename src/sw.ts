@@ -1,64 +1,55 @@
-/* global importScripts, getAllProjects, deleteProject */
-importScripts('/idbHelper.js');
+import { precacheAndRoute } from 'workbox-precaching';
+import { getAllProjects, deleteProject } from '@/helper/indexeddb';
 
-const CACHE_NAME = 'remsfal-v1';
-const CACHE_FILES = [
-  '/', // Start URL
-  '/index.html', // HTML file
-  '/manifest.json', // PWA manifest
-  '/styles.css', // CSS file
-  '/script.js', // JavaScript file
-  '/favicon.ico', // Favicon
-  '/android-chrome-192x192.png', // Icons
-  '/android-chrome-512x512.png',
-];
+declare const self: ServiceWorkerGlobalScope;
 
-// Install event: Load files into the cache
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(CACHE_FILES);
-    }),
-  );
-});
+precacheAndRoute(self.__WB_MANIFEST);
 
-// Activate event: Delete old caches
+// Workbox owns its own precache cache (prefixed "workbox-precache-") and cleans it up
+// via its own activate listener, so this handler must only ever touch caches under
+// our own runtime-cache prefix, never sweep every cache indiscriminately.
+const RUNTIME_CACHE_PREFIX = 'remsfal-runtime-';
+const RUNTIME_CACHE_NAME = `${RUNTIME_CACHE_PREFIX}v1`;
+
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName.startsWith(RUNTIME_CACHE_PREFIX) && cacheName !== RUNTIME_CACHE_NAME) {
+            return caches.delete(cacheName);
           }
+          return undefined;
         }),
-      );
-    }),
+      ),
+    ),
   );
-  return self.clients.claim(); // Claim control over all clients
+  event.waitUntil(self.clients.claim());
 });
 
-// Fetch event: Online-first strategy with fallback to the cache
+// Fetch event: network-first strategy with fallback to the runtime cache
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Save the response in the cache
         const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
+        caches.open(RUNTIME_CACHE_NAME).then((cache) => {
           cache.put(event.request, responseClone);
         });
         return response;
       })
-      .catch(() => {
-        // On error (e.g., offline), retrieve from the cache
-        return caches.match(event.request).then((response) => {
-          if (response) {
-            return response;
-          } else if (event.request.mode === 'navigate') {
-            return caches.match('/index.html'); // Fallback to the start page
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) {
+          return cached;
+        }
+        if (event.request.mode === 'navigate') {
+          const fallback = await caches.match('/index.html');
+          if (fallback) {
+            return fallback;
           }
-        });
+        }
+        return Response.error();
       }),
   );
 });
