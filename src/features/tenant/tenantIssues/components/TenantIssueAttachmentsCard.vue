@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import {computed} from 'vue';
 import { useI18n } from 'vue-i18n';
 import Image from 'primevue/image';
 import BaseCard from '@/components/common/BaseCard.vue';
-import type { IssueJson, IssueAttachmentJson } from '@/services/IssueService';
+import type { IssueAttachmentJson } from '@/services/IssueService';
 
 const props = defineProps<{
   issueId: string;
   attachments: IssueAttachmentJson[];
 }>();
 
-const issue = ref<IssueJson | null>(null);
-
 const { t } = useI18n();
 
-const attachments = computed(() => issue.value?.attachments ?? []);
 const imageAttachments = computed(() => props.attachments.filter(
   attachment => attachment.contentType?.startsWith('image/')
 ));
