@@ -14,9 +14,9 @@ import IssueDescriptionCard from '@/features/project/issues/components/IssueDesc
  * Global ResizeObserver mock for PrimeVue components
  */
 export class ResizeObserverMock {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe() { /* no-op: ResizeObserver not implemented in jsdom */ }
+  unobserve() { /* no-op: ResizeObserver not implemented in jsdom */ }
+  disconnect() { /* no-op: ResizeObserver not implemented in jsdom */ }
 }
 
 /**
