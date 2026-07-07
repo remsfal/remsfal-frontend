@@ -47,11 +47,11 @@ describe('MemberAutoComplete.vue', () => {
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    const vm = wrapper.vm as InstanceType<typeof MemberAutoComplete>;
-    vm.searchMembers({ query: 'John' });
+    await wrapper.findComponent(AutoComplete).vm.$emit('complete', { query: 'John' });
 
-    expect(vm.filteredMembers).toHaveLength(1);
-    expect(vm.filteredMembers[0].name).toBe('John Doe');
+    const suggestions = wrapper.findComponent(AutoComplete).props('suggestions') ?? [];
+    expect(suggestions).toHaveLength(1);
+    expect(suggestions[0].name).toBe('John Doe');
   });
 
   it('emits member ID on selection', async () => {
@@ -64,8 +64,7 @@ describe('MemberAutoComplete.vue', () => {
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    const vm = wrapper.vm as InstanceType<typeof MemberAutoComplete>;
-    vm.onMemberChange({
+    await wrapper.findComponent(AutoComplete).vm.$emit('update:modelValue', {
       id: 'user-1', name: 'John Doe', email: 'john@example.com',
     });
 
@@ -128,11 +127,11 @@ describe('MemberAutoComplete.vue', () => {
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    const vm = wrapper.vm as InstanceType<typeof MemberAutoComplete>;
-    vm.searchMembers({ query: 'Org Member' });
+    await wrapper.findComponent(AutoComplete).vm.$emit('complete', { query: 'Org Member' });
 
-    expect(vm.filteredMembers).toHaveLength(1);
-    expect(vm.filteredMembers[0].id).toBe('org-user-1');
+    const suggestions = wrapper.findComponent(AutoComplete).props('suggestions') ?? [];
+    expect(suggestions).toHaveLength(1);
+    expect(suggestions[0].id).toBe('org-user-1');
   });
 
   it('emits null when member is deselected', async () => {
@@ -145,8 +144,7 @@ describe('MemberAutoComplete.vue', () => {
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    const vm = wrapper.vm as InstanceType<typeof MemberAutoComplete>;
-    vm.onMemberChange(null);
+    await wrapper.findComponent(AutoComplete).vm.$emit('update:modelValue', null);
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy();
     expect(wrapper.emitted('update:modelValue')![0]).toEqual([

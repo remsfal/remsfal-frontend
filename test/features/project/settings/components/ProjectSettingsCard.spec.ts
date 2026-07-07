@@ -1,7 +1,8 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import ProjectSettingsCard from '@/features/project/settings/components/ProjectSettingsCard.vue';
-import { projectService } from '@/services/ProjectService';
+import { projectService, type ProjectJson } from '@/services/ProjectService';
 
 // ---- Mocks ----
 const addMock = vi.fn();
@@ -23,11 +24,6 @@ describe('ProjectSettingsCard.vue', () => {
     await flushPromises();
   });
 
-  test('fetches and displays project name on mount', async () => {
-    expect(projectService.getProject).toHaveBeenCalledWith('test-project-id');
-    expect(wrapper.vm.projectName).toBe('Old Project');
-  });
-
   test('displays the correct title', () => {
     const title = wrapper.find('.font-semibold.text-xl');
     expect(title.exists()).toBe(true);
@@ -35,9 +31,9 @@ describe('ProjectSettingsCard.vue', () => {
   });
 
   test('renders input field with project name', async () => {
-    const input = wrapper.find('input[type="text"]');
+    const input = wrapper.find<HTMLInputElement>('#name');
     expect(input.exists()).toBe(true);
-    expect((input.element as HTMLInputElement).value).toBe('Old Project');
+    expect(input.element.value).toBe('Old Project');
   });
 
   test('save button is disabled when name has not changed', async () => {
@@ -46,34 +42,30 @@ describe('ProjectSettingsCard.vue', () => {
   });
 
   test('enables save button when project name changes', async () => {
-    wrapper.vm.projectName = 'Updated Project';
-    await flushPromises();
+    await wrapper.find('#name').setValue('Updated Project');
 
     const button = wrapper.find('button');
     expect(button.attributes('disabled')).toBeUndefined();
   });
 
   test('disables save button when project name is empty', async () => {
-    wrapper.vm.projectName = '';
-    await flushPromises();
+    await wrapper.find('#name').setValue('');
 
     const button = wrapper.find('button');
     expect(button.attributes('disabled')).toBeDefined();
   });
 
   test('disables save button when project name is only whitespace', async () => {
-    wrapper.vm.projectName = '   ';
-    await flushPromises();
+    await wrapper.find('#name').setValue('   ');
 
     const button = wrapper.find('button');
     expect(button.attributes('disabled')).toBeDefined();
   });
 
   test('calls updateProject and shows success toast on save', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Updated Project';
+    await wrapper.find('#name').setValue('Updated Project');
 
-    await wrapper.vm.saveProjectName();
+    await wrapper.find('button').trigger('click');
     await flushPromises();
 
     expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {title: 'Updated Project',});
@@ -87,10 +79,9 @@ describe('ProjectSettingsCard.vue', () => {
   });
 
   test('trims whitespace when saving project name', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = '  Updated Project  ';
+    await wrapper.find('#name').setValue('  Updated Project  ');
 
-    await wrapper.vm.saveProjectName();
+    await wrapper.find('button').trigger('click');
     await flushPromises();
 
     expect(projectService.updateProject).toHaveBeenCalledWith('test-project-id', {title: 'Updated Project',});
@@ -99,10 +90,9 @@ describe('ProjectSettingsCard.vue', () => {
   test('shows error toast on update failure', async () => {
     vi.spyOn(projectService, 'updateProject').mockRejectedValue(new Error('fail'));
 
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Broken Project';
+    await wrapper.find('#name').setValue('Broken Project');
 
-    await wrapper.vm.saveProjectName();
+    await wrapper.find('button').trigger('click');
     await flushPromises();
 
     expect(addMock).toHaveBeenCalledWith(
@@ -115,26 +105,34 @@ describe('ProjectSettingsCard.vue', () => {
   });
 
   test('shows loading state during save', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Updated Project';
+    let resolveUpdate!: (value: ProjectJson) => void;
+    vi.spyOn(projectService, 'updateProject').mockImplementationOnce(
+      () => new Promise<ProjectJson>((resolve) => { resolveUpdate = resolve; }),
+    );
 
-    const savePromise = wrapper.vm.saveProjectName();
-    expect(wrapper.vm.loading).toBe(true);
+    await wrapper.find('#name').setValue('Updated Project');
+    const button = wrapper.find('button');
 
-    await savePromise;
+    const clickPromise = button.trigger('click');
+    await nextTick();
+
+    expect(button.attributes('disabled')).toBeDefined();
+    expect(button.classes()).toContain('p-button-loading');
+
+    resolveUpdate({ title: 'Updated Project' });
+    await clickPromise;
     await flushPromises();
 
-    expect(wrapper.vm.loading).toBe(false);
+    expect(button.classes()).not.toContain('p-button-loading');
   });
 
   test('updates originalProjectName after successful save', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Updated Project';
+    await wrapper.find('#name').setValue('Updated Project');
 
-    await wrapper.vm.saveProjectName();
+    await wrapper.find('button').trigger('click');
     await flushPromises();
 
-    expect(wrapper.vm.originalProjectName).toBe('Updated Project');
+    expect(wrapper.find('button').attributes('disabled')).toBeDefined();
   });
 
   test('fetches project data when projectId prop changes', async () => {
@@ -145,15 +143,6 @@ describe('ProjectSettingsCard.vue', () => {
     await flushPromises();
 
     expect(projectService.getProject).toHaveBeenCalledWith('new-project-id');
-    expect(wrapper.vm.projectName).toBe('New Project');
-  });
-
-  test('does not call updateProject if name has not changed', async () => {
-    wrapper.vm.originalProjectName = 'Old Project';
-    wrapper.vm.projectName = 'Old Project';
-
-    await wrapper.vm.saveProjectName();
-
-    expect(projectService.updateProject).not.toHaveBeenCalled();
+    expect(wrapper.find<HTMLInputElement>('#name').element.value).toBe('New Project');
   });
 });

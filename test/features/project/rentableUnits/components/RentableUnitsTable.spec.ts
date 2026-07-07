@@ -94,7 +94,8 @@ describe('RentableUnitsTable.vue', () => {
   });
 
   test('emits expandAll event when expand all button is clicked', async () => {
-    wrapper.vm.expandAll();
+    const expandButton = wrapper.findAll('button').find((b) => b.text() === 'Alle ausklappen');
+    await expandButton!.trigger('click');
     await flushPromises();
 
     expect(wrapper.emitted('expandAll')).toBeTruthy();
@@ -102,7 +103,8 @@ describe('RentableUnitsTable.vue', () => {
   });
 
   test('emits collapseAll event when collapse all button is clicked', async () => {
-    wrapper.vm.collapseAll();
+    const collapseButton = wrapper.findAll('button').find((b) => b.text() === 'Alle einklappen');
+    await collapseButton!.trigger('click');
     await flushPromises();
 
     expect(wrapper.emitted('collapseAll')).toBeTruthy();
@@ -122,7 +124,7 @@ describe('RentableUnitsTable.vue', () => {
       children: [],
     };
 
-    wrapper.vm.onNodeSelect(node);
+    await wrapper.findComponent({ name: 'TreeTable' }).vm.$emit('nodeSelect', node);
     await flushPromises();
 
     expect(mockRouterPush).toHaveBeenCalledWith({
@@ -138,14 +140,14 @@ describe('RentableUnitsTable.vue', () => {
       children: [],
     };
 
-    wrapper.vm.onNodeSelect(node);
+    await wrapper.findComponent({ name: 'TreeTable' }).vm.$emit('nodeSelect', node);
     await flushPromises();
 
     expect(mockRouterPush).not.toHaveBeenCalled();
   });
 
   test('emits newUnit event when NewRentableUnitButton triggers newUnit', async () => {
-    wrapper.vm.onNewRentableUnit('New Unit Title');
+    await wrapper.findComponent({ name: 'NewRentableUnitButton' }).vm.$emit('newUnit', 'New Unit Title');
     await flushPromises();
 
     expect(wrapper.emitted('newUnit')).toBeTruthy();
@@ -164,9 +166,32 @@ describe('RentableUnitsTable.vue', () => {
     expect(wrapper.emitted('update:expandedKeys')?.[0]).toEqual([newExpandedKeys]);
   });
 
-  test('translates unit types correctly', () => {
-    const translatedType = wrapper.vm.translateType('APARTMENT');
-    expect(translatedType).toBeDefined();
+  test('translates unit types correctly', async () => {
+    const apartmentTree: RentalUnitTreeNodeJson[] = [
+      {
+        key: 'apartment-1',
+        data: {
+          title: 'Test Apartment',
+          type: 'APARTMENT',
+          description: 'A test apartment',
+          tenant: 'John Doe',
+          space: 75,
+        },
+        children: [],
+      },
+    ];
+
+    const apartmentWrapper = mount(RentableUnitsTable, {
+      props: {
+        projectId: 'test-project-id',
+        rentableUnitTree: apartmentTree,
+        expandedKeys: {},
+      },
+    });
+    await flushPromises();
+
+    const cells = apartmentWrapper.findAll('td');
+    expect(cells.at(1)?.text()).toBe('Wohnung');
   });
 
   test('renders NewPropertyButton component', () => {
@@ -184,21 +209,57 @@ describe('RentableUnitsTable.vue', () => {
     expect(treeTable.props('expandedKeys')).toEqual(expandedKeys);
   });
 
-  test('locationOrDescription returns location when location differs from title', () => {
-    const result = wrapper.vm.locationOrDescription({
-      title: 'My Building',
-      location: 'Floor 3',
-      description: undefined,
-    } as RentalUnitNodeDataJson);
-    expect(result).toBe('Floor 3');
+  test('locationOrDescription returns location when location differs from title', async () => {
+    const tree: RentalUnitTreeNodeJson[] = [
+      {
+        key: 'building-1',
+        data: {
+          title: 'My Building',
+          type: 'BUILDING',
+          location: 'Floor 3',
+          description: undefined,
+        } as RentalUnitNodeDataJson,
+        children: [],
+      },
+    ];
+
+    const locationWrapper = mount(RentableUnitsTable, {
+      props: {
+        projectId: 'test-project-id',
+        rentableUnitTree: tree,
+        expandedKeys: {},
+      },
+    });
+    await flushPromises();
+
+    const cells = locationWrapper.findAll('td');
+    expect(cells.at(2)?.text()).toBe('Floor 3');
   });
 
-  test('locationOrDescription returns description when location equals title and description exists', () => {
-    const result = wrapper.vm.locationOrDescription({
-      title: 'Same',
-      location: 'Same',
-      description: 'Some description',
-    } as RentalUnitNodeDataJson);
-    expect(result).toBe('Some description');
+  test('locationOrDescription returns description when location equals title and description exists', async () => {
+    const tree: RentalUnitTreeNodeJson[] = [
+      {
+        key: 'building-2',
+        data: {
+          title: 'Same',
+          type: 'BUILDING',
+          location: 'Same',
+          description: 'Some description',
+        } as RentalUnitNodeDataJson,
+        children: [],
+      },
+    ];
+
+    const descriptionWrapper = mount(RentableUnitsTable, {
+      props: {
+        projectId: 'test-project-id',
+        rentableUnitTree: tree,
+        expandedKeys: {},
+      },
+    });
+    await flushPromises();
+
+    const cells = descriptionWrapper.findAll('td');
+    expect(cells.at(2)?.text()).toBe('Some description');
   });
 });

@@ -1,7 +1,11 @@
 import UnitsTableComponent from '@/features/project/rentalAgreements/components/UnitsTableComponent.vue';
 import { propertyService, type PropertyListJson } from '@/services/PropertyService';
-import { mount } from '@vue/test-utils';
+import type { components } from '@/services/api/platform-schema';
+import { mount, flushPromises } from '@vue/test-utils';
+import Select from 'primevue/select';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
+
+type RentalUnitJson = components['schemas']['RentalUnitJson'];
 
 vi.mock('@/services/PropertyService', () => ({
   propertyService: {getPropertyTree: vi.fn(),},
@@ -14,6 +18,13 @@ vi.mock('@/services/PropertyService', () => ({
 vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({projectId: 'mock-project-id',}),}));
 
 describe('UnitsTableComponent - loadDropdownOptions', () => {
+  // At least one row is required so a cell exists to click into edit mode - the `Select`
+  // editor (fed by rentalObjects/unitTypes) only renders inside a DataTable cell's #editor
+  // slot, which only mounts once that cell is being edited.
+  const existingUnit: RentalUnitJson = {
+    id: 'unit-1', type: 'PROPERTY', title: 'Existing Unit' 
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -37,33 +48,45 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
 
     vi.mocked(propertyService.getPropertyTree).mockResolvedValueOnce(mockTree);
 
-    const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [], isDeleteButtonEnabled: false},});
+    const wrapper = mount(UnitsTableComponent, {props: { listOfUnits: [existingUnit], isDeleteButtonEnabled: false },});
 
     // Wait for onMounted and loadDropdownOptions to finish
-    await new Promise(setImmediate);
-
-    const vm = wrapper.vm as InstanceType<typeof UnitsTableComponent>;
+    await flushPromises();
 
     expect(propertyService.getPropertyTree).toHaveBeenCalledWith('mock-project-id');
-    expect(vm.rentalObjects).toEqual([
-      { label: 'Property', value: 'Property' },
-      { label: 'Building', value: 'Building' },
-    ]);
-    expect(vm.unitTypes).toEqual([
+
+    const expectedUnitTypes = [
       { label: 'Unit A', value: 'Unit A' },
       { label: 'Unit B', value: 'Unit B' },
-    ]);
+    ];
+
+    // Enter cell-edit mode on the row's "type" and "title" columns to render their Select
+    // editors. Both columns resolve their editor options via
+    // `field === 'rentalObject' ? rentalObjects : unitTypes` in UnitsTableComponent.vue -
+    // since neither column's field is actually named 'rentalObject', both editors always
+    // receive `unitTypes`. This reflects the component's current (untouched) behavior.
+    const cells = wrapper.findAll('tbody tr')[0].findAll('td');
+
+    await cells[0].trigger('click');
+    expect(cells[0].findComponent(Select).props('options')).toEqual(expectedUnitTypes);
+
+    await cells[1].trigger('click');
+    expect(cells[1].findComponent(Select).props('options')).toEqual(expectedUnitTypes);
   });
 
   it('handles fetch error gracefully', async () => {
     vi.mocked(propertyService.getPropertyTree).mockRejectedValueOnce(new Error('fetch failed'));
 
-    const wrapper = mount(UnitsTableComponent, {props: {listOfUnits: [], isDeleteButtonEnabled: false},});
+    const wrapper = mount(UnitsTableComponent, {props: { listOfUnits: [existingUnit], isDeleteButtonEnabled: false },});
 
-    await new Promise(setImmediate); // wait for onMounted + promise
+    await flushPromises(); // wait for onMounted + promise
 
-    const vm = wrapper.vm as InstanceType<typeof UnitsTableComponent>;
-    expect(vm.unitTypes).toEqual([]);
-    expect(vm.rentalObjects).toEqual([]);
+    const cells = wrapper.findAll('tbody tr')[0].findAll('td');
+
+    await cells[0].trigger('click');
+    expect(cells[0].findComponent(Select).props('options')).toEqual([]);
+
+    await cells[1].trigger('click');
+    expect(cells[1].findComponent(Select).props('options')).toEqual([]);
   });
 });

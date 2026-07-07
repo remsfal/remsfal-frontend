@@ -8,7 +8,9 @@ const { t } = useI18n();
 
 <template>
   <BaseCard>
-    <template #title>{{ t('projectSelection.title') }}</template>
+    <template #title>
+      {{ t('projectSelection.title') }}
+    </template>
     <template #content>
       <ProjectSelectionTable />
     </template>

@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import ProjectMemberSettingsCard from '@/features/project/settings/components/ProjectMemberSettingsCard.vue';
 import NewProjectMemberButton from '@/features/project/settings/components/NewProjectMemberButton.vue';
+import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
 import {projectMemberService,
   type ProjectMemberJson,
   type MemberRole,} from '@/services/ProjectMemberService';
@@ -12,6 +13,13 @@ vi.mock('primevue/usetoast', () => ({useToast: () => ({ add: mockToastAdd }),}))
 
 vi.mock('@/services/ProjectMemberService');
 
+// PrimeVue's Select emits 'change' after 'update:modelValue', so simulate both to mirror a real selection.
+async function selectRole(roleSelect: VueWrapper<InstanceType<typeof ProjectMemberRoleSelect>>, role: MemberRole) {
+  await roleSelect.vm.$emit('update:modelValue', role);
+  await roleSelect.vm.$emit('change');
+  await flushPromises();
+}
+
 describe('ProjectMemberSettingsCard.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof ProjectMemberSettingsCard>>;
 
@@ -21,10 +29,10 @@ describe('ProjectMemberSettingsCard.vue', () => {
     const mockMembers = {
       members: [
         {
-          id: '1', email: 'test1@example.com', role: 'MANAGER' as MemberRole 
+          id: '1', email: 'test1@example.com', role: 'MANAGER' as MemberRole
         },
         {
-          id: '2', email: 'test2@example.com', role: 'STAFF' as MemberRole 
+          id: '2', email: 'test2@example.com', role: 'STAFF' as MemberRole
         },
       ],
     };
@@ -44,23 +52,34 @@ describe('ProjectMemberSettingsCard.vue', () => {
 
   test("updateMemberRole - updates a member's role successfully", async () => {
     const member: ProjectMemberJson = {
-      id: '1', email: 'test1@example.com', role: 'MANAGER' 
+      id: '1', email: 'test1@example.com', role: 'MANAGER'
     };
 
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).updateMemberRole(member);
+    const roleSelects = wrapper.findAllComponents(ProjectMemberRoleSelect);
+    await selectRole(roleSelects[0], 'MANAGER');
 
     expect(projectMemberService.updateMemberRole).toHaveBeenCalledWith('test-project-id', '1', { role: 'MANAGER' });
   });
 
   test('removeMember - removes a member successfully', async () => {
     const memberId = '6a5cf8c4-e060-4ff7-8abb-601438f67bfa';
+    const memberWithUuid: ProjectMemberJson = {
+      id: memberId, email: 'uuid@example.com', role: 'MANAGER' 
+    };
 
     const removeMock = vi.mocked(projectMemberService.removeMember).mockResolvedValueOnce();
+    vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce({ members: [memberWithUuid] });
+
+    const uuidWrapper = mount(ProjectMemberSettingsCard, { props: { projectId: 'test-project-id' } });
+    await flushPromises();
+
     vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce({ members: [] });
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).removeMember(memberId);
+    const deleteButtons = uuidWrapper.findAll('button').filter((b) => b.text() === 'Löschen');
+    await deleteButtons[0].trigger('click');
+    await flushPromises();
 
     expect(removeMock).toHaveBeenCalledWith('test-project-id', memberId);
     expect(projectMemberService.getMembers).toHaveBeenCalledWith('test-project-id');
@@ -75,18 +94,25 @@ describe('ProjectMemberSettingsCard.vue', () => {
     const removeMock = vi.mocked(projectMemberService.removeMember);
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).removeMember('invalid-id');
+    const deleteButtons = wrapper.findAll('button').filter((b) => b.text() === 'Löschen');
+    await deleteButtons[0].trigger('click');
+    await flushPromises();
 
     expect(removeMock).not.toHaveBeenCalled();
-    expect(consoleSpy).toHaveBeenCalledWith('Invalid memberId format:', 'invalid-id');
+    expect(consoleSpy).toHaveBeenCalledWith('Invalid memberId format:', '1');
     consoleSpy.mockRestore();
   });
 
   test('updateMemberRole - skips update when member id is undefined', async () => {
-    const member: ProjectMemberJson = { email: 'test@example.com', role: 'MANAGER' };
+    const memberWithoutId: ProjectMemberJson = { email: 'test@example.com', role: 'MANAGER' };
+    vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce({ members: [memberWithoutId] });
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).updateMemberRole(member);
+    const noIdWrapper = mount(ProjectMemberSettingsCard, { props: { projectId: 'test-project-id' } });
+    await flushPromises();
+
+    const roleSelect = noIdWrapper.findComponent(ProjectMemberRoleSelect);
+    await selectRole(roleSelect, 'MANAGER');
 
     expect(projectMemberService.updateMemberRole).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalledWith('Member ID is undefined, cannot update role');
@@ -97,20 +123,19 @@ describe('ProjectMemberSettingsCard.vue', () => {
     vi.mocked(projectMemberService.getMembers).mockRejectedValueOnce(new Error('Network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).fetchMembers();
+    mount(ProjectMemberSettingsCard, { props: { projectId: 'test-project-id' } });
+    await flushPromises();
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch members', expect.any(Error));
     consoleSpy.mockRestore();
   });
 
   test('updateMemberRole - handles update error gracefully', async () => {
-    const member: ProjectMemberJson = {
-      id: '1', email: 'test@example.com', role: 'MANAGER' 
-    };
     vi.mocked(projectMemberService.updateMemberRole).mockRejectedValueOnce(new Error('Update failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).updateMemberRole(member);
+    const roleSelects = wrapper.findAllComponents(ProjectMemberRoleSelect);
+    await selectRole(roleSelects[0], 'MANAGER');
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to update member role:', expect.anything());
     consoleSpy.mockRestore();
@@ -118,10 +143,19 @@ describe('ProjectMemberSettingsCard.vue', () => {
 
   test('removeMember - handles remove error gracefully', async () => {
     const memberId = '6a5cf8c4-e060-4ff7-8abb-601438f67bfa';
+    const memberWithUuid: ProjectMemberJson = {
+      id: memberId, email: 'uuid@example.com', role: 'MANAGER' 
+    };
+    vi.mocked(projectMemberService.getMembers).mockResolvedValueOnce({ members: [memberWithUuid] });
     vi.mocked(projectMemberService.removeMember).mockRejectedValueOnce(new Error('Remove failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).removeMember(memberId);
+    const uuidWrapper = mount(ProjectMemberSettingsCard, { props: { projectId: 'test-project-id' } });
+    await flushPromises();
+
+    const deleteButtons = uuidWrapper.findAll('button').filter((b) => b.text() === 'Löschen');
+    await deleteButtons[0].trigger('click');
+    await flushPromises();
 
     expect(consoleSpy).toHaveBeenCalledWith('Failed to remove member:', expect.anything());
     consoleSpy.mockRestore();
@@ -129,11 +163,12 @@ describe('ProjectMemberSettingsCard.vue', () => {
 
   test('updateMemberRole - shows success toast on successful update', async () => {
     const member: ProjectMemberJson = {
-      id: '1', email: 'test@example.com', role: 'MANAGER', name: 'Test User' 
+      id: '1', email: 'test@example.com', role: 'MANAGER', name: 'Test User'
     };
     vi.mocked(projectMemberService.updateMemberRole).mockResolvedValueOnce(member);
 
-    await (wrapper.vm as InstanceType<typeof ProjectMemberSettingsCard>).updateMemberRole(member);
+    const roleSelects = wrapper.findAllComponents(ProjectMemberRoleSelect);
+    await selectRole(roleSelects[0], 'MANAGER');
 
     expect(mockToastAdd).toHaveBeenCalledWith(
       expect.objectContaining({ severity: 'success' }),

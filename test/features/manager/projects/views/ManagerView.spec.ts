@@ -19,9 +19,11 @@ vi.mock('@/services/ProjectService', () => ({
 
 vi.mock('@/stores/ProjectStore', () => ({ useProjectStore: vi.fn() }));
 
-vi.mock('primevue/button', () => ({
-  default: { name: 'Button', template: '<button @click="$emit(\'click\')"><slot /></button>' },
-}));
+const { ButtonStub } = vi.hoisted(() => {
+  const template = '<button @click="$emit(\'click\')"><slot /></button>';
+  return { ButtonStub: { name: 'Button', template } };
+});
+vi.mock('primevue/button', () => ({ default: ButtonStub }));
 
 describe('ManagerView.vue', () => {
   let wrapper: VueWrapper;
@@ -37,9 +39,7 @@ describe('ManagerView.vue', () => {
       projectId: '123',
     });
 
-    wrapper = shallowMount(ManagerView, {
-      global: { stubs: { Button: false } },
-    });
+    wrapper = shallowMount(ManagerView, {global: { stubs: { Button: false } },});
   });
 
   it('renders the view', () => {
