@@ -2,6 +2,7 @@
 import type { components } from '@/services/api/platform-schema';
 import DatePicker from 'primevue/datepicker';
 import { computed, ref, watch } from 'vue';
+import { toISODateString } from '@/helper/dataHelper';
 
 type RentalAgreementJson = components['schemas']['RentalAgreementJson'];
 
@@ -21,7 +22,7 @@ const startOfRentalDate = computed<Date | null>({
   },
   set(value: Date | null) {
     if (value) {
-      localTenancy.value.startOfRental = value.toISOString();
+      localTenancy.value.startOfRental = toISODateString(value);
     } else {
       localTenancy.value.startOfRental = undefined;
     }
@@ -34,7 +35,7 @@ const endOfRentalDate = computed<Date | null>({
   },
   set(value: Date | null) {
     if (value) {
-      localTenancy.value.endOfRental = value.toISOString();
+      localTenancy.value.endOfRental = toISODateString(value);
     } else {
       localTenancy.value.endOfRental = undefined;
     }

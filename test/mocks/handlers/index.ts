@@ -3,7 +3,7 @@ import { organizationHandlers } from './organization.handlers';
 import { contractorHandlers } from './contractor.handlers';
 import { projectHandlers } from './project.handlers';
 import { projectMemberHandlers } from './project-member.handlers';
-import { projectOrganizationHandlers } from './project-organization.handlers';
+import { organizationMemberHandlers } from './organization-member.handlers';
 import { propertyHandlers } from './property.handlers';
 import { apartmentHandlers } from './apartment.handlers';
 import { buildingHandlers } from './building.handlers';
@@ -23,7 +23,7 @@ export const handlers = [
   ...contractorHandlers,
   ...projectHandlers,
   ...projectMemberHandlers,
-  ...projectOrganizationHandlers,
+  ...organizationMemberHandlers,
   ...propertyHandlers,
   ...apartmentHandlers,
   ...buildingHandlers,

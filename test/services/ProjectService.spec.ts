@@ -9,19 +9,17 @@ import { testErrorHandling } from '../utils/testHelpers';
 
 const mockProjects: ProjectListJson = {
   projects: [
-    { id: 'project-1', title: 'Project 1', memberRole: 'MANAGER' },
-    { id: 'project-2', title: 'Project 2', memberRole: 'CONTRACTOR' },
+    { id: 'project-1', name: 'Project 1', memberRole: 'MANAGER' },
+    { id: 'project-2', name: 'Project 2', memberRole: 'STAFF' },
   ],
-  offset: 0,
-  limit: 10,
+  first: 0,
+  size: 10,
   total: 2,
 };
 
 const mockProject: ProjectJson = {
   id: 'project-1',
   title: 'Project 1',
-  description: 'Test project description',
-  memberRole: 'MANAGER',
 };
 
 // --- HANDLERS ---
@@ -81,7 +79,9 @@ describe('ProjectService', () => {
 
   describe('getProjects', () => {
     it('should fetch projects with default pagination', async () => {
-      const result = await projectService.getProjects();
+      // `offset`/`limit` are not part of ProjectListJson, but the MSW handler above
+      // echoes them back to verify the request params — cast preserves existing test behavior.
+      const result = await projectService.getProjects() as ProjectListJson & { offset: number; limit: number };
       expect(result.projects).toHaveLength(2);
       expect(result.offset).toBe(0);
       expect(result.limit).toBe(10);
@@ -89,7 +89,7 @@ describe('ProjectService', () => {
     });
 
     it('should fetch projects with custom pagination', async () => {
-      const result = await projectService.getProjects(20, 5);
+      const result = await projectService.getProjects(20, 5) as ProjectListJson & { offset: number; limit: number };
       expect(result.offset).toBe(20);
       expect(result.limit).toBe(5);
     });
@@ -121,7 +121,9 @@ describe('ProjectService', () => {
 
   describe('createProject', () => {
     it('should create a new project', async () => {
-      const result = await projectService.createProject('New Project');
+      // `memberRole` is not part of ProjectJson, but the MSW handler above echoes it back
+      // to verify the creator's role is returned — cast preserves existing test behavior.
+      const result = await projectService.createProject('New Project') as ProjectJson & { memberRole: string };
       expect(result.id).toBe('new-project-id');
       expect(result.title).toBe('New Project');
       expect(result.memberRole).toBe('MANAGER');
@@ -154,12 +156,14 @@ describe('ProjectService', () => {
 
   describe('updateProject', () => {
     it('should update a project', async () => {
-      const updates: ProjectJson = {
+      // `description` is not part of the current ProjectJson schema, but this fixture predates
+      // that and the MSW handler still round-trips it; cast preserves existing test behavior.
+      const updates = {
         ...mockProject,
         title: 'Updated Title',
         description: 'Updated description',
-      };
-      const result = await projectService.updateProject('project-1', updates);
+      } as unknown as ProjectJson;
+      const result = await projectService.updateProject('project-1', updates) as ProjectJson & { description: string };
       expect(result.title).toBe('Updated Title');
       expect(result.description).toBe('Updated description');
     });

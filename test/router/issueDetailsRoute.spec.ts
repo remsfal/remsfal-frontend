@@ -4,6 +4,12 @@ import router from '@/router/index';
 import { useUserSessionStore } from '@/stores/UserSession';
 import { generateIdTestCases } from '../setup/issueTestHelpers';
 
+// `currentRoute.value.params` is typed as a union across every route the typed router
+// knows about; narrow to this test's known shape (we only ever push/resolve 'IssueDetails').
+function currentIssueParams() {
+  return router.currentRoute.value.params as unknown as { projectId: string; issueId: string };
+}
+
 describe('Router - Issue Details Route', () => {
   const testIds = generateIdTestCases();
 
@@ -80,22 +86,22 @@ describe('Router - Issue Details Route', () => {
     it('should navigate to IssueDetails route', async () => {
       await router.push({ name: 'IssueDetails', params: { projectId: 'test-project', issueId: 'test-issue' } });
       expect(router.currentRoute.value.name).toBe('IssueDetails');
-      expect(router.currentRoute.value.params.projectId).toBe('test-project');
-      expect(router.currentRoute.value.params.issueId).toBe('test-issue');
+      expect(currentIssueParams().projectId).toBe('test-project');
+      expect(currentIssueParams().issueId).toBe('test-issue');
     });
 
     it('should navigate using path', async () => {
       await router.push('/projects/my-proj/issues/my-issue');
       expect(router.currentRoute.value.name).toBe('IssueDetails');
-      expect(router.currentRoute.value.params.projectId).toBe('my-proj');
-      expect(router.currentRoute.value.params.issueId).toBe('my-issue');
+      expect(currentIssueParams().projectId).toBe('my-proj');
+      expect(currentIssueParams().issueId).toBe('my-issue');
     });
 
     it('should update route params on navigation', async () => {
       await router.push({ name: 'IssueDetails', params: { projectId: 'proj-1', issueId: 'issue-1' } });
-      expect(router.currentRoute.value.params.issueId).toBe('issue-1');
+      expect(currentIssueParams().issueId).toBe('issue-1');
       await router.push({ name: 'IssueDetails', params: { projectId: 'proj-1', issueId: 'issue-2' } });
-      expect(router.currentRoute.value.params.issueId).toBe('issue-2');
+      expect(currentIssueParams().issueId).toBe('issue-2');
     });
   });
 
@@ -105,7 +111,13 @@ describe('Router - Issue Details Route', () => {
       const matchedRoute = route.matched.find(r => r.name === 'IssueDetails');
       expect(matchedRoute).toBeDefined();
       if (matchedRoute && typeof matchedRoute.props.default === 'function') {
-        const props = matchedRoute.props.default(route);
+        // The generated per-route-name overloads on `props.default` don't accept
+        // the generic `RouteLocationResolvedGeneric` returned by `router.resolve()`,
+        // even though at runtime the function only reads `.params`. Cast the
+        // function reference itself (rather than `route`) to a signature that
+        // matches what we're actually passing.
+        const propsFn = matchedRoute.props.default as unknown as (r: typeof route) => Record<string, unknown>;
+        const props = propsFn(route);
         expect(props).toEqual({ projectId: 'test-proj', issueId: 'test-issue' });
       }
     });

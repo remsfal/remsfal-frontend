@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import AddIssueRelationDialog from '@/features/project/issues/components/AddIssueRelationDialog.vue';
-import { issueService } from '@/services/IssueService';
+import { issueService, type IssueItemJson } from '@/services/IssueService';
 
 const toastAddMock = vi.fn();
 
@@ -15,7 +15,7 @@ vi.mock('@/services/IssueService', () => ({
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
 vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-const projectIssues = [
+const projectIssues: IssueItemJson[] = [
   {
     id: 'issue-1', title: 'Broken window', type: 'DEFECT' 
   },

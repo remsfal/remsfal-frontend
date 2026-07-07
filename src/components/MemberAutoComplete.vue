@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, toRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AutoComplete from 'primevue/autocomplete';
-import { projectMemberService, type ProjectMemberJson } from '@/services/ProjectMemberService';
+import type { ProjectMemberJson } from '@/services/ProjectMemberService';
+import { useProjectMembers } from '@/composables/useProjectMembers';
 
 const props = defineProps<{
   modelValue: string | null;     // Member ID (UUID)
   projectId: string;              // Required for fetching
   disabled?: boolean;
   invalid?: boolean;
-  placeholder?: string;
-  customClass?: string;
   inputId?: string;
 }>();
 
@@ -21,8 +20,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 // State
-const members = ref<ProjectMemberJson[]>([]);
-const loadingMembers = ref(false);
+const { members, loading: loadingMembers } = useProjectMembers(toRef(props, 'projectId'));
 const filteredMembers = ref<MemberOption[]>([]);
 
 // Member with computed label for display
@@ -41,20 +39,6 @@ const selectedMember = computed(() => {
   if (!props.modelValue) return null;
   return memberOptions.value.find(m => m.id === props.modelValue) || null;
 });
-
-// Fetch members from API
-const fetchMembers = async () => {
-  loadingMembers.value = true;
-  try {
-    const memberList = await projectMemberService.getMembers(props.projectId);
-    // TEMP FIX: Handle nested response structure
-    members.value = (memberList as { members: ProjectMemberJson[] }).members || [];
-  } catch (error) {
-    console.error('Failed to fetch members:', error);
-  } finally {
-    loadingMembers.value = false;
-  }
-};
 
 // Search/filter members by name or email
 const searchMembers = (event: { query: string }) => {
@@ -75,16 +59,6 @@ const searchMembers = (event: { query: string }) => {
 const onMemberChange = (member: MemberOption | null) => {
   emit('update:modelValue', member?.id || null);
 };
-
-// Load members on mount
-onMounted(() => {
-  fetchMembers();
-});
-
-// Reload if projectId changes
-watch(() => props.projectId, () => {
-  fetchMembers();
-});
 </script>
 
 <template>
@@ -93,14 +67,12 @@ watch(() => props.projectId, () => {
     :inputId="inputId"
     :suggestions="filteredMembers"
     :invalid="invalid"
-    :virtualScrollerOptions="{ itemSize: 38 }"
     dataKey="id"
     optionLabel="label"
-    :placeholder="placeholder || t('memberAutoComplete.searchPlaceholder')"
+    :placeholder="t('memberAutoComplete.placeholder')"
     :disabled="disabled || loadingMembers"
     :loading="loadingMembers"
     :emptySearchMessage="t('memberAutoComplete.noResults')"
-    :class="customClass"
     fluid
     dropdown
     @update:modelValue="onMemberChange"

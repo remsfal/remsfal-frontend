@@ -29,10 +29,10 @@ const defaultRoute = {
 
 const navItems: MobileNavItem[] = [
   {
-    label: 'Dashboard', to: { name: 'Dashboard' }, icon: 'pi-home' 
+    label: 'Dashboard', to: { name: 'ManagerDashboard' }, icon: 'pi-home'
   },
   {
-    label: 'Settings', to: { name: 'Settings' }, icon: 'pi-cog' 
+    label: 'Settings', to: { name: 'ManagerSettings' }, icon: 'pi-cog'
   },
 ]
 
@@ -81,7 +81,7 @@ describe('AppRoleMobileBar.vue', () => {
 
   it('marks item active using composable isActive when no isActiveFn provided', () => {
     const route = reactive({
-      path: '/', name: 'Dashboard', params: {}, query: {} 
+      path: '/', name: 'ManagerDashboard', params: {}, query: {}
     })
     const wrapper = mount(AppRoleMobileBar, {
       props: { navItems },

@@ -1,6 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import { mount } from '@vue/test-utils';
 import TenancyDataComponent from '@/features/project/rentalAgreements/components/TenancyDataComponent.vue';
+import { toISODateString } from "../../../../../src/helper/dataHelper";
 
 describe('TenancyDataComponent', () => {
   const today = new Date();
@@ -53,6 +54,6 @@ describe('TenancyDataComponent', () => {
   
     const emitted = wrapper.emitted('onChange') as unknown[][];
     expect(emitted).toBeTruthy();
-    expect((emitted[0][0] as { startOfRental: string }).startOfRental).toEqual(today.toISOString());
+    expect((emitted[0][0] as { startOfRental: string }).startOfRental).toEqual(toISODateString(today));
   });   
 });

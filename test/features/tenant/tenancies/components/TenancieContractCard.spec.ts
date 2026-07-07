@@ -16,6 +16,8 @@ describe('TenancieContractCard', () => {
       street: 'Teststr. 1',
       zip: '12345',
       city: 'Berlin',
+      province: 'Berlin',
+      countryCode: 'DE',
     },
     tenants: [
       {

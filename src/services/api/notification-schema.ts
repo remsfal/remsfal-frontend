@@ -571,6 +571,18 @@ export interface components {
       /** Format: int64 */
       total?: number;
     };
+    /** @description Organization assignment to a project */
+    OrganizationMemberJson: {
+      organizationId?: components["schemas"]["UUID"];
+      organizationName?: string;
+      role: components["schemas"]["MemberRole"];
+      /** @description Members of the organization together with their derived role in this project */
+      readonly members?: components["schemas"]["ProjectMemberJson"][];
+    };
+    /** @description List of organizations assigned to a project */
+    OrganizationMemberListJson: {
+      organizations?: components["schemas"]["OrganizationMemberJson"][];
+    };
     /** @description A project item with the user's member role only */
     ProjectItemJson: {
       readonly id: components["schemas"]["UUID"];
@@ -624,16 +636,6 @@ export interface components {
     /** @description A list of project members */
     ProjectMemberListJson: {
       members: components["schemas"]["ProjectMemberJson"][];
-    };
-    /** @description Organization assignment to a project */
-    ProjectOrganizationJson: {
-      organizationId?: components["schemas"]["UUID"];
-      organizationName?: string;
-      role: components["schemas"]["MemberRole"];
-    };
-    /** @description List of organizations assigned to a project */
-    ProjectOrganizationListJson: {
-      organizations?: components["schemas"]["ProjectOrganizationJson"][];
     };
     /** @description A property */
     PropertyJson: {

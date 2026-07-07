@@ -842,6 +842,33 @@ components:
         total:
           type: integer
           format: int64
+    OrganizationMemberJson:
+      description: Organization assignment to a project
+      type: object
+      properties:
+        organizationId:
+          $ref: "#/components/schemas/UUID"
+        organizationName:
+          type: string
+        role:
+          $ref: "#/components/schemas/MemberRole"
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectMemberJson"
+          description: Members of the organization together with their derived role
+            in this project
+          readOnly: true
+      required:
+      - role
+    OrganizationMemberListJson:
+      description: List of organizations assigned to a project
+      type: object
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganizationMemberJson"
     ProjectItemJson:
       description: A project item with the user's member role only
       type: object
@@ -957,26 +984,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProjectMemberJson"
-    ProjectOrganizationJson:
-      description: Organization assignment to a project
-      type: object
-      properties:
-        organizationId:
-          $ref: "#/components/schemas/UUID"
-        organizationName:
-          type: string
-        role:
-          $ref: "#/components/schemas/MemberRole"
-      required:
-      - role
-    ProjectOrganizationListJson:
-      description: List of organizations assigned to a project
-      type: object
-      properties:
-        organizations:
-          type: array
-          items:
-            $ref: "#/components/schemas/ProjectOrganizationJson"
     PropertyJson:
       description: A property
       type: object
