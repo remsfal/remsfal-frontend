@@ -61,6 +61,9 @@ const baseProps: {
     project: string;
     issueType: IssueJson['type'];
     tenancy: string;
+    category: IssueJson['category'];
+    priority: IssueJson['priority'];
+    modifiedAt?: IssueJson['modifiedAt'];
   };
 } = {
   projectId: 'project-1',
@@ -74,6 +77,9 @@ const baseProps: {
     project: 'Project A',
     issueType: 'TASK',
     tenancy: 'tenant-1',
+    category: 'GENERAL',
+    priority: 'MEDIUM',
+    modifiedAt: '2026-01-15T10:30:00Z',
   },
 };
 
@@ -101,7 +107,7 @@ describe('IssueDetailsCard.vue', () => {
   // ───────────────────────────────────────────────────────────────────────────
   test('renders issue title in card header', () => {
     expect(wrapper.text()).toContain('Old title');
-    expect(wrapper.text()).toContain('Vorgangs-ID');
+    expect(wrapper.text()).toContain('Ticketnummer');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
