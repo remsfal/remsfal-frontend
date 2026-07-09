@@ -1,5 +1,6 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 import { type UnitType } from '@/services/PropertyService.ts';
+import { tenantTimelineService } from '@/services/TenantTimelineService';
 
 export type IssueCategory = ApiComponents['schemas']['IssueCategory'];
 export type IssueStatus = ApiComponents['schemas']['IssueStatus'];
@@ -13,6 +14,13 @@ export type IssueRelationType = 'related-to' | 'blocks' | 'blocked-by' | 'duplic
 export type IssueRelationGroup = IssueRelationType | 'parent';
 
 class IssueService {
+  private async createInitialTimelineEntry(issueId: string): Promise<void> {
+    await tenantTimelineService.createTimelineEntryWithAttachments(issueId, {
+      title: 'Issue erstellt',
+      message: 'Issue erstellt',
+    }, []);
+  }
+
   async getIssues(
     projectId?: string,
     preferTenancyIssues?: boolean,
@@ -49,7 +57,12 @@ class IssueService {
   }
 
   async createProjectIssue(body: Partial<IssueJson>): Promise<IssueJson> {
-    return apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
+    const createdIssue = await apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
+    if (!createdIssue.id) {
+      throw new Error('Created issue is missing id');
+    }
+    await this.createInitialTimelineEntry(createdIssue.id);
+    return createdIssue;
   }
 
   async createTenancyIssueWithAttachment(body: Partial<IssueJson>, files: File[]): Promise<IssueJson> {
@@ -63,7 +76,12 @@ class IssueService {
 
     // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return apiClient.post('/ticketing/v1/issues', formData as any) as Promise<IssueJson>;
+    const createdIssue = await apiClient.post('/ticketing/v1/issues', formData as any) as Promise<IssueJson>;
+    if (!createdIssue.id) {
+      throw new Error('Created issue is missing id');
+    }
+    await this.createInitialTimelineEntry(createdIssue.id);
+    return createdIssue;
   }
 
   async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {
