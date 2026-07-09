@@ -1,8 +1,116 @@
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
+import Button from 'primevue/button';
+import Message from 'primevue/message';
+import ProgressSpinner from 'primevue/progressspinner';
+import Textarea from 'primevue/textarea';
+import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/common/BaseCard.vue';
+import { tenantTimelineService, type TenantTimelineJson } from '@/services/TenantTimelineService';
 
-const { t } = useI18n();
+const props = defineProps<{
+  issueId: string;
+}>();
+
+const { t, locale } = useI18n();
+const toast = useToast();
+
+const loading = ref(false);
+const error = ref(false);
+const timelines = ref<TenantTimelineJson[]>([]);
+const messageText = ref('');
+const selectedFiles = ref<File[]>([]);
+const sendingMessage = ref(false);
+const canSendMessage = computed(() => messageText.value.trim().length > 0 && !sendingMessage.value);
+
+const formatTimelineDate = (value?: string) => {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString(locale.value);
+};
+
+const fetchTimelines = async () => {
+  loading.value = true;
+  error.value = false;
+
+  try {
+    const response = await tenantTimelineService.getTimelineEntries(props.issueId);
+    timelines.value = response.timelines;
+  } catch (fetchError) {
+    console.error('Error fetching issue timeline:', fetchError);
+    timelines.value = [];
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const getTimelineAttachmentCount = (timeline: TenantTimelineJson) => timeline.attachmentId?.length ?? 0;
+
+const getTimelineAttachmentDownloadUrl = (
+  issueId: string,
+  attachmentId: string,
+  fileName?: string,
+) => {
+  const encodedIssueId = encodeURIComponent(issueId);
+  const encodedAttachmentId = encodeURIComponent(attachmentId);
+  const encodedFileName = encodeURIComponent(fileName || attachmentId);
+  return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+};
+
+const onFilesSelected = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  selectedFiles.value = input.files ? Array.from(input.files) : [];
+};
+
+const submitMessage = async () => {
+  const trimmedMessage = messageText.value.trim();
+  if (!trimmedMessage || sendingMessage.value) {
+    return;
+  }
+
+  sendingMessage.value = true;
+
+  try {
+    await tenantTimelineService.createTimelineEntryWithAttachments(props.issueId, {
+      title: t('tenantIssues.timeline.tenantMessageTitle'),
+      message: trimmedMessage,
+    }, selectedFiles.value);
+    messageText.value = '';
+    selectedFiles.value = [];
+    await fetchTimelines();
+  } catch (submitError) {
+    console.error('Error creating timeline entry:', submitError);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('tenantIssues.timeline.createError'),
+      life: 4000,
+    });
+  } finally {
+    sendingMessage.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchTimelines();
+});
+
+watch(
+  () => props.issueId,
+  () => {
+    fetchTimelines();
+  },
+);
 </script>
 
 <template>
@@ -11,11 +119,106 @@ const { t } = useI18n();
       <span class="text-xl font-semibold">{{ t('tenantIssues.timeline.title') }}</span>
     </template>
     <template #content>
+
+      <div v-if="loading" class="flex items-center gap-3 py-2">
+        <ProgressSpinner data-testid="tenant-issue-timeline-loading" style="width: 24px; height: 24px" />
+        <span class="text-gray-600">{{ t('tenantIssues.loading') }}</span>
+      </div>
+
+      <Message v-else-if="error" severity="error" :closable="false" data-testid="tenant-issue-timeline-error">
+        {{ t('tenantIssues.timeline.loadError') }}
+      </Message>
+
       <div
-        data-testid="tenant-issue-timeline-placeholder"
+        v-else-if="timelines.length === 0"
+        data-testid="tenant-issue-timeline-empty"
         class="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-gray-600"
       >
-        {{ t('tenantIssues.timeline.placeholder') }}
+        {{ t('tenantIssues.timeline.empty') }}
+      </div>
+
+      <Timeline v-else :value="timelines" align="right" data-testid="tenant-issue-timeline">
+        <template #opposite="slotProps">
+          <span v-if="slotProps.item.createdAt" class="text-sm text-gray-500">
+            {{ formatTimelineDate(slotProps.item.createdAt) }}
+          </span>
+        </template>
+        <template #content="slotProps">
+          <article
+            data-testid="tenant-issue-timeline-entry"
+            class="mb-3 rounded-lg border border-gray-200 bg-white p-4"
+          >
+            <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <p class="font-medium text-gray-900">
+                {{ slotProps.item.title || t('tenantIssues.timeline.entryFallbackTitle') }}
+              </p>
+            </div>
+            <p v-if="slotProps.item.message" class="text-gray-700 text-left whitespace-pre-line">
+              {{ slotProps.item.message }}
+            </p>
+            <div v-if="getTimelineAttachmentCount(slotProps.item) > 0" class="mt-3 rounded bg-gray-50 p-2 text-sm">
+              <p class="mb-1 text-left text-gray-700">
+                {{
+                  t('tenantIssues.timeline.attachmentsCount', {
+                    count: getTimelineAttachmentCount(slotProps.item),
+                  })
+                }}
+              </p>
+              <ul v-if="slotProps.item.attachmentId" class="space-y-1">
+                <li
+                  v-for="attachmentId in slotProps.item.attachmentId"
+                  :key="attachmentId"
+                  data-testid="tenant-issue-timeline-attachment-url"
+                >
+                  <a
+                    class="break-all text-primary underline"
+                    :href="getTimelineAttachmentDownloadUrl(props.issueId, attachmentId)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ getTimelineAttachmentDownloadUrl(props.issueId, attachmentId) }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </article>
+        </template>
+      </Timeline>
+
+      <div class="mb-4 flex flex-col gap-2">
+        <Textarea
+            id="tenant-timeline-message"
+            v-model="messageText"
+            data-testid="tenant-issue-timeline-message-input"
+            rows="3"
+            :placeholder="t('tenantIssues.timeline.messagePlaceholder')"
+        />
+        <div class="flex flex-col gap-1">
+          <label for="tenant-timeline-attachments" class="text-sm text-gray-600">
+            {{ t('tenantIssues.timeline.attachmentsLabel') }}
+          </label>
+          <input
+              id="tenant-timeline-attachments"
+              data-testid="tenant-issue-timeline-attachments-input"
+              type="file"
+              multiple
+              class="block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-gray-700 hover:file:bg-gray-200"
+              @change="onFilesSelected"
+          >
+          <p v-if="selectedFiles.length > 0" class="text-xs text-gray-500">
+            {{ t('tenantIssues.timeline.attachmentsSelected', { count: selectedFiles.length }) }}
+          </p>
+        </div>
+        <div class="flex justify-end">
+          <Button
+              data-testid="tenant-issue-timeline-message-submit"
+              :label="t('tenantIssues.timeline.sendMessage')"
+              icon="pi pi-send"
+              :loading="sendingMessage"
+              :disabled="!canSendMessage"
+              @click="submitMessage"
+          />
+        </div>
       </div>
     </template>
   </BaseCard>

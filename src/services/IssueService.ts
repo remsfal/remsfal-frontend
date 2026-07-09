@@ -17,7 +17,6 @@ class IssueService {
   private async createInitialTimelineEntry(issueId: string): Promise<void> {
     await tenantTimelineService.createTimelineEntryWithAttachments(issueId, {
       title: 'Issue erstellt',
-      message: 'Issue erstellt',
     }, []);
   }
 
@@ -58,11 +57,7 @@ class IssueService {
 
   async createProjectIssue(body: Partial<IssueJson>): Promise<IssueJson> {
     const createdIssue = await apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
-    if (!createdIssue.id) {
-      throw new Error('Created issue is missing id');
-    }
-    await this.createInitialTimelineEntry(createdIssue.id);
-    return createdIssue;
+    return (await this.createInitialTimelineEntry(createdIssue.id!), createdIssue);
   }
 
   async createTenancyIssueWithAttachment(body: Partial<IssueJson>, files: File[]): Promise<IssueJson> {
@@ -77,11 +72,7 @@ class IssueService {
     // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const createdIssue = await apiClient.post('/ticketing/v1/issues', formData as any) as Promise<IssueJson>;
-    if (!createdIssue.id) {
-      throw new Error('Created issue is missing id');
-    }
-    await this.createInitialTimelineEntry(createdIssue.id);
-    return createdIssue;
+    return (await this.createInitialTimelineEntry(createdIssue.id!), createdIssue);
   }
 
   async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {

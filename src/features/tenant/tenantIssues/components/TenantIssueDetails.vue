@@ -115,7 +115,7 @@ watch(
         :deletingIssue="deletingIssue"
         @cancel="openCancelDialog"
       />
-      <TenantIssueTimelineCard />
+      <TenantIssueTimelineCard :issueId="issue.id || props.issueId" />
       <TenantIssueAttachmentsCard
         :issueId="issue.id || props.issueId"
         :attachments="issue.attachments ?? []"
