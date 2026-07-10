@@ -34,6 +34,40 @@ describe('IssueService with MSW (http)', () => {
     expect(createdIssue.status).toBe('OPEN' as IssueStatus);
   });
 
+  test('createTenancyIssueWithAttachment forwards files to initial timeline entry', async () => {
+    let capturedTimelineAttachments = 0;
+
+    server.use(
+      http.post('/ticketing/v1/issues', async ({ request }) => {
+        const form = await request.formData();
+        const issuePayload = form.get('issue');
+
+        expect(issuePayload).toBeInstanceOf(File);
+
+        return HttpResponse.json({
+          id: 'new-issue-id',
+          title: 'New tenancy issue',
+          status: 'OPEN',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      }),
+      http.post('/ticketing/v1/issues/:issueId/timelines', async ({ request, params }) => {
+        const form = await request.formData();
+        capturedTimelineAttachments = form.getAll('attachment').length;
+
+        expect(params.issueId).toBe('new-issue-id');
+        return HttpResponse.json({}, { status: 201 });
+      }),
+    );
+
+    const files = [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')];
+
+    await issueService.createTenancyIssueWithAttachment({ title: 'New tenancy issue' }, files);
+
+    expect(capturedTimelineAttachments).toBe(2);
+  });
+
   test('updateIssue returns the updated issue', async () => {
     const updates: Partial<IssueJson> = {
       title: 'Updated Issue',

@@ -14,10 +14,10 @@ export type IssueRelationType = 'related-to' | 'blocks' | 'blocked-by' | 'duplic
 export type IssueRelationGroup = IssueRelationType | 'parent';
 
 class IssueService {
-  private async createInitialTimelineEntry(issueId: string): Promise<void> {
+  private async createInitialTimelineEntry(issueId: string, files: File[] = []): Promise<void> {
     await tenantTimelineService.createTimelineEntryWithAttachments(issueId, {
       title: 'Issue erstellt',
-    }, []);
+    }, files);
   }
 
   async getIssues(
@@ -72,7 +72,7 @@ class IssueService {
     // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const createdIssue = await apiClient.post('/ticketing/v1/issues', formData as any) as Promise<IssueJson>;
-    return (await this.createInitialTimelineEntry(createdIssue.id!), createdIssue);
+    return (await this.createInitialTimelineEntry(createdIssue.id!, files), createdIssue);
   }
 
   async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {

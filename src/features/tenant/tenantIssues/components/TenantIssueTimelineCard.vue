@@ -67,9 +67,22 @@ const getTimelineAttachmentDownloadUrl = (
   return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
 };
 
+const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
+  const uniqueFiles = new Map<string, File>();
+
+  [...currentFiles, ...newFiles].forEach((file) => {
+    const fileKey = `${file.name}-${file.size}-${file.lastModified}`;
+    uniqueFiles.set(fileKey, file);
+  });
+
+  return Array.from(uniqueFiles.values());
+};
+
 const onFilesSelected = (event: Event) => {
   const input = event.target as HTMLInputElement;
-  selectedFiles.value = input.files ? Array.from(input.files) : [];
+  const files = input.files ? Array.from(input.files) : [];
+  selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files);
+  input.value = '';
 };
 
 const submitMessage = async () => {
