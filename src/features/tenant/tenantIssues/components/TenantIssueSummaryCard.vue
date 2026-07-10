@@ -26,17 +26,15 @@ const statusSeverity = computed(() => getIssueStatusSeverity(props.issue.status)
 const typeSeverity = computed(() => getIssueTypeSeverity(props.issue.type));
 const issueNodeId = computed(() => props.issue.id?.split('-').pop() || props.issue.id || '—');
 const descriptionLabel = computed(() => {
-  const description = props.issue.description;
+const description = props.issue.description;
   if (!description) {
     return null;
   }
-
-  const cleaned = description
+const cleaned = description
     .split('\n')
     .filter(line => !/^\s*(Verursacher|Ort):/i.test(line))
     .join('\n')
     .trim();
-
   return cleaned || null;
 });
 const modifiedAtLabel = computed(() => {
@@ -44,12 +42,10 @@ const modifiedAtLabel = computed(() => {
   if (!modifiedAt) {
     return null;
   }
-
   const date = new Date(modifiedAt);
   if (Number.isNaN(date.getTime())) {
     return modifiedAt;
   }
-
   return date.toLocaleDateString(locale.value);
 });
 const canCancel = computed(() => {
@@ -102,7 +98,6 @@ const canCancel = computed(() => {
             </dd>
           </div>
         </dl>
-
         <dl class="space-y-2 text-base text-gray-600">
           <div v-if="issue.type" class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
@@ -121,7 +116,6 @@ const canCancel = computed(() => {
             </dd>
           </div>
         </dl>
-
         <dl class="space-y-2 text-base text-gray-600">
           <div v-if="issue.status" class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
@@ -141,7 +135,6 @@ const canCancel = computed(() => {
           </div>
         </dl>
       </div>
-
       <div v-if="descriptionLabel" class="mt-4 text-base text-gray-600">
         {{ t('tenantIssues.detail.description') }}
         <span class="text-gray-900 whitespace-pre-line break-words">

@@ -9,7 +9,6 @@ const props = defineProps<{
   issueId: string;
   attachments: IssueAttachmentJson[];
 }>();
-
 const { t } = useI18n();
 
 const imageAttachments = computed(() => props.attachments.filter(
@@ -42,13 +41,11 @@ function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
         {{ t('issueDetails.attachmentsTitle') }}
       </div>
     </template>
-
     <template #content>
       <div class="flex flex-col gap-4">
         <div v-if="attachments.length === 0" class="text-sm text-gray-500">
           {{ t('issueDetails.noAttachments') }}
         </div>
-
         <div v-if="imageAttachments.length > 0 || nonImageAttachmentGroups.length > 0" class="flex flex-wrap gap-2">
           <Image
             v-for="attachment in imageAttachments"
@@ -71,7 +68,6 @@ function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
             <span>{{ group.ext }}</span>
           </div>
         </div>
-
         <div
           v-for="attachment in attachments"
           :key="attachment.attachmentId"
