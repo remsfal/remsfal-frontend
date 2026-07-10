@@ -36,7 +36,7 @@ describe('TenantsTableComponent', () => {
 
     // toBe(3) because onMounted adds a tenant, tenantsMock adds a tenant and the button click adds another one
     const rows = wrapper.findAll('tbody tr');
-    expect(rows.length).toBe(3);
+    expect(rows).toHaveLength(3);
     const secondRowCells = rows[1].findAll('td');
     expect(secondRowCells[0].text()).toBe('');
   });
@@ -60,7 +60,7 @@ describe('TenantsTableComponent', () => {
     await flushPromises();
 
     //same prodecure as above, but now we delete the first row
-    expect(wrapper.findAll('tbody tr').length).toBe(1);
+    expect(wrapper.findAll('tbody tr')).toHaveLength(1);
     expect(wrapper.emitted('onChange')).toBeTruthy();
   });
 });
