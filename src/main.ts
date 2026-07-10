@@ -1,4 +1,4 @@
-import { createApp } from 'vue';
+import { createApp, type Component } from 'vue';
 import { createPinia } from 'pinia';
 import App from '@/App.vue';
 import router from '@/router';
@@ -68,7 +68,7 @@ app.directive('tooltip', Tooltip);
 
 // Register Font Awesome Icon globally
 // PrimeVue components are auto-imported via PrimeVueResolver (vite.config.ts)
-app.component('FontAwesomeIcon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon as Component);
 
 app.mount('#app');
 
