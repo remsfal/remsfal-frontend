@@ -26,11 +26,11 @@ const statusSeverity = computed(() => getIssueStatusSeverity(props.issue.status)
 const typeSeverity = computed(() => getIssueTypeSeverity(props.issue.type));
 const issueNodeId = computed(() => props.issue.id?.split('-').pop() || props.issue.id || '—');
 const descriptionLabel = computed(() => {
-const description = props.issue.description;
+  const description = props.issue.description;
   if (!description) {
     return null;
   }
-const cleaned = description
+  const cleaned = description
     .split('\n')
     .filter(line => !/^\s*(Verursacher|Ort):/i.test(line))
     .join('\n')
