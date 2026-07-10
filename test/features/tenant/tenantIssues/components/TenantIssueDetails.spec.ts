@@ -3,7 +3,6 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { issueService } from '@/services/IssueService';
 import router from '@/router';
 import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
-import TenantIssueTimelineCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue';
 import TenantIssueAttachmentsCard from '@/features/tenant/tenantIssues/components/TenantIssueAttachmentsCard.vue';
 
 const toastAddMock = vi.fn();
@@ -49,7 +48,6 @@ describe('TenantIssueDetails component', () => {
     expect(issueService.getIssue).toHaveBeenCalledWith('issue-42');
     expect(wrapper.text()).toContain('Wasserschaden Küche');
     expect(wrapper.findComponent(TenantIssueSummaryCard).exists()).toBe(true);
-    expect(wrapper.findComponent(TenantIssueTimelineCard).exists()).toBe(true);
     expect(wrapper.findComponent(TenantIssueAttachmentsCard).exists()).toBe(true);
   });
 

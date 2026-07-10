@@ -8,7 +8,6 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
-import TenantIssueTimelineCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue';
 import TenantIssueAttachmentsCard from '@/features/tenant/tenantIssues/components/TenantIssueAttachmentsCard.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
 
@@ -115,7 +114,6 @@ watch(
         :deletingIssue="deletingIssue"
         @cancel="openCancelDialog"
       />
-      <TenantIssueTimelineCard />
       <TenantIssueAttachmentsCard
         :issueId="issue.id || props.issueId"
         :attachments="issue.attachments ?? []"
