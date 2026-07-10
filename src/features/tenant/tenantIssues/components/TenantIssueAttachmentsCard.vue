@@ -2,7 +2,6 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Image from 'primevue/image';
-
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { IssueAttachmentJson } from '@/services/IssueService';
 
