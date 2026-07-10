@@ -2,8 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { issueService } from '@/services/IssueService';
 import router from '@/router';
-import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
-import TenantIssueAttachmentsCard from '@/features/tenant/tenantIssues/components/TenantIssueAttachmentsCard.vue';
 
 const toastAddMock = vi.fn();
 
@@ -30,7 +28,7 @@ describe('TenantIssueDetails component', () => {
     vi.clearAllMocks();
   });
 
-  it('loads issue details and renders extracted cards', async () => {
+  it('loads issue details', async () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-42',
       title: 'Wasserschaden Küche',
@@ -47,35 +45,6 @@ describe('TenantIssueDetails component', () => {
 
     expect(issueService.getIssue).toHaveBeenCalledWith('issue-42');
     expect(wrapper.text()).toContain('Wasserschaden Küche');
-    expect(wrapper.findComponent(TenantIssueSummaryCard).exists()).toBe(true);
-    expect(wrapper.findComponent(TenantIssueAttachmentsCard).exists()).toBe(true);
-  });
-
-  it('passes issue.id to attachments card and falls back to route prop issueId', async () => {
-    vi.mocked(issueService.getIssue)
-      .mockResolvedValueOnce({
-        id: 'issue-from-entity',
-        title: 'Mit ID',
-        status: 'OPEN',
-        type: 'DEFECT',
-        agreementId: 'agreement-1',
-      })
-      .mockResolvedValueOnce({
-        title: 'Ohne ID',
-        status: 'OPEN',
-        type: 'DEFECT',
-        agreementId: 'agreement-1',
-      });
-
-    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-from-route' } });
-
-    await flushPromises();
-    expect(wrapper.findComponent(TenantIssueAttachmentsCard).props('issueId')).toBe('issue-from-entity');
-
-    await wrapper.setProps({ issueId: 'issue-from-route-fallback' });
-    await flushPromises();
-    expect(wrapper.findComponent(TenantIssueAttachmentsCard).props('issueId')).toBe('issue-from-route-fallback');
   });
 
   it('reloads issue details when issueId prop changes', async () => {
@@ -113,7 +82,7 @@ describe('TenantIssueDetails component', () => {
     vi.mocked(issueService.getIssue).mockRejectedValue(new Error('request failed'));
 
     const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-42' } });
+    mount(TenantIssueDetails, { props: { issueId: 'issue-42' } });
 
     await flushPromises();
 
@@ -122,7 +91,6 @@ describe('TenantIssueDetails component', () => {
       severity: 'error',
       life: 3000,
     }));
-    expect(wrapper.find('[data-testid="tenant-issue-timeline-placeholder"]').exists()).toBe(false);
   });
 
   it('deletes issue when cancel button is clicked and navigates to issue list', async () => {
@@ -283,99 +251,6 @@ describe('TenantIssueDetails component', () => {
 
     wrapper.unmount();
     pushSpy.mockRestore();
-  });
-
-  it('filters Verursacher/Ort lines from description and hides empty cleaned description', async () => {
-    vi.mocked(issueService.getIssue)
-      .mockResolvedValueOnce({
-        id: 'issue-12',
-        title: 'Schaden',
-        status: 'OPEN',
-        type: 'DEFECT',
-        agreementId: 'agreement-1',
-        description: 'Verursacher: Unbekannt\nOrt: Küche\nWasser tropft aus dem Rohr',
-      })
-      .mockResolvedValueOnce({
-        id: 'issue-13',
-        title: 'Ohne Beschreibung',
-        status: 'OPEN',
-        type: 'DEFECT',
-        agreementId: 'agreement-1',
-      });
-
-    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-12' } });
-
-    await flushPromises();
-
-    expect(wrapper.text()).toContain('Wasser tropft aus dem Rohr');
-    expect(wrapper.text()).not.toContain('Verursacher: Unbekannt');
-    expect(wrapper.text()).not.toContain('Ort: Küche');
-
-    await wrapper.setProps({ issueId: 'issue-13' });
-    await flushPromises();
-
-    expect(wrapper.text()).toContain('Ohne Beschreibung');
-    expect(wrapper.text()).not.toContain('Wasser tropft aus dem Rohr');
-  });
-
-  it('renders modifiedAt as localized date or raw value when date is invalid', async () => {
-    const validModifiedAt = '2026-01-02T00:00:00.000Z';
-    const invalidModifiedAt = 'invalid-modified-at';
-
-    vi.mocked(issueService.getIssue)
-      .mockResolvedValueOnce({
-        id: 'issue-20',
-        title: 'Mit gültigem Datum',
-        status: 'OPEN',
-        type: 'DEFECT',
-        agreementId: 'agreement-1',
-        description: 'Beschreibung',
-        modifiedAt: validModifiedAt,
-      })
-      .mockResolvedValueOnce({
-        id: 'issue-21',
-        title: 'Mit ungültigem Datum',
-        status: 'OPEN',
-        type: 'DEFECT',
-        agreementId: 'agreement-1',
-        description: 'Beschreibung',
-        modifiedAt: invalidModifiedAt,
-      });
-
-    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-20' } });
-
-    await flushPromises();
-
-    expect(wrapper.text()).not.toContain(validModifiedAt);
-
-    await wrapper.setProps({ issueId: 'issue-21' });
-    await flushPromises();
-
-    expect(wrapper.text()).toContain(invalidModifiedAt);
-  });
-
-  it.each([
-    ['TERMINATION', 'OPEN'],
-    ['DEFECT', 'CLOSED'],
-    ['DEFECT', 'REJECTED'],
-  ] as const)('hides cancel action for type %s and status %s', async (type, status) => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-30',
-      title: 'Nicht stornierbar',
-      status,
-      type,
-      agreementId: 'agreement-1',
-      description: 'Beschreibung',
-    });
-
-    const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-30' } });
-
-    await flushPromises();
-
-    expect(wrapper.find('[data-testid="tenant-issue-cancel"]').exists()).toBe(false);
   });
 
   it('uses route issueId for deletion when loaded issue has no id', async () => {

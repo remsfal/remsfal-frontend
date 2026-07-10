@@ -146,4 +146,39 @@ describe('TenantIssueAttachmentsCard.vue', () => {
 
     expect(wrapper.findAll('a')).toHaveLength(2);
   });
+
+  it('renders link text from fileName and keeps download security attributes', () => {
+    const wrapper = mountCard([
+      {
+        attachmentId: 'a1',
+        fileName: 'report.pdf',
+        contentType: 'application/pdf',
+      },
+    ]);
+
+    const link = wrapper.get('a');
+    expect(link.text()).toBe('report.pdf');
+    expect(link.attributes('target')).toBe('_blank');
+    expect(link.attributes('rel')).toBe('noopener noreferrer');
+  });
+
+  it('normalizes extension grouping to uppercase', () => {
+    const wrapper = mountCard([
+      {
+        attachmentId: 'a1',
+        fileName: 'first.Pdf',
+        contentType: 'application/pdf',
+      },
+      {
+        attachmentId: 'a2',
+        fileName: 'second.pdf',
+        contentType: 'application/pdf',
+      },
+    ]);
+
+    const tiles = wrapper.findAll('[data-test="non-image-tile"]');
+    expect(tiles).toHaveLength(1);
+    expect(tiles[0].text()).toContain('PDF');
+    expect(tiles[0].text()).toContain('+2');
+  });
 });

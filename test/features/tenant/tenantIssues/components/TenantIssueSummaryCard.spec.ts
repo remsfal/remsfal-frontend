@@ -107,4 +107,18 @@ describe('TenantIssueSummaryCard.vue', () => {
 
     expect(wrapper.text()).not.toContain('tenantIssues.detail.location');
   });
+
+  it('renders location row when location is set', () => {
+    const wrapper = mountCard({ location: 'Kueche EG' });
+
+    expect(wrapper.text()).toContain('tenantIssues.detail.location');
+    expect(wrapper.text()).toContain('Kueche EG');
+  });
+
+  it('renders category row when category is set', () => {
+    const wrapper = mountCard({ category: 'WATER_DAMAGE' as IssueJson['category'] });
+
+    expect(wrapper.text()).toContain('tenantIssues.detail.category');
+    expect(wrapper.text()).toContain('WATER_DAMAGE');
+  });
 });
