@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {computed} from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Image from 'primevue/image';
+
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { IssueAttachmentJson } from '@/services/IssueService';
 
@@ -12,24 +13,31 @@ const props = defineProps<{
 const { t } = useI18n();
 
 const imageAttachments = computed(() => props.attachments.filter(
-  attachment => attachment.contentType?.startsWith('image/')
+  attachment => attachment.contentType?.startsWith('image/'),
 ));
+
 const nonImageAttachmentGroups = computed(() => {
   const groups = new Map<string, number>();
+
   for (const attachment of props.attachments) {
     if (attachment.contentType?.startsWith('image/')) continue;
+
     const ext = attachment.fileName?.split('.').pop()?.toUpperCase() ?? '?';
     groups.set(ext, (groups.get(ext) ?? 0) + 1);
   }
+
   return Array.from(groups.entries()).map(([ext, count]) => ({ ext, count }));
 });
+
 function getAttachmentDownloadUrl(attachment: IssueAttachmentJson): string {
   const fileName = attachment.fileName ?? '';
   const attachmentId = attachment.attachmentId ?? '';
   const issueId = attachment.issueId ?? props.issueId;
+
   const encodedIssueId = encodeURIComponent(issueId);
   const encodedAttachmentId = encodeURIComponent(attachmentId);
   const encodedFileName = encodeURIComponent(fileName);
+
   return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
 }
 </script>

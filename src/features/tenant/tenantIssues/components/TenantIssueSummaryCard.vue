@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
+
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { IssueJson } from '@/services/IssueService';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
@@ -25,29 +26,39 @@ const categoryLabel = computed(() => getIssueCategoryLabel(props.issue.category,
 const statusSeverity = computed(() => getIssueStatusSeverity(props.issue.status));
 const typeSeverity = computed(() => getIssueTypeSeverity(props.issue.type));
 const issueNodeId = computed(() => props.issue.id?.split('-').pop() || props.issue.id || '—');
+
 const descriptionLabel = computed(() => {
   const description = props.issue.description;
+
   if (!description) {
     return null;
   }
+
   const cleaned = description
     .split('\n')
     .filter(line => !/^\s*(Verursacher|Ort):/i.test(line))
     .join('\n')
     .trim();
+
   return cleaned || null;
 });
+
 const modifiedAtLabel = computed(() => {
   const modifiedAt = props.issue.modifiedAt;
+
   if (!modifiedAt) {
     return null;
   }
+
   const date = new Date(modifiedAt);
+
   if (Number.isNaN(date.getTime())) {
     return modifiedAt;
   }
+
   return date.toLocaleDateString(locale.value);
 });
+
 const canCancel = computed(() => {
   return props.issue.type !== 'TERMINATION' &&
     props.issue.status !== 'CLOSED' &&

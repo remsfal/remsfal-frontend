@@ -58,6 +58,13 @@ describe('TenantIssueSummaryCard.vue', () => {
     expect(wrapper.find('[data-testid="tenant-issue-cancel"]').exists()).toBe(false);
   });
 
+  it('disables cancel button while deletion is in progress', () => {
+    const wrapper = mountCard({}, true);
+    const cancelButton = wrapper.get('[data-testid="tenant-issue-cancel"]');
+
+    expect(cancelButton.attributes('disabled')).toBeDefined();
+  });
+
   it('filters Verursacher/Ort lines from description', () => {
     const wrapper = mountCard({ description: 'Verursacher: Unbekannt\nOrt: Küche\nWasser tropft aus dem Rohr' });
 
@@ -76,5 +83,28 @@ describe('TenantIssueSummaryCard.vue', () => {
     const wrapper = mountCard({ modifiedAt: 'invalid-modified-at' });
 
     expect(wrapper.text()).toContain('invalid-modified-at');
+  });
+
+  it('renders valid modifiedAt as localized date', () => {
+    const modifiedAt = '2026-01-02T00:00:00.000Z';
+    const wrapper = mountCard({ modifiedAt });
+
+    expect(wrapper.text()).toContain(new Date(modifiedAt).toLocaleDateString('de-DE'));
+    expect(wrapper.text()).not.toContain(modifiedAt);
+  });
+
+  it('uses fallback title and hides issue-node block when issue id is missing', () => {
+    const wrapper = mountCard({ id: undefined, title: undefined });
+
+    expect(wrapper.text()).toContain('tenantIssues.detail.untitled');
+    expect(wrapper.text()).toContain('tenantIssues.detail.number');
+    expect(wrapper.findComponent({ name: 'Tag' }).exists()).toBe(true);
+    expect(wrapper.text()).not.toContain('tenantIssues.detail.issueNode');
+  });
+
+  it('hides location row when location contains only whitespace', () => {
+    const wrapper = mountCard({ location: '   ' });
+
+    expect(wrapper.text()).not.toContain('tenantIssues.detail.location');
   });
 });
