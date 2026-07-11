@@ -56,6 +56,12 @@ describe('TenantIssueSummaryCard.vue', () => {
     expect(wrapper.find('[data-testid="tenant-issue-cancel"]').exists()).toBe(false);
   });
 
+  it('shows cancel button for cancellable issues', () => {
+    const wrapper = mountComponent({ type: 'DEFECT', status: 'OPEN' });
+
+    expect(wrapper.find('[data-testid="tenant-issue-cancel"]').exists()).toBe(true);
+  });
+
   it('disables cancel button while deleting', () => {
     const wrapper = mountComponent({}, true);
 
@@ -70,16 +76,42 @@ describe('TenantIssueSummaryCard.vue', () => {
     expect(wrapper.text()).not.toContain('Ort: Küche');
   });
 
+  it('trims cleaned description after filtering', () => {
+    const wrapper = mountComponent({ description: '  \nVerursacher: X\n  Wasser tropft  \n' });
+
+    expect(wrapper.text()).toContain('Wasser tropft');
+    expect(wrapper.text()).not.toContain('Wasser tropft  ');
+  });
+
   it('hides description section when only filtered lines exist', () => {
     const wrapper = mountComponent({ description: 'Verursacher: unbekannt\nOrt: Küche' });
 
     expect(wrapper.text()).not.toContain('tenantIssues.detail.description');
   });
 
+  it('hides description section when description is missing', () => {
+    const wrapper = mountComponent({ description: undefined });
+
+    expect(wrapper.text()).not.toContain('tenantIssues.detail.description');
+  });
+
+  it('hides updated section when modifiedAt is missing', () => {
+    const wrapper = mountComponent({ modifiedAt: undefined });
+
+    expect(wrapper.text()).not.toContain('tenantIssues.detail.updated');
+  });
+
   it('renders modifiedAt raw value when date is invalid', () => {
     const wrapper = mountComponent({ modifiedAt: 'invalid-date' });
 
     expect(wrapper.text()).toContain('invalid-date');
+  });
+
+  it('formats modifiedAt with locale when date is valid', () => {
+    const modifiedAt = '2026-01-02T00:00:00.000Z';
+    const wrapper = mountComponent({ modifiedAt });
+
+    expect(wrapper.text()).toContain(new Date(modifiedAt).toLocaleDateString('de-DE'));
   });
 
   it('shows fallback title when title is missing', () => {

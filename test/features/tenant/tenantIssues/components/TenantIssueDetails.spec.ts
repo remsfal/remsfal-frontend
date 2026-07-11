@@ -104,6 +104,43 @@ describe('TenantIssueDetails.vue', () => {
     expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('issue-1|1');
   });
 
+  it('falls back to route issueId and empty attachments when issue fields are missing', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      title: 'Ohne Anhang und ID',
+    });
+
+    const wrapper = await mountComponent('route-issue-id');
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="summary-title"]').text()).toBe('Ohne Anhang und ID');
+    expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('route-issue-id|0');
+  });
+
+  it('uses route issueId when issue id is missing, but keeps existing attachments', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      title: 'Ohne ID',
+      attachments: [{ attachmentId: 'a1', fileName: 'image.png' }],
+    });
+
+    const wrapper = await mountComponent('route-fallback-id');
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('route-fallback-id|1');
+  });
+
+  it('uses issue id and falls back to empty attachments when attachments are null', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({
+      id: 'issue-from-response',
+      title: 'Mit ID ohne Attachments',
+      attachments: null,
+    });
+
+    const wrapper = await mountComponent('route-id');
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('issue-from-response|0');
+  });
+
   it('reloads issue data when issueId prop changes', async () => {
     vi.mocked(issueService.getIssue)
       .mockResolvedValueOnce({
