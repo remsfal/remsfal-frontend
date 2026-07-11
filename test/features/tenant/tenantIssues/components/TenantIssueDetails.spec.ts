@@ -105,9 +105,7 @@ describe('TenantIssueDetails.vue', () => {
   });
 
   it('falls back to route issueId and empty attachments when issue fields are missing', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      title: 'Ohne Anhang und ID',
-    });
+    vi.mocked(issueService.getIssue).mockResolvedValue({ title: 'Ohne Anhang und ID' });
 
     const wrapper = await mountComponent('route-issue-id');
     await flushPromises();
