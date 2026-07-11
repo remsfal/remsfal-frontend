@@ -126,11 +126,11 @@ describe('TenantIssueDetails.vue', () => {
     expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('route-fallback-id|1');
   });
 
-  it('uses issue id and falls back to empty attachments when attachments are null', async () => {
+  it('uses issue id and falls back to empty attachments when attachments are undefined', async () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-from-response',
       title: 'Mit ID ohne Attachments',
-      attachments: null,
+      attachments: undefined,
     });
 
     const wrapper = await mountComponent('route-id');
