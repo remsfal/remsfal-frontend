@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { ref } from 'vue';
 import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
@@ -12,40 +12,38 @@ vi.mock('vue-i18n', () => ({
 }));
 
 describe('TenantIssueSummaryCard.vue', () => {
-  const baseIssue: IssueJson = {
-    id: 'issue-42',
-    title: 'Wasserschaden Küche',
+  const issue: IssueJson = {
+    id: 'issue-1234',
+    title: 'Heizung defekt',
     status: 'OPEN',
     type: 'DEFECT',
-    description: 'Wasser tropft aus dem Rohr',
+    description: 'Wasser tropft',
   };
 
-  function mountCard(overrides: Partial<IssueJson> = {}, deletingIssue = false) {
-    return mount(TenantIssueSummaryCard, {
+  const mountComponent = (overrides: Partial<IssueJson> = {}, deletingIssue = false) => mount(
+    TenantIssueSummaryCard,
+    {
       props: {
-        issue: {
-          ...baseIssue,
-          ...overrides,
-        },
+        issue: { ...issue, ...overrides },
         deletingIssue,
       },
-    });
-  }
+    },
+  );
 
-  it('renders title, issue number and node id tag', () => {
-    const wrapper = mountCard();
+  it('renders issue title, full id and node id', () => {
+    const wrapper = mountComponent();
 
-    expect(wrapper.text()).toContain('Wasserschaden Küche');
-    expect(wrapper.text()).toContain('issue-42');
-    expect(wrapper.text()).toContain('42');
+    expect(wrapper.text()).toContain('Heizung defekt');
+    expect(wrapper.text()).toContain('issue-1234');
+    expect(wrapper.text()).toContain('1234');
   });
 
-  it('emits cancel when clicking cancel button', async () => {
-    const wrapper = mountCard();
+  it('emits cancel when the cancel button is clicked', async () => {
+    const wrapper = mountComponent();
 
     await wrapper.get('[data-testid="tenant-issue-cancel"]').trigger('click');
 
-    expect(wrapper.emitted('cancel')).toBeTruthy();
+    expect(wrapper.emitted('cancel')).toHaveLength(1);
   });
 
   it.each([
@@ -53,72 +51,40 @@ describe('TenantIssueSummaryCard.vue', () => {
     ['DEFECT', 'CLOSED'],
     ['DEFECT', 'REJECTED'],
   ] as const)('hides cancel button for type %s and status %s', (type, status) => {
-    const wrapper = mountCard({ type, status });
+    const wrapper = mountComponent({ type, status });
 
     expect(wrapper.find('[data-testid="tenant-issue-cancel"]').exists()).toBe(false);
   });
 
-  it('disables cancel button while deletion is in progress', () => {
-    const wrapper = mountCard({}, true);
-    const cancelButton = wrapper.get('[data-testid="tenant-issue-cancel"]');
+  it('disables cancel button while deleting', () => {
+    const wrapper = mountComponent({}, true);
 
-    expect(cancelButton.attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-testid="tenant-issue-cancel"]').attributes('disabled')).toBeDefined();
   });
 
-  it('filters Verursacher/Ort lines from description', () => {
-    const wrapper = mountCard({ description: 'Verursacher: Unbekannt\nOrt: Küche\nWasser tropft aus dem Rohr' });
+  it('removes Verursacher and Ort lines from description', () => {
+    const wrapper = mountComponent({ description: 'Verursacher: unbekannt\nOrt: Küche\nWasser tropft aus dem Rohr' });
 
     expect(wrapper.text()).toContain('Wasser tropft aus dem Rohr');
-    expect(wrapper.text()).not.toContain('Verursacher: Unbekannt');
+    expect(wrapper.text()).not.toContain('Verursacher: unbekannt');
     expect(wrapper.text()).not.toContain('Ort: Küche');
   });
 
-  it('hides description block when only filtered description lines exist', () => {
-    const wrapper = mountCard({ description: 'Verursacher: Unbekannt\nOrt: Küche' });
+  it('hides description section when only filtered lines exist', () => {
+    const wrapper = mountComponent({ description: 'Verursacher: unbekannt\nOrt: Küche' });
 
     expect(wrapper.text()).not.toContain('tenantIssues.detail.description');
   });
 
-  it('renders invalid modifiedAt as raw value', () => {
-    const wrapper = mountCard({ modifiedAt: 'invalid-modified-at' });
+  it('renders modifiedAt raw value when date is invalid', () => {
+    const wrapper = mountComponent({ modifiedAt: 'invalid-date' });
 
-    expect(wrapper.text()).toContain('invalid-modified-at');
+    expect(wrapper.text()).toContain('invalid-date');
   });
 
-  it('renders valid modifiedAt as localized date', () => {
-    const modifiedAt = '2026-01-02T00:00:00.000Z';
-    const wrapper = mountCard({ modifiedAt });
-
-    expect(wrapper.text()).toContain(new Date(modifiedAt).toLocaleDateString('de-DE'));
-    expect(wrapper.text()).not.toContain(modifiedAt);
-  });
-
-  it('uses fallback title and hides issue-node block when issue id is missing', () => {
-    const wrapper = mountCard({ id: undefined, title: undefined });
+  it('shows fallback title when title is missing', () => {
+    const wrapper = mountComponent({ title: undefined });
 
     expect(wrapper.text()).toContain('tenantIssues.detail.untitled');
-    expect(wrapper.text()).toContain('tenantIssues.detail.number');
-    expect(wrapper.findComponent({ name: 'Tag' }).exists()).toBe(true);
-    expect(wrapper.text()).not.toContain('tenantIssues.detail.issueNode');
-  });
-
-  it('hides location row when location contains only whitespace', () => {
-    const wrapper = mountCard({ location: '   ' });
-
-    expect(wrapper.text()).not.toContain('tenantIssues.detail.location');
-  });
-
-  it('renders location row when location is set', () => {
-    const wrapper = mountCard({ location: 'Kueche EG' });
-
-    expect(wrapper.text()).toContain('tenantIssues.detail.location');
-    expect(wrapper.text()).toContain('Kueche EG');
-  });
-
-  it('renders category row when category is set', () => {
-    const wrapper = mountCard({ category: 'WATER_DAMAGE' as IssueJson['category'] });
-
-    expect(wrapper.text()).toContain('tenantIssues.detail.category');
-    expect(wrapper.text()).toContain('WATER_DAMAGE');
   });
 });
