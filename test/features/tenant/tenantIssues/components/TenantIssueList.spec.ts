@@ -76,7 +76,7 @@ describe('TenantIssueList feature', () => {
     });
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+    const wrapper = mount(TenantIssueList);
 
     await flushPromises();
 
@@ -101,7 +101,7 @@ describe('TenantIssueList feature', () => {
     });
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+    const wrapper = mount(TenantIssueList);
 
     await flushPromises();
 
@@ -134,7 +134,7 @@ describe('TenantIssueList feature', () => {
       });
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+    const wrapper = mount(TenantIssueList);
 
     await flushPromises();
 
@@ -185,7 +185,7 @@ describe('TenantIssueList feature', () => {
     });
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+    const wrapper = mount(TenantIssueList);
 
     await flushPromises();
 
@@ -226,7 +226,7 @@ describe('TenantIssueList feature', () => {
     });
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+    const wrapper = mount(TenantIssueList);
 
     await flushPromises();
 
@@ -267,7 +267,7 @@ describe('TenantIssueList feature', () => {
     });
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+    const wrapper = mount(TenantIssueList);
 
     await flushPromises();
 
@@ -291,7 +291,7 @@ describe('TenantIssueList feature', () => {
     vi.mocked(issueService.getIssues).mockRejectedValue(new Error('request failed'));
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
-    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+    const wrapper = mount(TenantIssueList);
 
     await flushPromises();
 
