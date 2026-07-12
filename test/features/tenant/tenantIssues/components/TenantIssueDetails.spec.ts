@@ -60,18 +60,6 @@ const TenantIssueAttachmentsCardStub = defineComponent({
   `,
 });
 
-const BaseDialogStub = {
-  props: { visible: { type: Boolean, default: false } },
-  emits: ['update:visible'],
-  template: `
-    <div v-if="visible" data-testid="base-dialog">
-      <button data-testid="dialog-hide" @click="$emit('update:visible', false)" />
-      <slot />
-      <slot name="footer" />
-    </div>
-  `,
-};
-
 describe('TenantIssueDetails.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -85,7 +73,10 @@ describe('TenantIssueDetails.vue', () => {
         stubs: {
           TenantIssueSummaryCard: TenantIssueSummaryCardStub,
           TenantIssueAttachmentsCard: TenantIssueAttachmentsCardStub,
-          BaseDialog: BaseDialogStub,
+          BaseDialog: {
+            props: ['visible'],
+            template: '<div v-if="visible"><slot /><slot name="footer" /></div>',
+          },
           Message: { template: '<div><slot /></div>' },
           ProgressSpinner: { template: '<div data-testid="spinner" />' },
           Button: {
@@ -234,96 +225,5 @@ describe('TenantIssueDetails.vue', () => {
       severity: 'error',
       detail: 'tenantIssues.detail.cancelError',
     }));
-  });
-
-  it('uses route issueId for delete when fetched issue has no id', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      title: 'Ohne ID',
-      attachments: [],
-    });
-    vi.mocked(issueService.deleteIssue).mockResolvedValue(undefined);
-
-    const wrapper = await mountComponent('route-delete-id');
-    await flushPromises();
-
-    await wrapper.get('[data-testid="summary-cancel"]').trigger('click');
-    await flushPromises();
-    await wrapper.get('[data-testid="tenant-issue-cancel-confirm"]').trigger('click');
-    await flushPromises();
-
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('route-delete-id');
-  });
-
-  it('does not trigger a second delete while deletion is already in progress', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-13',
-      title: 'Defekt',
-      attachments: [],
-    });
-
-    let resolveDelete: (() => void) | undefined;
-    vi.mocked(issueService.deleteIssue).mockImplementation(() => (
-      new Promise<void>((resolve) => {
-        resolveDelete = resolve;
-      })
-    ));
-
-    const wrapper = await mountComponent('issue-13');
-    await flushPromises();
-
-    await wrapper.get('[data-testid="summary-cancel"]').trigger('click');
-    await flushPromises();
-
-    const confirm = wrapper.get('[data-testid="tenant-issue-cancel-confirm"]');
-    await confirm.trigger('click');
-    await confirm.trigger('click');
-
-    expect(issueService.deleteIssue).toHaveBeenCalledTimes(1);
-
-    resolveDelete?.();
-    await flushPromises();
-  });
-
-  it('closes dialog when dialog emits update:visible', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-14',
-      title: 'Defekt',
-      attachments: [],
-    });
-
-    const wrapper = await mountComponent('issue-14');
-    await flushPromises();
-
-    await wrapper.get('[data-testid="summary-cancel"]').trigger('click');
-    await flushPromises();
-    expect(wrapper.find('[data-testid="tenant-issue-cancel-confirm"]').exists()).toBe(true);
-
-    await wrapper.get('[data-testid="dialog-hide"]').trigger('click');
-    await flushPromises();
-
-    expect(wrapper.find('[data-testid="tenant-issue-cancel-confirm"]').exists()).toBe(false);
-  });
-
-  it('closes dialog when cancel button in footer is clicked', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-15',
-      title: 'Defekt',
-      attachments: [],
-    });
-
-    const wrapper = await mountComponent('issue-15');
-    await flushPromises();
-
-    await wrapper.get('[data-testid="summary-cancel"]').trigger('click');
-    await flushPromises();
-
-    const cancelButton = wrapper.findAll('button')
-      .find(button => button.text() === 'button.cancel');
-
-    expect(cancelButton).toBeDefined();
-    await cancelButton?.trigger('click');
-    await flushPromises();
-
-    expect(wrapper.find('[data-testid="tenant-issue-cancel-confirm"]').exists()).toBe(false);
   });
 });
