@@ -99,4 +99,38 @@ describe('TenantIssueSummaryCard component', () => {
     expect(tags).toHaveLength(4);
     expect(tags[1].props('value')).not.toBe(modifiedAt);
   });
+
+  it('uses full id as node label when id ends with separator', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      id: 'issue-',
+    });
+
+    const tags = wrapper.findAllComponents(Tag);
+
+    expect(tags[0].props('value')).toBe('issue-');
+  });
+
+  it('hides optional fields when values are empty', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      id: undefined,
+      location: '   ',
+      description: undefined,
+      modifiedAt: undefined,
+    });
+
+    expect(wrapper.findAllComponents(Tag)).toHaveLength(2);
+    expect(wrapper.text()).toContain(' —');
+    expect(wrapper.text()).not.toContain('Küche');
+    expect(wrapper.text()).not.toContain('Beschreibung:');
+  });
+
+  it('disables and shows loading state on cancel button while deleting', () => {
+    const wrapper = mountCard(baseIssue, true);
+    const cancelButton = wrapper.get('[data-testid="tenant-issue-cancel"]');
+
+    expect(cancelButton.attributes('disabled')).toBeDefined();
+    expect(cancelButton.classes()).toContain('p-button-loading');
+  });
 });
