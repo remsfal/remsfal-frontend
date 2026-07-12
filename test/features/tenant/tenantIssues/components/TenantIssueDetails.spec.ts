@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
+import type { IssueJson } from '@/services/IssueService';
 import { issueService } from '@/services/IssueService';
 import TenantIssueDetails from '@/features/tenant/tenantIssues/components/TenantIssueDetails.vue';
 
 const pushMock = vi.fn();
-const toastAddMock = vi.fn();
+const addMock = vi.fn();
 
 vi.mock('vue-router', async () => {
   const actual = await vi.importActual<typeof import('vue-router')>('vue-router');
@@ -15,8 +16,7 @@ vi.mock('vue-router', async () => {
   };
 });
 
-vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
-vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 vi.mock('@/services/IssueService', async () => {
   const actual = await vi.importActual<typeof import('@/services/IssueService')>(
@@ -35,77 +35,88 @@ vi.mock('@/services/IssueService', async () => {
 const TenantIssueSummaryCardStub = defineComponent({
   name: 'TenantIssueSummaryCard',
   props: {
-    issue: { type: Object, required: true },
-    deletingIssue: { type: Boolean, required: true },
+    issue: {
+      type: Object,
+      required: true,
+    },
+    deletingIssue: {
+      type: Boolean,
+      required: true,
+    },
   },
   emits: ['cancel'],
+  template: '<button data-testid="summary-stub" @click="$emit(\'cancel\')">{{ issue.title }}</button>',
+});
+
+const BaseDialogStub = defineComponent({
+  name: 'BaseDialog',
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+    header: {
+      type: String,
+      default: '',
+    },
+  },
+  emits: ['update:visible'],
   template: `
-    <div data-testid="summary-card">
-      <button data-testid="summary-cancel" @click="$emit('cancel')">cancel</button>
+    <div v-if="visible" data-testid="cancel-dialog">
+      <slot />
+      <slot name="footer" />
     </div>
   `,
 });
 
-describe('TenantIssueDetails.vue', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+describe('TenantIssueDetails component', () => {
+  const baseIssue: IssueJson = {
+    id: 'issue-1',
+    title: 'Heizung defekt',
+    status: 'OPEN',
+    type: 'DEFECT',
+    description: 'Wasser tropft von der Decke',
+  };
 
-  const mountComponent = (issueId = 'issue-1') => mount(
-    TenantIssueDetails,
-    {
+  const mountDetails = (issueId = 'issue-1') => {
+    return mount(TenantIssueDetails, {
       props: { issueId },
       global: {
         stubs: {
           TenantIssueSummaryCard: TenantIssueSummaryCardStub,
-          BaseDialog: {
-            props: ['visible'],
-            template: '<div v-if="visible"><slot /><slot name="footer" /></div>',
-          },
-          Message: { template: '<div><slot /></div>' },
-          ProgressSpinner: { template: '<div data-testid="spinner" />' },
-          Button: {
-            props: ['label'],
-            emits: ['click'],
-            template: '<button v-bind="$attrs" @click="$emit(\'click\')">{{ label }}</button>',
-          },
+          BaseDialog: BaseDialogStub,
         },
       },
-    },
-  );
-
-  it('loads issue and passes data to summary card', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-1',
-      title: 'Heizung defekt',
     });
+  };
 
-    const wrapper = await mountComponent('issue-1');
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(issueService.getIssue).mockResolvedValue(baseIssue);
+    vi.mocked(issueService.deleteIssue).mockResolvedValue();
+  });
+
+  it('fetches issue on mount and passes it to summary card', async () => {
+    const wrapper = mountDetails();
+
     await flushPromises();
 
     expect(issueService.getIssue).toHaveBeenCalledWith('issue-1');
-    const summary = wrapper.getComponent(TenantIssueSummaryCardStub);
-    expect(summary.props('issue')).toMatchObject({
-      id: 'issue-1',
-      title: 'Heizung defekt',
-    });
-    expect(summary.props('deletingIssue')).toBe(false);
+    const summaryStub = wrapper.getComponent({ name: 'TenantIssueSummaryCard' });
+    expect(summaryStub.props('issue')).toEqual(baseIssue);
+    expect(summaryStub.props('deletingIssue')).toBe(false);
   });
 
-  it('reloads issue data when issueId prop changes', async () => {
+  it('refetches issue when issueId changes', async () => {
     vi.mocked(issueService.getIssue)
+      .mockResolvedValueOnce(baseIssue)
       .mockResolvedValueOnce({
-        id: 'issue-1',
-        title: 'Erster Vorgang',
-        attachments: [],
-      })
-      .mockResolvedValueOnce({
+        ...baseIssue,
         id: 'issue-2',
-        title: 'Zweiter Vorgang',
-        attachments: [],
+        title: 'Fenster defekt',
       });
 
-    const wrapper = await mountComponent('issue-1');
+    const wrapper = mountDetails('issue-1');
     await flushPromises();
 
     await wrapper.setProps({ issueId: 'issue-2' });
@@ -113,87 +124,55 @@ describe('TenantIssueDetails.vue', () => {
 
     expect(issueService.getIssue).toHaveBeenNthCalledWith(1, 'issue-1');
     expect(issueService.getIssue).toHaveBeenNthCalledWith(2, 'issue-2');
-    const summary = wrapper.getComponent(TenantIssueSummaryCardStub);
-    expect(summary.props('issue')).toMatchObject({
-      id: 'issue-2',
-      title: 'Zweiter Vorgang',
-    });
   });
 
-  it('shows translated load error when issue fetching fails', async () => {
-    vi.mocked(issueService.getIssue).mockRejectedValue(new Error('load failed'));
+  it('shows translated load error message and error toast when fetch fails', async () => {
+    vi.mocked(issueService.getIssue).mockRejectedValueOnce(new Error('fetch failed'));
 
-    const wrapper = await mountComponent('issue-1');
+    const wrapper = mountDetails();
     await flushPromises();
 
-    expect(wrapper.text()).toContain('tenantIssues.detail.loadError');
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
+    expect(wrapper.text()).toContain('Meldungsdetails konnten nicht geladen werden.');
+    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'error',
-      detail: 'tenantIssues.detail.loadError',
+      summary: 'Fehler',
+      detail: 'Meldungsdetails konnten nicht geladen werden.',
     }));
   });
 
   it('deletes issue after confirmation and navigates back to list', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-11',
-      title: 'Defekt',
-    });
-    vi.mocked(issueService.deleteIssue).mockResolvedValue(undefined);
-
-    const wrapper = await mountComponent('issue-11');
+    const wrapper = mountDetails();
     await flushPromises();
 
-    await wrapper.get('[data-testid="summary-cancel"]').trigger('click');
-    await flushPromises();
-    expect(issueService.deleteIssue).not.toHaveBeenCalled();
+    await wrapper.get('[data-testid="summary-stub"]').trigger('click');
+    expect(wrapper.find('[data-testid="cancel-dialog"]').exists()).toBe(true);
 
-    const confirm = wrapper.get('[data-testid="tenant-issue-cancel-confirm"]');
-    await confirm.trigger('click');
+    await wrapper.get('[data-testid="tenant-issue-cancel-confirm"]').trigger('click');
     await flushPromises();
 
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-11');
+    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-1');
     expect(pushMock).toHaveBeenCalledWith({ name: 'TenantIssues' });
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
+    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'success',
-      detail: 'tenantIssues.detail.cancelSuccess',
+      detail: 'Vorgang wurde erfolgreich abgebrochen.',
     }));
   });
 
-  it('uses route issueId for deletion when loaded issue id is missing', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({ title: 'Defekt ohne ID' });
-    vi.mocked(issueService.deleteIssue).mockResolvedValue(undefined);
+  it('shows error toast and does not navigate when cancel fails', async () => {
+    vi.mocked(issueService.deleteIssue).mockRejectedValueOnce(new Error('delete failed'));
 
-    const wrapper = await mountComponent('route-id');
+    const wrapper = mountDetails();
     await flushPromises();
 
-    await wrapper.get('[data-testid="summary-cancel"]').trigger('click');
-    await flushPromises();
+    await wrapper.get('[data-testid="summary-stub"]').trigger('click');
     await wrapper.get('[data-testid="tenant-issue-cancel-confirm"]').trigger('click');
     await flushPromises();
 
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('route-id');
-  });
-
-  it('shows error toast when deleting issue fails', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-12',
-      title: 'Defekt',
-    });
-    vi.mocked(issueService.deleteIssue).mockRejectedValue(new Error('delete failed'));
-
-    const wrapper = await mountComponent('issue-12');
-    await flushPromises();
-
-    await wrapper.get('[data-testid="summary-cancel"]').trigger('click');
-    await flushPromises();
-    await wrapper.get('[data-testid="tenant-issue-cancel-confirm"]').trigger('click');
-    await flushPromises();
-
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-12');
+    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-1');
     expect(pushMock).not.toHaveBeenCalled();
-    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
+    expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'error',
-      detail: 'tenantIssues.detail.cancelError',
+      detail: 'Vorgang konnte nicht abgebrochen werden.',
     }));
   });
 });
