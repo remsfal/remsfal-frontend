@@ -41,7 +41,6 @@ const TenantIssueSummaryCardStub = defineComponent({
   emits: ['cancel'],
   template: `
     <div data-testid="summary-card">
-      <span data-testid="summary-title">{{ issue?.title }}</span>
       <button data-testid="summary-cancel" @click="$emit('cancel')">cancel</button>
     </div>
   `,
@@ -85,7 +84,12 @@ describe('TenantIssueDetails.vue', () => {
     await flushPromises();
 
     expect(issueService.getIssue).toHaveBeenCalledWith('issue-1');
-    expect(wrapper.get('[data-testid="summary-title"]').text()).toBe('Heizung defekt');
+    const summary = wrapper.getComponent(TenantIssueSummaryCardStub);
+    expect(summary.props('issue')).toMatchObject({
+      id: 'issue-1',
+      title: 'Heizung defekt',
+    });
+    expect(summary.props('deletingIssue')).toBe(false);
   });
 
   it('reloads issue data when issueId prop changes', async () => {
@@ -109,7 +113,11 @@ describe('TenantIssueDetails.vue', () => {
 
     expect(issueService.getIssue).toHaveBeenNthCalledWith(1, 'issue-1');
     expect(issueService.getIssue).toHaveBeenNthCalledWith(2, 'issue-2');
-    expect(wrapper.get('[data-testid="summary-title"]').text()).toBe('Zweiter Vorgang');
+    const summary = wrapper.getComponent(TenantIssueSummaryCardStub);
+    expect(summary.props('issue')).toMatchObject({
+      id: 'issue-2',
+      title: 'Zweiter Vorgang',
+    });
   });
 
   it('shows translated load error when issue fetching fails', async () => {
