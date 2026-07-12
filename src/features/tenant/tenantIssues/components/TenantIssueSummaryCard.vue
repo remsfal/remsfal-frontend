@@ -24,7 +24,7 @@ const typeLabel = computed(() => getIssueTypeLabel(props.issue.type, t));
 const categoryLabel = computed(() => getIssueCategoryLabel(props.issue.category, t));
 const statusSeverity = computed(() => getIssueStatusSeverity(props.issue.status));
 const typeSeverity = computed(() => getIssueTypeSeverity(props.issue.type));
-const issueNodeId = computed(() => props.issue.id?.split('-').pop() || props.issue.id || '—');
+const issueNodeId = computed(() => props.issue.id?.split('-').pop() || props.issue.id);
 
 const descriptionLabel = computed(() => {
   const description = props.issue.description;
