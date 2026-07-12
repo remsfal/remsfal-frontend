@@ -47,19 +47,6 @@ const TenantIssueSummaryCardStub = defineComponent({
   `,
 });
 
-const TenantIssueAttachmentsCardStub = defineComponent({
-  name: 'TenantIssueAttachmentsCard',
-  props: {
-    issueId: { type: String, required: true },
-    attachments: { type: Array, required: true },
-  },
-  template: `
-    <div data-testid="attachments-card">
-      {{ issueId }}|{{ attachments.length }}
-    </div>
-  `,
-});
-
 describe('TenantIssueDetails.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -72,7 +59,6 @@ describe('TenantIssueDetails.vue', () => {
       global: {
         stubs: {
           TenantIssueSummaryCard: TenantIssueSummaryCardStub,
-          TenantIssueAttachmentsCard: TenantIssueAttachmentsCardStub,
           BaseDialog: {
             props: ['visible'],
             template: '<div v-if="visible"><slot /><slot name="footer" /></div>',
@@ -89,11 +75,10 @@ describe('TenantIssueDetails.vue', () => {
     },
   );
 
-  it('loads issue and passes data to summary and attachments cards', async () => {
+  it('loads issue and passes data to summary card', async () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-1',
       title: 'Heizung defekt',
-      attachments: [{ attachmentId: 'a1', fileName: 'report.pdf' }],
     });
 
     const wrapper = await mountComponent('issue-1');
@@ -101,42 +86,6 @@ describe('TenantIssueDetails.vue', () => {
 
     expect(issueService.getIssue).toHaveBeenCalledWith('issue-1');
     expect(wrapper.get('[data-testid="summary-title"]').text()).toBe('Heizung defekt');
-    expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('issue-1|1');
-  });
-
-  it('falls back to route issueId and empty attachments when issue fields are missing', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({ title: 'Ohne Anhang und ID' });
-
-    const wrapper = await mountComponent('route-issue-id');
-    await flushPromises();
-
-    expect(wrapper.get('[data-testid="summary-title"]').text()).toBe('Ohne Anhang und ID');
-    expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('route-issue-id|0');
-  });
-
-  it('uses route issueId when issue id is missing, but keeps existing attachments', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      title: 'Ohne ID',
-      attachments: [{ attachmentId: 'a1', fileName: 'image.png' }],
-    });
-
-    const wrapper = await mountComponent('route-fallback-id');
-    await flushPromises();
-
-    expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('route-fallback-id|1');
-  });
-
-  it('uses issue id and falls back to empty attachments when attachments are undefined', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      id: 'issue-from-response',
-      title: 'Mit ID ohne Attachments',
-      attachments: undefined,
-    });
-
-    const wrapper = await mountComponent('route-id');
-    await flushPromises();
-
-    expect(wrapper.get('[data-testid="attachments-card"]').text()).toContain('issue-from-response|0');
   });
 
   it('reloads issue data when issueId prop changes', async () => {
@@ -180,7 +129,6 @@ describe('TenantIssueDetails.vue', () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-11',
       title: 'Defekt',
-      attachments: [],
     });
     vi.mocked(issueService.deleteIssue).mockResolvedValue(undefined);
 
@@ -203,11 +151,25 @@ describe('TenantIssueDetails.vue', () => {
     }));
   });
 
+  it('uses route issueId for deletion when loaded issue id is missing', async () => {
+    vi.mocked(issueService.getIssue).mockResolvedValue({ title: 'Defekt ohne ID' });
+    vi.mocked(issueService.deleteIssue).mockResolvedValue(undefined);
+
+    const wrapper = await mountComponent('route-id');
+    await flushPromises();
+
+    await wrapper.get('[data-testid="summary-cancel"]').trigger('click');
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-cancel-confirm"]').trigger('click');
+    await flushPromises();
+
+    expect(issueService.deleteIssue).toHaveBeenCalledWith('route-id');
+  });
+
   it('shows error toast when deleting issue fails', async () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       id: 'issue-12',
       title: 'Defekt',
-      attachments: [],
     });
     vi.mocked(issueService.deleteIssue).mockRejectedValue(new Error('delete failed'));
 
