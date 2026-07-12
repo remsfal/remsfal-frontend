@@ -53,6 +53,19 @@ describe('TenantIssueAttachmentsCard.vue', () => {
     expect(movTile?.text()).toContain('+1');
   });
 
+  it('groups attachments without filename under unknown extension', () => {
+    const wrapper = mountComponent([
+      {
+        attachmentId: 'unknown-ext',
+        contentType: 'application/pdf',
+      },
+    ]);
+
+    const tile = wrapper.get('[data-test="non-image-tile"]');
+    expect(tile.text()).toContain('+1');
+    expect(tile.text()).toContain('?');
+  });
+
   it('builds encoded link URL and prefers attachment issueId over prop issueId', () => {
     const wrapper = mountComponent([
       {
@@ -99,5 +112,15 @@ describe('TenantIssueAttachmentsCard.vue', () => {
 
     expect(wrapper.findAll('img')).toHaveLength(1);
     expect(wrapper.findAll('[data-test="non-image-tile"]')).toHaveLength(1);
+  });
+
+  it('falls back to empty filename and attachment id in download URL and default image alt', () => {
+    const wrapper = mountComponent([
+      { contentType: 'image/jpeg' },
+    ], 'issue-from-prop');
+
+    const image = wrapper.get('img');
+    expect(image.attributes('src')).toBe('/ticketing/v1/issues/issue-from-prop/attachments//');
+    expect(image.attributes('alt')).toBe('issue-attachment');
   });
 });

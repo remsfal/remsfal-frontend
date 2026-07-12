@@ -38,6 +38,35 @@ describe('TenantIssueSummaryCard.vue', () => {
     expect(wrapper.text()).toContain('1234');
   });
 
+  it('falls back to raw issue id when node id is empty after split', () => {
+    const wrapper = mountComponent({ id: 'issue-' });
+
+    expect(wrapper.text()).toContain('issue-');
+  });
+
+  it('hides issue node, type and status sections when values are missing', () => {
+    const wrapper = mountComponent({
+      id: undefined,
+      type: undefined,
+      status: undefined,
+    });
+
+    expect(wrapper.text()).not.toContain('tenantIssues.detail.issueNode');
+    expect(wrapper.text()).not.toContain('tenantIssues.card.type');
+    expect(wrapper.text()).not.toContain('tenantIssues.filter.status');
+  });
+
+  it('renders location and category sections when values are present', () => {
+    const wrapper = mountComponent({
+      location: 'Küche',
+      category: 'UNKNOWN' as NonNullable<IssueJson['category']>,
+    });
+
+    expect(wrapper.text()).toContain('tenantIssues.detail.location');
+    expect(wrapper.text()).toContain('Küche');
+    expect(wrapper.text()).toContain('tenantIssues.detail.category');
+  });
+
   it('emits cancel when the cancel button is clicked', async () => {
     const wrapper = mountComponent();
 

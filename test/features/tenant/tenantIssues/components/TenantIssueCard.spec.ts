@@ -27,6 +27,17 @@ describe('TenantIssueCard component', () => {
     expect(wrapper.text()).not.toContain('3fa85f64-5717-4562-b3fc-2c963f66afa6');
   });
 
+  it('renders node tag even when id is missing', async () => {
+    const wrapper = await mountCard({
+      ...baseIssue,
+      id: undefined,
+    });
+
+    const tags = wrapper.findAllComponents(Tag);
+    expect(tags).toHaveLength(3);
+    expect(tags[0].props('value')).toBeUndefined();
+  });
+
   it('uses expected tag severities for node, status and type', async () => {
     const wrapper = await mountCard(baseIssue);
 
@@ -35,6 +46,39 @@ describe('TenantIssueCard component', () => {
     expect(tags[0].props('severity')).toBe('info');
     expect(tags[1].props('severity')).toBe('warn');
     expect(tags[2].props('severity')).toBe('info');
+  });
+
+  it('hides updated tag when modifiedAt is missing', async () => {
+    const wrapper = await mountCard(baseIssue);
+
+    const tags = wrapper.findAllComponents(Tag);
+    expect(tags).toHaveLength(3);
+    expect(tags.some(tag => String(tag.props('value')).includes('Aktualisiert am:'))).toBe(false);
+  });
+
+  it('renders updated tag with raw modifiedAt for invalid date', async () => {
+    const modifiedAt = 'invalid-date';
+    const wrapper = await mountCard({
+      ...baseIssue,
+      modifiedAt,
+    });
+
+    const tags = wrapper.findAllComponents(Tag);
+    expect(tags).toHaveLength(4);
+    expect(tags[1].props('value')).toBe(`Aktualisiert am: ${modifiedAt}`);
+  });
+
+  it('renders updated tag with localized date for valid modifiedAt', async () => {
+    const modifiedAt = '2026-01-02T00:00:00.000Z';
+    const wrapper = await mountCard({
+      ...baseIssue,
+      modifiedAt,
+    });
+
+    const tags = wrapper.findAllComponents(Tag);
+    expect(tags).toHaveLength(4);
+    expect(String(tags[1].props('value')).startsWith('Aktualisiert am: ')).toBe(true);
+    expect(String(tags[1].props('value'))).not.toContain(modifiedAt);
   });
 
   it.each([
