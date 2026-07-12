@@ -48,6 +48,8 @@ const cancelIssue = async () => {
     return;
   }
 
+  deletingIssue.value = true;
+
   try {
     await issueService.deleteIssue(issue.value?.id || props.issueId);
     toast.add({
