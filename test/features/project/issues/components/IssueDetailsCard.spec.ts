@@ -430,7 +430,7 @@ describe('IssueDetailsCard.vue', () => {
     await categoryAutoComplete.vm.$emit('complete', { query: '' });
     await nextTick();
 
-    const labels = categoryAutoComplete.props('suggestions').map((option: { label: string }) => option.label);
+    const labels = categoryAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
     expect(labels).toContain(expectedLabel);
     expect(labels).toContain('Sonstiges');
   });
@@ -441,7 +441,7 @@ describe('IssueDetailsCard.vue', () => {
     await categoryAutoComplete.vm.$emit('complete', { query: 'sonst' });
     await nextTick();
 
-    const labels = categoryAutoComplete.props('suggestions').map((option: { label: string }) => option.label);
+    const labels = categoryAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
     expect(labels).toEqual(['Sonstiges']);
   });
 
@@ -451,7 +451,7 @@ describe('IssueDetailsCard.vue', () => {
     await priorityAutoComplete.vm.$emit('complete', { query: 'hoch' });
     await nextTick();
 
-    const labels = priorityAutoComplete.props('suggestions').map((option: { label: string }) => option.label);
+    const labels = priorityAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
     expect(labels).toEqual(['Hoch']);
   });
 
