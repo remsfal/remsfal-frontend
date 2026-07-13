@@ -43,6 +43,12 @@ describe('TenantIssueSummaryCard component', () => {
     expect(wrapper.emitted('cancel')).toHaveLength(1);
   });
 
+  it('renders cancel button label for cancellable issues', () => {
+    const wrapper = mountCard();
+
+    expect(wrapper.get('[data-testid="tenant-issue-cancel"]').text()).toContain('Vorgang schließen');
+  });
+
   it.each([
     [{ ...baseIssue, status: 'CLOSED' as const }],
     [{ ...baseIssue, status: 'REJECTED' as const }],
@@ -124,6 +130,17 @@ describe('TenantIssueSummaryCard component', () => {
     expect(wrapper.text()).toContain(' —');
     expect(wrapper.text()).not.toContain('Küche');
     expect(wrapper.text()).not.toContain('Beschreibung:');
+  });
+
+  it('renders fallback title and issue number placeholder when values are missing', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      title: undefined,
+      id: undefined,
+    });
+
+    expect(wrapper.text()).toContain('Unbenannte Meldung');
+    expect(wrapper.text()).toContain('Ticketnummer: —');
   });
 
   it('disables and shows loading state on cancel button while deleting', () => {
