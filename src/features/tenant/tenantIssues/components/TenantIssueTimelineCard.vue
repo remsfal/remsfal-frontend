@@ -3,11 +3,13 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
+import Image from 'primevue/image';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/common/BaseCard.vue';
+import { issueService, type IssueAttachmentJson } from '@/services/IssueService';
 import { tenantTimelineService, type TenantTimelineJson } from '@/services/TenantTimelineService';
 
 const props = defineProps<{ issueId: string; }>();
@@ -18,6 +20,7 @@ const toast = useToast();
 const loading = ref(false);
 const error = ref(false);
 const timelines = ref<TenantTimelineJson[]>([]);
+const issueAttachmentsById = ref(new Map<string, IssueAttachmentJson>());
 const messageText = ref('');
 const selectedFiles = ref<File[]>([]);
 const sendingMessage = ref(false);
@@ -25,6 +28,49 @@ const canSendMessage = computed(
   () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sendingMessage.value,
 );
 const selectedFileNames = computed(() => selectedFiles.value.map((file) => file.name));
+
+interface TimelineAttachmentView {
+  attachmentId: string;
+  contentType?: string;
+  downloadUrl: string;
+  fileName?: string;
+}
+
+const imageFileExtensions = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
+
+const isImageAttachment = (attachment: TimelineAttachmentView) => {
+  if (attachment.contentType?.startsWith('image/')) {
+    return true;
+  }
+
+  const fileName = attachment.fileName?.trim().toLowerCase();
+  if (!fileName || !fileName.includes('.')) {
+    return false;
+  }
+
+  const extension = fileName.split('.').pop();
+  return extension ? imageFileExtensions.has(extension) : false;
+};
+
+const getTimelineAttachments = (timeline: TenantTimelineJson): TimelineAttachmentView[] => {
+  return (timeline.attachmentId ?? []).map((attachmentId) => {
+    const attachment = issueAttachmentsById.value.get(attachmentId);
+    return {
+      attachmentId,
+      contentType: attachment?.contentType,
+      downloadUrl: getTimelineAttachmentDownloadUrl(props.issueId, attachmentId, attachment?.fileName),
+      fileName: attachment?.fileName,
+    };
+  });
+};
+
+const getTimelineImageAttachments = (timeline: TenantTimelineJson) => {
+  return getTimelineAttachments(timeline).filter(isImageAttachment);
+};
+
+const openAttachmentDownload = (downloadUrl: string) => {
+  window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+};
 
 const formatTimelineDate = (value?: string) => {
   if (!value) { return null; }
@@ -37,11 +83,19 @@ const fetchTimelines = async () => {
   loading.value = true;
   error.value = false;
   try {
-    const response = await tenantTimelineService.getTimelineEntries(props.issueId);
-    timelines.value = response.timelines;
+    const [timelineResponse, issueResponse] = await Promise.all([
+      tenantTimelineService.getTimelineEntries(props.issueId),
+      issueService.getIssue(props.issueId),
+    ]);
+    timelines.value = timelineResponse.timelines;
+    issueAttachmentsById.value = new Map(
+      (issueResponse.attachments ?? [])
+        .flatMap((attachment) => (attachment.attachmentId ? [[attachment.attachmentId, attachment] as const] : [])),
+    );
   } catch (fetchError) {
     console.error('Error fetching issue timeline:', fetchError);
     timelines.value = [];
+    issueAttachmentsById.value = new Map();
     error.value = true;
   } finally {
     loading.value = false;
@@ -168,20 +222,38 @@ watch(
                   t('tenantIssues.timeline.attachmentsCount')
                 }}
               </p>
+              <div
+                v-if="getTimelineImageAttachments(slotProps.item).length > 0"
+                class="mb-3 flex flex-wrap gap-2"
+              >
+                <div
+                  v-for="attachment in getTimelineImageAttachments(slotProps.item)"
+                  :key="`preview-${attachment.attachmentId}`"
+                  class="relative"
+                >
+                  <Image
+                    :src="attachment.downloadUrl"
+                    :alt="attachment.fileName ?? 'issue-attachment'"
+                    preview
+                    imageClass="h-24 w-24 object-cover rounded"
+                  />
+                  <Button
+                    icon="pi pi-download"
+                    size="small"
+                    severity="contrast"
+                    rounded
+                    class="!absolute bottom-1 right-1"
+                    :aria-label="t('tenantIssues.timeline.downloadAttachment')"
+                    @click="openAttachmentDownload(attachment.downloadUrl)"
+                  />
+                </div>
+              </div>
               <ul v-if="slotProps.item.attachmentId" class="space-y-2 text-left">
                 <li
-                  v-for="(attachmentId, attachmentIndex) in slotProps.item.attachmentId"
-                  :key="attachmentId"
+                  v-for="(attachment) in getTimelineAttachments(slotProps.item)"
+                  :key="attachment.attachmentId"
                   data-testid="tenant-issue-timeline-attachment-url"
                 >
-                  <a
-                    class="break-all text-primary underline"
-                    :href="getTimelineAttachmentDownloadUrl(props.issueId, attachmentId)"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {{ getTimelineAttachmentDisplayName(attachmentIndex) }}
-                  </a>
                 </li>
               </ul>
             </div>
