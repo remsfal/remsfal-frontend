@@ -134,15 +134,15 @@ watch(
 
           <!-- Issues Table -->
           <div v-if="props.assigneeId">
-            <IssueTable :issues="myIssues" @rowSelect="onIssueSelect" />
+            <IssueTable :issues="myIssues" :projectId="props.projectId" @rowSelect="onIssueSelect" />
           </div>
 
           <div v-else-if="props.status">
-            <IssueTable :issues="issuesByStatusOpen" @rowSelect="onIssueSelect" />
+            <IssueTable :issues="issuesByStatusOpen" :projectId="props.projectId" @rowSelect="onIssueSelect" />
           </div>
 
           <div v-else>
-            <IssueTable :issues="issues" @rowSelect="onIssueSelect" />
+            <IssueTable :issues="issues" :projectId="props.projectId" @rowSelect="onIssueSelect" />
           </div>
 
           <!-- Create Button -->

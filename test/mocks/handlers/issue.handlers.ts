@@ -73,8 +73,28 @@ export const issueHandlers = [
     });
   }),
 
-  // POST create issue (ticketing microservice)
+  // POST create issue (ticketing microservice) — supports plain JSON and multipart/form-data
+  // (multipart is used by createTenancyIssueWithAttachment, which appends the issue as a JSON
+  // Blob part named 'issue' plus one or more 'attachment' file parts).
+  // Note: the multipart branch only counts 'attachment' parts by header, it does not decode the
+  // 'issue' JSON payload — jsdom's XHR/FormData/Blob stack does not faithfully transmit part
+  // bodies in this test environment (headers arrive, content does not), and undici's strict
+  // request.formData() parser rejects the anonymous (filename-less) Blob part the real service
+  // code sends. Counting parts via the raw header text sidesteps both limitations.
   http.post(`${TICKETING_BASE}/issues`, async ({ request }) => {
+    const contentType = request.headers.get('content-type') || '';
+
+    if (contentType.includes('multipart/form-data')) {
+      const raw = await request.text();
+      const attachmentCount = (raw.match(/name="attachment"/g) || []).length;
+      return HttpResponse.json({
+        id: 'new-issue-id',
+        attachmentCount,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
     const body = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json({
       id: 'new-issue-id',
@@ -99,7 +119,23 @@ export const issueHandlers = [
     if (params.issueId === 'cannot-delete') {
       return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
     }
-    return HttpResponse.json({}, { status: 204 });
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // DELETE an attachment (ticketing microservice)
+  // Registered before the generic relation routes below since both share the
+  // /issues/:issueId/:x/:y URL shape and MSW resolves overlapping patterns by
+  // registration order (first match wins).
+  http.delete(`${TICKETING_BASE}/issues/:issueId/attachments/:attachmentId`, ({ params }) => {
+    if (params.attachmentId === 'cannot-delete') {
+      return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+    }
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // POST upload attachments (ticketing microservice) — called via raw fetch, not apiClient
+  http.post(`${TICKETING_BASE}/issues/:issueId/attachments`, () => {
+    return new HttpResponse(null, { status: 204 });
   }),
 
   // POST create an issue relation (ticketing microservice)

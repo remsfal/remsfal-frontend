@@ -47,8 +47,9 @@ describe('CommercialService with MSW', () => {
   });
 
   test('deleteCommercial succeeds', async () => {
-    await commercialService.deleteCommercial(projectId, commercialId);
-    // If no error is thrown, the delete was successful
+    await expect(
+      commercialService.deleteCommercial(projectId, commercialId),
+    ).resolves.toBeUndefined();
   });
 
   test('getCommercial handles errors', async () => {
