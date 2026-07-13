@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity, getIssuePriorityLabel,
-  getIssueStatusSeverity, getIssueTypeLabel, getUnitTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
-import i18n from '@/i18n/i18n';
+  getIssueStatusSeverity, getIssueTypeLabel, getUnitTypeLabel } from '@/features/tenant/tenantIssues/issueLabels.ts';
+import i18n from '@/i18n/i18n.ts';
 
 type Translator = Parameters<typeof getIssueStatusLabel>[1];
 
