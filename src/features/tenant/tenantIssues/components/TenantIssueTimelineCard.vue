@@ -21,7 +21,10 @@ const timelines = ref<TenantTimelineJson[]>([]);
 const messageText = ref('');
 const selectedFiles = ref<File[]>([]);
 const sendingMessage = ref(false);
-const canSendMessage = computed(() => messageText.value.trim().length > 0 && !sendingMessage.value);
+const canSendMessage = computed(
+  () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sendingMessage.value,
+);
+const selectedFileNames = computed(() => selectedFiles.value.map((file) => file.name));
 
 const formatTimelineDate = (value?: string) => {
   if (!value) { return null; }
@@ -78,16 +81,15 @@ const onFilesSelected = (event: Event) => {
 
 const submitMessage = async () => {
   const trimmedMessage = messageText.value.trim();
-  if (!trimmedMessage || sendingMessage.value) {
-    return;
-  }
+  const hasAttachments = selectedFiles.value.length > 0;
+  if ((!trimmedMessage && !hasAttachments) || sendingMessage.value) { return; }
 
   sendingMessage.value = true;
 
   try {
     await tenantTimelineService.createTimelineEntryWithAttachments(props.issueId, {
       title: t('tenantIssues.timeline.tenantMessageTitle'),
-      message: trimmedMessage,
+      ...(trimmedMessage ? { message: trimmedMessage } : {}),
     }, selectedFiles.value);
     messageText.value = '';
     selectedFiles.value = [];
@@ -163,12 +165,10 @@ watch(
             <div v-if="getTimelineAttachmentCount(slotProps.item) > 0" class="mt-3 rounded bg-gray-50 p-2 text-sm">
               <p class="mb-1 text-left text-gray-700">
                 {{
-                  t('tenantIssues.timeline.attachmentsCount', {
-                    count: getTimelineAttachmentCount(slotProps.item),
-                  })
+                  t('tenantIssues.timeline.attachmentsCount')
                 }}
               </p>
-              <ul v-if="slotProps.item.attachmentId" class="space-y-1 text-left">
+              <ul v-if="slotProps.item.attachmentId" class="space-y-2 text-left">
                 <li
                   v-for="(attachmentId, attachmentIndex) in slotProps.item.attachmentId"
                   :key="attachmentId"
@@ -198,9 +198,6 @@ watch(
             :placeholder="t('tenantIssues.timeline.messagePlaceholder')"
         />
         <div class="flex flex-col gap-1">
-          <label for="tenant-timeline-attachments" class="text-sm text-gray-600">
-            {{ t('tenantIssues.timeline.attachmentsLabel') }}
-          </label>
           <input
               id="tenant-timeline-attachments"
               data-testid="tenant-issue-timeline-attachments-input"
@@ -210,8 +207,13 @@ watch(
               @change="onFilesSelected"
           >
           <p v-if="selectedFiles.length > 0" class="text-xs text-gray-500">
-            {{ t('tenantIssues.timeline.attachmentName') }}
+            {{ t('tenantIssues.timeline.attachmentsSelected', { count: selectedFiles.length }) }}
           </p>
+          <ul v-if="selectedFileNames.length > 0" class="space-y-1 text-xs text-gray-600">
+            <li v-for="(fileName, fileIndex) in selectedFileNames" :key="`${fileName}-${fileIndex}`" class="truncate">
+              {{ fileName }}
+            </li>
+          </ul>
         </div>
         <div class="flex justify-end">
           <Button
