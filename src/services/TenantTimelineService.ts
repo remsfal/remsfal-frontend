@@ -23,7 +23,7 @@ class TenantTimelineService {
   async getTimelineEntries(issueId: string): Promise<TenantTimelineListJson> {
     // @ts-expect-error: Endpoint not yet in generated schema
     const result = await apiClient.get(
-      '/ticketing/v1/tenant-relations/issues/{issueId}/timelines',
+      '/ticketing/v1/tenant-relations/issues/{issueId}/timeline',
       { pathParams: { issueId } },
     ) as Partial<TenantTimelineListJson>;
 
@@ -46,7 +46,7 @@ class TenantTimelineService {
     });
 
     // @ts-expect-error: Endpoint not yet in generated schema
-    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timelines', formData, {
+    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timeline', formData, {
       pathParams: { issueId },
     });
   }
