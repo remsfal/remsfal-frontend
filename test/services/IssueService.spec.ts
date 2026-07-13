@@ -15,6 +15,11 @@ describe('IssueService with MSW (http)', () => {
     expect(issueList.issues?.[0]).toHaveProperty('title');
   });
 
+  test('getIssues works without a projectId filter', async () => {
+    const issueList = await issueService.getIssues();
+    expect(issueList.issues).toBeDefined();
+  });
+
   test('getIssue returns a single issue', async () => {
     const issue = await issueService.getIssue(issueId);
     expect(issue.id).toBe(issueId);
@@ -109,11 +114,103 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('deleteIssueRelation resolves successfully', async () => {
-    await issueService.deleteIssueRelation(issueId, 'related-to', 'related-issue');
+    await expect(
+      issueService.deleteIssueRelation(issueId, 'related-to', 'related-issue'),
+    ).resolves.toBeDefined();
   });
 
   test('setParentIssue returns the updated issue', async () => {
     const updatedIssue = await issueService.setParentIssue(issueId, 'parent-issue');
     expect(updatedIssue.id).toBe(issueId);
+  });
+
+  test('getIssues sends all optional parameters when provided', async () => {
+    let capturedParams: Record<string, string> = {};
+    server.use(
+      http.get('/ticketing/v1/issues', ({ request }) => {
+        const url = new URL(request.url);
+        capturedParams = Object.fromEntries(url.searchParams.entries());
+        return HttpResponse.json({
+          issues: [], first: 0, size: 0 
+        });
+      }),
+    );
+
+    await issueService.getIssues(
+      projectId,
+      true,
+      'OPEN' as IssueStatus,
+      'assignee-1',
+      'agreement-1',
+      'unit-1',
+      'APARTMENT',
+      50,
+      10,
+    );
+
+    expect(capturedParams).toMatchObject({
+      projectId,
+      preferTenancyIssues: 'true',
+      status: 'OPEN',
+      assigneeId: 'assignee-1',
+      agreementId: 'agreement-1',
+      rentalUnitId: 'unit-1',
+      rentalUnitType: 'APARTMENT',
+      limit: '50',
+      offset: '10',
+    });
+  });
+
+  test('createTenancyIssueWithAttachment uploads the issue with attached files', async () => {
+    const newIssue: Partial<IssueJson> = {
+      title: 'Issue with attachment',
+      description: 'Has a file',
+      status: 'OPEN' as IssueStatus,
+    };
+    const file = new File(['file content'], 'photo.png', { type: 'image/png' });
+
+    const createdIssue = await issueService.createTenancyIssueWithAttachment(newIssue, [file]);
+
+    expect(createdIssue.id).toBeDefined();
+    expect((createdIssue as unknown as { attachmentCount: number }).attachmentCount).toBe(1);
+  });
+
+  test('deleteIssue resolves successfully', async () => {
+    await expect(issueService.deleteIssue(issueId)).resolves.toBeDefined();
+  });
+
+  test('deleteIssue rejects when deletion fails', async () => {
+    await expect(issueService.deleteIssue('cannot-delete')).rejects.toThrow();
+  });
+
+  test('deleteAttachment resolves successfully', async () => {
+    await expect(
+      issueService.deleteAttachment(issueId, 'attachment-1'),
+    ).resolves.toBeDefined();
+  });
+
+  test('deleteAttachment rejects when deletion fails', async () => {
+    await expect(
+      issueService.deleteAttachment(issueId, 'cannot-delete'),
+    ).rejects.toThrow();
+  });
+
+  test('uploadAttachments resolves successfully', async () => {
+    const file = new File(['file content'], 'photo.png', { type: 'image/png' });
+
+    await expect(issueService.uploadAttachments(issueId, [file])).resolves.toBeUndefined();
+  });
+
+  test('uploadAttachments throws when the upload fails', async () => {
+    server.use(
+      http.post('/ticketing/v1/issues/:issueId/attachments', () => {
+        return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
+      }),
+    );
+    const file = new File(['file content'], 'photo.png', { type: 'image/png' });
+
+    await expect(issueService.uploadAttachments(issueId, [file])).rejects.toThrow(
+      'Failed to upload attachments: 500',
+    );
   });
 });

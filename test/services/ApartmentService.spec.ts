@@ -140,8 +140,9 @@ describe('ApartmentService', () => {
 
   describe('deleteApartment', () => {
     it('should delete an apartment successfully', async () => {
-      await apartmentService.deleteApartment('project-1', 'apartment-1');
-      // If no error is thrown, the delete was successful
+      await expect(
+        apartmentService.deleteApartment('project-1', 'apartment-1'),
+      ).resolves.toBeUndefined();
     });
 
     it('should throw error on deletion failure', async () => {

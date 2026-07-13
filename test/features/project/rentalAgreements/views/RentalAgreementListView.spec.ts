@@ -50,7 +50,6 @@ describe('RentalAgreementView.vue', () => {
 
   beforeEach(async () => {
     vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockResolvedValue(mockRentalAgreements);
-    vi.spyOn(rentalAgreementService, 'extractTenants').mockReturnValue(mockTenants);
 
     wrapper = mount(RentalAgreementView, {
       props: {projectId: 'proj-1',},

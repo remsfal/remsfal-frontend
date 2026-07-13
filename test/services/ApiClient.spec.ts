@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
+import type { AxiosError } from 'axios';
 import { server } from '../mocks/server';
-import { apiClient, type PathsForMethod, type RequestOptions } from '@/services/ApiClient';
+import { apiClient, requestErrorHandler, replacePlaceholders } from '@/services/ApiClient';
+import type { PathsForMethod, RequestOptions } from '@/services/ApiClient';
 import { authService } from '@/services/AuthService';
 import { setActivePinia, createPinia } from 'pinia';
 import { useEventBus } from '@/stores/EventStore';
@@ -306,6 +308,166 @@ describe('ApiClient', () => {
       )) as { id: string };
       // MSW decodes the param, so we get the original string back
       expect(result.id).toBe('test with spaces');
+    });
+
+    it('should throw when a path template mixes styles and leaves an unreplaced placeholder', async () => {
+      // The default placeholder style is 'curly'; a template that also contains a ':colon'
+      // segment is left untouched by the curly-only replacement and trips the leftover-check.
+      await expect(
+        apiClient.get(
+          '/api/v1/test/:legacy/{id}' as unknown as PathsForMethod<'get'>,
+          {pathParams: { id: '1' },},
+        ),
+      ).rejects.toThrow('Not all path parameters were replaced');
+    });
+  });
+
+  describe('Response body validation', () => {
+    it('should emit an error toast when a 200 response has no body', async () => {
+      server.use(
+        http.get('/api/v1/empty-body', () => {
+          // A literal JSON "null" body — axios parses it to response.data === null,
+          // unlike a truly empty body, which axios normalizes to '' (a valid falsy value).
+          return HttpResponse.json(null, { status: 200 });
+        }),
+      );
+
+      setActivePinia(createPinia());
+      const bus = useEventBus();
+      const toastHandler = vi.fn();
+      bus.on('toast:translate', toastHandler);
+
+      // Intentionally-fake test path.
+      await apiClient.get('/api/v1/empty-body' as unknown as PathsForMethod<'get'>);
+
+      expect(toastHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ severity: 'error', detail: 'error.apiResponse' }),
+      );
+    });
+
+    it('should not validate the body for non-2xx responses treated as success', async () => {
+      // responseHandler only runs its body-shape checks for 2xx responses. A custom
+      // validateStatus lets a 404 be treated as fulfilled (instead of routing through the
+      // response error interceptor), so we can reach responseHandler with an out-of-range status.
+      server.use(
+        http.get('/api/v1/not-found-but-ok', () => {
+          return HttpResponse.json({ message: 'Not Found' }, { status: 404 });
+        }),
+      );
+
+      setActivePinia(createPinia());
+      const bus = useEventBus();
+      const toastHandler = vi.fn();
+      bus.on('toast:translate', toastHandler);
+
+      const result = await apiClient.get(
+        '/api/v1/not-found-but-ok' as unknown as PathsForMethod<'get'>,
+        { config: { validateStatus: () => true } } as unknown as RequestOptions<PathsForMethod<'get'>, 'get'>,
+      );
+
+      expect(result).toEqual({ message: 'Not Found' });
+      expect(toastHandler).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Concurrent 401 handling', () => {
+    beforeEach(() => {
+      setActivePinia(createPinia());
+      vi.spyOn(authService, 'refreshTokens');
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should queue a second concurrent request while a refresh is in flight', async () => {
+      let refreshCallCount = 0;
+      server.use(
+        http.get('/api/v1/concurrent-test', () => {
+          return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }),
+      );
+
+      vi.mocked(authService.refreshTokens).mockImplementation(async () => {
+        refreshCallCount += 1;
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        server.use(
+          http.get('/api/v1/concurrent-test', () => {
+            return HttpResponse.json({ message: 'success after refresh' });
+          }),
+        );
+        return true;
+      });
+
+      // Intentionally-fake test path.
+      const [first, second] = await Promise.all([
+        apiClient.get('/api/v1/concurrent-test' as unknown as PathsForMethod<'get'>),
+        apiClient.get('/api/v1/concurrent-test' as unknown as PathsForMethod<'get'>),
+      ]);
+
+      expect(refreshCallCount).toBe(1);
+      expect(first).toEqual({ message: 'success after refresh' });
+      expect(second).toEqual({ message: 'success after refresh' });
+    });
+
+    it('should reject a queued concurrent request when the in-flight refresh fails', async () => {
+      server.use(
+        http.get('/api/v1/concurrent-fail-test', () => {
+          return HttpResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }),
+      );
+
+      vi.mocked(authService.refreshTokens).mockImplementation(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        return false;
+      });
+
+      // Intentionally-fake test path.
+      const results = await Promise.allSettled([
+        apiClient.get('/api/v1/concurrent-fail-test' as unknown as PathsForMethod<'get'>),
+        apiClient.get('/api/v1/concurrent-fail-test' as unknown as PathsForMethod<'get'>),
+      ]);
+
+      expect(results[0].status).toBe('rejected');
+      expect(results[1].status).toBe('rejected');
+      expect(authService.refreshTokens).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('replacePlaceholders (internal helper)', () => {
+    // Exercised directly rather than through apiClient — requestHandler always calls this
+    // helper with explicit pathParams/style arguments, so its default-parameter branches and
+    // the 'colon'/'both' placeholder styles are otherwise unreachable through the real
+    // interceptor chain.
+    it('throws a missing-parameter error when called with only a template (default pathParams/style)', () => {
+      expect(() => replacePlaceholders('/api/v1/test/{id}')).toThrow('Missing path parameter: "id"');
+    });
+
+    it('replaces colon-style placeholders', () => {
+      expect(replacePlaceholders('/api/v1/test/:id', { id: '42' }, 'colon')).toBe('/api/v1/test/42');
+    });
+
+    it('replaces a colon-style placeholder when using the "both" style', () => {
+      expect(replacePlaceholders('/api/v1/test/:id/{name}', { id: '42', name: 'x' }, 'both'))
+        .toBe('/api/v1/test/42/x');
+    });
+  });
+
+  describe('requestErrorHandler', () => {
+    it('logs the error, emits an error toast, and rejects with the original error', async () => {
+      setActivePinia(createPinia());
+      const bus = useEventBus();
+      const toastHandler = vi.fn();
+      bus.on('toast:translate', toastHandler);
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const error = new Error('boom') as AxiosError;
+
+      await expect(requestErrorHandler(error)).rejects.toBe(error);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(toastHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ severity: 'error', detail: 'error.apiRequest' }),
+      );
     });
   });
 });
