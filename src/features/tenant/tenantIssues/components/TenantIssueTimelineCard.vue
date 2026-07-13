@@ -10,9 +10,7 @@ import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { tenantTimelineService, type TenantTimelineJson } from '@/services/TenantTimelineService';
 
-const props = defineProps<{
-  issueId: string;
-}>();
+const props = defineProps<{ issueId: string; }>();
 
 const { t, locale } = useI18n();
 const toast = useToast();
@@ -26,22 +24,15 @@ const sendingMessage = ref(false);
 const canSendMessage = computed(() => messageText.value.trim().length > 0 && !sendingMessage.value);
 
 const formatTimelineDate = (value?: string) => {
-  if (!value) {
-    return null;
-  }
-
+  if (!value) { return null; }
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
+  if (Number.isNaN(date.getTime())) { return value; }
   return date.toLocaleString(locale.value);
 };
 
 const fetchTimelines = async () => {
   loading.value = true;
   error.value = false;
-
   try {
     const response = await tenantTimelineService.getTimelineEntries(props.issueId);
     timelines.value = response.timelines;
@@ -56,15 +47,15 @@ const fetchTimelines = async () => {
 
 const getTimelineAttachmentCount = (timeline: TenantTimelineJson) => timeline.attachmentId?.length ?? 0;
 
-const getTimelineAttachmentDownloadUrl = (
-  issueId: string,
-  attachmentId: string,
-  fileName?: string,
-) => {
+const getTimelineAttachmentDownloadUrl = ( issueId: string, attachmentId: string, fileName?: string, ) => {
   const encodedIssueId = encodeURIComponent(issueId);
   const encodedAttachmentId = encodeURIComponent(attachmentId);
   const encodedFileName = encodeURIComponent(fileName || attachmentId);
   return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+};
+
+const getTimelineAttachmentDisplayName = ( attachmentIndex: number, ) => {
+  return t('tenantIssues.timeline.attachmentName', { index: attachmentIndex + 1, });
 };
 
 const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
@@ -177,9 +168,9 @@ watch(
                   })
                 }}
               </p>
-              <ul v-if="slotProps.item.attachmentId" class="space-y-1">
+              <ul v-if="slotProps.item.attachmentId" class="space-y-1 text-left">
                 <li
-                  v-for="attachmentId in slotProps.item.attachmentId"
+                  v-for="(attachmentId, attachmentIndex) in slotProps.item.attachmentId"
                   :key="attachmentId"
                   data-testid="tenant-issue-timeline-attachment-url"
                 >
@@ -189,7 +180,7 @@ watch(
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {{ getTimelineAttachmentDownloadUrl(props.issueId, attachmentId) }}
+                    {{ getTimelineAttachmentDisplayName(attachmentIndex) }}
                   </a>
                 </li>
               </ul>
@@ -219,7 +210,7 @@ watch(
               @change="onFilesSelected"
           >
           <p v-if="selectedFiles.length > 0" class="text-xs text-gray-500">
-            {{ t('tenantIssues.timeline.attachmentsSelected', { count: selectedFiles.length }) }}
+            {{ t('tenantIssues.timeline.attachmentName') }}
           </p>
         </div>
         <div class="flex justify-end">
