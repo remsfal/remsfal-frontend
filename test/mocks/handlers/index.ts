@@ -1,3 +1,4 @@
+import { authHandlers } from './auth.handlers';
 import { userHandlers } from './user.handlers';
 import { organizationHandlers } from './organization.handlers';
 import { contractorHandlers } from './contractor.handlers';
@@ -16,8 +17,10 @@ import { taskHandlers } from './task.handlers';
 import { issueHandlers } from './issue.handlers';
 import { inboxHandlers } from './inbox.handlers';
 import { quotationRequestHandlers } from './quotation-request.handlers';
+import { tenantHandlers } from './tenant.handlers';
 
 export const handlers = [
+  ...authHandlers,
   ...userHandlers,
   ...organizationHandlers,
   ...contractorHandlers,
@@ -36,4 +39,5 @@ export const handlers = [
   ...issueHandlers,
   ...inboxHandlers,
   ...quotationRequestHandlers,
+  ...tenantHandlers,
 ];

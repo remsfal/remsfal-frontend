@@ -55,20 +55,22 @@ describe('UnitsTableComponent - loadDropdownOptions', () => {
 
     expect(propertyService.getPropertyTree).toHaveBeenCalledWith('mock-project-id');
 
+    const expectedRentalObjects = [
+      { label: 'Property', value: 'Property' },
+      { label: 'Building', value: 'Building' },
+    ];
     const expectedUnitTypes = [
       { label: 'Unit A', value: 'Unit A' },
       { label: 'Unit B', value: 'Unit B' },
     ];
 
     // Enter cell-edit mode on the row's "type" and "title" columns to render their Select
-    // editors. Both columns resolve their editor options via
-    // `field === 'rentalObject' ? rentalObjects : unitTypes` in UnitsTableComponent.vue -
-    // since neither column's field is actually named 'rentalObject', both editors always
-    // receive `unitTypes`. This reflects the component's current (untouched) behavior.
+    // editors. The "type" column's editor should offer rentalObjects (EntityType values),
+    // the "title" column's editor should offer unitTypes (titles from the property tree).
     const cells = wrapper.findAll('tbody tr')[0].findAll('td');
 
     await cells[0].trigger('click');
-    expect(cells[0].findComponent(Select).props('options')).toEqual(expectedUnitTypes);
+    expect(cells[0].findComponent(Select).props('options')).toEqual(expectedRentalObjects);
 
     await cells[1].trigger('click');
     expect(cells[1].findComponent(Select).props('options')).toEqual(expectedUnitTypes);

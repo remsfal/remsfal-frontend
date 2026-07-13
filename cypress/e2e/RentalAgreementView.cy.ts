@@ -318,13 +318,41 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should display confirmation dialog when deleting tenant', () => {
-    cy.visit(`/projects/${projectId}/agreements`);
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [
+          {
+            id: 'tenant-1',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john.doe@example.com',
+          },
+        ],
+        apartmentRents: [
+          {
+            unitId: 'apt-101',
+            basicRent: 1200.0,
+          },
+        ],
+      },
+    }).as('getRentalAgreementDetails');
 
-    cy.wait('@getRentalAgreements');
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
 
-    // Note: This test assumes there's a delete button in the UI
-    // If the delete functionality is not implemented yet, this test will fail
-    // For now, we just check that the confirmation dialog structure exists in the component
+    cy.wait('@getRentalAgreementDetails');
+
+    // Dialog is hidden until the delete button is clicked
+    cy.get('[role="dialog"]').should('not.exist');
+
+    // Click the delete button to trigger the confirmation dialog
+    cy.contains('button', /löschen|delete/i).click();
+
+    // Confirmation dialog should now be visible with the agreement id
+    cy.get('[role="dialog"]').should('be.visible').and('contain.text', 'agreement-1');
   });
 
   it('should refresh list after creating new rental agreement', () => {
