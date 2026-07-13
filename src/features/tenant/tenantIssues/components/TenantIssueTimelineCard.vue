@@ -255,18 +255,10 @@ watch(
                 </div>
                 <ul v-if="slotProps.item.attachmentId" class="space-y-2 text-left">
                   <li
-                    v-for="(attachment, attachmentIndex) in getTimelineAttachments(slotProps.item)"
+                    v-for="(attachment) in getTimelineAttachments(slotProps.item)"
                     :key="attachment.attachmentId"
                     data-testid="tenant-issue-timeline-attachment-url"
                   >
-                    <a
-                      class="break-all text-primary underline"
-                      :href="attachment.downloadUrl"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {{ attachment.fileName || getTimelineAttachmentDisplayName(attachmentIndex) }}
-                    </a>
                   </li>
                 </ul>
               </div>
