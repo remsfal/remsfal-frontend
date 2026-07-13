@@ -197,67 +197,81 @@ watch(
         {{ t('tenantIssues.timeline.empty') }}
       </div>
 
-      <Timeline v-else :value="timelines" align="right" data-testid="tenant-issue-timeline">
-        <template #opposite="slotProps">
-          <span v-if="slotProps.item.createdAt" class="text-sm text-gray-500">
-            {{ formatTimelineDate(slotProps.item.createdAt) }}
-          </span>
-        </template>
+      <Timeline v-else :value="timelines" align="left"
+        :pt="{
+          eventOpposite: { class: '!flex-none !max-w-0 !min-w-0 !p-0' },
+          eventContent: { class: '!pr-0' },
+        }"
+        data-testid="tenant-issue-timeline"
+      >
         <template #content="slotProps">
-          <article
-            data-testid="tenant-issue-timeline-entry"
-            class="mb-3 rounded-lg border border-gray-200 bg-white p-4"
-          >
-            <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <p class="font-medium text-gray-900">
-                {{ slotProps.item.title || t('tenantIssues.timeline.entryFallbackTitle') }}
-              </p>
-            </div>
-            <p v-if="slotProps.item.message" class="text-gray-700 text-left whitespace-pre-line">
-              {{ slotProps.item.message }}
-            </p>
-            <div v-if="getTimelineAttachmentCount(slotProps.item) > 0" class="mt-3 rounded bg-gray-50 p-2 text-sm">
-              <p class="mb-1 text-left text-gray-700">
-                {{
-                  t('tenantIssues.timeline.attachmentsCount')
-                }}
-              </p>
-              <div
-                v-if="getTimelineImageAttachments(slotProps.item).length > 0"
-                class="mb-3 flex flex-wrap gap-2"
-              >
-                <div
-                  v-for="attachment in getTimelineImageAttachments(slotProps.item)"
-                  :key="`preview-${attachment.attachmentId}`"
-                  class="relative"
-                >
-                  <Image
-                    :src="attachment.downloadUrl"
-                    :alt="attachment.fileName ?? 'issue-attachment'"
-                    preview
-                    imageClass="h-24 w-24 object-cover rounded"
-                  />
-                  <Button
-                    icon="pi pi-download"
-                    size="small"
-                    severity="contrast"
-                    rounded
-                    class="!absolute bottom-1 right-1"
-                    :aria-label="t('tenantIssues.timeline.downloadAttachment')"
-                    @click="openAttachmentDownload(attachment.downloadUrl)"
-                  />
-                </div>
+          <div class="mb-3 flex items-start gap-3">
+            <span class="w-40 shrink-0 pt-2 text-sm text-gray-500">
+              {{ formatTimelineDate(slotProps.item.createdAt) || '-' }}
+            </span>
+            <article
+              data-testid="tenant-issue-timeline-entry"
+              class="flex-1 rounded-lg border border-gray-200 bg-white p-4"
+            >
+              <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <p class="font-medium text-gray-900">
+                  {{ slotProps.item.title || t('tenantIssues.timeline.entryFallbackTitle') }}
+                </p>
               </div>
-              <ul v-if="slotProps.item.attachmentId" class="space-y-2 text-left">
-                <li
-                  v-for="(attachment) in getTimelineAttachments(slotProps.item)"
-                  :key="attachment.attachmentId"
-                  data-testid="tenant-issue-timeline-attachment-url"
+              <p v-if="slotProps.item.message" class="text-gray-700 text-left whitespace-pre-line">
+                {{ slotProps.item.message }}
+              </p>
+              <div v-if="getTimelineAttachmentCount(slotProps.item) > 0" class="mt-3 rounded bg-gray-50 p-2 text-sm">
+                <p class="mb-1 text-left text-gray-700">
+                  {{
+                    t('tenantIssues.timeline.attachmentsCount')
+                  }}
+                </p>
+                <div
+                  v-if="getTimelineImageAttachments(slotProps.item).length > 0"
+                  class="mb-3 flex flex-wrap gap-2"
                 >
-                </li>
-              </ul>
-            </div>
-          </article>
+                  <div
+                    v-for="attachment in getTimelineImageAttachments(slotProps.item)"
+                    :key="`preview-${attachment.attachmentId}`"
+                    class="relative"
+                  >
+                    <Image
+                      :src="attachment.downloadUrl"
+                      :alt="attachment.fileName ?? 'issue-attachment'"
+                      preview
+                      imageClass="h-24 w-24 object-cover rounded"
+                    />
+                    <Button
+                      icon="pi pi-download"
+                      size="small"
+                      severity="contrast"
+                      rounded
+                      class="!absolute bottom-1 right-1"
+                      :aria-label="t('tenantIssues.timeline.downloadAttachment')"
+                      @click="openAttachmentDownload(attachment.downloadUrl)"
+                    />
+                  </div>
+                </div>
+                <ul v-if="slotProps.item.attachmentId" class="space-y-2 text-left">
+                  <li
+                    v-for="(attachment, attachmentIndex) in getTimelineAttachments(slotProps.item)"
+                    :key="attachment.attachmentId"
+                    data-testid="tenant-issue-timeline-attachment-url"
+                  >
+                    <a
+                      class="break-all text-primary underline"
+                      :href="attachment.downloadUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ attachment.fileName || getTimelineAttachmentDisplayName(attachmentIndex) }}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </div>
         </template>
       </Timeline>
 
