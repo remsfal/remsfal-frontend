@@ -8,14 +8,9 @@ import type { IssueJson } from '@/services/IssueService';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
   getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
-const props = defineProps<{
-  issue: IssueJson;
-  deletingIssue: boolean;
-}>();
+const props = defineProps<{ issue: IssueJson; deletingIssue: boolean; }>();
 
-const emit = defineEmits<{
-  cancel: [];
-}>();
+const emit = defineEmits<{ cancel: []; }>();
 
 const { t, locale } = useI18n();
 
@@ -28,41 +23,21 @@ const issueNodeId = computed(() => props.issue.id?.split('-').pop() || props.iss
 
 const descriptionLabel = computed(() => {
   const description = props.issue.description;
-
-  if (!description) {
-    return null;
-  }
-
-  const cleaned = description
-    .split('\n')
-    .filter(line => !/^\s*(Verursacher|Ort):/i.test(line))
-    .join('\n')
-    .trim();
-
+  if (!description) { return null; }
+  const cleaned = description.split('\n').filter(line => !/^\s*(Verursacher|Ort):/i.test(line))
+    .join('\n').trim();
   return cleaned || null;
 });
-
 const modifiedAtLabel = computed(() => {
   const modifiedAt = props.issue.modifiedAt;
-
-  if (!modifiedAt) {
-    return null;
-  }
-
+  if (!modifiedAt) { return null; }
   const date = new Date(modifiedAt);
-
-  if (Number.isNaN(date.getTime())) {
-    return modifiedAt;
-  }
-
+  if (Number.isNaN(date.getTime())) { return modifiedAt; }
   return date.toLocaleDateString(locale.value);
 });
 
 const canCancel = computed(() => {
-  return props.issue.type !== 'TERMINATION' &&
-    props.issue.status !== 'CLOSED' &&
-    props.issue.status !== 'REJECTED';
-});
+  return props.issue.type !== 'TERMINATION' && props.issue.status !== 'CLOSED' && props.issue.status !== 'REJECTED'; });
 </script>
 
 <template>
