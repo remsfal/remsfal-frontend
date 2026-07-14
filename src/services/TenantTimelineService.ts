@@ -1,11 +1,13 @@
-import { apiClient } from '@/services/ApiClient';
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
+
+type IssueAttachmentJson = ApiComponents['schemas']['IssueAttachmentJson'];
 
 export interface TenantTimelineJson {
   issueId?: string;
   tenancyId?: string;
   timelineId?: string;
   projectId?: string;
-  attachmentId?: string[];
+  attachments?: IssueAttachmentJson[];
   senderId?: string;
   senderName?: string;
   title?: string;

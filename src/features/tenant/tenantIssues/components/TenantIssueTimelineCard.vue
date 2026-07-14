@@ -53,14 +53,21 @@ const isImageAttachment = (attachment: TimelineAttachmentView) => {
 };
 
 const getTimelineAttachments = (timeline: TenantTimelineJson): TimelineAttachmentView[] => {
-  return (timeline.attachmentId ?? []).map((attachmentId) => {
-    const attachment = issueAttachmentsById.value.get(attachmentId);
-    return {
+  return (timeline.attachments ?? []).flatMap((attachment) => {
+    const attachmentId = attachment.attachmentId;
+    if (!attachmentId) {
+      return [];
+    }
+
+    const issueAttachment = issueAttachmentsById.value.get(attachmentId);
+    const fileName = attachment.fileName ?? issueAttachment?.fileName;
+
+    return [{
       attachmentId,
-      contentType: attachment?.contentType,
-      downloadUrl: getTimelineAttachmentDownloadUrl(props.issueId, attachmentId, attachment?.fileName),
-      fileName: attachment?.fileName,
-    };
+      contentType: attachment.contentType ?? issueAttachment?.contentType,
+      downloadUrl: getTimelineAttachmentDownloadUrl(props.issueId, attachmentId, fileName),
+      fileName,
+    }];
   });
 };
 
@@ -102,7 +109,7 @@ const fetchTimelines = async () => {
   }
 };
 
-const getTimelineAttachmentCount = (timeline: TenantTimelineJson) => timeline.attachmentId?.length ?? 0;
+const getTimelineAttachmentCount = (timeline: TenantTimelineJson) => getTimelineAttachments(timeline).length;
 
 const getTimelineAttachmentDownloadUrl = ( issueId: string, attachmentId: string, fileName?: string, ) => {
   const encodedIssueId = encodeURIComponent(issueId);
@@ -253,7 +260,7 @@ watch(
                     />
                   </div>
                 </div>
-                <ul v-if="slotProps.item.attachmentId" class="space-y-2 text-left">
+                <ul v-if="getTimelineAttachments(slotProps.item).length > 0" class="space-y-2 text-left">
                   <li
                     v-for="(attachment) in getTimelineAttachments(slotProps.item)"
                     :key="attachment.attachmentId"

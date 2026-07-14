@@ -14,23 +14,23 @@ export type IssueRelationType = 'related-to' | 'blocks' | 'blocked-by' | 'duplic
 export type IssueRelationGroup = IssueRelationType | 'parent';
 
 class IssueService {
-  private mapAttachmentIds(issue: IssueJson): string[] {
-    return (issue.attachments ?? [])
-      .flatMap((attachment) => (attachment.attachmentId ? [attachment.attachmentId] : []));
+  private mapAttachments(issue: IssueJson): IssueAttachmentJson[] {
+    return issue.attachments ?? [];
   }
 
-  private async resolveInitialTimelineAttachmentIds(issue: IssueJson, hasUploadedFiles: boolean): Promise<string[]> {
-    const attachmentIds = this.mapAttachmentIds(issue);
-    if (attachmentIds.length > 0 || !hasUploadedFiles || !issue.id) { return attachmentIds; }
+  private async resolveInitialTimelineAttachments( issue: IssueJson, hasUploadedFiles: boolean,
+  ): Promise<IssueAttachmentJson[]> {
+    const attachments = this.mapAttachments(issue);
+    if (attachments.length > 0 || !hasUploadedFiles || !issue.id) { return attachments; }
     const issueWithAttachments = await this.getIssue(issue.id);
-    return this.mapAttachmentIds(issueWithAttachments);
+    return this.mapAttachments(issueWithAttachments);
   }
 
   private async createInitialTimelineEntry(issue: IssueJson, hasUploadedFiles = false): Promise<void> {
-    const attachmentIds = await this.resolveInitialTimelineAttachmentIds(issue, hasUploadedFiles);
+    const attachments = await this.resolveInitialTimelineAttachments(issue, hasUploadedFiles);
     await tenantTimelineService.createTimelineEntryWithAttachments(issue.id!, {
       title: 'Issue erstellt',
-      ...(attachmentIds.length > 0 ? { attachmentId: attachmentIds } : {}),
+      ...(attachments.length > 0 ? { attachments } : {}),
     }, []);
   }
 
