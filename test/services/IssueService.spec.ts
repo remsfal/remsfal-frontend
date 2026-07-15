@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
+import { apiClient } from '@/services/ApiClient';
 import { issueService, type IssueJson, type IssueStatus } from '@/services/IssueService';
 import { tenantTimelineService } from '@/services/TenantTimelineService';
 
@@ -136,17 +137,13 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('createTenancyIssueWithAttachment uploads the issue with attached files', async () => {
-    server.use(
-      http.post('/ticketing/v1/issues', ({ request }) => {
-        expect(request.headers.get('content-type') ?? '').toContain('multipart/form-data');
-        return HttpResponse.json({
-          id: 'new-issue-id',
-          attachmentCount: 1,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
-      }),
-    );
+    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce({
+      id: 'new-issue-id',
+      attachmentCount: 1,
+      attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as IssueJson);
 
     const newIssue: Partial<IssueJson> = {
       title: 'Issue with attachment',
@@ -157,6 +154,7 @@ describe('IssueService with MSW (http)', () => {
 
     const createdIssue = await issueService.createTenancyIssueWithAttachment(newIssue, [file]);
 
+    expect(postSpy).toHaveBeenCalledWith('/ticketing/v1/issues', expect.any(FormData));
     expect(createdIssue.id).toBeDefined();
     expect((createdIssue as unknown as { attachmentCount: number }).attachmentCount).toBe(1);
   });

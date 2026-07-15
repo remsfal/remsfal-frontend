@@ -77,6 +77,20 @@ const getTimelineImageAttachments = (timeline: TenantTimelineJson) => {
   return getTimelineAttachments(timeline).filter(isImageAttachment);
 };
 
+const getTimelineNonImageAttachments = (timeline: TenantTimelineJson) => {
+  return getTimelineAttachments(timeline).filter((attachment) => !isImageAttachment(attachment));
+};
+
+const getAttachmentTypeLabel = (attachment: TimelineAttachmentView) => {
+  const fileName = attachment.fileName?.trim().toLowerCase();
+  if (!fileName || !fileName.includes('.')) {
+    return 'FILE';
+  }
+
+  const extension = fileName.split('.').pop();
+  return extension ? extension.toUpperCase() : 'FILE';
+};
+
 const openAttachmentDownload = (downloadUrl: string) => {
   window.open(downloadUrl, '_blank', 'noopener,noreferrer');
 };
@@ -242,10 +256,7 @@ watch(
                     t('tenantIssues.timeline.attachmentsCount')
                   }}
                 </p>
-                <div
-                  v-if="getTimelineImageAttachments(slotProps.item).length > 0"
-                  class="mb-3 flex flex-wrap gap-2"
-                >
+                <div v-if="getTimelineAttachments(slotProps.item).length > 0" class="mb-3 flex flex-wrap gap-2">
                   <div
                     v-for="attachment in getTimelineImageAttachments(slotProps.item)"
                     :key="`preview-${attachment.attachmentId}`"
@@ -267,6 +278,19 @@ watch(
                       @click="openAttachmentDownload(attachment.downloadUrl)"
                     />
                   </div>
+                  <button
+                    v-for="attachment in getTimelineNonImageAttachments(slotProps.item)"
+                    :key="`file-${attachment.attachmentId}`"
+                    type="button"
+                    class="h-24 w-24 cursor-pointer rounded border border-surface-200 bg-surface-100 p-2 text-surface-700"
+                    :aria-label="t('tenantIssues.timeline.downloadAttachment')"
+                    @click="openAttachmentDownload(attachment.downloadUrl)"
+                  >
+                    <div class="flex h-full flex-col items-center justify-center gap-1">
+                      <i class="pi pi-file text-xl" />
+                      <span class="text-[10px] font-semibold">{{ getAttachmentTypeLabel(attachment) }}</span>
+                    </div>
+                  </button>
                 </div>
                 <ul v-if="getTimelineAttachments(slotProps.item).length > 0" class="space-y-2 text-left">
                   <li
