@@ -185,7 +185,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve information for all issues. */
+    /**
+     * Retrieve information for all issues of a single project.
+     * @description This method is intended solely for use by a property manager, scoped to exactly one project at a time. Tenants must use the separate tenant issues endpoint instead.
+     */
     get: {
       parameters: {
         query: {
@@ -193,14 +196,12 @@ export interface paths {
           agreementId?: components["schemas"]["UUID"];
           /** @description Filter to return only issues of a assigned user */
           assigneeId?: components["schemas"]["UUID"];
-          /** @description Maximum number of projects to return */
+          /** @description Opaque cursor returned by a previous call to fetch the next page */
+          cursor?: string;
+          /** @description Maximum number of issues to return */
           limit: number;
-          /** @description Offset of the first project to return */
-          offset: number;
-          /** @description Whether to prefer tenancy issues over project issues */
-          preferTenancyIssues?: boolean;
-          /** @description Filter to return only issues of a specific project */
-          projectId?: components["schemas"]["UUID"];
+          /** @description ID of the project to return issues of */
+          projectId: components["schemas"]["UUID"];
           /** @description Filter to return only issuesfor a specific rental unit */
           rentalUnitId?: components["schemas"]["UUID"];
           /** @description Filter to return only issuesfor a specific unit type */
@@ -221,7 +222,7 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description Not Allowed */
+        /** @description User does not have permission to read issues of this project */
         403: {
           headers: {
             [name: string]: unknown;
@@ -244,7 +245,6 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
           "application/json": components["schemas"]["IssueJson"];
         };
       };
@@ -254,13 +254,6 @@ export interface paths {
           headers: {
             /** @description URL of the new issue */
             Location?: unknown;
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Invalid input or unsupported file type */
-        400: {
-          headers: {
             [name: string]: unknown;
           };
           content?: never;
@@ -294,7 +287,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve information of an issue. */
+    /**
+     * Retrieve information of an issue.
+     * @description This method is intended solely for use by a property manager.
+     */
     get: {
       parameters: {
         query?: never;
@@ -314,7 +310,7 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description Not Allowed */
+        /** @description User does not have permission to view this issue */
         403: {
           headers: {
             [name: string]: unknown;
@@ -3515,6 +3511,256 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/ticketing/v1/tenant-relations/issues": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve information for all issues of the calling tenant.
+     * @description Aggregates issues across all rental agreements the caller is a tenant of.
+     */
+    get: {
+      parameters: {
+        query: {
+          /** @description Opaque cursor returned by a previous call to fetch the next page */
+          cursor?: string;
+          /** @description Maximum number of issues to return */
+          limit: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /**
+     * Create a new issue with multiple image attachments.
+     * @description Creates a new issue based on the provided issue information and attaches multiple image files to it. This method is intended solely for the creation of issues by a tenant.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": Record<string, never>;
+        };
+      };
+      responses: {
+        /** @description Issue with attachments created successfully */
+        201: {
+          headers: {
+            /** @description URL of the new issue */
+            Location?: unknown;
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Invalid input or unsupported file type */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ticketing/v1/tenant-relations/issues/{issueId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve information of an issue. */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to view this issue */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The issue does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    /**
+     * Close an existing issue.
+     * @description Closes the issue (sets its status to CLOSED). Tenants cannot delete issues outright.
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The issue was closed successfully */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to close this issue */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ticketing/v1/tenant-relations/issues/{issueId}/attachments/{attachmentId}/{filename}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Download an issue attachment */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the attachment */
+          attachmentId: components["schemas"]["UUID"];
+          /** @description Filename of the attachment */
+          filename: string;
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Attachment downloaded successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/octet-stream": unknown;
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description User does not have permission to access this attachment */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Attachment not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/ticketing/v1/tenant-relations/issues/{issueId}/timeline": {
     parameters: {
       query?: never;
@@ -3876,6 +4122,8 @@ export interface components {
     IssueItemJson: {
       /** @description Unique identifier of the issue */
       readonly id?: components["schemas"]["UUID"];
+      /** @description Unique identifier of the project this issue belongs to */
+      readonly projectId?: components["schemas"]["UUID"];
       /** @description Last modification timestamp of the issue */
       readonly modifiedAt?: components["schemas"]["Instant"];
       /** @description Title of the issue */
@@ -3920,18 +4168,13 @@ export interface components {
       blocks?: string[];
       attachments?: components["schemas"]["IssueAttachmentJson"][];
     };
-    /** @description A list of issues */
+    /** @description A cursor-paginated list of issues */
     IssueListJson: {
+      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+      readonly nextCursor?: string;
       /**
        * Format: int32
-       * @description Index of the first element in list of total available entries, starting at 1
-       * @example 1
-       */
-      readonly first: number;
-      /**
-       * Format: int32
-       * @description Number of elements in list
-       * @default 50
+       * @description Number of elements in this page
        */
       readonly size: number;
       issues?: components["schemas"]["IssueItemJson"][];
@@ -3954,6 +4197,9 @@ export interface components {
     LocalDateTime: string;
     /** @enum {string} */
     MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
+    /** @enum {string} */
+    MessagePurpose:
+      "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
     /**
      * Format: date-time
      * @example 2022-03-10T12:15:50-04:00
@@ -4404,6 +4650,36 @@ export interface components {
     TenancyListJson: {
       agreements?: components["schemas"]["TenancyJson"][];
     };
+    /** @description An issue, as visible to the tenant who reported it or is affected by it */
+    TenantIssueJson: {
+      readonly id?: components["schemas"]["UUID"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
+      title: string;
+      type: components["schemas"]["IssueType"];
+      category?: components["schemas"]["IssueCategory"];
+      readonly status?: components["schemas"]["IssueStatus"];
+      /** @description ID of the user who reported this issue */
+      readonly reporterId?: components["schemas"]["UUID"];
+      /** @description Name of the user who reported this issue */
+      readonly reportedBy?: string;
+      agreementId: components["schemas"]["UUID"];
+      rentalUnitId?: components["schemas"]["UUID"];
+      rentalUnitType?: components["schemas"]["UnitType"];
+      location?: string;
+      description: string;
+      attachments?: components["schemas"]["IssueAttachmentJson"][];
+    };
+    /** @description A cursor-paginated list of issues visible to a tenant */
+    TenantIssueListJson: {
+      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+      readonly nextCursor?: string;
+      /**
+       * Format: int32
+       * @description Number of elements in this page
+       */
+      readonly size: number;
+      issues?: components["schemas"]["TenantIssueJson"][];
+    };
     /** @description A tenant item with rental units and active status for list views */
     TenantItemJson: {
       /** @description Unique identifier of the tenant */
@@ -4460,7 +4736,7 @@ export interface components {
       attachments?: components["schemas"]["IssueAttachmentJson"][];
       senderId?: components["schemas"]["UUID"];
       senderName?: string;
-      title?: string;
+      purpose?: components["schemas"]["MessagePurpose"];
       message?: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];

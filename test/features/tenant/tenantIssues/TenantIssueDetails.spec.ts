@@ -1,23 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
-import { issueService } from '@/services/IssueService';
+import { tenantIssueService } from '@/services/TenantIssueService';
 import router from '@/router';
 
 const toastAddMock = vi.fn();
 
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
 
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>(
-    '@/services/IssueService',
+vi.mock('@/services/TenantIssueService', async () => {
+  const actual = await vi.importActual<typeof import('@/services/TenantIssueService')>(
+    '@/services/TenantIssueService',
   );
 
   return {
     ...actual,
-    issueService: {
+    tenantIssueService: {
       getIssue: vi.fn(),
       getIssues: vi.fn(),
-      deleteIssue: vi.fn(),
+      closeIssue: vi.fn(),
     },
   };
 });
@@ -28,7 +28,7 @@ describe('TenantIssueDetails component', () => {
   });
 
   it('loads issue details', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssue).mockResolvedValue({
       id: 'issue-42',
       title: 'Wasserschaden Küche',
       status: 'IN_PROGRESS',
@@ -42,12 +42,12 @@ describe('TenantIssueDetails component', () => {
 
     await flushPromises();
 
-    expect(issueService.getIssue).toHaveBeenCalledWith('issue-42');
+    expect(tenantIssueService.getIssue).toHaveBeenCalledWith('issue-42');
     expect(wrapper.text()).toContain('Wasserschaden Küche');
   });
 
   it('reloads issue details when issueId prop changes', async () => {
-    vi.mocked(issueService.getIssue)
+    vi.mocked(tenantIssueService.getIssue)
       .mockResolvedValueOnce({
         id: 'issue-1',
         title: 'Heizung defekt',
@@ -72,20 +72,20 @@ describe('TenantIssueDetails component', () => {
     await wrapper.setProps({ issueId: 'issue-2' });
     await flushPromises();
 
-    expect(issueService.getIssue).toHaveBeenNthCalledWith(1, 'issue-1');
-    expect(issueService.getIssue).toHaveBeenNthCalledWith(2, 'issue-2');
+    expect(tenantIssueService.getIssue).toHaveBeenNthCalledWith(1, 'issue-1');
+    expect(tenantIssueService.getIssue).toHaveBeenNthCalledWith(2, 'issue-2');
     expect(wrapper.text()).toContain('Wasserleck');
   });
 
   it('shows toast when loading issue details fails', async () => {
-    vi.mocked(issueService.getIssue).mockRejectedValue(new Error('request failed'));
+    vi.mocked(tenantIssueService.getIssue).mockRejectedValue(new Error('request failed'));
 
     const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueDetails, { props: { issueId: 'issue-42' } });
 
     await flushPromises();
 
-    expect(issueService.getIssue).toHaveBeenCalledWith('issue-42');
+    expect(tenantIssueService.getIssue).toHaveBeenCalledWith('issue-42');
     expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'error',
       life: 3000,
@@ -96,7 +96,7 @@ describe('TenantIssueDetails component', () => {
   it('deletes issue when cancel button is clicked and navigates to issue list', async () => {
     const pushSpy = vi.spyOn(router, 'push').mockResolvedValue(undefined);
 
-    vi.mocked(issueService.getIssue).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssue).mockResolvedValue({
       id: 'issue-42',
       title: 'Wasserschaden Küche',
       status: 'IN_PROGRESS',
@@ -104,7 +104,7 @@ describe('TenantIssueDetails component', () => {
       agreementId: 'agreement-1',
       description: 'Rohr unter der Spüle undicht.',
     });
-    vi.mocked(issueService.deleteIssue).mockResolvedValue(undefined);
+    vi.mocked(tenantIssueService.closeIssue).mockResolvedValue(undefined);
 
     const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueDetails, {
@@ -115,7 +115,7 @@ describe('TenantIssueDetails component', () => {
     await flushPromises();
     await wrapper.get('[data-testid="tenant-issue-cancel"]').trigger('click');
     await flushPromises();
-    expect(issueService.deleteIssue).not.toHaveBeenCalled();
+    expect(tenantIssueService.closeIssue).not.toHaveBeenCalled();
 
     const confirmButton = document.querySelector(
       '[data-testid="tenant-issue-cancel-confirm"]',
@@ -124,7 +124,7 @@ describe('TenantIssueDetails component', () => {
     confirmButton?.click();
     await flushPromises();
 
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-42');
+    expect(tenantIssueService.closeIssue).toHaveBeenCalledWith('issue-42');
     expect(pushSpy).toHaveBeenCalledWith({ name: 'TenantIssues' });
     expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'success',
@@ -137,7 +137,7 @@ describe('TenantIssueDetails component', () => {
   it('shows error toast when deleting issue fails', async () => {
     const pushSpy = vi.spyOn(router, 'push').mockResolvedValue(undefined);
 
-    vi.mocked(issueService.getIssue).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssue).mockResolvedValue({
       id: 'issue-42',
       title: 'Wasserschaden Küche',
       status: 'IN_PROGRESS',
@@ -145,7 +145,7 @@ describe('TenantIssueDetails component', () => {
       agreementId: 'agreement-1',
       description: 'Rohr unter der Spüle undicht.',
     });
-    vi.mocked(issueService.deleteIssue).mockRejectedValue(new Error('delete failed'));
+    vi.mocked(tenantIssueService.closeIssue).mockRejectedValue(new Error('delete failed'));
 
     const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueDetails, {
@@ -164,7 +164,7 @@ describe('TenantIssueDetails component', () => {
     confirmButton?.click();
     await flushPromises();
 
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-42');
+    expect(tenantIssueService.closeIssue).toHaveBeenCalledWith('issue-42');
     expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'error',
       life: 5000,
@@ -175,7 +175,7 @@ describe('TenantIssueDetails component', () => {
   });
 
   it('closes cancel dialog without deleting when cancel is clicked in dialog footer', async () => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssue).mockResolvedValue({
       id: 'issue-42',
       title: 'Wasserschaden Küche',
       status: 'IN_PROGRESS',
@@ -200,7 +200,7 @@ describe('TenantIssueDetails component', () => {
     cancelDialogButton?.click();
     await flushPromises();
 
-    expect(issueService.deleteIssue).not.toHaveBeenCalled();
+    expect(tenantIssueService.closeIssue).not.toHaveBeenCalled();
     expect(document.querySelector('[data-testid="tenant-issue-cancel-confirm"]')).toBeNull();
     wrapper.unmount();
   });
@@ -212,7 +212,7 @@ describe('TenantIssueDetails component', () => {
       resolveDelete = resolve;
     });
 
-    vi.mocked(issueService.getIssue).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssue).mockResolvedValue({
       id: 'issue-42',
       title: 'Wasserschaden Küche',
       status: 'IN_PROGRESS',
@@ -220,7 +220,7 @@ describe('TenantIssueDetails component', () => {
       agreementId: 'agreement-1',
       description: 'Rohr unter der Spüle undicht.',
     });
-    vi.mocked(issueService.deleteIssue).mockReturnValue(pendingDelete);
+    vi.mocked(tenantIssueService.closeIssue).mockReturnValue(pendingDelete);
 
     const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueDetails, {
@@ -239,13 +239,13 @@ describe('TenantIssueDetails component', () => {
     confirmButton?.click();
     await flushPromises();
 
-    expect(issueService.deleteIssue).toHaveBeenCalledTimes(1);
+    expect(tenantIssueService.closeIssue).toHaveBeenCalledTimes(1);
     const cancelButton = wrapper.get('[data-testid="tenant-issue-cancel"]');
     expect(cancelButton.attributes('disabled')).toBeDefined();
 
     await cancelButton.trigger('click');
     await flushPromises();
-    expect(issueService.deleteIssue).toHaveBeenCalledTimes(1);
+    expect(tenantIssueService.closeIssue).toHaveBeenCalledTimes(1);
 
     resolveDelete?.();
     await flushPromises();
@@ -255,7 +255,7 @@ describe('TenantIssueDetails component', () => {
   });
 
   it('filters Verursacher/Ort lines from description and hides empty cleaned description', async () => {
-    vi.mocked(issueService.getIssue)
+    vi.mocked(tenantIssueService.getIssue)
       .mockResolvedValueOnce({
         id: 'issue-12',
         title: 'Schaden',
@@ -270,6 +270,7 @@ describe('TenantIssueDetails component', () => {
         status: 'OPEN',
         type: 'DEFECT',
         agreementId: 'agreement-1',
+        description: '',
       });
 
     const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
@@ -292,7 +293,7 @@ describe('TenantIssueDetails component', () => {
     const validModifiedAt = '2026-01-02T00:00:00.000Z';
     const invalidModifiedAt = 'invalid-modified-at';
 
-    vi.mocked(issueService.getIssue)
+    vi.mocked(tenantIssueService.getIssue)
       .mockResolvedValueOnce({
         id: 'issue-20',
         title: 'Mit gültigem Datum',
@@ -330,7 +331,7 @@ describe('TenantIssueDetails component', () => {
     ['DEFECT', 'CLOSED'],
     ['DEFECT', 'REJECTED'],
   ] as const)('hides cancel action for type %s and status %s', async (type, status) => {
-    vi.mocked(issueService.getIssue).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssue).mockResolvedValue({
       id: 'issue-30',
       title: 'Nicht stornierbar',
       status,
@@ -350,14 +351,14 @@ describe('TenantIssueDetails component', () => {
   it('uses route issueId for deletion when loaded issue has no id', async () => {
     const pushSpy = vi.spyOn(router, 'push').mockResolvedValue(undefined);
 
-    vi.mocked(issueService.getIssue).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssue).mockResolvedValue({
       title: 'Ohne ID',
       status: 'OPEN',
       type: 'DEFECT',
       agreementId: 'agreement-1',
       description: 'Beschreibung',
     });
-    vi.mocked(issueService.deleteIssue).mockResolvedValue(undefined);
+    vi.mocked(tenantIssueService.closeIssue).mockResolvedValue(undefined);
 
     const { TenantIssueDetails } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueDetails, {
@@ -376,7 +377,7 @@ describe('TenantIssueDetails component', () => {
     confirmButton?.click();
     await flushPromises();
 
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-31');
+    expect(tenantIssueService.closeIssue).toHaveBeenCalledWith('issue-31');
     expect(pushSpy).toHaveBeenCalledWith({ name: 'TenantIssues' });
 
     wrapper.unmount();

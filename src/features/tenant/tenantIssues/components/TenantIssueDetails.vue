@@ -9,7 +9,7 @@ import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Tag from 'primevue/tag';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
   getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
@@ -22,7 +22,7 @@ const { t, locale } = useI18n();
 const loading = ref(false);
 const deletingIssue = ref(false);
 const showCancelDialog = ref(false);
-const issue = ref<IssueJson | null>(null);
+const issue = ref<TenantIssueJson | null>(null);
 const error = ref<string | null>(null);
 const statusLabel = computed(() => getIssueStatusLabel(issue.value?.status, t));
 const typeLabel = computed(() => getIssueTypeLabel(issue.value?.type, t));
@@ -63,7 +63,7 @@ const fetchIssue = async () => {
   error.value = null;
 
   try {
-    issue.value = await issueService.getIssue(props.issueId);
+    issue.value = await tenantIssueService.getIssue(props.issueId);
   } catch (fetchError) {
     console.error('Error fetching tenant issue:', fetchError);
     error.value = t('tenantIssues.detail.loadError');
@@ -86,7 +86,7 @@ const cancelIssue = async () => {
   deletingIssue.value = true;
 
   try {
-    await issueService.deleteIssue(issue.value?.id || props.issueId);
+    await tenantIssueService.closeIssue(issue.value?.id || props.issueId);
     toast.add({
       severity: 'success',
       summary: t('success.saved'),

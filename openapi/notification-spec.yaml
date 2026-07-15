@@ -456,6 +456,11 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
+        projectId:
+          description: Unique identifier of the project this issue belongs to
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
         modifiedAt:
           description: Last modification timestamp of the issue
           readOnly: true
@@ -581,32 +586,27 @@ components:
           items:
             $ref: "#/components/schemas/IssueAttachmentJson"
     IssueListJson:
-      description: A list of issues
+      description: A cursor-paginated list of issues
       type: object
-      required:
-      - first
-      - size
       properties:
-        first:
-          type: integer
-          format: int32
-          description: "Index of the first element in list of total available entries,\
-            \ starting at 1"
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
           readOnly: true
-          examples:
-          - 1
         size:
           type: integer
           format: int32
           maximum: 500
-          minimum: 1
-          description: Number of elements in list
+          minimum: 0
+          description: Number of elements in this page
           readOnly: true
-          default: 50
         issues:
           type: array
           items:
             $ref: "#/components/schemas/IssueItemJson"
+      required:
+      - size
     IssuePriority:
       type: string
       enum:
@@ -650,6 +650,14 @@ components:
       - LESSOR
       - STAFF
       - COLLABORATOR
+    MessagePurpose:
+      type: string
+      enum:
+      - ISSUE_CREATED
+      - MESSAGE_SENT
+      - APPOINTMENT_REQUESTED
+      - APPOINTMENT_SCHEDULED
+      - STATUS_CHANGED
     OffsetDateTime:
       type: string
       format: date-time
@@ -1534,6 +1542,81 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenancyJson"
+    TenantIssueJson:
+      description: "An issue, as visible to the tenant who reported it or is affected\
+        \ by it"
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        modifiedAt:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+        title:
+          type: string
+          pattern: \S
+          maxLength: 255
+        type:
+          $ref: "#/components/schemas/IssueType"
+        category:
+          $ref: "#/components/schemas/IssueCategory"
+        status:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueStatus"
+        reporterId:
+          description: ID of the user who reported this issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        reportedBy:
+          type: string
+          description: Name of the user who reported this issue
+          readOnly: true
+        agreementId:
+          $ref: "#/components/schemas/UUID"
+        rentalUnitId:
+          $ref: "#/components/schemas/UUID"
+        rentalUnitType:
+          $ref: "#/components/schemas/UnitType"
+        location:
+          type: string
+        description:
+          type: string
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueAttachmentJson"
+      required:
+      - title
+      - type
+      - agreementId
+      - description
+    TenantIssueListJson:
+      description: A cursor-paginated list of issues visible to a tenant
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
+          readOnly: true
+        size:
+          type: integer
+          format: int32
+          maximum: 500
+          minimum: 0
+          description: Number of elements in this page
+          readOnly: true
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantIssueJson"
+      required:
+      - size
     TenantItemJson:
       description: A tenant item with rental units and active status for list views
       type: object
@@ -1659,8 +1742,8 @@ components:
           $ref: "#/components/schemas/UUID"
         senderName:
           type: string
-        title:
-          type: string
+        purpose:
+          $ref: "#/components/schemas/MessagePurpose"
         message:
           type: string
         createdAt:

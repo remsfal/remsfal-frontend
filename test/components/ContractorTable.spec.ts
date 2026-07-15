@@ -35,7 +35,6 @@ describe('ContractorTable.vue', () => {
   it('loads issues successfully and renders table rows', async () => {
     vi.mocked(contractorService.getIssues).mockResolvedValue({
       issues: mockIssues,
-      first: 0,
       size: 2,
     });
 
@@ -52,7 +51,6 @@ describe('ContractorTable.vue', () => {
   it('expands a row when expander is clicked', async () => {
     vi.mocked(contractorService.getIssues).mockResolvedValue({
       issues: mockIssues,
-      first: 0,
       size: 2,
     });
 
@@ -72,7 +70,6 @@ describe('ContractorTable.vue', () => {
   it('handles empty issues list gracefully', async () => {
     vi.mocked(contractorService.getIssues).mockResolvedValue({
       issues: [],
-      first: 0,
       size: 0,
     });
 
