@@ -3,6 +3,8 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
+import FileUpload from 'primevue/fileupload';
+import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import Image from 'primevue/image';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -23,11 +25,11 @@ const timelines = ref<TenantTimelineJson[]>([]);
 const issueAttachmentsById = ref(new Map<string, IssueAttachmentJson>());
 const messageText = ref('');
 const selectedFiles = ref<File[]>([]);
+const fileUploadRef = ref<InstanceType<typeof FileUpload> | null>(null);
 const sendingMessage = ref(false);
 const canSendMessage = computed(
   () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sendingMessage.value,
 );
-const selectedFileNames = computed(() => selectedFiles.value.map((file) => file.name));
 
 interface TimelineAttachmentView {
   attachmentId: string;
@@ -86,6 +88,14 @@ const formatTimelineDate = (value?: string) => {
   return date.toLocaleString(locale.value);
 };
 
+const getTimelineTitle = (title?: string) => {
+  if (title === 'Verwalter Anhang') {
+    return t('tenantIssues.timeline.managerAddedAttachments');
+  }
+
+  return title || t('tenantIssues.timeline.entryFallbackTitle');
+};
+
 const fetchTimelines = async () => {
   loading.value = true;
   error.value = false;
@@ -118,10 +128,6 @@ const getTimelineAttachmentDownloadUrl = ( issueId: string, attachmentId: string
   return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
 };
 
-const getTimelineAttachmentDisplayName = ( attachmentIndex: number, ) => {
-  return t('tenantIssues.timeline.attachmentName', { index: attachmentIndex + 1, });
-};
-
 const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
   const uniqueFiles = new Map<string, File>();
 
@@ -133,11 +139,13 @@ const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
   return Array.from(uniqueFiles.values());
 };
 
-const onFilesSelected = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const files = input.files ? Array.from(input.files) : [];
-  selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files);
-  input.value = '';
+const onFilesSelected = (event: FileUploadSelectEvent) => {
+  const files = Array.isArray(event.files) ? event.files : [];
+  selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
+};
+
+const removeSelectedFile = (fileIndex: number) => {
+  selectedFiles.value = selectedFiles.value.filter((_, index) => index !== fileIndex);
 };
 
 const submitMessage = async () => {
@@ -154,6 +162,7 @@ const submitMessage = async () => {
     }, selectedFiles.value);
     messageText.value = '';
     selectedFiles.value = [];
+    fileUploadRef.value?.clear();
     await fetchTimelines();
   } catch (submitError) {
     console.error('Error creating timeline entry:', submitError);
@@ -212,8 +221,8 @@ watch(
         data-testid="tenant-issue-timeline"
       >
         <template #content="slotProps">
-          <div class="mb-3 flex items-start gap-3">
-            <span class="w-40 shrink-0 pt-2 text-sm text-gray-500">
+          <div class="mb-2 flex items-start gap-3">
+            <span class="w-40 shrink-0 text-sm text-gray-500">
               {{ formatTimelineDate(slotProps.item.createdAt) || '-' }}
             </span>
             <article
@@ -222,7 +231,7 @@ watch(
             >
               <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
                 <p class="font-medium text-gray-900">
-                  {{ slotProps.item.title || t('tenantIssues.timeline.entryFallbackTitle') }}
+                  {{ getTimelineTitle(slotProps.item.title) }}
                 </p>
               </div>
               <p v-if="slotProps.item.message" class="text-gray-700 text-left whitespace-pre-line">
@@ -273,7 +282,6 @@ watch(
           </div>
         </template>
       </Timeline>
-
       <div class="mb-4 flex flex-col gap-2">
         <Textarea
             id="tenant-timeline-message"
@@ -283,22 +291,23 @@ watch(
             :placeholder="t('tenantIssues.timeline.messagePlaceholder')"
         />
         <div class="flex flex-col gap-1">
-          <input
-              id="tenant-timeline-attachments"
-              data-testid="tenant-issue-timeline-attachments-input"
-              type="file"
-              multiple
-              class="block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-gray-700 hover:file:bg-gray-200"
-              @change="onFilesSelected"
+          <FileUpload
+           ref="fileUploadRef"
+           mode="advanced"
+           :chooseLabel="t('tenantIssues.timeline.uploadButton')"
+           multiple
+           customUpload
+           :showUploadButton="false"
+           :showCancelButton="false"
+           accept="image/*,video/*,application/pdf"
+           :maxFileSize="10485760"
+           :fileLimit="10"
+           @select="onFilesSelected"
           >
-          <p v-if="selectedFiles.length > 0" class="text-xs text-gray-500">
-            {{ t('tenantIssues.timeline.attachmentsSelected', { count: selectedFiles.length }) }}
-          </p>
-          <ul v-if="selectedFileNames.length > 0" class="space-y-1 text-xs text-gray-600">
-            <li v-for="(fileName, fileIndex) in selectedFileNames" :key="`${fileName}-${fileIndex}`" class="truncate">
-              {{ fileName }}
-            </li>
-          </ul>
+           <template #empty>
+             <div>{{ t('tenantIssues.timeline.uploadEmpty') }}</div>
+           </template>
+          </FileUpload>
         </div>
         <div class="flex justify-end">
           <Button

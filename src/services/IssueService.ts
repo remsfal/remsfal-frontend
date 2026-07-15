@@ -1,6 +1,7 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 import { type UnitType } from '@/services/PropertyService.ts';
 import { tenantTimelineService } from '@/services/TenantTimelineService';
+import i18n from '@/i18n/i18n';
 
 export type IssueCategory = ApiComponents['schemas']['IssueCategory'];
 export type IssueStatus = ApiComponents['schemas']['IssueStatus'];
@@ -29,7 +30,7 @@ class IssueService {
   private async createInitialTimelineEntry(issue: IssueJson, hasUploadedFiles = false): Promise<void> {
     const attachments = await this.resolveInitialTimelineAttachments(issue, hasUploadedFiles);
     await tenantTimelineService.createTimelineEntryWithAttachments(issue.id!, {
-      title: 'Issue erstellt',
+      title: i18n.global.t('tenantIssues.timeline.issueCreatedTitle'),
       ...(attachments.length > 0 ? { attachments } : {}),
     }, []);
   }
