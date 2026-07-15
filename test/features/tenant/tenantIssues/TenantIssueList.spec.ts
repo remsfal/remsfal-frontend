@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
-import { issueService } from '@/services/IssueService';
+import { tenantIssueService } from '@/services/TenantIssueService';
 import { tenancyService } from '@/services/TenancyService';
 import Select from 'primevue/select';
 
@@ -25,14 +25,14 @@ vi.mock('@/services/TenancyService', async () => {
   };
 });
 
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>(
-    '@/services/IssueService',
+vi.mock('@/services/TenantIssueService', async () => {
+  const actual = await vi.importActual<typeof import('@/services/TenantIssueService')>(
+    '@/services/TenantIssueService',
   );
 
   return {
     ...actual,
-    issueService: {
+    tenantIssueService: {
       getIssues: vi.fn(),
       getIssue: vi.fn(),
     },
@@ -59,8 +59,7 @@ describe('TenantIssueList feature', () => {
       },
     ]);
 
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      first: 0,
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       size: 1,
       issues: [
         {
@@ -68,9 +67,9 @@ describe('TenantIssueList feature', () => {
           title: 'Heizung defekt',
           status: 'OPEN',
           type: 'DEFECT',
-          createdAt: '2026-01-02T10:00:00.000Z',
           modifiedAt: '2026-01-03T10:00:00.000Z',
-          tenancyId: 'agreement-1',
+          agreementId: 'agreement-1',
+          description: 'Die Heizung ist kalt.',
         },
       ],
     });
@@ -94,8 +93,7 @@ describe('TenantIssueList feature', () => {
 
   it('shows empty state when no issues are returned', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      first: 0,
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       size: 0,
       issues: [],
     });
@@ -109,29 +107,69 @@ describe('TenantIssueList feature', () => {
     expect(wrapper.find('.pi.pi-inbox').exists()).toBe(true);
   });
 
-  it('reloads issues when status filter changes', async () => {
+  it('filters issues by status on the client side without refetching', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues)
-      .mockResolvedValueOnce({
-        first: 0,
-        size: 0,
-        issues: [],
-      })
-      .mockResolvedValueOnce({
-        first: 0,
-        size: 1,
-        issues: [
-          {
-            id: 'issue-open',
-            title: 'Tür klemmt',
-            status: 'OPEN',
-            type: 'DEFECT',
-            createdAt: '2026-01-02T10:00:00.000Z',
-            modifiedAt: '2026-01-03T10:00:00.000Z',
-            tenancyId: 'agreement-1',
-          },
-        ],
-      });
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
+      size: 2,
+      issues: [
+        {
+          id: 'issue-closed',
+          title: 'Geschlossen',
+          status: 'CLOSED',
+          type: 'DEFECT',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
+        },
+        {
+          id: 'issue-open',
+          title: 'Tür klemmt',
+          status: 'OPEN',
+          type: 'DEFECT',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
+        },
+      ],
+    });
+
+    const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
+    const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
+
+    await flushPromises();
+    expect(tenantIssueService.getIssues).toHaveBeenCalledTimes(1);
+
+    const selects = wrapper.findAllComponents(Select);
+    await selects[1].vm.$emit('update:modelValue', 'OPEN');
+    await flushPromises();
+
+    expect(tenantIssueService.getIssues).toHaveBeenCalledTimes(1);
+    const cardTexts = wrapper.findAll('[data-testid="tenant-issue-card"]').map((card) => card.text());
+    expect(cardTexts).toHaveLength(1);
+    expect(cardTexts[0]).toContain('Tür klemmt');
+  });
+
+  it('filters issues by tenancy on the client side', async () => {
+    vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
+      size: 2,
+      issues: [
+        {
+          id: 'issue-agreement-1',
+          title: 'Wohnung 1 Schaden',
+          status: 'OPEN',
+          type: 'DEFECT',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
+        },
+        {
+          id: 'issue-agreement-2',
+          title: 'Wohnung 2 Schaden',
+          status: 'OPEN',
+          type: 'DEFECT',
+          agreementId: 'agreement-2',
+          description: 'Beschreibung',
+        },
+      ],
+    });
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });
@@ -139,16 +177,17 @@ describe('TenantIssueList feature', () => {
     await flushPromises();
 
     const selects = wrapper.findAllComponents(Select);
-    await selects[1].vm.$emit('update:modelValue', 'OPEN');
+    await selects[0].vm.$emit('update:modelValue', 'agreement-2');
     await flushPromises();
 
-    expect(issueService.getIssues).toHaveBeenNthCalledWith(2, undefined, true, 'OPEN', undefined, undefined);
+    const cardTexts = wrapper.findAll('[data-testid="tenant-issue-card"]').map((card) => card.text());
+    expect(cardTexts).toHaveLength(1);
+    expect(cardTexts[0]).toContain('Wohnung 2 Schaden');
   });
 
   it('sorts issues by status when no status filter is active', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      first: 0,
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       size: 5,
       issues: [
         {
@@ -156,30 +195,40 @@ describe('TenantIssueList feature', () => {
           title: 'Closed',
           status: 'CLOSED',
           type: 'TASK',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
         {
           id: 'issue-rejected',
           title: 'Rejected',
           status: 'REJECTED',
           type: 'TASK',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
         {
           id: 'issue-open',
           title: 'Open',
           status: 'OPEN',
           type: 'TASK',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
         {
           id: 'issue-in-progress',
           title: 'In Progress',
           status: 'IN_PROGRESS',
           type: 'TASK',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
         {
           id: 'issue-pending',
           title: 'Pending',
           status: 'PENDING',
           type: 'TASK',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
       ],
     });
@@ -200,8 +249,7 @@ describe('TenantIssueList feature', () => {
 
   it('filters issues by type on the client side', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      first: 0,
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       size: 3,
       issues: [
         {
@@ -209,18 +257,24 @@ describe('TenantIssueList feature', () => {
           title: 'Defect issue',
           status: 'OPEN',
           type: 'DEFECT',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
         {
           id: 'issue-task',
           title: 'Task issue',
           status: 'OPEN',
           type: 'TASK',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
         {
           id: 'issue-maintenance',
           title: 'Maintenance issue',
           status: 'OPEN',
           type: 'MAINTENANCE',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
       ],
     });
@@ -241,8 +295,7 @@ describe('TenantIssueList feature', () => {
 
   it('filters issues by search query over title and id', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      first: 0,
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       size: 3,
       issues: [
         {
@@ -250,18 +303,24 @@ describe('TenantIssueList feature', () => {
           title: 'Heizung kaputt',
           status: 'OPEN',
           type: 'DEFECT',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
         {
           id: 'DEF-456',
           title: 'Fenster defekt',
           status: 'OPEN',
           type: 'DEFECT',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
         {
           id: 'GHI-789',
           title: 'Wasserleck',
           status: 'OPEN',
           type: 'MAINTENANCE',
+          agreementId: 'agreement-1',
+          description: 'Beschreibung',
         },
       ],
     });
@@ -288,7 +347,7 @@ describe('TenantIssueList feature', () => {
 
   it('shows translated error and clears cards when issue loading fails', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockRejectedValue(new Error('request failed'));
+    vi.mocked(tenantIssueService.getIssues).mockRejectedValue(new Error('request failed'));
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueList, { global: { stubs: { NewTenancyIssueDialog: true } } });

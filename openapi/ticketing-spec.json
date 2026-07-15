@@ -573,6 +573,12 @@
             "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
+          "projectId" : {
+            "description" : "Unique identifier of the project this issue belongs to",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
           "modifiedAt" : {
             "description" : "Last modification timestamp of the issue",
             "readOnly" : true,
@@ -739,25 +745,21 @@
         }
       },
       "IssueListJson" : {
-        "description" : "A list of issues",
+        "description" : "A cursor-paginated list of issues",
         "type" : "object",
-        "required" : [ "first", "size" ],
         "properties" : {
-          "first" : {
-            "type" : "integer",
-            "format" : "int32",
-            "description" : "Index of the first element in list of total available entries, starting at 1",
-            "readOnly" : true,
-            "examples" : [ 1 ]
+          "nextCursor" : {
+            "type" : "string",
+            "description" : "Opaque cursor to fetch the next page with; absent/null if there is no further page",
+            "readOnly" : true
           },
           "size" : {
             "type" : "integer",
             "format" : "int32",
             "maximum" : 500,
-            "minimum" : 1,
-            "description" : "Number of elements in list",
-            "readOnly" : true,
-            "default" : 50
+            "minimum" : 0,
+            "description" : "Number of elements in this page",
+            "readOnly" : true
           },
           "issues" : {
             "type" : "array",
@@ -765,7 +767,8 @@
               "$ref" : "#/components/schemas/IssueItemJson"
             }
           }
-        }
+        },
+        "required" : [ "size" ]
       },
       "IssuePriority" : {
         "type" : "string",
@@ -792,6 +795,10 @@
       "MemberRole" : {
         "type" : "string",
         "enum" : [ "PROPRIETOR", "MANAGER", "LESSOR", "STAFF", "COLLABORATOR" ]
+      },
+      "MessagePurpose" : {
+        "type" : "string",
+        "enum" : [ "ISSUE_CREATED", "MESSAGE_SENT", "APPOINTMENT_REQUESTED", "APPOINTMENT_SCHEDULED", "STATUS_CHANGED" ]
       },
       "OffsetDateTime" : {
         "type" : "string",
@@ -1934,6 +1941,97 @@
           }
         }
       },
+      "TenantIssueJson" : {
+        "description" : "An issue, as visible to the tenant who reported it or is affected by it",
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "modifiedAt" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "title" : {
+            "type" : "string",
+            "pattern" : "\\S",
+            "maxLength" : 255
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/IssueType"
+          },
+          "category" : {
+            "$ref" : "#/components/schemas/IssueCategory"
+          },
+          "status" : {
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/IssueStatus"
+          },
+          "reporterId" : {
+            "description" : "ID of the user who reported this issue",
+            "readOnly" : true,
+            "type" : "string",
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "reportedBy" : {
+            "type" : "string",
+            "description" : "Name of the user who reported this issue",
+            "readOnly" : true
+          },
+          "agreementId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "rentalUnitId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "rentalUnitType" : {
+            "$ref" : "#/components/schemas/UnitType"
+          },
+          "location" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
+            }
+          }
+        },
+        "required" : [ "title", "type", "agreementId", "description" ]
+      },
+      "TenantIssueListJson" : {
+        "description" : "A cursor-paginated list of issues visible to a tenant",
+        "type" : "object",
+        "properties" : {
+          "nextCursor" : {
+            "type" : "string",
+            "description" : "Opaque cursor to fetch the next page with; absent/null if there is no further page",
+            "readOnly" : true
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 500,
+            "minimum" : 0,
+            "description" : "Number of elements in this page",
+            "readOnly" : true
+          },
+          "issues" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TenantIssueJson"
+            }
+          }
+        },
+        "required" : [ "size" ]
+      },
       "TenantItemJson" : {
         "description" : "A tenant item with rental units and active status for list views",
         "type" : "object",
@@ -2084,8 +2182,8 @@
           "senderName" : {
             "type" : "string"
           },
-          "title" : {
-            "type" : "string"
+          "purpose" : {
+            "$ref" : "#/components/schemas/MessagePurpose"
           },
           "message" : {
             "type" : "string"
@@ -2344,7 +2442,8 @@
     },
     "/ticketing/v1/issues" : {
       "get" : {
-        "summary" : "Retrieve information for all issues.",
+        "summary" : "Retrieve information for all issues of a single project.",
+        "description" : "This method is intended solely for use by a property manager, scoped to exactly one project at a time. Tenants must use the separate tenant issues endpoint instead.",
         "parameters" : [ {
           "description" : "Filter to return only issuesfor a specific rental agreement",
           "name" : "agreementId",
@@ -2360,7 +2459,14 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
-          "description" : "Maximum number of projects to return",
+          "description" : "Opaque cursor returned by a previous call to fetch the next page",
+          "name" : "cursor",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Maximum number of issues to return",
           "name" : "limit",
           "in" : "query",
           "schema" : {
@@ -2372,26 +2478,8 @@
           },
           "required" : true
         }, {
-          "description" : "Offset of the first project to return",
-          "name" : "offset",
-          "in" : "query",
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32",
-            "minimum" : 0,
-            "default" : "0"
-          },
-          "required" : true
-        }, {
-          "description" : "Whether to prefer tenancy issues over project issues",
-          "name" : "preferTenancyIssues",
-          "in" : "query",
-          "schema" : {
-            "type" : "boolean",
-            "default" : false
-          }
-        }, {
-          "description" : "Filter to return only issues of a specific project",
+          "description" : "ID of the project to return issues of",
+          "required" : true,
           "name" : "projectId",
           "in" : "query",
           "schema" : {
@@ -2424,7 +2512,7 @@
             "description" : "No user authentication provided via session cookie"
           },
           "403" : {
-            "description" : "Not Allowed"
+            "description" : "User does not have permission to read issues of this project"
           }
         },
         "security" : [ {
@@ -2436,11 +2524,6 @@
         "description" : "Creates a new issue based on the provided issue information. This method is intended solely for the creation of issues by a property manager.",
         "requestBody" : {
           "content" : {
-            "multipart/form-data" : {
-              "schema" : {
-                "type" : "object"
-              }
-            },
             "application/json" : {
               "schema" : {
                 "$ref" : "#/components/schemas/IssueJson"
@@ -2457,9 +2540,6 @@
                 "description" : "URL of the new issue"
               }
             }
-          },
-          "400" : {
-            "description" : "Invalid input or unsupported file type"
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -2512,6 +2592,7 @@
       },
       "get" : {
         "summary" : "Retrieve information of an issue.",
+        "description" : "This method is intended solely for use by a property manager.",
         "parameters" : [ {
           "description" : "ID of the issue",
           "required" : true,
@@ -2525,11 +2606,11 @@
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
+          "403" : {
+            "description" : "User does not have permission to view this issue"
+          },
           "404" : {
             "description" : "The property does not exist"
-          },
-          "403" : {
-            "description" : "Not Allowed"
           }
         },
         "security" : [ {
@@ -4811,6 +4892,184 @@
           },
           "404" : {
             "description" : "Quotation not found"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/tenant-relations/issues" : {
+      "get" : {
+        "summary" : "Retrieve information for all issues of the calling tenant.",
+        "description" : "Aggregates issues across all rental agreements the caller is a tenant of.",
+        "parameters" : [ {
+          "description" : "Opaque cursor returned by a previous call to fetch the next page",
+          "name" : "cursor",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Maximum number of issues to return",
+          "name" : "limit",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 500,
+            "exclusiveMinimum" : 0,
+            "default" : "50"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new issue with multiple image attachments.",
+        "description" : "Creates a new issue based on the provided issue information and attaches multiple image files to it. This method is intended solely for the creation of issues by a tenant.",
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Issue with attachments created successfully",
+            "headers" : {
+              "Location" : {
+                "description" : "URL of the new issue"
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input or unsupported file type"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/tenant-relations/issues/{issueId}" : {
+      "get" : {
+        "summary" : "Retrieve information of an issue.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to view this issue"
+          },
+          "404" : {
+            "description" : "The issue does not exist"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "delete" : {
+        "summary" : "Close an existing issue.",
+        "description" : "Closes the issue (sets its status to CLOSED). Tenants cannot delete issues outright.",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The issue was closed successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to close this issue"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/tenant-relations/issues/{issueId}/attachments/{attachmentId}/{filename}" : {
+      "get" : {
+        "summary" : "Download an issue attachment",
+        "parameters" : [ {
+          "description" : "ID of the attachment",
+          "required" : true,
+          "name" : "attachmentId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "Filename of the attachment",
+          "required" : true,
+          "name" : "filename",
+          "in" : "path",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Attachment downloaded successfully",
+            "content" : {
+              "application/octet-stream" : { }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "403" : {
+            "description" : "User does not have permission to access this attachment"
+          },
+          "404" : {
+            "description" : "Attachment not found"
           }
         },
         "security" : [ {
