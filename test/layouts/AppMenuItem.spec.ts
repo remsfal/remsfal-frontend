@@ -143,7 +143,57 @@ describe('AppMenuItem.vue', () => {
     it('does not add active-route class for "/" items', () => {
       const rootItem = { label: 'projectMenu.home.label', to: '/' };
       const wrapper = mountItem(rootItem, {}, {
-        path: '/', name: 'Home', params: {}, query: {} 
+        path: '/', name: 'Home', params: {}, query: {}
+      });
+      expect(wrapper.find('.active-route').exists()).toBe(false);
+    });
+  });
+
+  describe('query-aware active state (object to)', () => {
+    const projectId = '123';
+    const openItem: MenuItem = {
+      label: 'projectMenu.issueManagement.open',
+      to: {
+        name: 'IssueOverview', params: { projectId }, query: { status: 'OPEN', type: 'TASK' } 
+      },
+    };
+    const allItem: MenuItem = {
+      label: 'projectMenu.issueManagement.all',
+      to: {
+        name: 'IssueOverview', params: { projectId }, query: { type: 'TASK' } 
+      },
+    };
+
+    it('highlights the item whose query exactly matches the route', () => {
+      const wrapper = mountItem(openItem, {}, {
+        path: '/projects/123/issues', name: 'IssueOverview', params: { projectId }, query: { status: 'OPEN', type: 'TASK' },
+      });
+      expect(wrapper.find('.active-route').exists()).toBe(true);
+    });
+
+    it('does not highlight a sibling item whose query is a subset of the route query', () => {
+      // Regression test for the bug where "Alle Aufgaben" (no status) also lit up
+      // while viewing "Offene Aufgaben" (?status=OPEN&type=TASK), since both share
+      // the IssueOverview route and "all" only declares type=TASK.
+      const wrapper = mountItem(allItem, {}, {
+        path: '/projects/123/issues', name: 'IssueOverview', params: { projectId }, query: { status: 'OPEN', type: 'TASK' },
+      });
+      expect(wrapper.find('.active-route').exists()).toBe(false);
+    });
+
+    it('highlights the "all" item only when the route has no extra query params', () => {
+      const wrapper = mountItem(allItem, {}, {
+        path: '/projects/123/issues', name: 'IssueOverview', params: { projectId }, query: { type: 'TASK' },
+      });
+      expect(wrapper.find('.active-route').exists()).toBe(true);
+    });
+
+    it('does not highlight when the route name differs even if the query matches', () => {
+      const wrapper = mountItem(allItem, {}, {
+        path: '/projects/123/issues/abc',
+        name: 'IssueDetails',
+        params: { projectId, issueId: 'abc' },
+        query: { type: 'TASK' },
       });
       expect(wrapper.find('.active-route').exists()).toBe(false);
     });

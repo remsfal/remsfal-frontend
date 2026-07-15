@@ -59,17 +59,33 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'projectMenu.issueManagement.mine',
           icon: { type: 'fa', name: ['fas', 'list'] },
-          to: currentProjectId ? `/projects/${currentProjectId}/issues?owner=${sessionStore.user?.id}` : '/',
+          to: currentProjectId
+            ? {
+              name: 'IssueOverview',
+              params: { projectId: currentProjectId },
+              query: { assigneeId: sessionStore.user?.id, type: 'TASK' },
+            }
+            : '/',
         },
         {
           label: 'projectMenu.issueManagement.open',
           icon: { type: 'fa', name: ['fas', 'list-check'] },
-          to: currentProjectId ? `/projects/${currentProjectId}/issues?status=OPEN` : '/',
+          to: currentProjectId
+            ? {
+              name: 'IssueOverview',
+              params: { projectId: currentProjectId },
+              query: { status: 'OPEN', type: 'TASK' },
+            }
+            : '/',
         },
         {
           label: 'projectMenu.issueManagement.all',
           icon: { type: 'fa', name: ['far', 'rectangle-list'] },
-          to: currentProjectId ? `/projects/${currentProjectId}/issues` : '/',
+          to: currentProjectId
+            ? {
+              name: 'IssueOverview', params: { projectId: currentProjectId }, query: { type: 'TASK' } 
+            }
+            : '/',
         },
       ],
     },
@@ -79,22 +95,44 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         {
           label: 'projectMenu.defectManagement.new',
           icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-          to: currentProjectId ? `/projects/${currentProjectId}/chat` : '/',
+          to: currentProjectId
+            ? {
+              name: 'IssueOverview',
+              params: { projectId: currentProjectId },
+              query: { status: 'PENDING', type: 'DEFECT' },
+            }
+            : '/',
         },
         {
           label: 'projectMenu.defectManagement.open',
           icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-          to: currentProjectId ? `/projects/${currentProjectId}/chat` : '/',
+          to: currentProjectId
+            ? {
+              name: 'IssueOverview',
+              params: { projectId: currentProjectId },
+              query: { status: 'OPEN', type: 'DEFECT' },
+            }
+            : '/',
         },
         {
           label: 'projectMenu.defectManagement.closed',
           icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-          to: currentProjectId ? `/projects/${currentProjectId}/chat` : '/',
+          to: currentProjectId
+            ? {
+              name: 'IssueOverview',
+              params: { projectId: currentProjectId },
+              query: { status: 'CLOSED', type: 'DEFECT' },
+            }
+            : '/',
         },
         {
           label: 'projectMenu.defectManagement.all',
           icon: { type: 'pi', name: 'pi pi-fw pi-comments' },
-          to: currentProjectId ? `/projects/${currentProjectId}/chat` : '/',
+          to: currentProjectId
+            ? {
+              name: 'IssueOverview', params: { projectId: currentProjectId }, query: { type: 'DEFECT' } 
+            }
+            : '/',
         },
       ],
     },

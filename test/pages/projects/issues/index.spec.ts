@@ -9,7 +9,7 @@ vi.mock('vue-router', async (importOriginal) => {
     useRoute: () => ({
       params: { projectId: 'proj-1' },
       query: {
-        owner: 'user-1', status: 'OPEN', category: 'MAINTENANCE' 
+        assigneeId: 'user-1', status: 'OPEN', type: 'MAINTENANCE'
       },
     }),
   };
@@ -18,7 +18,7 @@ vi.mock('vue-router', async (importOriginal) => {
 vi.mock('@/features/project/issues', () => ({
   IssueListView: {
     name: 'IssueListView',
-    props: ['projectId', 'assigneeId', 'status', 'category'],
+    props: ['projectId', 'assigneeId', 'status', 'type'],
     template: '<div data-test="issue-list-view-stub" />',
   },
 }));
@@ -40,6 +40,6 @@ describe('projects/[projectId]/issues/index.vue', () => {
     const view = wrapper.findComponent({ name: 'IssueListView' });
     expect(view.props('assigneeId')).toBe('user-1');
     expect(view.props('status')).toBe('OPEN');
-    expect(view.props('category')).toBe('MAINTENANCE');
+    expect(view.props('type')).toBe('MAINTENANCE');
   });
 });

@@ -4,6 +4,7 @@ import { useRoute, type RouteLocationRaw } from 'vue-router';
 import AppRoleMobileBar from '@/layouts/components/AppRoleMobileBar.vue'
 import ProjectMenu from '@/layouts/components/ProjectMenu.vue';
 import type { MobileNavItem } from '@/layouts/composables/useMobileBarActiveState';
+import { matchesRouteTarget } from '@/layouts/composables/useRouteActiveMatch';
 
 interface ProjectNavItem extends MobileNavItem {
   to: RouteLocationRaw;
@@ -40,7 +41,7 @@ const navItems = computed<ProjectNavItem[]>(() => {
       to: {
         name: 'IssueOverview',
         params: { projectId: projectId.value },
-        query: { status: 'OPEN', category: 'TASK' },
+        query: { status: 'OPEN', type: 'TASK' },
       },
       icon: 'pi-list',
     },
@@ -49,7 +50,7 @@ const navItems = computed<ProjectNavItem[]>(() => {
       to: {
         name: 'IssueOverview',
         params: { projectId: projectId.value },
-        query: { status: 'OPEN', category: 'DEFECT' },
+        query: { status: 'OPEN', type: 'DEFECT' },
       },
       icon: 'pi-exclamation-circle',
     },
@@ -61,48 +62,8 @@ const navItems = computed<ProjectNavItem[]>(() => {
   ];
 });
 
-function matchesQuery(
-  targetQuery: Record<string, string>,
-  routeQuery: Record<string, string | null | (string | null)[]>,
-  strict: boolean,
-): boolean {
-  const targetKeys = Object.keys(targetQuery);
-  const routeKeys = Object.keys(routeQuery);
-
-  if (targetKeys.length > 0) {
-    for (const key of targetKeys) {
-      if (routeQuery[key] !== targetQuery[key]) return false;
-    }
-    return true;
-  }
-
-  if (strict && routeKeys.length > 0) {
-    return false;
-  }
-
-  return true;
-}
-
 function isActive(item: MobileNavItem): boolean {
-  if (!item.to) return false;
-
-  const target = item.to;
-  const currentRouteQuery = route.query as Record<string, string>;
-
-  if (typeof target === 'string') {
-    return route.path === target || (target !== '/' && route.path.startsWith(target));
-  }
-
-  if (typeof target === 'object' && target !== null && 'name' in target) {
-    if (target.name && route.name !== target.name) return false;
-
-    const targetQuery = (target as { query?: Record<string, string> }).query || {};
-    const strict = !Object.keys(targetQuery).length && route.name === (target as { name?: string }).name;
-
-    return matchesQuery(targetQuery, currentRouteQuery, strict);
-  }
-
-  return true;
+  return matchesRouteTarget(route, item.to);
 }
 </script>
 

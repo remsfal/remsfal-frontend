@@ -11,22 +11,22 @@ vi.mock('vue-router', async (importOriginal) => {
 });
 
 vi.mock('@/features/project/issues', () => ({
-  ProjectIssueView: {
-    name: 'ProjectIssueView',
+  IssueView: {
+    name: 'IssueView',
     props: ['projectId', 'issueId'],
-    template: '<div data-test="project-issue-view-stub" />',
+    template: '<div data-test="issue-view-stub" />',
   },
 }));
 
 describe('projects/[projectId]/issues/[issueId].vue', () => {
-  it('renders ProjectIssueView', () => {
+  it('renders IssueView', () => {
     const wrapper = mount(IssueDetailsPage);
-    expect(wrapper.find('[data-test="project-issue-view-stub"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="issue-view-stub"]').exists()).toBe(true);
   });
 
-  it('passes projectId and issueId from route params to ProjectIssueView', () => {
+  it('passes projectId and issueId from route params to IssueView', () => {
     const wrapper = mount(IssueDetailsPage);
-    const view = wrapper.findComponent({ name: 'ProjectIssueView' });
+    const view = wrapper.findComponent({ name: 'IssueView' });
     expect(view.props('projectId')).toBe('project-123');
     expect(view.props('issueId')).toBe('issue-456');
   });
