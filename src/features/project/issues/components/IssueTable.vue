@@ -6,10 +6,16 @@ import Column from 'primevue/column';
 import { type IssueItemJson } from '@/services/IssueService.ts';
 import { useProjectMembers } from '@/composables/useProjectMembers';
 
-const props = defineProps<{
-  issues: IssueItemJson[];
-  projectId: string;
-}>();
+export type IssueColumn = 'title' | 'assignee' | 'status' | 'priority' | 'type';
+
+const props = withDefaults(
+  defineProps<{
+    issues: IssueItemJson[];
+    projectId: string;
+    columns?: IssueColumn[];
+  }>(),
+  { columns: () => ['title', 'assignee', 'status'] },
+);
 
 const emit = defineEmits<{
   rowSelect: [issue: IssueItemJson];
@@ -23,6 +29,8 @@ const memberNameById = computed(() => new Map(members.value.map((m) => [m.id, m.
 
 const assigneeName = (assigneeId?: string) =>
   (assigneeId && memberNameById.value.get(assigneeId)) || assigneeId;
+
+const isColumnVisible = (column: IssueColumn) => props.columns.includes(column);
 
 const onRowSelect = (event: { data: IssueItemJson }) => {
   emit('rowSelect', event.data);
@@ -46,12 +54,14 @@ const onRowSelect = (event: { data: IssueItemJson }) => {
         </div>
       </div>
     </template>
-    <Column field="title" :header="t('issueDetails.fields.title')" sortable />
-    <Column field="assigneeId" :header="t('issueDetails.fields.assignee')" sortable>
+    <Column v-if="isColumnVisible('title')" field="title" :header="t('issueDetails.fields.title')" sortable />
+    <Column v-if="isColumnVisible('assignee')" field="assigneeId" :header="t('issueDetails.fields.assignee')" sortable>
       <template #body="slotProps">
         {{ assigneeName(slotProps.data.assigneeId) }}
       </template>
     </Column>
-    <Column field="status" :header="t('issueDetails.fields.status')" sortable />
+    <Column v-if="isColumnVisible('status')" field="status" :header="t('issueDetails.fields.status')" sortable />
+    <Column v-if="isColumnVisible('priority')" field="priority" :header="t('issueDetails.fields.priority')" sortable />
+    <Column v-if="isColumnVisible('type')" field="type" :header="t('issueDetails.fields.type')" sortable />
   </DataTable>
 </template>
