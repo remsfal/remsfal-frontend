@@ -3515,6 +3515,119 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/ticketing/v1/tenant-relations/issues/{issueId}/timeline": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get all timeline entries for an issue */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Timeline entries retrieved */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TenantTimelineListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Issue not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /** Create a new timeline entry with attachments for an issue */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": Record<string, never>;
+        };
+      };
+      responses: {
+        /** @description Timeline entry created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Invalid input */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Issue not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4337,6 +4450,25 @@ export interface components {
     /** @description A list of tenants for a project */
     TenantListJson: {
       tenants?: components["schemas"]["TenantItemJson"][];
+    };
+    /** @description A tenant timeline entry */
+    TenantTimelineJson: {
+      issueId?: components["schemas"]["UUID"];
+      tenancyId?: components["schemas"]["UUID"];
+      timelineId?: components["schemas"]["UUID"];
+      projectId?: components["schemas"]["UUID"];
+      attachments?: components["schemas"]["IssueAttachmentJson"][];
+      senderId?: components["schemas"]["UUID"];
+      senderName?: string;
+      title?: string;
+      message?: string;
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+    };
+    /** @description A list of tenant timelines */
+    TenantTimelineListJson: {
+      /** @description Tenant timeline entries */
+      timelines: components["schemas"]["TenantTimelineJson"][];
     };
     /** Format: uuid */
     UUID: string;
