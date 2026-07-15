@@ -59,6 +59,7 @@ describe('NewContractorButton', () => {
     expect(wrapper.text()).toContain('Telefon');
     expect(wrapper.text()).toContain('Ansprechpartner');
     expect(wrapper.text()).toContain('Gewerk');
+    expect(wrapper.text()).toContain('Bemerkungen');
   });
 
   it('renders PhoneInput inside dialog', () => {
@@ -124,12 +125,13 @@ describe('NewContractorButton', () => {
         email: { value: 'test@gmbh.de' },
         contactPerson: { value: 'Max' },
         trade: { value: 'Bau' },
+        remarks: { value: 'Handles roofing jobs' },
       },
     });
     await flushPromises();
 
     expect(projectContractorService.createContractor).toHaveBeenCalledWith(
-      'proj-1', expect.objectContaining({ companyName: 'Test GmbH' }),
+      'proj-1', expect.objectContaining({ companyName: 'Test GmbH', remarks: 'Handles roofing jobs' }),
     );
     expect(wrapper.emitted('newContractor')).toBeTruthy();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
@@ -146,6 +148,7 @@ describe('NewContractorButton', () => {
         email: { value: '' },
         contactPerson: { value: '' },
         trade: { value: '' },
+        remarks: { value: '' },
       },
     });
     await flushPromises();
@@ -156,6 +159,7 @@ describe('NewContractorButton', () => {
       phone: undefined,
       contactPerson: undefined,
       trade: undefined,
+      remarks: undefined,
     });
   });
 

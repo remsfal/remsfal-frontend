@@ -68,4 +68,21 @@ describe('ContractorService (MSW with http)', () => {
 
     await expect(service.getIssue('non-existing')).rejects.toThrow();
   });
+
+  it('should filter issues by status and owner when both are provided', async () => {
+    let capturedParams: Record<string, string> = {};
+    server.use(
+      http.get('/ticketing/v1/issues', ({ request }) => {
+        const url = new URL(request.url);
+        capturedParams = Object.fromEntries(url.searchParams.entries());
+        return HttpResponse.json({
+          issues: [], first: 0, size: 0 
+        });
+      }),
+    );
+
+    await service.getIssues('OPEN', 'owner-1');
+
+    expect(capturedParams).toMatchObject({ status: 'OPEN', owner: 'owner-1' });
+  });
 });

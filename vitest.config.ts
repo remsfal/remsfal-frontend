@@ -23,6 +23,14 @@ export default mergeConfig(
           'src/assets/**',
           'src/services/api/*-schema.ts',
         ],
+        thresholds: {
+          'src/services/**': {
+            statements: 100,
+            branches: 100,
+            functions: 100,
+            lines: 100,
+          },
+        },
       },
       environment: 'jsdom',
       globals: true,

@@ -2056,6 +2056,62 @@
           }
         }
       },
+      "TenantTimelineJson" : {
+        "description" : "A tenant timeline entry",
+        "type" : "object",
+        "properties" : {
+          "issueId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "tenancyId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "timelineId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "projectId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "attachments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueAttachmentJson"
+            }
+          },
+          "senderId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "senderName" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          },
+          "modifiedAt" : {
+            "$ref" : "#/components/schemas/Instant"
+          }
+        }
+      },
+      "TenantTimelineListJson" : {
+        "description" : "A list of tenant timelines",
+        "type" : "object",
+        "required" : [ "timelines" ],
+        "properties" : {
+          "timelines" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TenantTimelineJson"
+            },
+            "description" : "Tenant timeline entries"
+          }
+        }
+      },
       "UUID" : {
         "type" : "string",
         "format" : "uuid",
@@ -4755,6 +4811,86 @@
           },
           "404" : {
             "description" : "Quotation not found"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/tenant-relations/issues/{issueId}/timeline" : {
+      "get" : {
+        "summary" : "Get all timeline entries for an issue",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Timeline entries retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenantTimelineListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "Issue not found"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new timeline entry with attachments for an issue",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Timeline entry created"
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "Issue not found"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
         },
         "security" : [ {

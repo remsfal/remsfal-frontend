@@ -3,6 +3,7 @@ import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import IssueDetailsCard from '@/features/project/issues/components/IssueDetailsCard.vue';
 import Select from 'primevue/select';
+import AutoComplete from 'primevue/autocomplete';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
 import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
@@ -61,6 +62,9 @@ const baseProps: {
     project: string;
     issueType: IssueJson['type'];
     tenancy: string;
+    category: IssueJson['category'];
+    priority: IssueJson['priority'];
+    modifiedAt?: IssueJson['modifiedAt'];
   };
 } = {
   projectId: 'project-1',
@@ -74,6 +78,9 @@ const baseProps: {
     project: 'Project A',
     issueType: 'TASK',
     tenancy: 'tenant-1',
+    category: 'GENERAL',
+    priority: 'MEDIUM',
+    modifiedAt: '2026-01-15T10:30:00Z',
   },
 };
 
@@ -101,7 +108,7 @@ describe('IssueDetailsCard.vue', () => {
   // ───────────────────────────────────────────────────────────────────────────
   test('renders issue title in card header', () => {
     expect(wrapper.text()).toContain('Old title');
-    expect(wrapper.text()).toContain('Vorgangs-ID');
+    expect(wrapper.text()).toContain('Ticketnummer');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -388,5 +395,183 @@ describe('IssueDetailsCard.vue', () => {
     });
 
     expect(wrapperWithoutReporter.find<HTMLInputElement>('#issue-reporter').element.value).toBe('Kein Melder');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('resolves category and priority to null when initialData omits them', () => {
+    const wrapperWithoutCategoryAndPriority = mount(IssueDetailsCard, {
+      props: {
+        ...baseProps,
+        initialData: {
+          ...baseProps.initialData,
+          category: undefined as unknown as IssueJson['category'],
+          priority: undefined as unknown as IssueJson['priority'],
+        },
+      },
+    });
+
+    const categoryAutoComplete = wrapperWithoutCategoryAndPriority.findAllComponents(AutoComplete)[0];
+    const priorityAutoComplete = wrapperWithoutCategoryAndPriority.findAllComponents(AutoComplete)[1];
+
+    expect(categoryAutoComplete.props('modelValue')).toBeNull();
+    expect(priorityAutoComplete.props('modelValue')).toBeNull();
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test.each([
+    ['DEFECT', 'Wasserschaden'],
+    ['INQUIRY', 'Wohnungsgeberbestätigung'],
+    ['MAINTENANCE', 'Gartenpflege'],
+  ] as const)('offers %s-specific categories for %s issue type', async (issueType, expectedLabel) => {
+    await wrapper.findAllComponents(Select)[1].vm.$emit('update:modelValue', issueType);
+    await nextTick();
+
+    const categoryAutoComplete = wrapper.findAllComponents(AutoComplete)[0];
+    await categoryAutoComplete.vm.$emit('complete', { query: '' });
+    await nextTick();
+
+    const labels = categoryAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
+    expect(labels).toContain(expectedLabel);
+    expect(labels).toContain('Sonstiges');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('filters categories by query text', async () => {
+    const categoryAutoComplete = wrapper.findAllComponents(AutoComplete)[0];
+    await categoryAutoComplete.vm.$emit('complete', { query: 'sonst' });
+    await nextTick();
+
+    const labels = categoryAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
+    expect(labels).toEqual(['Sonstiges']);
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('filters priorities by query text', async () => {
+    const priorityAutoComplete = wrapper.findAllComponents(AutoComplete)[1];
+    await priorityAutoComplete.vm.$emit('complete', { query: 'hoch' });
+    await nextTick();
+
+    const labels = priorityAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
+    expect(labels).toEqual(['Hoch']);
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('lists all priorities when query is empty', async () => {
+    const priorityAutoComplete = wrapper.findAllComponents(AutoComplete)[1];
+    await priorityAutoComplete.vm.$emit('complete', { query: '' });
+    await nextTick();
+
+    expect(priorityAutoComplete.props('suggestions')).toHaveLength(5);
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('resets category when issue type change event fires', async () => {
+    await wrapper.findAllComponents(Select)[1].vm.$emit('change', { value: 'DEFECT' });
+    await nextTick();
+
+    const categoryAutoComplete = wrapper.findAllComponents(AutoComplete)[0];
+    expect(categoryAutoComplete.props('modelValue')).toBeNull();
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('falls back to em dash when issueId is empty', () => {
+    const wrapperWithoutIssueId = mount(IssueDetailsCard, {
+      props: {
+        ...baseProps,
+        initialData: { ...baseProps.initialData, issueId: '' },
+      },
+    });
+
+    expect(wrapperWithoutIssueId.find<HTMLInputElement>('#issue-number').element.value).toBe('—');
+    expect(wrapperWithoutIssueId.text()).toContain('Ticketnummer —');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('falls back to em dash when modifiedAt is missing', () => {
+    const wrapperWithoutModifiedAt = mount(IssueDetailsCard, {
+      props: {
+        ...baseProps,
+        initialData: { ...baseProps.initialData, modifiedAt: undefined },
+      },
+    });
+
+    expect(wrapperWithoutModifiedAt.find<HTMLInputElement>('#issue-assigned-at').element.value).toBe('—');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('shows raw modifiedAt value when it is not a valid date', () => {
+    const wrapperWithInvalidDate = mount(IssueDetailsCard, {
+      props: {
+        ...baseProps,
+        initialData: { ...baseProps.initialData, modifiedAt: 'not-a-date' },
+      },
+    });
+
+    expect(wrapperWithInvalidDate.find<HTMLInputElement>('#issue-assigned-at').element.value).toBe('not-a-date');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('updates fields when initialData prop changes', async () => {
+    await wrapper.setProps({
+      initialData: {
+        issueId: 'issue-2',
+        title: 'Replaced title',
+        status: 'CLOSED',
+        assigneeId: 'user-2',
+        reportedBy: 'John Reporter',
+        project: 'Project B',
+        issueType: 'DEFECT',
+        tenancy: 'tenant-2',
+        category: 'WATER_DAMAGE',
+        priority: 'HIGH',
+        modifiedAt: '2026-02-01T00:00:00Z',
+      },
+    });
+    await nextTick();
+
+    expect(wrapper.find<HTMLInputElement>('#issue-title').element.value).toBe('Replaced title');
+    expect(wrapper.find<HTMLInputElement>('#issue-reporter').element.value).toBe('John Reporter');
+    expect(wrapper.find<HTMLInputElement>('#issue-tenancy').element.value).toBe('tenant-2');
+    // canSave should be false again since original values now match the new data
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('includes assigneeId, category and priority in payload when changed', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
+
+    const categoryOption = { value: 'WATER_DAMAGE', label: 'Wasserschaden' };
+    const priorityOption = { value: 'HIGH', label: 'Hoch' };
+
+    await wrapper.findComponent(MemberAutoComplete).vm.$emit('update:modelValue', 'user-2');
+    await wrapper.findAllComponents(AutoComplete)[0].vm.$emit('update:modelValue', categoryOption);
+    await wrapper.findAllComponents(AutoComplete)[1].vm.$emit('update:modelValue', priorityOption);
+    await nextTick();
+
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
+      'issue-1',
+      {
+        assigneeId: 'user-2', category: 'WATER_DAMAGE', priority: 'HIGH' 
+      },
+    );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('omits title from payload when only another field changes', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
+
+    await wrapper.findAllComponents(Select)[0].vm.$emit('update:modelValue', 'CLOSED');
+    await nextTick();
+
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
+      'issue-1',
+      { status: 'CLOSED' },
+    );
   });
 });

@@ -1653,6 +1653,45 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenantItemJson"
+    TenantTimelineJson:
+      description: A tenant timeline entry
+      type: object
+      properties:
+        issueId:
+          $ref: "#/components/schemas/UUID"
+        tenancyId:
+          $ref: "#/components/schemas/UUID"
+        timelineId:
+          $ref: "#/components/schemas/UUID"
+        projectId:
+          $ref: "#/components/schemas/UUID"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueAttachmentJson"
+        senderId:
+          $ref: "#/components/schemas/UUID"
+        senderName:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
+          $ref: "#/components/schemas/Instant"
+    TenantTimelineListJson:
+      description: A list of tenant timelines
+      type: object
+      required:
+      - timelines
+      properties:
+        timelines:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantTimelineJson"
+          description: Tenant timeline entries
     UUID:
       type: string
       format: uuid

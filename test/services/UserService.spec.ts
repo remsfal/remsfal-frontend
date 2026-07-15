@@ -23,8 +23,7 @@ describe('UserService with MSW', () => {
   
 
   test('deleteUser succeeds', async () => {
-    await userService.deleteUser();
-    // If no error is thrown, the delete was successful
+    await expect(userService.deleteUser()).resolves.toBeUndefined();
   });
 
 });
