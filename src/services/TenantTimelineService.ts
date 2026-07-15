@@ -22,7 +22,11 @@ class TenantTimelineService {
       formData.append('attachment', file);
     });
 
-    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timeline', formData, { pathParams: { issueId } });
+    await apiClient.post(
+      '/ticketing/v1/tenant-relations/issues/{issueId}/timeline',
+      formData as unknown as never,
+      { pathParams: { issueId } },
+    );
   }
 }
 
