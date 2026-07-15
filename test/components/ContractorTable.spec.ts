@@ -45,7 +45,7 @@ describe('ContractorTable.vue', () => {
     expect(wrapper.findComponent(DataTable).props('value')).toEqual(mockIssues);
 
     const rows = wrapper.findAll('tr');
-    expect(rows.length).toBe(mockIssues.length + 1);
+    expect(rows).toHaveLength(mockIssues.length + 1);
   });
 
   it('expands a row when expander is clicked', async () => {

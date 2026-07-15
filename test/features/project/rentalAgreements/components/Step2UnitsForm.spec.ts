@@ -92,7 +92,7 @@ describe('Step2UnitsForm', () => {
     await wrapper.vm.$nextTick();
 
     const unitCards = wrapper.findAll('.bg-gray-50');
-    expect(unitCards.length).toBe(1);
+    expect(unitCards).toHaveLength(1);
     expect(unitCards[0].text()).toContain('Apartment 101');
     expect(unitCards[0].text()).toContain('1.000,00');
   });
