@@ -160,29 +160,30 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('createTenancyIssueWithAttachment resolves attachments via getIssue for timeline entry', async () => {
-    vi.spyOn(apiClient, 'post').mockResolvedValueOnce({
-      id: 'new-issue-id',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    } as IssueJson);
-    const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
-      id: 'new-issue-id',
-      attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }],
-    } as IssueJson);
+    server.use(
+      http.post('/ticketing/v1/issues', () =>
+        HttpResponse.json({
+          id: 'new-issue-id',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }),
+      ),
+      http.get('/ticketing/v1/issues/:issueId', () =>
+        HttpResponse.json({
+          id: 'new-issue-id',
+          attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }],
+        }),
+      ),
+    );
 
     await issueService.createTenancyIssueWithAttachment(
       { title: 'Issue with attachment fallback' },
       [new File(['file content'], 'photo.png', { type: 'image/png' })],
     );
 
-    expect(getSpy).toHaveBeenCalledWith('/ticketing/v1/issues/{issueId}', {
-      pathParams: { issueId: 'new-issue-id' },
-    });
     expect(tenantTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
       'new-issue-id',
-      expect.objectContaining({
-        attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }],
-      }),
+      expect.objectContaining({ attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }] }),
       [],
     );
   });
