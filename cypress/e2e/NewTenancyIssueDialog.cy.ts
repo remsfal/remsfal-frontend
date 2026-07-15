@@ -60,9 +60,9 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       body: { agreements: [tenancy1, tenancy2] },
     }).as('getTenancies');
 
-    cy.intercept('GET', '/ticketing/v1/issues*', {
+    cy.intercept('GET', '/ticketing/v1/tenant-relations/issues*', {
       statusCode: 200,
-      body: { first: 0, size: 0, issues: [] },
+      body: { size: 0, issues: [] },
     }).as('getIssues');
   }
 
@@ -634,7 +634,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     }
 
     it('should show a success toast after successful issue creation', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         body: createdIssue,
       }).as('createIssue');
@@ -646,7 +646,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     });
 
     it('should close the dialog after successful submission', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         body: createdIssue,
       }).as('createIssue');
@@ -658,7 +658,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     });
 
     it('should show a loading overlay while the issue is being created', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         delay: 2000,
         body: createdIssue,
@@ -673,7 +673,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     });
 
     it('should show an error toast when the API returns a server error', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 500,
         body: { error: 'Internal Server Error' },
       }).as('createIssueFail');
@@ -685,7 +685,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     });
 
     it('should keep the dialog open after a failed submission so the user can retry', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 500,
         body: { error: 'Internal Server Error' },
       }).as('createIssueFail');
@@ -697,7 +697,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
     });
 
     it('should send a POST request to the ticketing API on submission', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         body: createdIssue,
       }).as('createIssueRequest');
@@ -749,7 +749,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
   // =========================================================================
   describe('Form Reset', () => {
     it('should reset to Step 1 after successful submission when the dialog is reopened', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         body: createdIssue,
       }).as('createIssueReset');
@@ -847,7 +847,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
   // =========================================================================
   describe('Complete DEFECT flow', () => {
     it('should create a DEFECT issue and display a success notification', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         body: createdIssue,
       }).as('createDefectIssue');
@@ -888,7 +888,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
 
   describe('Complete INQUIRY flow', () => {
     it('should create an INQUIRY issue and display a success notification', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         body: {
           ...createdIssue,
@@ -924,7 +924,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
 
   describe('Complete TERMINATION flow', () => {
     it('should create a TERMINATION issue and display a success notification', () => {
-      cy.intercept('POST', '/ticketing/v1/issues', {
+      cy.intercept('POST', '/ticketing/v1/tenant-relations/issues', {
         statusCode: 201,
         body: {
           ...createdIssue,
