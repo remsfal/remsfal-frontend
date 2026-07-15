@@ -30,9 +30,7 @@ vi.mock('@/services/StorageService', () => ({storageService: { getStorage: vi.fn
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
-  return {
-    ...actual, navigateToObjects: vi.fn(), showSavingErrorToast: vi.fn(),
-  };
+  return {...actual, showSavingErrorToast: vi.fn(),};
 });
 
 // ─── Test Data ────────────────────────────────────────────────────────────────
