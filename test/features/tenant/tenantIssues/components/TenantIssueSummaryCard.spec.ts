@@ -35,6 +35,15 @@ describe('TenantIssueSummaryCard component', () => {
     expect(tags[2].props('severity')).toBe('info');
   });
 
+  it('uses fallback title when title is missing', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      title: undefined,
+    });
+
+    expect(wrapper.text()).toContain('Unbenannt');
+  });
+
   it('emits cancel when cancel button is clicked', async () => {
     const wrapper = mountCard();
 
@@ -142,6 +151,25 @@ describe('TenantIssueSummaryCard component', () => {
     expect(wrapper.text()).toContain(' —');
     expect(wrapper.text()).not.toContain('Küche');
     expect(wrapper.text()).not.toContain('Beschreibung:');
+  });
+
+  it('renders category label when category is set', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      category: 'GENERAL',
+    });
+
+    expect(wrapper.text()).toContain('Sonstiges');
+  });
+
+  it('hides status and type rows when both values are missing', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      status: undefined,
+      type: undefined,
+    });
+
+    expect(wrapper.findAllComponents(Tag)).toHaveLength(1);
   });
 
   it('disables and shows loading state on cancel button while deleting', () => {
