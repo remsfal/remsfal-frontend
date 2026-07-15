@@ -979,6 +979,25 @@ export interface components {
     TenantListJson: {
       tenants?: components["schemas"]["TenantItemJson"][];
     };
+    /** @description A tenant timeline entry */
+    TenantTimelineJson: {
+      issueId?: components["schemas"]["UUID"];
+      tenancyId?: components["schemas"]["UUID"];
+      timelineId?: components["schemas"]["UUID"];
+      projectId?: components["schemas"]["UUID"];
+      attachments?: components["schemas"]["IssueAttachmentJson"][];
+      senderId?: components["schemas"]["UUID"];
+      senderName?: string;
+      title?: string;
+      message?: string;
+      createdAt?: components["schemas"]["Instant"];
+      modifiedAt?: components["schemas"]["Instant"];
+    };
+    /** @description A list of tenant timelines */
+    TenantTimelineListJson: {
+      /** @description Tenant timeline entries */
+      timelines: components["schemas"]["TenantTimelineJson"][];
+    };
     /** Format: uuid */
     UUID: string;
     /** @enum {string} */
