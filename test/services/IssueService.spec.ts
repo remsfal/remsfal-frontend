@@ -176,10 +176,9 @@ describe('IssueService with MSW (http)', () => {
       ),
     );
 
-    await issueService.createTenancyIssueWithAttachment(
-      { title: 'Issue with attachment fallback' },
-      [new File(['file content'], 'photo.png', { type: 'image/png' })],
-    );
+    await issueService.createTenancyIssueWithAttachment({ title: 'Issue with attachment fallback' }, [
+      new File(['file content'], 'photo.png', { type: 'image/png' }),
+    ]);
 
     expect(tenantTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
       'new-issue-id',
