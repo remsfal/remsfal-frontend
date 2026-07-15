@@ -1,38 +1,15 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type ApiPaths } from '@/services/ApiClient';
 
-type IssueAttachmentJson = ApiComponents['schemas']['IssueAttachmentJson'];
-
-export interface TenantTimelineJson {
-  issueId?: string;
-  tenancyId?: string;
-  timelineId?: string;
-  projectId?: string;
-  attachments?: IssueAttachmentJson[];
-  senderId?: string;
-  senderName?: string;
-  title?: string;
-  message?: string;
-  createdAt?: string;
-  modifiedAt?: string;
-}
-
-export interface TenantTimelineListJson {
-  size: number;
-  timelines: TenantTimelineJson[];
-}
+type TenantTimelineCreateBody = ApiPaths['/ticketing/v1/tenant-relations/issues/{issueId}/timeline']['post']['requestBody']['content']['multipart/form-data'];
+export type TenantTimelineJson = ApiComponents['schemas']['TenantTimelineJson'];
+export type TenantTimelineListJson = ApiComponents['schemas']['TenantTimelineListJson'];
 
 class TenantTimelineService {
   async getTimelineEntries(issueId: string): Promise<TenantTimelineListJson> {
-    // @ts-expect-error: Endpoint not yet in generated schema
-    const result = await apiClient.get(
+    return apiClient.get(
       '/ticketing/v1/tenant-relations/issues/{issueId}/timeline',
       { pathParams: { issueId } },
-    ) as Partial<TenantTimelineListJson>;
-
-    return {
-      size: result.size ?? result.timelines?.length ?? 0,
-      timelines: result.timelines ?? [],
-    };
+    );
   }
 
   async createTimelineEntryWithAttachments(
@@ -47,8 +24,7 @@ class TenantTimelineService {
       formData.append('attachment', file);
     });
 
-    // @ts-expect-error: Endpoint not yet in generated schema
-    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timeline', formData, {
+    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timeline', formData as TenantTimelineCreateBody, {
       pathParams: { issueId },
     });
   }
