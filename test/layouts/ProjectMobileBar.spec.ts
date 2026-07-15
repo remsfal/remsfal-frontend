@@ -85,12 +85,12 @@ describe('ProjectMobileBar.vue', () => {
     expect(navItems[0].classes()).toContain('active');
   });
 
-  it('highlights Tasks when on IssueOverview with TASK category', async () => {
+  it('highlights Tasks when on IssueOverview with TASK type', async () => {
     const { wrapper } = mountComponent({
       path: '/projects/123/issues',
       name: 'IssueOverview',
       params: { projectId: '123' },
-      query: { status: 'OPEN', category: 'TASK' },
+      query: { status: 'OPEN', type: 'TASK' },
     });
     await wrapper.vm.$nextTick();
     const navItems = wrapper.findAll('a.nav-item');
@@ -98,12 +98,12 @@ describe('ProjectMobileBar.vue', () => {
     expect(navItems[2].classes()).not.toContain('active');
   });
 
-  it('highlights Defects when on IssueOverview with DEFECT category', async () => {
+  it('highlights Defects when on IssueOverview with DEFECT type', async () => {
     const { wrapper } = mountComponent({
       path: '/projects/123/issues',
       name: 'IssueOverview',
       params: { projectId: '123' },
-      query: { status: 'OPEN', category: 'DEFECT' },
+      query: { status: 'OPEN', type: 'DEFECT' },
     });
     await wrapper.vm.$nextTick();
     const navItems = wrapper.findAll('a.nav-item');
@@ -128,7 +128,7 @@ describe('ProjectMobileBar.vue', () => {
       path: '/projects/123/issues',
       name: 'IssueOverview',
       params: { projectId: '123' },
-      query: { status: 'OPEN', category: 'SOMETHING_ELSE' },
+      query: { status: 'OPEN', type: 'SOMETHING_ELSE' },
     });
     await wrapper.vm.$nextTick();
     const navItems = wrapper.findAll('a.nav-item');

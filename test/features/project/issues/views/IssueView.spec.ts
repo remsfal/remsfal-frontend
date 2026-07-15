@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { mount, flushPromises, VueWrapper } from "@vue/test-utils";
-import ProjectIssueView from "@/features/project/issues/views/ProjectIssueView.vue";
+import IssueView from "@/features/project/issues/views/IssueView.vue";
 import { issueService } from "@/services/IssueService";
 
 // ---- Mocks ----
@@ -40,8 +40,8 @@ const mockIssue = {
 };
 
 // ---- Test Suite ----
-describe("ProjectIssueView.vue", () => {
-  let wrapper: VueWrapper<InstanceType<typeof ProjectIssueView>>;
+describe("IssueView.vue", () => {
+  let wrapper: VueWrapper<InstanceType<typeof IssueView>>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -50,7 +50,7 @@ describe("ProjectIssueView.vue", () => {
       mockIssue as unknown as Awaited<ReturnType<typeof issueService.getIssue>>
     );
 
-    wrapper = mount(ProjectIssueView, {
+    wrapper = mount(IssueView, {
       props: {
         projectId: "PROJ-1",
         issueId: "ISSUE-1",
@@ -92,7 +92,7 @@ describe("ProjectIssueView.vue", () => {
       () => new Promise(() => {}) // promise never resolves
     );
   
-    mount(ProjectIssueView, {
+    mount(IssueView, {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
@@ -110,7 +110,7 @@ describe("ProjectIssueView.vue", () => {
       throw new Error("API error");
     });
 
-    mount(ProjectIssueView, {
+    mount(IssueView, {
       props: {
         projectId: "PROJ-1",
         issueId: "ISSUE-1",
@@ -150,7 +150,7 @@ describe("ProjectIssueView.vue", () => {
   });
 
   test("sets description after fetching issue", async () => {
-    const localWrapper = mount(ProjectIssueView, {
+    const localWrapper = mount(IssueView, {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
@@ -179,7 +179,7 @@ describe("ProjectIssueView.vue", () => {
       pendingPromise as unknown as ReturnType<typeof issueService.getIssue>
     );
   
-    const tempWrapper = mount(ProjectIssueView, {
+    const tempWrapper = mount(IssueView, {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {

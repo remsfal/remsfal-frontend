@@ -103,4 +103,36 @@ describe('useMobileBarActiveState', () => {
       expect(result).toBe(false);
     });
   });
+
+  describe('query-aware matching (delegates to matchesRouteTarget)', () => {
+    it('does not match a named route when the route carries extra query params', () => {
+      const result = callIsActive(
+        {
+          path: '/projects/1/issues', name: 'IssueOverview', query: { status: 'OPEN' } 
+        },
+        makeItem({ name: 'IssueOverview' }),
+      );
+      expect(result).toBe(false);
+    });
+
+    it('matches a named route with a query only when the query matches exactly', () => {
+      const result = callIsActive(
+        {
+          path: '/projects/1/issues', name: 'IssueOverview', query: { status: 'OPEN', type: 'TASK' } 
+        },
+        makeItem({ name: 'IssueOverview', query: { status: 'OPEN', type: 'TASK' } }),
+      );
+      expect(result).toBe(true);
+    });
+
+    it('does not match a sibling item whose query is a subset of the route query', () => {
+      const result = callIsActive(
+        {
+          path: '/projects/1/issues', name: 'IssueOverview', query: { status: 'OPEN', type: 'TASK' } 
+        },
+        makeItem({ name: 'IssueOverview', query: { type: 'TASK' } }),
+      );
+      expect(result).toBe(false);
+    });
+  });
 });

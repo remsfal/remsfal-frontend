@@ -1,83 +1,49 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
-import IssueTable from '../components/IssueTable.vue';
+import IssueTable, { type IssueColumn } from '../components/IssueTable.vue';
 import NewIssueDialog from '../components/NewIssueDialog.vue';
-import { issueService, type IssueItemJson, type IssueStatus } from '@/services/IssueService';
+import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
-const props = defineProps<{ projectId: string; assigneeId?: string; status?: IssueStatus; category?: string; }>();
+const props = defineProps<{ projectId: string; assigneeId?: string; status?: IssueStatus; type?: IssueType; }>();
 const router = useRouter();
 
 // Reactive state
 const showNewIssueDialog = ref(false);
 const issues = ref<IssueItemJson[]>([]);
-const issuesByStatusOpen = ref<IssueItemJson[]>([]);
-const myIssues = ref<IssueItemJson[]>([]);
 
-// --- Handle issue created from dialog ---
-const handleIssueCreated = (newIssue: IssueItemJson) => {
-  // Update local state reactively
-  issues.value = [...issues.value, newIssue];
-
-  if (newIssue.status === 'OPEN') {
-    issuesByStatusOpen.value = [...issuesByStatusOpen.value, newIssue];
-  }
-
-  if (props.assigneeId) {
-    myIssues.value = [
-      ...myIssues.value,
-      {
-        ...newIssue,
-        assigneeId: props.assigneeId,
-      },
-    ];
-  }
-
-  router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: newIssue.id ?? '' } });
-};
-
-// --- Load all issues ---
+// --- Backend filters (status, assigneeId) are applied server-side; type is applied client-side ---
 const loadIssues = async () => {
   try {
-    const issueList = await issueService.getIssues(
-      props.projectId,
-    );
+    const issueList = await issueService.getIssues(props.projectId, undefined, props.status, props.assigneeId);
     issues.value = issueList?.issues ?? [];
   } catch (err) {
     console.error(err);
   }
 };
 
-// --- Load only open issues ---
-const loadIssuesWithOpenStatus = async () => {
-  try {
-    const issueList = await issueService.getIssues(
-      props.projectId,
-      undefined,
-        'OPEN' as IssueStatus,
-    );
-    issuesByStatusOpen.value = issueList?.issues ?? [];
-  } catch (err) {
-    console.error(err);
-  }
-};
+const filteredIssues = computed(() =>
+  props.type ? issues.value.filter((issue) => issue.type === props.type) : issues.value,
+);
 
-// --- Load issues for current assigneeId ---
-const loadMyIssues = async () => {
-  try {
-    const issueList = await issueService.getIssues(
-      props.projectId,
-    );
+const columns = computed<IssueColumn[]>(() =>
+  props.type === 'DEFECT' ? ['title', 'status', 'priority'] : ['title', 'assignee', 'status'],
+);
 
-    myIssues.value =
-        issueList?.issues?.map((issue: IssueItemJson) => ({
-          ...issue,
-          assigneeId: props.assigneeId,
-        })) ?? [];
-  } catch (err) {
-    console.error(err);
-  }
+const heading = computed(() => {
+  const subject = props.type === 'DEFECT' ? 'Mängel' : 'Aufgaben';
+  if (props.assigneeId) return `Meine ${subject}`;
+  if (props.status === 'OPEN') return `Offene ${subject}`;
+  if (props.status === 'CLOSED') return `Geschlossene ${subject}`;
+  if (props.status === 'PENDING') return `Neue ${subject}`;
+  return `Alle ${subject}`;
+});
+
+// --- Handle issue created from dialog ---
+const handleIssueCreated = async (newIssue: IssueItemJson) => {
+  await loadIssues();
+  router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: newIssue.id ?? '' } });
 };
 
 // --- Handle row selection ---
@@ -86,40 +52,17 @@ const onIssueSelect = (issue: IssueItemJson) => {
 };
 
 // --- Initialize on mount ---
-onMounted(() => {
-  loadIssues();
-  loadIssuesWithOpenStatus();
-  if (props.assigneeId) loadMyIssues();
-});
+onMounted(loadIssues);
 
-// --- Watch for prop changes ---
-watch(
-  () => props,
-  () => {
-    loadIssues();
-    loadIssuesWithOpenStatus();
-    if (props.assigneeId) loadMyIssues();
-  },
-  { deep: true }
-);
+// --- Re-fetch when the backend-relevant filters change ---
+watch(() => [props.projectId, props.status, props.assigneeId], loadIssues);
 </script>
 
 <template>
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
-        <h1 class="w-full">
-          <span v-if="props.category === 'DEFECT'">
-            <span v-if="props.assigneeId">Meine Mängel</span>
-            <span v-else-if="props.status">Offene Mängel</span>
-            <span v-else>Alle Mängel</span>
-          </span>
-          <span v-else>
-            <span v-if="props.assigneeId">Meine Aufgaben</span>
-            <span v-else-if="props.status">Offene Aufgaben</span>
-            <span v-else>Alle Aufgaben</span>
-          </span>
-        </h1>
+        <h1 class="w-full">{{ heading }}</h1>
       </div>
 
       <div class="col-span-12">
@@ -128,27 +71,22 @@ watch(
           <NewIssueDialog
             v-model:visible="showNewIssueDialog"
             :projectId="props.projectId"
-            :category="props.category"
+            :category="props.type"
             @issueCreated="handleIssueCreated"
           />
 
           <!-- Issues Table -->
-          <div v-if="props.assigneeId">
-            <IssueTable :issues="myIssues" :projectId="props.projectId" @rowSelect="onIssueSelect" />
-          </div>
-
-          <div v-else-if="props.status">
-            <IssueTable :issues="issuesByStatusOpen" :projectId="props.projectId" @rowSelect="onIssueSelect" />
-          </div>
-
-          <div v-else>
-            <IssueTable :issues="issues" :projectId="props.projectId" @rowSelect="onIssueSelect" />
-          </div>
+          <IssueTable
+            :issues="filteredIssues"
+            :projectId="props.projectId"
+            :columns="columns"
+            @rowSelect="onIssueSelect"
+          />
 
           <!-- Create Button -->
           <div class="flex justify-end mt-6">
             <Button
-              :label="props.category === 'DEFECT' ? 'Mangel melden' : 'Aufgabe erstellen'"
+              :label="props.type === 'DEFECT' ? 'Mangel melden' : 'Aufgabe erstellen'"
               icon="pi pi-plus"
               @click="showNewIssueDialog = true"
             />
@@ -158,4 +96,3 @@ watch(
     </div>
   </main>
 </template>
-    
