@@ -69,13 +69,28 @@ describe('ProjectMenu.vue', () => {
 
   it('includes user id in issues URL when user is set', async () => {
     projectStore.selectedProject = {
-      id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER' 
+      id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER'
     };
     sessionStore.user = { id: 'user-42', email: 'manager@example.com' } as ReturnType<typeof useUserSessionStore>['user'];
     wrapper = mountMenu();
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.html()).toContain('/projects/proj-123/issues?owner=user-42');
+    const html = wrapper.html();
+    expect(html).toContain('/projects/proj-123/issues');
+    expect(html).toContain('assigneeId=user-42');
+    expect(html).toContain('type=TASK');
+  });
+
+  it('wires Mängelmanagement items to the issues view instead of chat', async () => {
+    projectStore.selectedProject = {
+      id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER'
+    };
+    wrapper = mountMenu();
+    await wrapper.vm.$nextTick();
+
+    const html = wrapper.html();
+    expect(html).not.toContain('/projects/proj-123/chat');
+    expect(html).toContain('type=DEFECT');
   });
 
   it('updates menu routes when projectId changes', async () => {

@@ -77,4 +77,16 @@ describe('IssueTable', () => {
     expect(wrapper.emitted('rowSelect')).toBeTruthy();
     expect(wrapper.emitted('rowSelect')?.[0]).toEqual([mockIssues[0]]);
   });
+
+  it('renders only the columns passed via the columns prop', async () => {
+    const customWrapper = mount(IssueTable, {
+      props: {
+        issues: mockIssues, projectId: 'project-123', columns: ['title', 'priority'] 
+      },
+    });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    const headerTexts = customWrapper.findAll('th').map((th) => th.text());
+    expect(headerTexts).toEqual(['Titel', 'Priorität']);
+  });
 });

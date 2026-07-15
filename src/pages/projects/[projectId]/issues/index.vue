@@ -7,13 +7,13 @@ meta:
 
 <script setup lang="ts">
 import { IssueListView } from '@/features/project/issues'
-import type { IssueStatus } from '@/services/IssueService'
+import type { IssueStatus, IssueType } from '@/services/IssueService'
 import { useRoute } from 'vue-router'
 const route = useRoute('IssueOverview')
 const projectId = route.params.projectId as string
-const assigneeId = route.query.owner as string | undefined
+const assigneeId = route.query.assigneeId as string | undefined
 const status = route.query.status as IssueStatus | undefined
-const category = route.query.category as string | undefined
+const type = route.query.type as IssueType | undefined
 </script>
 
 <template>
@@ -21,6 +21,6 @@ const category = route.query.category as string | undefined
     :projectId="projectId"
     :assigneeId="assigneeId"
     :status="status"
-    :category="category"
+    :type="type"
   />
 </template>
