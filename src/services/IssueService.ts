@@ -14,22 +14,20 @@ export type IssueRelationGroup = IssueRelationType | 'parent';
 
 class IssueService {
   async getIssues(
-    projectId?: string,
-    preferTenancyIssues?: boolean,
+    projectId: string,
     status?: IssueStatus,
     assigneeId?: string,
     agreementId?: string,
     rentalUnitId?: string,
     rentalUnitType?: UnitType,
+    cursor?: string,
     limit = 100,
-    offset = 0,
   ): Promise<IssueListJson> {
     const result = await apiClient.get('/ticketing/v1/issues', {
       params: {
         limit,
-        offset,
-        ...(projectId ? { projectId } : {}),
-        ...(preferTenancyIssues ? { preferTenancyIssues } : {}),
+        projectId,
+        ...(cursor ? { cursor } : {}),
         ...(status ? { status } : {}),
         ...(assigneeId ? { assigneeId } : {}),
         ...(agreementId ? { agreementId } : {}),
@@ -38,9 +36,9 @@ class IssueService {
       },
     }) as Partial<IssueListJson>;
     return {
-      first: result.first ?? 0,
       size: result.size ?? 0,
       issues: result.issues ?? [],
+      nextCursor: result.nextCursor,
     };
   }
 
@@ -50,20 +48,6 @@ class IssueService {
 
   async createProjectIssue(body: Partial<IssueJson>): Promise<IssueJson> {
     return apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
-  }
-
-  async createTenancyIssueWithAttachment(body: Partial<IssueJson>, files: File[]): Promise<IssueJson> {
-    const formData = new FormData();
-
-    formData.append('issue', new Blob([JSON.stringify(body)], { type: 'application/json' }));
-
-    files.forEach((file) => {
-      formData.append('attachment', file);
-    });
-
-    // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return apiClient.post('/ticketing/v1/issues', formData as any) as Promise<IssueJson>;
   }
 
   async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {

@@ -3,11 +3,11 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
-import type { IssueItemJson } from '@/services/IssueService';
+import type { TenantIssueJson } from '@/services/TenantIssueService';
 import { getIssueStatusLabel, getIssueTypeSeverity,
   getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 const props = defineProps<{
-  issue: IssueItemJson;
+  issue: TenantIssueJson;
 }>();
 
 const emit = defineEmits<{ select: [] }>();

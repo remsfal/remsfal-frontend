@@ -7,32 +7,12 @@ describe('ContractorService (MSW with http)', () => {
   const service = new ContractorService();
   const issueId = 'test-issue';
 
-  it('should get a list of issues', async () => {
-    // Mock GET /ticketing/v1/issues
-    server.use(
-      http.get('/ticketing/v1/issues', () => {
-        return HttpResponse.json({
-          issues: [
-            {
-              id: issueId,
-              title: 'Issue 1',
-              description: 'Description 1',
-              status: 'OPEN',
-            },
-          ],
-          first: 0,
-          size: 1,
-          total: 1,
-        });
-      }),
-    );
-
+  it('getIssues returns an empty list without calling the backend', async () => {
+    // No contractor-scoped issues endpoint exists yet; the manager endpoint now
+    // requires a projectId this service doesn't have, so it must not call it.
     const issueList = await service.getIssues();
-    const issues = issueList.issues ?? []; // <-- safe default
 
-    expect(issues.length).toBe(1);
-    expect(issues[0].title).toBe('Issue 1');
-    expect(issues[0].status).toBe('OPEN');
+    expect(issueList).toEqual({ size: 0, issues: [] });
   });
 
   it('should get a single issue', async () => {
@@ -67,22 +47,5 @@ describe('ContractorService (MSW with http)', () => {
     );
 
     await expect(service.getIssue('non-existing')).rejects.toThrow();
-  });
-
-  it('should filter issues by status and owner when both are provided', async () => {
-    let capturedParams: Record<string, string> = {};
-    server.use(
-      http.get('/ticketing/v1/issues', ({ request }) => {
-        const url = new URL(request.url);
-        capturedParams = Object.fromEntries(url.searchParams.entries());
-        return HttpResponse.json({
-          issues: [], first: 0, size: 0 
-        });
-      }),
-    );
-
-    await service.getIssues('OPEN', 'owner-1');
-
-    expect(capturedParams).toMatchObject({ status: 'OPEN', owner: 'owner-1' });
   });
 });
