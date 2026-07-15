@@ -25,7 +25,7 @@ const timelines = ref<TenantTimelineJson[]>([]);
 const issueAttachmentsById = ref(new Map<string, IssueAttachmentJson>());
 const messageText = ref('');
 const selectedFiles = ref<File[]>([]);
-const fileUploadRef = ref<InstanceType<typeof FileUpload> | null>(null);
+const fileUploadKey = ref(0);
 const sendingMessage = ref(false);
 const canSendMessage = computed(
   () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sendingMessage.value,
@@ -162,7 +162,7 @@ const submitMessage = async () => {
     }, selectedFiles.value);
     messageText.value = '';
     selectedFiles.value = [];
-    fileUploadRef.value?.clear();
+    fileUploadKey.value += 1;
     await fetchTimelines();
   } catch (submitError) {
     console.error('Error creating timeline entry:', submitError);
@@ -292,7 +292,7 @@ watch(
         />
         <div class="flex flex-col gap-1">
           <FileUpload
-           ref="fileUploadRef"
+           :key="fileUploadKey"
            mode="advanced"
            :chooseLabel="t('tenantIssues.timeline.uploadButton')"
            multiple

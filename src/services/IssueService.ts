@@ -71,8 +71,9 @@ class IssueService {
   }
 
   async createProjectIssue(body: Partial<IssueJson>): Promise<IssueJson> {
-    const createdIssue = await apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
-    return (await this.createInitialTimelineEntry(createdIssue), createdIssue);
+    const createdIssue = await apiClient.post('/ticketing/v1/issues', body) as IssueJson;
+    await this.createInitialTimelineEntry(createdIssue);
+    return createdIssue;
   }
 
   async createTenancyIssueWithAttachment(body: Partial<IssueJson>, files: File[]): Promise<IssueJson> {
@@ -86,8 +87,9 @@ class IssueService {
 
     // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const createdIssue = await apiClient.post('/ticketing/v1/issues', formData as any) as Promise<IssueJson>;
-    return (await this.createInitialTimelineEntry(createdIssue, files.length > 0), createdIssue);
+    const createdIssue = await apiClient.post('/ticketing/v1/issues', formData as any) as IssueJson;
+    await this.createInitialTimelineEntry(createdIssue, files.length > 0);
+    return createdIssue;
   }
 
   async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {

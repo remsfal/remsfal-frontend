@@ -1,6 +1,4 @@
-import { apiClient, type ApiComponents, type ApiPaths } from '@/services/ApiClient';
-
-type TenantTimelineCreateBody = ApiPaths['/ticketing/v1/tenant-relations/issues/{issueId}/timeline']['post']['requestBody']['content']['multipart/form-data'];
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
 export type TenantTimelineJson = ApiComponents['schemas']['TenantTimelineJson'];
 export type TenantTimelineListJson = ApiComponents['schemas']['TenantTimelineListJson'];
 
@@ -24,7 +22,9 @@ class TenantTimelineService {
       formData.append('attachment', file);
     });
 
-    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timeline', formData as TenantTimelineCreateBody, {
+    // OpenAPI currently exposes multipart request body as non-JSON, which ApiClient.post does not infer yet.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timeline', formData as any, {
       pathParams: { issueId },
     });
   }
