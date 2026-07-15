@@ -16,17 +16,13 @@ class TenantTimelineService {
     files: File[],
   ): Promise<void> {
     const formData = new FormData();
-    formData.append('timeline', new Blob([JSON.stringify(timeline)], { type: 'application/json' }));
+    formData.append('timeline', new File([JSON.stringify(timeline)], 'timeline.json', { type: 'application/json' }));
 
     files.forEach((file) => {
       formData.append('attachment', file);
     });
 
-    // OpenAPI currently exposes multipart request body as non-JSON, which ApiClient.post does not infer yet.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timeline', formData as any, {
-      pathParams: { issueId },
-    });
+    await apiClient.post('/ticketing/v1/tenant-relations/issues/{issueId}/timeline', formData, { pathParams: { issueId } });
   }
 }
 

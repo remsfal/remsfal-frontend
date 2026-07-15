@@ -233,8 +233,14 @@ export type PathsForMethod<M extends HttpMethod> = {
 type RequestBody<P extends keyof ApiPaths, M extends HttpMethod> =
   P extends keyof ApiPaths
     ? M extends keyof ApiPaths[P]
-      ? ApiPaths[P][M] extends { requestBody?: { content: { 'application/json': infer Body } } }
-        ? Body
+      ? ApiPaths[P][M] extends { requestBody?: { content: infer Content } }
+        ? Content extends { 'application/json': infer JsonBody }
+          ? JsonBody
+          : Content extends { 'multipart/form-data': infer MultipartBody }
+            ? MultipartBody | FormData
+            : Content extends { 'application/x-www-form-urlencoded': infer FormBody }
+              ? FormBody
+              : never
         : never
       : never
     : never;

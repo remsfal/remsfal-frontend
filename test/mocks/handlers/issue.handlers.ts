@@ -138,6 +138,11 @@ export const issueHandlers = [
     return new HttpResponse(null, { status: 204 });
   }),
 
+  // POST create timeline entry for tenant issue flow
+  http.post(`${TICKETING_BASE}/tenant-relations/issues/:issueId/timeline`, () => {
+    return new HttpResponse(null, { status: 201 });
+  }),
+
   // POST create an issue relation (ticketing microservice)
   http.post(`${TICKETING_BASE}/issues/:issueId/:relationType/:relatedIssueId`, ({ params }) => {
     return HttpResponse.json({

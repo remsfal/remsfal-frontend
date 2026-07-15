@@ -144,10 +144,6 @@ const onFilesSelected = (event: FileUploadSelectEvent) => {
   selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
 };
 
-const removeSelectedFile = (fileIndex: number) => {
-  selectedFiles.value = selectedFiles.value.filter((_, index) => index !== fileIndex);
-};
-
 const submitMessage = async () => {
   const trimmedMessage = messageText.value.trim();
   const hasAttachments = selectedFiles.value.length > 0;
@@ -213,7 +209,10 @@ watch(
         {{ t('tenantIssues.timeline.empty') }}
       </div>
 
-      <Timeline v-else :value="timelines" align="left"
+      <Timeline
+        v-else
+        :value="timelines"
+        align="left"
         :pt="{
           eventOpposite: { class: '!flex-none !max-w-0 !min-w-0 !p-0' },
           eventContent: { class: '!pr-0' },
@@ -284,39 +283,39 @@ watch(
       </Timeline>
       <div class="mb-4 flex flex-col gap-2">
         <Textarea
-            id="tenant-timeline-message"
-            v-model="messageText"
-            data-testid="tenant-issue-timeline-message-input"
-            rows="3"
-            :placeholder="t('tenantIssues.timeline.messagePlaceholder')"
+          id="tenant-timeline-message"
+          v-model="messageText"
+          data-testid="tenant-issue-timeline-message-input"
+          rows="3"
+          :placeholder="t('tenantIssues.timeline.messagePlaceholder')"
         />
         <div class="flex flex-col gap-1">
           <FileUpload
-           :key="fileUploadKey"
-           mode="advanced"
-           :chooseLabel="t('tenantIssues.timeline.uploadButton')"
-           multiple
-           customUpload
-           :showUploadButton="false"
-           :showCancelButton="false"
-           accept="image/*,video/*,application/pdf"
-           :maxFileSize="10485760"
-           :fileLimit="10"
-           @select="onFilesSelected"
+            :key="fileUploadKey"
+            mode="advanced"
+            :chooseLabel="t('tenantIssues.timeline.uploadButton')"
+            multiple
+            customUpload
+            :showUploadButton="false"
+            :showCancelButton="false"
+            accept="image/*,video/*,application/pdf"
+            :maxFileSize="10485760"
+            :fileLimit="10"
+            @select="onFilesSelected"
           >
-           <template #empty>
-             <div>{{ t('tenantIssues.timeline.uploadEmpty') }}</div>
-           </template>
+            <template #empty>
+              <div>{{ t('tenantIssues.timeline.uploadEmpty') }}</div>
+            </template>
           </FileUpload>
         </div>
         <div class="flex justify-end">
           <Button
-              data-testid="tenant-issue-timeline-message-submit"
-              :label="t('tenantIssues.timeline.sendMessage')"
-              icon="pi pi-send"
-              :loading="sendingMessage"
-              :disabled="!canSendMessage"
-              @click="submitMessage"
+            data-testid="tenant-issue-timeline-message-submit"
+            :label="t('tenantIssues.timeline.sendMessage')"
+            icon="pi pi-send"
+            :loading="sendingMessage"
+            :disabled="!canSendMessage"
+            @click="submitMessage"
           />
         </div>
       </div>

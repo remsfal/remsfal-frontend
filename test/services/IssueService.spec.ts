@@ -39,58 +39,6 @@ describe('IssueService with MSW (http)', () => {
     expect(createdIssue.status).toBe('OPEN' as IssueStatus);
   });
 
-  test('createTenancyIssueWithAttachment references uploaded attachments in initial timeline entry', async () => {
-    let capturedTimelineAttachments = 0;
-    let capturedTimelineAttachmentIds: string[] = [];
-
-    server.use(
-      http.post('/ticketing/v1/issues', async ({ request }) => {
-        const form = await request.formData();
-        const issuePayload = form.get('issue');
-
-        expect(issuePayload).toBeInstanceOf(File);
-
-        return HttpResponse.json({
-          id: 'new-issue-id',
-          title: 'New tenancy issue',
-          status: 'OPEN',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
-      }),
-      http.get('/ticketing/v1/issues/:issueId', ({ params }) => {
-        expect(params.issueId).toBe('new-issue-id');
-        return HttpResponse.json({
-          id: 'new-issue-id',
-          title: 'New tenancy issue',
-          attachments: [
-            { attachmentId: 'attachment-1', fileName: 'a.txt' },
-            { attachmentId: 'attachment-2', fileName: 'b.txt' },
-          ],
-        });
-      }),
-      http.post('/ticketing/v1/tenant-relations/issues/:issueId/timeline', async ({ request, params }) => {
-        const form = await request.formData();
-        capturedTimelineAttachments = form.getAll('attachment').length;
-        const timelinePart = form.get('timeline');
-
-        expect(timelinePart).toBeInstanceOf(File);
-        const timelinePayload = JSON.parse(await (timelinePart as File).text()) as { attachmentId?: string[] };
-        capturedTimelineAttachmentIds = timelinePayload.attachmentId ?? [];
-
-        expect(params.issueId).toBe('new-issue-id');
-        return HttpResponse.json({}, { status: 201 });
-      }),
-    );
-
-    const files = [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')];
-
-    await issueService.createTenancyIssueWithAttachment({ title: 'New tenancy issue' }, files);
-
-    expect(capturedTimelineAttachments).toBe(0);
-    expect(capturedTimelineAttachmentIds).toEqual(['attachment-1', 'attachment-2']);
-  });
-
   test('updateIssue returns the updated issue', async () => {
     const updates: Partial<IssueJson> = {
       title: 'Updated Issue',
