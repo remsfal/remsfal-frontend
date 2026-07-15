@@ -175,9 +175,7 @@ describe('IssueService with MSW (http)', () => {
       [new File(['file content'], 'photo.png', { type: 'image/png' })],
     );
 
-    expect(getSpy).toHaveBeenCalledWith('/ticketing/v1/issues/{issueId}', {
-      pathParams: { issueId: 'new-issue-id' },
-    });
+    expect(getSpy).toHaveBeenCalledWith('/ticketing/v1/issues/{issueId}', { pathParams: { issueId: 'new-issue-id' } });
     expect(tenantTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
       'new-issue-id',
       expect.objectContaining({ attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }] }),

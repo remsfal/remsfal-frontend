@@ -3,25 +3,17 @@ import { flushPromises, mount } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
 import i18n from '@/i18n/i18n';
 import { issueService, type IssueJson } from '@/services/IssueService';
-import {
-  tenantTimelineService,
-  type TenantTimelineJson,
-  type TenantTimelineListJson,
-} from '@/services/TenantTimelineService';
+import { tenantTimelineService, type TenantTimelineJson, type TenantTimelineListJson } from '@/services/TenantTimelineService';
 
 const toastAddMock = vi.fn();
 
-vi.mock('primevue/usetoast', () => ({
-  useToast: () => ({ add: toastAddMock }),
-}));
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
 
 vi.mock('@/services/IssueService', async () => {
   const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
   return {
     ...actual,
-    issueService: {
-      getIssue: vi.fn(),
-    },
+    issueService: { getIssue: vi.fn() },
   };
 });
 
@@ -52,9 +44,7 @@ const mountTimelineCard = async () => {
     '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue'
   );
 
-  return mount(TenantIssueTimelineCard, {
-    props: { issueId: 'issue-1' },
-  });
+  return mount(TenantIssueTimelineCard, { props: { issueId: 'issue-1' } });
 };
 
 describe('TenantIssueTimelineCard component', () => {
@@ -80,7 +70,11 @@ describe('TenantIssueTimelineCard component', () => {
     vi.mocked(issueService.getIssue).mockResolvedValue({
       ...baseIssue,
       attachments: [
-        { attachmentId: 'att-1', fileName: 'report.pdf', contentType: 'application/pdf' },
+        {
+          attachmentId: 'att-1',
+          fileName: 'report.pdf',
+          contentType: 'application/pdf',
+        },
       ],
     });
     vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
@@ -135,12 +129,8 @@ describe('TenantIssueTimelineCard component', () => {
     await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Mit Dateien');
 
     const fileUpload = wrapper.getComponent(FileUpload);
-    fileUpload.vm.$emit('select', {
-      files: [new File(['a'], 'a.pdf', { type: 'application/pdf' })],
-    });
-    fileUpload.vm.$emit('select', {
-      files: [new File(['b'], 'b.pdf', { type: 'application/pdf' })],
-    });
+    fileUpload.vm.$emit('select', { files: [new File(['a'], 'a.pdf', { type: 'application/pdf' })] });
+    fileUpload.vm.$emit('select', { files: [new File(['b'], 'b.pdf', { type: 'application/pdf' })] });
     await flushPromises();
 
     await wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').trigger('click');
