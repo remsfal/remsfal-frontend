@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
+import i18n from '@/i18n/i18n';
 import { issueService, type IssueJson } from '@/services/IssueService';
 import {
   tenantTimelineService,
@@ -166,11 +167,14 @@ describe('TenantIssueTimelineCard component', () => {
     await wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').trigger('click');
     await flushPromises();
 
-    expect(toastAddMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        severity: 'error',
-        detail: 'tenantIssues.timeline.createError',
-      }),
-    );
+    expect(toastAddMock).toHaveBeenCalledTimes(1);
+    const toastPayload = toastAddMock.mock.calls[0][0] as {
+      severity?: string;
+      detail?: string;
+      summary?: string;
+    };
+    expect(toastPayload.severity).toBe('error');
+    expect(toastPayload.summary).toBe(i18n.global.t('error.general'));
+    expect(toastPayload.detail).toBe(i18n.global.t('tenantIssues.timeline.createError'));
   });
 });
