@@ -9,7 +9,6 @@ import Button from 'primevue/button';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
 import TenantIssueTimelineCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue';
-import TenantIssueAttachmentsCard from '@/features/tenant/tenantIssues/components/TenantIssueAttachmentsCard.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
 
 const props = defineProps<{ issueId: string }>();
@@ -116,10 +115,6 @@ watch(
         @cancel="openCancelDialog"
       />
       <TenantIssueTimelineCard :issueId="issue.id || props.issueId" />
-      <TenantIssueAttachmentsCard
-        :issueId="issue.id || props.issueId"
-        :attachments="issue.attachments ?? []"
-      />
     </template>
 
     <BaseDialog

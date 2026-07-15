@@ -617,7 +617,7 @@
   "tenantIssues.detail.cancelSuccess": "Vorgang wurde erfolgreich abgebrochen.",
   "tenantIssues.detail.cancelError": "Vorgang konnte nicht abgebrochen werden.",
   "tenantIssues.loading": "Lade Meldungen…",
-  "tenantIssues.timeline.title": "Informationen",
+  "tenantIssues.timeline.title": "Verlauf",
   "tenantIssues.timeline.loadError": "Timeline-Einträge konnten nicht geladen werden.",
   "tenantIssues.timeline.empty": "Noch keine Timeline-Einträge vorhanden.",
   "tenantIssues.timeline.unknownSender": "Unbekannter Absender",

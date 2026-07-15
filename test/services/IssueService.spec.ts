@@ -1,12 +1,20 @@
-import { describe, test, expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
 import { issueService, type IssueJson, type IssueStatus } from '@/services/IssueService';
+import { tenantTimelineService } from '@/services/TenantTimelineService';
 
 const projectId = 'test-project';
 const issueId = 'test-issue';
 
 describe('IssueService with MSW (http)', () => {
+  beforeEach(() => {
+    vi.spyOn(tenantTimelineService, 'createTimelineEntryWithAttachments').mockResolvedValue();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   test('getIssues returns a list of issues', async () => {
     const issueList = await issueService.getIssues(projectId);
@@ -128,6 +136,18 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('createTenancyIssueWithAttachment uploads the issue with attached files', async () => {
+    server.use(
+      http.post('/ticketing/v1/issues', ({ request }) => {
+        expect(request.headers.get('content-type') ?? '').toContain('multipart/form-data');
+        return HttpResponse.json({
+          id: 'new-issue-id',
+          attachmentCount: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      }),
+    );
+
     const newIssue: Partial<IssueJson> = {
       title: 'Issue with attachment',
       description: 'Has a file',
