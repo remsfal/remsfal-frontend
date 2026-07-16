@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
-import Button from 'primevue/button';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import Tag from 'primevue/tag';
+import Button from 'primevue/button';
 import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
-import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
-  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -48,6 +46,8 @@ const cancelIssue = async () => {
   if (deletingIssue.value) {
     return;
   }
+
+  deletingIssue.value = true;
 
   try {
     await tenantIssueService.closeIssue(issue.value?.id || props.issueId);

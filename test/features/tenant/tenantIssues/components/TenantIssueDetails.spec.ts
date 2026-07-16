@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
-import type { IssueJson } from '@/services/IssueService';
-import { issueService } from '@/services/IssueService';
+import type { TenantIssueJson } from '@/services/TenantIssueService';
+import { tenantIssueService } from '@/services/TenantIssueService';
 import TenantIssueDetails from '@/features/tenant/tenantIssues/components/TenantIssueDetails.vue';
 
 const pushMock = vi.fn();
@@ -18,16 +18,16 @@ vi.mock('vue-router', async () => {
 
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>(
-    '@/services/IssueService',
+vi.mock('@/services/TenantIssueService', async () => {
+  const actual = await vi.importActual<typeof import('@/services/TenantIssueService')>(
+    '@/services/TenantIssueService',
   );
 
   return {
     ...actual,
-    issueService: {
+    tenantIssueService: {
       getIssue: vi.fn(),
-      deleteIssue: vi.fn(),
+      closeIssue: vi.fn(),
     },
   };
 });
@@ -69,12 +69,24 @@ const BaseDialogStub = defineComponent({
   `,
 });
 
+const TenantIssueTimelineCardStub = defineComponent({
+  name: 'TenantIssueTimelineCard',
+  props: {
+    issueId: {
+      type: String,
+      required: true,
+    },
+  },
+  template: '<div data-testid="timeline-stub">{{ issueId }}</div>',
+});
+
 describe('TenantIssueDetails component', () => {
-  const baseIssue: IssueJson = {
+  const baseIssue: TenantIssueJson = {
     id: 'issue-1',
     title: 'Heizung defekt',
     status: 'OPEN',
     type: 'DEFECT',
+    agreementId: 'agreement-1',
     description: 'Wasser tropft von der Decke',
   };
 
@@ -85,6 +97,7 @@ describe('TenantIssueDetails component', () => {
         stubs: {
           TenantIssueSummaryCard: TenantIssueSummaryCardStub,
           BaseDialog: BaseDialogStub,
+          TenantIssueTimelineCard: TenantIssueTimelineCardStub,
         },
       },
     });
@@ -92,8 +105,8 @@ describe('TenantIssueDetails component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(issueService.getIssue).mockResolvedValue(baseIssue);
-    vi.mocked(issueService.deleteIssue).mockResolvedValue();
+    vi.mocked(tenantIssueService.getIssue).mockResolvedValue(baseIssue);
+    vi.mocked(tenantIssueService.closeIssue).mockResolvedValue();
   });
 
   it('fetches issue on mount and passes it to summary card', async () => {
@@ -101,14 +114,14 @@ describe('TenantIssueDetails component', () => {
 
     await flushPromises();
 
-    expect(issueService.getIssue).toHaveBeenCalledWith('issue-1');
+    expect(tenantIssueService.getIssue).toHaveBeenCalledWith('issue-1');
     const summaryStub = wrapper.getComponent({ name: 'TenantIssueSummaryCard' });
     expect(summaryStub.props('issue')).toEqual(baseIssue);
     expect(summaryStub.props('deletingIssue')).toBe(false);
   });
 
   it('refetches issue when issueId changes', async () => {
-    vi.mocked(issueService.getIssue)
+    vi.mocked(tenantIssueService.getIssue)
       .mockResolvedValueOnce(baseIssue)
       .mockResolvedValueOnce({
         ...baseIssue,
@@ -122,12 +135,12 @@ describe('TenantIssueDetails component', () => {
     await wrapper.setProps({ issueId: 'issue-2' });
     await flushPromises();
 
-    expect(issueService.getIssue).toHaveBeenNthCalledWith(1, 'issue-1');
-    expect(issueService.getIssue).toHaveBeenNthCalledWith(2, 'issue-2');
+    expect(tenantIssueService.getIssue).toHaveBeenNthCalledWith(1, 'issue-1');
+    expect(tenantIssueService.getIssue).toHaveBeenNthCalledWith(2, 'issue-2');
   });
 
   it('shows translated load error message and error toast when fetch fails', async () => {
-    vi.mocked(issueService.getIssue).mockRejectedValueOnce(new Error('fetch failed'));
+    vi.mocked(tenantIssueService.getIssue).mockRejectedValueOnce(new Error('fetch failed'));
 
     const wrapper = mountDetails();
     await flushPromises();
@@ -140,7 +153,7 @@ describe('TenantIssueDetails component', () => {
     }));
   });
 
-  it('deletes issue after confirmation and navigates back to list', async () => {
+  it('closes issue after confirmation and navigates back to list', async () => {
     const wrapper = mountDetails();
     await flushPromises();
 
@@ -150,7 +163,7 @@ describe('TenantIssueDetails component', () => {
     await wrapper.get('[data-testid="tenant-issue-cancel-confirm"]').trigger('click');
     await flushPromises();
 
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-1');
+    expect(tenantIssueService.closeIssue).toHaveBeenCalledWith('issue-1');
     expect(pushMock).toHaveBeenCalledWith({ name: 'TenantIssues' });
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'success',
@@ -159,7 +172,7 @@ describe('TenantIssueDetails component', () => {
   });
 
   it('shows error toast and does not navigate when cancel fails', async () => {
-    vi.mocked(issueService.deleteIssue).mockRejectedValueOnce(new Error('delete failed'));
+    vi.mocked(tenantIssueService.closeIssue).mockRejectedValueOnce(new Error('close failed'));
 
     const wrapper = mountDetails();
     await flushPromises();
@@ -168,7 +181,7 @@ describe('TenantIssueDetails component', () => {
     await wrapper.get('[data-testid="tenant-issue-cancel-confirm"]').trigger('click');
     await flushPromises();
 
-    expect(issueService.deleteIssue).toHaveBeenCalledWith('issue-1');
+    expect(tenantIssueService.closeIssue).toHaveBeenCalledWith('issue-1');
     expect(pushMock).not.toHaveBeenCalled();
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'error',
