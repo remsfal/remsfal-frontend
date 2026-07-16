@@ -27,9 +27,9 @@ const fileUploadKey = ref(0);
 const sendingMessage = ref(false);
 const blockingStatusMessages = new Set(['CLOSED', 'REJECTED']);
 const isClosedByTimeline = computed(() =>
-    timelines.value.some((timeline) =>
-        timeline.purpose === 'STATUS_CHANGED' && blockingStatusMessages.has(timeline.message?.trim().toUpperCase() ?? ''),
-    ),
+  timelines.value.some((timeline) =>
+    timeline.purpose === 'STATUS_CHANGED' && blockingStatusMessages.has(timeline.message?.trim().toUpperCase() ?? ''),
+  ),
 );
 
 const canSendMessage = computed(
