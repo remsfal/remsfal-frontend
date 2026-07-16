@@ -190,7 +190,7 @@ describe('TenantIssueTimelineCard component', () => {
     expect(tenantTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-2');
   });
 
-  it('disables submit and blocks sending when timeline contains CLOSED message', async () => {
+  it('disables submit and blocks sending when timeline contains CLOSED or REJECTED message', async () => {
     vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
       {
         timelineId: 'closed-1',
@@ -208,6 +208,27 @@ describe('TenantIssueTimelineCard component', () => {
     expect(submitButton.attributes('disabled')).toBeDefined();
 
     await submitButton.trigger('click');
+    await flushPromises();
+
+    expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
+
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValueOnce(createTimelineList([
+      {
+        timelineId: 'rejected-1',
+        purpose: 'STATUS_CHANGED',
+        message: 'REJECTED',
+        createdAt: '2026-01-02T10:01:00.000Z',
+      },
+    ]));
+
+    await wrapper.setProps({ issueId: 'issue-2' });
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Noch eine Nachricht');
+
+    const rejectedSubmitButton = wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]');
+    expect(rejectedSubmitButton.attributes('disabled')).toBeDefined();
+
+    await rejectedSubmitButton.trigger('click');
     await flushPromises();
 
     expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();

@@ -25,8 +25,12 @@ const messageText = ref('');
 const selectedFiles = ref<File[]>([]);
 const fileUploadKey = ref(0);
 const sendingMessage = ref(false);
+const blockingStatusMessages = new Set(['CLOSED', 'REJECTED']);
 const isClosedByTimeline = computed(() => {
-  return timelines.value.some((timeline) => timeline.message?.trim().toUpperCase() === 'CLOSED');
+  return timelines.value.some((timeline) => {
+    const normalizedMessage = timeline.message?.trim().toUpperCase();
+    return normalizedMessage ? blockingStatusMessages.has(normalizedMessage) : false;
+  });
 });
 const canSendMessage = computed(
   () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) &&
