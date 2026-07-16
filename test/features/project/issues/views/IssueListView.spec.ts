@@ -32,9 +32,7 @@ describe("IssueListView.vue", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    getIssuesMock.mockResolvedValue({
-      first: 0, size: 0, issues: [] 
-    });
+    getIssuesMock.mockResolvedValue({ size: 0, issues: []});
 
     wrapper = mount(IssueListView, {
       props: {
@@ -62,7 +60,7 @@ describe("IssueListView.vue", () => {
   test("fetches issues once on mount with status and assigneeId forwarded to the backend", async () => {
     await flushPromises();
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, undefined, "user1");
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "user1");
   });
 
   test("re-fetches when status changes", async () => {
@@ -73,7 +71,7 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "OPEN", "user1");
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", "OPEN", "user1");
   });
 
   test("does not re-fetch when only type changes (client-side filter)", async () => {
@@ -88,7 +86,6 @@ describe("IssueListView.vue", () => {
 
   test("filters issues by type on the client", async () => {
     getIssuesMock.mockResolvedValueOnce({
-      first: 0,
       size: 2,
       issues: [
         {
@@ -113,7 +110,6 @@ describe("IssueListView.vue", () => {
 
   test("shows all issues when type is not set", async () => {
     getIssuesMock.mockResolvedValueOnce({
-      first: 0,
       size: 2,
       issues: [
         {
@@ -245,7 +241,6 @@ describe("IssueListView.vue", () => {
     await flushPromises();
     getIssuesMock.mockClear();
     getIssuesMock.mockResolvedValueOnce({
-      first: 0,
       size: 1,
       issues: [{
         id: "new-123", title: "New Issue", type: 'TASK' as IssueType, status: 'OPEN' as IssueStatus 
@@ -312,7 +307,7 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, undefined, undefined);
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, undefined);
     expect(localWrapper.findComponent(IssueTable).props("issues")).toHaveLength(0);
   });
 });

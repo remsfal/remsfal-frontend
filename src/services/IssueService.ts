@@ -14,14 +14,14 @@ export type IssueRelationGroup = IssueRelationType | 'parent';
 
 class IssueService {
   async getIssues(
-      projectId: string,
-      status?: IssueStatus,
-      assigneeId?: string,
-      agreementId?: string,
-      rentalUnitId?: string,
-      rentalUnitType?: UnitType,
-      cursor?: string,
-      limit = 100,
+    projectId: string,
+    status?: IssueStatus,
+    assigneeId?: string,
+    agreementId?: string,
+    rentalUnitId?: string,
+    rentalUnitType?: UnitType,
+    cursor?: string,
+    limit = 100,
   ): Promise<IssueListJson> {
     const result = await apiClient.get('/ticketing/v1/issues', {
       params: {
@@ -50,10 +50,18 @@ class IssueService {
     return apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
   }
 
+  async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {
+    return apiClient.patch('/ticketing/v1/issues/{issueId}', body, { pathParams: { issueId } }) as Promise<IssueJson>;
+  }
+
+  async deleteIssue(issueId: string): Promise<void> {
+    return apiClient.delete('/ticketing/v1/issues/{issueId}', { pathParams: { issueId } });
+  }
+
   async createIssueRelation(
-      issueId: string,
-      relationType: IssueRelationType,
-      relatedIssueId: string,
+    issueId: string,
+    relationType: IssueRelationType,
+    relatedIssueId: string,
   ): Promise<IssueJson> {
     // requestBody?: never for this endpoint — same cast precedent as createTenancyIssueWithAttachment
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,9 +75,9 @@ class IssueService {
   }
 
   async deleteIssueRelation(
-      issueId: string,
-      relationType: IssueRelationGroup,
-      relatedIssueId: string,
+    issueId: string,
+    relationType: IssueRelationGroup,
+    relatedIssueId: string,
   ): Promise<void> {
     return apiClient.delete('/ticketing/v1/issues/{issueId}/{relationType}/{relatedIssueId}', {
       pathParams: {

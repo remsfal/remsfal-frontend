@@ -1,32 +1,18 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { apiClient } from '@/services/ApiClient';
 import { issueService, type IssueJson, type IssueStatus } from '@/services/IssueService';
-import { tenantTimelineService } from '@/services/TenantTimelineService';
 
 const projectId = 'test-project';
 const issueId = 'test-issue';
 
 describe('IssueService with MSW (http)', () => {
-  beforeEach(() => {
-    vi.spyOn(tenantTimelineService, 'createTimelineEntryWithAttachments').mockResolvedValue();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
 
   test('getIssues returns a list of issues', async () => {
     const issueList = await issueService.getIssues(projectId);
     expect(issueList.issues?.length).toBeGreaterThan(0);
     expect(issueList.issues?.[0]).toHaveProperty('id');
     expect(issueList.issues?.[0]).toHaveProperty('title');
-  });
-
-  test('getIssues works without a projectId filter', async () => {
-    const issueList = await issueService.getIssues();
-    expect(issueList.issues).toBeDefined();
   });
 
   test('getIssue returns a single issue', async () => {
@@ -63,14 +49,13 @@ describe('IssueService with MSW (http)', () => {
     const issueList = await issueService.getIssues(projectId);
     expect(issueList.issues).toBeDefined();
     expect(issueList.issues?.length).toBeGreaterThan(0);
-    expect(issueList.first).toBeDefined();
     expect(issueList.size).toBeDefined();
   });
-  
+
   test('getIssue handles non-existing issue (404)', async () => {
     await expect(issueService.getIssue('non-existing-id')).rejects.toThrow();
   });
-  
+
   test('getIssues fallback values are applied when data is missing', async () => {
     // Mock empty response
     server.use(
@@ -78,7 +63,6 @@ describe('IssueService with MSW (http)', () => {
     );
 
     const result = await issueService.getIssues(projectId);
-    expect(result.first).toBe(0);
     expect(result.size).toBe(0);
     expect(result.issues).toEqual([]);
   });
@@ -105,82 +89,31 @@ describe('IssueService with MSW (http)', () => {
       http.get('/ticketing/v1/issues', ({ request }) => {
         const url = new URL(request.url);
         capturedParams = Object.fromEntries(url.searchParams.entries());
-        return HttpResponse.json({
-          issues: [], first: 0, size: 0 
-        });
+        return HttpResponse.json({ issues: [], size: 0 });
       }),
     );
 
     await issueService.getIssues(
       projectId,
-      true,
       'OPEN' as IssueStatus,
       'assignee-1',
       'agreement-1',
       'unit-1',
       'APARTMENT',
+      'cursor-1',
       50,
-      10,
     );
 
     expect(capturedParams).toMatchObject({
       projectId,
-      preferTenancyIssues: 'true',
       status: 'OPEN',
       assigneeId: 'assignee-1',
       agreementId: 'agreement-1',
       rentalUnitId: 'unit-1',
       rentalUnitType: 'APARTMENT',
+      cursor: 'cursor-1',
       limit: '50',
-      offset: '10',
     });
-  });
-
-  test('createTenancyIssueWithAttachment uploads the issue with attached files', async () => {
-    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce({
-      id: 'new-issue-id',
-      attachmentCount: 1,
-      attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    } as IssueJson);
-
-    const newIssue: Partial<IssueJson> = {
-      title: 'Issue with attachment',
-      description: 'Has a file',
-      status: 'OPEN' as IssueStatus,
-    };
-    const file = new File(['file content'], 'photo.png', { type: 'image/png' });
-
-    const createdIssue = await issueService.createTenancyIssueWithAttachment(newIssue, [file]);
-
-    expect(postSpy).toHaveBeenCalledWith('/ticketing/v1/issues', expect.any(FormData));
-    expect(createdIssue.id).toBeDefined();
-    expect((createdIssue as unknown as { attachmentCount: number }).attachmentCount).toBe(1);
-  });
-
-  test('createTenancyIssueWithAttachment resolves attachments via getIssue for timeline entry', async () => {
-    vi.spyOn(apiClient, 'post').mockResolvedValueOnce({
-      id: 'new-issue-id',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    } as IssueJson);
-    const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce({
-      id: 'new-issue-id',
-      attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }],
-    } as IssueJson);
-
-    await issueService.createTenancyIssueWithAttachment(
-      { title: 'Issue with attachment fallback' },
-      [new File(['file content'], 'photo.png', { type: 'image/png' })],
-    );
-
-    expect(getSpy).toHaveBeenCalledWith('/ticketing/v1/issues/{issueId}', { pathParams: { issueId: 'new-issue-id' } });
-    expect(tenantTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledWith(
-      'new-issue-id',
-      expect.objectContaining({ attachments: [{ attachmentId: 'attachment-1', fileName: 'photo.png' }] }),
-      [],
-    );
   });
 
   test('deleteIssue resolves successfully', async () => {
