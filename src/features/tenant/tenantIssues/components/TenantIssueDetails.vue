@@ -5,7 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import TenantIssueTimelineCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -13,7 +13,7 @@ const toast = useToast();
 const { t } = useI18n();
 
 const loading = ref(false);
-const issue = ref<IssueJson | null>(null);
+const issue = ref<TenantIssueJson | null>(null);
 const error = ref<string | null>(null);
 
 const fetchIssue = async () => {
@@ -21,7 +21,7 @@ const fetchIssue = async () => {
   error.value = null;
 
   try {
-    issue.value = await issueService.getIssue(props.issueId);
+    issue.value = await tenantIssueService.getIssue(props.issueId);
   } catch (fetchError) {
     console.error('Error fetching tenant issue:', fetchError);
     error.value = t('tenantIssues.detail.loadError');

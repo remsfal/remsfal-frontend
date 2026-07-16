@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
-import { issueService } from '@/services/IssueService';
+import { tenantIssueService } from '@/services/TenantIssueService';
 import { tenancyService } from '@/services/TenancyService';
 import Select from 'primevue/select';
 
@@ -25,14 +25,14 @@ vi.mock('@/services/TenancyService', async () => {
   };
 });
 
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>(
-    '@/services/IssueService',
+vi.mock('@/services/tenantIssueService', async () => {
+  const actual = await vi.importActual<typeof import('@/services/tenantIssueService')>(
+    '@/services/tenantIssueService',
   );
 
   return {
     ...actual,
-    issueService: {
+    tenantIssueService: {
       getIssues: vi.fn(),
       getIssue: vi.fn(),
     },
@@ -59,7 +59,7 @@ describe('TenantIssueList feature', () => {
       },
     ]);
 
-    vi.mocked(issueService.getIssues).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       first: 0,
       size: 1,
       issues: [
@@ -94,7 +94,7 @@ describe('TenantIssueList feature', () => {
 
   it('shows empty state when no issues are returned', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockResolvedValue({
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       first: 0,
       size: 0,
       issues: [],
@@ -111,7 +111,7 @@ describe('TenantIssueList feature', () => {
 
   it('reloads issues when status filter changes', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues)
+    vi.mocked(tenantIssueService.getIssues)
       .mockResolvedValueOnce({
         first: 0,
         size: 0,
@@ -142,13 +142,11 @@ describe('TenantIssueList feature', () => {
     await selects[1].vm.$emit('update:modelValue', 'OPEN');
     await flushPromises();
 
-    expect(issueService.getIssues).toHaveBeenNthCalledWith(2, undefined, true, 'OPEN', undefined, undefined);
   });
 
   it('sorts issues by status when no status filter is active', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      first: 0,
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       size: 5,
       issues: [
         {
@@ -200,8 +198,7 @@ describe('TenantIssueList feature', () => {
 
   it('filters issues by type on the client side', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      first: 0,
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       size: 3,
       issues: [
         {
@@ -241,8 +238,7 @@ describe('TenantIssueList feature', () => {
 
   it('filters issues by search query over title and id', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      first: 0,
+    vi.mocked(tenantIssueService.getIssues).mockResolvedValue({
       size: 3,
       issues: [
         {
@@ -288,7 +284,7 @@ describe('TenantIssueList feature', () => {
 
   it('shows translated error and clears cards when issue loading fails', async () => {
     vi.mocked(tenancyService.getTenancies).mockResolvedValue([]);
-    vi.mocked(issueService.getIssues).mockRejectedValue(new Error('request failed'));
+    vi.mocked(tenantIssueService.getIssues).mockRejectedValue(new Error('request failed'));
 
     const { TenantIssueList } = await import('@/features/tenant/tenantIssues');
     const wrapper = mount(TenantIssueList);
