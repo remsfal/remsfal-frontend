@@ -54,7 +54,17 @@ const updateOrganizationRole = async (org: OrganizationMemberJson) => {
       return;
     }
 
-    await organizationMemberService.updateOrganizationRole(props.projectId, org.organizationId, { role: org.role });
+    const updatedOrganization = await organizationMemberService.updateOrganizationRole(
+      props.projectId,
+      org.organizationId,
+      { role: org.role },
+    );
+
+    const index = organizations.value.findIndex((o) => o.organizationId === updatedOrganization.organizationId);
+    if (index !== -1) {
+      organizations.value[index] = updatedOrganization;
+    }
+
     toast.add({
       severity: 'success',
       summary: t('projectSettings.updateOrganizationRoleSuccess'),
