@@ -1,4 +1,4 @@
-import { apiClient } from '@/services/ApiClient.ts';
+import { apiClient } from '@/services/ApiClient';
 import type { IssueJson, IssueListJson, IssueStatus } from '@/services/IssueService';
 
 export class ContractorService {

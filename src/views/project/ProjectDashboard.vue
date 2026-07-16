@@ -9,7 +9,7 @@ import { useRoute } from 'vue-router';
 
 import Chart from 'primevue/chart';
 import Card from 'primevue/card';
-import StatCard from '@/components/StatCard.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
 const chartPlugins = [ChartDataLabels];
 const { t } = useI18n();
 const route = useRoute('ProjectDashboard');
@@ -207,15 +207,33 @@ const recentActivities = [
 
     <!-- Dynamische Summary Cards -->
     <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      <StatCard
+      <BaseCard
         v-for="(card, index) in statCards"
         :key="index"
-        :icon="card.icon"
-        :title="card.title"
-        :value="card.value"
-        :subtext="card.subtext"
-        :color="card.color"
-      />
+        cardClass=""
+      >
+        <template #content>
+          <div class="p-4 flex items-center gap-4">
+            <div
+              class="rounded-full p-3"
+              :class="`bg-${card.color ?? 'blue'}-100 text-${card.color ?? 'blue'}-600`"
+            >
+              <i :class="`pi ${card.icon} text-xl`" />
+            </div>
+            <div>
+              <p class="text-gray-500 text-sm font-medium">
+                {{ card.title }}
+              </p>
+              <p class="text-2xl font-bold text-gray-800">
+                {{ card.value }}
+              </p>
+              <p v-if="card.subtext" class="text-sm text-gray-500 mt-1">
+                {{ card.subtext }}
+              </p>
+            </div>
+          </div>
+        </template>
+      </BaseCard>
     </div>
 
     <!-- Aufgabenstatus -->

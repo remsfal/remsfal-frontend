@@ -1,5 +1,5 @@
 import {describe, it, expect, afterEach, vi} from 'vitest';
-import './setupMocks.js';
+import './setupMocks';
 
 const mockPrecacheAndRoute = vi.hoisted(() => vi.fn());
 vi.mock('workbox-precaching', () => ({precacheAndRoute: mockPrecacheAndRoute,}));
@@ -11,7 +11,7 @@ vi.mock('@/helper/indexeddb', () => ({
   deleteProject: mockDeleteProject,
 }));
 
-import '../../src/sw.ts';
+import '../../src/sw';
 
 // precacheAndRoute is invoked once at module load time, before this file's
 // describe/it blocks run — capture the call args into a plain variable here,

@@ -13,10 +13,10 @@ import { z } from 'zod';
 
 import RentableUnitBaseDataCard from '@/features/project/rentableUnits/components/RentableUnitBaseDataCard.vue';
 import {useRentableUnitForm,
-  createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm.ts';
-import { apartmentService } from '@/services/ApartmentService.ts';
-import type { ApartmentJson } from '@/services/ApartmentService.ts';
-import { showSavingErrorToast } from '@/helper/viewHelper.ts';
+  createBaseRentableUnitSchema,} from '@/features/project/rentableUnits/composables/useRentableUnitForm';
+import { apartmentService } from '@/services/ApartmentService';
+import type { ApartmentJson } from '@/services/ApartmentService';
+import { showSavingErrorToast } from '@/helper/viewHelper';
 
 const props = defineProps<{
   projectId: string;

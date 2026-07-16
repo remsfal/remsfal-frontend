@@ -14,10 +14,10 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 // Services & Types
-import type { IssueCategory, IssueType } from '@/services/IssueService.ts';
-import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService.ts';
-import { tenancyService, type TenancyJson } from '@/services/TenancyService.ts';
-import { useUserSessionStore } from '@/stores/UserSession.ts';
+import type { IssueCategory, IssueType } from '@/services/IssueService';
+import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
+import { tenancyService, type TenancyJson } from '@/services/TenancyService';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 // Step Components
 import Step1TypeCategoryForm from './Step1TypeCategoryForm.vue';

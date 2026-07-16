@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import TenantIssueTimelineCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue';
+import BaseDialog from '@/components/common/BaseDialog.vue';
+import Button from 'primevue/button';
 import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
+import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -66,5 +70,37 @@ watch(
     </div>
 
     <TenantIssueTimelineCard v-else-if="issue" :issueId="issue.id || props.issueId" />
+    <template v-else-if="issue">
+      <TenantIssueSummaryCard
+        :issue="issue"
+        :deletingIssue="deletingIssue"
+        @cancel="openCancelDialog"
+      />
+    </template>
+
+    <BaseDialog
+      v-model:visible="showCancelDialog"
+      :header="t('tenantIssues.detail.cancelIssue')"
+    >
+      <p class="mb-4">
+        {{ t('tenantIssues.detail.cancelConfirm') }}
+      </p>
+      <template #footer>
+        <Button
+          :label="t('button.cancel')"
+          severity="secondary"
+          @click="showCancelDialog = false"
+        />
+        <Button
+          :label="t('tenantIssues.detail.cancelIssue')"
+          severity="danger"
+          icon="pi pi-trash"
+          data-testid="tenant-issue-cancel-confirm"
+          :loading="deletingIssue"
+          :disabled="deletingIssue"
+          @click="confirmCancelIssue"
+        />
+      </template>
+    </BaseDialog>
   </div>
 </template>

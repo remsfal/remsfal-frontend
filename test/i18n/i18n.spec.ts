@@ -2,7 +2,7 @@ import {describe, test, expect, beforeEach, vi} from 'vitest';
 
 async function loadI18n() {
   vi.resetModules();
-  return import('@/i18n/i18n.ts');
+  return import('@/i18n/i18n');
 }
 
 describe('i18n browser locale detection', () => {

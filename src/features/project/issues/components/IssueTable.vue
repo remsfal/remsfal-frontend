@@ -3,7 +3,7 @@ import { computed, toRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import { type IssueItemJson } from '@/services/IssueService.ts';
+import { type IssueItemJson } from '@/services/IssueService';
 import { useProjectMembers } from '@/composables/useProjectMembers';
 
 export type IssueColumn = 'title' | 'assignee' | 'status' | 'priority' | 'type';

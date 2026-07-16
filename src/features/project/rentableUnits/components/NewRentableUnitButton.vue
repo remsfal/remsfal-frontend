@@ -19,7 +19,7 @@ import { siteService } from '@/services/SiteService';
 import { buildingService } from '@/services/BuildingService';
 import { apartmentService } from '@/services/ApartmentService';
 import { commercialService } from '@/services/CommercialService';
-import { storageService } from '@/services/StorageService.ts';
+import { storageService } from '@/services/StorageService';
 
 const props = defineProps<{
   projectId: string;
