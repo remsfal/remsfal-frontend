@@ -7,8 +7,8 @@ import type {AxiosError,
 import type { paths as ticketingPaths, components as ticketingComponents } from './api/ticketing-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
-import { useEventBus } from '@/stores/EventStore.ts';
-import { authService } from '@/services/AuthService.ts';
+import { useEventBus } from '@/stores/EventStore';
+import { authService } from '@/services/AuthService';
 
 // Combine all OpenAPI paths
 export type ApiPaths = ticketingPaths & platformPaths & notificationPaths;

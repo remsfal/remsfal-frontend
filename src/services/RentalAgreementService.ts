@@ -1,4 +1,4 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
 export type RentalAgreementJson = ApiComponents['schemas']['RentalAgreementJson'];
 export type RentalAgreementListJson = ApiComponents['schemas']['RentalAgreementListJson'];
