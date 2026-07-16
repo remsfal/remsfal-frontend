@@ -13,19 +13,15 @@ const router = useRouter();
 const showNewIssueDialog = ref(false);
 const issues = ref<IssueItemJson[]>([]);
 
-// --- Backend filters (status, assigneeId) are applied server-side; type is applied client-side ---
+// --- Filters (status, type, assigneeId) are applied server-side ---
 const loadIssues = async () => {
   try {
-    const issueList = await issueService.getIssues(props.projectId, props.status, props.assigneeId);
+    const issueList = await issueService.getIssues(props.projectId, props.status, props.type, props.assigneeId);
     issues.value = issueList?.issues ?? [];
   } catch (err) {
     console.error(err);
   }
 };
-
-const filteredIssues = computed(() =>
-  props.type ? issues.value.filter((issue) => issue.type === props.type) : issues.value,
-);
 
 const columns = computed<IssueColumn[]>(() =>
   props.type === 'DEFECT' ? ['title', 'status', 'priority'] : ['title', 'assignee', 'status'],
@@ -55,7 +51,7 @@ const onIssueSelect = (issue: IssueItemJson) => {
 onMounted(loadIssues);
 
 // --- Re-fetch when the backend-relevant filters change ---
-watch(() => [props.projectId, props.status, props.assigneeId], loadIssues);
+watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadIssues);
 </script>
 
 <template>
@@ -79,7 +75,7 @@ watch(() => [props.projectId, props.status, props.assigneeId], loadIssues);
 
           <!-- Issues Table -->
           <IssueTable
-            :issues="filteredIssues"
+            :issues="issues"
             :projectId="props.projectId"
             :columns="columns"
             @rowSelect="onIssueSelect"

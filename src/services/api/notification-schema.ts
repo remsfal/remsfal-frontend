@@ -421,7 +421,7 @@ export interface components {
       /** @description Unique identifier of the assignee of the issue */
       readonly assigneeId?: components["schemas"]["UUID"];
     };
-    /** @description An issue */
+    /** @description An issue, as visible to the project manager with full access to all fields and relations */
     IssueJson: {
       readonly id?: components["schemas"]["UUID"];
       projectId?: components["schemas"]["UUID"];
@@ -949,7 +949,6 @@ export interface components {
       rentalUnitType?: components["schemas"]["UnitType"];
       location?: string;
       description: string;
-      attachments?: components["schemas"]["IssueAttachmentJson"][];
     };
     /** @description A cursor-paginated list of issues visible to a tenant */
     TenantIssueListJson: {
@@ -959,8 +958,9 @@ export interface components {
        * Format: int32
        * @description Number of elements in this page
        */
-      readonly size: number;
-      issues?: components["schemas"]["TenantIssueJson"][];
+      readonly size?: number;
+      /** @description The issues in this page */
+      readonly issues?: components["schemas"]["TenantIssueJson"][];
     };
     /** @description A tenant item with rental units and active status for list views */
     TenantItemJson: {
@@ -1009,24 +1009,23 @@ export interface components {
     TenantListJson: {
       tenants?: components["schemas"]["TenantItemJson"][];
     };
-    /** @description A tenant timeline entry */
-    TenantTimelineJson: {
-      issueId?: components["schemas"]["UUID"];
-      tenancyId?: components["schemas"]["UUID"];
-      timelineId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      attachments?: components["schemas"]["IssueAttachmentJson"][];
-      senderId?: components["schemas"]["UUID"];
-      senderName?: string;
-      purpose?: components["schemas"]["MessagePurpose"];
-      message?: string;
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
+    /** @description An issue timeline entry */
+    TimelineJson: {
+      readonly issueId?: components["schemas"]["UUID"];
+      readonly tenancyId?: components["schemas"]["UUID"];
+      readonly timelineId?: components["schemas"]["UUID"];
+      readonly attachments?: components["schemas"]["IssueAttachmentJson"][];
+      readonly senderId?: components["schemas"]["UUID"];
+      readonly senderName?: string;
+      purpose: components["schemas"]["MessagePurpose"];
+      message: string;
+      readonly createdAt?: components["schemas"]["Instant"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
     };
-    /** @description A list of tenant timelines */
-    TenantTimelineListJson: {
-      /** @description Tenant timeline entries */
-      timelines: components["schemas"]["TenantTimelineJson"][];
+    /** @description A list of issue timelines */
+    TimelineListJson: {
+      /** @description Timeline entries */
+      readonly timelines?: components["schemas"]["TimelineJson"][];
     };
     /** Format: uuid */
     UUID: string;

@@ -645,7 +645,7 @@
         }
       },
       "IssueJson" : {
-        "description" : "An issue",
+        "description" : "An issue, as visible to the project manager with full access to all fields and relations",
         "type" : "object",
         "properties" : {
           "id" : {
@@ -1979,6 +1979,7 @@
           "title" : {
             "type" : "string",
             "pattern" : "\\S",
+            "minLength" : 3,
             "maxLength" : 255
           },
           "type" : {
@@ -2017,12 +2018,6 @@
           },
           "description" : {
             "type" : "string"
-          },
-          "attachments" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/IssueAttachmentJson"
-            }
           }
         },
         "required" : [ "title", "type", "agreementId", "description" ]
@@ -2048,10 +2043,11 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/TenantIssueJson"
-            }
+            },
+            "description" : "The issues in this page",
+            "readOnly" : true
           }
-        },
-        "required" : [ "size" ]
+        }
       },
       "TenantItemJson" : {
         "description" : "A tenant item with rental units and active status for list views",
@@ -2175,33 +2171,40 @@
           }
         }
       },
-      "TenantTimelineJson" : {
-        "description" : "A tenant timeline entry",
+      "TimelineJson" : {
+        "description" : "An issue timeline entry",
         "type" : "object",
         "properties" : {
           "issueId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "tenancyId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "timelineId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "projectId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "attachments" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/IssueAttachmentJson"
-            }
+            },
+            "readOnly" : true
           },
           "senderId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "senderName" : {
-            "type" : "string"
+            "type" : "string",
+            "readOnly" : true
           },
           "purpose" : {
             "$ref" : "#/components/schemas/MessagePurpose"
@@ -2210,24 +2213,29 @@
             "type" : "string"
           },
           "createdAt" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/Instant"
           },
           "modifiedAt" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/Instant"
           }
-        }
+        },
+        "required" : [ "purpose", "message" ]
       },
-      "TenantTimelineListJson" : {
-        "description" : "A list of tenant timelines",
+      "TimelineListJson" : {
+        "description" : "A list of issue timelines",
         "type" : "object",
-        "required" : [ "timelines" ],
         "properties" : {
           "timelines" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/TenantTimelineJson"
+              "$ref" : "#/components/schemas/TimelineJson"
             },
-            "description" : "Tenant timeline entries"
+            "description" : "Timeline entries",
+            "readOnly" : true
           }
         }
       },
@@ -2607,6 +2615,13 @@
             "headers" : {
               "Location" : {
                 "description" : "URL of the new organization"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrganizationJson"
+                }
               }
             }
           },
@@ -4344,6 +4359,13 @@
               "Location" : {
                 "description" : "URL of the new contractor"
               }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContractorJson"
+                }
+              }
             }
           },
           "400" : {
@@ -5858,7 +5880,14 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Tenancy created successfully"
+            "description" : "Tenancy created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RentalAgreementJson"
+                }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid request message"
@@ -6482,7 +6511,7 @@
   },
   "info" : {
     "title" : "remsfal-platform API",
-    "version" : "1.0.12-SNAPSHOT"
+    "version" : "1.0.13-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "http://localhost:8080",

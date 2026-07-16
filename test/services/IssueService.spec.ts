@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { issueService, type IssueJson, type IssueStatus } from '@/services/IssueService';
+import { issueService, type IssueJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
 const projectId = 'test-project';
 const issueId = 'test-issue';
@@ -96,6 +96,7 @@ describe('IssueService with MSW (http)', () => {
     await issueService.getIssues(
       projectId,
       'OPEN' as IssueStatus,
+      'DEFECT' as IssueType,
       'assignee-1',
       'agreement-1',
       'unit-1',
@@ -106,7 +107,8 @@ describe('IssueService with MSW (http)', () => {
 
     expect(capturedParams).toMatchObject({
       projectId,
-      status: 'OPEN',
+      status: 'OPEN', // repeated single-value query param collapses to one entry via fromEntries
+      type: 'DEFECT',
       assigneeId: 'assignee-1',
       agreementId: 'agreement-1',
       rentalUnitId: 'unit-1',
