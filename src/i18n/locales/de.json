@@ -646,7 +646,7 @@
   "tenantList.filter.all": "Alle",
   "tenantList.filter.active": "Aktiv",
   "tenantList.filter.inactive": "Inaktiv",
-  "tenantList.search.placeholder": "Nach Nachname suchen..",
+  "tenantList.search.placeholder": "Nach Nachname suchen...",
   "tenantList.empty.noAgreements": "Keine Mietverträge vorhanden. Erstellen Sie zuerst einen Mietvertrag.",
   "tenantList.empty.noResults": "Keine Mieter gefunden, die den Suchkriterien entsprechen.",
   "tenantList.card.active": "Aktiv",
