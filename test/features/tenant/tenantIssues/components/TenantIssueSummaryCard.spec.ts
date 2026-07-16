@@ -139,6 +139,17 @@ describe('TenantIssueSummaryCard component', () => {
     expect(tags[0].props('value')).toBe('issue-');
   });
 
+  it('uses full id as node label when id has no separator', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      id: 'issue42',
+    });
+
+    const tags = wrapper.findAllComponents(Tag);
+
+    expect(tags[0].props('value')).toBe('issue42');
+  });
+
   it('hides optional fields when values are empty', () => {
     const wrapper = mountCard({
       ...baseIssue,
@@ -163,6 +174,26 @@ describe('TenantIssueSummaryCard component', () => {
     expect(wrapper.text()).toContain('Sonstiges');
   });
 
+  it('hides category row when category is missing', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      category: undefined,
+    });
+
+    expect(wrapper.text()).not.toContain('Kategorie');
+    expect(wrapper.text()).not.toContain('Sonstiges');
+  });
+
+  it('hides type row when type is missing', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      type: undefined,
+    });
+
+    expect(wrapper.findAllComponents(Tag)).toHaveLength(2);
+    expect(wrapper.text()).not.toContain('Schaden');
+  });
+
   it('hides status row when status is missing', () => {
     const wrapper = mountCard({
       ...baseIssue,
@@ -178,5 +209,18 @@ describe('TenantIssueSummaryCard component', () => {
 
     expect(cancelButton.attributes('disabled')).toBeDefined();
     expect(cancelButton.classes()).toContain('p-button-loading');
+  });
+
+  it('cleans metadata lines case-insensitively and preserves regular lines', () => {
+    const wrapper = mountCard({
+      ...baseIssue,
+      description: 'verursacher: Test\nORT: Flur\nLeitung tropft weiter',
+    });
+
+    const description = wrapper.get('span.whitespace-pre-line').text();
+
+    expect(description).toBe('Leitung tropft weiter');
+    expect(description).not.toContain('verursacher:');
+    expect(description).not.toContain('ORT:');
   });
 });
