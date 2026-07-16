@@ -20,6 +20,14 @@ describe('TenantTimelineService', () => {
     expect(result).toEqual(timelineList);
   });
 
+  test('getTimelineEntries returns fallback empty list when timelines are missing', async () => {
+    vi.spyOn(apiClient, 'get').mockResolvedValueOnce({});
+
+    const result = await tenantTimelineService.getTimelineEntries('issue-1');
+
+    expect(result).toEqual({ timelines: [] });
+  });
+
   test('createTimelineEntryWithAttachments sends multipart form data', async () => {
     const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce(undefined);
     const files = [
