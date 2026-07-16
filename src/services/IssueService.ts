@@ -36,22 +36,20 @@ class IssueService {
   }
 
   async getIssues(
-    projectId?: string,
-    preferTenancyIssues?: boolean,
+    projectId: string,
     status?: IssueStatus,
     assigneeId?: string,
     agreementId?: string,
     rentalUnitId?: string,
     rentalUnitType?: UnitType,
+    cursor?: string,
     limit = 100,
-    offset = 0,
   ): Promise<IssueListJson> {
     const result = await apiClient.get('/ticketing/v1/issues', {
       params: {
         limit,
-        offset,
-        ...(projectId ? { projectId } : {}),
-        ...(preferTenancyIssues ? { preferTenancyIssues } : {}),
+        projectId,
+        ...(cursor ? { cursor } : {}),
         ...(status ? { status } : {}),
         ...(assigneeId ? { assigneeId } : {}),
         ...(agreementId ? { agreementId } : {}),
@@ -60,9 +58,9 @@ class IssueService {
       },
     }) as Partial<IssueListJson>;
     return {
-      first: result.first ?? 0,
       size: result.size ?? 0,
       issues: result.issues ?? [],
+      nextCursor: result.nextCursor,
     };
   }
 

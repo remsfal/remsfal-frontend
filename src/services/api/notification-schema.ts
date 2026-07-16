@@ -404,6 +404,8 @@ export interface components {
     IssueItemJson: {
       /** @description Unique identifier of the issue */
       readonly id?: components["schemas"]["UUID"];
+      /** @description Unique identifier of the project this issue belongs to */
+      readonly projectId?: components["schemas"]["UUID"];
       /** @description Last modification timestamp of the issue */
       readonly modifiedAt?: components["schemas"]["Instant"];
       /** @description Title of the issue */
@@ -448,18 +450,13 @@ export interface components {
       blocks?: string[];
       attachments?: components["schemas"]["IssueAttachmentJson"][];
     };
-    /** @description A list of issues */
+    /** @description A cursor-paginated list of issues */
     IssueListJson: {
+      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+      readonly nextCursor?: string;
       /**
        * Format: int32
-       * @description Index of the first element in list of total available entries, starting at 1
-       * @example 1
-       */
-      readonly first: number;
-      /**
-       * Format: int32
-       * @description Number of elements in list
-       * @default 50
+       * @description Number of elements in this page
        */
       readonly size: number;
       issues?: components["schemas"]["IssueItemJson"][];
@@ -482,6 +479,9 @@ export interface components {
     LocalDateTime: string;
     /** @enum {string} */
     MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
+    /** @enum {string} */
+    MessagePurpose:
+      "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
     /**
      * Format: date-time
      * @example 2022-03-10T12:15:50-04:00
@@ -932,6 +932,36 @@ export interface components {
     TenancyListJson: {
       agreements?: components["schemas"]["TenancyJson"][];
     };
+    /** @description An issue, as visible to the tenant who reported it or is affected by it */
+    TenantIssueJson: {
+      readonly id?: components["schemas"]["UUID"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
+      title: string;
+      type: components["schemas"]["IssueType"];
+      category?: components["schemas"]["IssueCategory"];
+      readonly status?: components["schemas"]["IssueStatus"];
+      /** @description ID of the user who reported this issue */
+      readonly reporterId?: components["schemas"]["UUID"];
+      /** @description Name of the user who reported this issue */
+      readonly reportedBy?: string;
+      agreementId: components["schemas"]["UUID"];
+      rentalUnitId?: components["schemas"]["UUID"];
+      rentalUnitType?: components["schemas"]["UnitType"];
+      location?: string;
+      description: string;
+      attachments?: components["schemas"]["IssueAttachmentJson"][];
+    };
+    /** @description A cursor-paginated list of issues visible to a tenant */
+    TenantIssueListJson: {
+      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+      readonly nextCursor?: string;
+      /**
+       * Format: int32
+       * @description Number of elements in this page
+       */
+      readonly size: number;
+      issues?: components["schemas"]["TenantIssueJson"][];
+    };
     /** @description A tenant item with rental units and active status for list views */
     TenantItemJson: {
       /** @description Unique identifier of the tenant */
@@ -988,7 +1018,7 @@ export interface components {
       attachments?: components["schemas"]["IssueAttachmentJson"][];
       senderId?: components["schemas"]["UUID"];
       senderName?: string;
-      title?: string;
+      purpose?: components["schemas"]["MessagePurpose"];
       message?: string;
       createdAt?: components["schemas"]["Instant"];
       modifiedAt?: components["schemas"]["Instant"];
