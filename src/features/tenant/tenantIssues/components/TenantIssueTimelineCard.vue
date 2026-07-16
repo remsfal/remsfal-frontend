@@ -25,8 +25,13 @@ const messageText = ref('');
 const selectedFiles = ref<File[]>([]);
 const fileUploadKey = ref(0);
 const sendingMessage = ref(false);
+const isClosedByTimeline = computed(() => {
+  return timelines.value.some((timeline) => timeline.message?.trim().toUpperCase() === 'CLOSED');
+});
 const canSendMessage = computed(
-  () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) && !sendingMessage.value,
+  () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) &&
+    !sendingMessage.value &&
+    !isClosedByTimeline.value,
 );
 
 interface TimelineAttachmentView {
@@ -159,7 +164,7 @@ const onFilesSelected = (event: FileUploadSelectEvent) => {
 const submitMessage = async () => {
   const trimmedMessage = messageText.value.trim();
   const hasAttachments = selectedFiles.value.length > 0;
-  if ((!trimmedMessage && !hasAttachments) || sendingMessage.value) { return; }
+  if ((!trimmedMessage && !hasAttachments) || sendingMessage.value || isClosedByTimeline.value) { return; }
 
   sendingMessage.value = true;
 

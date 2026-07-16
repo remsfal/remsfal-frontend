@@ -190,6 +190,29 @@ describe('TenantIssueTimelineCard component', () => {
     expect(tenantTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-2');
   });
 
+  it('disables submit and blocks sending when timeline contains CLOSED message', async () => {
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
+      {
+        timelineId: 'closed-1',
+        purpose: 'STATUS_CHANGED',
+        message: 'CLOSED',
+        createdAt: '2026-01-02T10:00:00.000Z',
+      },
+    ]));
+
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Neue Nachricht');
+
+    const submitButton = wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]');
+    expect(submitButton.attributes('disabled')).toBeDefined();
+
+    await submitButton.trigger('click');
+    await flushPromises();
+
+    expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
+  });
+
   it('submits tenant messages and clears the input after success', async () => {
     const wrapper = await mountTimelineCard();
 
