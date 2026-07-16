@@ -1,4 +1,4 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
 export type TenantTimelineJson = ApiComponents['schemas']['TenantTimelineJson'];
 export type TenantTimelineListJson = ApiComponents['schemas']['TenantTimelineListJson'];
 

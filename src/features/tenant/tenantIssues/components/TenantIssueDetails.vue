@@ -43,6 +43,35 @@ const fetchIssue = async () => {
   }
 };
 
+const cancelIssue = async () => {
+  if (deletingIssue.value) {
+    return;
+  }
+
+  deletingIssue.value = true;
+
+  try {
+    await tenantIssueService.closeIssue(issue.value?.id || props.issueId);
+    toast.add({
+      severity: 'success',
+      summary: t('success.saved'),
+      detail: t('tenantIssues.detail.cancelSuccess'),
+      life: 4000,
+    });
+    await router.push({ name: 'TenantIssues' });
+  } catch (deleteError) {
+    console.error('Error deleting tenant issue:', deleteError);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('tenantIssues.detail.cancelError'),
+      life: 5000,
+    });
+  } finally {
+    deletingIssue.value = false;
+  }
+};
+
 onMounted(() => {
   fetchIssue();
 });
@@ -58,30 +87,9 @@ const openCancelDialog = () => {
   showCancelDialog.value = true;
 };
 
-const confirmCancelIssue = async () => {
-  const issueId = issue.value?.id || props.issueId;
-  deletingIssue.value = true;
-  try {
-    await tenantIssueService.closeIssue(issueId);
-    showCancelDialog.value = false;
-    toast.add({
-      severity: 'success',
-      summary: t('success.saved'),
-      detail: t('tenantIssues.detail.cancelSuccess'),
-      life: 3000,
-    });
-    await router.push({ name: 'TenantIssues' });
-  } catch (cancelError) {
-    console.error('Error cancelling tenant issue:', cancelError);
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('tenantIssues.detail.cancelError'),
-      life: 3000,
-    });
-  } finally {
-    deletingIssue.value = false;
-  }
+const confirmCancelIssue = () => {
+  showCancelDialog.value = false;
+  cancelIssue();
 };
 </script>
 
