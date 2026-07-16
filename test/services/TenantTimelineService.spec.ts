@@ -40,8 +40,8 @@ describe('TenantTimelineService', () => {
 
     const formData = payload as FormData;
     const timelinePart = formData.get('timeline');
-    expect(timelinePart).toBeInstanceOf(File);
-    expect(await (timelinePart as File).text()).toBe(JSON.stringify({ title: 'Tenant message' }));
+    expect(timelinePart).toBeInstanceOf(Blob);
+    expect(await (timelinePart as Blob).text()).toBe(JSON.stringify({ title: 'Tenant message' }));
     expect(formData.getAll('attachment')).toHaveLength(2);
   });
 });

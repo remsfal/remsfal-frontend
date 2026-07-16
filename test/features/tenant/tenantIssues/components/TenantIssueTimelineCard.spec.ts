@@ -2,20 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
 import i18n from '@/i18n/i18n';
-import { issueService, type IssueJson } from '@/services/IssueService';
 import { tenantTimelineService, type TenantTimelineJson, type TenantTimelineListJson } from '@/services/TenantTimelineService';
 
 const toastAddMock = vi.fn();
 
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
-
-vi.mock('@/services/IssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueService')>('@/services/IssueService');
-  return {
-    ...actual,
-    issueService: { getIssue: vi.fn() },
-  };
-});
 
 vi.mock('@/services/TenantTimelineService', async () => {
   const actual = await vi.importActual<typeof import('@/services/TenantTimelineService')>(
@@ -30,13 +21,6 @@ vi.mock('@/services/TenantTimelineService', async () => {
   };
 });
 
-const baseIssue: IssueJson = {
-  id: 'issue-1',
-  title: 'Issue',
-  status: 'OPEN',
-  attachments: [],
-};
-
 const createTimelineList = (timelines: TenantTimelineJson[]): TenantTimelineListJson => ({ timelines });
 
 const mountTimelineCard = async () => {
@@ -50,7 +34,6 @@ const mountTimelineCard = async () => {
 describe('TenantIssueTimelineCard component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(issueService.getIssue).mockResolvedValue(baseIssue);
     vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([]));
     vi.mocked(tenantTimelineService.createTimelineEntryWithAttachments).mockResolvedValue();
   });
@@ -61,28 +44,21 @@ describe('TenantIssueTimelineCard component', () => {
     await flushPromises();
 
     expect(tenantTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-1');
-    expect(issueService.getIssue).toHaveBeenCalledWith('issue-1');
     expect(wrapper.find('[data-testid="tenant-issue-timeline-empty"]').exists()).toBe(true);
   });
 
   it('renders non-image attachment tiles and opens download in a new tab', async () => {
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    vi.mocked(issueService.getIssue).mockResolvedValue({
-      ...baseIssue,
-      attachments: [
-        {
-          attachmentId: 'att-1',
-          fileName: 'report.pdf',
-          contentType: 'application/pdf',
-        },
-      ],
-    });
     vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
       {
         timelineId: 'timeline-1',
         title: 'Dokument',
         createdAt: '2026-01-02T10:00:00.000Z',
-        attachments: [{ attachmentId: 'att-1' }],
+        attachments: [{
+          attachmentId: 'att-1',
+          fileName: 'report.pdf',
+          contentType: 'application/pdf',
+        }],
       },
     ]));
 
@@ -96,7 +72,7 @@ describe('TenantIssueTimelineCard component', () => {
     await wrapper.get('button.cursor-pointer').trigger('click');
 
     expect(openSpy).toHaveBeenCalledWith(
-      '/ticketing/v1/issues/issue-1/attachments/att-1/report.pdf',
+      '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-1/report.pdf',
       '_blank',
       'noopener,noreferrer',
     );

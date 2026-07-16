@@ -1,7 +1,5 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 import { type UnitType } from '@/services/PropertyService.ts';
-import { tenantTimelineService } from '@/services/TenantTimelineService';
-import i18n from '@/i18n/i18n';
 
 export type IssueCategory = ApiComponents['schemas']['IssueCategory'];
 export type IssueStatus = ApiComponents['schemas']['IssueStatus'];
@@ -15,26 +13,6 @@ export type IssueRelationType = 'related-to' | 'blocks' | 'blocked-by' | 'duplic
 export type IssueRelationGroup = IssueRelationType | 'parent';
 
 class IssueService {
-  private mapAttachments(issue: IssueJson): IssueAttachmentJson[] {
-    return issue.attachments ?? [];
-  }
-
-  private async resolveInitialTimelineAttachments( issue: IssueJson, hasUploadedFiles: boolean,
-  ): Promise<IssueAttachmentJson[]> {
-    const attachments = this.mapAttachments(issue);
-    if (attachments.length > 0 || !hasUploadedFiles || !issue.id) { return attachments; }
-    const issueWithAttachments = await this.getIssue(issue.id);
-    return this.mapAttachments(issueWithAttachments);
-  }
-
-  private async createInitialTimelineEntry(issue: IssueJson, hasUploadedFiles = false): Promise<void> {
-    const attachments = await this.resolveInitialTimelineAttachments(issue, hasUploadedFiles);
-    await tenantTimelineService.createTimelineEntryWithAttachments(issue.id!, {
-      title: i18n.global.t('tenantIssues.timeline.issueCreatedTitle'),
-      ...(attachments.length > 0 ? { attachments } : {}),
-    }, []);
-  }
-
   async getIssues(
     projectId: string,
     status?: IssueStatus,
@@ -69,9 +47,7 @@ class IssueService {
   }
 
   async createProjectIssue(body: Partial<IssueJson>): Promise<IssueJson> {
-    const createdIssue = await apiClient.post('/ticketing/v1/issues', body) as IssueJson;
-    await this.createInitialTimelineEntry(createdIssue);
-    return createdIssue;
+    return apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
   }
 
   async createTenancyIssueWithAttachment(body: Partial<IssueJson>, files: File[]): Promise<IssueJson> {
@@ -85,9 +61,7 @@ class IssueService {
 
     // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const createdIssue = await apiClient.post('/ticketing/v1/issues', formData as any) as IssueJson;
-    await this.createInitialTimelineEntry(createdIssue, files.length > 0);
-    return createdIssue;
+    return apiClient.post('/ticketing/v1/issues', formData as any) as Promise<IssueJson>;
   }
 
   async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {

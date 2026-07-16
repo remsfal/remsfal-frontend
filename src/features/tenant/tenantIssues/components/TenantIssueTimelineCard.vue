@@ -11,7 +11,6 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/common/BaseCard.vue';
-import { issueService, type IssueAttachmentJson } from '@/services/IssueService';
 import { tenantTimelineService, type TenantTimelineJson } from '@/services/TenantTimelineService';
 
 const props = defineProps<{ issueId: string; }>();
@@ -22,7 +21,6 @@ const toast = useToast();
 const loading = ref(false);
 const error = ref(false);
 const timelines = ref<TenantTimelineJson[]>([]);
-const issueAttachmentsById = ref(new Map<string, IssueAttachmentJson>());
 const messageText = ref('');
 const selectedFiles = ref<File[]>([]);
 const fileUploadKey = ref(0);
@@ -61,12 +59,11 @@ const getTimelineAttachments = (timeline: TenantTimelineJson): TimelineAttachmen
       return [];
     }
 
-    const issueAttachment = issueAttachmentsById.value.get(attachmentId);
-    const fileName = attachment.fileName ?? issueAttachment?.fileName;
+    const fileName = attachment.fileName;
 
     return [{
       attachmentId,
-      contentType: attachment.contentType ?? issueAttachment?.contentType,
+      contentType: attachment.contentType,
       downloadUrl: getTimelineAttachmentDownloadUrl(props.issueId, attachmentId, fileName),
       fileName,
     }];
@@ -114,19 +111,11 @@ const fetchTimelines = async () => {
   loading.value = true;
   error.value = false;
   try {
-    const [timelineResponse, issueResponse] = await Promise.all([
-      tenantTimelineService.getTimelineEntries(props.issueId),
-      issueService.getIssue(props.issueId),
-    ]);
+    const timelineResponse = await tenantTimelineService.getTimelineEntries(props.issueId);
     timelines.value = timelineResponse.timelines;
-    issueAttachmentsById.value = new Map(
-      (issueResponse.attachments ?? [])
-        .flatMap((attachment) => (attachment.attachmentId ? [[attachment.attachmentId, attachment] as const] : [])),
-    );
   } catch (fetchError) {
     console.error('Error fetching issue timeline:', fetchError);
     timelines.value = [];
-    issueAttachmentsById.value = new Map();
     error.value = true;
   } finally {
     loading.value = false;
@@ -139,7 +128,7 @@ const getTimelineAttachmentDownloadUrl = ( issueId: string, attachmentId: string
   const encodedIssueId = encodeURIComponent(issueId);
   const encodedAttachmentId = encodeURIComponent(attachmentId);
   const encodedFileName = encodeURIComponent(fileName || attachmentId);
-  return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+  return `/ticketing/v1/tenant-relations/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
 };
 
 const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {

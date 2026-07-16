@@ -1,13 +1,16 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
 export type TenantTimelineJson = ApiComponents['schemas']['TenantTimelineJson'];
 export type TenantTimelineListJson = ApiComponents['schemas']['TenantTimelineListJson'];
 
 class TenantTimelineService {
   async getTimelineEntries(issueId: string): Promise<TenantTimelineListJson> {
-    return apiClient.get(
+    const result = await apiClient.get(
       '/ticketing/v1/tenant-relations/issues/{issueId}/timeline',
       { pathParams: { issueId } },
-    );
+    ) as Partial<TenantTimelineListJson>;
+    return {
+      timelines: result.timelines ?? [],
+    };
   }
 
   async createTimelineEntryWithAttachments(
@@ -16,7 +19,7 @@ class TenantTimelineService {
     files: File[],
   ): Promise<void> {
     const formData = new FormData();
-    formData.append('timeline', new File([JSON.stringify(timeline)], 'timeline.json', { type: 'application/json' }));
+    formData.append('timeline', new Blob([JSON.stringify(timeline)], { type: 'application/json' }));
 
     files.forEach((file) => {
       formData.append('attachment', file);
