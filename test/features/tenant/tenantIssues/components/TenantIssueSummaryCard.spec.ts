@@ -1,20 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Tag from 'primevue/tag';
-import type { IssueJson } from '@/services/IssueService';
+import type { TenantIssueJson } from '@/services/TenantIssueService';
 import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
 
 describe('TenantIssueSummaryCard component', () => {
-  const baseIssue: IssueJson = {
+  const baseIssue: TenantIssueJson = {
     id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
     title: 'Heizung defekt',
     status: 'OPEN',
     type: 'DEFECT',
+    agreementId: 'agreement-1',
     location: 'Küche',
     description: 'Wasser tropft von der Decke',
   };
 
-  const mountCard = (issue: IssueJson = baseIssue, deletingIssue = false) => {
+  const mountCard = (issue: TenantIssueJson = baseIssue, deletingIssue = false) => {
     return mount(TenantIssueSummaryCard, {
       props: {
         issue,
