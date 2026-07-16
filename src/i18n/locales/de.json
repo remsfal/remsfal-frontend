@@ -616,8 +616,6 @@
   "tenantIssues.detail.cancelConfirm": "Sind Sie sicher, dass Sie diesen Vorgang schließen möchten?",
   "tenantIssues.detail.cancelSuccess": "Vorgang wurde erfolgreich abgebrochen.",
   "tenantIssues.detail.cancelError": "Vorgang konnte nicht abgebrochen werden.",
-  "tenantIssues.timeline.title": "Timeline",
-  "tenantIssues.timeline.placeholder": "Die Timeline wird in einem nächsten Schritt mit Verlaufseinträgen aus dem Backend angebunden.",
   "tenantIssues.loading": "Lade Meldungen…",
   "tenantNewIssueDialog.title": "Neue Meldung erstellen",
   "tenantNewIssueDialog.createButton": "Erstellen",

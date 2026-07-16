@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService.ts';
+import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService';
 
 import Button from 'primevue/button';
 import Column from 'primevue/column';

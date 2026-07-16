@@ -2,6 +2,7 @@ import globals from 'globals';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import vue from 'eslint-plugin-vue';
+import importPlugin from 'eslint-plugin-import';
 import type { Linter } from 'eslint';
 
 export default [
@@ -77,10 +78,19 @@ export default [
 
   // general rules
   {
+    plugins: { import: importPlugin },
+    settings: { 'import/resolver': { typescript: true } },
     rules: {
       'max-len': ['error', { code: 128 }],
       'no-tabs': 'error',
       indent: ['error', 2, { SwitchCase: 1 }],
+      'import/extensions': ['error', 'ignorePackages', {
+        js: 'never',
+        mjs: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      }],
       'object-curly-newline': [
         'error',
         {
