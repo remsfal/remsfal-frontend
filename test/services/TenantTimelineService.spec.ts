@@ -8,7 +8,7 @@ describe('TenantTimelineService', () => {
   });
 
   test('getTimelineEntries requests timeline list by issue id', async () => {
-    const timelineList: TenantTimelineListJson = { timelines: [{ timelineId: 'timeline-1', title: 'Update' }] };
+    const timelineList: TenantTimelineListJson = { timelines: [{ timelineId: 'timeline-1', purpose: 'MESSAGE_SENT' }] };
     const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce(timelineList);
 
     const result = await tenantTimelineService.getTimelineEntries('issue-1');
@@ -29,7 +29,7 @@ describe('TenantTimelineService', () => {
 
     await tenantTimelineService.createTimelineEntryWithAttachments(
       'issue-1',
-      { title: 'Tenant message' },
+      { purpose: 'MESSAGE_SENT' },
       files,
     );
 
@@ -41,7 +41,7 @@ describe('TenantTimelineService', () => {
     const formData = payload as FormData;
     const timelinePart = formData.get('timeline');
     expect(timelinePart).toBeInstanceOf(Blob);
-    expect(await (timelinePart as Blob).text()).toBe(JSON.stringify({ title: 'Tenant message' }));
+    expect(await (timelinePart as Blob).text()).toBe(JSON.stringify({ purpose: 'MESSAGE_SENT' }));
     expect(formData.getAll('attachment')).toHaveLength(2);
   });
 });
