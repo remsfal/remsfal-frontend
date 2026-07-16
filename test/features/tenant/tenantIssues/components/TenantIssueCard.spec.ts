@@ -1,17 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Tag from 'primevue/tag';
-import type { IssueItemJson } from '@/services/IssueService';
+import type { TenantIssueJson } from '@/services/TenantIssueService';
 
 describe('TenantIssueCard component', () => {
-  const baseIssue: IssueItemJson = {
+  const baseIssue: TenantIssueJson = {
     id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
     title: 'Heizung defekt',
     status: 'OPEN',
     type: 'DEFECT',
+    agreementId: 'agreement-1',
+    description: 'Die Heizung ist kalt.',
   };
 
-  const mountCard = async (issue: IssueItemJson) => {
+  const mountCard = async (issue: TenantIssueJson) => {
     const { default: TenantIssueCard } = await import(
       '@/features/tenant/tenantIssues/components/TenantIssueCard.vue'
     );
@@ -113,7 +115,7 @@ describe('TenantIssueCard component', () => {
   it('falls back to raw status label for unknown status values', async () => {
     const wrapper = await mountCard({
       ...baseIssue,
-      status: 'UNKNOWN' as IssueItemJson['status'],
+      status: 'UNKNOWN' as TenantIssueJson['status'],
     });
 
     const tags = wrapper.findAllComponents(Tag);

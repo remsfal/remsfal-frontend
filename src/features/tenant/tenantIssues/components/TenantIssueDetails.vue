@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
@@ -7,8 +7,10 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
-import { issueService, type IssueJson } from '@/services/IssueService';
+import Tag from 'primevue/tag';
+import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
+import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
+  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -19,7 +21,7 @@ const { t } = useI18n();
 const loading = ref(false);
 const deletingIssue = ref(false);
 const showCancelDialog = ref(false);
-const issue = ref<IssueJson | null>(null);
+const issue = ref<TenantIssueJson | null>(null);
 const error = ref<string | null>(null);
 
 const fetchIssue = async () => {
@@ -27,7 +29,7 @@ const fetchIssue = async () => {
   error.value = null;
 
   try {
-    issue.value = await issueService.getIssue(props.issueId);
+    issue.value = await tenantIssueService.getIssue(props.issueId);
   } catch (fetchError) {
     console.error('Error fetching tenant issue:', fetchError);
     error.value = t('tenantIssues.detail.loadError');
@@ -48,7 +50,7 @@ const cancelIssue = async () => {
   }
 
   try {
-    await issueService.deleteIssue(issue.value?.id || props.issueId);
+    await tenantIssueService.closeIssue(issue.value?.id || props.issueId);
     toast.add({
       severity: 'success',
       summary: t('success.saved'),

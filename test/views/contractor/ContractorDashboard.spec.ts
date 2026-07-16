@@ -34,7 +34,7 @@ describe("ContractorDashboardView", () => {
   // ------------------------------------------------------------
   it("renders 4 KPI cards", () => {
     const wrapper = mountView();
-    expect(wrapper.findAll(".kpi-card").length).toBe(4);
+    expect(wrapper.findAll(".kpi-card")).toHaveLength(4);
   });
 
   it("renders all KPI card titles correctly", () => {
@@ -59,7 +59,7 @@ describe("ContractorDashboardView", () => {
   it("renders all 3 charts (bar, doughnut, line)", () => {
     const wrapper = mountView();
     const charts = wrapper.findAll('[data-test="chart-stub"]');
-    expect(charts.length).toBe(3);
+    expect(charts).toHaveLength(3);
   });
 
   // ------------------------------------------------------------

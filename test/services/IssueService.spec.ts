@@ -15,11 +15,6 @@ describe('IssueService with MSW (http)', () => {
     expect(issueList.issues?.[0]).toHaveProperty('title');
   });
 
-  test('getIssues works without a projectId filter', async () => {
-    const issueList = await issueService.getIssues();
-    expect(issueList.issues).toBeDefined();
-  });
-
   test('getIssue returns a single issue', async () => {
     const issue = await issueService.getIssue(issueId);
     expect(issue.id).toBe(issueId);
@@ -54,14 +49,13 @@ describe('IssueService with MSW (http)', () => {
     const issueList = await issueService.getIssues(projectId);
     expect(issueList.issues).toBeDefined();
     expect(issueList.issues?.length).toBeGreaterThan(0);
-    expect(issueList.first).toBeDefined();
     expect(issueList.size).toBeDefined();
   });
-  
+
   test('getIssue handles non-existing issue (404)', async () => {
     await expect(issueService.getIssue('non-existing-id')).rejects.toThrow();
   });
-  
+
   test('getIssues fallback values are applied when data is missing', async () => {
     // Mock empty response
     server.use(
@@ -69,7 +63,6 @@ describe('IssueService with MSW (http)', () => {
     );
 
     const result = await issueService.getIssues(projectId);
-    expect(result.first).toBe(0);
     expect(result.size).toBe(0);
     expect(result.issues).toEqual([]);
   });
@@ -96,49 +89,31 @@ describe('IssueService with MSW (http)', () => {
       http.get('/ticketing/v1/issues', ({ request }) => {
         const url = new URL(request.url);
         capturedParams = Object.fromEntries(url.searchParams.entries());
-        return HttpResponse.json({
-          issues: [], first: 0, size: 0 
-        });
+        return HttpResponse.json({ issues: [], size: 0 });
       }),
     );
 
     await issueService.getIssues(
       projectId,
-      true,
       'OPEN' as IssueStatus,
       'assignee-1',
       'agreement-1',
       'unit-1',
       'APARTMENT',
+      'cursor-1',
       50,
-      10,
     );
 
     expect(capturedParams).toMatchObject({
       projectId,
-      preferTenancyIssues: 'true',
       status: 'OPEN',
       assigneeId: 'assignee-1',
       agreementId: 'agreement-1',
       rentalUnitId: 'unit-1',
       rentalUnitType: 'APARTMENT',
+      cursor: 'cursor-1',
       limit: '50',
-      offset: '10',
     });
-  });
-
-  test('createTenancyIssueWithAttachment uploads the issue with attached files', async () => {
-    const newIssue: Partial<IssueJson> = {
-      title: 'Issue with attachment',
-      description: 'Has a file',
-      status: 'OPEN' as IssueStatus,
-    };
-    const file = new File(['file content'], 'photo.png', { type: 'image/png' });
-
-    const createdIssue = await issueService.createTenancyIssueWithAttachment(newIssue, [file]);
-
-    expect(createdIssue.id).toBeDefined();
-    expect((createdIssue as unknown as { attachmentCount: number }).attachmentCount).toBe(1);
   });
 
   test('deleteIssue resolves successfully', async () => {

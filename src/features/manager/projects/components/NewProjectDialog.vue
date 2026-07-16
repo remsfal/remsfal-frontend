@@ -161,7 +161,3 @@ function abort() {
     </Form>
   </BaseDialog>
 </template>
-
-<style scoped>
-
-</style>

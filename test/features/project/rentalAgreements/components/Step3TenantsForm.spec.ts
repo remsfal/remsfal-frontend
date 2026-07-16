@@ -117,7 +117,7 @@ describe('Step3TenantsForm', () => {
     await wrapper.vm.$nextTick();
 
     const tenantCards = wrapper.findAll('.bg-gray-50');
-    expect(tenantCards.length).toBe(2);
+    expect(tenantCards).toHaveLength(2);
     expect(tenantCards[0].text()).toContain('Max Mustermann');
     expect(tenantCards[1].text()).toContain('Erika Musterfrau');
   });
