@@ -31,7 +31,7 @@ describe('ProjectMenu.vue', () => {
     wrapper = mountMenu();
     await wrapper.vm.$nextTick();
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems).toHaveLength(4);
+    expect(rootItems.length).toBe(4);
   });
 
   it('renders section labels', async () => {

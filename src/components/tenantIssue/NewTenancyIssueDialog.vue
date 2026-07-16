@@ -14,8 +14,7 @@ import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
 
 // Services & Types
-import type { IssueCategory, IssueType } from '@/services/IssueService.ts';
-import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService.ts';
+import { issueService, type IssueCategory, type IssueJson, type IssueType } from '@/services/IssueService.ts';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService.ts';
 import { useUserSessionStore } from '@/stores/UserSession.ts';
 
@@ -32,7 +31,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:visible': [value: boolean];
-  issueCreated: [issue: TenantIssueJson];
+  issueCreated: [issue: IssueJson];
 }>();
 
 const { t } = useI18n();
@@ -199,9 +198,9 @@ function buildDescription(state: TenantIssueFormState): string | undefined {
 }
 
 // Transform Form Data to Issue API Schema
-function transformFormDataToIssue(state: TenantIssueFormState): Partial<TenantIssueJson> {
+function transformFormDataToIssue(state: TenantIssueFormState): Partial<IssueJson> {
   // Derive rentalUnitType from the selected rental unit of the tenancy
-  let rentalUnitType: TenantIssueJson['rentalUnitType'] | undefined;
+  let rentalUnitType: IssueJson['rentalUnitType'] | undefined;
   if (state.rentalUnitId && state.tenancyId) {
     const tenancy = tenancies.value.find(t => t.agreementId === state.tenancyId);
     const unit = tenancy?.rentalUnits?.find(u => u.id === state.rentalUnitId);
@@ -231,7 +230,7 @@ async function handleSubmit() {
   try {
     const issueData = transformFormDataToIssue(formState.value);
 
-    let newIssue = await tenantIssueService.createIssueWithAttachment(issueData, formState.value.files);
+    let newIssue = await issueService.createTenancyIssueWithAttachment(issueData, formState.value.files);
 
     toast.add({
       severity: 'success',

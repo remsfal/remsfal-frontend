@@ -66,3 +66,5 @@ const cardClasses = computed(() => {
     <slot />
   </Card>
 </template>
+
+<style scoped></style>

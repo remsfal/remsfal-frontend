@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -10,8 +10,7 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
-import type { IssueStatus, IssueType } from '@/services/IssueService';
-import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
+import { issueService, type IssueJson, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
 import TenantIssueCard from './TenantIssueCard.vue';
 
@@ -19,7 +18,7 @@ const { t } = useI18n();
 const router = useRouter();
 
 const contracts = ref<TenancyJson[]>([]);
-const issues = ref<TenantIssueJson[]>([]);
+const issues = ref<IssueItemJson[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const showNewIssueDialog = ref(false);
@@ -81,14 +80,6 @@ const getStatusOrder = (status: string | undefined) => {
 const filteredIssues = computed(() => {
   let result = issues.value;
 
-  if (filters.value.tenancyId) {
-    result = result.filter((issue) => issue.agreementId === filters.value.tenancyId);
-  }
-
-  if (filters.value.status) {
-    result = result.filter((issue) => issue.status === filters.value.status);
-  }
-
   if (filters.value.type) {
     result = result.filter((issue) => issue.type === filters.value.type);
   }
@@ -128,9 +119,15 @@ const loadIssues = async () => {
   error.value = null;
 
   try {
-    const issueList = await tenantIssueService.getIssues();
+    const issueList = await issueService.getIssues(
+      undefined,
+      true,
+      filters.value.status || undefined,
+      undefined,
+      filters.value.tenancyId || undefined,
+    );
 
-    issues.value = issueList?.issues ?? [];
+    issues.value = (issueList?.issues ?? []) as IssueItemJson[];
   } catch (err) {
     console.error('Error loading issues:', err);
     error.value = t('error.general');
@@ -145,16 +142,24 @@ const onSearchInput = (event: Event) => {
   searchQuery.value = target.value;
 };
 
-const handleIssueCreated = (newIssue: TenantIssueJson) => {
-  issues.value = [newIssue, ...issues.value];
+const handleIssueCreated = (newIssue: IssueJson) => {
+  issues.value = [newIssue as IssueItemJson, ...issues.value];
 };
 
-const openIssue = (issue: TenantIssueJson) => {
+const openIssue = (issue: IssueItemJson) => {
   if (!issue.id) {
     return;
   }
   router.push({ name: 'TenantIssueDetails', params: { issueId: issue.id } });
 };
+
+watch(
+  () => filters.value,
+  () => {
+    loadIssues();
+  },
+  { deep: true },
+);
 
 onMounted(async () => {
   await loadContracts();

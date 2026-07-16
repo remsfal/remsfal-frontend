@@ -33,7 +33,7 @@ export const siteHandlers = [
         id: 'new-site-id',
         projectId: params.projectId,
         propertyId: params.propertyId,
-        ...lastRequests.createdSite,
+        ...(lastRequests.createdSite ?? {}),
       });
     },
   ),
@@ -43,7 +43,7 @@ export const siteHandlers = [
     lastRequests.updatedSite = (await request.json()) as Record<string, unknown> | null;
     return HttpResponse.json({
       id: params.siteId,
-      ...lastRequests.updatedSite,
+      ...(lastRequests.updatedSite ?? {}),
     });
   }),
 

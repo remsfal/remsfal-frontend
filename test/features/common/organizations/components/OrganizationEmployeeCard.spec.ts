@@ -85,7 +85,7 @@ describe('OrganizationEmployeeCard', () => {
     const wrapper = mountCard();
     await flushPromises();
     const selects = wrapper.findAllComponents({ name: 'EmployeeRoleSelect' });
-    expect(selects).toHaveLength(mockEmployees.length);
+    expect(selects.length).toBe(mockEmployees.length);
   });
 
   it('renders NewOrganizationEmployeeButton', async () => {

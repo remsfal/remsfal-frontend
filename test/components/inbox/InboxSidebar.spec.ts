@@ -89,7 +89,7 @@ describe('InboxSidebar', () => {
       messages: [],
     });
     const badges = wrapper.findAllComponents({ name: 'Badge' });
-    expect(badges).toHaveLength(0);
+    expect(badges.length).toBe(0);
   });
 
   it('emits update:activeNavItem when inbox button is clicked', async () => {

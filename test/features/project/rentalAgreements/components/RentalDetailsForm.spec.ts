@@ -24,7 +24,7 @@ describe('RentalDetailsForm', () => {
     expect(wrapper.find('input[name="operatingCostsPrepayment"]').exists()).toBe(true);
     expect(wrapper.find('input[name="heatingCostsPrepayment"]').exists()).toBe(true);
     expect(wrapper.findComponent({ name: 'SelectButton' }).exists()).toBe(true);
-    expect(wrapper.findAllComponents({ name: 'DatePicker' })).toHaveLength(2);
+    expect(wrapper.findAllComponents({ name: 'DatePicker' }).length).toBe(2);
   });
 
   it('has required field indicator for billing cycle', () => {
@@ -56,7 +56,7 @@ describe('RentalDetailsForm', () => {
 
   it('has date pickers for first and last payment', () => {
     const datePickers = wrapper.findAllComponents({ name: 'DatePicker' });
-    expect(datePickers).toHaveLength(2);
+    expect(datePickers.length).toBe(2);
   });
 
   it('displays unit type correctly', () => {
@@ -78,7 +78,7 @@ describe('RentalDetailsForm', () => {
     });
 
     const datePickers = wrapperWithDates.findAllComponents({ name: 'DatePicker' });
-    expect(datePickers).toHaveLength(2);
+    expect(datePickers.length).toBe(2);
   });
 
   it('has submit button with correct label', () => {

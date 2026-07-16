@@ -16,7 +16,7 @@ const issues = ref<IssueItemJson[]>([]);
 // --- Backend filters (status, assigneeId) are applied server-side; type is applied client-side ---
 const loadIssues = async () => {
   try {
-    const issueList = await issueService.getIssues(props.projectId, props.status, props.assigneeId);
+    const issueList = await issueService.getIssues(props.projectId, undefined, props.status, props.assigneeId);
     issues.value = issueList?.issues ?? [];
   } catch (err) {
     console.error(err);
@@ -62,9 +62,7 @@ watch(() => [props.projectId, props.status, props.assigneeId], loadIssues);
   <main>
     <div class="grid grid-cols-12 gap-4">
       <div class="col-span-12">
-        <h1 class="w-full">
-          {{ heading }}
-        </h1>
+        <h1 class="w-full">{{ heading }}</h1>
       </div>
 
       <div class="col-span-12">

@@ -6,8 +6,8 @@ export const projectHandlers = [
   // GET projects list
   http.get(`${API_BASE}/projects`, ({ request }) => {
     const url = new URL(request.url);
-    const offset = Number.parseInt(url.searchParams.get('offset') || '0');
-    const limit = Number.parseInt(url.searchParams.get('limit') || '10');
+    const offset = parseInt(url.searchParams.get('offset') || '0');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
 
     return HttpResponse.json({
       projects: [

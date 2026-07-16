@@ -48,7 +48,7 @@ describe('IssueTable', () => {
     expect(dataTable.exists()).toBe(true);
 
     const rows = wrapper.findAll('.p-datatable-tbody > tr');
-    expect(rows).toHaveLength(mockIssues.length);
+    expect(rows.length).toBe(mockIssues.length);
   });
 
   it('displays correct data for each column, resolving assignee names', () => {

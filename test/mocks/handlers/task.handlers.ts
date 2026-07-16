@@ -47,14 +47,14 @@ export const taskHandlers = [
   // POST create task
   http.post(`${API_BASE}/projects/:projectId/tasks`, async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown> | undefined;
-    lastRequests.createdTask = { ...body, id: 'new-task-id' };
+    lastRequests.createdTask = { ...(body ?? {}), id: 'new-task-id' };
     return HttpResponse.json(lastRequests.createdTask);
   }),
 
   // PATCH modify task
   http.patch(`${API_BASE}/projects/:projectId/tasks/:taskId`, async ({ request, params }) => {
     const body = (await request.json()) as Record<string, unknown> | undefined;
-    lastRequests.updatedTask = { id: params.taskId, ...body };
+    lastRequests.updatedTask = { id: params.taskId, ...(body ?? {}) };
     return HttpResponse.json(lastRequests.updatedTask);
   }),
 ];

@@ -35,6 +35,7 @@ describe('ContractorTable.vue', () => {
   it('loads issues successfully and renders table rows', async () => {
     vi.mocked(contractorService.getIssues).mockResolvedValue({
       issues: mockIssues,
+      first: 0,
       size: 2,
     });
 
@@ -45,12 +46,13 @@ describe('ContractorTable.vue', () => {
     expect(wrapper.findComponent(DataTable).props('value')).toEqual(mockIssues);
 
     const rows = wrapper.findAll('tr');
-    expect(rows).toHaveLength(mockIssues.length + 1);
+    expect(rows.length).toBe(mockIssues.length + 1);
   });
 
   it('expands a row when expander is clicked', async () => {
     vi.mocked(contractorService.getIssues).mockResolvedValue({
       issues: mockIssues,
+      first: 0,
       size: 2,
     });
 
@@ -70,6 +72,7 @@ describe('ContractorTable.vue', () => {
   it('handles empty issues list gracefully', async () => {
     vi.mocked(contractorService.getIssues).mockResolvedValue({
       issues: [],
+      first: 0,
       size: 0,
     });
 

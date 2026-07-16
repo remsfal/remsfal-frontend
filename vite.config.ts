@@ -140,11 +140,6 @@ export default defineConfig({
     strictPort: true,
     port: 5173,
     host: '0.0.0.0',
-    watch: {
-      // Coverage reports (written mid-run by istanbul during `coverage:e2e`) mirror the
-      // src/ tree — without this, every report write triggers a full page reload.
-      ignored: ['**/coverage/**', '**/coverage-cypress/**', '**/coverage-vitest/**'],
-    },
     proxy: {
       '/api': createProxyConfig('http://localhost:8080', 'Platform Microservice'),
       '/ticketing': createProxyConfig('http://localhost:8081', 'Ticketing Microservice'),
