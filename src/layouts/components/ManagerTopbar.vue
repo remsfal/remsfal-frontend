@@ -8,7 +8,7 @@ import Select, { type SelectChangeEvent } from 'primevue/select';
 import AppTopbar from '@/layouts/components/AppTopbar.vue';
 import { computed } from 'vue';
 import { useInboxStore } from '@/stores/InboxStore';
-import TopbarUserActions from '@/components/TopbarUserActions.vue';
+import TopbarUserActions from '@/layouts/components/TopbarUserActions.vue';
 
 const { t } = useI18n();
 

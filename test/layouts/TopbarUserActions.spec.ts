@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import TopbarUserActions from '@/components/TopbarUserActions.vue';
+import TopbarUserActions from '@/layouts/components/TopbarUserActions.vue';
 import { useUserSessionStore, type User } from '@/stores/UserSession';
 
 // Mock vue-router
