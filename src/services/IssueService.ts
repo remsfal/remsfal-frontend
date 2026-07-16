@@ -50,20 +50,6 @@ class IssueService {
     return apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
   }
 
-  async createTenancyIssueWithAttachment(body: Partial<IssueJson>, files: File[]): Promise<IssueJson> {
-    const formData = new FormData();
-
-    formData.append('issue', new Blob([JSON.stringify(body)], { type: 'application/json' }));
-
-    files.forEach((file) => {
-      formData.append('attachment', file);
-    });
-
-    // Do NOT set Content-Type manually — axios/browser sets multipart/form-data with boundary automatically
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return apiClient.post('/ticketing/v1/issues', formData as any) as Promise<IssueJson>;
-  }
-
   async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {
     return apiClient.patch('/ticketing/v1/issues/{issueId}', body, { pathParams: { issueId } }) as Promise<IssueJson>;
   }
