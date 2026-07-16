@@ -13,12 +13,15 @@ import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/Te
 
 const props = defineProps<{ issueId: string }>();
 
+const router = useRouter();
 const toast = useToast();
 const { t } = useI18n();
 
 const loading = ref(false);
+const deletingIssue = ref(false);
 const issue = ref<TenantIssueJson | null>(null);
 const error = ref<string | null>(null);
+const showCancelDialog = ref(false);
 
 const fetchIssue = async () => {
   loading.value = true;
@@ -50,6 +53,36 @@ watch(
     fetchIssue();
   }
 );
+
+const openCancelDialog = () => {
+  showCancelDialog.value = true;
+};
+
+const confirmCancelIssue = async () => {
+  const issueId = issue.value?.id || props.issueId;
+  deletingIssue.value = true;
+  try {
+    await tenantIssueService.closeIssue(issueId);
+    showCancelDialog.value = false;
+    toast.add({
+      severity: 'success',
+      summary: t('success.saved'),
+      detail: t('tenantIssues.detail.cancelSuccess'),
+      life: 3000,
+    });
+    await router.push({ name: 'TenantIssues' });
+  } catch (cancelError) {
+    console.error('Error cancelling tenant issue:', cancelError);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('tenantIssues.detail.cancelError'),
+      life: 3000,
+    });
+  } finally {
+    deletingIssue.value = false;
+  }
+};
 </script>
 
 <template>
@@ -69,13 +102,13 @@ watch(
       <span class="ml-3 text-gray-600">{{ t('tenantIssues.loading') }}</span>
     </div>
 
-    <TenantIssueTimelineCard v-else-if="issue" :issueId="issue.id || props.issueId" />
     <template v-else-if="issue">
       <TenantIssueSummaryCard
         :issue="issue"
         :deletingIssue="deletingIssue"
         @cancel="openCancelDialog"
       />
+      <TenantIssueTimelineCard :issueId="issue.id || props.issueId" />
     </template>
 
     <BaseDialog
