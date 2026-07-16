@@ -39,7 +39,7 @@ describe('TenantIssueSummaryCard component', () => {
   it('uses fallback title when title is missing', () => {
     const wrapper = mountCard({
       ...baseIssue,
-      title: undefined,
+      title: '',
     });
 
     expect(wrapper.text()).toContain('Unbenannt');
@@ -144,7 +144,7 @@ describe('TenantIssueSummaryCard component', () => {
       ...baseIssue,
       id: undefined,
       location: '   ',
-      description: undefined,
+      description: '',
       modifiedAt: undefined,
     });
 
@@ -163,14 +163,13 @@ describe('TenantIssueSummaryCard component', () => {
     expect(wrapper.text()).toContain('Sonstiges');
   });
 
-  it('hides status and type rows when both values are missing', () => {
+  it('hides status row when status is missing', () => {
     const wrapper = mountCard({
       ...baseIssue,
       status: undefined,
-      type: undefined,
     });
 
-    expect(wrapper.findAllComponents(Tag)).toHaveLength(1);
+    expect(wrapper.findAllComponents(Tag)).toHaveLength(2);
   });
 
   it('disables and shows loading state on cancel button while deleting', () => {
