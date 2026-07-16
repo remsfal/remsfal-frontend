@@ -185,10 +185,9 @@ describe('TenantIssueSummaryCard component', () => {
   });
 
   it('hides type row when type is missing', () => {
-    const wrapper = mountCard({
-      ...baseIssue,
-      type: undefined,
-    });
+    const issueWithoutType = { ...baseIssue } as TenantIssueJson;
+    delete (issueWithoutType as { type?: TenantIssueJson['type'] }).type;
+    const wrapper = mountCard(issueWithoutType);
 
     expect(wrapper.findAllComponents(Tag)).toHaveLength(2);
     expect(wrapper.text()).not.toContain('Schaden');
