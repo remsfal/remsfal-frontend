@@ -57,10 +57,10 @@ describe("IssueListView.vue", () => {
     expect(wrapper.findComponent(NewIssueDialog).props("visible")).toBe(true);
   });
 
-  test("fetches issues once on mount with status and assigneeId forwarded to the backend", async () => {
+  test("fetches issues once on mount with status, type and assigneeId forwarded to the backend", async () => {
     await flushPromises();
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "user1");
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", "user1");
   });
 
   test("re-fetches when status changes", async () => {
@@ -71,28 +71,26 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", "OPEN", "user1");
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", "OPEN", "TASK", "user1");
   });
 
-  test("does not re-fetch when only type changes (client-side filter)", async () => {
+  test("re-fetches when type changes (server-side filter)", async () => {
     await flushPromises();
     getIssuesMock.mockClear();
 
     await wrapper.setProps({ type: 'DEFECT' as IssueType });
     await flushPromises();
 
-    expect(getIssuesMock).not.toHaveBeenCalled();
+    expect(getIssuesMock).toHaveBeenCalledTimes(1);
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "DEFECT", "user1");
   });
 
-  test("filters issues by type on the client", async () => {
+  test("passes type to the backend and displays issues returned by it as-is", async () => {
     getIssuesMock.mockResolvedValueOnce({
-      size: 2,
+      size: 1,
       issues: [
         {
-          id: "1", title: "Task issue", type: 'TASK' as IssueType, status: 'OPEN' as IssueStatus 
-        },
-        {
-          id: "2", title: "Defect issue", type: 'DEFECT' as IssueType, status: 'OPEN' as IssueStatus 
+          id: "1", title: "Task issue", type: 'TASK' as IssueType, status: 'OPEN' as IssueStatus
         },
       ],
     });
@@ -103,6 +101,7 @@ describe("IssueListView.vue", () => {
     });
     await flushPromises();
 
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", undefined);
     const issues = localWrapper.findComponent(IssueTable).props("issues");
     expect(issues).toHaveLength(1);
     expect(issues[0].id).toBe("1");
@@ -307,7 +306,7 @@ describe("IssueListView.vue", () => {
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
-    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, undefined);
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", undefined);
     expect(localWrapper.findComponent(IssueTable).props("issues")).toHaveLength(0);
   });
 });

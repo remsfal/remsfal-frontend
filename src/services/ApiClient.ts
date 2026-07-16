@@ -163,7 +163,9 @@ function responseHandler(response: AxiosResponse): AxiosResponse {
 }
 
 function createAxiosInstance() {
-  const instance = axios.create({});
+  // indexes: null serializes array params as repeated keys (status=OPEN&status=CLOSED)
+  // instead of axios' default bracket notation (status[]=OPEN), matching the backend's expected format.
+  const instance = axios.create({ paramsSerializer: { indexes: null } });
 
   let isRefreshing = false;
   let pendingQueue: Array<{ resolve: () => void; reject: (e: unknown) => void }> = [];

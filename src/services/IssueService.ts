@@ -16,6 +16,7 @@ class IssueService {
   async getIssues(
     projectId: string,
     status?: IssueStatus,
+    type?: IssueType,
     assigneeId?: string,
     agreementId?: string,
     rentalUnitId?: string,
@@ -28,7 +29,8 @@ class IssueService {
         limit,
         projectId,
         ...(cursor ? { cursor } : {}),
-        ...(status ? { status } : {}),
+        ...(status ? { status: [status] } : {}),
+        ...(type ? { type: [type] } : {}),
         ...(assigneeId ? { assigneeId } : {}),
         ...(agreementId ? { agreementId } : {}),
         ...(rentalUnitId ? { rentalUnitId } : {}),
