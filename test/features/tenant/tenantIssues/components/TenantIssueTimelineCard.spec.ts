@@ -23,12 +23,12 @@ vi.mock('@/services/TenantTimelineService', async () => {
 
 const createTimelineList = (timelines: TenantTimelineJson[]): TenantTimelineListJson => ({ timelines });
 
-const mountTimelineCard = async () => {
+const mountTimelineCard = async (issueId = 'issue-1') => {
   const { default: TenantIssueTimelineCard } = await import(
     '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue'
   );
 
-  return mount(TenantIssueTimelineCard, { props: { issueId: 'issue-1' } });
+  return mount(TenantIssueTimelineCard, { props: { issueId } });
 };
 
 describe('TenantIssueTimelineCard component', () => {
@@ -106,6 +106,26 @@ describe('TenantIssueTimelineCard component', () => {
       'noopener,noreferrer',
     );
     openSpy.mockRestore();
+  });
+
+  it('treats image extensions as images even without content type', async () => {
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
+      {
+        timelineId: 'timeline-image-ext',
+        purpose: 'MESSAGE_SENT',
+        createdAt: '2026-01-02T10:00:00.000Z',
+        attachments: [{
+          attachmentId: 'img-ext-1',
+          fileName: 'photo.webp',
+        }],
+      },
+    ]));
+
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+
+    expect(wrapper.find('img').exists()).toBe(true);
+    expect(wrapper.text()).not.toContain('WEBP');
   });
 
   it('renders purpose-based titles including fallback', async () => {
@@ -234,6 +254,38 @@ describe('TenantIssueTimelineCard component', () => {
     expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
   });
 
+  it('blocks sending for status messages regardless of casing and surrounding whitespace', async () => {
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
+      {
+        timelineId: 'rejected-normalized',
+        purpose: 'STATUS_CHANGED',
+        message: '  rejected  ',
+        createdAt: '2026-01-02T10:00:00.000Z',
+      },
+    ]));
+
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Nachricht');
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').trigger('click');
+    await flushPromises();
+
+    expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
+  });
+
+  it('keeps submit disabled and does not send for empty message without attachments', async () => {
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+
+    const submitButton = wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]');
+    expect(submitButton.attributes('disabled')).toBeDefined();
+
+    await submitButton.trigger('click');
+    await flushPromises();
+
+    expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
+  });
+
   it('submits tenant messages and clears the input after success', async () => {
     const wrapper = await mountTimelineCard();
 
@@ -275,6 +327,71 @@ describe('TenantIssueTimelineCard component', () => {
         expect.objectContaining({ name: 'b.pdf' }),
       ]),
     );
+  });
+
+  it('submits attachment-only messages without adding an empty message field', async () => {
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+
+    const fileUpload = wrapper.getComponent(FileUpload);
+    fileUpload.vm.$emit('select', { files: [new File(['attachment'], 'only-attachment.pdf', { type: 'application/pdf' })] });
+    await flushPromises();
+
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').trigger('click');
+    await flushPromises();
+
+    const secondArgument = vi.mocked(tenantTimelineService.createTimelineEntryWithAttachments).mock.calls[0][1];
+    expect(secondArgument).toEqual(expect.objectContaining({ purpose: 'MESSAGE_SENT' }));
+    expect(secondArgument).not.toHaveProperty('message');
+  });
+
+  it('prevents duplicate submits while request is still in flight', async () => {
+    let resolveSubmission: (() => void) | undefined;
+    const pendingSubmission = new Promise<void>((resolve) => {
+      resolveSubmission = resolve;
+    });
+    vi.mocked(tenantTimelineService.createTimelineEntryWithAttachments).mockReturnValueOnce(pendingSubmission);
+
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Eine Nachricht');
+
+    const submitButton = wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]');
+    await submitButton.trigger('click');
+    await submitButton.trigger('click');
+    await flushPromises();
+
+    expect(tenantTimelineService.createTimelineEntryWithAttachments).toHaveBeenCalledTimes(1);
+
+    resolveSubmission?.();
+    await flushPromises();
+  });
+
+  it('encodes issue, attachment and filename in generated download URL', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
+      {
+        timelineId: 'encoded-url',
+        purpose: 'MESSAGE_SENT',
+        createdAt: '2026-01-02T10:00:00.000Z',
+        attachments: [{
+          attachmentId: 'att id/1',
+          fileName: 'file name #1.pdf',
+          contentType: 'application/pdf',
+        }],
+      },
+    ]));
+
+    const wrapper = await mountTimelineCard('issue id/ä');
+    await flushPromises();
+    await wrapper.get('button.cursor-pointer').trigger('click');
+
+    expect(openSpy).toHaveBeenCalledWith(
+      '/ticketing/v1/tenant-relations/issues/issue%20id%2F%C3%A4/attachments/att%20id%2F1/file%20name%20%231.pdf',
+      '_blank',
+      'noopener,noreferrer',
+    );
+    openSpy.mockRestore();
   });
 
   it('shows an error toast when message submission fails', async () => {
