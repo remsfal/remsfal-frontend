@@ -624,7 +624,7 @@
         }
       },
       "IssueJson" : {
-        "description" : "An issue",
+        "description" : "An issue, as visible to the project manager with full access to all fields and relations",
         "type" : "object",
         "properties" : {
           "id" : {
@@ -1958,6 +1958,7 @@
           "title" : {
             "type" : "string",
             "pattern" : "\\S",
+            "minLength" : 3,
             "maxLength" : 255
           },
           "type" : {
@@ -1996,12 +1997,6 @@
           },
           "description" : {
             "type" : "string"
-          },
-          "attachments" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/IssueAttachmentJson"
-            }
           }
         },
         "required" : [ "title", "type", "agreementId", "description" ]
@@ -2027,10 +2022,11 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/TenantIssueJson"
-            }
+            },
+            "description" : "The issues in this page",
+            "readOnly" : true
           }
-        },
-        "required" : [ "size" ]
+        }
       },
       "TenantItemJson" : {
         "description" : "A tenant item with rental units and active status for list views",
@@ -2154,33 +2150,40 @@
           }
         }
       },
-      "TenantTimelineJson" : {
-        "description" : "A tenant timeline entry",
+      "TimelineJson" : {
+        "description" : "An issue timeline entry",
         "type" : "object",
         "properties" : {
           "issueId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "tenancyId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "timelineId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "projectId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "attachments" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/IssueAttachmentJson"
-            }
+            },
+            "readOnly" : true
           },
           "senderId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "senderName" : {
-            "type" : "string"
+            "type" : "string",
+            "readOnly" : true
           },
           "purpose" : {
             "$ref" : "#/components/schemas/MessagePurpose"
@@ -2189,24 +2192,29 @@
             "type" : "string"
           },
           "createdAt" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/Instant"
           },
           "modifiedAt" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/Instant"
           }
-        }
+        },
+        "required" : [ "purpose", "message" ]
       },
-      "TenantTimelineListJson" : {
-        "description" : "A list of tenant timelines",
+      "TimelineListJson" : {
+        "description" : "A list of issue timelines",
         "type" : "object",
-        "required" : [ "timelines" ],
         "properties" : {
           "timelines" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/TenantTimelineJson"
+              "$ref" : "#/components/schemas/TimelineJson"
             },
-            "description" : "Tenant timeline entries"
+            "description" : "Timeline entries",
+            "readOnly" : true
           }
         }
       },
@@ -2463,7 +2471,7 @@
           "name" : "cursor",
           "in" : "query",
           "schema" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
           "description" : "Maximum number of issues to return",
@@ -2500,14 +2508,37 @@
             "$ref" : "#/components/schemas/UnitType"
           }
         }, {
-          "description" : "Filter to return only issues with a specific status",
+          "description" : "Filter to return only issues matching one of the given statuses (repeat the parameter for multiple values, e.g. status=OPEN&status=IN_PROGRESS); omit to return issues of all statuses",
           "name" : "status",
           "in" : "query",
           "schema" : {
-            "$ref" : "#/components/schemas/IssueStatus"
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueStatus"
+            }
+          }
+        }, {
+          "description" : "Filter to return only issues matching one of the given types (repeat the parameter for multiple values, e.g. type=DEFECT&type=MAINTENANCE); omit to return issues of all types",
+          "name" : "type",
+          "in" : "query",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IssueType"
+            }
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "Issues retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueListJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2538,6 +2569,13 @@
             "headers" : {
               "Location" : {
                 "description" : "URL of the new issue"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueJson"
+                }
               }
             }
           },
@@ -2576,6 +2614,16 @@
           "required" : true
         },
         "responses" : {
+          "200" : {
+            "description" : "Issue updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2603,6 +2651,16 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "Issue retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IssueJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -2661,7 +2719,18 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "attachment" ],
+                "type" : "object",
+                "properties" : {
+                  "attachment" : {
+                    "description" : "One or more image files to attach to the issue",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -2831,7 +2900,14 @@
         } ],
         "responses" : {
           "201" : {
-            "description" : "Chat session created"
+            "description" : "Chat session created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChatSessionJson"
+                }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -2975,7 +3051,14 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Chat message sent"
+            "description" : "Chat message sent",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChatMessageJson"
+                }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -3064,7 +3147,18 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "file" ],
+                "type" : "object",
+                "properties" : {
+                  "file" : {
+                    "description" : "One or more files to send in the chat session",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -3072,7 +3166,31 @@
         },
         "responses" : {
           "201" : {
-            "description" : "File sent"
+            "description" : "File sent",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "fileId" : {
+                      "$ref" : "#/components/schemas/UUID"
+                    },
+                    "fileUrl" : {
+                      "type" : "string"
+                    },
+                    "sessionId" : {
+                      "$ref" : "#/components/schemas/UUID"
+                    },
+                    "createdAt" : {
+                      "$ref" : "#/components/schemas/Instant"
+                    },
+                    "sender" : {
+                      "$ref" : "#/components/schemas/UUID"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"
@@ -3367,7 +3485,14 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Requests for quotation created successfully"
+            "description" : "Requests for quotation created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QuotationRequestListJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -3398,7 +3523,18 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "attachment" ],
+                "type" : "object",
+                "properties" : {
+                  "attachment" : {
+                    "description" : "One or more files to attach",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -3675,7 +3811,18 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "attachment" ],
+                "type" : "object",
+                "properties" : {
+                  "attachment" : {
+                    "description" : "One or more files to attach",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -3902,7 +4049,14 @@
         } ],
         "responses" : {
           "201" : {
-            "description" : "Order placement created successfully"
+            "description" : "Order placement created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderPlacementJson"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
@@ -3971,7 +4125,18 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "attachment" ],
+                "type" : "object",
+                "properties" : {
+                  "attachment" : {
+                    "description" : "One or more files to attach",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -4070,6 +4235,158 @@
           },
           "404" : {
             "description" : "Attachment not found"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      }
+    },
+    "/ticketing/v1/issues/{issueId}/timeline" : {
+      "get" : {
+        "summary" : "Get all timeline entries for an issue",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Timeline entries retrieved",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TimelineListJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "Issue not found"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "security" : [ {
+          "SecurityScheme" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create a new timeline entry with attachments for an issue",
+        "parameters" : [ {
+          "description" : "ID of the issue",
+          "required" : true,
+          "name" : "issueId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "required" : [ "timeline" ],
+                "type" : "object",
+                "properties" : {
+                  "timeline" : {
+                    "description" : "Timeline entry information as JSON",
+                    "type" : "object",
+                    "properties" : {
+                      "issueId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "tenancyId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "timelineId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "attachments" : {
+                        "type" : "array",
+                        "items" : {
+                          "$ref" : "#/components/schemas/IssueAttachmentJson"
+                        },
+                        "readOnly" : true
+                      },
+                      "senderId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderName" : {
+                        "type" : "string",
+                        "readOnly" : true
+                      },
+                      "purpose" : {
+                        "$ref" : "#/components/schemas/MessagePurpose"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "modifiedAt" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/Instant"
+                      }
+                    },
+                    "required" : [ "purpose", "message" ]
+                  },
+                  "attachment" : {
+                    "description" : "One or more files to attach to the timeline entry",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Timeline entry created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TimelineJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "Issue not found"
+          },
+          "403" : {
+            "description" : "Not Allowed"
           }
         },
         "security" : [ {
@@ -4306,7 +4623,18 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "attachment" ],
+                "type" : "object",
+                "properties" : {
+                  "attachment" : {
+                    "description" : "One or more files to attach",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -4472,7 +4800,18 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "attachment" ],
+                "type" : "object",
+                "properties" : {
+                  "attachment" : {
+                    "description" : "One or more files to attach",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -4739,7 +5078,18 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "attachment" ],
+                "type" : "object",
+                "properties" : {
+                  "attachment" : {
+                    "description" : "One or more files to attach",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -4908,7 +5258,7 @@
           "name" : "cursor",
           "in" : "query",
           "schema" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/UUID"
           }
         }, {
           "description" : "Maximum number of issues to return",
@@ -4924,6 +5274,16 @@
           "required" : true
         } ],
         "responses" : {
+          "200" : {
+            "description" : "Issues retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenantIssueListJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -4942,7 +5302,78 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "issue" ],
+                "type" : "object",
+                "properties" : {
+                  "issue" : {
+                    "description" : "Issue information as JSON",
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "modifiedAt" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "title" : {
+                        "type" : "string",
+                        "pattern" : "\\S",
+                        "minLength" : 3,
+                        "maxLength" : 255
+                      },
+                      "type" : {
+                        "$ref" : "#/components/schemas/IssueType"
+                      },
+                      "category" : {
+                        "$ref" : "#/components/schemas/IssueCategory"
+                      },
+                      "status" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/IssueStatus"
+                      },
+                      "reporterId" : {
+                        "description" : "ID of the user who reported this issue",
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "reportedBy" : {
+                        "type" : "string",
+                        "description" : "Name of the user who reported this issue",
+                        "readOnly" : true
+                      },
+                      "agreementId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "rentalUnitId" : {
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "rentalUnitType" : {
+                        "$ref" : "#/components/schemas/UnitType"
+                      },
+                      "location" : {
+                        "type" : "string"
+                      },
+                      "description" : {
+                        "type" : "string"
+                      }
+                    },
+                    "required" : [ "title", "type", "agreementId", "description" ]
+                  },
+                  "attachment" : {
+                    "description" : "One or more image files to attach to the issue",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -4954,6 +5385,13 @@
             "headers" : {
               "Location" : {
                 "description" : "URL of the new issue"
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenantIssueJson"
+                }
               }
             }
           },
@@ -4985,6 +5423,16 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "Issue retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenantIssueJson"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "No user authentication provided via session cookie"
           },
@@ -5095,7 +5543,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TenantTimelineListJson"
+                  "$ref" : "#/components/schemas/TimelineListJson"
                 }
               }
             }
@@ -5129,7 +5577,72 @@
           "content" : {
             "multipart/form-data" : {
               "schema" : {
-                "type" : "object"
+                "required" : [ "timeline" ],
+                "type" : "object",
+                "properties" : {
+                  "timeline" : {
+                    "description" : "Timeline entry information as JSON",
+                    "type" : "object",
+                    "properties" : {
+                      "issueId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "tenancyId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "timelineId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "attachments" : {
+                        "type" : "array",
+                        "items" : {
+                          "$ref" : "#/components/schemas/IssueAttachmentJson"
+                        },
+                        "readOnly" : true
+                      },
+                      "senderId" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/UUID"
+                      },
+                      "senderName" : {
+                        "type" : "string",
+                        "readOnly" : true
+                      },
+                      "purpose" : {
+                        "$ref" : "#/components/schemas/MessagePurpose"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/Instant"
+                      },
+                      "modifiedAt" : {
+                        "readOnly" : true,
+                        "type" : "string",
+                        "$ref" : "#/components/schemas/Instant"
+                      }
+                    },
+                    "required" : [ "purpose", "message" ]
+                  },
+                  "attachment" : {
+                    "description" : "One or more files to attach to the timeline entry",
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string",
+                      "format" : "binary"
+                    }
+                  }
+                }
               }
             }
           },
@@ -5137,7 +5650,14 @@
         },
         "responses" : {
           "201" : {
-            "description" : "Timeline entry created"
+            "description" : "Timeline entry created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TimelineJson"
+                }
+              }
+            }
           },
           "400" : {
             "description" : "Invalid input"

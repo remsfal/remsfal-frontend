@@ -624,7 +624,7 @@
         }
       },
       "IssueJson" : {
-        "description" : "An issue",
+        "description" : "An issue, as visible to the project manager with full access to all fields and relations",
         "type" : "object",
         "properties" : {
           "id" : {
@@ -1958,6 +1958,7 @@
           "title" : {
             "type" : "string",
             "pattern" : "\\S",
+            "minLength" : 3,
             "maxLength" : 255
           },
           "type" : {
@@ -1996,12 +1997,6 @@
           },
           "description" : {
             "type" : "string"
-          },
-          "attachments" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/IssueAttachmentJson"
-            }
           }
         },
         "required" : [ "title", "type", "agreementId", "description" ]
@@ -2027,10 +2022,11 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/TenantIssueJson"
-            }
+            },
+            "description" : "The issues in this page",
+            "readOnly" : true
           }
-        },
-        "required" : [ "size" ]
+        }
       },
       "TenantItemJson" : {
         "description" : "A tenant item with rental units and active status for list views",
@@ -2154,33 +2150,40 @@
           }
         }
       },
-      "TenantTimelineJson" : {
-        "description" : "A tenant timeline entry",
+      "TimelineJson" : {
+        "description" : "An issue timeline entry",
         "type" : "object",
         "properties" : {
           "issueId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "tenancyId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "timelineId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "projectId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "attachments" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/IssueAttachmentJson"
-            }
+            },
+            "readOnly" : true
           },
           "senderId" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/UUID"
           },
           "senderName" : {
-            "type" : "string"
+            "type" : "string",
+            "readOnly" : true
           },
           "purpose" : {
             "$ref" : "#/components/schemas/MessagePurpose"
@@ -2189,24 +2192,29 @@
             "type" : "string"
           },
           "createdAt" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/Instant"
           },
           "modifiedAt" : {
+            "readOnly" : true,
+            "type" : "string",
             "$ref" : "#/components/schemas/Instant"
           }
-        }
+        },
+        "required" : [ "purpose", "message" ]
       },
-      "TenantTimelineListJson" : {
-        "description" : "A list of tenant timelines",
+      "TimelineListJson" : {
+        "description" : "A list of issue timelines",
         "type" : "object",
-        "required" : [ "timelines" ],
         "properties" : {
           "timelines" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/TenantTimelineJson"
+              "$ref" : "#/components/schemas/TimelineJson"
             },
-            "description" : "Tenant timeline entries"
+            "description" : "Timeline entries",
+            "readOnly" : true
           }
         }
       },

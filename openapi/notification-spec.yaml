@@ -497,7 +497,8 @@ components:
           $comment: "Only available for project issues, not for tenancy issues"
           $ref: "#/components/schemas/UUID"
     IssueJson:
-      description: An issue
+      description: "An issue, as visible to the project manager with full access to\
+        \ all fields and relations"
       type: object
       properties:
         id:
@@ -1558,6 +1559,7 @@ components:
         title:
           type: string
           pattern: \S
+          minLength: 3
           maxLength: 255
         type:
           $ref: "#/components/schemas/IssueType"
@@ -1586,10 +1588,6 @@ components:
           type: string
         description:
           type: string
-        attachments:
-          type: array
-          items:
-            $ref: "#/components/schemas/IssueAttachmentJson"
       required:
       - title
       - type
@@ -1615,8 +1613,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenantIssueJson"
-      required:
-      - size
+          description: The issues in this page
+          readOnly: true
     TenantItemJson:
       description: A tenant item with rental units and active status for list views
       type: object
@@ -1722,45 +1720,59 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenantItemJson"
-    TenantTimelineJson:
-      description: A tenant timeline entry
+    TimelineJson:
+      description: An issue timeline entry
       type: object
       properties:
         issueId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         tenancyId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         timelineId:
-          $ref: "#/components/schemas/UUID"
-        projectId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         attachments:
           type: array
           items:
             $ref: "#/components/schemas/IssueAttachmentJson"
+          readOnly: true
         senderId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         senderName:
           type: string
+          readOnly: true
         purpose:
           $ref: "#/components/schemas/MessagePurpose"
         message:
           type: string
         createdAt:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/Instant"
         modifiedAt:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/Instant"
-    TenantTimelineListJson:
-      description: A list of tenant timelines
-      type: object
       required:
-      - timelines
+      - purpose
+      - message
+    TimelineListJson:
+      description: A list of issue timelines
+      type: object
       properties:
         timelines:
           type: array
           items:
-            $ref: "#/components/schemas/TenantTimelineJson"
-          description: Tenant timeline entries
+            $ref: "#/components/schemas/TimelineJson"
+          description: Timeline entries
+          readOnly: true
     UUID:
       type: string
       format: uuid

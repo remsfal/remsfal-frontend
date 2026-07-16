@@ -197,7 +197,7 @@ export interface paths {
           /** @description Filter to return only issues of a assigned user */
           assigneeId?: components["schemas"]["UUID"];
           /** @description Opaque cursor returned by a previous call to fetch the next page */
-          cursor?: string;
+          cursor?: components["schemas"]["UUID"];
           /** @description Maximum number of issues to return */
           limit: number;
           /** @description ID of the project to return issues of */
@@ -206,8 +206,10 @@ export interface paths {
           rentalUnitId?: components["schemas"]["UUID"];
           /** @description Filter to return only issuesfor a specific unit type */
           rentalUnitType?: components["schemas"]["UnitType"];
-          /** @description Filter to return only issues with a specific status */
-          status?: components["schemas"]["IssueStatus"];
+          /** @description Filter to return only issues matching one of the given statuses (repeat the parameter for multiple values, e.g. status=OPEN&status=IN_PROGRESS); omit to return issues of all statuses */
+          status?: components["schemas"]["IssueStatus"][];
+          /** @description Filter to return only issues matching one of the given types (repeat the parameter for multiple values, e.g. type=DEFECT&type=MAINTENANCE); omit to return issues of all types */
+          type?: components["schemas"]["IssueType"][];
         };
         header?: never;
         path?: never;
@@ -215,6 +217,15 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
+        /** @description Issues retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["IssueListJson"];
+          };
+        };
         /** @description No user authentication provided via session cookie */
         401: {
           headers: {
@@ -256,7 +267,9 @@ export interface paths {
             Location?: unknown;
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": components["schemas"]["IssueJson"];
+          };
         };
         /** @description No user authentication provided via session cookie */
         401: {
@@ -303,6 +316,15 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
+        /** @description Issue retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["IssueJson"];
+          };
+        };
         /** @description No user authentication provided via session cookie */
         401: {
           headers: {
@@ -383,6 +405,15 @@ export interface paths {
         };
       };
       responses: {
+        /** @description Issue updated successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["IssueJson"];
+          };
+        };
         /** @description No user authentication provided via session cookie */
         401: {
           headers: {
@@ -433,7 +464,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description One or more image files to attach to the issue */
+            attachment: string[];
+          };
         };
       };
       responses: {
@@ -677,7 +711,9 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": components["schemas"]["ChatSessionJson"];
+          };
         };
         /** @description Invalid input */
         400: {
@@ -923,7 +959,9 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": components["schemas"]["ChatMessageJson"];
+          };
         };
         /** @description Invalid input */
         400: {
@@ -985,7 +1023,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description One or more files to send in the chat session */
+            file: string[];
+          };
         };
       };
       responses: {
@@ -994,7 +1035,15 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": {
+              fileId?: components["schemas"]["UUID"];
+              fileUrl?: string;
+              sessionId?: components["schemas"]["UUID"];
+              createdAt?: components["schemas"]["Instant"];
+              sender?: components["schemas"]["UUID"];
+            };
+          };
         };
         /** @description Invalid input */
         400: {
@@ -1348,7 +1397,9 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": components["schemas"]["QuotationRequestListJson"];
+          };
         };
         /** @description No user authentication provided via session cookie */
         401: {
@@ -1397,7 +1448,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description One or more files to attach */
+            attachment: string[];
+          };
         };
       };
       responses: {
@@ -1767,7 +1821,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description One or more files to attach */
+            attachment: string[];
+          };
         };
       };
       responses: {
@@ -2077,7 +2134,9 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": components["schemas"]["OrderPlacementJson"];
+          };
         };
         /** @description No user authentication provided via session cookie */
         401: {
@@ -2174,7 +2233,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description One or more files to attach */
+            attachment: string[];
+          };
         };
       };
       responses: {
@@ -2337,6 +2399,137 @@ export interface paths {
     };
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ticketing/v1/issues/{issueId}/timeline": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get all timeline entries for an issue */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Timeline entries retrieved */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TimelineListJson"];
+          };
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Issue not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    /** Create a new timeline entry with attachments for an issue */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the issue */
+          issueId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /** @description Timeline entry information as JSON */
+            timeline: {
+              readonly issueId?: components["schemas"]["UUID"];
+              readonly tenancyId?: components["schemas"]["UUID"];
+              readonly timelineId?: components["schemas"]["UUID"];
+              readonly attachments?: components["schemas"]["IssueAttachmentJson"][];
+              readonly senderId?: components["schemas"]["UUID"];
+              readonly senderName?: string;
+              purpose: components["schemas"]["MessagePurpose"];
+              message: string;
+              readonly createdAt?: components["schemas"]["Instant"];
+              readonly modifiedAt?: components["schemas"]["Instant"];
+            };
+            /** @description One or more files to attach to the timeline entry */
+            attachment?: string[];
+          };
+        };
+      };
+      responses: {
+        /** @description Timeline entry created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TimelineJson"];
+          };
+        };
+        /** @description Invalid input */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Not Allowed */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Issue not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
     delete?: never;
     options?: never;
     head?: never;
@@ -2635,7 +2828,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description One or more files to attach */
+            attachment: string[];
+          };
         };
       };
       responses: {
@@ -2886,7 +3082,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description One or more files to attach */
+            attachment: string[];
+          };
         };
       };
       responses: {
@@ -3278,7 +3477,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description One or more files to attach */
+            attachment: string[];
+          };
         };
       };
       responses: {
@@ -3526,7 +3728,7 @@ export interface paths {
       parameters: {
         query: {
           /** @description Opaque cursor returned by a previous call to fetch the next page */
-          cursor?: string;
+          cursor?: components["schemas"]["UUID"];
           /** @description Maximum number of issues to return */
           limit: number;
         };
@@ -3536,6 +3738,15 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
+        /** @description Issues retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TenantIssueListJson"];
+          };
+        };
         /** @description No user authentication provided via session cookie */
         401: {
           headers: {
@@ -3566,7 +3777,28 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description Issue information as JSON */
+            issue: {
+              readonly id?: components["schemas"]["UUID"];
+              readonly modifiedAt?: components["schemas"]["Instant"];
+              title: string;
+              type: components["schemas"]["IssueType"];
+              category?: components["schemas"]["IssueCategory"];
+              readonly status?: components["schemas"]["IssueStatus"];
+              /** @description ID of the user who reported this issue */
+              readonly reporterId?: components["schemas"]["UUID"];
+              /** @description Name of the user who reported this issue */
+              readonly reportedBy?: string;
+              agreementId: components["schemas"]["UUID"];
+              rentalUnitId?: components["schemas"]["UUID"];
+              rentalUnitType?: components["schemas"]["UnitType"];
+              location?: string;
+              description: string;
+            };
+            /** @description One or more image files to attach to the issue */
+            attachment?: string[];
+          };
         };
       };
       responses: {
@@ -3577,7 +3809,9 @@ export interface paths {
             Location?: unknown;
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": components["schemas"]["TenantIssueJson"];
+          };
         };
         /** @description Invalid input or unsupported file type */
         400: {
@@ -3628,6 +3862,15 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
+        /** @description Issue retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TenantIssueJson"];
+          };
+        };
         /** @description No user authentication provided via session cookie */
         401: {
           headers: {
@@ -3787,7 +4030,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": components["schemas"]["TenantTimelineListJson"];
+            "application/json": components["schemas"]["TimelineListJson"];
           };
         };
         /** @description No user authentication provided via session cookie */
@@ -3827,7 +4070,23 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "multipart/form-data": Record<string, never>;
+          "multipart/form-data": {
+            /** @description Timeline entry information as JSON */
+            timeline: {
+              readonly issueId?: components["schemas"]["UUID"];
+              readonly tenancyId?: components["schemas"]["UUID"];
+              readonly timelineId?: components["schemas"]["UUID"];
+              readonly attachments?: components["schemas"]["IssueAttachmentJson"][];
+              readonly senderId?: components["schemas"]["UUID"];
+              readonly senderName?: string;
+              purpose: components["schemas"]["MessagePurpose"];
+              message: string;
+              readonly createdAt?: components["schemas"]["Instant"];
+              readonly modifiedAt?: components["schemas"]["Instant"];
+            };
+            /** @description One or more files to attach to the timeline entry */
+            attachment?: string[];
+          };
         };
       };
       responses: {
@@ -3836,7 +4095,9 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": components["schemas"]["TimelineJson"];
+          };
         };
         /** @description Invalid input */
         400: {
@@ -4139,7 +4400,7 @@ export interface components {
       /** @description Unique identifier of the assignee of the issue */
       readonly assigneeId?: components["schemas"]["UUID"];
     };
-    /** @description An issue */
+    /** @description An issue, as visible to the project manager with full access to all fields and relations */
     IssueJson: {
       readonly id?: components["schemas"]["UUID"];
       projectId?: components["schemas"]["UUID"];
@@ -4667,7 +4928,6 @@ export interface components {
       rentalUnitType?: components["schemas"]["UnitType"];
       location?: string;
       description: string;
-      attachments?: components["schemas"]["IssueAttachmentJson"][];
     };
     /** @description A cursor-paginated list of issues visible to a tenant */
     TenantIssueListJson: {
@@ -4677,8 +4937,9 @@ export interface components {
        * Format: int32
        * @description Number of elements in this page
        */
-      readonly size: number;
-      issues?: components["schemas"]["TenantIssueJson"][];
+      readonly size?: number;
+      /** @description The issues in this page */
+      readonly issues?: components["schemas"]["TenantIssueJson"][];
     };
     /** @description A tenant item with rental units and active status for list views */
     TenantItemJson: {
@@ -4727,24 +4988,23 @@ export interface components {
     TenantListJson: {
       tenants?: components["schemas"]["TenantItemJson"][];
     };
-    /** @description A tenant timeline entry */
-    TenantTimelineJson: {
-      issueId?: components["schemas"]["UUID"];
-      tenancyId?: components["schemas"]["UUID"];
-      timelineId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      attachments?: components["schemas"]["IssueAttachmentJson"][];
-      senderId?: components["schemas"]["UUID"];
-      senderName?: string;
-      purpose?: components["schemas"]["MessagePurpose"];
-      message?: string;
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
+    /** @description An issue timeline entry */
+    TimelineJson: {
+      readonly issueId?: components["schemas"]["UUID"];
+      readonly tenancyId?: components["schemas"]["UUID"];
+      readonly timelineId?: components["schemas"]["UUID"];
+      readonly attachments?: components["schemas"]["IssueAttachmentJson"][];
+      readonly senderId?: components["schemas"]["UUID"];
+      readonly senderName?: string;
+      purpose: components["schemas"]["MessagePurpose"];
+      message: string;
+      readonly createdAt?: components["schemas"]["Instant"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
     };
-    /** @description A list of tenant timelines */
-    TenantTimelineListJson: {
-      /** @description Tenant timeline entries */
-      timelines: components["schemas"]["TenantTimelineJson"][];
+    /** @description A list of issue timelines */
+    TimelineListJson: {
+      /** @description Timeline entries */
+      readonly timelines?: components["schemas"]["TimelineJson"][];
     };
     /** Format: uuid */
     UUID: string;
