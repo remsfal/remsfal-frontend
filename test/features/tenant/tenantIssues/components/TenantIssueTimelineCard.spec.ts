@@ -23,12 +23,25 @@ vi.mock('@/services/TenantTimelineService', async () => {
 
 const createTimelineList = (timelines: TenantTimelineJson[]): TenantTimelineListJson => ({ timelines });
 
+const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
+  timelineId: 'timeline-1',
+  purpose: 'MESSAGE_SENT',
+  createdAt: '2026-01-02T10:00:00.000Z',
+  ...overrides,
+});
+
 const mountTimelineCard = async (issueId = 'issue-1') => {
   const { default: TenantIssueTimelineCard } = await import(
     '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue'
   );
-
   return mount(TenantIssueTimelineCard, { props: { issueId } });
+};
+
+const mountWithTimelines = async (timelines: TenantTimelineJson[], issueId = 'issue-1') => {
+  vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValueOnce(createTimelineList(timelines));
+  const wrapper = await mountTimelineCard(issueId);
+  await flushPromises();
+  return wrapper;
 };
 
 describe('TenantIssueTimelineCard component', () => {
@@ -40,7 +53,6 @@ describe('TenantIssueTimelineCard component', () => {
 
   it('shows empty state when no timeline entries are available', async () => {
     const wrapper = await mountTimelineCard();
-
     await flushPromises();
 
     expect(tenantTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-1');
@@ -63,84 +75,49 @@ describe('TenantIssueTimelineCard component', () => {
     expect(wrapper.find('[data-testid="tenant-issue-timeline-empty"]').exists()).toBe(true);
   });
 
-  it('renders non-image attachment tiles and opens download in a new tab', async () => {
-    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'timeline-1',
-        purpose: 'MESSAGE_SENT',
-        createdAt: '2026-01-02T10:00:00.000Z',
-        attachments: [{
-          attachmentId: 'att-1',
-          fileName: 'report.pdf',
-          contentType: 'application/pdf',
-        }],
+  it.each([
+    {
+      name: 'renders non-image attachment tile and opens download',
+      attachment: {
+        attachmentId: 'att-1',
+        fileName: 'report.pdf',
+        contentType: 'application/pdf',
       },
-    ]));
+      expectedUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-1/report.pdf',
+      expectedLabel: 'PDF',
+    },
+    {
+      name: 'falls back to attachment id when filename is missing',
+      attachment: { attachmentId: 'fallback-att', contentType: 'application/pdf' },
+      expectedUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/fallback-att/fallback-att',
+      expectedLabel: 'FILE',
+    },
+  ])('$name', async ({ attachment, expectedUrl, expectedLabel }) => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    const wrapper = await mountWithTimelines([makeTimeline({ attachments: [attachment] })]);
 
-    const wrapper = await mountTimelineCard();
-
-    await flushPromises();
-
-    expect(wrapper.find('[data-testid="tenant-issue-timeline"]').exists()).toBe(true);
-    expect(wrapper.text()).toContain('PDF');
-
+    expect(wrapper.text()).toContain(expectedLabel);
     await wrapper.get('button.cursor-pointer').trigger('click');
 
-    expect(openSpy).toHaveBeenCalledWith(
-      '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-1/report.pdf',
-      '_blank',
-      'noopener,noreferrer',
-    );
-    openSpy.mockRestore();
-  });
-
-  it('uses attachment id as download filename fallback when filename is missing', async () => {
-    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'timeline-fallback-filename',
-        purpose: 'MESSAGE_SENT',
-        createdAt: '2026-01-02T10:00:00.000Z',
-        attachments: [{
-          attachmentId: 'fallback-att',
-          contentType: 'application/pdf',
-        }],
-      },
-    ]));
-
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
-    await wrapper.get('button.cursor-pointer').trigger('click');
-
-    expect(openSpy).toHaveBeenCalledWith(
-      '/ticketing/v1/tenant-relations/issues/issue-1/attachments/fallback-att/fallback-att',
-      '_blank',
-      'noopener,noreferrer',
-    );
+    expect(openSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
     openSpy.mockRestore();
   });
 
   it('renders image attachments and triggers download from image action button', async () => {
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'timeline-image',
-        purpose: 'MESSAGE_SENT',
-        createdAt: '2026-01-02T10:00:00.000Z',
-        attachments: [{
-          attachmentId: 'img-1',
-          fileName: 'photo.jpg',
-          contentType: 'image/jpeg',
-        }],
-      },
-    ]));
+    const wrapper = await mountWithTimelines([
+      makeTimeline({
+        attachments: [
+          {
+            attachmentId: 'img-1',
+            fileName: 'photo.jpg',
+            contentType: 'image/jpeg',
+          },
+        ],
+      }),
+    ]);
 
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
-
-    const imageDownloadButton = wrapper.get('button.p-button');
-    await imageDownloadButton.trigger('click');
+    await wrapper.get('button.p-button').trigger('click');
 
     expect(openSpy).toHaveBeenCalledWith(
       '/ticketing/v1/tenant-relations/issues/issue-1/attachments/img-1/photo.jpg',
@@ -151,57 +128,38 @@ describe('TenantIssueTimelineCard component', () => {
   });
 
   it('treats image extensions as images even without content type', async () => {
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'timeline-image-ext',
-        purpose: 'MESSAGE_SENT',
-        createdAt: '2026-01-02T10:00:00.000Z',
-        attachments: [{
-          attachmentId: 'img-ext-1',
-          fileName: 'photo.webp',
-        }],
-      },
-    ]));
-
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
+    const wrapper = await mountWithTimelines([
+      makeTimeline({ attachments: [{ attachmentId: 'img-ext-1', fileName: 'photo.webp' }] }),
+    ]);
 
     expect(wrapper.find('img').exists()).toBe(true);
     expect(wrapper.text()).not.toContain('WEBP');
   });
 
-  it('renders purpose-based titles including fallback', async () => {
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'p1',
-        purpose: 'ISSUE_CREATED',
-        createdAt: '2026-01-02T10:00:00.000Z',
-      },
-      {
-        timelineId: 'p2',
-        purpose: 'MESSAGE_SENT',
-        createdAt: '2026-01-02T10:01:00.000Z',
-      },
-      {
-        timelineId: 'p3',
-        purpose: 'APPOINTMENT_REQUESTED',
-        createdAt: '2026-01-02T10:02:00.000Z',
-      },
-      {
-        timelineId: 'p4',
-        purpose: 'APPOINTMENT_SCHEDULED',
-        createdAt: '2026-01-02T10:03:00.000Z',
-      },
-      {
-        timelineId: 'p5',
-        purpose: 'STATUS_CHANGED',
-        createdAt: '2026-01-02T10:04:00.000Z',
-      },
-      { timelineId: 'p6', createdAt: '2026-01-02T10:05:00.000Z' },
-    ]));
+  it('shows FILE label for attachments without extension and ignores attachments without id', async () => {
+    const wrapper = await mountWithTimelines([
+      makeTimeline({
+        attachments: [
+          { attachmentId: 'file-1', fileName: 'README' },
+          { fileName: 'missing-id.txt' },
+        ],
+      }),
+    ]);
 
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
+    expect(wrapper.text()).toContain('FILE');
+    expect(wrapper.findAll('button.cursor-pointer')).toHaveLength(1);
+  });
+
+  it('renders purpose-based titles including fallback', async () => {
+    const wrapper = await mountWithTimelines([
+      makeTimeline({ timelineId: 'p1', purpose: 'ISSUE_CREATED' }),
+      makeTimeline({ timelineId: 'p2', purpose: 'MESSAGE_SENT' }),
+      makeTimeline({ timelineId: 'p3', purpose: 'APPOINTMENT_REQUESTED' }),
+      makeTimeline({ timelineId: 'p4', purpose: 'APPOINTMENT_SCHEDULED' }),
+      makeTimeline({ timelineId: 'p5', purpose: 'STATUS_CHANGED' }),
+      makeTimeline({ timelineId: 'p6', purpose: 'UNKNOWN_PURPOSE' as TenantTimelineJson['purpose'] }),
+      makeTimeline({ timelineId: 'p7', purpose: undefined }),
+    ]);
 
     const text = wrapper.text();
     expect(text).toContain(i18n.global.t('tenantIssues.timeline.issueCreatedTitle'));
@@ -210,41 +168,6 @@ describe('TenantIssueTimelineCard component', () => {
     expect(text).toContain(i18n.global.t('tenantIssues.timeline.appointmentScheduledTitle'));
     expect(text).toContain(i18n.global.t('tenantIssues.timeline.statusChangedTitle'));
     expect(text).toContain(i18n.global.t('tenantIssues.timeline.entryFallbackTitle'));
-  });
-
-  it('renders fallback title for unknown purpose values', async () => {
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'unknown-purpose',
-        purpose: 'UNKNOWN_PURPOSE' as TenantTimelineJson['purpose'],
-        createdAt: '2026-01-02T10:00:00.000Z',
-      },
-    ]));
-
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
-
-    expect(wrapper.text()).toContain(i18n.global.t('tenantIssues.timeline.entryFallbackTitle'));
-  });
-
-  it('shows FILE label for attachments without extension and ignores attachments without id', async () => {
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'timeline-file',
-        purpose: 'MESSAGE_SENT',
-        createdAt: '2026-01-02T10:00:00.000Z',
-        attachments: [
-          { attachmentId: 'file-1', fileName: 'README' },
-          { fileName: 'missing-id.txt' },
-        ],
-      },
-    ]));
-
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
-
-    expect(wrapper.text()).toContain('FILE');
-    expect(wrapper.findAll('button.cursor-pointer')).toHaveLength(1);
   });
 
   it('shows error state when timeline loading fails', async () => {
@@ -268,15 +191,7 @@ describe('TenantIssueTimelineCard component', () => {
   });
 
   it('renders fallback date placeholder when createdAt is missing', async () => {
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'missing-date',
-        purpose: 'MESSAGE_SENT',
-      },
-    ]));
-
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
+    const wrapper = await mountWithTimelines([makeTimeline({ createdAt: undefined })]);
 
     expect(wrapper.find('[data-testid="tenant-issue-timeline-entry"]').text()).toContain(
       i18n.global.t('tenantIssues.timeline.tenantMessageTitle'),
@@ -284,64 +199,21 @@ describe('TenantIssueTimelineCard component', () => {
     expect(wrapper.find('.w-40').text()).toContain('-');
   });
 
-  it('disables submit and blocks sending when timeline contains CLOSED or REJECTED message', async () => {
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'closed-1',
-        purpose: 'STATUS_CHANGED',
-        message: 'CLOSED',
-        createdAt: '2026-01-02T10:00:00.000Z',
-      },
-    ]));
+  it.each([
+    { label: 'CLOSED', message: 'CLOSED' },
+    { label: 'REJECTED', message: 'REJECTED' },
+    { label: 'normalized rejected', message: '  rejected  ' },
+  ])('blocks sending when timeline contains $label status message', async ({ message }) => {
+    const wrapper = await mountWithTimelines([
+      makeTimeline({ purpose: 'STATUS_CHANGED', message }),
+    ]);
 
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
     await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Neue Nachricht');
-
     const submitButton = wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]');
+
     expect(submitButton.attributes('disabled')).toBeDefined();
 
     await submitButton.trigger('click');
-    await flushPromises();
-
-    expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
-
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValueOnce(createTimelineList([
-      {
-        timelineId: 'rejected-1',
-        purpose: 'STATUS_CHANGED',
-        message: 'REJECTED',
-        createdAt: '2026-01-02T10:01:00.000Z',
-      },
-    ]));
-
-    await wrapper.setProps({ issueId: 'issue-2' });
-    await flushPromises();
-    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Noch eine Nachricht');
-
-    const rejectedSubmitButton = wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]');
-    expect(rejectedSubmitButton.attributes('disabled')).toBeDefined();
-
-    await rejectedSubmitButton.trigger('click');
-    await flushPromises();
-
-    expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
-  });
-
-  it('blocks sending for status messages regardless of casing and surrounding whitespace', async () => {
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'rejected-normalized',
-        purpose: 'STATUS_CHANGED',
-        message: '  rejected  ',
-        createdAt: '2026-01-02T10:00:00.000Z',
-      },
-    ]));
-
-    const wrapper = await mountTimelineCard();
-    await flushPromises();
-    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Nachricht');
-    await wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').trigger('click');
     await flushPromises();
 
     expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
@@ -362,8 +234,8 @@ describe('TenantIssueTimelineCard component', () => {
 
   it('submits tenant messages and clears the input after success', async () => {
     const wrapper = await mountTimelineCard();
-
     await flushPromises();
+
     await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Neue Nachricht');
     await wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').trigger('click');
     await flushPromises();
@@ -374,17 +246,14 @@ describe('TenantIssueTimelineCard component', () => {
       [],
     );
     expect((wrapper.get('#tenant-timeline-message').element as HTMLTextAreaElement).value).toBe('');
-    expect(
-      wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').attributes('disabled'),
-    ).toBeDefined();
+    expect(wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').attributes('disabled')).toBeDefined();
   });
 
-  it('merges selected files and submits them together with the message', async () => {
+  it('submits selected files and merges file selections', async () => {
     const wrapper = await mountTimelineCard();
-
     await flushPromises();
-    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Mit Dateien');
 
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Mit Dateien');
     const fileUpload = wrapper.getComponent(FileUpload);
     fileUpload.vm.$emit('select', { files: [new File(['a'], 'a.pdf', { type: 'application/pdf' })] });
     fileUpload.vm.$emit('select', { files: [new File(['b'], 'b.pdf', { type: 'application/pdf' })] });
@@ -434,9 +303,12 @@ describe('TenantIssueTimelineCard component', () => {
   it('deduplicates files with same name/size/lastModified before submit', async () => {
     const wrapper = await mountTimelineCard();
     await flushPromises();
-    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Deduplicate');
 
-    const duplicateFile = new File(['same'], 'same.pdf', { type: 'application/pdf', lastModified: 1700000000000 });
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Deduplicate');
+    const duplicateFile = new File(['same'], 'same.pdf', {
+      type: 'application/pdf',
+      lastModified: 1700000000000,
+    });
     const fileUpload = wrapper.getComponent(FileUpload);
     fileUpload.vm.$emit('select', { files: [duplicateFile] });
     fileUpload.vm.$emit('select', { files: [duplicateFile] });
@@ -474,21 +346,16 @@ describe('TenantIssueTimelineCard component', () => {
 
   it('encodes issue, attachment and filename in generated download URL', async () => {
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
-      {
-        timelineId: 'encoded-url',
-        purpose: 'MESSAGE_SENT',
-        createdAt: '2026-01-02T10:00:00.000Z',
+    const wrapper = await mountWithTimelines([
+      makeTimeline({
         attachments: [{
           attachmentId: 'att id/1',
           fileName: 'file name #1.pdf',
           contentType: 'application/pdf',
         }],
-      },
-    ]));
+      }),
+    ], 'issue id/ä');
 
-    const wrapper = await mountTimelineCard('issue id/ä');
-    await flushPromises();
     await wrapper.get('button.cursor-pointer').trigger('click');
 
     expect(openSpy).toHaveBeenCalledWith(
@@ -504,8 +371,8 @@ describe('TenantIssueTimelineCard component', () => {
       new Error('submit failed'),
     );
     const wrapper = await mountTimelineCard();
-
     await flushPromises();
+
     await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Fehlermeldung');
     await wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').trigger('click');
     await flushPromises();
