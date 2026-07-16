@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import FacilityAddressCard from '@/components/FacilityAddressCard.vue';
+import FacilityAddressCard from '@/features/project/rentableUnits/components/FacilityAddressCard.vue';
 import { buildingService } from '@/services/BuildingService';
 import { siteService } from '@/services/SiteService';
 
