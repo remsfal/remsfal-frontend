@@ -26,6 +26,7 @@ const createTimelineList = (timelines: TenantTimelineJson[]): TenantTimelineList
 const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
   timelineId: 'timeline-1',
   purpose: 'MESSAGE_SENT',
+  message: '',
   createdAt: '2026-01-02T10:00:00.000Z',
   ...overrides,
 });

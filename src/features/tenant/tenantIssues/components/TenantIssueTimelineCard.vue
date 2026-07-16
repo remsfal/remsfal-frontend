@@ -130,7 +130,7 @@ const fetchTimelines = async () => {
   error.value = false;
   try {
     const timelineResponse = await tenantTimelineService.getTimelineEntries(props.issueId);
-    timelines.value = timelineResponse.timelines;
+    timelines.value = timelineResponse.timelines ?? [];
   } catch (fetchError) {
     console.error('Error fetching issue timeline:', fetchError);
     timelines.value = [];

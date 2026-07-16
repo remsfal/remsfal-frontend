@@ -8,7 +8,9 @@ describe('TenantTimelineService', () => {
   });
 
   test('getTimelineEntries requests timeline list by issue id', async () => {
-    const timelineList: TenantTimelineListJson = { timelines: [{ timelineId: 'timeline-1', purpose: 'MESSAGE_SENT' }] };
+    const timelineList: TenantTimelineListJson = {
+      timelines: [{ timelineId: 'timeline-1', purpose: 'MESSAGE_SENT', message: 'Hello' }],
+    };
     const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce(timelineList);
 
     const result = await tenantTimelineService.getTimelineEntries('issue-1');

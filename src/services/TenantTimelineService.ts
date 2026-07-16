@@ -1,6 +1,8 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
-export type TenantTimelineJson = ApiComponents['schemas']['TenantTimelineJson'];
-export type TenantTimelineListJson = ApiComponents['schemas']['TenantTimelineListJson'];
+import { apiClient } from '@/services/ApiClient';
+import type { components as ticketingComponents } from '@/services/api/ticketing-schema';
+
+export type TenantTimelineJson = ticketingComponents['schemas']['TimelineJson'];
+export type TenantTimelineListJson = ticketingComponents['schemas']['TimelineListJson'];
 
 class TenantTimelineService {
   async getTimelineEntries(issueId: string): Promise<TenantTimelineListJson> {
