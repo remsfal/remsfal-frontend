@@ -8,9 +8,7 @@ class TenantTimelineService {
       '/ticketing/v1/tenant-relations/issues/{issueId}/timeline',
       { pathParams: { issueId } },
     ) as Partial<TenantTimelineListJson>;
-    return {
-      timelines: result.timelines ?? [],
-    };
+    return { timelines: result.timelines ?? [] };
   }
 
   async createTimelineEntryWithAttachments(
