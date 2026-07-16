@@ -26,12 +26,12 @@ const selectedFiles = ref<File[]>([]);
 const fileUploadKey = ref(0);
 const sendingMessage = ref(false);
 const blockingStatusMessages = new Set(['CLOSED', 'REJECTED']);
-const isClosedByTimeline = computed(() => {
-  return timelines.value.some((timeline) => {
-    const normalizedMessage = timeline.message?.trim().toUpperCase();
-    return normalizedMessage ? blockingStatusMessages.has(normalizedMessage) : false;
-  });
-});
+const isClosedByTimeline = computed(() =>
+    timelines.value.some((timeline) =>
+        timeline.purpose === 'STATUS_CHANGED' && blockingStatusMessages.has(timeline.message?.trim().toUpperCase() ?? ''),
+    ),
+);
+
 const canSendMessage = computed(
   () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) &&
     !sendingMessage.value &&
@@ -299,14 +299,6 @@ watch(
                     </div>
                   </button>
                 </div>
-                <ul v-if="getTimelineAttachments(slotProps.item).length > 0" class="space-y-2 text-left">
-                  <li
-                    v-for="(attachment) in getTimelineAttachments(slotProps.item)"
-                    :key="attachment.attachmentId"
-                    data-testid="tenant-issue-timeline-attachment-url"
-                  >
-                  </li>
-                </ul>
               </div>
             </article>
           </div>

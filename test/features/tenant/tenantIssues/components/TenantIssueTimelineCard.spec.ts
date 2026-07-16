@@ -47,6 +47,22 @@ describe('TenantIssueTimelineCard component', () => {
     expect(wrapper.find('[data-testid="tenant-issue-timeline-empty"]').exists()).toBe(true);
   });
 
+  it('shows loading spinner while timeline request is pending', async () => {
+    let resolveRequest: ((value: TenantTimelineListJson) => void) | undefined;
+    const pendingRequest = new Promise<TenantTimelineListJson>((resolve) => {
+      resolveRequest = resolve;
+    });
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockReturnValueOnce(pendingRequest);
+
+    const wrapper = await mountTimelineCard();
+    expect(wrapper.find('[data-testid="tenant-issue-timeline-loading"]').exists()).toBe(true);
+
+    resolveRequest?.(createTimelineList([]));
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="tenant-issue-timeline-empty"]').exists()).toBe(true);
+  });
+
   it('renders non-image attachment tiles and opens download in a new tab', async () => {
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
     vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
@@ -73,6 +89,32 @@ describe('TenantIssueTimelineCard component', () => {
 
     expect(openSpy).toHaveBeenCalledWith(
       '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-1/report.pdf',
+      '_blank',
+      'noopener,noreferrer',
+    );
+    openSpy.mockRestore();
+  });
+
+  it('uses attachment id as download filename fallback when filename is missing', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
+      {
+        timelineId: 'timeline-fallback-filename',
+        purpose: 'MESSAGE_SENT',
+        createdAt: '2026-01-02T10:00:00.000Z',
+        attachments: [{
+          attachmentId: 'fallback-att',
+          contentType: 'application/pdf',
+        }],
+      },
+    ]));
+
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+    await wrapper.get('button.cursor-pointer').trigger('click');
+
+    expect(openSpy).toHaveBeenCalledWith(
+      '/ticketing/v1/tenant-relations/issues/issue-1/attachments/fallback-att/fallback-att',
       '_blank',
       'noopener,noreferrer',
     );
@@ -170,6 +212,21 @@ describe('TenantIssueTimelineCard component', () => {
     expect(text).toContain(i18n.global.t('tenantIssues.timeline.entryFallbackTitle'));
   });
 
+  it('renders fallback title for unknown purpose values', async () => {
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
+      {
+        timelineId: 'unknown-purpose',
+        purpose: 'UNKNOWN_PURPOSE' as TenantTimelineJson['purpose'],
+        createdAt: '2026-01-02T10:00:00.000Z',
+      },
+    ]));
+
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+
+    expect(wrapper.text()).toContain(i18n.global.t('tenantIssues.timeline.entryFallbackTitle'));
+  });
+
   it('shows FILE label for attachments without extension and ignores attachments without id', async () => {
     vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
       {
@@ -187,7 +244,7 @@ describe('TenantIssueTimelineCard component', () => {
     await flushPromises();
 
     expect(wrapper.text()).toContain('FILE');
-    expect(wrapper.findAll('[data-testid="tenant-issue-timeline-attachment-url"]')).toHaveLength(1);
+    expect(wrapper.findAll('button.cursor-pointer')).toHaveLength(1);
   });
 
   it('shows error state when timeline loading fails', async () => {
@@ -208,6 +265,23 @@ describe('TenantIssueTimelineCard component', () => {
     await flushPromises();
 
     expect(tenantTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-2');
+  });
+
+  it('renders fallback date placeholder when createdAt is missing', async () => {
+    vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValue(createTimelineList([
+      {
+        timelineId: 'missing-date',
+        purpose: 'MESSAGE_SENT',
+      },
+    ]));
+
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="tenant-issue-timeline-entry"]').text()).toContain(
+      i18n.global.t('tenantIssues.timeline.tenantMessageTitle'),
+    );
+    expect(wrapper.find('.w-40').text()).toContain('-');
   });
 
   it('disables submit and blocks sending when timeline contains CLOSED or REJECTED message', async () => {
@@ -343,6 +417,37 @@ describe('TenantIssueTimelineCard component', () => {
     const secondArgument = vi.mocked(tenantTimelineService.createTimelineEntryWithAttachments).mock.calls[0][1];
     expect(secondArgument).toEqual(expect.objectContaining({ purpose: 'MESSAGE_SENT' }));
     expect(secondArgument).not.toHaveProperty('message');
+  });
+
+  it('keeps send button disabled when file select payload is not an array', async () => {
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+
+    const fileUpload = wrapper.getComponent(FileUpload);
+    fileUpload.vm.$emit('select', { files: {} });
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').attributes('disabled')).toBeDefined();
+    expect(tenantTimelineService.createTimelineEntryWithAttachments).not.toHaveBeenCalled();
+  });
+
+  it('deduplicates files with same name/size/lastModified before submit', async () => {
+    const wrapper = await mountTimelineCard();
+    await flushPromises();
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-input"]').setValue('Deduplicate');
+
+    const duplicateFile = new File(['same'], 'same.pdf', { type: 'application/pdf', lastModified: 1700000000000 });
+    const fileUpload = wrapper.getComponent(FileUpload);
+    fileUpload.vm.$emit('select', { files: [duplicateFile] });
+    fileUpload.vm.$emit('select', { files: [duplicateFile] });
+    await flushPromises();
+
+    await wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').trigger('click');
+    await flushPromises();
+
+    const submittedFiles = vi.mocked(tenantTimelineService.createTimelineEntryWithAttachments).mock.calls[0][2];
+    expect(submittedFiles).toHaveLength(1);
+    expect(submittedFiles[0]).toMatchObject({ name: 'same.pdf' });
   });
 
   it('prevents duplicate submits while request is still in flight', async () => {

@@ -25,7 +25,7 @@ class TenantTimelineService {
 
     await apiClient.post(
       '/ticketing/v1/tenant-relations/issues/{issueId}/timeline',
-      formData as unknown as never,
+      formData as never,
       { pathParams: { issueId } },
     );
   }
