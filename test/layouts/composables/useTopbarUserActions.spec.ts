@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { useTopbarUserActions } from '@/composables/useTopbarUserActions';
+import { useTopbarUserActions } from '@/layouts/composables/useTopbarUserActions';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 

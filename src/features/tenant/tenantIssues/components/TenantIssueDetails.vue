@@ -1,62 +1,26 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
-import Button from 'primevue/button';
-import BaseCard from '@/components/common/BaseCard.vue';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import Tag from 'primevue/tag';
+import Button from 'primevue/button';
 import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
-import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
-  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
 
 const props = defineProps<{ issueId: string }>();
 
 const router = useRouter();
 const toast = useToast();
-const { t, locale } = useI18n();
+const { t } = useI18n();
 
 const loading = ref(false);
 const deletingIssue = ref(false);
 const showCancelDialog = ref(false);
 const issue = ref<TenantIssueJson | null>(null);
 const error = ref<string | null>(null);
-const statusLabel = computed(() => getIssueStatusLabel(issue.value?.status, t));
-const typeLabel = computed(() => getIssueTypeLabel(issue.value?.type, t));
-const categoryLabel = computed(() => getIssueCategoryLabel(issue.value?.category, t));
-const statusSeverity = computed(() => getIssueStatusSeverity(issue.value?.status));
-const typeSeverity = computed(() => getIssueTypeSeverity(issue.value?.type));
-const issueNodeId = computed(() => issue.value?.id?.split('-').pop() || issue.value?.id || '—');
-const descriptionLabel = computed(() => {
-  const description = issue.value?.description;
-  if (!description) {
-    return null;
-  }
-
-  const cleaned = description
-    .split('\n')
-    .filter(line => !/^\s*(Verursacher|Ort):/i.test(line))
-    .join('\n')
-    .trim();
-
-  return cleaned || null;
-});
-const modifiedAtLabel = computed(() => {
-  const modifiedAt = issue.value?.modifiedAt;
-  if (!modifiedAt) {
-    return null;
-  }
-
-  const date = new Date(modifiedAt);
-  if (Number.isNaN(date.getTime())) {
-    return modifiedAt;
-  }
-
-  return date.toLocaleDateString(locale.value);
-});
 
 const fetchIssue = async () => {
   loading.value = true;
@@ -146,109 +110,11 @@ watch(
     </div>
 
     <template v-else-if="issue">
-      <BaseCard>
-        <template #title>
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
-            <div>
-              <span class="text-xl font-semibold">{{ issue.title || t('tenantIssues.detail.untitled') }}</span>
-              <p class="text-base text-gray-500 font-normal mt-1">
-                {{ t('tenantIssues.detail.number') }} {{ issue.id || '—' }}
-              </p>
-            </div>
-            <Button
-              v-if="issue.type !== 'TERMINATION' && issue.status !== 'CLOSED' && issue.status !== 'REJECTED'"
-              :label="t('tenantIssues.detail.cancelIssue')"
-              icon="pi pi-trash"
-              severity="danger"
-              class="shrink-0 self-start"
-              data-testid="tenant-issue-cancel"
-              :loading="deletingIssue"
-              :disabled="deletingIssue"
-              @click="openCancelDialog"
-            />
-          </div>
-        </template>
-        <template #content>
-          <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 mt-4">
-            <dl class="space-y-2 text-base text-gray-600">
-              <div v-if="issue.id" class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">
-                  {{ t('tenantIssues.detail.issueNode') }}
-                </dt>
-                <dd class="text-gray-900">
-                  <Tag :value="issueNodeId" severity="info" class="inline-flex w-fit" />
-                </dd>
-              </div>
-              <div v-if="modifiedAtLabel" class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">
-                  {{ t('tenantIssues.detail.updated') }}
-                </dt>
-                <dd class="text-gray-900">
-                  <Tag v-if="modifiedAtLabel" :value="modifiedAtLabel" severity="info" class="inline-flex w-fit" />
-                </dd>
-              </div>
-            </dl>
-
-            <dl class="space-y-2 text-base text-gray-600">
-              <div v-if="issue.type" class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">
-                  {{ t('tenantIssues.card.type') }}
-                </dt>
-                <dd class="text-gray-900">
-                  <Tag :value="typeLabel" :severity="typeSeverity" class="inline-flex w-fit" />
-                </dd>
-              </div>
-              <div v-if="issue.location?.trim()" class="flex justify-start gap-2">
-                <dt class="font-medium text-gray-500">
-                  {{ t('tenantIssues.detail.location') }}
-                </dt>
-                <dd class="text-gray-900 break-words">
-                  {{ issue.location }}
-                </dd>
-              </div>
-            </dl>
-
-            <dl class="space-y-2 text-base text-gray-600">
-              <div v-if="issue.status" class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">
-                  {{ t('tenantIssues.filter.status') }}
-                </dt>
-                <dd class="text-gray-900">
-                  <Tag :value="statusLabel" :severity="statusSeverity" class="inline-flex w-fit" />
-                </dd>
-              </div>
-              <div v-if="issue.category" class="flex justify-start gap-2">
-                <dt class="font-medium text-gray-500">
-                  {{ t('tenantIssues.detail.category') }}
-                </dt>
-                <dd class="text-gray-900">
-                  {{ categoryLabel }}
-                </dd>
-              </div>
-            </dl>
-          </div>
-
-          <div v-if="descriptionLabel" class="mt-4 text-base text-gray-600">
-            {{ t('tenantIssues.detail.description') }}
-            <span class="text-gray-900 whitespace-pre-line break-words">
-              {{ descriptionLabel }}
-            </span>
-          </div>
-        </template>
-      </BaseCard>
-      <BaseCard>
-        <template #title>
-          <span class="text-xl font-semibold">{{ t('tenantIssues.timeline.title') }}</span>
-        </template>
-        <template #content>
-          <div
-            data-testid="tenant-issue-timeline-placeholder"
-            class="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-gray-600"
-          >
-            {{ t('tenantIssues.timeline.placeholder') }}
-          </div>
-        </template>
-      </BaseCard>
+      <TenantIssueSummaryCard
+        :issue="issue"
+        :deletingIssue="deletingIssue"
+        @cancel="openCancelDialog"
+      />
     </template>
 
     <BaseDialog

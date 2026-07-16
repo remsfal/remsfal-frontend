@@ -1,5 +1,5 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
-import { type UnitType } from '@/services/PropertyService.ts';
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { type UnitType } from '@/services/PropertyService';
 
 export type IssueCategory = ApiComponents['schemas']['IssueCategory'];
 export type IssueStatus = ApiComponents['schemas']['IssueStatus'];
