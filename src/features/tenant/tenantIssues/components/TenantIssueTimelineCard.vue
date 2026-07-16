@@ -99,12 +99,21 @@ const formatTimelineDate = (value?: string) => {
   return date.toLocaleString(locale.value);
 };
 
-const getTimelineTitle = (title?: string) => {
-  if (title === 'Verwalter Anhang') {
-    return t('tenantIssues.timeline.managerAddedAttachments');
+const getTimelineTitle = (purpose?: TenantTimelineJson['purpose']) => {
+  switch (purpose) {
+    case 'ISSUE_CREATED':
+      return t('tenantIssues.timeline.issueCreatedTitle');
+    case 'MESSAGE_SENT':
+      return t('tenantIssues.timeline.tenantMessageTitle');
+    case 'APPOINTMENT_REQUESTED':
+      return t('tenantIssues.timeline.appointmentRequestedTitle');
+    case 'APPOINTMENT_SCHEDULED':
+      return t('tenantIssues.timeline.appointmentScheduledTitle');
+    case 'STATUS_CHANGED':
+      return t('tenantIssues.timeline.statusChangedTitle');
+    default:
+      return t('tenantIssues.timeline.entryFallbackTitle');
   }
-
-  return title || t('tenantIssues.timeline.entryFallbackTitle');
 };
 
 const fetchTimelines = async () => {
@@ -156,7 +165,7 @@ const submitMessage = async () => {
 
   try {
     await tenantTimelineService.createTimelineEntryWithAttachments(props.issueId, {
-      title: t('tenantIssues.timeline.tenantMessageTitle'),
+      purpose: 'MESSAGE_SENT',
       ...(trimmedMessage ? { message: trimmedMessage } : {}),
     }, selectedFiles.value);
     messageText.value = '';
@@ -233,7 +242,7 @@ watch(
             >
               <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
                 <p class="font-medium text-gray-900">
-                  {{ getTimelineTitle(slotProps.item.title) }}
+                  {{ getTimelineTitle(slotProps.item.purpose) }}
                 </p>
               </div>
               <p v-if="slotProps.item.message" class="text-gray-700 text-left whitespace-pre-line">
