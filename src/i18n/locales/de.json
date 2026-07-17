@@ -635,7 +635,7 @@
   "tenantIssues.timeline.sendMessage": "Nachricht senden",
   "tenantIssues.timeline.tenantMessageTitle": "Mieter-Nachricht",
   "tenantIssues.timeline.issueCreatedTitle": "Issue erstellt",
-  "tenantIssues.timeline.appointmentRequestedTitle": "Termin angefragt",
+  "tenantIssues.timeline.appointmentRequestedTitle": "Terminanfrage von {senderName}",
   "tenantIssues.timeline.appointmentScheduledTitle": "Termin vereinbart",
   "tenantIssues.timeline.statusChangedTitle": "Status geändert",
   "tenantIssues.timeline.createError": "Timeline-Eintrag konnte nicht erstellt werden.",
