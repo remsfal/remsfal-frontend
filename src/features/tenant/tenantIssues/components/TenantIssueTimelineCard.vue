@@ -249,7 +249,7 @@ watch(
               class="flex-1 rounded-lg border border-gray-200 bg-white p-4"
             >
               <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
-                <p class="font-medium text-gray-900">
+                <p class="text-lg font-semibold text-gray-900">
                   {{ getTimelineTitle(slotProps.item.purpose) }}
                 </p>
               </div>
