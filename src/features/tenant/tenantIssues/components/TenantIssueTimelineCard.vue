@@ -111,7 +111,10 @@ const formatTimelineDate = (value?: string) => {
 const getTimelineTitle = (timelineItem?: TimelineJson) => {
   switch (purpose) {
     case 'ISSUE_CREATED':
-      return t('tenantIssues.timeline.issueCreatedTitle');
+      return t('tenantIssues.timeline.issueCreatedTitle', {
+        issueNumber: getIssueNumber(timelineItem.issueId ?? props.issueId),
+        senderName: timelineItem.senderName ?? '',
+      });
     case 'MESSAGE_SENT':
       return t('tenantIssues.timeline.tenantMessageTitle');
     case 'APPOINTMENT_REQUESTED':
