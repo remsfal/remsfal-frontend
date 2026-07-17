@@ -108,7 +108,7 @@ const formatTimelineDate = (value?: string) => {
   return date.toLocaleString(locale.value);
 };
 
-const getTimelineTitle = (purpose?: TimelineJson['purpose']) => {
+const getTimelineTitle = (timelineItem?: TimelineJson) => {
   switch (purpose) {
     case 'ISSUE_CREATED':
       return t('tenantIssues.timeline.issueCreatedTitle');
