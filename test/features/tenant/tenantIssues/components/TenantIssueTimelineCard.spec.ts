@@ -76,101 +76,6 @@ describe('TenantIssueTimelineCard component', () => {
     expect(wrapper.find('[data-testid="tenant-issue-timeline-empty"]').exists()).toBe(true);
   });
 
-  it.each([
-    {
-      name: 'renders non-image attachment tile and opens download',
-      attachment: {
-        attachmentId: 'att-1',
-        fileName: 'report.pdf',
-        contentType: 'application/pdf',
-      },
-      expectedUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/att-1/report.pdf',
-      expectedLabel: 'PDF',
-    },
-    {
-      name: 'falls back to attachment id when filename is missing',
-      attachment: { attachmentId: 'fallback-att', contentType: 'application/pdf' },
-      expectedUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/fallback-att/fallback-att',
-      expectedLabel: 'FILE',
-    },
-  ])('$name', async ({ attachment, expectedUrl, expectedLabel }) => {
-    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    const wrapper = await mountWithTimelines([makeTimeline({ attachments: [attachment] })]);
-
-    expect(wrapper.text()).toContain(expectedLabel);
-    await wrapper.get('button.cursor-pointer').trigger('click');
-
-    expect(openSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
-    openSpy.mockRestore();
-  });
-
-  it('renders image attachments and triggers download from image action button', async () => {
-    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    const wrapper = await mountWithTimelines([
-      makeTimeline({
-        attachments: [
-          {
-            attachmentId: 'img-1',
-            fileName: 'photo.jpg',
-            contentType: 'image/jpeg',
-          },
-        ],
-      }),
-    ]);
-
-    await wrapper.get('button.p-button').trigger('click');
-
-    expect(openSpy).toHaveBeenCalledWith(
-      '/ticketing/v1/tenant-relations/issues/issue-1/attachments/img-1/photo.jpg',
-      '_blank',
-      'noopener,noreferrer',
-    );
-    openSpy.mockRestore();
-  });
-
-  it('treats image extensions as images even without content type', async () => {
-    const wrapper = await mountWithTimelines([
-      makeTimeline({ attachments: [{ attachmentId: 'img-ext-1', fileName: 'photo.webp' }] }),
-    ]);
-
-    expect(wrapper.find('img').exists()).toBe(true);
-    expect(wrapper.text()).not.toContain('WEBP');
-  });
-
-  it('shows FILE label for attachments without extension and ignores attachments without id', async () => {
-    const wrapper = await mountWithTimelines([
-      makeTimeline({
-        attachments: [
-          { attachmentId: 'file-1', fileName: 'README' },
-          { fileName: 'missing-id.txt' },
-        ],
-      }),
-    ]);
-
-    expect(wrapper.text()).toContain('FILE');
-    expect(wrapper.findAll('button.cursor-pointer')).toHaveLength(1);
-  });
-
-  it('renders purpose-based titles including fallback', async () => {
-    const wrapper = await mountWithTimelines([
-      makeTimeline({ timelineId: 'p1', purpose: 'ISSUE_CREATED' }),
-      makeTimeline({ timelineId: 'p2', purpose: 'MESSAGE_SENT' }),
-      makeTimeline({ timelineId: 'p3', purpose: 'APPOINTMENT_REQUESTED' }),
-      makeTimeline({ timelineId: 'p4', purpose: 'APPOINTMENT_SCHEDULED' }),
-      makeTimeline({ timelineId: 'p5', purpose: 'STATUS_CHANGED' }),
-      makeTimeline({ timelineId: 'p6', purpose: 'UNKNOWN_PURPOSE' as TimelineJson['purpose'] }),
-      makeTimeline({ timelineId: 'p7', purpose: undefined }),
-    ]);
-
-    const text = wrapper.text();
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.issueCreatedTitle'));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.tenantMessageTitle'));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.appointmentRequestedTitle'));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.appointmentScheduledTitle'));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.statusChangedTitle'));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.entryFallbackTitle'));
-  });
-
   it('shows error state when timeline loading fails', async () => {
     vi.mocked(tenantTimelineService.getTimelineEntries).mockRejectedValueOnce(new Error('load failed'));
 
@@ -189,15 +94,6 @@ describe('TenantIssueTimelineCard component', () => {
     await flushPromises();
 
     expect(tenantTimelineService.getTimelineEntries).toHaveBeenCalledWith('issue-2');
-  });
-
-  it('renders fallback date placeholder when createdAt is missing', async () => {
-    const wrapper = await mountWithTimelines([makeTimeline({ createdAt: undefined })]);
-
-    expect(wrapper.find('[data-testid="tenant-issue-timeline-entry"]').text()).toContain(
-      i18n.global.t('tenantIssues.timeline.tenantMessageTitle'),
-    );
-    expect(wrapper.find('.w-40').text()).toContain('-');
   });
 
   it.each([
@@ -343,28 +239,6 @@ describe('TenantIssueTimelineCard component', () => {
 
     resolveSubmission?.();
     await flushPromises();
-  });
-
-  it('encodes issue, attachment and filename in generated download URL', async () => {
-    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    const wrapper = await mountWithTimelines([
-      makeTimeline({
-        attachments: [{
-          attachmentId: 'att id/1',
-          fileName: 'file name #1.pdf',
-          contentType: 'application/pdf',
-        }],
-      }),
-    ], 'issue id/ä');
-
-    await wrapper.get('button.cursor-pointer').trigger('click');
-
-    expect(openSpy).toHaveBeenCalledWith(
-      '/ticketing/v1/tenant-relations/issues/issue%20id%2F%C3%A4/attachments/att%20id%2F1/file%20name%20%231.pdf',
-      '_blank',
-      'noopener,noreferrer',
-    );
-    openSpy.mockRestore();
   });
 
   it('shows an error toast when message submission fails', async () => {

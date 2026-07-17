@@ -5,11 +5,11 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
-import TenantIssueTimelineCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineCard.vue';
+import TenantIssueTimelineCard from '../components/TenantIssueTimelineCard.vue';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
 import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
-import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
+import TenantIssueSummaryCard from '../components/TenantIssueSummaryCard.vue';
 
 const props = defineProps<{ issueId: string }>();
 

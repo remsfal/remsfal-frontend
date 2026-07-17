@@ -13,7 +13,7 @@ import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import type { IssueStatus, IssueType } from '@/services/IssueService';
 import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
 import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
-import TenantIssueCard from './TenantIssueCard.vue';
+import TenantIssueCard from '../components/TenantIssueCard.vue';
 
 const { t } = useI18n();
 const router = useRouter();
