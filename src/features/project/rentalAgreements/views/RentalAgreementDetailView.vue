@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import TenancyDataComponent from '../components/TenancyDataComponent.vue';
 import TenantsTableComponent from '../components/TenantsTableComponent.vue';
-import UnitsTableComponent from '../components/UnitsTableComponent.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService';
-import type { components } from '@/services/api/platform-schema';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -16,9 +14,6 @@ const props = defineProps<{
   projectId: string;
   agreementId: string;
 }>();
-
-type RentJson = components['schemas']['RentJson'];
-type RentalUnitJson = components['schemas']['RentalUnitJson'];
 
 const { t } = useI18n();
 const router = useRouter();
