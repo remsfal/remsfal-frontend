@@ -18,6 +18,7 @@ const props = defineProps<{
 }>();
 
 type RentJson = components['schemas']['RentJson'];
+type RentalUnitJson = components['schemas']['RentalUnitJson'];
 
 const { t } = useI18n();
 const router = useRouter();

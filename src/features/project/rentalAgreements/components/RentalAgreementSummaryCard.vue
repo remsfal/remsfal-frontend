@@ -23,25 +23,13 @@ const props = defineProps<{
 
 const { t, d, n } = useI18n();
 
-const rentalUnitById = computed(() => {
-  const units = props.rentalAgreement.rentalUnits || [];
-  const unitMap = new Map<string, (typeof units)[number]>();
-  units.forEach((unit) => {
-    if (unit?.id) {
-      unitMap.set(unit.id, unit);
-    }
-  });
-  return unitMap;
-});
-
 function mapRentsToSummary(rents: RentJson[] | undefined, unitType: UnitType): RentalUnitSummary[] {
   return (rents || []).map((rent) => {
-    const unit = rentalUnitById.value.get(rent.unitId);
     return {
       unitId: rent.unitId,
       unitType,
-      title: unit?.title || null,
-      location: unit?.location || null,
+      title: null,
+      location: null,
       basicRent: rent.basicRent,
       operatingCostsPrepayment: rent.operatingCostsPrepayment,
       heatingCostsPrepayment: rent.heatingCostsPrepayment,
