@@ -86,6 +86,10 @@ function formatCurrency(value: number | null | undefined): string {
   if (value === null || value === undefined) return t('common.notSet');
   return n(value, 'currency');
 }
+
+function formatLabel(key: string): string {
+  return `${t(key)}:`;
+}
 </script>
 
 <template>
@@ -104,48 +108,48 @@ function formatCurrency(value: number | null | undefined): string {
       <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3">
         <dl class="space-y-2 text-base text-gray-600">
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('projectTenancies.table.rentalStart') }}</dt>
+            <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.rentalStart') }}</dt>
             <dd class="text-gray-900">{{ formatDateLabel(rentalAgreement.startOfRental) }}</dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('projectTenancies.table.rentalEnd') }}</dt>
+            <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.rentalEnd') }}</dt>
             <dd class="text-gray-900">{{ formatDateLabel(rentalAgreement.endOfRental) }}</dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('projectTenancies.table.tenants') }}</dt>
+            <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.tenants') }}</dt>
             <dd class="text-gray-900">{{ tenantCount }}</dd>
           </div>
         </dl>
         <dl class="space-y-2 text-base text-gray-600">
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.basicRent') }}</dt>
+            <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.basicRent') }}</dt>
             <dd class="text-gray-900">{{ formatCurrency(totalBasicRent) }}</dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.operatingCosts') }}</dt>
+            <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.operatingCosts') }}</dt>
             <dd class="text-gray-900">{{ formatCurrency(totalOperatingCosts) }}</dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.heatingCosts') }}</dt>
+            <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.heatingCosts') }}</dt>
             <dd class="text-gray-900">{{ formatCurrency(totalHeatingCosts) }}</dd>
           </div>
         </dl>
         <div v-if="rentalUnitSummary.length">
           <div
-              v-for="unit in rentalUnitSummary"
-              :key="`${unit.unitType}-${unit.unitId}`"
+            v-for="unit in rentalUnitSummary"
+            :key="`${unit.unitType}-${unit.unitId}`"
           >
             <dl class="space-y-2 text-base text-gray-600">
               <div class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.unitType') }}</dt>
+                <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.unitType') }}</dt>
                 <dd class="text-gray-900">{{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}</dd>
               </div>
               <div class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">{{ t('rentableUnits.form.title') }}</dt>
+                <dt class="font-medium text-gray-500">{{ formatLabel('rentableUnits.form.title') }}</dt>
                 <dd class="text-gray-900">{{ unit.title || unit.unitId }}</dd>
               </div>
               <div class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">{{ t('rentableUnits.form.location') }}</dt>
+                <dt class="font-medium text-gray-500">{{ formatLabel('rentableUnits.form.location') }}</dt>
                 <dd class="text-gray-900">{{ unit.location || t('common.notSet') }}</dd>
               </div>
             </dl>
