@@ -104,20 +104,6 @@ function formatCurrency(value: number | null | undefined): string {
       <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3">
         <dl class="space-y-2 text-base text-gray-600">
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.basicRent') }}</dt>
-            <dd class="text-gray-900">{{ formatCurrency(totalBasicRent) }}</dd>
-          </div>
-          <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.operatingCosts') }}</dt>
-            <dd class="text-gray-900">{{ formatCurrency(totalOperatingCosts) }}</dd>
-          </div>
-          <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.heatingCosts') }}</dt>
-            <dd class="text-gray-900">{{ formatCurrency(totalHeatingCosts) }}</dd>
-          </div>
-        </dl>
-        <dl class="space-y-2 text-base text-gray-600">
-          <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">{{ t('projectTenancies.table.rentalStart') }}</dt>
             <dd class="text-gray-900">{{ formatDateLabel(rentalAgreement.startOfRental) }}</dd>
           </div>
@@ -128,6 +114,20 @@ function formatCurrency(value: number | null | undefined): string {
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">{{ t('projectTenancies.table.tenants') }}</dt>
             <dd class="text-gray-900">{{ tenantCount }}</dd>
+          </div>
+        </dl>
+        <dl class="space-y-2 text-base text-gray-600">
+          <div class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.basicRent') }}</dt>
+            <dd class="text-gray-900">{{ formatCurrency(totalBasicRent) }}</dd>
+          </div>
+          <div class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.operatingCosts') }}</dt>
+            <dd class="text-gray-900">{{ formatCurrency(totalOperatingCosts) }}</dd>
+          </div>
+          <div class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">{{ t('rentalAgreement.step2.heatingCosts') }}</dt>
+            <dd class="text-gray-900">{{ formatCurrency(totalHeatingCosts) }}</dd>
           </div>
         </dl>
         <div v-if="rentalUnitSummary.length">
