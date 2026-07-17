@@ -111,12 +111,12 @@ defineExpose({
         :isDeleteButtonEnabled="false"
       />
 
-      <!-- Units Table -->
+      <!-- Units Table
       <UnitsTableComponent
         :projectId="props.projectId"
         :listOfUnits="listOfUnits"
         :isDeleteButtonEnabled="false"
-      />
+      />-->
 
       <!-- Action buttons -->
       <div class="flex justify-end">
