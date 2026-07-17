@@ -116,7 +116,9 @@ const getTimelineTitle = (timelineItem?: TimelineJson) => {
         senderName: timelineItem.senderName ?? '',
       });
     case 'MESSAGE_SENT':
-      return t('tenantIssues.timeline.tenantMessageTitle');
+      return t('tenantIssues.timeline.tenantMessageTitle', {
+        senderName: timelineItem.senderName ?? '',
+      });
     case 'APPOINTMENT_REQUESTED':
       return t('tenantIssues.timeline.appointmentRequestedTitle');
     case 'APPOINTMENT_SCHEDULED':
