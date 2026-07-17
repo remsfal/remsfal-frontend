@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
 import i18n from '@/i18n/i18n';
-import { tenantTimelineService, type TenantTimelineJson, type TenantTimelineListJson } from '@/services/TenantTimelineService';
+import { tenantTimelineService, type TimelineJson, type TimelineListJson } from '@/services/TenantTimelineService';
 
 const toastAddMock = vi.fn();
 
@@ -21,9 +21,9 @@ vi.mock('@/services/TenantTimelineService', async () => {
   };
 });
 
-const createTimelineList = (timelines: TenantTimelineJson[]): TenantTimelineListJson => ({ timelines });
+const createTimelineList = (timelines: TimelineJson[]): TimelineListJson => ({ timelines });
 
-const makeTimeline = (overrides: Partial<TenantTimelineJson> = {}): TenantTimelineJson => ({
+const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   timelineId: 'timeline-1',
   purpose: 'MESSAGE_SENT',
   message: '',
@@ -38,7 +38,7 @@ const mountTimelineCard = async (issueId = 'issue-1') => {
   return mount(TenantIssueTimelineCard, { props: { issueId } });
 };
 
-const mountWithTimelines = async (timelines: TenantTimelineJson[], issueId = 'issue-1') => {
+const mountWithTimelines = async (timelines: TimelineJson[], issueId = 'issue-1') => {
   vi.mocked(tenantTimelineService.getTimelineEntries).mockResolvedValueOnce(createTimelineList(timelines));
   const wrapper = await mountTimelineCard(issueId);
   await flushPromises();
@@ -61,8 +61,8 @@ describe('TenantIssueTimelineCard component', () => {
   });
 
   it('shows loading spinner while timeline request is pending', async () => {
-    let resolveRequest: ((value: TenantTimelineListJson) => void) | undefined;
-    const pendingRequest = new Promise<TenantTimelineListJson>((resolve) => {
+    let resolveRequest: ((value: TimelineListJson) => void) | undefined;
+    const pendingRequest = new Promise<TimelineListJson>((resolve) => {
       resolveRequest = resolve;
     });
     vi.mocked(tenantTimelineService.getTimelineEntries).mockReturnValueOnce(pendingRequest);
@@ -158,7 +158,7 @@ describe('TenantIssueTimelineCard component', () => {
       makeTimeline({ timelineId: 'p3', purpose: 'APPOINTMENT_REQUESTED' }),
       makeTimeline({ timelineId: 'p4', purpose: 'APPOINTMENT_SCHEDULED' }),
       makeTimeline({ timelineId: 'p5', purpose: 'STATUS_CHANGED' }),
-      makeTimeline({ timelineId: 'p6', purpose: 'UNKNOWN_PURPOSE' as TenantTimelineJson['purpose'] }),
+      makeTimeline({ timelineId: 'p6', purpose: 'UNKNOWN_PURPOSE' as TimelineJson['purpose'] }),
       makeTimeline({ timelineId: 'p7', purpose: undefined }),
     ]);
 

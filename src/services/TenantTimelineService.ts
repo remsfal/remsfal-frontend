@@ -1,21 +1,21 @@
 import { apiClient } from '@/services/ApiClient';
 import type { components as ticketingComponents } from '@/services/api/ticketing-schema';
 
-export type TenantTimelineJson = ticketingComponents['schemas']['TimelineJson'];
-export type TenantTimelineListJson = ticketingComponents['schemas']['TimelineListJson'];
+export type TimelineJson = ticketingComponents['schemas']['TimelineJson'];
+export type TimelineListJson = ticketingComponents['schemas']['TimelineListJson'];
 
 class TenantTimelineService {
-  async getTimelineEntries(issueId: string): Promise<TenantTimelineListJson> {
+  async getTimelineEntries(issueId: string): Promise<TimelineListJson> {
     const result = await apiClient.get(
       '/ticketing/v1/tenant-relations/issues/{issueId}/timeline',
       { pathParams: { issueId } },
-    ) as Partial<TenantTimelineListJson>;
+    ) as Partial<TimelineListJson>;
     return { timelines: result.timelines ?? [] };
   }
 
   async createTimelineEntryWithAttachments(
     issueId: string,
-    timeline: Partial<TenantTimelineJson>,
+    timeline: Partial<TimelineJson>,
     files: File[],
   ): Promise<void> {
     const formData = new FormData();

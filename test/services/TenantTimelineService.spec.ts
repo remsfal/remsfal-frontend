@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { apiClient } from '@/services/ApiClient';
-import { tenantTimelineService, type TenantTimelineListJson } from '@/services/TenantTimelineService';
+import { tenantTimelineService, type TimelineListJson } from '@/services/TenantTimelineService';
 
 describe('TenantTimelineService', () => {
   afterEach(() => {
@@ -8,8 +8,10 @@ describe('TenantTimelineService', () => {
   });
 
   test('getTimelineEntries requests timeline list by issue id', async () => {
-    const timelineList: TenantTimelineListJson = {
-      timelines: [{ timelineId: 'timeline-1', purpose: 'MESSAGE_SENT', message: 'Hello' }],
+    const timelineList: TimelineListJson = {
+      timelines: [{
+        timelineId: 'timeline-1', purpose: 'MESSAGE_SENT', message: 'Hello' 
+      }],
     };
     const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValueOnce(timelineList);
 

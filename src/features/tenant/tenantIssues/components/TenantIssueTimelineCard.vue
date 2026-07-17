@@ -11,7 +11,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/common/BaseCard.vue';
-import { tenantTimelineService, type TenantTimelineJson } from '@/services/TenantTimelineService';
+import { tenantTimelineService, type TimelineJson } from '@/services/TenantTimelineService';
 
 const props = defineProps<{ issueId: string; }>();
 
@@ -20,7 +20,7 @@ const toast = useToast();
 
 const loading = ref(false);
 const error = ref(false);
-const timelines = ref<TenantTimelineJson[]>([]);
+const timelines = ref<TimelineJson[]>([]);
 const messageText = ref('');
 const selectedFiles = ref<File[]>([]);
 const fileUploadKey = ref(0);
@@ -61,7 +61,7 @@ const isImageAttachment = (attachment: TimelineAttachmentView) => {
   return extension ? imageFileExtensions.has(extension) : false;
 };
 
-const getTimelineAttachments = (timeline: TenantTimelineJson): TimelineAttachmentView[] => {
+const getTimelineAttachments = (timeline: TimelineJson): TimelineAttachmentView[] => {
   return (timeline.attachments ?? []).flatMap((attachment) => {
     const attachmentId = attachment.attachmentId;
     if (!attachmentId) {
@@ -79,11 +79,11 @@ const getTimelineAttachments = (timeline: TenantTimelineJson): TimelineAttachmen
   });
 };
 
-const getTimelineImageAttachments = (timeline: TenantTimelineJson) => {
+const getTimelineImageAttachments = (timeline: TimelineJson) => {
   return getTimelineAttachments(timeline).filter(isImageAttachment);
 };
 
-const getTimelineNonImageAttachments = (timeline: TenantTimelineJson) => {
+const getTimelineNonImageAttachments = (timeline: TimelineJson) => {
   return getTimelineAttachments(timeline).filter((attachment) => !isImageAttachment(attachment));
 };
 
@@ -108,7 +108,7 @@ const formatTimelineDate = (value?: string) => {
   return date.toLocaleString(locale.value);
 };
 
-const getTimelineTitle = (purpose?: TenantTimelineJson['purpose']) => {
+const getTimelineTitle = (purpose?: TimelineJson['purpose']) => {
   switch (purpose) {
     case 'ISSUE_CREATED':
       return t('tenantIssues.timeline.issueCreatedTitle');
@@ -140,7 +140,7 @@ const fetchTimelines = async () => {
   }
 };
 
-const getTimelineAttachmentCount = (timeline: TenantTimelineJson) => getTimelineAttachments(timeline).length;
+const getTimelineAttachmentCount = (timeline: TimelineJson) => getTimelineAttachments(timeline).length;
 
 const getTimelineAttachmentDownloadUrl = ( issueId: string, attachmentId: string, fileName?: string, ) => {
   const encodedIssueId = encodeURIComponent(issueId);
@@ -212,7 +212,6 @@ watch(
       <span class="text-xl font-semibold">{{ t('tenantIssues.timeline.title') }}</span>
     </template>
     <template #content>
-
       <div v-if="loading" class="flex items-center gap-3 py-2">
         <ProgressSpinner data-testid="tenant-issue-timeline-loading" style="width: 24px; height: 24px" />
         <span class="text-gray-600">{{ t('tenantIssues.loading') }}</span>
