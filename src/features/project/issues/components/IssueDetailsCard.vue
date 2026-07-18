@@ -49,11 +49,6 @@ interface CategoryOption {
   label: string;
 }
 
-interface PriorityOption {
-  value: IssuePriority;
-  label: string;
-}
-
 const GENERAL_CATEGORY = computed<CategoryOption>(() => ({
   value: 'GENERAL',
   label: t('tenantIssue.categories.GENERAL'),
@@ -119,22 +114,9 @@ const availableCategories = computed<CategoryOption[]>(() => {
   }
 });
 
-const priorityOptions = computed<PriorityOption[]>(() => [
-  { value: 'URGENT', label: t('issuePriority.urgent') },
-  { value: 'HIGH', label: t('issuePriority.high') },
-  { value: 'MEDIUM', label: t('issuePriority.medium') },
-  { value: 'LOW', label: t('issuePriority.low') },
-  { value: 'UNCLASSIFIED', label: t('issuePriority.unclassified') },
-]);
-
 function findCategoryOption(value: IssueCategory | undefined): CategoryOption | null {
   if (!value) return null;
   return ALL_CATEGORIES.value.find((option) => option.value === value) ?? null;
-}
-
-function findPriorityOption(value: IssuePriority | undefined): PriorityOption | null {
-  if (!value) return null;
-  return priorityOptions.value.find((option) => option.value === value) ?? null;
 }
 
 /* =========================
@@ -149,7 +131,7 @@ const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
 const tenancy = ref(props.initialData.tenancy);
 const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category));
-const priority = ref<PriorityOption | null>(findPriorityOption(props.initialData.priority));
+const priority = ref(props.initialData.priority);
 const modifiedAt = ref(props.initialData.modifiedAt);
 
 /* =========================
@@ -174,7 +156,7 @@ const canSave = computed(() =>
   issueType.value !== originalIssueType.value ||
   tenancy.value !== originalTenancy.value ||
   category.value?.value !== originalCategory.value?.value ||
-  priority.value?.value !== originalPriority.value?.value
+  priority.value !== originalPriority.value
 );
 
 // Display name for reporter, as provided by the backend
@@ -211,6 +193,14 @@ const typeOptions = computed(() => [
   { label: t('issueType.termination'), value: 'TERMINATION' as IssueType },
 ]);
 
+const priorityOptions = computed(() => [
+  { label: t('issuePriority.urgent'), value: 'URGENT' as IssuePriority },
+  { label: t('issuePriority.high'), value: 'HIGH' as IssuePriority },
+  { label: t('issuePriority.medium'), value: 'MEDIUM' as IssuePriority },
+  { label: t('issuePriority.low'), value: 'LOW' as IssuePriority },
+  { label: t('issuePriority.unclassified'), value: 'UNCLASSIFIED' as IssuePriority },
+]);
+
 /* =========================
      AutoComplete Search
   ========================= */
@@ -221,15 +211,6 @@ function searchCategories(event: { query: string }) {
   filteredCategories.value = query
     ? availableCategories.value.filter((option) => option.label.toLowerCase().includes(query))
     : availableCategories.value;
-}
-
-const filteredPriorities = ref<PriorityOption[]>([]);
-
-function searchPriorities(event: { query: string }) {
-  const query = event.query.toLowerCase();
-  filteredPriorities.value = query
-    ? priorityOptions.value.filter((option) => option.label.toLowerCase().includes(query))
-    : priorityOptions.value;
 }
 
 /* =========================
@@ -247,7 +228,7 @@ watch(
     issueType.value = newData.issueType;
     tenancy.value = newData.tenancy;
     category.value = findCategoryOption(newData.category);
-    priority.value = findPriorityOption(newData.priority);
+    priority.value = newData.priority;
     modifiedAt.value = newData.modifiedAt;
 
     originalTitle.value = newData.title;
@@ -282,8 +263,8 @@ const handleSave = async () => {
       payload.type = issueType.value as IssueJson["type"];
     if (category.value?.value !== originalCategory.value?.value)
       payload.category = category.value?.value as IssueJson["category"];
-    if (priority.value?.value !== originalPriority.value?.value)
-      payload.priority = priority.value?.value as IssueJson["priority"];
+    if (priority.value !== originalPriority.value)
+      payload.priority = priority.value as IssueJson["priority"];
 
     await issueService.updateIssue(props.issueId, payload);
 
@@ -402,16 +383,13 @@ const handleSave = async () => {
 
           <div class="flex flex-col gap-1 flex-1">
             <label for="issue-priority" class="text-sm text-gray-600">{{ t('issueDetails.fields.priority') }}</label>
-            <AutoComplete
-              id="issue-priority"
+            <Select
               v-model="priority"
-              :suggestions="filteredPriorities"
+              inputId="issue-priority"
+              :options="priorityOptions"
               optionLabel="label"
+              optionValue="value"
               :placeholder="t('issueDetails.fields.priorityPlaceholder')"
-              fluid
-              dropdown
-              forceSelection
-              @complete="searchPriorities"
             />
           </div>
         </div>

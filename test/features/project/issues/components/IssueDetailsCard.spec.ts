@@ -398,7 +398,7 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('resolves category and priority to null when initialData omits them', () => {
+  test('resolves category to null and priority to undefined when initialData omits them', () => {
     const wrapperWithoutCategoryAndPriority = mount(IssueDetailsCard, {
       props: {
         ...baseProps,
@@ -411,10 +411,10 @@ describe('IssueDetailsCard.vue', () => {
     });
 
     const categoryAutoComplete = wrapperWithoutCategoryAndPriority.findAllComponents(AutoComplete)[0];
-    const priorityAutoComplete = wrapperWithoutCategoryAndPriority.findAllComponents(AutoComplete)[1];
+    const prioritySelect = wrapperWithoutCategoryAndPriority.findAllComponents(Select)[2];
 
     expect(categoryAutoComplete.props('modelValue')).toBeNull();
-    expect(priorityAutoComplete.props('modelValue')).toBeNull();
+    expect(prioritySelect.props('modelValue')).toBeUndefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -443,25 +443,6 @@ describe('IssueDetailsCard.vue', () => {
 
     const labels = categoryAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
     expect(labels).toEqual(['Sonstiges']);
-  });
-
-  // ───────────────────────────────────────────────────────────────────────────
-  test('filters priorities by query text', async () => {
-    const priorityAutoComplete = wrapper.findAllComponents(AutoComplete)[1];
-    await priorityAutoComplete.vm.$emit('complete', { query: 'hoch' });
-    await nextTick();
-
-    const labels = priorityAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
-    expect(labels).toEqual(['Hoch']);
-  });
-
-  // ───────────────────────────────────────────────────────────────────────────
-  test('lists all priorities when query is empty', async () => {
-    const priorityAutoComplete = wrapper.findAllComponents(AutoComplete)[1];
-    await priorityAutoComplete.vm.$emit('complete', { query: '' });
-    await nextTick();
-
-    expect(priorityAutoComplete.props('suggestions')).toHaveLength(5);
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -541,11 +522,10 @@ describe('IssueDetailsCard.vue', () => {
     vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
 
     const categoryOption = { value: 'WATER_DAMAGE', label: 'Wasserschaden' };
-    const priorityOption = { value: 'HIGH', label: 'Hoch' };
 
     await wrapper.findComponent(MemberAutoComplete).vm.$emit('update:modelValue', 'user-2');
     await wrapper.findAllComponents(AutoComplete)[0].vm.$emit('update:modelValue', categoryOption);
-    await wrapper.findAllComponents(AutoComplete)[1].vm.$emit('update:modelValue', priorityOption);
+    await wrapper.findAllComponents(Select)[2].vm.$emit('update:modelValue', 'HIGH');
     await nextTick();
 
     await findSaveButton(wrapper).trigger('click');
