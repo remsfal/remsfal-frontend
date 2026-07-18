@@ -107,6 +107,16 @@ export const issueHandlers = [
     return new HttpResponse(null, { status: 204 });
   }),
 
+  // GET timeline entries for tenant issue flow
+  http.get(`${TICKETING_BASE}/tenant-relations/issues/:issueId/timeline`, () => {
+    return HttpResponse.json({ timelines: [] });
+  }),
+
+  // POST create timeline entry for tenant issue flow
+  http.post(`${TICKETING_BASE}/tenant-relations/issues/:issueId/timeline`, () => {
+    return new HttpResponse(null, { status: 201 });
+  }),
+
   // POST create an issue relation (ticketing microservice)
   http.post(`${TICKETING_BASE}/issues/:issueId/:relationType/:relatedIssueId`, ({ params }) => {
     return HttpResponse.json({

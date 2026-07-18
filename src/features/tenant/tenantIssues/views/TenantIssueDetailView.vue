@@ -5,10 +5,11 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import ProgressSpinner from 'primevue/progressspinner';
+import TenantIssueTimelineCard from '../components/TenantIssueTimelineCard.vue';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
 import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
-import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
+import TenantIssueSummaryCard from '../components/TenantIssueSummaryCard.vue';
 
 const props = defineProps<{ issueId: string }>();
 
@@ -18,9 +19,9 @@ const { t } = useI18n();
 
 const loading = ref(false);
 const deletingIssue = ref(false);
-const showCancelDialog = ref(false);
 const issue = ref<TenantIssueJson | null>(null);
 const error = ref<string | null>(null);
+const showCancelDialog = ref(false);
 
 const fetchIssue = async () => {
   loading.value = true;
@@ -71,15 +72,6 @@ const cancelIssue = async () => {
   }
 };
 
-const openCancelDialog = () => {
-  showCancelDialog.value = true;
-};
-
-const confirmCancelIssue = () => {
-  showCancelDialog.value = false;
-  cancelIssue();
-};
-
 onMounted(() => {
   fetchIssue();
 });
@@ -90,6 +82,15 @@ watch(
     fetchIssue();
   }
 );
+
+const openCancelDialog = () => {
+  showCancelDialog.value = true;
+};
+
+const confirmCancelIssue = () => {
+  showCancelDialog.value = false;
+  cancelIssue();
+};
 </script>
 
 <template>
@@ -115,6 +116,7 @@ watch(
         :deletingIssue="deletingIssue"
         @cancel="openCancelDialog"
       />
+      <TenantIssueTimelineCard :issueId="issue.id || props.issueId" />
     </template>
 
     <BaseDialog
