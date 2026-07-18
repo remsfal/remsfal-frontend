@@ -39,7 +39,7 @@ vi.mock('@/services/TenantIssueService', async () => {
   };
 });
 
-describe('TenantIssueList feature', () => {
+describe('TenantIssueListView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
