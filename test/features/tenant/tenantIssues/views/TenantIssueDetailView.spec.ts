@@ -3,7 +3,7 @@ import { defineComponent } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import type { TenantIssueJson } from '@/services/TenantIssueService';
 import { tenantIssueService } from '@/services/TenantIssueService';
-import TenantIssueDetails from '@/features/tenant/tenantIssues/components/TenantIssueDetails.vue';
+import TenantIssueDetailView from '@/features/tenant/tenantIssues/views/TenantIssueDetailView.vue';
 
 const pushMock = vi.fn();
 const addMock = vi.fn();
@@ -69,7 +69,7 @@ const BaseDialogStub = defineComponent({
   `,
 });
 
-describe('TenantIssueDetails component', () => {
+describe('TenantIssueDetailView', () => {
   const baseIssue: TenantIssueJson = {
     id: 'issue-1',
     title: 'Heizung defekt',
@@ -80,7 +80,7 @@ describe('TenantIssueDetails component', () => {
   };
 
   const mountDetails = (issueId = 'issue-1') => {
-    return mount(TenantIssueDetails, {
+    return mount(TenantIssueDetailView, {
       props: { issueId },
       global: {
         stubs: {
