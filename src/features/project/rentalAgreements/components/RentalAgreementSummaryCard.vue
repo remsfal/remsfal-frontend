@@ -2,8 +2,10 @@
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { RentalAgreementJson } from '@/services/RentalAgreementService';
 import type { components } from '@/services/api/platform-schema';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import Button from 'primevue/button';
+import Popover from 'primevue/popover';
 
 type RentJson = components['schemas']['RentJson'];
 type UnitType = components['schemas']['UnitType'];
@@ -21,7 +23,12 @@ const props = defineProps<{
   rentalAgreement: RentalAgreementJson;
 }>();
 
+const emit = defineEmits<{
+  delete: [];
+}>();
+
 const { t, d, n } = useI18n();
+const deleteWarningMenu = ref<InstanceType<typeof Popover> | null>(null);
 
 function mapRentsToSummary(rents: RentJson[] | undefined, unitType: UnitType): RentalUnitSummary[] {
   return (rents || []).map((rent) => {
@@ -78,6 +85,20 @@ function formatCurrency(value: number | null | undefined): string {
 function formatLabel(key: string): string {
   return `${t(key)}:`;
 }
+
+function toggleDeleteWarningMenu(event: Event): void {
+  deleteWarningMenu.value?.toggle(event);
+}
+
+function confirmDelete(): void {
+  deleteWarningMenu.value?.hide();
+  emit('delete');
+}
+
+function closeDeleteWarningMenu(): void {
+  deleteWarningMenu.value?.hide();
+}
+
 </script>
 
 <template>
@@ -119,28 +140,41 @@ function formatLabel(key: string): string {
             <dd class="text-gray-900">{{ formatCurrency(totalHeatingCosts) }}</dd>
           </div>
         </dl>
-        <div v-if="rentalUnitSummary.length">
-          <div
-            v-for="unit in rentalUnitSummary"
-            :key="`${unit.unitType}-${unit.unitId}`"
-          >
-            <dl class="space-y-2 text-base text-gray-600">
-              <div class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.unitType') }}</dt>
-                <dd class="text-gray-900">{{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}</dd>
-              </div>
-              <div class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">{{ formatLabel('rentableUnits.form.title') }}</dt>
-                <dd class="text-gray-900">{{ unit.title || unit.unitId }}</dd>
-              </div>
-              <div class="flex items-center justify-start gap-2">
-                <dt class="font-medium text-gray-500">{{ formatLabel('rentableUnits.form.location') }}</dt>
-                <dd class="text-gray-900">{{ unit.location || t('common.notSet') }}</dd>
-              </div>
-            </dl>
+      </div>
+      <Button
+        :label="t('button.delete')"
+        icon="pi pi-trash"
+        severity="danger"
+        outlined
+        class="mt-4"
+        @click="toggleDeleteWarningMenu"
+      />
+      <Popover ref="deleteWarningMenu">
+        <div class="flex max-w-80 flex-col gap-3">
+          <p class="font-semibold text-red-600">
+            {{ t('projectTenancies.dialog.confirmationTitle') }}
+          </p>
+          <p class="text-sm text-gray-700">
+            {{ t('rentalAgreement.dialog.confirmDelete', { id: rentalAgreement.id }) }}
+          </p>
+          <div class="flex justify-end gap-2">
+            <Button
+              :label="t('button.cancel')"
+              severity="secondary"
+              text
+              size="small"
+              @click="closeDeleteWarningMenu"
+            />
+            <Button
+              :label="t('button.delete')"
+              icon="pi pi-trash"
+              severity="danger"
+              size="small"
+              @click="confirmDelete"
+            />
           </div>
         </div>
-      </div>
+      </Popover>
     </template>
   </BaseCard>
 </template>

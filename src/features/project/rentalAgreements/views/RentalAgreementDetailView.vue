@@ -98,6 +98,7 @@ defineExpose({
       <RentalAgreementSummaryCard
         v-if="rentalAgreement"
         :rentalAgreement="rentalAgreement"
+        @delete="confirmDeletion"
       />
 
       <!-- Tenants Table -->
@@ -105,13 +106,6 @@ defineExpose({
         :tenants="rentalAgreement?.tenants || []"
         :isDeleteButtonEnabled="false"
       />
-
-      <!-- Units Table
-      <UnitsTableComponent
-        :projectId="props.projectId"
-        :listOfUnits="listOfUnits"
-        :isDeleteButtonEnabled="false"
-      />-->
 
       <!-- Action buttons -->
       <div class="flex justify-end">
