@@ -5,12 +5,14 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import Step3TenantsForm from './Step3TenantsForm.vue';
 
 type TenantJson = components['schemas']['TenantJson'];
 
 const props = defineProps<{
   tenants: TenantJson[];
   isDeleteButtonEnabled: boolean;
+  projectId?: string;
 }>();
 
 const emit = defineEmits<{
@@ -20,6 +22,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const localTenants = ref<TenantJson[]>([]);
 const removeListVisible = ref(false);
+const isStep3TenantsFormVisible = ref(false);
 
 watch(
   () => props.tenants,
@@ -79,6 +82,11 @@ const removeTenantFromList = (index: number) => {
   if (localTenants.value.length === 0) {
     removeListVisible.value = false;
   }
+};
+
+const handleStep3TenantsUpdate = (updatedTenants: TenantJson[]) => {
+  localTenants.value = [...updatedTenants];
+  emit('onChange', localTenants.value);
 };
 
 onMounted(() => {
@@ -223,17 +231,20 @@ onMounted(() => {
               :label="t('rentalAgreement.step3.addNewTenant')"
               icon="pi pi-plus"
               severity="secondary"
-              @click="addNewRow"
-          />
-          <Button
-              :label="t('rentalAgreement.step3.removeTenant')"
-              icon="pi pi-trash"
-              severity="danger"
-              outlined
-              @click="toggleRemoveList"
+              @click="isStep3TenantsFormVisible = true"
           />
         </div>
       </div>
+
+      <Step3TenantsForm
+        v-if="isStep3TenantsFormVisible && projectId"
+        class="mt-6"
+        :projectId="projectId"
+        :tenants="localTenants"
+        @update:tenants="handleStep3TenantsUpdate"
+        @back="isStep3TenantsFormVisible = false"
+        @next="isStep3TenantsFormVisible = false"
+      />
     </template>
   </BaseCard>
 </template>

@@ -130,6 +130,7 @@ defineExpose({
     <div class="grid grid-cols-1 gap-6">
       <!-- Tenants Table -->
       <TenantsTableComponent
+        :projectId="props.projectId"
         :tenants="rentalAgreement?.tenants || []"
         :isDeleteButtonEnabled="false"
       />
