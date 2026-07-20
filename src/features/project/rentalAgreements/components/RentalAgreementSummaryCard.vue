@@ -83,7 +83,7 @@ const tenantTitleLabel = computed(() => {
     return firstTenantName;
   }
 
-  const additionalCount = props.rentalAgreement.tenants?.length - 1;
+  const additionalCount = props.rentalAgreement.tenants?.length - 1 || undefined;
 
   return `${firstTenantName} ${t('projectTenancies.table.andMore', {count: additionalCount,})}`;
 })
@@ -132,7 +132,7 @@ function closeDeleteWarningMenu(): void {
       </div>
     </template>
     <template #content>
-      <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-1 xl:grid-cols-3">
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.rentalStart') }}</dt>
