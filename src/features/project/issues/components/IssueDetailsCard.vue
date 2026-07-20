@@ -8,6 +8,8 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
+import IssueAcceptButton from './IssueAcceptButton.vue';
+import IssueRejectButton from './IssueRejectButton.vue';
 import { issueService, type IssueJson, type IssueType, type IssueCategory, type IssuePriority } from '@/services/IssueService';
 import { useProjectStore } from '@/stores/ProjectStore';
 
@@ -159,6 +161,9 @@ const canSave = computed(() =>
   priority.value !== originalPriority.value
 );
 
+// Show Accept/Reject actions based on the persisted status, not an unsaved Select edit
+const isPending = computed(() => originalStatus.value === 'PENDING');
+
 // Display name for reporter, as provided by the backend
 const reporterName = computed(() => reportedBy.value || t('issueDetails.fields.noReporter'));
 
@@ -295,6 +300,31 @@ const handleSave = async () => {
     loadingSave.value = false;
   }
 };
+
+/* =========================
+     Accept/Reject Sync
+  ========================= */
+// Applies the IssueJson returned by IssueAcceptButton/IssueRejectButton to local
+// and original state, overwriting any unsaved edits in other fields since those
+// buttons act immediately on the backend, independent of the Save diff flow.
+function applyIssueUpdate(updated: IssueJson) {
+  if (updated.title !== undefined) title.value = updated.title;
+  if (updated.status !== undefined) status.value = updated.status;
+  if (updated.assigneeId !== undefined) assigneeId.value = updated.assigneeId;
+  if (updated.type !== undefined) issueType.value = updated.type;
+  if (updated.category !== undefined) category.value = findCategoryOption(updated.category);
+  if (updated.priority !== undefined) priority.value = updated.priority;
+  if (updated.modifiedAt !== undefined) modifiedAt.value = updated.modifiedAt;
+
+  originalTitle.value = title.value;
+  originalStatus.value = status.value;
+  originalAssigneeId.value = assigneeId.value;
+  originalIssueType.value = issueType.value;
+  originalCategory.value = category.value;
+  originalPriority.value = priority.value;
+
+  emit('saved');
+}
 </script>
 
 <template>
@@ -427,8 +457,10 @@ const handleSave = async () => {
           </div>
         </div>
 
-        <!-- Save Button -->
-        <div class="flex justify-end pt-2">
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 pt-2">
+          <IssueAcceptButton v-if="isPending" :issueId="issueId" @accepted="applyIssueUpdate" />
+          <IssueRejectButton v-if="isPending" :issueId="issueId" @rejected="applyIssueUpdate" />
           <Button
             :label="t('button.save')"
             icon="pi pi-save"
