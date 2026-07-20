@@ -70,6 +70,24 @@ const totalHeatingCosts = computed(() => {
 
 const tenantCount = computed(() => props.rentalAgreement.tenants?.length ?? 0);
 
+const tenantTitleLabel = computed(() => {
+  const [firstTenant] = props.rentalAgreement.tenants || [];
+  if (!firstTenant) {
+    return t('common.notSet');
+  } else if (props.rentalAgreement.tenants?.length === 1) {
+    return t(`projectTenancies.table.more`);
+  }
+
+  const firstTenantName = `${firstTenant.firstName || ''} ${firstTenant.lastName || ''}`.trim() || t('common.notSet');
+  if ((props.rentalAgreement.tenants?.length || 0) <= 1) {
+    return firstTenantName;
+  }
+
+  const additionalCount = props.rentalAgreement.tenants?.length - 1;
+
+  return `${firstTenantName} ${t('projectTenancies.table.andMore', {count: additionalCount,})}`;
+})
+
 function formatDateLabel(date: string | null | undefined): string {
   if (!date) return t('common.notSet');
   const parsedDate = new Date(date);
@@ -106,13 +124,16 @@ function closeDeleteWarningMenu(): void {
     <template #title>
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
         <div>
-          <span class="text-xl font-semibold">{{ t('rentalAgreement.step4.title') }}</span>
+          <span class="text-xl font-semibold">{{ t('projectTenancies.table.title', { tenant: tenantTitleLabel }) }}</span>
+          <p class="text-base text-gray-500 font-normal mt-1">
+            {{ formatLabel('projectTenancies.table.mietvertragsNummer') }} {{ rentalAgreement.id || '—' }}
+          </p>
         </div>
       </div>
     </template>
     <template #content>
       <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3">
-        <dl class="space-y-2 text-base text-gray-600">
+        <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.rentalStart') }}</dt>
             <dd class="text-gray-900">{{ formatDateLabel(rentalAgreement.startOfRental) }}</dd>
@@ -126,7 +147,7 @@ function closeDeleteWarningMenu(): void {
             <dd class="text-gray-900">{{ tenantCount }}</dd>
           </div>
         </dl>
-        <dl class="space-y-2 text-base text-gray-600">
+        <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.basicRent') }}</dt>
             <dd class="text-gray-900">{{ formatCurrency(totalBasicRent) }}</dd>
