@@ -19,7 +19,7 @@ const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;
 };
 
-watch(route, closeMobileMenu);
+watch(() => route.fullPath, closeMobileMenu);
 
 // Close menu when clicking outside
 const handleOutsideClick = (event: Event) => {
