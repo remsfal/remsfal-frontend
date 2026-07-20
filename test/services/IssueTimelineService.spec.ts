@@ -8,7 +8,9 @@ describe('IssueTimelineService', () => {
   });
 
   test('createTimelineEntry sends multipart form data', async () => {
-    const timelineEntry: TimelineJson = { timelineId: 'timeline-1', purpose: 'MESSAGE_SENT', message: 'Hello' };
+    const timelineEntry: TimelineJson = {
+      timelineId: 'timeline-1', purpose: 'MESSAGE_SENT', message: 'Hello' 
+    };
     const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce(timelineEntry);
 
     const result = await issueTimelineService.createTimelineEntry('issue-1', 'MESSAGE_SENT', 'Hello');

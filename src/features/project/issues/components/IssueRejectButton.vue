@@ -91,7 +91,9 @@ async function handleConfirm() {
         rows="4"
         :placeholder="t('issueDetails.rejectRequest.reasonPlaceholder')"
       />
-      <p class="text-sm text-gray-500">{{ t('issueDetails.rejectRequest.hint') }}</p>
+      <p class="text-sm text-gray-500">
+        {{ t('issueDetails.rejectRequest.hint') }}
+      </p>
     </div>
     <template #footer>
       <Button :label="t('button.cancel')" severity="secondary" @click="showDialog = false" />
