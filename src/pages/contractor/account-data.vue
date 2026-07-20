@@ -1,14 +1,14 @@
 <route lang="yaml">
-name: ContractorAccountSettings
+name: ContractorAccountData
 meta:
   layout: contractor
   requiresAuth: true
 </route>
 
 <script setup lang="ts">
-import { AccountSettingsView } from '@/features/common/users';
+import { AccountDataView } from '@/features/common/users'
 </script>
 
 <template>
-  <AccountSettingsView />
+  <AccountDataView />
 </template>

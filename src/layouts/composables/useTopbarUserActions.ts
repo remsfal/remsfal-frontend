@@ -20,11 +20,11 @@ export function useTopbarUserActions(): {
 
   const onAccountSettingsClick = () => {
     if (route.path.startsWith('/contractor')) {
-      router.push('/contractor/account-settings');
+      router.push('/contractor/account-data');
     } else if (route.path.startsWith('/tenant')) {
-      router.push('/tenant/account-settings');
+      router.push('/tenant/account-data');
     } else {
-      router.push('/manager/account-settings');
+      router.push('/manager/account-data');
     }
   };
 

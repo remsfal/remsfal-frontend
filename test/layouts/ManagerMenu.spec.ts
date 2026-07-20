@@ -63,7 +63,7 @@ describe('ManagerMenu.vue', () => {
     expect(wrapper.find('.pi-chart-bar').exists()).toBe(true);
     expect(wrapper.find('.pi-building').exists()).toBe(true);
     expect(wrapper.find('.pi-user').exists()).toBe(true);
-    expect(wrapper.find('.pi-cog').exists()).toBe(true);
+    expect(wrapper.find('.pi-user-edit').exists()).toBe(true);
     expect(wrapper.find('.pi-user-plus').exists()).toBe(true);
   });
 
