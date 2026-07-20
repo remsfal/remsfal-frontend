@@ -86,9 +86,6 @@ function formatLabel(key: string): string {
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
         <div>
           <span class="text-xl font-semibold">{{ t('rentalAgreement.step4.title') }}</span>
-          <p class="text-base text-gray-500 font-normal mt-1">
-            ID {{ rentalAgreement.id || '—' }}
-          </p>
         </div>
       </div>
     </template>
