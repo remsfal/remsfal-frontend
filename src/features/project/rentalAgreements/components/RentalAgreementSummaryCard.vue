@@ -140,15 +140,16 @@ function closeDeleteWarningMenu(): void {
             <dd class="text-gray-900">{{ formatCurrency(totalHeatingCosts) }}</dd>
           </div>
         </dl>
+        <div class="flex items-end justify-end">
+          <Button
+            label="Mietvertrag löschen"
+            icon="pi pi-trash"
+            severity="danger"
+            outlined
+            @click="toggleDeleteWarningMenu"
+          />
+        </div>
       </div>
-      <Button
-        :label="t('button.delete')"
-        icon="pi pi-trash"
-        severity="danger"
-        outlined
-        class="mt-4"
-        @click="toggleDeleteWarningMenu"
-      />
       <Popover ref="deleteWarningMenu">
         <div class="flex max-w-80 flex-col gap-3">
           <p class="font-semibold text-red-600">
