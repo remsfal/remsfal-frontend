@@ -12,7 +12,7 @@ export function useMobileBarActiveState() {
   const route = useRoute();
   const sidebarVisible = ref(false);
 
-  watch(route, () => {
+  watch(() => route.fullPath, () => {
     sidebarVisible.value = false;
   });
 

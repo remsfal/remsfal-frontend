@@ -1,14 +1,14 @@
 <route lang="yaml">
-name: TenantAccountSettings
+name: TenantAccountData
 meta:
   layout: tenant
   requiresAuth: true
 </route>
 
 <script setup lang="ts">
-import { AccountSettingsView } from "@/features/common/users";
+import { AccountDataView } from "@/features/common/users";
 </script>
 
 <template>
-  <AccountSettingsView />
+  <AccountDataView />
 </template>
