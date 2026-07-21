@@ -83,7 +83,7 @@ const tenantTitleLabel = computed(() => {
     return firstTenantName;
   }
 
-  const additionalCount = props.rentalAgreement.tenants?.length - 1 || undefined;
+  const additionalCount = props.rentalAgreement.tenants?.length > 1 ? props.rentalAgreement.tenants?.length - 1 : undefined;
 
   return `${firstTenantName} ${t('projectTenancies.table.andMore', {count: additionalCount,})}`;
 })
