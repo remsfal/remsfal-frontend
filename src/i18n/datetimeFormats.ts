@@ -4,7 +4,11 @@ const datetimeFormats: DateTimeFormats = {
   en: {
     // Example: "12/19/2024"
     shortFormat: {
-      year: 'numeric', month: '2-digit', day: '2-digit' 
+      year: 'numeric', month: '2-digit', day: '2-digit'
+    },
+    // Example: "12/19/2024, 12:20 PM"
+    shortDateTime: {
+      year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric',
     },
     // Example: "Dec 19 2024 Thu 12:20"
     long: {
@@ -31,7 +35,11 @@ const datetimeFormats: DateTimeFormats = {
   de: {
     // Example: "29.06.2026"
     shortFormat: {
-      year: 'numeric', month: '2-digit', day: '2-digit' 
+      year: 'numeric', month: '2-digit', day: '2-digit'
+    },
+    // Example: "29.06.2026, 12:20"
+    shortDateTime: {
+      year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric',
     },
     long: {
       year: 'numeric',

@@ -62,7 +62,7 @@ describe('TenantMobileBar.vue', () => {
   });
 
   it('does not highlight Overview when on an unrelated route', async () => {
-    const { wrapper } = mountComponent({ path: '/tenant/account-settings', name: 'TenantAccountSettings' });
+    const { wrapper } = mountComponent({ path: '/tenant/account-data', name: 'TenantAccountData' });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');

@@ -34,6 +34,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    'ContractorAccountData': RouteRecordInfo<
+      'ContractorAccountData',
+      '/contractor/account-data',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'ContractorAccountSettings': RouteRecordInfo<
       'ContractorAccountSettings',
       '/contractor/account-settings',
@@ -83,13 +90,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    'ContractorSettings': RouteRecordInfo<
-      'ContractorSettings',
-      '/contractor/settings',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     'Inbox': RouteRecordInfo<
       'Inbox',
       '/inbox',
@@ -102,6 +102,13 @@ declare module 'vue-router/auto-routes' {
       '/inbox/:id',
       { id: ParamValue<true> },
       { id: ParamValue<false> },
+      | never
+    >,
+    'ManagerAccountData': RouteRecordInfo<
+      'ManagerAccountData',
+      '/manager/account-data',
+      Record<never, never>,
+      Record<never, never>,
       | never
     >,
     'ManagerAccountSettings': RouteRecordInfo<
@@ -149,13 +156,6 @@ declare module 'vue-router/auto-routes' {
     'ProjectSelection': RouteRecordInfo<
       'ProjectSelection',
       '/manager/projects',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    'ManagerSettings': RouteRecordInfo<
-      'ManagerSettings',
-      '/manager/settings',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -286,9 +286,9 @@ declare module 'vue-router/auto-routes' {
       { projectId: ParamValue<false>, unitId: ParamValue<false> },
       | never
     >,
-    'TenantAccountSettings': RouteRecordInfo<
-      'TenantAccountSettings',
-      '/tenant/account-settings',
+    'TenantAccountData': RouteRecordInfo<
+      'TenantAccountData',
+      '/tenant/account-data',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -330,6 +330,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/index.vue': {
       routes:
         | 'LandingPage'
+      views:
+        | never
+    }
+    'src/pages/contractor/account-data.vue': {
+      routes:
+        | 'ContractorAccountData'
       views:
         | never
     }
@@ -375,12 +381,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/contractor/settings.vue': {
-      routes:
-        | 'ContractorSettings'
-      views:
-        | never
-    }
     'src/pages/inbox/index.vue': {
       routes:
         | 'Inbox'
@@ -390,6 +390,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/inbox/[id].vue': {
       routes:
         | 'InboxDetail'
+      views:
+        | never
+    }
+    'src/pages/manager/account-data.vue': {
+      routes:
+        | 'ManagerAccountData'
       views:
         | never
     }
@@ -432,12 +438,6 @@ declare module 'vue-router/auto-routes' {
     'src/pages/manager/projects.vue': {
       routes:
         | 'ProjectSelection'
-      views:
-        | never
-    }
-    'src/pages/manager/settings.vue': {
-      routes:
-        | 'ManagerSettings'
       views:
         | never
     }
@@ -549,9 +549,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/tenant/account-settings.vue': {
+    'src/pages/tenant/account-data.vue': {
       routes:
-        | 'TenantAccountSettings'
+        | 'TenantAccountData'
       views:
         | never
     }

@@ -82,10 +82,10 @@ describe('TenantMenu.vue', () => {
     expect(pushSpy).toHaveBeenCalledWith('/tenant/dashboard');
   });
 
-  it('navigates to /tenant/account-settings when personal data is clicked', async () => {
+  it('navigates to /tenant/account-data when personal data is clicked', async () => {
     await wrapper.vm.$nextTick();
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.pi-user').trigger('click');
-    expect(pushSpy).toHaveBeenCalledWith('/tenant/account-settings');
+    expect(pushSpy).toHaveBeenCalledWith('/tenant/account-data');
   });
 });

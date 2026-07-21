@@ -6,7 +6,7 @@ import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
 import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
 import IssueRelationshipsCard from '../components/IssueRelationshipsCard.vue';
-import QuotationRequestCard from '../components/QuotationRequestCard.vue';
+import IssueOrderManagementCard from '../components/IssueOrderManagementCard.vue';
 import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
 
 /* Props */
@@ -159,8 +159,8 @@ watch(
     @saved="handleRelationshipsSaved"
   />
 
-  <!-- Quotation Request Card -->
-  <QuotationRequestCard
+  <!-- Issue Order Management Card -->
+  <IssueOrderManagementCard
     :issueId="issueId"
     :projectId="projectId"
   />
