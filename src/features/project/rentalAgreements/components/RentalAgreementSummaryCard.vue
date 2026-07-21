@@ -72,20 +72,21 @@ const tenantCount = computed(() => props.rentalAgreement.tenants?.length ?? 0);
 
 const tenantTitleLabel = computed(() => {
   const [firstTenant] = props.rentalAgreement.tenants || [];
-  const firstTenantName = `${firstTenant.firstName || ''} ${firstTenant.lastName || ''}`.trim() || t('common.notSet');
   if (!firstTenant) {
     return t('common.notSet');
   } else if (props.rentalAgreement.tenants?.length === 2) {
+    const firstTenantName = `${firstTenant.firstName || ''} ${firstTenant.lastName || ''}`.trim() || t('common.notSet');
     return `${firstTenantName} ${t('projectTenancies.table.more')}`;
   }
+
+  const firstTenantName = `${firstTenant.firstName || ''} ${firstTenant.lastName || ''}`.trim() || t('common.notSet');
 
   if ((props.rentalAgreement.tenants?.length || 0) <= 1) {
     return firstTenantName;
   }
 
   const additionalTenants = props.rentalAgreement.tenants?.length ?? 0;
-
-  const additionalCount = props.rentalAgreement.tenants?.length > 1 ? additionalTenants - 1 : undefined;
+  const additionalCount = additionalTenants - 1
 
   return `${firstTenantName} ${t('projectTenancies.table.andMore', {count: additionalCount,})}`;
 })
