@@ -35,4 +35,13 @@ export const quotationHandlers = [
   http.post(`${TICKETING_BASE}/issues/:issueId/quotations/:quotationId/order-placement`, () => {
     return HttpResponse.json(mockOrderPlacement, { status: 201 });
   }),
+
+  http.get(`${TICKETING_BASE}/order-management/order-placements`, () => {
+    return HttpResponse.json({ items: [mockOrderPlacement] }, { status: 200 });
+  }),
+
+  http.patch(`${TICKETING_BASE}/order-management/order-placements/:placementId`, async ({ request }) => {
+    const body = (await request.json()) as { status: string };
+    return HttpResponse.json({ ...mockOrderPlacement, status: body.status }, { status: 200 });
+  }),
 ];
