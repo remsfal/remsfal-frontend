@@ -10,10 +10,10 @@ import { useToast } from 'primevue/usetoast';
 import { onMounted, ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
 const props = defineProps<{
-  projectId: string;
-  agreementId: string;
+  projectId: string; agreementId: string; status?: IssueStatus; type?: IssueType; assigneeId?: string;
 }>();
 
 type RentJson = components['schemas']['RentJson'];
@@ -21,6 +21,7 @@ type RentJson = components['schemas']['RentJson'];
 const { t } = useI18n();
 const router = useRouter();
 const toast = useToast();
+const issues = ref<IssueItemJson[]>([]);
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
@@ -89,6 +90,17 @@ function deleteRentalAgreement(agreementId: string) {
 function redirectToTenanciesList() {
   router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
+
+const loadIssues = async () => {
+  try {
+    const issueList = await issueService.getIssues(props.projectId, props.status, props.type, props.assigneeId);
+    issues.value = issueList?.issues ?? [];
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+onMounted(loadIssues);
 
 function updateRentalAgreement(agreement: RentalAgreementJson | null) {
   if (!agreement?.id || !props.projectId) return;
