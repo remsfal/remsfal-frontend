@@ -967,6 +967,21 @@
   "quotation.placeOrderSuccess": "Auftrag erfolgreich erteilt",
   "quotation.placeOrderError": "Fehler beim Erteilen des Auftrags",
   "order.table.placeholder": "Diese Ansicht wird in einem zukünftigen Update verfügbar sein.",
-  "offerManagement.openRequests.title": "Offene Anfragen",
-  "offerManagement.openRequests.empty": "Keine offenen Anfragen vorhanden"
+  "orderManagement.orderPlacementRequests.title": "Anfragen zur Auftragserteilung",
+  "orderManagement.orderPlacementRequests.empty": "Keine Anfragen zur Auftragserteilung vorhanden",
+  "orderManagement.quotationRequests.title": "Anfragen zur Erstellung eines Angebots",
+  "orderManagement.quotationRequests.empty": "Keine Anfragen zur Erstellung eines Angebots vorhanden",
+  "orderPlacement.status.PLACED": "Angefragt",
+  "orderPlacement.status.CONFIRMED": "Bestätigt",
+  "orderPlacement.status.REJECTED": "Abgelehnt",
+  "orderPlacement.status.WITHDRAWN": "Zurückgezogen",
+  "orderPlacement.table.status": "Status",
+  "orderPlacement.table.projectOwner": "Auftraggeber",
+  "orderPlacement.table.createdAt": "Erstellt am",
+  "orderPlacement.table.actions": "Aktionen",
+  "orderPlacement.confirmButton": "Bestätigen",
+  "orderPlacement.rejectButton": "Ablehnen",
+  "orderPlacement.confirmSuccess": "Auftrag erfolgreich bestätigt",
+  "orderPlacement.rejectSuccess": "Auftrag erfolgreich abgelehnt",
+  "orderPlacement.actionError": "Fehler beim Aktualisieren des Auftrags"
 }

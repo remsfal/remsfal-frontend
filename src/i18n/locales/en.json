@@ -964,6 +964,21 @@
   "quotation.placeOrderSuccess": "Order placed successfully",
   "quotation.placeOrderError": "Error placing order",
   "order.table.placeholder": "This view will be available in a future update.",
-  "offerManagement.openRequests.title": "Open Requests",
-  "offerManagement.openRequests.empty": "No open requests"
+  "orderManagement.orderPlacementRequests.title": "Order Placement Requests",
+  "orderManagement.orderPlacementRequests.empty": "No order placement requests",
+  "orderManagement.quotationRequests.title": "Quotation Requests",
+  "orderManagement.quotationRequests.empty": "No quotation requests",
+  "orderPlacement.status.PLACED": "Placed",
+  "orderPlacement.status.CONFIRMED": "Confirmed",
+  "orderPlacement.status.REJECTED": "Rejected",
+  "orderPlacement.status.WITHDRAWN": "Withdrawn",
+  "orderPlacement.table.status": "Status",
+  "orderPlacement.table.projectOwner": "Project Owner",
+  "orderPlacement.table.createdAt": "Created at",
+  "orderPlacement.table.actions": "Actions",
+  "orderPlacement.confirmButton": "Confirm",
+  "orderPlacement.rejectButton": "Reject",
+  "orderPlacement.confirmSuccess": "Order confirmed successfully",
+  "orderPlacement.rejectSuccess": "Order rejected successfully",
+  "orderPlacement.actionError": "Error updating the order"
 }
