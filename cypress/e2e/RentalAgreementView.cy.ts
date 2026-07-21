@@ -318,6 +318,14 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should display confirmation dialog when deleting tenant', () => {
+    // UnitsTableComponent loads the property tree on mount regardless of context
+    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
+      statusCode: 200,
+      body: {
+        properties: [],
+      },
+    }).as('getProperties');
+
     cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
       statusCode: 200,
       body: {

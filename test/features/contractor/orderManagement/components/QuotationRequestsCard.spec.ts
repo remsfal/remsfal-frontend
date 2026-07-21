@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import OpenRequestsCard from '@/features/contractor/offerManagement/components/OpenRequestsCard.vue';
+import QuotationRequestsCard from '@/features/contractor/orderManagement/components/QuotationRequestsCard.vue';
 import { quotationRequestService, type QuotationRequestJson } from '@/services/QuotationRequestService';
 
 const mockRequests: QuotationRequestJson[] = [
@@ -18,13 +18,13 @@ const mockRequests: QuotationRequestJson[] = [
   },
 ];
 
-describe('OpenRequestsCard', () => {
+describe('QuotationRequestsCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({items: mockRequests,});
   });
 
-  const mountCard = () => mount(OpenRequestsCard);
+  const mountCard = () => mount(QuotationRequestsCard);
 
   it('calls getContractorQuotationRequests on mount', async () => {
     mountCard();
@@ -32,10 +32,10 @@ describe('OpenRequestsCard', () => {
     expect(quotationRequestService.getContractorQuotationRequests).toHaveBeenCalledOnce();
   });
 
-  it('renders card title "Offene Anfragen"', async () => {
+  it('renders card title "Anfragen zur Erstellung eines Angebots"', async () => {
     const wrapper = mountCard();
     await flushPromises();
-    expect(wrapper.text()).toContain('Offene Anfragen');
+    expect(wrapper.text()).toContain('Anfragen zur Erstellung eines Angebots');
   });
 
   it('shows only REQUESTED entries in the table', async () => {
@@ -54,12 +54,12 @@ describe('OpenRequestsCard', () => {
   it('shows empty message when no open requests exist', async () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({
       items: [{
-        id: 'qr-1', status: 'SUBMITTED', scopeOfWork: 'Test' 
+        id: 'qr-1', status: 'SUBMITTED', scopeOfWork: 'Test'
       }],
     });
     const wrapper = mountCard();
     await flushPromises();
-    expect(wrapper.text()).toContain('Keine offenen Anfragen vorhanden');
+    expect(wrapper.text()).toContain('Keine Anfragen zur Erstellung eines Angebots vorhanden');
   });
 
   it('handles undefined items from API gracefully', async () => {

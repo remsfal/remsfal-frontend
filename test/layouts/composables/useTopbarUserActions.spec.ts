@@ -79,24 +79,24 @@ describe('useTopbarUserActions', () => {
     expect(globalThis.location.pathname).toBe('/api/v1/authentication/logout');
   });
 
-  it('navigates to contractor account settings when on contractor route', () => {
+  it('navigates to contractor account data when on contractor route', () => {
     currentPath = '/contractor/dashboard';
     const wrapper = mount(TestComponent);
     wrapper.vm.onAccountSettingsClick();
-    expect(mockPush).toHaveBeenCalledWith('/contractor/account-settings');
+    expect(mockPush).toHaveBeenCalledWith('/contractor/account-data');
   });
 
-  it('navigates to tenant account settings when on tenant route', () => {
+  it('navigates to tenant account data when on tenant route', () => {
     currentPath = '/tenant/dashboard';
     const wrapper = mount(TestComponent);
     wrapper.vm.onAccountSettingsClick();
-    expect(mockPush).toHaveBeenCalledWith('/tenant/account-settings');
+    expect(mockPush).toHaveBeenCalledWith('/tenant/account-data');
   });
 
-  it('navigates to manager account settings when on manager route', () => {
+  it('navigates to manager account data when on manager route', () => {
     currentPath = '/manager/dashboard';
     const wrapper = mount(TestComponent);
     wrapper.vm.onAccountSettingsClick();
-    expect(mockPush).toHaveBeenCalledWith('/manager/account-settings');
+    expect(mockPush).toHaveBeenCalledWith('/manager/account-data');
   });
 });

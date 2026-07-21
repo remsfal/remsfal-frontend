@@ -10,7 +10,7 @@ const { t, d } = useI18n();
 
 const requests = ref<QuotationRequestJson[]>([]);
 
-const openRequests = computed(() =>
+const quotationRequests = computed(() =>
   requests.value.filter((r) => r.status === 'REQUESTED'),
 );
 
@@ -31,12 +31,12 @@ onMounted(() => {
 <template>
   <BaseCard>
     <template #title>
-      {{ t('offerManagement.openRequests.title') }}
+      {{ t('orderManagement.quotationRequests.title') }}
     </template>
     <template #content>
-      <DataTable :value="openRequests">
+      <DataTable :value="quotationRequests">
         <template #empty>
-          <span class="text-muted-color">{{ t('offerManagement.openRequests.empty') }}</span>
+          <span class="text-muted-color">{{ t('orderManagement.quotationRequests.empty') }}</span>
         </template>
         <Column field="status" :header="t('quotationRequest.table.status')">
           <template #body="{ data }">
