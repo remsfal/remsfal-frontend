@@ -77,7 +77,7 @@
     "@types/jsdom": "^28.0.3",
     "@types/node": "^26.0.1",
     "@vitejs/plugin-vue": "^6.0.7",
-    "@vitest/coverage-istanbul": "^4.1.8",
+    "@vitest/coverage-istanbul": "^4.1.10",
     "@vue/test-utils": "^2.4.11",
     "@vue/tsconfig": "^0.9.1",
     "autoprefixer": "^10.4.27",
