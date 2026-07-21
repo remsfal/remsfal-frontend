@@ -17,6 +17,7 @@ import { taskHandlers } from './task.handlers';
 import { issueHandlers } from './issue.handlers';
 import { inboxHandlers } from './inbox.handlers';
 import { quotationRequestHandlers } from './quotation-request.handlers';
+import { quotationHandlers } from './quotation.handlers';
 import { tenantHandlers } from './tenant.handlers';
 
 export const handlers = [
@@ -39,5 +40,6 @@ export const handlers = [
   ...issueHandlers,
   ...inboxHandlers,
   ...quotationRequestHandlers,
+  ...quotationHandlers,
   ...tenantHandlers,
 ];

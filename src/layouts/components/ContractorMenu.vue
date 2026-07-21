@@ -48,12 +48,12 @@ const model = computed<MenuItem[]>(() => {
         {
           label: 'contractorMenu.myData.personalData',
           icon: { type: 'pi', name: 'pi pi-fw pi-user' },
-          to: '/contractor/account-settings',
+          to: '/contractor/account-data',
         },
         {
           label: 'contractorMenu.myData.settings',
-          icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
-          to: '/contractor/settings',
+          icon: { type: 'pi', name: 'pi pi-fw pi-user-edit' },
+          to: '/contractor/account-settings',
         },
       ],
     },

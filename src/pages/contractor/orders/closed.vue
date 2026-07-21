@@ -6,9 +6,12 @@ meta:
 </route>
 
 <script setup lang="ts">
-import ContractorClientsView from '@/views/contractor/ContractorClientsView.vue'
+import { OrderPlacementRequestsCard, QuotationRequestsCard } from '@/features/contractor/orderManagement';
 </script>
 
 <template>
-  <ContractorClientsView />
+  <div class="flex flex-col gap-4">
+    <OrderPlacementRequestsCard />
+    <QuotationRequestsCard />
+  </div>
 </template>

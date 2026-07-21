@@ -66,7 +66,7 @@ describe("IssueView.vue", () => {
             template:
               '<div data-test="attachments" @click="$emit(\'saved\')" />',
           },
-          QuotationRequestCard: true,
+          IssueOrderManagementCard: true,
         },
       },
     });
@@ -96,7 +96,7 @@ describe("IssueView.vue", () => {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
-          IssueDetailsCard: true, IssueDescriptionCard: true, IssueAttachmentCard: true, QuotationRequestCard: true 
+          IssueDetailsCard: true, IssueDescriptionCard: true, IssueAttachmentCard: true, IssueOrderManagementCard: true 
         } 
       },
     });
@@ -120,7 +120,7 @@ describe("IssueView.vue", () => {
           IssueDetailsCard: true,
           IssueDescriptionCard: true,
           IssueAttachmentCard: true,
-          QuotationRequestCard: true,
+          IssueOrderManagementCard: true,
         },
       },
     });
@@ -161,7 +161,7 @@ describe("IssueView.vue", () => {
               '<div data-test="description">{{ initialDescription }}</div>',
           },
           IssueAttachmentCard: true,
-          QuotationRequestCard: true,
+          IssueOrderManagementCard: true,
         },
       },
     });
@@ -183,7 +183,7 @@ describe("IssueView.vue", () => {
       props: { projectId: "PROJ-1", issueId: "ISSUE-1" },
       global: {
         stubs: {
-          IssueDetailsCard: true, IssueDescriptionCard: true, IssueAttachmentCard: true, QuotationRequestCard: true 
+          IssueDetailsCard: true, IssueDescriptionCard: true, IssueAttachmentCard: true, IssueOrderManagementCard: true 
         } 
       },
     });

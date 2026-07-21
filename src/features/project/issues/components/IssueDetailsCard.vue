@@ -8,6 +8,8 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
+import IssueAcceptButton from './IssueAcceptButton.vue';
+import IssueRejectButton from './IssueRejectButton.vue';
 import { issueService, type IssueJson, type IssueType, type IssueCategory, type IssuePriority } from '@/services/IssueService';
 import { useProjectStore } from '@/stores/ProjectStore';
 
@@ -46,11 +48,6 @@ const { t, locale } = useI18n();
   ========================= */
 interface CategoryOption {
   value: IssueCategory;
-  label: string;
-}
-
-interface PriorityOption {
-  value: IssuePriority;
   label: string;
 }
 
@@ -119,22 +116,9 @@ const availableCategories = computed<CategoryOption[]>(() => {
   }
 });
 
-const priorityOptions = computed<PriorityOption[]>(() => [
-  { value: 'URGENT', label: t('issuePriority.urgent') },
-  { value: 'HIGH', label: t('issuePriority.high') },
-  { value: 'MEDIUM', label: t('issuePriority.medium') },
-  { value: 'LOW', label: t('issuePriority.low') },
-  { value: 'UNCLASSIFIED', label: t('issuePriority.unclassified') },
-]);
-
 function findCategoryOption(value: IssueCategory | undefined): CategoryOption | null {
   if (!value) return null;
   return ALL_CATEGORIES.value.find((option) => option.value === value) ?? null;
-}
-
-function findPriorityOption(value: IssuePriority | undefined): PriorityOption | null {
-  if (!value) return null;
-  return priorityOptions.value.find((option) => option.value === value) ?? null;
 }
 
 /* =========================
@@ -149,7 +133,7 @@ const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
 const tenancy = ref(props.initialData.tenancy);
 const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category));
-const priority = ref<PriorityOption | null>(findPriorityOption(props.initialData.priority));
+const priority = ref(props.initialData.priority);
 const modifiedAt = ref(props.initialData.modifiedAt);
 
 /* =========================
@@ -174,8 +158,11 @@ const canSave = computed(() =>
   issueType.value !== originalIssueType.value ||
   tenancy.value !== originalTenancy.value ||
   category.value?.value !== originalCategory.value?.value ||
-  priority.value?.value !== originalPriority.value?.value
+  priority.value !== originalPriority.value
 );
+
+// Show Accept/Reject actions based on the persisted status, not an unsaved Select edit
+const isPending = computed(() => originalStatus.value === 'PENDING');
 
 // Display name for reporter, as provided by the backend
 const reporterName = computed(() => reportedBy.value || t('issueDetails.fields.noReporter'));
@@ -211,6 +198,14 @@ const typeOptions = computed(() => [
   { label: t('issueType.termination'), value: 'TERMINATION' as IssueType },
 ]);
 
+const priorityOptions = computed(() => [
+  { label: t('issuePriority.urgent'), value: 'URGENT' as IssuePriority },
+  { label: t('issuePriority.high'), value: 'HIGH' as IssuePriority },
+  { label: t('issuePriority.medium'), value: 'MEDIUM' as IssuePriority },
+  { label: t('issuePriority.low'), value: 'LOW' as IssuePriority },
+  { label: t('issuePriority.unclassified'), value: 'UNCLASSIFIED' as IssuePriority },
+]);
+
 /* =========================
      AutoComplete Search
   ========================= */
@@ -221,15 +216,6 @@ function searchCategories(event: { query: string }) {
   filteredCategories.value = query
     ? availableCategories.value.filter((option) => option.label.toLowerCase().includes(query))
     : availableCategories.value;
-}
-
-const filteredPriorities = ref<PriorityOption[]>([]);
-
-function searchPriorities(event: { query: string }) {
-  const query = event.query.toLowerCase();
-  filteredPriorities.value = query
-    ? priorityOptions.value.filter((option) => option.label.toLowerCase().includes(query))
-    : priorityOptions.value;
 }
 
 /* =========================
@@ -247,7 +233,7 @@ watch(
     issueType.value = newData.issueType;
     tenancy.value = newData.tenancy;
     category.value = findCategoryOption(newData.category);
-    priority.value = findPriorityOption(newData.priority);
+    priority.value = newData.priority;
     modifiedAt.value = newData.modifiedAt;
 
     originalTitle.value = newData.title;
@@ -282,8 +268,8 @@ const handleSave = async () => {
       payload.type = issueType.value as IssueJson["type"];
     if (category.value?.value !== originalCategory.value?.value)
       payload.category = category.value?.value as IssueJson["category"];
-    if (priority.value?.value !== originalPriority.value?.value)
-      payload.priority = priority.value?.value as IssueJson["priority"];
+    if (priority.value !== originalPriority.value)
+      payload.priority = priority.value as IssueJson["priority"];
 
     await issueService.updateIssue(props.issueId, payload);
 
@@ -314,6 +300,31 @@ const handleSave = async () => {
     loadingSave.value = false;
   }
 };
+
+/* =========================
+     Accept/Reject Sync
+  ========================= */
+// Applies the IssueJson returned by IssueAcceptButton/IssueRejectButton to local
+// and original state, overwriting any unsaved edits in other fields since those
+// buttons act immediately on the backend, independent of the Save diff flow.
+function applyIssueUpdate(updated: IssueJson) {
+  if (updated.title !== undefined) title.value = updated.title;
+  if (updated.status !== undefined) status.value = updated.status;
+  if (updated.assigneeId !== undefined) assigneeId.value = updated.assigneeId;
+  if (updated.type !== undefined) issueType.value = updated.type;
+  if (updated.category !== undefined) category.value = findCategoryOption(updated.category);
+  if (updated.priority !== undefined) priority.value = updated.priority;
+  if (updated.modifiedAt !== undefined) modifiedAt.value = updated.modifiedAt;
+
+  originalTitle.value = title.value;
+  originalStatus.value = status.value;
+  originalAssigneeId.value = assigneeId.value;
+  originalIssueType.value = issueType.value;
+  originalCategory.value = category.value;
+  originalPriority.value = priority.value;
+
+  emit('saved');
+}
 </script>
 
 <template>
@@ -402,16 +413,13 @@ const handleSave = async () => {
 
           <div class="flex flex-col gap-1 flex-1">
             <label for="issue-priority" class="text-sm text-gray-600">{{ t('issueDetails.fields.priority') }}</label>
-            <AutoComplete
-              id="issue-priority"
+            <Select
               v-model="priority"
-              :suggestions="filteredPriorities"
+              inputId="issue-priority"
+              :options="priorityOptions"
               optionLabel="label"
+              optionValue="value"
               :placeholder="t('issueDetails.fields.priorityPlaceholder')"
-              fluid
-              dropdown
-              forceSelection
-              @complete="searchPriorities"
             />
           </div>
         </div>
@@ -449,8 +457,10 @@ const handleSave = async () => {
           </div>
         </div>
 
-        <!-- Save Button -->
-        <div class="flex justify-end pt-2">
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 pt-2">
+          <IssueAcceptButton v-if="isPending" :issueId="issueId" @accepted="applyIssueUpdate" />
+          <IssueRejectButton v-if="isPending" :issueId="issueId" @rejected="applyIssueUpdate" />
           <Button
             :label="t('button.save')"
             icon="pi pi-save"
