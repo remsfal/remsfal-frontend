@@ -68,7 +68,8 @@ describe('TenantIssueDetails E2E Tests', () => {
 
     cy.contains('Heizung defekt').should('be.visible');
     cy.get('[data-testid="tenant-issue-cancel"]').should('be.visible').click();
-    cy.get('[data-testid="tenant-issue-cancel-confirm"]').click();
+    cy.get('[role="dialog"]').should('be.visible');
+    cy.get('[data-testid="tenant-issue-cancel-confirm"]').should('be.visible').click();
 
     cy.wait('@closeIssue');
     cy.url().should('include', '/tenant/issues');
