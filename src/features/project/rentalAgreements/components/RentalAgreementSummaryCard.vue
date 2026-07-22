@@ -134,10 +134,10 @@ function closeDeleteWarningMenu(): void {
         </div>
         <div class="flex items-end justify-end">
           <Button
-              :label="t('projectTenancies.table.delete')"
-              icon="pi pi-trash"
-              severity="danger"
-              @click="toggleDeleteWarningMenu"
+            :label="t('projectTenancies.table.delete')"
+            icon="pi pi-trash"
+            severity="danger"
+            @click="toggleDeleteWarningMenu"
           />
         </div>
       </div>
@@ -146,36 +146,64 @@ function closeDeleteWarningMenu(): void {
       <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 ">
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.rentalStart') }}</dt>
-            <dd class="text-gray-900">{{ formatDateLabel(rentalAgreement.startOfRental) }}</dd>
+            <dt class="font-medium text-gray-500">
+              {{ formatLabel('projectTenancies.table.rentalStart') }}
+            </dt>
+            <dd class="text-gray-900">
+              {{ formatDateLabel(rentalAgreement.startOfRental) }}
+            </dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.rentalEnd') }}</dt>
-            <dd class="text-gray-900">{{ formatDateLabel(rentalAgreement.endOfRental) }}</dd>
+            <dt class="font-medium text-gray-500">
+              {{ formatLabel('projectTenancies.table.rentalEnd') }}
+            </dt>
+            <dd class="text-gray-900">
+              {{ formatDateLabel(rentalAgreement.endOfRental) }}
+            </dd>
           </div>
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.tenants') }}</dt>
-            <dd class="text-gray-900">{{ tenantCount }}</dd>
-          </div>
-        </dl>
-        <dl class="space-y-2 text-[14.5px] text-gray-600">
-          <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.basicRent') }}</dt>
-            <dd class="text-gray-900">{{ formatCurrency(totalBasicRent) }}</dd>
-          </div>
-          <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.operatingCosts') }}</dt>
-            <dd class="text-gray-900">{{ formatCurrency(totalOperatingCosts) }}</dd>
-          </div>
-          <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ formatLabel('rentalAgreement.step2.heatingCosts') }}</dt>
-            <dd class="text-gray-900">{{ formatCurrency(totalHeatingCosts) }}</dd>
+            <dt class="font-medium text-gray-500">
+              {{ formatLabel('projectTenancies.table.tenants') }}
+            </dt>
+            <dd class="text-gray-900">
+              {{ tenantCount }}
+            </dd>
           </div>
         </dl>
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
-            <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.amountKeys') }}</dt>
-            <dd class="text-gray-900">{{ "Schema noch nicht Vollständig" }}</dd>
+            <dt class="font-medium text-gray-500">
+              {{ formatLabel('rentalAgreement.step2.basicRent') }}
+            </dt>
+            <dd class="text-gray-900">
+              {{ formatCurrency(totalBasicRent) }}
+            </dd>
+          </div>
+          <div class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ formatLabel('rentalAgreement.step2.operatingCosts') }}
+            </dt>
+            <dd class="text-gray-900">
+              {{ formatCurrency(totalOperatingCosts) }}
+            </dd>
+          </div>
+          <div class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ formatLabel('rentalAgreement.step2.heatingCosts') }}
+            </dt>
+            <dd class="text-gray-900">
+              {{ formatCurrency(totalHeatingCosts) }}
+            </dd>
+          </div>
+        </dl>
+        <dl class="space-y-2 text-[14.5px] text-gray-600">
+          <div class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">
+              {{ formatLabel('projectTenancies.table.amountKeys') }}
+            </dt>
+            <dd class="text-gray-900">
+              Schema noch nicht Vollständig
+            </dd>
           </div>
         </dl>
       </div>
