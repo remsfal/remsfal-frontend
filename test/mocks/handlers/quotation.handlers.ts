@@ -32,7 +32,7 @@ export const quotationHandlers = [
     return HttpResponse.json({ items: [mockQuotation] }, { status: 200 });
   }),
 
-  http.post(`${TICKETING_BASE}/issues/:issueId/quotations/:quotationId/order-placement`, () => {
+  http.post(`${TICKETING_BASE}/issues/:issueId/quotations/:quotationId/orders`, () => {
     return HttpResponse.json(mockOrderPlacement, { status: 201 });
   }),
 

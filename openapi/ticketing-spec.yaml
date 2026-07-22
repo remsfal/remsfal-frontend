@@ -2592,6 +2592,194 @@ paths:
           description: No user authentication provided via session cookie
       security:
       - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders:
+    get:
+      summary: Retrieve all orders placed for an issue.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Orders returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderPlacementListJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue
+        "404":
+          description: The issue does not exist
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders/{orderId}:
+    delete:
+      summary: Withdraw an order placement.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the order placement
+        required: true
+        name: orderId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: Order placement withdrawn successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue
+        "404":
+          description: The issue or order placement does not exist
+      security:
+      - SecurityScheme: []
+    get:
+      summary: Retrieve a single order placement.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the order placement
+        required: true
+        name: orderId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Order placement returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderPlacementJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue
+        "404":
+          description: The issue or order placement does not exist
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders/{processId}/attachments:
+    post:
+      summary: Upload one or more attachments.
+      description: "Uploads one or more files to an already-existing quotation request,\
+        \ quotation, or order placement. Each file must be provided as a separate\
+        \ 'attachment' part in the multipart request."
+      parameters:
+      - description: "ID of the quotation request, quotation, or order placement"
+        required: true
+        name: processId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - attachment
+              type: object
+              properties:
+                attachment:
+                  description: One or more files to attach
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+        required: true
+      responses:
+        "200":
+          description: Attachments uploaded successfully
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Invalid input or unsupported file type
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to upload attachments here
+        "404":
+          description: "The quotation request, quotation, or order placement not found"
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders/{processId}/attachments/{attachmentId}:
+    delete:
+      summary: Delete an order attachment
+      parameters:
+      - description: ID of the attachment
+        required: true
+        name: attachmentId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: "ID of the quotation request, quotation, or order placement"
+        required: true
+        name: processId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: Attachment deleted successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to delete this attachment
+        "404":
+          description: Attachment not found
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders/{processId}/attachments/{attachmentId}/{filename}:
+    get:
+      summary: Download an order attachment
+      parameters:
+      - description: ID of the attachment
+        required: true
+        name: attachmentId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filename of the attachment
+        required: true
+        name: filename
+        in: path
+        schema:
+          type: string
+      - description: "ID of the quotation request, quotation, or order placement"
+        required: true
+        name: processId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Attachment downloaded successfully
+          content:
+            application/octet-stream: {}
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this attachment
+        "404":
+          description: Attachment not found
+      security:
+      - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/parent/{parentIssueId}:
     put:
       summary: Set another issue as parent issue.
@@ -3009,33 +3197,7 @@ paths:
           description: The issue or quotation does not exist
       security:
       - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/order-placement:
-    delete:
-      summary: Withdraw the order placement for a quotation.
-      parameters:
-      - description: ID of the issue
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the quotation
-        required: true
-        name: quotationId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "204":
-          description: Order placement withdrawn successfully
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to access this issue
-        "404":
-          description: "The issue, quotation, or order placement does not exist"
-      security:
-      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/orders:
     post:
       summary: Place an order based on a quotation.
       parameters:
@@ -3064,123 +3226,6 @@ paths:
           description: User does not have permission to access this issue
         "404":
           description: The issue or quotation does not exist
-      security:
-      - SecurityScheme: []
-    get:
-      summary: Retrieve the order placement for a quotation.
-      parameters:
-      - description: ID of the issue
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the quotation
-        required: true
-        name: quotationId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Order placement returned successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OrderPlacementJson"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to access this issue
-        "404":
-          description: "The issue, quotation, or order placement does not exist"
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/order-placement/attachments:
-    post:
-      summary: Upload one or more attachments.
-      description: "Uploads one or more files to an already-existing quotation request,\
-        \ quotation, or order placement. Each file must be provided as a separate\
-        \ 'attachment' part in the multipart request."
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              required:
-              - attachment
-              type: object
-              properties:
-                attachment:
-                  description: One or more files to attach
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-        required: true
-      responses:
-        "200":
-          description: Attachments uploaded successfully
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input or unsupported file type
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to upload attachments here
-        "404":
-          description: "The quotation request, quotation, or order placement not found"
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/order-placement/attachments/{attachmentId}:
-    delete:
-      summary: Delete an order attachment
-      parameters:
-      - description: ID of the attachment
-        required: true
-        name: attachmentId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "204":
-          description: Attachment deleted successfully
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to delete this attachment
-        "404":
-          description: Attachment not found
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/order-placement/attachments/{attachmentId}/{filename}:
-    get:
-      summary: Download an order attachment
-      parameters:
-      - description: ID of the attachment
-        required: true
-        name: attachmentId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: Filename of the attachment
-        required: true
-        name: filename
-        in: path
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Attachment downloaded successfully
-          content:
-            application/octet-stream: {}
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to access this attachment
-        "404":
-          description: Attachment not found
       security:
       - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/timeline:
