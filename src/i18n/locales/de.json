@@ -104,6 +104,8 @@
   "projectTenancies.table.title": "Mietvertrag von {tenant}",
   "projectTenancies.table.more": "und einer weiteren Person",
   "projectTenancies.table.andMore": "und {count} weiteren Personen",
+  "projectTenancies.table.delete": "Mietvertrag löschen",
+  "projectTenancies.table.amountKeys": "Anzahl der Schlüssel",
   "projectTenancies.button.addTenant": "Neuen Mieter hinzufügen",
   "projectTenancies.dialog.confirmationTitle": "Bestätigung",
   "projectTenancies.dialog.confirmDelete": "Sind Sie sicher, dass Sie {firstName} {lastName} löschen möchten?",

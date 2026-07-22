@@ -104,6 +104,8 @@
   "projectTenancies.table.title": "Contract with {tenant}",
   "projectTenancies.table.more": "and one more person",
   "projectTenancies.table.andMore": "and {count} more people",
+  "projectTenancies.table.delete": "Delete contract",
+  "projectTenancies.table.amountKeys": "Key amount",
   "projectTenancies.button.addTenant": "Add New Tenant",
   "projectTenancies.dialog.confirmationTitle": "Confirmation",
   "projectTenancies.dialog.confirmDelete": "Are you sure you want to delete {firstName} {lastName}?",

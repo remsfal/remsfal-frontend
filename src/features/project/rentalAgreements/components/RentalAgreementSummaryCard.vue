@@ -132,6 +132,14 @@ function closeDeleteWarningMenu(): void {
             {{ formatLabel('projectTenancies.table.mietvertragsNummer') }} {{ rentalAgreement.id || '—' }}
           </p>
         </div>
+        <div class="flex items-end justify-end">
+          <Button
+              :label="t('projectTenancies.table.delete')"
+              icon="pi pi-trash"
+              severity="danger"
+              @click="toggleDeleteWarningMenu"
+          />
+        </div>
       </div>
     </template>
     <template #content>
@@ -164,15 +172,12 @@ function closeDeleteWarningMenu(): void {
             <dd class="text-gray-900">{{ formatCurrency(totalHeatingCosts) }}</dd>
           </div>
         </dl>
-        <div class="flex items-end justify-end">
-          <Button
-            label="Mietvertrag löschen"
-            icon="pi pi-trash"
-            severity="danger"
-            outlined
-            @click="toggleDeleteWarningMenu"
-          />
-        </div>
+        <dl class="space-y-2 text-[14.5px] text-gray-600">
+          <div class="flex items-center justify-start gap-2">
+            <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.amountKeys') }}</dt>
+            <dd class="text-gray-900">{{ formatCurrency(totalBasicRent) }}</dd>
+          </div>
+        </dl>
       </div>
       <Popover ref="deleteWarningMenu">
         <div class="flex max-w-80 flex-col gap-3">
