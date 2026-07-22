@@ -143,7 +143,7 @@ function closeDeleteWarningMenu(): void {
       </div>
     </template>
     <template #content>
-      <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-1 xl:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4 lg:min-[1000px]:grid-cols-2 xl:grid-cols-3 ">
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.rentalStart') }}</dt>
@@ -175,7 +175,7 @@ function closeDeleteWarningMenu(): void {
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">{{ formatLabel('projectTenancies.table.amountKeys') }}</dt>
-            <dd class="text-gray-900">{{ formatCurrency(totalBasicRent) }}</dd>
+            <dd class="text-gray-900">{{ "Schema noch nicht Vollständig" }}</dd>
           </div>
         </dl>
       </div>
