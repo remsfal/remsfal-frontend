@@ -51,7 +51,7 @@ describe('QuoteTable', () => {
     await flushPromises();
     const buttons = wrapper.findAllComponents({ name: 'Button' })
       .filter((b) => b.text().includes('Auftrag erteilen'));
-    expect(buttons.length).toBe(1);
+    expect(buttons).toHaveLength(1);
   });
 
   it('places order and refetches on button click', async () => {
