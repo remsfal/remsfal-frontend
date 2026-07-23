@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import { siteService, type SiteJson } from '@/services/SiteService';
+import { siteService, type SiteJson } from '@/features/project/rentableUnits/services/SiteService';
 
 const projectId = 'project123';
 const propertyId = 'property456';

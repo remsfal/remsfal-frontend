@@ -2,15 +2,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import FileUpload from 'primevue/fileupload';
 import i18n from '@/i18n/i18n';
-import { tenantTimelineService, type TimelineJson, type TimelineListJson } from '@/services/TenantTimelineService';
+import {tenantTimelineService,
+  type TimelineJson,
+  type TimelineListJson,} from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 
 const toastAddMock = vi.fn();
 
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastAddMock }) }));
 
-vi.mock('@/services/TenantTimelineService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/TenantTimelineService')>(
-    '@/services/TenantTimelineService',
+vi.mock('@/features/tenant/tenantIssues/services/TenantTimelineService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/tenant/tenantIssues/services/TenantTimelineService')>(
+    '@/features/tenant/tenantIssues/services/TenantTimelineService',
   );
   return {
     ...actual,

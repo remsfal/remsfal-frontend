@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
-import { buildingService, type BuildingJson } from '@/services/BuildingService';
-import { testErrorHandling } from '../utils/testHelpers';
+import { server } from '../../../../mocks/server';
+import { buildingService, type BuildingJson } from '@/features/project/rentableUnits/services/BuildingService';
+import { testErrorHandling } from '../../../../utils/testHelpers';
 
 const mockBuilding: BuildingJson = {
   id: 'building-1',
