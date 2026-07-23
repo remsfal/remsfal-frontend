@@ -11,10 +11,12 @@ import type { UnitType } from '@/services/PropertyService';
 
 const props = defineProps<{
   tenant: TenantItemJson;
+  deletable?: boolean;
 }>();
 
 const emit = defineEmits<{
   click: [];
+  delete: [];
 }>();
 
 const { t } = useI18n();
@@ -114,7 +116,11 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
 
         <!-- Contact Buttons (with click.stop) -->
         <div @click.stop>
-          <TenantContactButtons :tenantId="tenant.id || ''" />
+          <TenantContactButtons
+            :tenantId="tenant.id || ''"
+            :deletable="deletable"
+            @delete="emit('delete')"
+          />
         </div>
       </div>
     </div>

@@ -4,7 +4,13 @@ import Button from 'primevue/button';
 defineProps<{
   tenantId: string;
   disabled?: boolean;
+  deletable?: boolean;
 }>();
+const emit = defineEmits<{
+  click: [];
+  delete: [];
+}>();
+
 </script>
 
 <template>
@@ -24,6 +30,15 @@ defineProps<{
       outlined
       :disabled="disabled"
       aria-label="Nachricht"
+    />
+    <Button
+      v-if="deletable"
+      icon="pi pi-trash"
+      severity="danger"
+      size="small"
+      text
+      aria-label="Löschen"
+      @click.stop="emit('delete')"
     />
   </div>
 </template>

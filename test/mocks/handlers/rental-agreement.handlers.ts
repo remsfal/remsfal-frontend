@@ -115,4 +115,27 @@ export const rentalAgreementHandlers = [
     }
     return HttpResponse.json({}, { status: 204 });
   }),
+
+  // POST add tenant to rental agreement
+  http.post(
+    `${API_BASE}/projects/:projectId/rental-agreements/:agreementId/tenants`,
+    async ({ request, params }) => {
+      if (params.agreementId === 'not-found') {
+        return HttpResponse.json({ message: 'Rental agreement not found' }, { status: 404 });
+      }
+      const body = (await request.json()) as Record<string, unknown>;
+      return HttpResponse.json({ id: 'new-tenant-id', ...body }, { status: 201 });
+    },
+  ),
+
+  // DELETE remove tenant from rental agreement
+  http.delete(
+    `${API_BASE}/projects/:projectId/rental-agreements/:agreementId/tenants/:tenantId`,
+    ({ params }) => {
+      if (params.tenantId === 'cannot-delete') {
+        return HttpResponse.json({ message: 'Cannot delete' }, { status: 403 });
+      }
+      return HttpResponse.json({}, { status: 204 });
+    },
+  ),
 ];
