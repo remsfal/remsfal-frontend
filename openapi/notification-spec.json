@@ -2286,6 +2286,16 @@
             "type" : "string",
             "maxLength" : 2
           },
+          "placeOfBirth" : {
+            "type" : "string",
+            "examples" : [ "Berlin" ],
+            "maxLength" : 255
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "examples" : [ "1990-01-01" ],
+            "$ref" : "#/components/schemas/LocalDate"
+          },
           "additionalEmails" : {
             "type" : "array",
             "items" : {
