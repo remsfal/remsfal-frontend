@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import TenancyDataComponent from '../components/TenancyDataComponent.vue';
 import TenantsTableComponent from '../components/TenantsTableComponent.vue';
-import UnitsTableComponent from '../components/UnitsTableComponent.vue';
+import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import type { components } from '@/services/api/platform-schema';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -17,40 +16,12 @@ const props = defineProps<{
   agreementId: string;
 }>();
 
-type RentJson = components['schemas']['RentJson'];
-
 const { t } = useI18n();
 const router = useRouter();
 const toast = useToast();
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
-
-const rentalStart = ref<string | null>(null);
-const rentalEnd = ref<string | null>(null);
-
-// Compute all units from all rent types
-const listOfUnits = computed(() => {
-  if (!rentalAgreement.value) return [];
-
-  const allRents: RentJson[] = [
-    ...(rentalAgreement.value.propertyRents || []),
-    ...(rentalAgreement.value.siteRents || []),
-    ...(rentalAgreement.value.buildingRents || []),
-    ...(rentalAgreement.value.apartmentRents || []),
-    ...(rentalAgreement.value.storageRents || []),
-    ...(rentalAgreement.value.commercialRents || [])
-  ];
-
-  // Note: RentJson only has unitId, not full rentalUnit object
-  // We map to TenancyItemJson structure for compatibility with UnitsTableComponent
-  return allRents.map(rent => ({
-    id: rent.unitId,
-    rentalType: 'APARTMENT' as const, // We don't have type info, using default
-    rentalTitle: rent.unitId, // Using unitId as title since we don't have full unit data
-    active: true
-  }));
-});
 
 onMounted(async () => {
   if (!props.agreementId || !props.projectId) {
@@ -62,8 +33,6 @@ onMounted(async () => {
     props.projectId,
     props.agreementId
   );
-  rentalStart.value = rentalAgreement.value?.startOfRental || null;
-  rentalEnd.value = rentalAgreement.value?.endOfRental || null;
 });
 
 function confirmDeletion() {
@@ -109,8 +78,6 @@ function updateRentalAgreement(agreement: RentalAgreementJson | null) {
 
 function handleTenancyDataChange(updatedAgreement: RentalAgreementJson) {
   rentalAgreement.value = updatedAgreement;
-  rentalStart.value = rentalAgreement.value?.startOfRental || null;
-  rentalEnd.value = rentalAgreement.value?.endOfRental || null;
 }
 
 defineExpose({
@@ -129,16 +96,15 @@ defineExpose({
     />
 
     <div class="grid grid-cols-1 gap-6">
+      <RentalAgreementSummaryCard
+        v-if="rentalAgreement"
+        :rentalAgreement="rentalAgreement"
+        @delete="confirmDeletion"
+      />
+
       <!-- Tenants Table -->
       <TenantsTableComponent
         :tenants="rentalAgreement?.tenants || []"
-        :isDeleteButtonEnabled="false"
-      />
-
-      <!-- Units Table -->
-      <UnitsTableComponent
-        :projectId="props.projectId"
-        :listOfUnits="listOfUnits"
         :isDeleteButtonEnabled="false"
       />
 
