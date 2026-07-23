@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
-import { storageService, type StorageJson } from '@/services/StorageService';
+import { server } from '../../../../mocks/server';
+import { storageService, type StorageJson } from '@/features/project/rentableUnits/services/StorageService';
 
 const mockStorage: StorageJson = {
   id: 'storage-1',

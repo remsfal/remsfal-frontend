@@ -2,7 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import IssueRejectButton from '@/features/project/issues/components/IssueRejectButton.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
-import { issueTimelineService } from '@/services/IssueTimelineService';
+import { issueTimelineService } from '@/features/project/issues/services/IssueTimelineService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
@@ -19,9 +19,9 @@ vi.mock('@/services/IssueService', async () => {
   };
 });
 
-vi.mock('@/services/IssueTimelineService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueTimelineService')>(
-    '@/services/IssueTimelineService',
+vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/project/issues/services/IssueTimelineService')>(
+    '@/features/project/issues/services/IssueTimelineService',
   );
   return {
     ...actual,

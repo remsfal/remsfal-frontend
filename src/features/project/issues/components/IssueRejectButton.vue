@@ -6,7 +6,7 @@ import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
-import { issueTimelineService } from '@/services/IssueTimelineService';
+import { issueTimelineService } from '@/features/project/issues/services/IssueTimelineService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ issueId: string }>();

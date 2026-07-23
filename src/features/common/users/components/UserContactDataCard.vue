@@ -13,7 +13,7 @@ import Message from 'primevue/message';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import BaseDialog from '@/components/common/BaseDialog.vue';
-import { userService } from '@/services/UserService';
+import { userService } from '@/features/common/users/services/UserService';
 import { type Locale } from '@/i18n/i18n';
 
 const { t } = useI18n();
