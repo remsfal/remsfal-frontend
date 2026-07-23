@@ -4,9 +4,12 @@ import { useRouter } from 'vue-router';
 import {type IssueColumn} from "@/features/project/issues/components/IssueTable.vue";
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 import BaseCard from "@/components/common/BaseCard.vue";
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{ projectId: string; assigneeId?: string; status?: IssueStatus; type?: IssueType; }>();
 const router = useRouter();
+
+const { t } = useI18n();
 
 // Reactive state
 const showNewIssueDialog = ref(false);
@@ -43,7 +46,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
     <template #title>
       <div class="flex flex-wrap items-center justify-between gap-3 pb-4">
         <span class="text-xl font-semibold">
-          {{ t('rentalAgreement.step4.tenantsSection') }}
+          {{ t('rentalAgreement.issue.title') }}
         </span>
       </div>
     </template>
@@ -75,7 +78,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
             <dl class="grid grid-cols-1 gap-4 text-base text-gray-600 md:grid-cols-2 lg:grid-cols-3">
               <div>
                 <dt class="font-medium text-gray-500">
-                  Status
+                  {{ t('rentalAgreement.issue.state') }}
                 </dt>
                 <dd class="mt-1 text-gray-900">
                   {{ issue.status }}
@@ -84,7 +87,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
 
               <div>
                 <dt class="font-medium text-gray-500">
-                  Priorität
+                  {{ t('rentalAgreement.issue.priority') }}
                 </dt>
                 <dd class="mt-1 text-gray-900">
                   {{ issue.priority }}
@@ -93,7 +96,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
 
               <div>
                 <dt class="font-medium text-gray-500">
-                  Typ
+                  {{ t('rentalAgreement.issue.type') }}
                 </dt>
                 <dd class="mt-1 text-gray-900">
                   {{ issue.type }}
@@ -102,7 +105,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
 
               <div v-if="issue.assignee">
                 <dt class="font-medium text-gray-500">
-                  Bearbeiter
+                  {{ t('rentalAgreement.issue.assignee') }}
                 </dt>
                 <dd class="mt-1 text-gray-900">
                   {{ issue.assignee }}
@@ -111,7 +114,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
 
               <div v-if="issue.createdAt">
                 <dt class="font-medium text-gray-500">
-                  Erstellt
+                  {{ t('rentalAgreement.issue.createdAt') }}
                 </dt>
                 <dd class="mt-1 text-gray-900">
                   {{ issue.createdAt }}
@@ -120,7 +123,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
 
               <div v-if="issue.updatedAt">
                 <dt class="font-medium text-gray-500">
-                  Letzte Änderung
+                  {{ t('rentalAgreement.issue.updatedAt') }}
                 </dt>
                 <dd class="mt-1 text-gray-900">
                   {{ issue.updatedAt }}
