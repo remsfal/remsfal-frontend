@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { tenantService } from '@/services/TenantService';
+import { tenantService } from '@/features/project/rentalAgreements/services/TenantService';
 
 const projectId = 'test-project';
 
