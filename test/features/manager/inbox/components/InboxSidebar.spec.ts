@@ -3,6 +3,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import InboxSidebar, { type CustomFilter, type ProjectOption } from '@/features/manager/inbox/components/InboxSidebar.vue';
 import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
 import { createMockInboxMessage } from '../../../../utils/testHelpers';
+import { useLayout } from '@/layouts/composables/layout';
 
 describe('InboxSidebar', () => {
   let wrapper: VueWrapper;
@@ -131,6 +132,103 @@ describe('InboxSidebar', () => {
     mountWithProps({});
     expect(wrapper.text()).toContain('Project 1');
     expect(wrapper.text()).toContain('Project 2');
+  });
+
+  const mixedCustomFilters: CustomFilter[] = [
+    {
+      id: 'smart-urgent', name: 'Smart Urgent', icon: 'pi-exclamation-circle', query: 'status:OPEN type:DEFECT' 
+    },
+    {
+      id: 'status-open', name: 'Status Open', icon: 'pi-clock', query: 'status:OPEN' 
+    },
+    {
+      id: 'type-defect', name: 'Type Defect', icon: 'pi-wrench', query: 'type:DEFECT' 
+    },
+  ];
+
+  it.each([
+    ['smart-urgent'],
+    ['status-open'],
+    ['type-defect'],
+  ])('applies dark theme classes with %s active', (activeFilterId) => {
+    const { layoutConfig } = useLayout();
+    layoutConfig.darkTheme = true;
+    try {
+      mountWithProps({
+        activeFilterId,
+        filterProject: ['proj-1'],
+        customFilters: mixedCustomFilters,
+      });
+      expect(wrapper.html()).toContain('bg-surface-900');
+    } finally {
+      layoutConfig.darkTheme = false;
+    }
+  });
+
+  it('renders and activates status filters', async () => {
+    mountWithProps({
+      activeFilterId: 'status-open',
+      customFilters: [
+        {
+          id: 'status-open', name: 'Status Open', icon: 'pi-clock', query: 'status:OPEN' 
+        },
+      ],
+    });
+
+    const buttons = wrapper.findAllComponents({ name: 'Button' });
+    const statusButton = buttons.find(btn => btn.text().includes('Status Open'));
+    expect(statusButton).toBeTruthy();
+
+    await statusButton!.trigger('click');
+    expect(wrapper.emitted('clearFilters')).toBeTruthy();
+  });
+
+  it('renders and activates type filters', async () => {
+    mountWithProps({
+      activeFilterId: 'type-defect',
+      customFilters: [
+        {
+          id: 'type-defect', name: 'Type Defect', icon: 'pi-wrench', query: 'type:DEFECT' 
+        },
+        {
+          id: 'type-task', name: 'Type Task', icon: 'pi-list', query: 'type:TASK' 
+        },
+      ],
+    });
+
+    const buttons = wrapper.findAllComponents({ name: 'Button' });
+    const activeTypeButton = buttons.find(btn => btn.text().includes('Type Defect'));
+    expect(activeTypeButton?.props('severity')).toBe('success');
+    await activeTypeButton!.trigger('click');
+    expect(wrapper.emitted('clearFilters')).toBeTruthy();
+
+    const inactiveTypeButton = buttons.find(btn => btn.text().includes('Type Task'));
+    expect(inactiveTypeButton?.props('severity')).toBe('secondary');
+    await inactiveTypeButton!.trigger('click');
+    expect(wrapper.emitted('filterApplied')).toBeTruthy();
+  });
+
+  it('marks the active project button', () => {
+    mountWithProps({ filterProject: ['proj-1'] });
+    const buttons = wrapper.findAllComponents({ name: 'Button' });
+    const projectButton = buttons.find(btn => btn.text().includes('Project 1'));
+    expect(projectButton?.props('severity')).toBe('success');
+  });
+
+  it('treats filter query parts with unknown keys as always matching', () => {
+    mountWithProps({
+      customFilters: [
+        {
+          id: 'status-custom', name: 'Custom', icon: 'pi-star', query: 'foo:bar' 
+        },
+      ],
+      messages: [createMockInboxMessage({ id: 'x1' })],
+      projectOptions: [],
+    });
+
+    const badges = wrapper.findAllComponents({ name: 'Badge' });
+    const badge = badges.find(b => b.text() === '1');
+    expect(badge).toBeTruthy();
   });
 });
 

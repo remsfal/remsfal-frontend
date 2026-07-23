@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import InboxMessageItem from '@/features/manager/inbox/components/InboxMessageItem.vue';
 import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
+import { useLayout } from '@/layouts/composables/layout';
 
 describe('InboxMessageItem', () => {
   let wrapper: VueWrapper;
@@ -178,6 +179,55 @@ describe('InboxMessageItem', () => {
 
     // Mock date is 5 days ago
     expect(wrapper.text()).toContain('5 days ago');
+  });
+
+  it('applies dark theme classes when dark mode is enabled', () => {
+    const { layoutConfig } = useLayout();
+    layoutConfig.darkTheme = true;
+    try {
+      wrapper = mount(InboxMessageItem, {
+        props: {
+          message: mockMessage,
+          isSelected: false,
+          index: 0,
+          isLast: false,
+        },
+      });
+      expect(wrapper.html()).toContain('bg-surface-900');
+    } finally {
+      layoutConfig.darkTheme = false;
+    }
+  });
+
+  it('applies dark theme classes for a read message', () => {
+    const { layoutConfig } = useLayout();
+    layoutConfig.darkTheme = true;
+    try {
+      wrapper = mount(InboxMessageItem, {
+        props: {
+          message: { ...mockMessage, isRead: true },
+          isSelected: false,
+          index: 0,
+          isLast: false,
+        },
+      });
+      expect(wrapper.html()).toContain('bg-surface-800/30');
+    } finally {
+      layoutConfig.darkTheme = false;
+    }
+  });
+
+  it('omits the border class for the last item in the list', () => {
+    wrapper = mount(InboxMessageItem, {
+      props: {
+        message: mockMessage,
+        isSelected: false,
+        index: 0,
+        isLast: true,
+      },
+    });
+
+    expect(wrapper.find('div.group').classes()).not.toContain('border-b');
   });
 });
 

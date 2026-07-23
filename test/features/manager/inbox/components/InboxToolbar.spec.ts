@@ -3,6 +3,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import InboxToolbar from '@/features/manager/inbox/components/InboxToolbar.vue';
 import SelectButton from 'primevue/selectbutton';
 import InputText from 'primevue/inputtext';
+import { useLayout } from '@/layouts/composables/layout';
 
 describe('InboxToolbar', () => {
   let wrapper: VueWrapper;
@@ -208,6 +209,38 @@ describe('InboxToolbar', () => {
     const tag = wrapper.findComponent({ name: 'Tag' });
     expect(tag.exists()).toBe(true);
     expect(tag.props('value')).toContain('5');
+  });
+
+  it('applies dark theme classes when dark mode is enabled', () => {
+    const { layoutConfig } = useLayout();
+    layoutConfig.darkTheme = true;
+    try {
+      wrapper = mount(InboxToolbar, {
+        props: {
+          activeTab: 'all',
+          searchQuery: '',
+          selectedCount: 0,
+        },
+      });
+      expect(wrapper.html()).toContain('border-surface-800');
+    } finally {
+      layoutConfig.darkTheme = false;
+    }
+  });
+
+  it('emits an empty string when search input is cleared to a falsy value', async () => {
+    wrapper = mount(InboxToolbar, {
+      props: {
+        activeTab: 'all',
+        searchQuery: 'test query',
+        selectedCount: 0,
+      },
+    });
+
+    const input = wrapper.findComponent(InputText);
+    await input.vm.$emit('update:modelValue', null);
+
+    expect(wrapper.emitted('update:searchQuery')?.[0]).toEqual(['']);
   });
 });
 
