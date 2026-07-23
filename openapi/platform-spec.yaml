@@ -4217,7 +4217,7 @@ paths:
           description: No user authentication provided via session cookie
   /api/v1/projects/{projectId}/rental-agreements:
     get:
-      summary: Retrieve information of all tenancies
+      summary: Retrieve information of all rental agreements
       parameters:
       - description: ID of the project
         required: true
@@ -4251,7 +4251,7 @@ paths:
         required: true
       responses:
         "201":
-          description: Tenancy created successfully
+          description: Rental agreement created successfully
           content:
             application/json:
               schema:
@@ -4262,7 +4262,7 @@ paths:
           description: No user authentication provided via session cookie
   /api/v1/projects/{projectId}/rental-agreements/{agreementId}:
     patch:
-      summary: Update information of a tenancy
+      summary: Update information of a rental agreement
       parameters:
       - description: ID of the tenancy
         required: true
@@ -4294,7 +4294,7 @@ paths:
         "404":
           description: The rental agreement does not exist
     get:
-      summary: Retrieve Information of a tenancy.
+      summary: Retrieve Information of a rental agreement.
       parameters:
       - description: ID of the tenancy
         required: true
@@ -4319,6 +4319,26 @@ paths:
           description: No user authentication provided session cookie
         "404":
           description: The rental agreement does not exist
+    delete:
+      summary: Delete an existing rental agreement
+      parameters:
+      - description: ID of the tenancy
+        required: true
+        name: agreementId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: Rental agreement was deleted successfully
+        "401":
+          description: No user authentication provided via session cookie
   /api/v1/projects/{projectId}/sites:
     post:
       summary: Create a new site
