@@ -1,5 +1,7 @@
 export { default as RentalAgreementListView } from './views/RentalAgreementListView.vue';
 export { default as RentalAgreementDetailView } from './views/RentalAgreementDetailView.vue';
+export { default as TenantListView } from './views/TenantListView.vue';
+export { default as TenantDetailView } from './views/TenantDetailView.vue';
 export { default as NewRentalAgreementDialog } from './components/NewRentalAgreementDialog.vue';
 export { default as TenancyDataComponent } from './components/TenancyDataComponent.vue';
 export { default as TenantsTableComponent } from './components/TenantsTableComponent.vue';

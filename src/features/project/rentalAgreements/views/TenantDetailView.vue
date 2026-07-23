@@ -12,7 +12,7 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
-import { tenantService, type TenantJson } from '@/services/TenantService';
+import { tenantService, type TenantJson } from '../services/TenantService';
 import BaseCard from '@/components/common/BaseCard.vue';
 
 const props = defineProps<{
