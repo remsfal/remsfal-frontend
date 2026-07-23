@@ -3,9 +3,9 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
 import Step3TenantsForm from '@/features/project/rentalAgreements/components/Step3TenantsForm.vue';
 import type { TenantJson as TenantItem } from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import { tenantService } from '@/services/TenantService';
+import { tenantService } from '@/features/project/rentalAgreements/services/TenantService';
 
-vi.mock('@/services/TenantService', () => ({
+vi.mock('@/features/project/rentalAgreements/services/TenantService', () => ({
   tenantService: {fetchTenants: vi.fn(),},
   TenantItem: {},
 }));

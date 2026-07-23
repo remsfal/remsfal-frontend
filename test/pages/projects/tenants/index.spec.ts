@@ -10,8 +10,8 @@ vi.mock('vue-router', async (importOriginal) => {
   };
 });
 
-vi.mock('@/views/project/TenantListView.vue', () => ({
-  default: {
+vi.mock('@/features/project/rentalAgreements', () => ({
+  TenantListView: {
     name: 'TenantListView',
     props: ['projectId'],
     template: '<div data-test="tenant-list-view-stub" />',

@@ -4,9 +4,9 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ProgressSpinner from 'primevue/progressspinner';
 import DataView from 'primevue/dataview';
-import { tenantService, type TenantItemJson } from '@/services/TenantService';
-import TenantCard from '@/components/tenants/TenantCard.vue';
-import TenantToolbar from '@/components/tenants/TenantToolbar.vue';
+import { tenantService, type TenantItemJson } from '../services/TenantService';
+import TenantCard from '../components/TenantCard.vue';
+import TenantToolbar from '../components/TenantToolbar.vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 
 const props = defineProps<{
