@@ -141,7 +141,7 @@ defineExpose({
     />
 
     <RentalAgreementsIssueCard
-        :projectId="props.projectId"
+      :projectId="props.projectId"
     />
 
     <div class="grid grid-cols-1 gap-6">

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import {type IssueColumn} from "@/features/project/issues/components/IssueTable.vue";
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 import BaseCard from "@/components/common/BaseCard.vue";
 import { useI18n } from 'vue-i18n';
@@ -12,7 +11,6 @@ const router = useRouter();
 const { t } = useI18n();
 
 // Reactive state
-const showNewIssueDialog = ref(false);
 const issues = ref<IssueItemJson[]>([]);
 
 // --- Filters (status, type, assigneeId) are applied server-side ---
@@ -24,10 +22,6 @@ const loadIssues = async () => {
     console.error(err);
   }
 };
-
-const columns = computed<IssueColumn[]>(() =>
-    props.type === 'DEFECT' ? ['title', 'status', 'priority'] : ['title', 'assignee', 'status'],
-);
 
 // --- Handle row selection ---
 const onIssueSelect = (issue: IssueItemJson) => {
@@ -55,10 +49,10 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12">
           <div
-              v-for="issue in issues"
-              :key="issue.id"
-              class="mb-4 cursor-pointer rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
-              @click="onIssueSelect(issue)"
+            v-for="issue in issues"
+            :key="issue.id"
+            class="mb-4 cursor-pointer rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
+            @click="onIssueSelect(issue)"
           >
             <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
               <div>
@@ -67,8 +61,8 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
                 </h4>
 
                 <p
-                    v-if="issue.description"
-                    class="mt-1 text-sm text-gray-500"
+                  v-if="issue.description"
+                  class="mt-1 text-sm text-gray-500"
                 >
                   {{ issue.description }}
                 </p>
