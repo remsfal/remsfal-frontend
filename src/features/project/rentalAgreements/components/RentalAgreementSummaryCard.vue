@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BaseCard from '@/components/common/BaseCard.vue';
-import type { RentalAgreementJson } from '@/services/RentalAgreementService';
+import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import type { components } from '@/services/api/platform-schema';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
