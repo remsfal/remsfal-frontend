@@ -97,30 +97,21 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
                 </dd>
               </div>
 
-              <div v-if="issue.assignee">
+              <div v-if="issue.assigneeId">
                 <dt class="font-medium text-gray-500">
                   {{ t('rentalAgreement.issue.assignee') }}
                 </dt>
                 <dd class="mt-1 text-gray-900">
-                  {{ issue.assignee }}
+                  {{ issue.assigneeId }}
                 </dd>
               </div>
 
-              <div v-if="issue.createdAt">
-                <dt class="font-medium text-gray-500">
-                  {{ t('rentalAgreement.issue.createdAt') }}
-                </dt>
-                <dd class="mt-1 text-gray-900">
-                  {{ issue.createdAt }}
-                </dd>
-              </div>
-
-              <div v-if="issue.updatedAt">
+              <div v-if="issue.modifiedAt">
                 <dt class="font-medium text-gray-500">
                   {{ t('rentalAgreement.issue.updatedAt') }}
                 </dt>
                 <dd class="mt-1 text-gray-900">
-                  {{ issue.updatedAt }}
+                  {{ issue.modifiedAt }}
                 </dd>
               </div>
             </dl>
