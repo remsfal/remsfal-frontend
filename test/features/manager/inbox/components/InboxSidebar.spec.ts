@@ -49,9 +49,6 @@ describe('InboxSidebar', () => {
   ];
 
   const mountWithProps = (overrides?: Partial<{
-    activeNavItem: 'inbox' | 'done';
-    unreadCount: number;
-    doneCount: number;
     activeFilterId: string | null;
     customFilters: CustomFilter[];
     projectOptions: ProjectOption[];
@@ -60,9 +57,6 @@ describe('InboxSidebar', () => {
   }>) => {
     wrapper = mount(InboxSidebar, {
       props: {
-        activeNavItem: overrides?.activeNavItem ?? 'inbox',
-        unreadCount: overrides?.unreadCount ?? 5,
-        doneCount: overrides?.doneCount ?? 3,
         activeFilterId: overrides?.activeFilterId ?? null,
         customFilters: overrides?.customFilters ?? mockCustomFilters,
         projectOptions: overrides?.projectOptions ?? mockProjectOptions,
@@ -80,37 +74,14 @@ describe('InboxSidebar', () => {
   });
 
 
-  it('does not show badge when unread and done count is 0', () => {
+  it('does not show badge when there are no filter or project matches', () => {
     mountWithProps({
-      unreadCount: 0,
-      doneCount: 0,
       customFilters: [],
       projectOptions: [],
       messages: [],
     });
     const badges = wrapper.findAllComponents({ name: 'Badge' });
     expect(badges).toHaveLength(0);
-  });
-
-  it('emits update:activeNavItem when inbox button is clicked', async () => {
-    mountWithProps({ activeNavItem: 'done' });
-    const buttons = wrapper.findAllComponents({ name: 'Button' });
-    const inboxButton = buttons.find(btn => btn.text().includes('Inbox'));
-    if (inboxButton) {
-      await inboxButton.trigger('click');
-      expect(wrapper.emitted('update:activeNavItem')).toBeTruthy();
-      expect(wrapper.emitted('update:activeNavItem')?.[0]).toEqual(['inbox']);
-    }
-  });
-
-  it('emits clearFilters when switching to inbox', async () => {
-    mountWithProps({ activeNavItem: 'done' });
-    const buttons = wrapper.findAllComponents({ name: 'Button' });
-    const inboxButton = buttons.find(btn => btn.text().includes('Inbox'));
-    if (inboxButton) {
-      await inboxButton.trigger('click');
-      expect(wrapper.emitted('clearFilters')).toBeTruthy();
-    }
   });
 
   it('emits filterApplied when custom filter is clicked', async () => {

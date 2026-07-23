@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 
-import { useLayout } from '@/layouts/composables/layout';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { useInboxStore } from '../stores/InboxStore';
 import type { InboxMessage } from '../services/InboxService';
@@ -15,7 +14,6 @@ import InboxMessageList from './InboxMessageList.vue';
 const { t } = useI18n();
 const router = useRouter();
 const inbox = useInboxStore();
-const { isDarkTheme } = useLayout();
 
 const {
   messages,
@@ -27,7 +25,6 @@ const {
   filterIssueStatus,
   filteredMessages,
   projectOptions,
-  unreadCount,
   grouping,
 } = storeToRefs(inbox);
 
@@ -58,7 +55,6 @@ const customFilters = computed<CustomFilter[]>(() => {
 });
 
 const activeFilterId = ref<string | null>(null);
-const activeNavItem = ref<'inbox' | 'done'>('inbox');
 
 onMounted(async () => {
   await inbox.fetchInbox();
@@ -140,16 +136,8 @@ const handleMessageDelete = (msg: InboxMessage) => {
   inbox.confirmDeleteSelected();
 };
 
-const doneCount = computed(() => messages.value.filter(m => m.isRead).length);
-
 const displayedMessages = computed(() => {
-  let msgs = filteredMessages.value;
-  
-  if (activeNavItem.value === 'done') {
-    return msgs.filter(m => m.isRead);
-  }
-  
-  return [...msgs].sort((a, b) => {
+  return [...filteredMessages.value].sort((a, b) => {
     if (!a.isRead && b.isRead) return -1;
     if (a.isRead && !b.isRead) return 1;
     return new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime();
@@ -158,37 +146,17 @@ const displayedMessages = computed(() => {
 </script>
 
 <template>
-  <div 
-    class="flex h-[calc(100vh-4rem)]"
-    :class="isDarkTheme ? 'bg-surface-950' : 'bg-surface-100'"
-  >
-    <InboxSidebar
-      :activeNavItem="activeNavItem"
-      :unreadCount="unreadCount"
-      :doneCount="doneCount"
-      :activeFilterId="activeFilterId"
-      :customFilters="customFilters"
-      :projectOptions="projectOptions"
-      :filterProject="filterProject"
-      :messages="messages"
-      @update:activeNavItem="activeNavItem = $event"
-      @filterApplied="applyFilter"
-      @projectFilterToggled="toggleProjectFilter"
-      @clearFilters="clearAllFilters"
-    />
-
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col min-w-0 py-4 pr-4">
-      <BaseCard cardClass="h-full flex flex-col overflow-hidden">
-        <template #content>
+  <BaseCard>
+    <template #content>
+      <div class="flex h-full">
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col min-w-0 py-4 pr-4">
           <InboxToolbar
             :activeTab="activeTab"
             :searchQuery="searchQuery"
             :selectedCount="selectedMessages.length"
-            :grouping="grouping"
             @update:activeTab="handleActiveTabChange"
             @update:searchQuery="searchQuery = $event"
-            @update:grouping="grouping = $event"
             @markReadSelected="inbox.markReadSelected"
             @deleteSelected="inbox.confirmDeleteSelected"
           />
@@ -204,8 +172,19 @@ const displayedMessages = computed(() => {
             @markRead="handleMessageMarkRead"
             @delete="handleMessageDelete"
           />
-        </template>
-      </BaseCard>
-    </div>
-  </div>
+        </div>
+
+        <InboxSidebar
+          :activeFilterId="activeFilterId"
+          :customFilters="customFilters"
+          :projectOptions="projectOptions"
+          :filterProject="filterProject"
+          :messages="messages"
+          @filterApplied="applyFilter"
+          @projectFilterToggled="toggleProjectFilter"
+          @clearFilters="clearAllFilters"
+        />
+      </div>
+    </template>
+  </BaseCard>
 </template>

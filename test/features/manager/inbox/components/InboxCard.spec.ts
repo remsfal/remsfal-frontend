@@ -63,15 +63,6 @@ describe('InboxCard.vue', () => {
   });
 
 
-  it('handles navigation between inbox and done', async () => {
-    const sidebar = wrapper.findComponent(InboxSidebar);
-    await sidebar.vm.$emit('update:activeNavItem', 'done');
-
-    await wrapper.vm.$nextTick();
-    const updatedSidebar = wrapper.findComponent(InboxSidebar);
-    expect(updatedSidebar.props('activeNavItem')).toBe('done');
-  });
-
   it('handles filter application', async () => {
     const sidebar = wrapper.findComponent(InboxSidebar);
     const filter = {

@@ -20,7 +20,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -38,7 +37,6 @@ describe('InboxToolbar', () => {
         activeTab: 'unread',
         searchQuery: '',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -52,7 +50,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -69,7 +66,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -85,7 +81,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -101,7 +96,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -116,7 +110,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: 'test query',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -130,7 +123,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -147,7 +139,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 0,
-        grouping: null,
       },
     });
 
@@ -161,7 +152,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 3,
-        grouping: null,
       },
     });
 
@@ -176,7 +166,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 2,
-        grouping: null,
       },
     });
 
@@ -195,7 +184,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 2,
-        grouping: null,
       },
     });
 
@@ -214,7 +202,6 @@ describe('InboxToolbar', () => {
         activeTab: 'all',
         searchQuery: '',
         selectedCount: 5,
-        grouping: null,
       },
     });
 
