@@ -4097,7 +4097,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve information of all tenancies */
+    /** Retrieve information of all rental agreements */
     get: {
       parameters: {
         query?: never;
@@ -4146,7 +4146,7 @@ export interface paths {
         };
       };
       responses: {
-        /** @description Tenancy created successfully */
+        /** @description Rental agreement created successfully */
         201: {
           headers: {
             [name: string]: unknown;
@@ -4184,7 +4184,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Retrieve Information of a tenancy. */
+    /** Retrieve Information of a rental agreement. */
     get: {
       parameters: {
         query?: never;
@@ -4226,10 +4226,40 @@ export interface paths {
     };
     put?: never;
     post?: never;
-    delete?: never;
+    /** Delete an existing rental agreement */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the tenancy */
+          agreementId: components["schemas"]["UUID"];
+          /** @description ID of the project */
+          projectId: components["schemas"]["UUID"];
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Rental agreement was deleted successfully */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
     options?: never;
     head?: never;
-    /** Update information of a tenancy */
+    /** Update information of a rental agreement */
     patch: {
       parameters: {
         query?: never;
