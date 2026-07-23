@@ -1,10 +1,11 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import InboxMessageList from '@/components/inbox/InboxMessageList.vue';
-import InboxEmptyState from '@/components/inbox/InboxEmptyState.vue';
-import InboxMessageItem from '@/components/inbox/InboxMessageItem.vue';
-import type { InboxMessage } from '@/services/InboxService';
-import { createMockInboxMessage, createGroupingTestMessages } from '../../utils/testHelpers';
+import InboxMessageList from '@/features/manager/inbox/components/InboxMessageList.vue';
+import InboxEmptyState from '@/features/manager/inbox/components/InboxEmptyState.vue';
+import InboxMessageItem from '@/features/manager/inbox/components/InboxMessageItem.vue';
+import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
+import { createMockInboxMessage, createGroupingTestMessages } from '../../../../utils/testHelpers';
+import { useLayout } from '@/layouts/composables/layout';
 
 describe('InboxMessageList', () => {
   let wrapper: VueWrapper;
@@ -144,6 +145,38 @@ describe('InboxMessageList', () => {
     expect(items[1].props('isSelected')).toBe(false);
   });
 
+  it('applies dark theme classes when dark mode is enabled', () => {
+    const { layoutConfig } = useLayout();
+    layoutConfig.darkTheme = true;
+    try {
+      mountWithProps({});
+      expect(wrapper.html()).toContain('bg-surface-800/50');
+    } finally {
+      layoutConfig.darkTheme = false;
+    }
+  });
+
+  it('forwards select/navigate/markRead/delete events for grouped message items', async () => {
+    const messages = createGroupingTestMessages().slice(0, 2);
+    mountWithProps({ messages, grouping: 'project' });
+
+    const items = wrapper.findAllComponents(InboxMessageItem);
+    const target = items.find(item => item.props('message').id === messages[0].id);
+    expect(target).toBeTruthy();
+
+    await target!.vm.$emit('select');
+    expect(wrapper.emitted('selectItem')?.at(-1)).toEqual([messages[0]]);
+
+    await target!.vm.$emit('navigate');
+    expect(wrapper.emitted('navigate')?.at(-1)).toEqual([messages[0]]);
+
+    await target!.vm.$emit('markRead');
+    expect(wrapper.emitted('markRead')?.at(-1)).toEqual([messages[0]]);
+
+    await target!.vm.$emit('delete');
+    expect(wrapper.emitted('delete')?.at(-1)).toEqual([messages[0]]);
+  });
+
   describe('grouping functionality', () => {
     beforeEach(() => {
       vi.useFakeTimers();
@@ -208,6 +241,18 @@ describe('InboxMessageList', () => {
 
       const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
       expect(groupHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('sorts multiple date groups: today, yesterday, week-ago and month-ago', () => {
+      const today = createMockInboxMessage({ id: 't1', receivedAt: new Date('2025-01-15T09:00:00Z') });
+      const yesterday = createMockInboxMessage({ id: 'y1', receivedAt: new Date('2025-01-14T09:00:00Z') });
+      const weekAgo = createMockInboxMessage({ id: 'w1', receivedAt: new Date('2025-01-10T09:00:00Z') });
+      const monthAgo = createMockInboxMessage({ id: 'm1', receivedAt: new Date('2024-12-15T09:00:00Z') });
+
+      mountWithProps({ messages: [monthAgo, weekAgo, yesterday, today], grouping: 'date' });
+
+      const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
+      expect(groupHeaders.length).toBe(4);
     });
 
     it('handles selected messages with project grouping', () => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import IconField from 'primevue/iconfield';
@@ -7,20 +7,17 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import SelectButton from 'primevue/selectbutton';
 import Tag from 'primevue/tag';
-import Menu from 'primevue/menu';
 import { useLayout } from '@/layouts/composables/layout';
 
 const props = defineProps<{
   activeTab: 'all' | 'unread';
   searchQuery: string;
   selectedCount: number;
-  grouping: 'date' | 'project' | null;
 }>();
 
 const emit = defineEmits<{
   'update:activeTab': [value: 'all' | 'unread'];
   'update:searchQuery': [value: string];
-  'update:grouping': [value: 'date' | 'project' | null];
   markReadSelected: [];
   deleteSelected: [];
 }>();
@@ -32,69 +29,6 @@ const tabOptions = computed(() => [
   { label: t('inbox.filter.statusOptions.all'), value: 'all' },
   { label: t('inbox.filter.statusOptions.unread'), value: 'unread' },
 ]);
-
-const groupingMenu = ref<InstanceType<typeof Menu> | null>(null);
-const groupingButton = ref<HTMLElement | null>(null);
-
-const groupingOptions = computed(() => [
-  { label: t('inbox.grouping.date'), value: 'date' as const },
-  { label: t('inbox.grouping.project'), value: 'project' as const },
-]);
-
-const groupingLabel = computed(() => {
-  if (!props.grouping) return t('inbox.grouping.none');
-  const option = groupingOptions.value.find(opt => opt.value === props.grouping);
-  return option ? option.label : t('inbox.grouping.none');
-});
-
-const groupingButtonLabel = computed(() => {
-  if (!props.grouping) {
-    return t('inbox.grouping.buttonLabel');
-  }
-  return `${t('inbox.grouping.buttonLabel')}: ${groupingLabel.value}`;
-});
-
-type MenuItem = {
-  label: string;
-  command: () => void;
-  class?: string;
-  separator?: boolean;
-};
-
-const getActiveMenuItemClass = (): string => {
-  return isDarkTheme.value ? 'bg-primary-900/20' : 'bg-primary-50';
-};
-
-const menuItems = computed<MenuItem[]>(() => {
-  const items: MenuItem[] = groupingOptions.value.map(option => {
-    const isSelected = props.grouping === option.value;
-    return {
-      label: option.label,
-      command: () => {
-        if (props.grouping === option.value) {
-          emit('update:grouping', null);
-        } else {
-          emit('update:grouping', option.value);
-        }
-      },
-      class: isSelected ? getActiveMenuItemClass() : '',
-    };
-  });
-
-  if (props.grouping) {
-    items.push({
-      label: t('inbox.grouping.clear'),
-      command: () => emit('update:grouping', null),
-      separator: true,
-    });
-  }
-
-  return items;
-});
-
-const toggleGroupingMenu = (event: Event) => {
-  groupingMenu.value?.toggle(event);
-};
 
 const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
   // Ensure a tab is always selected - prevent deselection
@@ -128,7 +62,7 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
     />
 
     <!-- Search -->
-    <div class="flex-1 max-w-md">
+    <div class="flex-1 w-full">
       <IconField iconPosition="left">
         <InputIcon class="pi pi-search" />
         <InputText 
@@ -139,25 +73,6 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
           @update:modelValue="emit('update:searchQuery', $event || '')"
         />
       </IconField>
-    </div>
-
-    <!-- Grouping Button -->
-    <div class="relative">
-      <Button
-        ref="groupingButton"
-        :label="groupingButtonLabel"
-        icon="pi pi-chevron-down"
-        iconPos="right"
-        outlined
-        size="small"
-        :class="isDarkTheme ? 'grouping-button-dark' : 'grouping-button-light'"
-        @click="toggleGroupingMenu"
-      />
-      <Menu
-        ref="groupingMenu"
-        :model="menuItems"
-        popup
-      />
     </div>
 
     <div class="flex-1" />
@@ -185,30 +100,4 @@ const handleTabChange = (value: 'all' | 'unread' | null | undefined) => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.grouping-button-light {
-  background-color: #f6f8fa;
-  border-color: #d0d7de;
-  color: #24292f;
-  font-weight: 500;
-}
-
-.grouping-button-light:hover {
-  background-color: #f3f4f6;
-  border-color: #d0d7de;
-}
-
-.grouping-button-dark {
-  background-color: #21262d;
-  border-color: #30363d;
-  color: #c9d1d9;
-  font-weight: 500;
-}
-
-.grouping-button-dark:hover {
-  background-color: #30363d;
-  border-color: #30363d;
-}
-</style>
 

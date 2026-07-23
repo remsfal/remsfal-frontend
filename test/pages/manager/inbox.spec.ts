@@ -1,22 +1,22 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import InboxPage from '@/pages/inbox/index.vue';
+import ManagerInboxPage from '@/pages/manager/inbox.vue';
 
-vi.mock('@/views/InboxView.vue', () => ({
-  default: {
+vi.mock('@/features/manager/inbox', () => ({
+  InboxView: {
     name: 'InboxView',
     template: '<div data-test="inbox-view-stub" />',
   },
 }));
 
-describe('inbox/index.vue', () => {
+describe('manager/inbox.vue', () => {
   it('renders without errors', () => {
-    const wrapper = mount(InboxPage);
+    const wrapper = mount(ManagerInboxPage);
     expect(wrapper.exists()).toBe(true);
   });
 
   it('renders InboxView', () => {
-    const wrapper = mount(InboxPage);
+    const wrapper = mount(ManagerInboxPage);
     expect(wrapper.find('[data-test="inbox-view-stub"]').exists()).toBe(true);
   });
 });

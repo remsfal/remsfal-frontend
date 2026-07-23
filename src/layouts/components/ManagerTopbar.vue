@@ -7,7 +7,7 @@ import Button from 'primevue/button';
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import AppTopbar from '@/layouts/components/AppTopbar.vue';
 import { computed } from 'vue';
-import { useInboxStore } from '@/stores/InboxStore';
+import { useInboxStore } from '@/features/manager/inbox';
 import TopbarUserActions from '@/layouts/components/TopbarUserActions.vue';
 
 const { t } = useI18n();
@@ -30,7 +30,7 @@ const onHomeClick = () => {
 };
 
 const onInboxClick = () => {
-  router.push('/inbox');
+  router.push({ name: 'Inbox' });
 };
 
 const unreadCount = computed(() =>

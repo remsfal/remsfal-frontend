@@ -90,20 +90,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    'Inbox': RouteRecordInfo<
-      'Inbox',
-      '/inbox',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    'InboxDetail': RouteRecordInfo<
-      'InboxDetail',
-      '/inbox/:id',
-      { id: ParamValue<true> },
-      { id: ParamValue<false> },
-      | never
-    >,
     'ManagerAccountData': RouteRecordInfo<
       'ManagerAccountData',
       '/manager/account-data',
@@ -135,6 +121,13 @@ declare module 'vue-router/auto-routes' {
     'ManagerDashboard': RouteRecordInfo<
       'ManagerDashboard',
       '/manager/dashboard',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    'Inbox': RouteRecordInfo<
+      'Inbox',
+      '/manager/inbox',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -381,18 +374,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/inbox/index.vue': {
-      routes:
-        | 'Inbox'
-      views:
-        | never
-    }
-    'src/pages/inbox/[id].vue': {
-      routes:
-        | 'InboxDetail'
-      views:
-        | never
-    }
     'src/pages/manager/account-data.vue': {
       routes:
         | 'ManagerAccountData'
@@ -420,6 +401,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/manager/dashboard.vue': {
       routes:
         | 'ManagerDashboard'
+      views:
+        | never
+    }
+    'src/pages/manager/inbox.vue': {
+      routes:
+        | 'Inbox'
       views:
         | never
     }

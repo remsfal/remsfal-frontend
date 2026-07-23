@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
-import { inboxService, type InboxMessage } from '@/services/InboxService';
+import { server } from '../../../../mocks/server';
+import { inboxService, type InboxMessage } from '@/features/manager/inbox/services/InboxService';
 
 const mockMessages: InboxMessage[] = [
   {
