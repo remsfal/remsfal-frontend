@@ -1,14 +1,14 @@
 <route lang="yaml">
-name: InboxDetail
+name: Inbox
 meta:
   layout: manager
   requiresAuth: true
 </route>
 
 <script setup lang="ts">
-import InboxDetail from '@/views/InboxDetail.vue'
+import { InboxView } from '@/features/manager/inbox';
 </script>
 
 <template>
-  <InboxDetail />
+  <InboxView />
 </template>

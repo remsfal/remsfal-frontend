@@ -5,13 +5,10 @@ import Button from 'primevue/button';
 import Badge from 'primevue/badge';
 import Divider from 'primevue/divider';
 import ScrollPanel from 'primevue/scrollpanel';
-import type { InboxMessage } from '@/services/InboxService';
+import type { InboxMessage } from '../services/InboxService';
 import { useLayout } from '@/layouts/composables/layout';
 
 const props = defineProps<{
-  activeNavItem: 'inbox' | 'done';
-  unreadCount: number;
-  doneCount: number;
   activeFilterId: string | null;
   customFilters: CustomFilter[];
   projectOptions: ProjectOption[];
@@ -20,7 +17,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:activeNavItem': [value: 'inbox' | 'done'];
   filterApplied: [filter: CustomFilter];
   projectFilterToggled: [projectId: string];
   clearFilters: [];
@@ -69,13 +65,6 @@ const handleProjectClick = (projectId: string) => {
   emit('projectFilterToggled', projectId);
 };
 
-const handleNavClick = (navItem: 'inbox' | 'done') => {
-  emit('update:activeNavItem', navItem);
-  if (navItem === 'inbox') {
-    emit('clearFilters');
-  }
-};
-
 // Gruppiere Filter nach Kategorien
 const smartFilters = computed(() => 
   props.customFilters.filter(f => f.id.startsWith('smart-'))
@@ -91,58 +80,11 @@ const typeFilters = computed(() =>
 </script>
 
 <template>
-  <aside 
-    class="w-72 m-4 p-4 shadow-md rounded-xl"
+  <aside
+    class="hidden lg:block w-72 m-4 p-4 shadow-md rounded-xl"
     :class="isDarkTheme ? 'bg-surface-900' : 'bg-surface-0'"
   >
     <div class="flex flex-col h-full">
-      <!-- Navigation Buttons -->
-      <div class="space-y-1 mb-4">
-        <Button 
-          text
-          severity="secondary"
-          class="w-full justify-start"
-          :class="isDarkTheme ? '!text-surface-0' : '!text-surface-900'"
-          :style="props.activeNavItem === 'inbox' 
-            ? { backgroundColor: isDarkTheme ? 'var(--p-surface-600)' : 'var(--p-surface-200)' } 
-            : {}"
-          @click="handleNavClick('inbox')"
-        >
-          <template #default>
-            <span class="flex items-center justify-between w-full">
-              <span class="flex items-center gap-2">
-                <i class="pi pi-inbox" />
-                {{ t('inbox.sidebar.inbox') }}
-              </span>
-              <Badge v-if="unreadCount > 0" :value="unreadCount" severity="secondary" />
-            </span>
-          </template>
-        </Button>
-        
-        <Button 
-          text
-          severity="secondary"
-          class="w-full justify-start"
-          :class="isDarkTheme ? '!text-surface-0' : '!text-surface-900'"
-          :style="props.activeNavItem === 'done' 
-            ? { backgroundColor: isDarkTheme ? 'var(--p-surface-600)' : 'var(--p-surface-200)' } 
-            : {}"
-          @click="handleNavClick('done')"
-        >
-          <template #default>
-            <span class="flex items-center justify-between w-full">
-              <span class="flex items-center gap-2">
-                <i class="pi pi-check" />
-                <span>{{ t('inbox.sidebar.done') }}</span>
-              </span>
-              <Badge v-if="doneCount > 0" :value="doneCount" severity="secondary" />
-            </span>
-          </template>
-        </Button>
-      </div>
-
-      <Divider />
-
       <!-- Filters Section -->
       <div class="flex-1 overflow-hidden flex flex-col min-h-0">
         <div class="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-2 px-2 flex-shrink-0">

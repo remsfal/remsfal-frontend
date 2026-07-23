@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
-import { useInboxStore } from '@/stores/InboxStore';
-import type { InboxMessage } from '@/services/InboxService';
-import { createMockInboxMessage } from '../utils/testHelpers';
+import { server } from '../../../../mocks/server';
+import { useInboxStore } from '@/features/manager/inbox/stores/InboxStore';
+import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
+import { createMockInboxMessage } from '../../../../utils/testHelpers';
 
 describe('InboxStore', () => {
   let store: ReturnType<typeof useInboxStore>;
@@ -108,20 +108,29 @@ describe('InboxStore', () => {
       expect(store.messages[0].isRead).toBe(true);
     });
 
+    it('does nothing when the message is not found in the store', async () => {
+      const unknownMessage = createMockInboxMessage({ id: 'unknown-id' });
+
+      await expect(store.markAsRead(unknownMessage)).resolves.not.toThrow();
+
+      expect(store.messages.find(m => m.id === 'unknown-id')).toBeUndefined();
+    });
+
     it('handles errors gracefully', async () => {
       store.messages = mockMessages.map(msg => ({ ...msg }));
       server.use(
-        http.patch('http://localhost:8080/notification/inbox/:messageId/read', () => {
+        http.patch('/notification/inbox/:messageId/read', () => {
           return HttpResponse.json({ error: 'Not found' }, { status: 404 });
         }),
       );
 
       const message = store.messages[0];
-      
+      const originalIsRead = message.isRead;
+
       await expect(store.markAsRead(message)).resolves.not.toThrow();
 
       const messageAfterError = store.messages.find(m => m.id === message.id);
-      expect(messageAfterError).toBeDefined();
+      expect(messageAfterError?.isRead).toBe(originalIsRead);
     });
   });
 
@@ -156,6 +165,19 @@ describe('InboxStore', () => {
       await store.markReadSelected();
       expect(store.selectedMessages.length).toBe(0);
     });
+
+    it('reverts optimistic updates when the API call fails', async () => {
+      const originalStates = store.messages.map(m => m.isRead);
+      server.use(
+        http.patch('/notification/inbox/:messageId/read', () => {
+          return HttpResponse.json({ error: 'Not found' }, { status: 404 });
+        }),
+      );
+
+      await expect(store.markReadSelected()).resolves.not.toThrow();
+
+      expect(store.messages.map(m => m.isRead)).toEqual(originalStates);
+    });
   });
 
   describe('confirmDeleteSelected', () => {
@@ -179,19 +201,22 @@ describe('InboxStore', () => {
       expect(store.selectedMessages.length).toBe(0);
     });
 
-    it('handles errors gracefully', async () => {
+    it('restores deleted messages when the API call fails', async () => {
       store.messages = mockMessages.map(msg => ({ ...msg }));
       store.selectedMessages = [store.messages[0], store.messages[1]];
-      
+      const initialLength = store.messages.length;
+
       server.use(
-        http.delete('http://localhost:8080/notification/inbox/:messageId', () => {
+        http.delete('/notification/inbox/:messageId', () => {
           return HttpResponse.json({ error: 'Not found' }, { status: 404 });
         }),
       );
 
       await expect(store.confirmDeleteSelected()).resolves.not.toThrow();
 
-      expect(store.messages.length).toBeGreaterThan(0);
+      expect(store.messages.length).toBe(initialLength);
+      expect(store.messages.find(m => m.id === '1')).toBeDefined();
+      expect(store.messages.find(m => m.id === '2')).toBeDefined();
     });
   });
 
@@ -258,6 +283,59 @@ describe('InboxStore', () => {
 
       expect(filtered.length).toBe(1);
       expect(filtered[0].id).toBe('1');
+    });
+
+    it('filters by a valid date range', () => {
+      store.filterDateRange = [new Date('2025-01-10T00:00:00Z'), new Date('2025-01-11T00:00:00Z')];
+      const filtered = store.filteredMessages;
+
+      expect(filtered.map(m => m.id).sort()).toEqual(['1', '2']);
+    });
+
+    it('excludes messages outside the date range', () => {
+      store.filterDateRange = [new Date('2025-02-01T00:00:00Z'), new Date('2025-02-02T00:00:00Z')];
+      const filtered = store.filteredMessages;
+
+      expect(filtered.length).toBe(0);
+    });
+
+    it('ignores an incomplete date range', () => {
+      store.filterDateRange = [undefined as unknown as Date, undefined as unknown as Date];
+      const filtered = store.filteredMessages;
+
+      expect(filtered.length).toBe(mockMessages.length);
+    });
+  });
+
+  describe('issueTypeOptions', () => {
+    beforeEach(() => {
+      store.messages = [...mockMessages];
+    });
+
+    it('returns unique issue type options', () => {
+      const options = store.issueTypeOptions;
+
+      expect(options.map(o => o.value).sort()).toEqual(['DEFECT', 'MAINTENANCE', 'TASK']);
+    });
+  });
+
+  describe('issueStatusOptions', () => {
+    beforeEach(() => {
+      store.messages = [...mockMessages];
+    });
+
+    it('returns unique issue status options', () => {
+      const options = store.issueStatusOptions;
+
+      expect(options.map(o => o.value).sort()).toEqual(['CLOSED', 'IN_PROGRESS', 'OPEN']);
+    });
+  });
+
+  describe('groupedMessages', () => {
+    it('returns the same messages as filteredMessages', () => {
+      store.messages = [...mockMessages];
+
+      expect(store.groupedMessages).toEqual(store.filteredMessages);
     });
   });
 

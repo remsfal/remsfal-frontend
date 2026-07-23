@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import InboxEmptyState from '@/components/inbox/InboxEmptyState.vue';
+import InboxEmptyState from '@/features/manager/inbox/components/InboxEmptyState.vue';
 
 describe('InboxEmptyState', () => {
   let wrapper: VueWrapper;
