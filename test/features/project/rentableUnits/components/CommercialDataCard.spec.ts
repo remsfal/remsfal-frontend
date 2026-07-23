@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 
 import CommercialDataCard from '@/features/project/rentableUnits/components/CommercialDataCard.vue';
-import { commercialService, type CommercialJson } from '@/services/CommercialService';
+import { commercialService, type CommercialJson } from '@/features/project/rentableUnits/services/CommercialService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -25,7 +25,8 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/CommercialService', () => ({commercialService: { getCommercial: vi.fn(), updateCommercial: vi.fn() },}));
+const mockCommercialService = vi.hoisted(() => ({ getCommercial: vi.fn(), updateCommercial: vi.fn() }));
+vi.mock('@/features/project/rentableUnits/services/CommercialService', () => ({ commercialService: mockCommercialService }));
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {

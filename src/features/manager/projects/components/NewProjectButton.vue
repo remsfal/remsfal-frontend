@@ -15,19 +15,13 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { saveProject } from '@/helper/indexeddb';
 
-defineProps<{
-  visible: boolean;
-}>();
-
-const emit = defineEmits<{
-  'update:visible': [value: boolean];
-}>();
-
 const { t } = useI18n();
 const toast = useToast();
 
 const router = useRouter();
 const projectStore = useProjectStore();
+
+const visible = ref(false);
 
 // Zod validation schema
 const validationSchema = z.object({
@@ -63,7 +57,7 @@ async function createProject(title: string) {
         detail: t('newProjectForm.offlineSaved'),
         life: 4000,
       });
-      emit('update:visible', false);
+      visible.value = false;
       return;
     }
 
@@ -77,7 +71,7 @@ async function createProject(title: string) {
         detail: t('newProjectForm.offlineSaved'),
         life: 4000,
       });
-      emit('update:visible', false);
+      visible.value = false;
       return;
     }
 
@@ -97,7 +91,7 @@ async function createProject(title: string) {
       detail: t('newProjectForm.successCreated'),
       life: 4000,
     });
-    emit('update:visible', false);
+    visible.value = false;
   } catch (error) {
     console.error('Failed to create project online:', error);
     await saveProject(title);
@@ -107,22 +101,27 @@ async function createProject(title: string) {
       detail: t('newProjectForm.offlineSaved'),
       life: 4000,
     });
-    emit('update:visible', false);
+    visible.value = false;
   }
 }
 
 function abort() {
-  router.push({ name: 'ProjectSelection' });
-  emit('update:visible', false);
+  visible.value = false;
 }
 </script>
 
 <template>
+  <Button
+    :label="t('projectSelection.add')"
+    icon="pi pi-plus"
+    style="width: auto"
+    @click="visible = true"
+  />
+
   <BaseDialog
-    :visible="visible"
+    v-model:visible="visible"
     :header="t('projectSelection.add')"
     closable
-    @update:visible="emit('update:visible', $event)"
     @hide="abort"
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">

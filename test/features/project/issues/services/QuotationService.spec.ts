@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { quotationService } from '@/services/QuotationService';
+import { quotationService } from '@/features/project/issues/services/QuotationService';
 
 describe('QuotationService with MSW', () => {
   test('getQuotations returns list with items array', async () => {

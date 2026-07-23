@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import AddressCard from '@/components/AddressCard.vue';
-import { userService } from '@/services/UserService';
+import { userService } from '@/features/common/users/services/UserService';
 import type { AddressJson } from '@/services/AddressService';
 
 const { t } = useI18n();
