@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import TenantContactButtons from '@/components/tenants/TenantContactButtons.vue';
+import TenantContactButtons from '@/features/project/rentalAgreements/components/TenantContactButtons.vue';
 
 describe('TenantContactButtons', () => {
   it('renders call and message buttons', () => {

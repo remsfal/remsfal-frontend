@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import TenantCard from '@/components/tenants/TenantCard.vue';
-import type { TenantItemJson } from '@/services/TenantService';
+import TenantCard from '@/features/project/rentalAgreements/components/TenantCard.vue';
+import type { TenantItemJson } from '@/features/project/rentalAgreements/services/TenantService';
 
 const tenant: TenantItemJson = {
   id: 'tenant-1',

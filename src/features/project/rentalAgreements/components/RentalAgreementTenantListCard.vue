@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import BaseCard from '@/components/common/BaseCard.vue';
-import TenantCard from '@/components/tenants/TenantCard.vue';
+import TenantCard from './TenantCard.vue';
 import NewTenantButton from './NewTenantButton.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,
