@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import AddressCard from '@/components/AddressCard.vue';
-import { buildingService } from '@/services/BuildingService';
-import { siteService } from '@/services/SiteService';
+import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
+import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 import type { AddressJson } from '@/services/AddressService';
 
 interface Props {

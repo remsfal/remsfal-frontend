@@ -3,9 +3,9 @@ import { mount, flushPromises, DOMWrapper, VueWrapper } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import Select from 'primevue/select';
 import UserContactDataCard from '@/features/common/users/components/UserContactDataCard.vue';
-import { userService } from '@/services/UserService';
+import { userService } from '@/features/common/users/services/UserService';
 
-vi.mock('@/services/UserService', () => ({
+vi.mock('@/features/common/users/services/UserService', () => ({
   userService: {
     getUser: vi.fn(),
     updateUser: vi.fn(),

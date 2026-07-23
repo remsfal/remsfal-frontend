@@ -14,7 +14,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
 // Types
-import type { TenantJson } from '@/services/RentalAgreementService';
+import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Props & Emits
 defineProps<{

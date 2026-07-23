@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { apiClient } from '@/services/ApiClient';
-import { tenantTimelineService, type TimelineListJson } from '@/services/TenantTimelineService';
+import { tenantTimelineService, type TimelineListJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 
 describe('TenantTimelineService', () => {
   afterEach(() => {

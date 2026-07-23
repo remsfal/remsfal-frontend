@@ -1,4 +1,4 @@
-describe('NewProjectDialog E2E Tests', () => {
+describe('NewProjectButton E2E Tests', () => {
   const projectId = 'test-project-123';
   const longTitle = String("a").repeat(101);
 
@@ -120,21 +120,19 @@ describe('NewProjectDialog E2E Tests', () => {
     cy.contains('button', /create|erstellen/i).should('be.disabled');
   });
 
-  it('should cancel and redirect to project selection', () => {
+  it('should close the dialog when cancel is clicked', () => {
     cy.contains('button', /cancel|abbrechen/i).click();
 
-    // Should redirect to project selection
-    cy.url().should('include', '/projects');
+    cy.get('[role="dialog"]').should('not.exist');
   });
 
-  it('should close dialog when clicking close button and redirect', () => {
+  it('should close the dialog when clicking the close button', () => {
     // Find and click the close button (X button)
     cy.get('[role="dialog"]').within(() => {
       cy.get('.p-dialog-close-button').click();
     });
 
-    // Should redirect to project selection
-    cy.url().should('include', '/projects');
+    cy.get('[role="dialog"]').should('not.exist');
   });
 
   it('should clear error message when fixing title length', () => {

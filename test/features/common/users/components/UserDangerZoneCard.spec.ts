@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import UserDangerZoneCard from '@/features/common/users/components/UserDangerZoneCard.vue';
-import { userService } from '@/services/UserService';
+import { userService } from '@/features/common/users/services/UserService';
 
 // ---- Mocks ----
 const addMock = vi.fn();

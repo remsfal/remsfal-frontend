@@ -1,4 +1,4 @@
-export { default as ManagerProjectListCard } from './components/ManagerProjectListCard.vue';
+export { default as ProjectSelectionCard } from './components/ProjectSelectionCard.vue';
 export { default as ProjectSelectionTable } from './components/ProjectSelectionTable.vue';
-export { default as NewProjectDialog } from './components/NewProjectDialog.vue';
-export { default as ManagerView } from './views/ManagerView.vue';
+export { default as NewProjectButton } from './components/NewProjectButton.vue';
+export { default as ProjectSelectionView } from './views/ProjectSelectionView.vue';

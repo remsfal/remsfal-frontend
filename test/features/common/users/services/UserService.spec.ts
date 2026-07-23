@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import UserService from '@/services/UserService';
+import UserService from '@/features/common/users/services/UserService';
 
 describe('UserService with MSW', () => {
   const userService = new UserService();

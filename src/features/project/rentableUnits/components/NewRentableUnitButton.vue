@@ -15,11 +15,11 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import { EntityType, propertyService } from '@/services/PropertyService';
 import { UNIT_TYPE_ICONS } from '../unitTypeIcons';
-import { siteService } from '@/services/SiteService';
-import { buildingService } from '@/services/BuildingService';
-import { apartmentService } from '@/services/ApartmentService';
-import { commercialService } from '@/services/CommercialService';
-import { storageService } from '@/services/StorageService';
+import { siteService } from '@/features/project/rentableUnits/services/SiteService';
+import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
+import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
+import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
+import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 
 const props = defineProps<{
   projectId: string;

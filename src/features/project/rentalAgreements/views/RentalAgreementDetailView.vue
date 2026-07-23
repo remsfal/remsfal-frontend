@@ -2,7 +2,8 @@
 import TenancyDataComponent from '../components/TenancyDataComponent.vue';
 import TenantsTableComponent from '../components/TenantsTableComponent.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
-import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService';
+import {rentalAgreementService,
+  type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
