@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Checkbox from 'primevue/checkbox';
 import DataView from 'primevue/dataview';
-import type { InboxMessage } from '@/services/InboxService';
+import type { InboxMessage } from '../services/InboxService';
 import InboxMessageItem from './InboxMessageItem.vue';
 import InboxEmptyState from './InboxEmptyState.vue';
 import { useLayout } from '@/layouts/composables/layout';

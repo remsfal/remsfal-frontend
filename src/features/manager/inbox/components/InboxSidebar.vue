@@ -5,7 +5,7 @@ import Button from 'primevue/button';
 import Badge from 'primevue/badge';
 import Divider from 'primevue/divider';
 import ScrollPanel from 'primevue/scrollpanel';
-import type { InboxMessage } from '@/services/InboxService';
+import type { InboxMessage } from '../services/InboxService';
 import { useLayout } from '@/layouts/composables/layout';
 
 const props = defineProps<{

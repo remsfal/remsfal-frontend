@@ -1,10 +1,10 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import InboxMessageList from '@/components/inbox/InboxMessageList.vue';
-import InboxEmptyState from '@/components/inbox/InboxEmptyState.vue';
-import InboxMessageItem from '@/components/inbox/InboxMessageItem.vue';
-import type { InboxMessage } from '@/services/InboxService';
-import { createMockInboxMessage, createGroupingTestMessages } from '../../utils/testHelpers';
+import InboxMessageList from '@/features/manager/inbox/components/InboxMessageList.vue';
+import InboxEmptyState from '@/features/manager/inbox/components/InboxEmptyState.vue';
+import InboxMessageItem from '@/features/manager/inbox/components/InboxMessageItem.vue';
+import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
+import { createMockInboxMessage, createGroupingTestMessages } from '../../../../utils/testHelpers';
 
 describe('InboxMessageList', () => {
   let wrapper: VueWrapper;

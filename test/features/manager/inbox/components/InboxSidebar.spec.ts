@@ -1,8 +1,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import InboxSidebar, { type CustomFilter, type ProjectOption } from '@/components/inbox/InboxSidebar.vue';
-import type { InboxMessage } from '@/services/InboxService';
-import { createMockInboxMessage } from '../../utils/testHelpers';
+import InboxSidebar, { type CustomFilter, type ProjectOption } from '@/features/manager/inbox/components/InboxSidebar.vue';
+import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
+import { createMockInboxMessage } from '../../../../utils/testHelpers';
 
 describe('InboxSidebar', () => {
   let wrapper: VueWrapper;

@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { it, expect, vi } from 'vitest'
 import ManagerTopbar from '@/layouts/components/ManagerTopbar.vue'
-import { useInboxStore } from '@/stores/InboxStore'
+import { useInboxStore } from '@/features/manager/inbox/stores/InboxStore'
 import { useUserSessionStore } from '@/stores/UserSession'
 
 // Router mock

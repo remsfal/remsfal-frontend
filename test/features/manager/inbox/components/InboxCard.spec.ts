@@ -1,20 +1,20 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
-import InboxView from '@/views/InboxView.vue';
-import { useInboxStore } from '@/stores/InboxStore';
-import InboxSidebar from '@/components/inbox/InboxSidebar.vue';
-import InboxToolbar from '@/components/inbox/InboxToolbar.vue';
-import InboxMessageList from '@/components/inbox/InboxMessageList.vue';
-import type { InboxMessage } from '@/services/InboxService';
-import { createMockInboxMessage } from '../utils/testHelpers';
+import { server } from '../../../../mocks/server';
+import InboxCard from '@/features/manager/inbox/components/InboxCard.vue';
+import { useInboxStore } from '@/features/manager/inbox/stores/InboxStore';
+import InboxSidebar from '@/features/manager/inbox/components/InboxSidebar.vue';
+import InboxToolbar from '@/features/manager/inbox/components/InboxToolbar.vue';
+import InboxMessageList from '@/features/manager/inbox/components/InboxMessageList.vue';
+import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
+import { createMockInboxMessage } from '../../../../utils/testHelpers';
 
 // Mocks
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));
 
-describe('InboxView.vue', () => {
+describe('InboxCard.vue', () => {
   let wrapper: VueWrapper;
   let store: ReturnType<typeof useInboxStore>;
 
@@ -53,7 +53,7 @@ describe('InboxView.vue', () => {
       }),
     );
 
-    wrapper = mount(InboxView);
+    wrapper = mount(InboxCard);
   });
 
   it('calls fetchInbox on mount', async () => {

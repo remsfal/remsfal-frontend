@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { http, HttpResponse } from 'msw';
-import { server } from '../mocks/server';
-import { useInboxStore } from '@/stores/InboxStore';
-import type { InboxMessage } from '@/services/InboxService';
-import { createMockInboxMessage } from '../utils/testHelpers';
+import { server } from '../../../../mocks/server';
+import { useInboxStore } from '@/features/manager/inbox/stores/InboxStore';
+import type { InboxMessage } from '@/features/manager/inbox/services/InboxService';
+import { createMockInboxMessage } from '../../../../utils/testHelpers';
 
 describe('InboxStore', () => {
   let store: ReturnType<typeof useInboxStore>;

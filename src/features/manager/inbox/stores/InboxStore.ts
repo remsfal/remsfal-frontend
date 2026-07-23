@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { inboxService, type InboxMessage } from '@/services/InboxService';
+import { inboxService, type InboxMessage } from '../services/InboxService';
 
 /**
  * Normalizes message dates by converting string dates to Date objects.

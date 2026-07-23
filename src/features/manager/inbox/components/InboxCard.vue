@@ -5,11 +5,12 @@ import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 
 import { useLayout } from '@/layouts/composables/layout';
-import { useInboxStore } from '@/stores/InboxStore';
-import type { InboxMessage } from '@/services/InboxService';
-import InboxSidebar, { type CustomFilter } from '@/components/inbox/InboxSidebar.vue';
-import InboxToolbar from '@/components/inbox/InboxToolbar.vue';
-import InboxMessageList from '@/components/inbox/InboxMessageList.vue';
+import BaseCard from '@/components/common/BaseCard.vue';
+import { useInboxStore } from '../stores/InboxStore';
+import type { InboxMessage } from '../services/InboxService';
+import InboxSidebar, { type CustomFilter } from './InboxSidebar.vue';
+import InboxToolbar from './InboxToolbar.vue';
+import InboxMessageList from './InboxMessageList.vue';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -178,34 +179,33 @@ const displayedMessages = computed(() => {
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-w-0 py-4 pr-4">
-      <div 
-        class="rounded-xl overflow-hidden shadow-md h-full flex flex-col"
-        :class="isDarkTheme ? 'bg-surface-900' : 'bg-surface-0'"
-      >
-        <InboxToolbar
-          :activeTab="activeTab"
-          :searchQuery="searchQuery"
-          :selectedCount="selectedMessages.length"
-          :grouping="grouping"
-          @update:activeTab="handleActiveTabChange"
-          @update:searchQuery="searchQuery = $event"
-          @update:grouping="grouping = $event"
-          @markReadSelected="inbox.markReadSelected"
-          @deleteSelected="inbox.confirmDeleteSelected"
-        />
+      <BaseCard cardClass="h-full flex flex-col overflow-hidden">
+        <template #content>
+          <InboxToolbar
+            :activeTab="activeTab"
+            :searchQuery="searchQuery"
+            :selectedCount="selectedMessages.length"
+            :grouping="grouping"
+            @update:activeTab="handleActiveTabChange"
+            @update:searchQuery="searchQuery = $event"
+            @update:grouping="grouping = $event"
+            @markReadSelected="inbox.markReadSelected"
+            @deleteSelected="inbox.confirmDeleteSelected"
+          />
 
-        <InboxMessageList
-          :messages="displayedMessages"
-          :selectedMessages="selectedMessages"
-          :searchQuery="searchQuery"
-          :grouping="grouping"
-          @selectAll="selectAll"
-          @selectItem="handleMessageSelect"
-          @navigate="handleMessageNavigate"
-          @markRead="handleMessageMarkRead"
-          @delete="handleMessageDelete"
-        />
-      </div>
+          <InboxMessageList
+            :messages="displayedMessages"
+            :selectedMessages="selectedMessages"
+            :searchQuery="searchQuery"
+            :grouping="grouping"
+            @selectAll="selectAll"
+            @selectItem="handleMessageSelect"
+            @navigate="handleMessageNavigate"
+            @markRead="handleMessageMarkRead"
+            @delete="handleMessageDelete"
+          />
+        </template>
+      </BaseCard>
     </div>
   </div>
 </template>
