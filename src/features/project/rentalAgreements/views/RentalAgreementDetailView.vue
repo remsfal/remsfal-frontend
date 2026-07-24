@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TenancyDataComponent from '../components/TenancyDataComponent.vue';
-import TenantsTableComponent from '../components/TenantsTableComponent.vue';
+import RentalAgreementTenantListCard from '../components/RentalAgreementTenantListCard.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
@@ -102,10 +102,12 @@ defineExpose({
         @delete="confirmDeletion"
       />
 
-      <!-- Tenants Table -->
-      <TenantsTableComponent
-        :tenants="rentalAgreement?.tenants || []"
-        :isDeleteButtonEnabled="false"
+      <!-- Tenants -->
+      <RentalAgreementTenantListCard
+        v-if="rentalAgreement"
+        :projectId="projectId"
+        :rentalAgreement="rentalAgreement"
+        @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
       />
 
       <!-- Action buttons -->

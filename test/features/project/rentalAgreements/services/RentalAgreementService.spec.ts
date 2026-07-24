@@ -96,4 +96,29 @@ describe('RentalAgreementService', () => {
       service.deleteRentalAgreement(testProjectId, 'cannot-delete'),
     ).rejects.toThrow();
   });
+
+  test('addTenant resolves with the created tenant', async () => {
+    const tenant = { firstName: 'New', lastName: 'Tenant' };
+    const created = await service.addTenant(testProjectId, 'agreement-1', tenant);
+    expect(created).toMatchObject(tenant);
+    expect(created.id).toBeDefined();
+  });
+
+  test('addTenant rejects when the rental agreement does not exist', async () => {
+    await expect(
+      service.addTenant(testProjectId, 'not-found', { firstName: 'New', lastName: 'Tenant' }),
+    ).rejects.toThrow();
+  });
+
+  test('removeTenant resolves successfully', async () => {
+    await expect(
+      service.removeTenant(testProjectId, 'agreement-1', 'tenant-1'),
+    ).resolves.toBeUndefined();
+  });
+
+  test('removeTenant rejects when removal fails', async () => {
+    await expect(
+      service.removeTenant(testProjectId, 'agreement-1', 'cannot-delete'),
+    ).rejects.toThrow();
+  });
 });
