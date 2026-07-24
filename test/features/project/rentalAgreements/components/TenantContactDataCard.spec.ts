@@ -1,6 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
+import DatePicker from 'primevue/datepicker';
 import TenantContactDataCard from '@/features/project/rentalAgreements/components/TenantContactDataCard.vue';
 import { tenantService } from '@/features/project/rentalAgreements/services/TenantService';
 
@@ -145,5 +146,151 @@ describe('TenantContactDataCard', () => {
     await flushPromises();
 
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+  });
+
+  test('shows a validation error for missing first name', async () => {
+    await flushPromises();
+
+    await wrapper.find('input[name="firstName"]').setValue('');
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Dieses Feld ist erforderlich');
+    expect(tenantService.updateTenant).not.toHaveBeenCalled();
+  });
+
+  test('shows a validation error for missing last name', async () => {
+    await flushPromises();
+
+    await wrapper.find('input[name="lastName"]').setValue('');
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Dieses Feld ist erforderlich');
+    expect(tenantService.updateTenant).not.toHaveBeenCalled();
+  });
+
+  test('shows a validation error for an invalid email', async () => {
+    await flushPromises();
+
+    await wrapper.find('input[name="email"]').setValue('not-an-email');
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Bitte geben Sie eine gültige E-Mail-Adresse ein');
+    expect(tenantService.updateTenant).not.toHaveBeenCalled();
+  });
+
+  test('updates the business and private phone numbers', async () => {
+    await flushPromises();
+
+    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
+    await phoneInputs[1].vm.$emit('update:modelValue', '+491511234568');
+    await phoneInputs[2].vm.$emit('update:modelValue', '+491511234569');
+    await flushPromises();
+
+    expect(wrapper.text()).not.toContain('Ungültiges Telefonformat');
+  });
+
+  test('shows business and private phone validation errors for invalid numbers', async () => {
+    await flushPromises();
+
+    const phoneInputs = wrapper.findAllComponents({ name: 'PhoneInput' });
+    await phoneInputs[1].vm.$emit('update:modelValue', 'invalid');
+    await phoneInputs[2].vm.$emit('update:modelValue', 'invalid');
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Ungültiges Telefonformat');
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }},
+    });
+    await flushPromises();
+
+    expect(tenantService.updateTenant).not.toHaveBeenCalled();
+  });
+
+  test('updates the date of birth and marks the form dirty', async () => {
+    await flushPromises();
+
+    const datePicker = wrapper.findComponent(DatePicker);
+    await datePicker.vm.$emit('update:modelValue', new Date('1995-05-05'));
+    await flushPromises();
+    vi.mocked(tenantService.updateTenant).mockResolvedValue({
+      ...mockTenant,
+      dateOfBirth: '1995-05-05',
+    });
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Max' },
+        lastName: { value: 'Mustermann' },
+        email: { value: 'max@example.com' },
+        placeOfBirth: { value: 'Berlin' },
+      },
+    });
+    await flushPromises();
+
+    expect(tenantService.updateTenant).toHaveBeenCalledWith(
+      'project-1',
+      'tenant-1',
+      expect.objectContaining({ dateOfBirth: '1995-05-05' }),
+    );
+  });
+
+  test('loads a tenant with missing optional fields using fallback defaults', async () => {
+    vi.mocked(tenantService.getTenant).mockResolvedValue({
+      id: 'tenant-1',
+      firstName: '',
+      lastName: '',
+      email: undefined,
+      placeOfBirth: undefined,
+      dateOfBirth: undefined,
+      mobilePhoneNumber: undefined,
+      businessPhoneNumber: undefined,
+      privatePhoneNumber: undefined,
+      address: undefined,
+    });
+
+    wrapper = mountCard();
+    await flushPromises();
+
+    expect((wrapper.find('input[name="firstName"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="email"]').element as HTMLInputElement).value).toBe('');
+  });
+
+  test('submits with fallback defaults when optional fields are empty', async () => {
+    await flushPromises();
+    vi.mocked(tenantService.updateTenant).mockResolvedValue({
+      id: 'tenant-1',
+      firstName: '',
+      lastName: '',
+      email: undefined,
+      placeOfBirth: undefined,
+      dateOfBirth: undefined,
+      mobilePhoneNumber: undefined,
+      businessPhoneNumber: undefined,
+      privatePhoneNumber: undefined,
+      address: undefined,
+    });
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: { firstName: { value: '' }, lastName: { value: '' } },
+    });
+    await flushPromises();
+
+    expect(tenantService.updateTenant).toHaveBeenCalledWith(
+      'project-1',
+      'tenant-1',
+      expect.objectContaining({
+        firstName: '', lastName: '', email: undefined, placeOfBirth: undefined,
+      }),
+    );
   });
 });

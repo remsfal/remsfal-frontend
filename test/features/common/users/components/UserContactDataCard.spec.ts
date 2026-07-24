@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, flushPromises, DOMWrapper, VueWrapper } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import Select from 'primevue/select';
+import DatePicker from 'primevue/datepicker';
 import UserContactDataCard from '@/features/common/users/components/UserContactDataCard.vue';
 import { userService } from '@/features/common/users/services/UserService';
 
@@ -88,6 +89,26 @@ describe('UserContactDataCard', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
+  test('falls back to empty defaults when optional profile fields are missing', async () => {
+    vi.mocked(userService.getUser).mockResolvedValue({
+      email: undefined,
+      firstName: '',
+      lastName: '',
+      placeOfBirth: '',
+      dateOfBirth: undefined,
+      mobilePhoneNumber: undefined,
+      businessPhoneNumber: undefined,
+      privatePhoneNumber: undefined,
+      locale: undefined,
+      additionalEmails: undefined,
+    });
+    wrapper = mountCard();
+    await flushPromises();
+
+    expect((wrapper.find('input#primaryEmail').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="firstName"]').element as HTMLInputElement).value).toBe('');
+  });
+
   test('logs an error when loading the profile fails', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(userService.getUser).mockRejectedValue(new Error('load failed'));
@@ -166,6 +187,31 @@ describe('UserContactDataCard', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
+  test('updates the date of birth via the date picker', async () => {
+    await flushPromises();
+
+    const datePicker = wrapper.findComponent(DatePicker);
+    await datePicker.vm.$emit('update:modelValue', new Date('1995-05-05'));
+    await flushPromises();
+    vi.mocked(userService.updateUser).mockResolvedValue({
+      ...mockProfile,
+      dateOfBirth: '1995-05-05',
+    });
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
+      },
+    });
+    await flushPromises();
+
+    expect(userService.updateUser).toHaveBeenCalledWith(
+      expect.objectContaining({ dateOfBirth: '1995-05-05' }),
+    );
+  });
+
   test('submits the form successfully and updates state', async () => {
     await flushPromises();
     vi.mocked(userService.updateUser).mockResolvedValue({
@@ -188,6 +234,62 @@ describe('UserContactDataCard', () => {
       expect.objectContaining({ firstName: 'Erika' }),
     );
     expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
+  });
+
+  test('submits with fallback defaults when optional fields and locale are empty', async () => {
+    await flushPromises();
+    vi.mocked(userService.updateUser).mockResolvedValue({
+      email: undefined,
+      firstName: '',
+      lastName: '',
+      placeOfBirth: undefined,
+      dateOfBirth: undefined,
+      mobilePhoneNumber: undefined,
+      businessPhoneNumber: undefined,
+      privatePhoneNumber: undefined,
+      locale: undefined,
+      additionalEmails: undefined,
+    });
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: { firstName: { value: '' }, lastName: { value: '' } },
+    });
+    await flushPromises();
+
+    expect(userService.updateUser).toHaveBeenCalledWith(
+      expect.objectContaining({
+        firstName: undefined, lastName: undefined, locale: undefined,
+      }),
+    );
+  });
+
+  test('includes the alternative email when it was changed before submitting', async () => {
+    await flushPromises();
+    const v = vm();
+    v.alternativeEmailInput = 'alt@example.com';
+    v.saveAlternativeEmail();
+    await flushPromises();
+    expect(v.altEmailDirty).toBe(true);
+
+    vi.mocked(userService.updateUser).mockResolvedValue({
+      ...mockProfile,
+      additionalEmails: ['alt@example.com'],
+    });
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
+      },
+    });
+    await flushPromises();
+
+    expect(userService.updateUser).toHaveBeenCalledWith(
+      expect.objectContaining({ additionalEmails: ['alt@example.com'] }),
+    );
   });
 
   test('does not submit when the form is invalid', async () => {
@@ -228,6 +330,20 @@ describe('UserContactDataCard', () => {
 
     await body.find('#alt-email-input').setValue('alt@example.com');
     await body.find('button[aria-label="Abbrechen"]').trigger('click');
+    await flushPromises();
+
+    expect(vm().dialogVisible).toBe(false);
+  });
+
+  test('closes the dialog when the dialog itself emits update:visible', async () => {
+    await flushPromises();
+
+    await wrapper.find('button[aria-label="Alternative E-Mail hinzufügen"]').trigger('click');
+    await flushPromises();
+    expect(vm().dialogVisible).toBe(true);
+
+    const dialog = wrapper.findComponent({ name: 'Dialog' });
+    await dialog.vm.$emit('update:visible', false);
     await flushPromises();
 
     expect(vm().dialogVisible).toBe(false);
