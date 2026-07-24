@@ -162,9 +162,6 @@ export interface components {
   schemas: {
     /** @description The address of a customer, a building or a site */
     AddressJson: {
-      addressLine1?: string;
-      addressLine2?: string;
-      addressLine3?: string;
       street: string;
       city: string;
       province: string;
@@ -448,6 +445,8 @@ export interface components {
       duplicateOf?: string[];
       blockedBy?: string[];
       blocks?: string[];
+      /** @description Proposed data change submitted via self-service, for manager review */
+      tenantUpdate?: components["schemas"]["TenantJson"];
       attachments?: components["schemas"]["IssueAttachmentJson"][];
     };
     /** @description A cursor-paginated list of issues */
@@ -466,7 +465,7 @@ export interface components {
     /** @enum {string} */
     IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
     /** @enum {string} */
-    IssueType: "APPLICATION" | "DEFECT" | "INQUIRY" | "MAINTENANCE" | "TASK" | "TERMINATION";
+    IssueType: "APPLICATION" | "DEFECT" | "INQUIRY" | "MAINTENANCE" | "SELF_SERVICE" | "TASK" | "TERMINATION";
     /**
      * Format: date
      * @example 2022-03-10
@@ -1047,6 +1046,10 @@ export interface components {
       businessPhoneNumber?: string;
       privatePhoneNumber?: string;
       locale?: string;
+      /** @example Berlin */
+      placeOfBirth?: string;
+      /** @example 1990-01-01 */
+      dateOfBirth?: components["schemas"]["LocalDate"];
       /**
        * @example [
        *       "test@example.com",

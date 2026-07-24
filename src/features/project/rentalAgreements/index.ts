@@ -6,3 +6,5 @@ export { default as NewRentalAgreementDialog } from './components/NewRentalAgree
 export { default as TenancyDataComponent } from './components/TenancyDataComponent.vue';
 export { default as RentalAgreementTenantListCard } from './components/RentalAgreementTenantListCard.vue';
 export { default as UnitsTableComponent } from './components/UnitsTableComponent.vue';
+export { default as TenantContactDataCard } from './components/TenantContactDataCard.vue';
+export { default as TenantAddressCard } from './components/TenantAddressCard.vue';

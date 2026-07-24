@@ -252,7 +252,7 @@ describe('InboxMessageList', () => {
       mountWithProps({ messages: [monthAgo, weekAgo, yesterday, today], grouping: 'date' });
 
       const groupHeaders = wrapper.findAll('.px-4.py-2.bg-surface-100');
-      expect(groupHeaders.length).toBe(4);
+      expect(groupHeaders).toHaveLength(4);
     });
 
     it('handles selected messages with project grouping', () => {
