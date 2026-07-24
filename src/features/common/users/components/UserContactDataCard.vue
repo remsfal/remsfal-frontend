@@ -12,9 +12,11 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
+import DatePicker from 'primevue/datepicker';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import { userService } from '@/features/common/users/services/UserService';
 import { type Locale } from '@/i18n/i18n';
+import { toISODateString } from '@/helper/dataHelper';
 
 const { t } = useI18n();
 const i18n = useI18n();
@@ -34,17 +36,26 @@ const schema = z.object({
     .trim()
     .min(1, { message: t('validation.required') })
     .regex(nameRegex, { message: t('accountSettings.validation.nameInvalid') }),
+  placeOfBirth: z.string().trim().or(z.literal('')),
   locale: z.string(),
 });
 
 const resolver = zodResolver(schema);
 const formKey = ref(0);
-const formFields = ['firstName', 'lastName', 'locale'];
+const formFields = ['firstName', 'lastName', 'placeOfBirth', 'locale'];
 const initialValues = ref<Record<string, string>>({
   firstName: '',
   lastName: '',
+  placeOfBirth: '',
   locale: i18n.locale.value,
 });
+
+// Date of birth tracked separately (not via PrimeVue Forms, DatePicker returns a Date)
+const serverDateOfBirth = ref<Date | null>(null);
+const dateOfBirthValue = ref<Date | null>(null);
+const dateOfBirthDirty = computed(
+  () => toISODateString(dateOfBirthValue.value) !== toISODateString(serverDateOfBirth.value),
+);
 
 // Phone fields tracked separately (not via PrimeVue Forms)
 const serverPhones = reactive({
@@ -96,11 +107,15 @@ onMounted(async () => {
     initialValues.value = {
       firstName: profile.firstName || '',
       lastName: profile.lastName || '',
+      placeOfBirth: profile.placeOfBirth || '',
       locale: profile.locale ? validateLocale(profile.locale) : i18n.locale.value,
     };
     if (profile.locale) {
       i18n.locale.value = validateLocale(profile.locale);
     }
+    serverDateOfBirth.value = dateOfBirthValue.value = profile.dateOfBirth
+      ? new Date(profile.dateOfBirth)
+      : null;
     const phones = {
       mobile: profile.mobilePhoneNumber || '',
       business: profile.businessPhoneNumber || '',
@@ -169,6 +184,8 @@ async function onSubmit(event: FormSubmitEvent) {
     const updatedUser = await userService.updateUser({
       firstName: s.firstName?.value || undefined,
       lastName: s.lastName?.value || undefined,
+      placeOfBirth: s.placeOfBirth?.value?.trim() || undefined,
+      dateOfBirth: toISODateString(dateOfBirthValue.value) || undefined,
       mobilePhoneNumber: currentPhones.mobile || undefined,
       businessPhoneNumber: currentPhones.business || undefined,
       privatePhoneNumber: currentPhones.private || undefined,
@@ -179,8 +196,12 @@ async function onSubmit(event: FormSubmitEvent) {
     initialValues.value = {
       firstName: updatedUser.firstName || '',
       lastName: updatedUser.lastName || '',
+      placeOfBirth: updatedUser.placeOfBirth || '',
       locale: updatedUser.locale ? validateLocale(updatedUser.locale) : i18n.locale.value,
     };
+    serverDateOfBirth.value = dateOfBirthValue.value = updatedUser.dateOfBirth
+      ? new Date(updatedUser.dateOfBirth)
+      : null;
     formKey.value++;
 
     const savedPhones = {
@@ -264,6 +285,28 @@ async function onSubmit(event: FormSubmitEvent) {
               >
                 {{ $form.lastName.error?.message }}
               </Message>
+            </div>
+
+            <!-- Place of Birth -->
+            <div class="flex flex-col gap-1">
+              <label class="font-medium" for="placeOfBirth">
+                {{ t('accountSettings.userProfile.placeOfBirth') }}
+              </label>
+              <InputText id="placeOfBirth" fluid name="placeOfBirth" />
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="flex flex-col gap-1">
+              <label class="font-medium" for="dateOfBirth">
+                {{ t('accountSettings.userProfile.dateOfBirth') }}
+              </label>
+              <DatePicker
+                id="dateOfBirth"
+                v-model="dateOfBirthValue"
+                dateFormat="dd.mm.yy"
+                fluid
+                showIcon
+              />
             </div>
 
             <!-- Primary Email (readonly) -->
@@ -385,7 +428,10 @@ async function onSubmit(event: FormSubmitEvent) {
           <!-- Save Button -->
           <div class="flex justify-end">
             <Button
-              :disabled="!(formFields.some(k => $form[k]?.dirty) || altEmailDirty || phoneDirty) || hasPhoneError"
+              :disabled="
+                !(formFields.some(k => $form[k]?.dirty) || altEmailDirty || phoneDirty || dateOfBirthDirty) ||
+                  hasPhoneError
+              "
               :label="t('button.save')"
               icon="pi pi-save"
               type="submit"
