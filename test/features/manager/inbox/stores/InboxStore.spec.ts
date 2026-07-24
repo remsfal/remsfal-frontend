@@ -66,9 +66,9 @@ describe('InboxStore', () => {
     it('loads messages and normalizes receivedAt', async () => {
       await store.fetchInbox();
 
-      expect(store.messages.length).toBe(3);
+      expect(store.messages).toHaveLength(3);
       expect(store.messages[0].id).toBe('1');
-      expect(store.messages[0].receivedAt instanceof Date).toBe(true);
+      expect(store.messages[0].receivedAt).toBeInstanceOf(Date);
       expect(store.isLoading).toBe(false);
     });
 
@@ -86,7 +86,7 @@ describe('InboxStore', () => {
 
       await store.fetchInbox();
 
-      expect(store.messages[0].receivedAt instanceof Date).toBe(true);
+      expect(store.messages[0].receivedAt).toBeInstanceOf(Date);
     });
   });
 
@@ -149,8 +149,8 @@ describe('InboxStore', () => {
       const msg3 = { ...mockMessages[2], isRead: false };
       store.messages = [msg1, msg2, msg3];
       store.selectedMessages = [msg1, msg3];
-      
-      expect(store.selectedMessages.length).toBe(2);
+
+      expect(store.selectedMessages).toHaveLength(2);
       expect(msg1.isRead).toBe(false);
       expect(msg3.isRead).toBe(false);
 
@@ -158,12 +158,12 @@ describe('InboxStore', () => {
 
       expect(msg1.isRead).toBe(true);
       expect(msg3.isRead).toBe(true);
-      expect(store.selectedMessages.length).toBe(0);
+      expect(store.selectedMessages).toHaveLength(0);
     });
 
     it('clears selection after marking as read', async () => {
       await store.markReadSelected();
-      expect(store.selectedMessages.length).toBe(0);
+      expect(store.selectedMessages).toHaveLength(0);
     });
 
     it('reverts optimistic updates when the API call fails', async () => {
@@ -191,14 +191,14 @@ describe('InboxStore', () => {
 
     it('calls service for all selected messages and removes them from local state', async () => {
       const initialLength = store.messages.length;
-      expect(store.selectedMessages.length).toBe(2);
+      expect(store.selectedMessages).toHaveLength(2);
 
       await store.confirmDeleteSelected();
 
-      expect(store.messages.length).toBe(initialLength - 2);
+      expect(store.messages).toHaveLength(initialLength - 2);
       expect(store.messages.find(m => m.id === '1')).toBeUndefined();
       expect(store.messages.find(m => m.id === '2')).toBeUndefined();
-      expect(store.selectedMessages.length).toBe(0);
+      expect(store.selectedMessages).toHaveLength(0);
     });
 
     it('restores deleted messages when the API call fails', async () => {
@@ -214,7 +214,7 @@ describe('InboxStore', () => {
 
       await expect(store.confirmDeleteSelected()).resolves.not.toThrow();
 
-      expect(store.messages.length).toBe(initialLength);
+      expect(store.messages).toHaveLength(initialLength);
       expect(store.messages.find(m => m.id === '1')).toBeDefined();
       expect(store.messages.find(m => m.id === '2')).toBeDefined();
     });
@@ -232,7 +232,7 @@ describe('InboxStore', () => {
       store.activeTab = 'unread';
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
       expect(filtered.every(m => !m.isRead)).toBe(true);
     });
 
@@ -240,14 +240,14 @@ describe('InboxStore', () => {
       store.activeTab = 'all';
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(3);
+      expect(filtered).toHaveLength(3);
     });
 
     it('filters by search query', () => {
       store.searchQuery = 'Issue 1';
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].issueTitle).toBe('Test Issue 1');
     });
 
@@ -255,7 +255,7 @@ describe('InboxStore', () => {
       store.filterProject = ['proj-1'];
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
       expect(filtered.every(m => m.projectId === 'proj-1')).toBe(true);
     });
 
@@ -263,7 +263,7 @@ describe('InboxStore', () => {
       store.filterIssueType = ['DEFECT'];
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].issueType).toBe('DEFECT');
     });
 
@@ -271,7 +271,7 @@ describe('InboxStore', () => {
       store.filterIssueStatus = ['OPEN'];
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].issueStatus).toBe('OPEN');
     });
 
@@ -281,7 +281,7 @@ describe('InboxStore', () => {
       store.filterIssueType = ['DEFECT'];
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].id).toBe('1');
     });
 
@@ -296,14 +296,14 @@ describe('InboxStore', () => {
       store.filterDateRange = [new Date('2025-02-01T00:00:00Z'), new Date('2025-02-02T00:00:00Z')];
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(0);
+      expect(filtered).toHaveLength(0);
     });
 
     it('ignores an incomplete date range', () => {
       store.filterDateRange = [undefined as unknown as Date, undefined as unknown as Date];
       const filtered = store.filteredMessages;
 
-      expect(filtered.length).toBe(mockMessages.length);
+      expect(filtered).toHaveLength(mockMessages.length);
     });
   });
 
@@ -372,7 +372,7 @@ describe('InboxStore', () => {
     it('returns unique project options', () => {
       const options = store.projectOptions;
 
-      expect(options.length).toBe(2);
+      expect(options).toHaveLength(2);
       expect(options.find(o => o.value === 'proj-1')?.label).toBe('Project 1');
       expect(options.find(o => o.value === 'proj-2')?.label).toBe('Project 2');
     });
@@ -388,9 +388,9 @@ describe('InboxStore', () => {
 
       store.clearFilters();
 
-      expect(store.filterProject.length).toBe(0);
-      expect(store.filterIssueType.length).toBe(0);
-      expect(store.filterIssueStatus.length).toBe(0);
+      expect(store.filterProject).toHaveLength(0);
+      expect(store.filterIssueType).toHaveLength(0);
+      expect(store.filterIssueStatus).toHaveLength(0);
       expect(store.searchQuery).toBe('');
       expect(store.filterDateRange).toBeNull();
     });
