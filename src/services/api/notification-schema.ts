@@ -1047,6 +1047,10 @@ export interface components {
       businessPhoneNumber?: string;
       privatePhoneNumber?: string;
       locale?: string;
+      /** @example Berlin */
+      placeOfBirth?: string;
+      /** @example 1990-01-01 */
+      dateOfBirth?: components["schemas"]["LocalDate"];
       /**
        * @example [
        *       "test@example.com",
