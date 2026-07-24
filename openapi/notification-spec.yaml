@@ -5,13 +5,13 @@ components:
     AddressJson:
       description: "The address of a customer, a building or a site"
       type: object
+      required:
+      - street
+      - city
+      - province
+      - zip
+      - countryCode
       properties:
-        addressLine1:
-          type: string
-        addressLine2:
-          type: string
-        addressLine3:
-          type: string
         street:
           type: string
           pattern: \S
@@ -29,12 +29,6 @@ components:
           pattern: \S
           minLength: 2
           maxLength: 2
-      required:
-      - street
-      - city
-      - province
-      - zip
-      - countryCode
     ApartmentJson:
       description: An apartment inside a building according to WoFIV
       type: object
@@ -582,6 +576,11 @@ components:
             type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        tenantUpdate:
+          description: "Proposed data change submitted via self-service, for manager\
+            \ review"
+          type: object
+          $ref: "#/components/schemas/TenantJson"
         attachments:
           type: array
           items:
@@ -631,6 +630,7 @@ components:
       - DEFECT
       - INQUIRY
       - MAINTENANCE
+      - SELF_SERVICE
       - TASK
       - TERMINATION
     LocalDate:

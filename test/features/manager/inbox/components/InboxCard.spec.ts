@@ -230,7 +230,7 @@ describe('InboxCard.vue', () => {
 
     await messageList.vm.$emit('select-all');
 
-    expect(store.selectedMessages.length).toBe(mockMessages.length);
+    expect(store.selectedMessages).toHaveLength(mockMessages.length);
   });
 
   it('deselects all messages when all are already selected', async () => {
@@ -240,7 +240,7 @@ describe('InboxCard.vue', () => {
 
     await messageList.vm.$emit('select-all');
 
-    expect(store.selectedMessages.length).toBe(0);
+    expect(store.selectedMessages).toHaveLength(0);
   });
 
   it('marks a single message as read via the message item action', async () => {
