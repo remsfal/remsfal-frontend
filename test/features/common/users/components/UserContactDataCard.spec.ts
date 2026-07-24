@@ -237,6 +237,8 @@ describe('UserContactDataCard', () => {
   });
 
   test('submits with fallback defaults when optional fields and locale are empty', async () => {
+    vi.mocked(userService.getUser).mockResolvedValue({ ...mockProfile, dateOfBirth: undefined });
+    wrapper = mountCard();
     await flushPromises();
     vi.mocked(userService.updateUser).mockResolvedValue({
       email: undefined,
@@ -290,6 +292,28 @@ describe('UserContactDataCard', () => {
     expect(userService.updateUser).toHaveBeenCalledWith(
       expect.objectContaining({ additionalEmails: ['alt@example.com'] }),
     );
+  });
+
+  test('shows the error icon next to an existing alternative email when saving fails', async () => {
+    await flushPromises();
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const v = vm();
+    v.additionalEmails = ['alt@example.com'];
+    await flushPromises();
+    vi.mocked(userService.updateUser).mockRejectedValue(new Error('save failed'));
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Max' }, lastName: { value: 'Mustermann' }, locale: { value: 'de' }
+      },
+    });
+    await flushPromises();
+
+    expect(v.altEmailError).toBe(true);
+    expect(wrapper.text()).toContain('✗');
+    consoleErrorSpy.mockRestore();
   });
 
   test('does not submit when the form is invalid', async () => {
