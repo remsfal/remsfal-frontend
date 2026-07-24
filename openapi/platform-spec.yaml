@@ -4349,6 +4349,70 @@ paths:
           description: Rental agreement was deleted successfully
         "401":
           description: No user authentication provided via session cookie
+  /api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants:
+    post:
+      summary: Add a tenant to a rental agreement
+      parameters:
+      - description: ID of the tenancy
+        required: true
+        name: agreementId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantJson"
+        required: true
+      responses:
+        "201":
+          description: Tenant was added to the rental agreement successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantJson"
+        "400":
+          description: Invalid request message
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: The rental agreement does not exist
+  /api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants/{tenantId}:
+    delete:
+      summary: Remove a tenant from a rental agreement
+      parameters:
+      - description: ID of the tenancy
+        required: true
+        name: agreementId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the tenant
+        required: true
+        name: tenantId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: Tenant was removed from the rental agreement successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: The rental agreement does not exist
   /api/v1/projects/{projectId}/sites:
     post:
       summary: Create a new site
