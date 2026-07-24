@@ -13,6 +13,8 @@
   "accountSettings.userProfile.userSince": "Mitglied seit",
   "accountSettings.userProfile.firstName": "Vorname",
   "accountSettings.userProfile.lastName": "Nachname",
+  "accountSettings.userProfile.placeOfBirth": "Geburtsort",
+  "accountSettings.userProfile.dateOfBirth": "Geburtsdatum",
   "accountSettings.userProfile.requiredFields": "*Plichtfelder",
   "accountSettings.userProfile.managementView": "Zur Verwalter Ansicht",
   "accountSettings.userProfile.tenanciesView": "Zur Mieter Ansicht",

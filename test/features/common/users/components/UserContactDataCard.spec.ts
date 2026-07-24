@@ -19,6 +19,8 @@ const mockProfile = {
   email: 'primary@example.com',
   firstName: 'Max',
   lastName: 'Mustermann',
+  placeOfBirth: 'Berlin',
+  dateOfBirth: '1990-01-01',
   mobilePhoneNumber: '',
   businessPhoneNumber: '',
   privatePhoneNumber: '',

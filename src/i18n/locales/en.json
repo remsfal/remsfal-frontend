@@ -13,6 +13,8 @@
   "accountSettings.userProfile.userSince": "Member Since",
   "accountSettings.userProfile.firstName": "First Name",
   "accountSettings.userProfile.lastName": "Last Name",
+  "accountSettings.userProfile.placeOfBirth": "Place of Birth",
+  "accountSettings.userProfile.dateOfBirth": "Date of Birth",
   "accountSettings.userProfile.requiredFields": "*Required Fields",
   "accountSettings.userProfile.managementView": "View For Administrators",
   "accountSettings.userProfile.tenanciesView": "View For Tenants",
