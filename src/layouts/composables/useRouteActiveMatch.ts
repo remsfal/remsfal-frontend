@@ -1,6 +1,24 @@
 import type { RouteLocationNormalizedLoaded, RouteLocationRaw } from 'vue-router';
 
-type QueryRecord = Record<string, string | null | (string | null)[] | undefined>;
+type QueryValue = string | null | (string | null)[] | undefined;
+type QueryRecord = Record<string, QueryValue>;
+
+/**
+ * Normalizes a scalar-or-array query value into a sorted array so a single value
+ * and a 1-element array compare equal, and two arrays compare equal regardless of
+ * order (vue-router/axios don't guarantee order is preserved for repeated query keys).
+ */
+function toSortedList(value: QueryValue): (string | null)[] {
+  const list = value === undefined ? [] : Array.isArray(value) ? value : [value];
+  return [...list].sort();
+}
+
+function valuesMatch(a: QueryValue, b: QueryValue): boolean {
+  const listA = toSortedList(a);
+  const listB = toSortedList(b);
+  if (listA.length !== listB.length) return false;
+  return listA.every((value, index) => value === listB[index]);
+}
 
 /**
  * Exact-set equality: a target's declared query keys/values must match the route's
@@ -15,7 +33,7 @@ function matchesQueryParams(targetQuery: QueryRecord, routeQuery: QueryRecord): 
 
   if (targetKeys.length !== routeKeys.length) return false;
 
-  return targetKeys.every((key) => routeQuery[key] === targetQuery[key]);
+  return targetKeys.every((key) => valuesMatch(targetQuery[key], routeQuery[key]));
 }
 
 /**

@@ -1,13 +1,20 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import IssueTable, { type IssueColumn } from '../components/IssueTable.vue';
 import NewIssueDialog from '../components/NewIssueDialog.vue';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
-const props = defineProps<{ projectId: string; assigneeId?: string; status?: IssueStatus; type?: IssueType; }>();
+const props = defineProps<{
+  projectId: string;
+  assigneeId?: string;
+  status?: IssueStatus | IssueStatus[];
+  type?: IssueType | IssueType[];
+}>();
 const router = useRouter();
+const { t } = useI18n();
 
 // Reactive state
 const showNewIssueDialog = ref(false);
@@ -23,17 +30,61 @@ const loadIssues = async () => {
   }
 };
 
+function toArray<T>(value?: T | T[]): T[] {
+  return value === undefined ? [] : Array.isArray(value) ? value : [value];
+}
+
+function isExactSet<T>(values: T[], expected: T[]): boolean {
+  if (values.length !== expected.length) return false;
+  const sorted = [...values].sort();
+  const expectedSorted = [...expected].sort();
+  return sorted.every((value, index) => value === expectedSorted[index]);
+}
+
+const OPEN_STATUSES: IssueStatus[] = ['OPEN', 'IN_PROGRESS'];
+const REQUEST_TYPES: IssueType[] = ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'];
+
+const isDefectOnly = computed(() => isExactSet(toArray(props.type), ['DEFECT']));
+
 const columns = computed<IssueColumn[]>(() =>
-  props.type === 'DEFECT' ? ['title', 'status', 'priority'] : ['title', 'assignee', 'status'],
+  isDefectOnly.value ? ['title', 'status', 'priority'] : ['title', 'assignee', 'status'],
 );
 
+// Ordered filter-signature lookup, reusing the sidebar's own i18n keys instead
+// of re-deriving a label from the raw filter props (which share status/type
+// combinations across several distinct menu items).
+const HEADING_PRESETS: { key: string; matches: (statusArr: IssueStatus[], typeArr: IssueType[]) => boolean }[] = [
+  {
+    key: 'projectMenu.issueManagement.mine',
+    matches: (statusArr, typeArr) => !!props.assigneeId && statusArr.length === 0 && typeArr.length === 0,
+  },
+  {
+    key: 'projectMenu.tenantCommunication.open',
+    matches: (statusArr, typeArr) => isExactSet(statusArr, OPEN_STATUSES) && isExactSet(typeArr, ['DEFECT']),
+  },
+  {
+    key: 'projectMenu.tenantCommunication.requests',
+    matches: (statusArr, typeArr) => isExactSet(statusArr, OPEN_STATUSES) && isExactSet(typeArr, REQUEST_TYPES),
+  },
+  {
+    key: 'projectMenu.issueManagement.open',
+    matches: (statusArr, typeArr) => isExactSet(statusArr, OPEN_STATUSES) && typeArr.length === 0,
+  },
+  {
+    key: 'projectMenu.tenantCommunication.new',
+    matches: (statusArr, typeArr) => isExactSet(statusArr, ['PENDING']) && typeArr.length === 0,
+  },
+  {
+    key: 'projectMenu.issueManagement.all',
+    matches: () => true,
+  },
+];
+
 const heading = computed(() => {
-  const subject = props.type === 'DEFECT' ? 'Mängel' : 'Aufgaben';
-  if (props.assigneeId) return `Meine ${subject}`;
-  if (props.status === 'OPEN') return `Offene ${subject}`;
-  if (props.status === 'CLOSED') return `Geschlossene ${subject}`;
-  if (props.status === 'PENDING') return `Neue ${subject}`;
-  return `Alle ${subject}`;
+  const statusArr = toArray(props.status);
+  const typeArr = toArray(props.type);
+  const preset = HEADING_PRESETS.find((candidate) => candidate.matches(statusArr, typeArr));
+  return t(preset?.key ?? 'projectMenu.issueManagement.all');
 });
 
 // --- Handle issue created from dialog ---
@@ -69,7 +120,6 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
           <NewIssueDialog
             v-model:visible="showNewIssueDialog"
             :projectId="props.projectId"
-            :category="props.type"
             @issueCreated="handleIssueCreated"
           />
 
@@ -84,7 +134,7 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
           <!-- Create Button -->
           <div class="flex justify-end mt-6">
             <Button
-              :label="props.type === 'DEFECT' ? 'Mangel melden' : 'Aufgabe erstellen'"
+              :label="t('newIssueDialog.title')"
               icon="pi pi-plus"
               @click="showNewIssueDialog = true"
             />

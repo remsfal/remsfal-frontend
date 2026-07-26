@@ -63,7 +63,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
             ? {
               name: 'IssueOverview',
               params: { projectId: currentProjectId },
-              query: { assigneeId: sessionStore.user?.id, type: 'TASK' },
+              query: sessionStore.user?.id ? { assigneeId: sessionStore.user.id } : {},
             }
             : '/',
         },
@@ -74,7 +74,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
             ? {
               name: 'IssueOverview',
               params: { projectId: currentProjectId },
-              query: { status: 'OPEN', type: 'TASK' },
+              query: { status: ['OPEN', 'IN_PROGRESS'] },
             }
             : '/',
         },
@@ -83,54 +83,45 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
           icon: { type: 'fa', name: ['far', 'rectangle-list'] },
           to: currentProjectId
             ? {
-              name: 'IssueOverview', params: { projectId: currentProjectId }, query: { type: 'TASK' } 
+              name: 'IssueOverview', params: { projectId: currentProjectId }, query: {}
             }
             : '/',
         },
       ],
     },
     {
-      label: 'projectMenu.defectManagement',
+      label: 'projectMenu.tenantCommunication',
       items: [
         {
-          label: 'projectMenu.defectManagement.new',
+          label: 'projectMenu.tenantCommunication.new',
           icon: { type: 'pi', name: 'pi pi-fw pi-list' },
           to: currentProjectId
             ? {
               name: 'IssueOverview',
               params: { projectId: currentProjectId },
-              query: { status: 'PENDING', type: 'DEFECT' },
+              query: { status: 'PENDING' },
             }
             : '/',
         },
         {
-          label: 'projectMenu.defectManagement.open',
+          label: 'projectMenu.tenantCommunication.open',
           icon: { type: 'pi', name: 'pi pi-fw pi-list' },
           to: currentProjectId
             ? {
               name: 'IssueOverview',
               params: { projectId: currentProjectId },
-              query: { status: 'OPEN', type: 'DEFECT' },
+              query: { status: ['OPEN', 'IN_PROGRESS'], type: 'DEFECT' },
             }
             : '/',
         },
         {
-          label: 'projectMenu.defectManagement.closed',
-          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
-          to: currentProjectId
-            ? {
-              name: 'IssueOverview',
-              params: { projectId: currentProjectId },
-              query: { status: 'CLOSED', type: 'DEFECT' },
-            }
-            : '/',
-        },
-        {
-          label: 'projectMenu.defectManagement.all',
+          label: 'projectMenu.tenantCommunication.requests',
           icon: { type: 'pi', name: 'pi pi-fw pi-comments' },
           to: currentProjectId
             ? {
-              name: 'IssueOverview', params: { projectId: currentProjectId }, query: { type: 'DEFECT' } 
+              name: 'IssueOverview',
+              params: { projectId: currentProjectId },
+              query: { status: ['OPEN', 'IN_PROGRESS'], type: ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'] },
             }
             : '/',
         },
