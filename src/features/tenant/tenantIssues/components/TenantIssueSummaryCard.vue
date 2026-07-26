@@ -6,7 +6,7 @@ import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
 import type { TenantIssueJson } from '@/services/TenantIssueService';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
-  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/tenant/tenantIssues/issueLabels';
+  getIssueStatusSeverity, getIssueTypeLabel } from '@/features/common/issues/issueLabels';
 
 const props = defineProps<{ issue: TenantIssueJson; deletingIssue: boolean; }>();
 

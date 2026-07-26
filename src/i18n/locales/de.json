@@ -575,6 +575,7 @@
   "issueDetails.fields.priority": "Priorität",
   "issueDetails.fields.priorityPlaceholder": "Priorität auswählen",
   "issueDetails.fields.assignedAt": "Zugewiesen am",
+  "issueDetails.fields.modifiedAt": "Letzte Änderung",
   "issueDetails.fields.untitled": "Unbenannter Vorgang",
   "issueDetails.fields.titlePlaceholder": "Titel eingeben",
   "issueDetails.fields.statusPlaceholder": "Status auswählen",

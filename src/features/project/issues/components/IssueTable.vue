@@ -5,8 +5,9 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { type IssueItemJson } from '@/services/IssueService';
 import { useProjectMembers } from '@/composables/useProjectMembers';
+import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
 
-export type IssueColumn = 'title' | 'assignee' | 'status' | 'priority' | 'type';
+export type IssueColumn = 'title' | 'assignee' | 'status' | 'priority' | 'type' | 'issueNumber' | 'modifiedAt';
 
 const props = withDefaults(
   defineProps<{
@@ -21,7 +22,17 @@ const emit = defineEmits<{
   rowSelect: [issue: IssueItemJson];
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+const COLUMN_DEFS: Record<IssueColumn, { field: string; headerKey: string }> = {
+  issueNumber: { field: 'id', headerKey: 'issueDetails.fields.issueNumber' },
+  title: { field: 'title', headerKey: 'issueDetails.fields.title' },
+  type: { field: 'type', headerKey: 'issueDetails.fields.type' },
+  status: { field: 'status', headerKey: 'issueDetails.fields.status' },
+  priority: { field: 'priority', headerKey: 'issueDetails.fields.priority' },
+  assignee: { field: 'assigneeId', headerKey: 'issueDetails.fields.assignee' },
+  modifiedAt: { field: 'modifiedAt', headerKey: 'issueDetails.fields.modifiedAt' },
+};
 
 const { members } = useProjectMembers(toRef(props, 'projectId'));
 
@@ -30,7 +41,15 @@ const memberNameById = computed(() => new Map(members.value.map((m) => [m.id, m.
 const assigneeName = (assigneeId?: string) =>
   (assigneeId && memberNameById.value.get(assigneeId)) || assigneeId;
 
-const isColumnVisible = (column: IssueColumn) => props.columns.includes(column);
+const issueNumber = (id?: string) => id?.split('-').pop() || id;
+
+const modifiedAtLabel = (modifiedAt?: string) => {
+  if (!modifiedAt) return undefined;
+  const date = new Date(modifiedAt);
+  return Number.isNaN(date.getTime()) ? modifiedAt : date.toLocaleDateString(locale.value);
+};
+
+const visibleColumns = computed(() => props.columns.map((key) => ({ key, ...COLUMN_DEFS[key] })));
 
 const onRowSelect = (event: { data: IssueItemJson }) => {
   emit('rowSelect', event.data);
@@ -42,7 +61,7 @@ const onRowSelect = (event: { data: IssueItemJson }) => {
     :value="props.issues"
     tableStyle="min-width: 60rem"
     paginator
-    :rows="5"
+    :rows="50"
     selectionMode="single"
     :metaKeySelection="false"
     @rowSelect="onRowSelect"
@@ -54,14 +73,31 @@ const onRowSelect = (event: { data: IssueItemJson }) => {
         </div>
       </div>
     </template>
-    <Column v-if="isColumnVisible('title')" field="title" :header="t('issueDetails.fields.title')" sortable />
-    <Column v-if="isColumnVisible('assignee')" field="assigneeId" :header="t('issueDetails.fields.assignee')" sortable>
-      <template #body="slotProps">
+    <Column
+      v-for="col in visibleColumns"
+      :key="col.key"
+      :field="col.field"
+      :header="t(col.headerKey)"
+      sortable
+    >
+      <template v-if="col.key === 'assignee'" #body="slotProps">
         {{ assigneeName(slotProps.data.assigneeId) }}
       </template>
+      <template v-else-if="col.key === 'issueNumber'" #body="slotProps">
+        {{ issueNumber(slotProps.data.id) }}
+      </template>
+      <template v-else-if="col.key === 'modifiedAt'" #body="slotProps">
+        {{ modifiedAtLabel(slotProps.data.modifiedAt) }}
+      </template>
+      <template v-else-if="col.key === 'status'" #body="slotProps">
+        {{ getIssueStatusLabel(slotProps.data.status, t) }}
+      </template>
+      <template v-else-if="col.key === 'type'" #body="slotProps">
+        {{ getIssueTypeLabel(slotProps.data.type, t) }}
+      </template>
+      <template v-else-if="col.key === 'priority'" #body="slotProps">
+        {{ getIssuePriorityLabel(slotProps.data.priority, t) }}
+      </template>
     </Column>
-    <Column v-if="isColumnVisible('status')" field="status" :header="t('issueDetails.fields.status')" sortable />
-    <Column v-if="isColumnVisible('priority')" field="priority" :header="t('issueDetails.fields.priority')" sortable />
-    <Column v-if="isColumnVisible('type')" field="type" :header="t('issueDetails.fields.type')" sortable />
   </DataTable>
 </template>

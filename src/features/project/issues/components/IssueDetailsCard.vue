@@ -11,7 +11,9 @@ import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
 import { issueService, type IssueJson, type IssueType, type IssueCategory, type IssuePriority } from '@/services/IssueService';
+import type { IssueStatus } from '@/services/IssueService';
 import { useProjectStore } from '@/stores/ProjectStore';
+import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
 
 /* =========================
      Props & Emits
@@ -181,30 +183,17 @@ const modifiedAtLabel = computed(() => {
 /* =========================
      Dropdown Options
   ========================= */
-const statusOptions = computed(() => [
-  { label: t('inbox.filters.status.pending'), value: 'PENDING' },
-  { label: t('inbox.filters.status.open'), value: 'OPEN' },
-  { label: t('inbox.filters.status.inProgress'), value: 'IN_PROGRESS' },
-  { label: t('inbox.filters.status.closed'), value: 'CLOSED' },
-  { label: t('inbox.filters.status.rejected'), value: 'REJECTED' },
-]);
+const STATUS_ORDER: IssueStatus[] = ['PENDING', 'OPEN', 'IN_PROGRESS', 'CLOSED', 'REJECTED'];
+const statusOptions = computed(() =>
+  STATUS_ORDER.map((value) => ({ label: getIssueStatusLabel(value, t), value })));
 
-const typeOptions = computed(() => [
-  { label: t('issueType.task'), value: 'TASK' as IssueType },
-  { label: t('issueType.application'), value: 'APPLICATION' as IssueType },
-  { label: t('issueType.defect'), value: 'DEFECT' as IssueType },
-  { label: t('issueType.maintenance'), value: 'MAINTENANCE' as IssueType },
-  { label: t('issueType.inquiry'), value: 'INQUIRY' as IssueType },
-  { label: t('issueType.termination'), value: 'TERMINATION' as IssueType },
-]);
+const TYPE_ORDER: IssueType[] = ['TASK', 'APPLICATION', 'DEFECT', 'MAINTENANCE', 'INQUIRY', 'TERMINATION'];
+const typeOptions = computed(() =>
+  TYPE_ORDER.map((value) => ({ label: getIssueTypeLabel(value, t), value })));
 
-const priorityOptions = computed(() => [
-  { label: t('issuePriority.urgent'), value: 'URGENT' as IssuePriority },
-  { label: t('issuePriority.high'), value: 'HIGH' as IssuePriority },
-  { label: t('issuePriority.medium'), value: 'MEDIUM' as IssuePriority },
-  { label: t('issuePriority.low'), value: 'LOW' as IssuePriority },
-  { label: t('issuePriority.unclassified'), value: 'UNCLASSIFIED' as IssuePriority },
-]);
+const PRIORITY_ORDER: IssuePriority[] = ['URGENT', 'HIGH', 'MEDIUM', 'LOW', 'UNCLASSIFIED'];
+const priorityOptions = computed(() =>
+  PRIORITY_ORDER.map((value) => ({ label: getIssuePriorityLabel(value, t), value })));
 
 /* =========================
      AutoComplete Search

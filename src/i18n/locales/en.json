@@ -572,6 +572,7 @@
   "issueDetails.fields.priority": "Priority",
   "issueDetails.fields.priorityPlaceholder": "Select priority",
   "issueDetails.fields.assignedAt": "Assigned on",
+  "issueDetails.fields.modifiedAt": "Last modified",
   "issueDetails.fields.untitled": "Untitled issue",
   "issueDetails.fields.titlePlaceholder": "Enter issue title",
   "issueDetails.fields.statusPlaceholder": "Select status",
