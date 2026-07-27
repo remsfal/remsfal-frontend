@@ -4855,6 +4855,8 @@ export interface components {
       tenants?: components["schemas"]["TenantJson"][];
       startOfRental?: components["schemas"]["LocalDate"];
       endOfRental?: components["schemas"]["LocalDate"];
+      /** @description List of key handovers for this rental agreement */
+      keys?: components["schemas"]["RentalAgreementKeysJson"][];
       /** @description List of property rents */
       propertyRents?: components["schemas"]["RentJson"][];
       /** @description List of site rents */
@@ -4867,6 +4869,20 @@ export interface components {
       storageRents?: components["schemas"]["RentJson"][];
       /** @description List of commercial rents */
       commercialRents?: components["schemas"]["RentJson"][];
+    };
+    /** @description A key handover record for a rental agreement */
+    RentalAgreementKeysJson: {
+      /**
+       * Format: int32
+       * @description Number of keys of this type
+       */
+      amountOfKeys: number;
+      /** @description Date the key(s) were issued to the tenant */
+      issuedAt?: components["schemas"]["LocalDate"];
+      /** @description Date the key(s) were returned by the tenant */
+      returnedAt?: components["schemas"]["LocalDate"];
+      /** @description Free text describing the type of key, e.g. front door, mailbox, garage */
+      keyDescription?: string;
     };
     /** @description A list of rental agreements for a project */
     RentalAgreementListJson: {
