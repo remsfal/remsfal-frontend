@@ -8,7 +8,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import TenantIssueTimelineCard from '../components/TenantIssueTimelineCard.vue';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
-import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
+import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import TenantIssueSummaryCard from '../components/TenantIssueSummaryCard.vue';
 
 const props = defineProps<{ issueId: string }>();
