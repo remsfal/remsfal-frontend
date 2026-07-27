@@ -128,9 +128,29 @@ describe('useMobileBarActiveState', () => {
     it('does not match a sibling item whose query is a subset of the route query', () => {
       const result = callIsActive(
         {
-          path: '/projects/1/issues', name: 'IssueOverview', query: { status: 'OPEN', type: 'TASK' } 
+          path: '/projects/1/issues', name: 'IssueOverview', query: { status: 'OPEN', type: 'TASK' }
         },
         makeItem({ name: 'IssueOverview', query: { type: 'TASK' } }),
+      );
+      expect(result).toBe(false);
+    });
+
+    it('matches an array-valued query regardless of value order', () => {
+      const result = callIsActive(
+        {
+          path: '/projects/1/issues', name: 'IssueOverview', query: { status: ['IN_PROGRESS', 'OPEN'] }
+        },
+        makeItem({ name: 'IssueOverview', query: { status: ['OPEN', 'IN_PROGRESS'] } }),
+      );
+      expect(result).toBe(true);
+    });
+
+    it('does not match an array-valued query with a different value set', () => {
+      const result = callIsActive(
+        {
+          path: '/projects/1/issues', name: 'IssueOverview', query: { status: ['OPEN', 'IN_PROGRESS'] }
+        },
+        makeItem({ name: 'IssueOverview', query: { status: ['OPEN'] } }),
       );
       expect(result).toBe(false);
     });

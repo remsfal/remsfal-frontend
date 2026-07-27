@@ -7,7 +7,6 @@ import { useI18n } from 'vue-i18n';
 import { matchesRouteTarget } from '@/layouts/composables/useRouteActiveMatch';
 
 const props = withDefaults(defineProps<MenuItemProps>(), {
-  item: () => ({}) as MenuItem,
   index: 0,
   root: true,
   parentItemKey: undefined,
@@ -31,10 +30,10 @@ export interface MenuItem {
 }
 
 interface MenuItemProps {
-  item?: MenuItem;
+  item: MenuItem;
   index?: number;
   root?: boolean;
-  parentItemKey?: string | undefined;
+  parentItemKey?: string;
 }
 
 const route = useRoute();
@@ -80,11 +79,14 @@ const itemClick = (event: Event, item: MenuItem) => {
     item.navigate();
   }
 
-  const foundItemKey = item.items
-    ? isActiveMenu.value
-      ? props.parentItemKey
-      : itemKey
-    : itemKey.value;
+  let foundItemKey;
+  if (!item.items) {
+    foundItemKey = itemKey.value;
+  } else if (isActiveMenu.value) {
+    foundItemKey = props.parentItemKey;
+  } else {
+    foundItemKey = itemKey;
+  }
 
   setActiveMenuItem(foundItemKey);
 };
