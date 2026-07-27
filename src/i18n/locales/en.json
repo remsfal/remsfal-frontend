@@ -699,6 +699,7 @@
   "rentalAgreement.dialog.title": "New Rental Agreement",
   "rentalAgreement.dialog.confirmDelete": "Are you sure you want to delete the rental agreement with ID {id}?",
   "rentalAgreement.issue.title": "Tasks and Issues",
+  "rentalAgreement.issue.heading.tasks": "All Tasks and Defects",
   "rentalAgreement.issue.state": "Status:",
   "rentalAgreement.issue.priority": "Priority:",
   "rentalAgreement.issue.type": "Type:",

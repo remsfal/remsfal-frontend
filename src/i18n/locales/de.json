@@ -702,6 +702,7 @@
   "rentalAgreement.dialog.title": "Neuer Mietvertrag",
   "rentalAgreement.dialog.confirmDelete": "Sind Sie sicher, dass Sie den Mietvertrag mit der ID {id} löschen möchten?",
   "rentalAgreement.issue.title": "Aufgaben und Mängel",
+  "rentalAgreement.issue.heading.tasks": "Alle Aufgaben und Mängel",
   "rentalAgreement.issue.state": "Status:",
   "rentalAgreement.issue.priority": "Priorität:",
   "rentalAgreement.issue.type": "Typ:",

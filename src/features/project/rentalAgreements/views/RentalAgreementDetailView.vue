@@ -142,10 +142,6 @@ defineExpose({
       @onChange="handleTenancyDataChange"
     />
 
-    <RentalAgreementsIssueCard
-      :projectId="props.projectId"
-    />
-
     <div class="grid grid-cols-1 gap-6">
       <RentalAgreementSummaryCard
         v-if="rentalAgreement"
@@ -164,6 +160,10 @@ defineExpose({
         :projectId="props.projectId"
         :listOfUnits="listOfUnits"
         :isDeleteButtonEnabled="false"
+      />
+
+      <RentalAgreementsIssueCard
+        :projectId="props.projectId"
       />
 
       <!-- Action buttons -->
