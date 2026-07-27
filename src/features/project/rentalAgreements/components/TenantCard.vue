@@ -124,6 +124,11 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
         <div @click.stop>
           <TenantContactButtons
             :tenantId="tenant.id || ''"
+            :tenantName="fullName"
+            :email="tenant.email"
+            :mobilePhoneNumber="tenant.mobilePhoneNumber"
+            :businessPhoneNumber="tenant.businessPhoneNumber"
+            :privatePhoneNumber="tenant.privatePhoneNumber"
             :deletable="deletable"
             @delete="emit('delete')"
           />

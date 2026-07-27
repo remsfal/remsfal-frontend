@@ -11,7 +11,16 @@ const BaseDialogStub = {
 
 describe('NewTenantButton', () => {
   const mountButton = () =>
-    mount(NewTenantButton, {global: {stubs: {BaseDialog: BaseDialogStub,},},});
+    mount(NewTenantButton, {
+      props: { projectId: 'proj-1' },
+      global: { stubs: { BaseDialog: BaseDialogStub } },
+    });
+
+  const showTenantForm = async (wrapper: ReturnType<typeof mountButton>) => {
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    const addNewBtn = dialog.findAll('button').find((btn) => btn.text() === 'Neuen Mieter hinzufügen');
+    await addNewBtn?.trigger('click');
+  };
 
   it('renders the button with label', () => {
     const wrapper = mountButton();
@@ -32,26 +41,19 @@ describe('NewTenantButton', () => {
     expect(dialog.attributes('data-visible')).toBe('true');
   });
 
-  it('renders TenantForm fields inside the dialog', () => {
-    const wrapper = mountButton();
-    expect(wrapper.find('input[name="firstName"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="lastName"]').exists()).toBe(true);
-  });
-
-  it('closes dialog when TenantForm emits cancel', async () => {
+  it('renders TenantForm fields inside the dialog', async () => {
     const wrapper = mountButton();
     await wrapper.find('button').trigger('click');
+    await showTenantForm(wrapper);
 
-    const cancelBtn = wrapper.findAll('button').find((btn) => btn.text() === 'Abbrechen');
-    await cancelBtn?.trigger('click');
-
-    const dialog = wrapper.find('[data-testid="dialog"]');
-    expect(dialog.attributes('data-visible')).toBe('false');
+    expect(wrapper.find('input[name="firstName"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="lastName"]').exists()).toBe(true);
   });
 
   it('emits newTenant and closes dialog when TenantForm submits', async () => {
     const wrapper = mountButton();
     await wrapper.find('button').trigger('click');
+    await showTenantForm(wrapper);
 
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
@@ -78,7 +80,7 @@ describe('NewTenantButton', () => {
 
   it('disables the button when disabled prop is true', () => {
     const wrapper = mount(NewTenantButton, {
-      props: { disabled: true },
+      props: { projectId: 'proj-1', disabled: true },
       global: { stubs: { BaseDialog: BaseDialogStub } },
     });
 

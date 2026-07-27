@@ -677,6 +677,8 @@
   "tenantList.card.unknownUnit": "Unbekannte Einheit",
   "tenantList.card.callButton": "Anrufen",
   "tenantList.card.messageButton": "Nachricht",
+  "tenantList.card.multiplePhoneNumbers": "Mehrere Nummern verfügbar",
+  "tenantList.card.confirmRemove": "Sind Sie sicher, dass Sie den Mieter mit folgendem Namen aus dem Mietvertrag entfernen möchten: {name}?",
   "tenantDetail.title": "Mieterdetails",
   "tenantDetail.contactTitle": "Kontaktdaten von {name}",
   "tenantDetail.notFound": "Mieter nicht gefunden",

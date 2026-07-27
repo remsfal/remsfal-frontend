@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, flushPromises } from '@vue/test-utils';
 import TenantCard from '@/features/project/rentalAgreements/components/TenantCard.vue';
 import type { TenantItemJson } from '@/features/project/rentalAgreements/services/TenantService';
 
@@ -21,13 +21,24 @@ describe('TenantCard', () => {
     expect(wrapper.find('[class*="pi-trash"]').exists()).toBe(true);
   });
 
-  it('emits delete without emitting click when the delete button is clicked', async () => {
-    const wrapper = mount(TenantCard, { props: { tenant, deletable: true } });
+  it('emits delete without emitting click when the delete confirmation is confirmed', async () => {
+    const wrapper = mount(TenantCard, {
+      props: { tenant, deletable: true },
+      attachTo: document.body,
+    });
 
     await wrapper.find('[class*="pi-trash"]').trigger('click');
+    await flushPromises();
+
+    const confirmButton = document.querySelector('.p-dialog [class*="pi-trash"]')?.closest('button');
+    expect(confirmButton).not.toBeNull();
+    confirmButton!.click();
+    await flushPromises();
 
     expect(wrapper.emitted('delete')).toBeTruthy();
     expect(wrapper.emitted('click')).toBeFalsy();
+
+    wrapper.unmount();
   });
 
   it('emits click when the card itself is clicked', async () => {

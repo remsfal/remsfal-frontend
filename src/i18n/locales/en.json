@@ -674,6 +674,8 @@
   "tenantList.card.unknownUnit": "Unknown unit",
   "tenantList.card.callButton": "Call",
   "tenantList.card.messageButton": "Message",
+  "tenantList.card.multiplePhoneNumbers": "Multiple numbers available",
+  "tenantList.card.confirmRemove": "Are you sure you want to remove the tenant with the following name from the rental agreement: {name}?",
   "tenantDetail.title": "Tenant Details",
   "tenantDetail.contactTitle": "Contact data of {name}",
   "tenantDetail.notFound": "Tenant not found",

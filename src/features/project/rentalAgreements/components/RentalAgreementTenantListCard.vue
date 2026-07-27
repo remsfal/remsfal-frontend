@@ -110,7 +110,12 @@ function onTenantClick(tenant: TenantJson) {
         </div>
       </div>
       <div class="flex justify-end mt-6">
-        <NewTenantButton :disabled="saving" @newTenant="onNewTenant" />
+        <NewTenantButton
+          :projectId="projectId"
+          :existingTenants="tenants"
+          :disabled="saving"
+          @newTenant="onNewTenant"
+        />
       </div>
     </template>
   </BaseCard>

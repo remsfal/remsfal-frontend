@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import RentalAgreementTenantListCard from '@/features/project/rentalAgreements/components/RentalAgreementTenantListCard.vue';
@@ -28,8 +28,30 @@ describe('RentalAgreementTenantListCard', () => {
     vi.spyOn(rentalAgreementService, 'removeTenant').mockResolvedValue(undefined);
   });
 
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
   const mountCard = (agreement: RentalAgreementJson = baseAgreement) =>
-    mount(RentalAgreementTenantListCard, {props: { projectId: 'proj-1', rentalAgreement: agreement },});
+    mount(RentalAgreementTenantListCard, {
+      props: { projectId: 'proj-1', rentalAgreement: agreement },
+      attachTo: document.body,
+    });
+
+  const confirmDelete = async () => {
+    const confirmButton = document.querySelector('.p-dialog [class*="pi-trash"]')?.closest('button');
+    expect(confirmButton).not.toBeNull();
+    confirmButton!.click();
+    await flushPromises();
+  };
+
+  const showNewTenantForm = async () => {
+    const addNewBtn = Array.from(document.querySelectorAll('.p-dialog button'))
+      .find((btn) => btn.textContent?.includes('Neuen Mieter hinzufügen'));
+    expect(addNewBtn).not.toBeUndefined();
+    (addNewBtn as HTMLButtonElement).click();
+    await flushPromises();
+  };
 
   it('renders a TenantCard for each tenant', () => {
     const wrapper = mountCard();
@@ -46,6 +68,7 @@ describe('RentalAgreementTenantListCard', () => {
 
     const addBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Neuen Mieter hinzufügen'));
     await addBtn?.trigger('click');
+    await showNewTenantForm();
 
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
@@ -83,6 +106,7 @@ describe('RentalAgreementTenantListCard', () => {
 
     await wrapper.find('[class*="pi-trash"]').trigger('click');
     await flushPromises();
+    await confirmDelete();
 
     expect(rentalAgreementService.removeTenant).toHaveBeenCalledWith('proj-1', 'agreement-1', 'tenant-1');
 
@@ -97,6 +121,7 @@ describe('RentalAgreementTenantListCard', () => {
 
     await wrapper.find('[class*="pi-trash"]').trigger('click');
     await flushPromises();
+    await confirmDelete();
 
     expect(push).not.toHaveBeenCalled();
   });
@@ -108,6 +133,7 @@ describe('RentalAgreementTenantListCard', () => {
     const wrapper = mountCard();
     const addBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Neuen Mieter hinzufügen'));
     await addBtn?.trigger('click');
+    await showNewTenantForm();
 
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
@@ -135,6 +161,7 @@ describe('RentalAgreementTenantListCard', () => {
     const wrapper = mountCard();
     await wrapper.find('[class*="pi-trash"]').trigger('click');
     await flushPromises();
+    await confirmDelete();
 
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
     consoleSpy.mockRestore();
