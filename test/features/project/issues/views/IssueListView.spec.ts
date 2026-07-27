@@ -41,7 +41,7 @@ describe("IssueListView.vue", () => {
       global: {
         stubs: {
           IssueTable: true,
-          NewIssueButton: true,
+          NewIssueButton: true, NewTenantIssueButton: true,
           Button: false,
         },
       },
@@ -110,7 +110,11 @@ describe("IssueListView.vue", () => {
 
     const localWrapper = mount(IssueListView, {
       props: { projectId: "proj-1", type: 'TASK' as IssueType },
-      global: { stubs: { NewIssueButton: true, Button: false } },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
     });
     await flushPromises();
 
@@ -135,7 +139,11 @@ describe("IssueListView.vue", () => {
 
     const localWrapper = mount(IssueListView, {
       props: { projectId: "proj-1" },
-      global: { stubs: { NewIssueButton: true, Button: false } },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
     });
     await flushPromises();
 
@@ -161,7 +169,11 @@ describe("IssueListView.vue", () => {
 
     const localWrapper = mount(IssueListView, {
       props: { projectId: "proj-1" },
-      global: { stubs: { NewIssueButton: true, Button: false } },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
     });
     await flushPromises();
 
@@ -279,7 +291,7 @@ describe("IssueListView.vue", () => {
       props: { projectId: "proj-1", type: 'TASK' as IssueType },
       global: {
         stubs: {
-          IssueTable: true, NewIssueButton: true, Button: false
+          IssueTable: true, NewIssueButton: true, NewTenantIssueButton: true, Button: false
         }
       },
     });
@@ -365,7 +377,7 @@ describe("IssueListView.vue", () => {
       global: {
         stubs: {
           IssueTable: true,
-          NewIssueButton: true,
+          NewIssueButton: true, NewTenantIssueButton: true,
           Button: false,
         },
       },

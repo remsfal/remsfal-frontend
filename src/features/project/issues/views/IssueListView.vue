@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/common/BaseCard.vue';
 import IssueTable, { type IssueColumn } from '../components/IssueTable.vue';
 import NewIssueButton from '../components/NewIssueButton.vue';
+import NewTenantIssueButton from '../components/NewTenantIssueButton.vue';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
 const props = defineProps<{
@@ -140,8 +141,9 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
         @rowSelect="onIssueSelect"
       />
 
-      <!-- Create Button -->
-      <div class="flex justify-end mt-6">
+      <!-- Create Buttons -->
+      <div class="flex justify-end gap-2 mt-6">
+        <NewTenantIssueButton :projectId="props.projectId" @issueCreated="handleIssueCreated" />
         <NewIssueButton :projectId="props.projectId" @issueCreated="handleIssueCreated" />
       </div>
     </template>
