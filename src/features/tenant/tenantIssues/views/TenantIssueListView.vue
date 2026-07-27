@@ -11,8 +11,8 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import type { IssueStatus, IssueType } from '@/services/IssueService';
-import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
-import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
+import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
+import NewTenancyIssueDialog from '../components/NewTenancyIssueDialog.vue';
 import TenantIssueCard from '../components/TenantIssueCard.vue';
 
 const { t } = useI18n();

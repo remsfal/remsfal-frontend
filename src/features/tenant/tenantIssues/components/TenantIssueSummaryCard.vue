@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
-import type { TenantIssueJson } from '@/services/TenantIssueService';
+import type { TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import { getIssueCategoryLabel, getIssueStatusLabel, getIssueTypeSeverity,
   getIssueStatusSeverity, getIssueTypeLabel } from '@/features/common/issues/issueLabels';
 

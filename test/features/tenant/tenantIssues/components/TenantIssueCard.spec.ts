@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Tag from 'primevue/tag';
-import type { TenantIssueJson } from '@/services/TenantIssueService';
+import type { TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 
 describe('TenantIssueCard component', () => {
   const baseIssue: TenantIssueJson = {
