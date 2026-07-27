@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import FacilityAddressCard from '@/features/project/rentableUnits/components/FacilityAddressCard.vue';
-import { buildingService } from '@/services/BuildingService';
-import { siteService } from '@/services/SiteService';
+import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
+import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 
-vi.mock('@/services/BuildingService', () => ({
+vi.mock('@/features/project/rentableUnits/services/BuildingService', () => ({
   buildingService: {
     getBuilding: vi.fn(),
     updateBuilding: vi.fn(),
   },
 }));
-vi.mock('@/services/SiteService', () => ({
+vi.mock('@/features/project/rentableUnits/services/SiteService', () => ({
   siteService: {
     getSite: vi.fn(),
     updateSite: vi.fn(),

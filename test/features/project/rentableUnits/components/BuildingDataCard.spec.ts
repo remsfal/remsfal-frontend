@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 
 import BuildingDataCard from '@/features/project/rentableUnits/components/BuildingDataCard.vue';
-import { buildingService, type BuildingJson } from '@/services/BuildingService';
+import { buildingService, type BuildingJson } from '@/features/project/rentableUnits/services/BuildingService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -25,7 +25,8 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/BuildingService', () => ({buildingService: { getBuilding: vi.fn(), updateBuilding: vi.fn() },}));
+const mockBuildingService = vi.hoisted(() => ({ getBuilding: vi.fn(), updateBuilding: vi.fn() }));
+vi.mock('@/features/project/rentableUnits/services/BuildingService', () => ({ buildingService: mockBuildingService }));
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {

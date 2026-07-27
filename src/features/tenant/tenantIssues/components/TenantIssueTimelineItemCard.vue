@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Image from 'primevue/image';
-import type { TimelineJson } from '@/services/TenantTimelineService';
+import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 

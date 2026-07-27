@@ -2,18 +2,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import RentableUnitDangerZoneCard from '@/features/project/rentableUnits/components/RentableUnitDangerZoneCard.vue';
 import { propertyService } from '@/services/PropertyService';
-import { buildingService } from '@/services/BuildingService';
-import { apartmentService } from '@/services/ApartmentService';
-import { commercialService } from '@/services/CommercialService';
-import { storageService } from '@/services/StorageService';
-import { siteService } from '@/services/SiteService';
+import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
+import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
+import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
+import { storageService } from '@/features/project/rentableUnits/services/StorageService';
+import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 
 vi.mock('@/services/PropertyService');
-vi.mock('@/services/BuildingService');
-vi.mock('@/services/ApartmentService');
-vi.mock('@/services/CommercialService');
-vi.mock('@/services/StorageService');
-vi.mock('@/services/SiteService');
+vi.mock('@/features/project/rentableUnits/services/BuildingService');
+vi.mock('@/features/project/rentableUnits/services/ApartmentService');
+vi.mock('@/features/project/rentableUnits/services/CommercialService');
+vi.mock('@/features/project/rentableUnits/services/StorageService');
+vi.mock('@/features/project/rentableUnits/services/SiteService');
 
 const mockPush = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: mockPush }) }));

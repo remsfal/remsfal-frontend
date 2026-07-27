@@ -11,7 +11,7 @@ import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/common/BaseCard.vue';
 import TenantIssueTimelineItemCard from './TenantIssueTimelineItemCard.vue';
-import { tenantTimelineService, type TimelineJson } from '@/services/TenantTimelineService';
+import { tenantTimelineService, type TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 
 const props = defineProps<{ issueId: string; }>();
 

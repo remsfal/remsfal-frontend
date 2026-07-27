@@ -5,16 +5,8 @@
       "AddressJson" : {
         "description" : "The address of a customer, a building or a site",
         "type" : "object",
+        "required" : [ "street", "city", "province", "zip", "countryCode" ],
         "properties" : {
-          "addressLine1" : {
-            "type" : "string"
-          },
-          "addressLine2" : {
-            "type" : "string"
-          },
-          "addressLine3" : {
-            "type" : "string"
-          },
           "street" : {
             "type" : "string",
             "pattern" : "\\S"
@@ -37,8 +29,7 @@
             "minLength" : 2,
             "maxLength" : 2
           }
-        },
-        "required" : [ "street", "city", "province", "zip", "countryCode" ]
+        }
       },
       "ApartmentJson" : {
         "description" : "An apartment inside a building according to WoFIV",
@@ -757,6 +748,11 @@
               "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
             }
           },
+          "tenantUpdate" : {
+            "description" : "Proposed data change submitted via self-service, for manager review",
+            "type" : "object",
+            "$ref" : "#/components/schemas/TenantJson"
+          },
           "attachments" : {
             "type" : "array",
             "items" : {
@@ -801,7 +797,7 @@
       },
       "IssueType" : {
         "type" : "string",
-        "enum" : [ "APPLICATION", "DEFECT", "INQUIRY", "MAINTENANCE", "TASK", "TERMINATION" ]
+        "enum" : [ "APPLICATION", "DEFECT", "INQUIRY", "MAINTENANCE", "SELF_SERVICE", "TASK", "TERMINATION" ]
       },
       "LocalDate" : {
         "type" : "string",
@@ -2306,6 +2302,16 @@
           "locale" : {
             "type" : "string",
             "maxLength" : 2
+          },
+          "placeOfBirth" : {
+            "type" : "string",
+            "examples" : [ "Berlin" ],
+            "maxLength" : 255
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "examples" : [ "1990-01-01" ],
+            "$ref" : "#/components/schemas/LocalDate"
           },
           "additionalEmails" : {
             "type" : "array",
@@ -6010,6 +6016,100 @@
           },
           "401" : {
             "description" : "No user authentication provided via session cookie"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants" : {
+      "post" : {
+        "summary" : "Add a tenant to a rental agreement",
+        "parameters" : [ {
+          "description" : "ID of the tenancy",
+          "required" : true,
+          "name" : "agreementId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TenantJson"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Tenant was added to the rental agreement successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TenantJson"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request message"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The rental agreement does not exist"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants/{tenantId}" : {
+      "delete" : {
+        "summary" : "Remove a tenant from a rental agreement",
+        "parameters" : [ {
+          "description" : "ID of the tenancy",
+          "required" : true,
+          "name" : "agreementId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the project",
+          "required" : true,
+          "name" : "projectId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        }, {
+          "description" : "ID of the tenant",
+          "required" : true,
+          "name" : "tenantId",
+          "in" : "path",
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Tenant was removed from the rental agreement successfully"
+          },
+          "401" : {
+            "description" : "No user authentication provided via session cookie"
+          },
+          "404" : {
+            "description" : "The rental agreement does not exist"
           }
         }
       }

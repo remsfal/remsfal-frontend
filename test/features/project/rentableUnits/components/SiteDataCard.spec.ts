@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 
 import SiteDataCard from '@/features/project/rentableUnits/components/SiteDataCard.vue';
-import { siteService, type SiteJson } from '@/services/SiteService';
+import { siteService, type SiteJson } from '@/features/project/rentableUnits/services/SiteService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -25,7 +25,8 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/SiteService', () => ({ siteService: { getSite: vi.fn(), updateSite: vi.fn() } }));
+const mockSiteService = vi.hoisted(() => ({ getSite: vi.fn(), updateSite: vi.fn() }));
+vi.mock('@/features/project/rentableUnits/services/SiteService', () => ({ siteService: mockSiteService }));
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {

@@ -6,9 +6,9 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { ManagerView } from '@/features/manager/projects';
+import { ProjectSelectionView } from '@/features/manager/projects';
 </script>
 
 <template>
-  <ManagerView />
+  <ProjectSelectionView />
 </template>

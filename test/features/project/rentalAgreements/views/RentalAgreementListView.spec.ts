@@ -3,7 +3,8 @@ import Dialog from 'primevue/dialog';
 import DataTable from 'primevue/datatable';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import RentalAgreementView from '@/features/project/rentalAgreements/views/RentalAgreementListView.vue';
-import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService';
+import {rentalAgreementService,
+  type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Fix for "window is not defined" error
 if (typeof window === 'undefined') (global as Record<string, unknown>).window = {};

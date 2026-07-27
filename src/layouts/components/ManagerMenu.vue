@@ -26,6 +26,11 @@ const model = computed<MenuItem[]>(() => {
           to: '/manager/dashboard',
         },
         {
+          label: 'managerMenu.myData.messages',
+          icon: { type: 'pi', name: 'pi pi-fw pi-inbox' },
+          to: '/manager/inbox',
+        },
+        {
           label: 'managerMenu.myData.properties',
           icon: { type: 'pi', name: 'pi pi-fw pi-building' },
           to: '/manager/projects',

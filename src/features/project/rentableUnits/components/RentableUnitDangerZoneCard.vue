@@ -5,11 +5,11 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import DangerZoneCard from '@/components/common/DangerZoneCard.vue';
 import { propertyService, type UnitType } from '@/services/PropertyService';
-import { buildingService } from '@/services/BuildingService';
-import { apartmentService } from '@/services/ApartmentService';
-import { commercialService } from '@/services/CommercialService';
-import { storageService } from '@/services/StorageService';
-import { siteService } from '@/services/SiteService';
+import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
+import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
+import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
+import { storageService } from '@/features/project/rentableUnits/services/StorageService';
+import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 
 const props = defineProps<{
   projectId: string;

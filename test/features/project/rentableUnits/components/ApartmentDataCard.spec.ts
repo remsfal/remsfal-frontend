@@ -12,7 +12,8 @@ beforeAll(() => {
 });
 
 import ApartmentDataCard from '@/features/project/rentableUnits/components/ApartmentDataCard.vue';
-import { apartmentService, type ApartmentJson } from '@/services/ApartmentService';
+import {apartmentService,
+  type ApartmentJson,} from '@/features/project/rentableUnits/services/ApartmentService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -25,7 +26,8 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/ApartmentService', () => ({apartmentService: { getApartment: vi.fn(), updateApartment: vi.fn() },}));
+const mockApartmentService = vi.hoisted(() => ({ getApartment: vi.fn(), updateApartment: vi.fn() }));
+vi.mock('@/features/project/rentableUnits/services/ApartmentService', () => ({ apartmentService: mockApartmentService }));
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {

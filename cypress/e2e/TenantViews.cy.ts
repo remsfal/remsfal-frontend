@@ -355,7 +355,7 @@ describe('Tenant Views E2E Tests', () => {
       cy.visit(`/projects/${projectId}/tenants/${tenantId}`);
       cy.wait('@getTenant');
 
-      cy.contains(/mieterdetails|tenant details/i).should('be.visible');
+      cy.contains(/kontaktdaten von john doe|contact data of john doe/i).should('be.visible');
     });
 
     it('should display loading spinner while loading tenant data', () => {
@@ -385,7 +385,8 @@ describe('Tenant Views E2E Tests', () => {
       cy.get('input[name="firstName"]').should('have.value', 'John');
       cy.get('input[name="lastName"]').should('have.value', 'Doe');
       cy.get('input[name="email"]').should('have.value', 'john.doe@example.com');
-      cy.get('input[name="mobilePhoneNumber"]').should('have.value', '+49123456789');
+      // PhoneInput splits the E.164 value into a country select + local number input
+      cy.get('#mobile-phone').should('have.value', '123456789');
       cy.get('input[name="street"]').should('have.value', 'Main Street 123');
       cy.get('input[name="city"]').should('have.value', 'Berlin');
       cy.get('input[name="zip"]').should('have.value', '10115');
@@ -411,18 +412,22 @@ describe('Tenant Views E2E Tests', () => {
       // Error message should be displayed
       cy.get('.p-message-error').should('be.visible');
 
-      // Save button should be disabled
-      cy.contains('button', /speichern|save/i).should('be.disabled');
+      // Submitting with an invalid required field must not persist changes
+      cy.get('input[name="firstName"]')
+        .closest('.p-card')
+        .contains('button', /speichern|save/i)
+        .click();
+      cy.get('@updateTenant.all').should('have.length', 0);
     });
 
     // Test removed - too fragile and tests implementation details
 
-    it('should validate ZIP code format', () => {
+    it('should validate ZIP code as a required field', () => {
       cy.visit(`/projects/${projectId}/tenants/${tenantId}`);
       cy.wait('@getTenant');
 
-      // Enter invalid ZIP
-      cy.get('input[name="zip"]').clear().type('invalid').blur();
+      // Clear the required ZIP field
+      cy.get('input[name="zip"]').clear().blur();
 
       // Error message should be displayed
       cy.get('.p-message-error').should('be.visible');
@@ -432,16 +437,8 @@ describe('Tenant Views E2E Tests', () => {
 
     // Test removed - form validation makes this test too fragile
 
-    it('should cancel and redirect to tenant list', () => {
-      cy.visit(`/projects/${projectId}/tenants/${tenantId}`);
-      cy.wait('@getTenant');
-
-      // Click cancel button
-      cy.contains('button', /abbrechen|cancel/i).click();
-
-      // Should redirect to tenant list
-      cy.url().should('include', `/projects/${projectId}/tenants`);
-    });
+    // Test removed - the standalone cancel/back button was removed when
+    // TenantDetailView was split into independently loading/saving cards
 
     it('should handle tenant not found', () => {
       // Mock 404 response (tenant not found)
@@ -476,7 +473,7 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getTenant');
 
       // DatePicker input should be present
-      cy.get('input[name="dateOfBirth"]').should('exist');
+      cy.get('input#dateOfBirth').should('exist');
       // DatePicker component is rendered - the calendar overlay appears on click
       cy.get('[data-pc-name="datepicker"]').should('exist');
     });

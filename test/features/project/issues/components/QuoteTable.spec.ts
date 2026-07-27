@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import QuoteTable from '@/features/project/issues/components/QuoteTable.vue';
-import { quotationService, type QuotationJson } from '@/services/QuotationService';
+import { quotationService, type QuotationJson } from '@/features/project/issues/services/QuotationService';
 import { orderPlacementService } from '@/services/OrderPlacementService';
 
 const addMock = vi.fn();

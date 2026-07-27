@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
-import type { TimelineJson } from '@/services/TenantTimelineService';
+import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import TenantIssueTimelineItemCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineItemCard.vue';
 
 const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({

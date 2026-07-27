@@ -5,7 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import { quotationService, type QuotationJson } from '@/services/QuotationService';
+import { quotationService, type QuotationJson } from '@/features/project/issues/services/QuotationService';
 import { orderPlacementService } from '@/services/OrderPlacementService';
 
 const props = defineProps<{ issueId: string }>();

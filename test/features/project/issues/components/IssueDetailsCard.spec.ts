@@ -27,9 +27,9 @@ vi.mock('@/services/IssueService', async () => {
 });
 
 // IssueRejectButton (rendered as a real child) uses this to post the optional reject reason.
-vi.mock('@/services/IssueTimelineService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/IssueTimelineService')>(
-    '@/services/IssueTimelineService',
+vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/project/issues/services/IssueTimelineService')>(
+    '@/features/project/issues/services/IssueTimelineService',
   );
   return {
     ...actual,
