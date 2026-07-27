@@ -9,10 +9,14 @@ import Avatar from 'primevue/avatar';
 import { getIconForUnitType } from '@/features/project/rentableUnits';
 import type { UnitType } from '@/services/PropertyService';
 
-const props = defineProps<{
-  tenant: TenantItemJson;
-  deletable?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    tenant: TenantItemJson;
+    deletable?: boolean;
+    showUnits?: boolean;
+  }>(),
+  { showUnits: true },
+);
 
 const emit = defineEmits<{
   click: [];
@@ -71,7 +75,7 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
     <!-- Avatar Section -->
     <div class="flex justify-center md:justify-start md:w-40">
       <Avatar size="xlarge" class="bg-surface-100 text-primary">
-        <FontAwesomeIcon icon="fa-solid fa-building-user" class="text-2xl" />
+        <FontAwesomeIcon icon="fa-solid fa-building-user" class="text-2xl translate-y-0.5" />
       </Avatar>
     </div>
 
@@ -84,26 +88,28 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
           {{ fullName }}
         </div>
 
-        <!-- Rental Units Tags (horizontal) -->
-        <div v-if="hasRentalUnits" class="flex flex-wrap gap-2">
-          <Tag
-            v-for="(unit, index) in displayedUnits"
-            :key="unit.id || index"
-            :value="unitLabel(unit)"
-            :icon="getUnitIcon(unit.type)"
-            severity="secondary"
-          />
-          <Tag
-            v-if="remainingUnitsCount > 0"
-            :value="t('tenantList.card.moreUnits', { count: remainingUnitsCount })"
-            severity="secondary"
-          />
-        </div>
+        <template v-if="showUnits">
+          <!-- Rental Units Tags (horizontal) -->
+          <div v-if="hasRentalUnits" class="flex flex-wrap gap-2">
+            <Tag
+              v-for="(unit, index) in displayedUnits"
+              :key="unit.id || index"
+              :value="unitLabel(unit)"
+              :icon="getUnitIcon(unit.type)"
+              severity="secondary"
+            />
+            <Tag
+              v-if="remainingUnitsCount > 0"
+              :value="t('tenantList.card.moreUnits', { count: remainingUnitsCount })"
+              severity="secondary"
+            />
+          </div>
 
-        <!-- Fallback if no units -->
-        <div v-else class="text-sm text-muted-color">
-          {{ t('tenantList.card.noUnits') }}
-        </div>
+          <!-- Fallback if no units -->
+          <div v-else class="text-sm text-muted-color">
+            {{ t('tenantList.card.noUnits') }}
+          </div>
+        </template>
       </div>
 
       <!-- Status & Actions -->

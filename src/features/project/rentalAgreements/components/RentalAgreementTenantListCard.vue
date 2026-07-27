@@ -103,6 +103,7 @@ function onTenantClick(tenant: TenantJson) {
           <TenantCard
             :tenant="tenant"
             :deletable="!saving"
+            :showUnits="false"
             @click="onTenantClick(tenant)"
             @delete="onDeleteTenant(tenant.id)"
           />
