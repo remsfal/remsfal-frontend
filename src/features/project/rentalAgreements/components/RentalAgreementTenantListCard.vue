@@ -13,6 +13,7 @@ import {rentalAgreementService,
 const props = defineProps<{
   projectId: string;
   rentalAgreement: RentalAgreementJson;
+  active?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -101,7 +102,7 @@ function onTenantClick(tenant: TenantJson) {
           :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }"
         >
           <TenantCard
-            :tenant="tenant"
+            :tenant="{ ...tenant, active: props.active ? true : false }"
             :deletable="!saving"
             :showUnits="false"
             @click="onTenantClick(tenant)"

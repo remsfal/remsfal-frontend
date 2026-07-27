@@ -71,7 +71,6 @@ function onTenantSelected(tenant: TenantItemJson | null) {
   if (alreadyAdded) return;
 
   const tenantForRental: TenantJson = {
-    id: tenant.id,
     firstName: tenant.firstName,
     lastName: tenant.lastName,
     email: tenant.email,

@@ -105,6 +105,7 @@ defineExpose({
       <!-- Tenants -->
       <RentalAgreementTenantListCard
         v-if="rentalAgreement"
+        :active="rentalAgreement.active ? true : false"
         :projectId="projectId"
         :rentalAgreement="rentalAgreement"
         @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
