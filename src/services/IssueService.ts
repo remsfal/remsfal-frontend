@@ -15,8 +15,8 @@ export type IssueRelationGroup = IssueRelationType | 'parent';
 class IssueService {
   async getIssues(
     projectId: string,
-    status?: IssueStatus,
-    type?: IssueType,
+    status?: IssueStatus | IssueStatus[],
+    type?: IssueType | IssueType[],
     assigneeId?: string,
     agreementId?: string,
     rentalUnitId?: string,
@@ -24,13 +24,16 @@ class IssueService {
     cursor?: string,
     limit = 100,
   ): Promise<IssueListJson> {
+    const statusList = status === undefined ? [] : ([] as IssueStatus[]).concat(status);
+    const typeList = type === undefined ? [] : ([] as IssueType[]).concat(type);
+
     const result = await apiClient.get('/ticketing/v1/issues', {
       params: {
         limit,
         projectId,
         ...(cursor ? { cursor } : {}),
-        ...(status ? { status: [status] } : {}),
-        ...(type ? { type: [type] } : {}),
+        ...(statusList.length ? { status: statusList } : {}),
+        ...(typeList.length ? { type: typeList } : {}),
         ...(assigneeId ? { assigneeId } : {}),
         ...(agreementId ? { agreementId } : {}),
         ...(rentalUnitId ? { rentalUnitId } : {}),
