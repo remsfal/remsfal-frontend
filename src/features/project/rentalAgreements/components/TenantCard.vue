@@ -114,8 +114,9 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
 
       <!-- Status & Actions -->
       <div class="flex flex-col md:items-end gap-4">
-        <!-- Active/Inactive Status Tag -->
+        <!-- Active/Inactive Status Tag (hidden when active state is not applicable) -->
         <Tag
+          v-if="tenant.active !== undefined"
           :value="tenant.active ? t('tenantList.card.active') : t('tenantList.card.inactive')"
           :severity="tenant.active ? 'success' : 'secondary'"
         />

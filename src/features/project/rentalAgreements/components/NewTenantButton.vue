@@ -30,10 +30,10 @@ const selectedExistingTenant = ref<TenantItemJson | null>(null);
 type TenantOption = TenantItemJson & { label: string };
 
 const tenantOptions = computed<TenantOption[]>(() =>
-  filteredTenants.value.map((tenant) => ({
-    ...tenant,
-    label: `${tenant.firstName} ${tenant.lastName}${tenant.email ? ` (${tenant.email})` : ''}`,
-  })),
+  filteredTenants.value.map((tenant) => {
+    const emailSuffix = tenant.email ? ` (${tenant.email})` : '';
+    return { ...tenant, label: `${tenant.firstName} ${tenant.lastName}${emailSuffix}` };
+  }),
 );
 
 async function loadTenants() {

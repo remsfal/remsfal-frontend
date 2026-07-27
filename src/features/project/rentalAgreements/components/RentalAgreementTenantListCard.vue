@@ -102,7 +102,7 @@ function onTenantClick(tenant: TenantJson) {
           :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }"
         >
           <TenantCard
-            :tenant="{ ...tenant, active: props.active ? true : false }"
+            :tenant="{ ...tenant, active: props.active ? true : undefined }"
             :deletable="!saving"
             :showUnits="false"
             @click="onTenantClick(tenant)"
