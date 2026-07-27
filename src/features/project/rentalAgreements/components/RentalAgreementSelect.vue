@@ -6,38 +6,38 @@ import { useI18n } from 'vue-i18n';
 import AutoComplete from 'primevue/autocomplete';
 
 // Services & Types
-import { rentalAgreementService, type RentalAgreementJson } from '../services/RentalAgreementService';
+import { rentalAgreementService, type RentalAgreementItemJson } from '../services/RentalAgreementService';
 
 // Props & Emits
 const props = defineProps<{
   projectId: string;
-  modelValue: RentalAgreementJson | null;
+  modelValue: RentalAgreementItemJson | null;
   invalid?: boolean;
   inputId?: string;
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: RentalAgreementJson | null];
+  'update:modelValue': [value: RentalAgreementItemJson | null];
   blur: [];
 }>();
 
 const { t } = useI18n();
 
 // State
-const allAgreements = ref<RentalAgreementJson[]>([]);
-const filteredAgreements = ref<RentalAgreementJson[]>([]);
+const allAgreements = ref<RentalAgreementItemJson[]>([]);
+const filteredAgreements = ref<RentalAgreementItemJson[]>([]);
 const isLoading = ref(false);
 
-type AgreementOption = RentalAgreementJson & { label: string };
+type AgreementOption = RentalAgreementItemJson & { label: string };
 
-function tenantNamesFor(agreement: RentalAgreementJson): string {
+function tenantNamesFor(agreement: RentalAgreementItemJson): string {
   const names = (agreement.tenants ?? [])
     .map((tenant) => `${tenant.firstName ?? ''} ${tenant.lastName ?? ''}`.trim())
     .filter(Boolean);
   return names.length ? names.join(', ') : t('rentalAgreementSelect.unknownTenant');
 }
 
-function unitLabelFor(agreement: RentalAgreementJson): string {
+function unitLabelFor(agreement: RentalAgreementItemJson): string {
   return (agreement.rentalUnits ?? [])
     .map((unit) => unit.title || unit.location)
     .filter((value): value is string => Boolean(value))
@@ -57,7 +57,7 @@ const agreementOptions = computed<AgreementOption[]>(() =>
 onMounted(async () => {
   isLoading.value = true;
   try {
-    allAgreements.value = await rentalAgreementService.fetchRentalAgreements(props.projectId);
+    allAgreements.value = await rentalAgreementService.getRentalAgreements(props.projectId);
     filteredAgreements.value = allAgreements.value;
   } catch (error) {
     console.error('Failed to load rental agreements:', error);

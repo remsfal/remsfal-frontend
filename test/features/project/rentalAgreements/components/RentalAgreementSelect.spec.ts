@@ -2,28 +2,30 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { RentalAgreementItemJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 vi.mock('@/features/project/rentalAgreements/services/RentalAgreementService', { spy: true });
 
 describe('RentalAgreementSelect.vue', () => {
   let wrapper: VueWrapper;
 
-  const mockAgreements: RentalAgreementJson[] = [
+  const mockAgreements: RentalAgreementItemJson[] = [
     {
       id: 'agreement-1',
+      startOfRental: '2024-01-01',
       tenants: [{ firstName: 'Max', lastName: 'Mustermann' }],
       rentalUnits: [{ id: 'unit-1', title: 'Wohnung 1A' }],
     },
     {
       id: 'agreement-2',
+      startOfRental: '2024-01-01',
       tenants: [{ firstName: 'Erika', lastName: 'Musterfrau' }],
       rentalUnits: [{ id: 'unit-2', location: 'Keller' }],
     },
   ];
 
   beforeEach(async () => {
-    vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockResolvedValue(mockAgreements);
+    vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockResolvedValue(mockAgreements);
 
     wrapper = mount(RentalAgreementSelect, {
       props: {
@@ -36,7 +38,7 @@ describe('RentalAgreementSelect.vue', () => {
   });
 
   it('loads rental agreements on mount', () => {
-    expect(rentalAgreementService.fetchRentalAgreements).toHaveBeenCalledWith('project-123');
+    expect(rentalAgreementService.getRentalAgreements).toHaveBeenCalledWith('project-123');
   });
 
   it('renders an AutoComplete', () => {

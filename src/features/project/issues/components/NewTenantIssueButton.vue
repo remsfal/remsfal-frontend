@@ -20,7 +20,7 @@ import { z } from 'zod';
 // Services & Types
 import { issueService, type IssueJson, type IssueType } from '@/services/IssueService';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
-import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { RentalAgreementItemJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Props & Emits
 const props = defineProps<{
@@ -39,7 +39,7 @@ const visible = ref(false);
 // --- Rental agreement selection (kept outside the zod-managed Form: the
 // AutoComplete-backed RentalAgreementSelect binds a full object, not a
 // scalar id, so it can't be registered as a normal name="..." form field) ---
-const selectedAgreement = ref<RentalAgreementJson | null>(null);
+const selectedAgreement = ref<RentalAgreementItemJson | null>(null);
 const agreementTouched = ref(false);
 const submitAttempted = ref(false);
 
