@@ -8,9 +8,20 @@ type QueryRecord = Record<string, QueryValue>;
  * and a 1-element array compare equal, and two arrays compare equal regardless of
  * order (vue-router/axios don't guarantee order is preserved for repeated query keys).
  */
+function compareQueryValues(a: string | null, b: string | null): number {
+  if (a === null) return b === null ? 0 : -1;
+  if (b === null) return 1;
+  return a.localeCompare(b);
+}
+
 function toSortedList(value: QueryValue): (string | null)[] {
-  const list = value === undefined ? [] : Array.isArray(value) ? value : [value];
-  return [...list].sort();
+  let list: (string | null)[];
+  if (value === undefined) {
+    list = [];
+  } else {
+    list = Array.isArray(value) ? value : [value];
+  }
+  return [...list].sort(compareQueryValues);
 }
 
 function valuesMatch(a: QueryValue, b: QueryValue): boolean {

@@ -45,7 +45,8 @@ const loadIssues = async () => {
 };
 
 function toArray<T>(value?: T | T[]): T[] {
-  return value === undefined ? [] : Array.isArray(value) ? value : [value];
+  if (value === undefined) return [];
+  return Array.isArray(value) ? value : [value];
 }
 
 function isExactSet<T>(values: T[], expected: T[]): boolean {

@@ -10,8 +10,8 @@ import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
-import { issueService, type IssueJson, type IssueType, type IssueCategory, type IssuePriority } from '@/services/IssueService';
-import type { IssueStatus } from '@/services/IssueService';
+import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssueCategory, type IssuePriority }
+  from '@/services/IssueService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
 

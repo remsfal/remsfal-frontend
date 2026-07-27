@@ -7,7 +7,6 @@ import { useI18n } from 'vue-i18n';
 import { matchesRouteTarget } from '@/layouts/composables/useRouteActiveMatch';
 
 const props = withDefaults(defineProps<MenuItemProps>(), {
-  item: () => ({}) as MenuItem,
   index: 0,
   root: true,
   parentItemKey: undefined,
@@ -31,7 +30,7 @@ export interface MenuItem {
 }
 
 interface MenuItemProps {
-  item?: MenuItem;
+  item: MenuItem;
   index?: number;
   root?: boolean;
   parentItemKey?: string | undefined;
