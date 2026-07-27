@@ -8,9 +8,11 @@ vi.mock('@/layouts/components/ProjectMenu.vue', () => ({ default: { name: 'Proje
 // Mock ProjectStore used by ProjectMenu
 vi.mock('@/stores/ProjectStore', () => ({
   useProjectStore: () => ({
-    projectId: undefined, projectList: [], selectedProject: null 
+    projectId: undefined, projectList: [], selectedProject: null
   }),
 }));
+// Mock UserSession used for the "Meine Aufgaben" assigneeId query
+vi.mock('@/stores/UserSession', () => ({ useUserSessionStore: () => ({ user: { id: 'user-42' } }) }));
 
 import { mount, config } from '@vue/test-utils';
 import ProjectMobileBar from '@/layouts/components/ProjectMobileBar.vue';
@@ -85,12 +87,12 @@ describe('ProjectMobileBar.vue', () => {
     expect(navItems[0].classes()).toContain('active');
   });
 
-  it('highlights Tasks when on IssueOverview with TASK type', async () => {
+  it('highlights Neue Meldungen when on IssueOverview with PENDING status', async () => {
     const { wrapper } = mountComponent({
       path: '/projects/123/issues',
       name: 'IssueOverview',
       params: { projectId: '123' },
-      query: { status: 'OPEN', type: 'TASK' },
+      query: { status: 'PENDING' },
     });
     await wrapper.vm.$nextTick();
     const navItems = wrapper.findAll('a.nav-item');
@@ -98,12 +100,12 @@ describe('ProjectMobileBar.vue', () => {
     expect(navItems[2].classes()).not.toContain('active');
   });
 
-  it('highlights Defects when on IssueOverview with DEFECT type', async () => {
+  it('highlights Meine Aufgaben when on IssueOverview with the current user as assignee', async () => {
     const { wrapper } = mountComponent({
       path: '/projects/123/issues',
       name: 'IssueOverview',
       params: { projectId: '123' },
-      query: { status: 'OPEN', type: 'DEFECT' },
+      query: { assigneeId: 'user-42' },
     });
     await wrapper.vm.$nextTick();
     const navItems = wrapper.findAll('a.nav-item');
@@ -111,10 +113,10 @@ describe('ProjectMobileBar.vue', () => {
     expect(navItems[2].classes()).toContain('active');
   });
 
-  it('highlights Chat when on ProjectChatView', async () => {
+  it('highlights Mieter when on TenantList', async () => {
     const { wrapper } = mountComponent({
-      path: '/projects/123/chat',
-      name: 'ProjectChatView',
+      path: '/projects/123/tenants',
+      name: 'TenantList',
       params: { projectId: '123' },
       query: {},
     });

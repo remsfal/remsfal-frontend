@@ -197,6 +197,29 @@ describe('AppMenuItem.vue', () => {
       });
       expect(wrapper.find('.active-route').exists()).toBe(false);
     });
+
+    it('highlights an item with an array-valued query regardless of value order', () => {
+      const openStatusesItem: MenuItem = {
+        label: 'projectMenu.issueManagement.open',
+        to: {
+          name: 'IssueOverview', params: { projectId }, query: { status: ['OPEN', 'IN_PROGRESS'] }
+        },
+      };
+      const wrapper = mountItem(openStatusesItem, {}, {
+        path: '/projects/123/issues', name: 'IssueOverview', params: { projectId }, query: { status: ['IN_PROGRESS', 'OPEN'] },
+      });
+      expect(wrapper.find('.active-route').exists()).toBe(true);
+    });
+
+    it('does not highlight a sibling item with a differing array-valued query', () => {
+      const wrapper = mountItem(openItem, {}, {
+        path: '/projects/123/issues',
+        name: 'IssueOverview',
+        params: { projectId },
+        query: { status: ['OPEN', 'IN_PROGRESS'], type: 'TASK' },
+      });
+      expect(wrapper.find('.active-route').exists()).toBe(false);
+    });
   });
 
   describe('icons', () => {

@@ -12,8 +12,10 @@ import { useRoute } from 'vue-router'
 const route = useRoute('IssueOverview')
 const projectId = route.params.projectId as string
 const assigneeId = route.query.assigneeId as string | undefined
-const status = route.query.status as IssueStatus | undefined
-const type = route.query.type as IssueType | undefined
+// vue-router yields a plain string for a single `?status=X` occurrence and a
+// string array when the same key repeats (`?status=X&status=Y`).
+const status = route.query.status as IssueStatus | IssueStatus[] | undefined
+const type = route.query.type as IssueType | IssueType[] | undefined
 </script>
 
 <template>

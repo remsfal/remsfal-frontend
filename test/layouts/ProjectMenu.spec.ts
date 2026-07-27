@@ -14,6 +14,14 @@ describe('ProjectMenu.vue', () => {
 
   const mountMenu = () => mount(ProjectMenu);
 
+  // Finds the rendered <a>/RouterLink for a submenu item by its visible label text.
+  const findLinkByLabel = (label: string) => {
+    const textEl = wrapper
+      .findAll('.layout-submenu .layout-menuitem-text')
+      .find((el) => el.text() === label);
+    return textEl?.element.closest('a');
+  };
+
   beforeEach(() => {
     projectStore = useProjectStore();
     sessionStore = useUserSessionStore();
@@ -41,7 +49,7 @@ describe('ProjectMenu.vue', () => {
     expect(rootItems[0].text()).toContain('Home');
     expect(rootItems[1].text()).toContain('Stammdaten');
     expect(rootItems[2].text()).toContain('Aufgabenmanagement');
-    expect(rootItems[3].text()).toContain('Mängelmanagement');
+    expect(rootItems[3].text()).toContain('Mieterkommunikation');
   });
 
   it('uses "/" as fallback route when no projectId is set', async () => {
@@ -67,7 +75,7 @@ describe('ProjectMenu.vue', () => {
     expect(html).toContain('/projects/proj-123/agreements');
   });
 
-  it('includes user id in issues URL when user is set', async () => {
+  it('includes user id in issues URL when user is set, without a type filter', async () => {
     projectStore.selectedProject = {
       id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER'
     };
@@ -75,13 +83,26 @@ describe('ProjectMenu.vue', () => {
     wrapper = mountMenu();
     await wrapper.vm.$nextTick();
 
-    const html = wrapper.html();
-    expect(html).toContain('/projects/proj-123/issues');
-    expect(html).toContain('assigneeId=user-42');
-    expect(html).toContain('type=TASK');
+    const href = findLinkByLabel('Meine Aufgaben')?.getAttribute('href');
+    expect(href).toContain('/projects/proj-123/issues');
+    expect(href).toContain('assigneeId=user-42');
+    expect(href).not.toContain('type=');
   });
 
-  it('wires Mängelmanagement items to the issues view instead of chat', async () => {
+  it('wires "Offene Aufgaben" to multiple statuses without a type filter', async () => {
+    projectStore.selectedProject = {
+      id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER'
+    };
+    wrapper = mountMenu();
+    await wrapper.vm.$nextTick();
+
+    const href = findLinkByLabel('Offene Aufgaben')?.getAttribute('href');
+    expect(href).toContain('status=OPEN');
+    expect(href).toContain('status=IN_PROGRESS');
+    expect(href).not.toContain('type=');
+  });
+
+  it('wires Mieterkommunikation items to the issues view instead of chat', async () => {
     projectStore.selectedProject = {
       id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER'
     };
@@ -90,7 +111,27 @@ describe('ProjectMenu.vue', () => {
 
     const html = wrapper.html();
     expect(html).not.toContain('/projects/proj-123/chat');
-    expect(html).toContain('type=DEFECT');
+
+    const href = findLinkByLabel('Offene Mängel')?.getAttribute('href');
+    expect(href).toContain('type=DEFECT');
+    expect(href).toContain('status=OPEN');
+    expect(href).toContain('status=IN_PROGRESS');
+  });
+
+  it('wires "Offene Vorgänge" to the open statuses and request-type set', async () => {
+    projectStore.selectedProject = {
+      id: 'proj-123', name: 'Test Project', memberRole: 'MANAGER'
+    };
+    wrapper = mountMenu();
+    await wrapper.vm.$nextTick();
+
+    const href = findLinkByLabel('Offene Vorgänge')?.getAttribute('href');
+    expect(href).toContain('status=OPEN');
+    expect(href).toContain('status=IN_PROGRESS');
+    expect(href).toContain('type=APPLICATION');
+    expect(href).toContain('type=INQUIRY');
+    expect(href).toContain('type=TASK');
+    expect(href).toContain('type=TERMINATION');
   });
 
   it('updates menu routes when projectId changes', async () => {
@@ -135,5 +176,14 @@ describe('ProjectMenu.vue', () => {
     expect(labels).toContain('Meine Aufgaben');
     expect(labels).toContain('Offene Aufgaben');
     expect(labels).toContain('Alle Aufgaben');
+  });
+
+  it('renders submenu items for Mieterkommunikation section', async () => {
+    wrapper = mountMenu();
+    await wrapper.vm.$nextTick();
+    const labels = wrapper.findAll('.layout-submenu .layout-menuitem-text').map(el => el.text());
+    expect(labels).toContain('Neue Meldungen');
+    expect(labels).toContain('Offene Mängel');
+    expect(labels).toContain('Offene Vorgänge');
   });
 });
