@@ -2480,6 +2480,13 @@
             "$ref" : "#/components/schemas/UUID"
           }
         }, {
+          "description" : "Filter to return only issues that are (or are not) visible to tenants",
+          "name" : "isVisibleToTenants",
+          "in" : "query",
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
           "description" : "Maximum number of issues to return",
           "name" : "limit",
           "in" : "query",

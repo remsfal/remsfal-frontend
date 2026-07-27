@@ -198,6 +198,8 @@ export interface paths {
           assigneeId?: components["schemas"]["UUID"];
           /** @description Opaque cursor returned by a previous call to fetch the next page */
           cursor?: components["schemas"]["UUID"];
+          /** @description Filter to return only issues that are (or are not) visible to tenants */
+          isVisibleToTenants?: boolean;
           /** @description Maximum number of issues to return */
           limit: number;
           /** @description ID of the project to return issues of */
