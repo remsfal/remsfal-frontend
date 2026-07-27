@@ -58,7 +58,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
       items: [
         {
           label: 'projectMenu.issueManagement.mine',
-          icon: { type: 'fa', name: ['fas', 'list'] },
+          icon: { type: 'pi', name: 'pi pi-fw pi-list-check' },
           to: currentProjectId
             ? {
               name: 'IssueOverview',
@@ -69,7 +69,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         },
         {
           label: 'projectMenu.issueManagement.open',
-          icon: { type: 'fa', name: ['fas', 'list-check'] },
+          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
           to: currentProjectId
             ? {
               name: 'IssueOverview',
@@ -80,7 +80,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         },
         {
           label: 'projectMenu.issueManagement.all',
-          icon: { type: 'fa', name: ['far', 'rectangle-list'] },
+          icon: { type: 'pi', name: 'pi pi-fw pi-bars' },
           to: currentProjectId
             ? {
               name: 'IssueOverview', params: { projectId: currentProjectId }, query: {}
@@ -94,7 +94,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
       items: [
         {
           label: 'projectMenu.tenantCommunication.new',
-          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-envelope' },
           to: currentProjectId
             ? {
               name: 'IssueOverview',
@@ -105,7 +105,7 @@ function buildMenuModel(currentProjectId?: string): MenuItem[] {
         },
         {
           label: 'projectMenu.tenantCommunication.open',
-          icon: { type: 'pi', name: 'pi pi-fw pi-list' },
+          icon: { type: 'pi', name: 'pi pi-fw pi-wrench' },
           to: currentProjectId
             ? {
               name: 'IssueOverview',
