@@ -1,5 +1,7 @@
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import ProjectTenanciesDetails from '@/features/project/rentalAgreements/views/RentalAgreementDetailView.vue';
+import TenancyDataComponent from '@/features/project/rentalAgreements/components/TenancyDataComponent.vue';
+import UnitsTableComponent from '@/features/project/rentalAgreements/components/UnitsTableComponent.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { issueService } from '@/services/IssueService';
@@ -55,7 +57,8 @@ describe('ProjectTenanciesDetails', () => {
       props: {
         projectId: 'proj-1',
         agreementId: 'agreement-1'
-      }
+      },
+      attachTo: document.body,
     });
     await flushPromises();
   });
@@ -108,6 +111,80 @@ describe('ProjectTenanciesDetails', () => {
     await flushPromises();
 
     expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+
+    localWrapper.unmount();
+  });
+
+  it('falls back to an empty issues list when the response has no issues field', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    // @ts-expect-error - intentionally missing the `issues` field to exercise the `?? []` fallback
+    vi.spyOn(issueService, 'getIssues').mockResolvedValue({});
+
+    const localWrapper = mount(ProjectTenanciesDetails, {props: { projectId: 'proj-1', agreementId: 'agreement-1' },});
+    await flushPromises();
+
+    expect(consoleSpy).not.toHaveBeenCalled();
+
+    localWrapper.unmount();
+  });
+
+  it('does not load the rental agreement when agreementId is missing', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(rentalAgreementService, 'loadRentalAgreement').mockClear();
+
+    const localWrapper = mount(ProjectTenanciesDetails, {props: { projectId: 'proj-1', agreementId: '' },});
+    await flushPromises();
+
+    expect(rentalAgreementService.loadRentalAgreement).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith('Agreement ID or Project ID not found');
+
+    localWrapper.unmount();
+  });
+
+  it('closes the dialog when the close button is used', async () => {
+    const openBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Löschen'));
+    await openBtn!.trigger('click');
+    await flushPromises();
+
+    const closeBtn = document.querySelector('.p-dialog-close-button') as HTMLButtonElement;
+    expect(closeBtn).not.toBeNull();
+    closeBtn.click();
+    await flushPromises();
+
+    expect(document.querySelector('.p-dialog')).toBeNull();
+  });
+
+  it('updates the rental agreement when tenancy data changes', async () => {
+    const updatedAgreement = {
+      ...mockRentalAgreement,
+      startOfRental: '2026-02-01',
+      endOfRental: '2026-11-30',
+    };
+
+    await wrapper.findComponent(TenancyDataComponent).vm.$emit('onChange', updatedAgreement);
+    await flushPromises();
+
+    expect(wrapper.findComponent(TenancyDataComponent).props('tenancy')).toEqual(updatedAgreement);
+  });
+
+  it('maps rents from all unit types into listOfUnits, defaulting missing rent arrays to empty', async () => {
+    vi.spyOn(rentalAgreementService, 'loadRentalAgreement').mockResolvedValueOnce({
+      id: 'agreement-1',
+      active: true,
+      tenants: [],
+      startOfRental: '2025-01-01',
+      endOfRental: '2025-12-31',
+      apartmentRents: [{ unitId: 'unit-1' }],
+    });
+
+    const localWrapper = mount(ProjectTenanciesDetails, {props: { projectId: 'proj-1', agreementId: 'agreement-1' },});
+    await flushPromises();
+
+    expect(localWrapper.findComponent(UnitsTableComponent).props('listOfUnits')).toEqual([
+      {
+        id: 'unit-1', rentalType: 'APARTMENT', rentalTitle: 'unit-1', active: true,
+      },
+    ]);
 
     localWrapper.unmount();
   });
