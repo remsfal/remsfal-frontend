@@ -118,6 +118,42 @@ describe('IssueService with MSW (http)', () => {
     });
   });
 
+  test('getIssues sends array status/type values as repeated query params', async () => {
+    let capturedUrl: URL | undefined;
+    server.use(
+      http.get('/ticketing/v1/issues', ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ issues: [], size: 0 });
+      }),
+    );
+
+    await issueService.getIssues(
+      projectId,
+      ['OPEN', 'IN_PROGRESS'] as IssueStatus[],
+      ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'] as IssueType[],
+    );
+
+    expect(capturedUrl?.searchParams.getAll('status')).toEqual(['OPEN', 'IN_PROGRESS']);
+    expect(capturedUrl?.searchParams.getAll('type')).toEqual([
+      'APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION',
+    ]);
+  });
+
+  test('getIssues sends neither status nor type when no filter is provided', async () => {
+    let capturedUrl: URL | undefined;
+    server.use(
+      http.get('/ticketing/v1/issues', ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ issues: [], size: 0 });
+      }),
+    );
+
+    await issueService.getIssues(projectId);
+
+    expect(capturedUrl?.searchParams.getAll('status')).toEqual([]);
+    expect(capturedUrl?.searchParams.getAll('type')).toEqual([]);
+  });
+
   test('deleteIssue resolves successfully', async () => {
     await expect(issueService.deleteIssue(issueId)).resolves.toBeDefined();
   });

@@ -85,6 +85,24 @@ describe("IssueListView.vue", () => {
     expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "DEFECT", "user1");
   });
 
+  test("forwards array-valued status/type filters to getIssues untouched", async () => {
+    await flushPromises();
+    getIssuesMock.mockClear();
+
+    await wrapper.setProps({
+      status: ['OPEN', 'IN_PROGRESS'] as IssueStatus[],
+      type: ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'] as IssueType[],
+    });
+    await flushPromises();
+
+    expect(getIssuesMock).toHaveBeenCalledWith(
+      "proj-1",
+      ['OPEN', 'IN_PROGRESS'],
+      ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'],
+      "user1",
+    );
+  });
+
   test("passes type to the backend and displays issues returned by it as-is", async () => {
     getIssuesMock.mockResolvedValueOnce({
       size: 1,
@@ -129,13 +147,49 @@ describe("IssueListView.vue", () => {
     expect(localWrapper.findComponent(IssueTable).props("issues")).toHaveLength(2);
   });
 
-  test("passes different columns for DEFECT vs TASK views", async () => {
-    await flushPromises();
-    expect(wrapper.findComponent(IssueTable).props("columns")).toEqual(['title', 'assignee', 'status']);
+  test("follows nextCursor to load and merge all pages", async () => {
+    getIssuesMock.mockReset();
+    getIssuesMock
+      .mockResolvedValueOnce({
+        size: 1,
+        issues: [{
+          id: "1", title: "Page 1 issue", status: 'OPEN' as IssueStatus
+        }],
+        nextCursor: "cursor-abc",
+      })
+      .mockResolvedValueOnce({
+        size: 1,
+        issues: [{
+          id: "2", title: "Page 2 issue", status: 'OPEN' as IssueStatus
+        }],
+      });
 
-    await wrapper.setProps({ type: 'DEFECT' as IssueType });
+    const localWrapper = mount(IssueListView, {
+      props: { projectId: "proj-1" },
+      global: { stubs: { NewIssueDialog: true, Button: false } },
+    });
     await flushPromises();
-    expect(wrapper.findComponent(IssueTable).props("columns")).toEqual(['title', 'status', 'priority']);
+
+    expect(getIssuesMock).toHaveBeenCalledTimes(2);
+    expect(getIssuesMock).toHaveBeenNthCalledWith(1, "proj-1", undefined, undefined, undefined);
+    expect(getIssuesMock).toHaveBeenNthCalledWith(
+      2, "proj-1", undefined, undefined, undefined, undefined, undefined, undefined, "cursor-abc",
+    );
+
+    const issues = localWrapper.findComponent(IssueTable).props("issues");
+    expect(issues).toHaveLength(2);
+    expect(issues.map((issue: { id?: string }) => issue.id)).toEqual(["1", "2"]);
+  });
+
+  test("uses the fallback columns when the filter signature matches no specific preset", async () => {
+    await flushPromises();
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
+
+    await wrapper.setProps({ type: ['DEFECT', 'TASK'] as IssueType[] });
+    await flushPromises();
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
   });
 
   test("navigates to issue details on row select", async () => {
@@ -150,60 +204,76 @@ describe("IssueListView.vue", () => {
     });
   });
 
-  test("renders correct header for assignee + DEFECT type", async () => {
-    await wrapper.setProps({
-      assigneeId: "user1", type: "DEFECT", status: undefined
-    });
-    expect(wrapper.text()).toContain("Meine Mängel");
-  });
-
-  test("renders correct header for status OPEN + DEFECT type", async () => {
-    await wrapper.setProps({
-      assigneeId: undefined, type: "DEFECT", status: 'OPEN' as IssueStatus
-    });
-    expect(wrapper.text()).toContain("Offene Mängel");
-  });
-
-  test("renders correct header for status CLOSED + DEFECT type", async () => {
-    await wrapper.setProps({
-      assigneeId: undefined, type: "DEFECT", status: 'CLOSED' as IssueStatus
-    });
-    expect(wrapper.text()).toContain("Geschlossene Mängel");
-  });
-
-  test("renders correct header for status PENDING + DEFECT type", async () => {
-    await wrapper.setProps({
-      assigneeId: undefined, type: "DEFECT", status: 'PENDING' as IssueStatus
-    });
-    expect(wrapper.text()).toContain("Neue Mängel");
-  });
-
-  test("renders correct header for no assignee/status + DEFECT", async () => {
-    await wrapper.setProps({
-      assigneeId: undefined, type: "DEFECT", status: undefined
-    });
-    expect(wrapper.text()).toContain("Alle Mängel");
-  });
-
-  test("renders correct header for assignee + TASK type", async () => {
+  test("renders 'Meine Aufgaben' with its columns when only assigneeId is set", async () => {
     await wrapper.setProps({
       assigneeId: "user1", type: undefined, status: undefined
     });
+    await flushPromises();
     expect(wrapper.text()).toContain("Meine Aufgaben");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['title', 'type', 'status', 'priority', 'modifiedAt']);
   });
 
-  test("renders correct header for status + TASK type", async () => {
+  test("renders 'Offene Aufgaben' with its columns when status is OPEN/IN_PROGRESS with no type", async () => {
     await wrapper.setProps({
-      assigneeId: undefined, type: undefined, status: 'OPEN' as IssueStatus
+      assigneeId: undefined, type: undefined, status: ['OPEN', 'IN_PROGRESS'] as IssueStatus[]
     });
+    await flushPromises();
     expect(wrapper.text()).toContain("Offene Aufgaben");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'assignee', 'priority']);
   });
 
-  test("renders correct header for no assignee/status + TASK", async () => {
+  test("renders 'Alle Aufgaben' with its columns when no filters are set", async () => {
     await wrapper.setProps({
       assigneeId: undefined, type: undefined, status: undefined
     });
+    await flushPromises();
     expect(wrapper.text()).toContain("Alle Aufgaben");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
+  });
+
+  test("renders 'Alle Aufgaben' as a fallback for an unrecognized filter combination", async () => {
+    await wrapper.setProps({
+      assigneeId: undefined, type: undefined, status: 'CLOSED' as IssueStatus
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Alle Aufgaben");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
+  });
+
+  test("renders 'Neue Meldungen' with its columns when status is PENDING with no type", async () => {
+    await wrapper.setProps({
+      assigneeId: undefined, type: undefined, status: 'PENDING' as IssueStatus
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Neue Meldungen");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'modifiedAt']);
+  });
+
+  test("renders 'Offene Mängel' with its columns when status is OPEN/IN_PROGRESS and type is DEFECT", async () => {
+    await wrapper.setProps({
+      assigneeId: undefined, type: 'DEFECT' as IssueType, status: ['OPEN', 'IN_PROGRESS'] as IssueStatus[]
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Offene Mängel");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'assignee', 'priority']);
+  });
+
+  test("renders 'Offene Vorgänge' with its columns for status OPEN/IN_PROGRESS and the request-type set", async () => {
+    await wrapper.setProps({
+      assigneeId: undefined,
+      type: ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'] as IssueType[],
+      status: ['OPEN', 'IN_PROGRESS'] as IssueStatus[],
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Offene Vorgänge");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'assignee', 'priority']);
   });
 
   test("handles error during loadIssues", async () => {
@@ -226,14 +296,17 @@ describe("IssueListView.vue", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test("renders create button with correct label for DEFECT", async () => {
+  test("renders create button with the generic 'Vorgang erstellen' label regardless of the active filter", async () => {
     await wrapper.setProps({ type: "DEFECT" });
-    expect(wrapper.text()).toContain("Mangel melden");
+    expect(wrapper.text()).toContain("Vorgang erstellen");
+
+    await wrapper.setProps({ type: undefined });
+    expect(wrapper.text()).toContain("Vorgang erstellen");
   });
 
-  test("renders create button with correct label for TASK", async () => {
-    await wrapper.setProps({ type: undefined });
-    expect(wrapper.text()).toContain("Aufgabe erstellen");
+  test("does not pass a category to NewIssueDialog", async () => {
+    await flushPromises();
+    expect(wrapper.findComponent(NewIssueDialog).props("category")).toBeUndefined();
   });
 
   test("handleIssueCreated re-fetches issues and navigates to the new issue", async () => {
