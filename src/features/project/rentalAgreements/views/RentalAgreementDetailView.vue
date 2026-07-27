@@ -2,7 +2,7 @@
 import TenancyDataComponent from '../components/TenancyDataComponent.vue';
 import TenantsTableComponent from '../components/TenantsTableComponent.vue';
 import UnitsTableComponent from '../components/UnitsTableComponent.vue';
-import RentalAgreementsIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementsIssueCard.vue";
+import RentalAgreementIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue";
 import type { components } from '@/services/api/platform-schema';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
@@ -162,7 +162,7 @@ defineExpose({
         :isDeleteButtonEnabled="false"
       />
 
-      <RentalAgreementsIssueCard
+      <RentalAgreementIssueCard
         :projectId="props.projectId"
       />
 
