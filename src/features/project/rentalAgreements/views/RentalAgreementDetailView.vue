@@ -164,6 +164,7 @@ defineExpose({
 
       <RentalAgreementIssueCard
         :projectId="props.projectId"
+        :agreementId="props.agreementId"
       />
 
       <!-- Action buttons -->

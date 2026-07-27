@@ -2,6 +2,7 @@ import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import ProjectTenanciesDetails from '@/features/project/rentalAgreements/views/RentalAgreementDetailView.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import { issueService } from '@/services/IssueService';
 
 // ---- Mocks ----
 const push = vi.fn();
@@ -97,5 +98,17 @@ describe('ProjectTenanciesDetails', () => {
       name: 'RentalAgreementView',
       params: { projectId: 'proj-1' }
     });
+  });
+
+  it('logs an error when loading issues fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(issueService, 'getIssues').mockRejectedValue(new Error('network error'));
+
+    const localWrapper = mount(ProjectTenanciesDetails, {props: { projectId: 'proj-1', agreementId: 'agreement-1' },});
+    await flushPromises();
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+
+    localWrapper.unmount();
   });
 });
