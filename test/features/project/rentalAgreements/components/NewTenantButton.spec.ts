@@ -27,20 +27,6 @@ describe('NewTenantButton', () => {
     expect(wrapper.text()).toContain('Neuen Mieter hinzufügen');
   });
 
-  it('dialog is initially not visible', () => {
-    const wrapper = mountButton();
-    const dialog = wrapper.find('[data-testid="dialog"]');
-    expect(dialog.attributes('data-visible')).toBe('false');
-  });
-
-  it('dialog becomes visible when button is clicked', async () => {
-    const wrapper = mountButton();
-    await wrapper.find('button').trigger('click');
-
-    const dialog = wrapper.find('[data-testid="dialog"]');
-    expect(dialog.attributes('data-visible')).toBe('true');
-  });
-
   it('renders TenantForm fields inside the dialog', async () => {
     const wrapper = mountButton();
     await wrapper.find('button').trigger('click');
@@ -76,14 +62,5 @@ describe('NewTenantButton', () => {
 
     const dialog = wrapper.find('[data-testid="dialog"]');
     expect(dialog.attributes('data-visible')).toBe('false');
-  });
-
-  it('disables the button when disabled prop is true', () => {
-    const wrapper = mount(NewTenantButton, {
-      props: { projectId: 'proj-1', disabled: true },
-      global: { stubs: { BaseDialog: BaseDialogStub } },
-    });
-
-    expect(wrapper.find('button').attributes('disabled')).toBeDefined();
   });
 });

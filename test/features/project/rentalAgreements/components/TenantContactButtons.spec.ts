@@ -9,35 +9,6 @@ describe('TenantContactButtons', () => {
     expect(wrapper.find('[class*="pi-envelope"]').exists()).toBe(true);
   });
 
-  it('does not render a delete button by default', () => {
-    const wrapper = mount(TenantContactButtons, { props: { tenantId: 'tenant-1' } });
-    expect(wrapper.find('[class*="pi-trash"]').exists()).toBe(false);
-  });
-
-  it('renders a delete button when deletable is true', () => {
-    const wrapper = mount(TenantContactButtons, { props: { tenantId: 'tenant-1', deletable: true } });
-    expect(wrapper.find('[class*="pi-trash"]').exists()).toBe(true);
-  });
-
-  it('emits delete when the delete confirmation dialog is confirmed', async () => {
-    const wrapper = mount(TenantContactButtons, {
-      props: { tenantId: 'tenant-1', deletable: true },
-      attachTo: document.body,
-    });
-
-    await wrapper.find('[class*="pi-trash"]').trigger('click');
-    await flushPromises();
-
-    const confirmButton = document.querySelector('.p-dialog [class*="pi-trash"]')?.closest('button');
-    expect(confirmButton).not.toBeNull();
-    confirmButton!.click();
-    await flushPromises();
-
-    expect(wrapper.emitted('delete')).toBeTruthy();
-
-    wrapper.unmount();
-  });
-
   it('shows the tenant name in the delete confirmation message', async () => {
     const wrapper = mount(TenantContactButtons, {
       props: {

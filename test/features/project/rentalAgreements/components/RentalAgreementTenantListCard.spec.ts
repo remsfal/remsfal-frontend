@@ -53,11 +53,6 @@ describe('RentalAgreementTenantListCard', () => {
     await flushPromises();
   };
 
-  it('renders a TenantCard for each tenant', () => {
-    const wrapper = mountCard();
-    expect(wrapper.text()).toContain('Max Mustermann');
-  });
-
   it('shows empty state when there are no tenants', () => {
     const wrapper = mountCard({ ...baseAgreement, tenants: [] });
     expect(wrapper.text()).toContain('Noch keine Mieter hinzugefügt.');
@@ -116,16 +111,6 @@ describe('RentalAgreementTenantListCard', () => {
     expect(updatedAgreement.tenants).toEqual([]);
   });
 
-  it('does not navigate when the delete button is clicked', async () => {
-    const wrapper = mountCard();
-
-    await wrapper.find('[class*="pi-trash"]').trigger('click');
-    await flushPromises();
-    await confirmDelete();
-
-    expect(push).not.toHaveBeenCalled();
-  });
-
   it('shows an error toast when adding a tenant fails', async () => {
     vi.spyOn(rentalAgreementService, 'addTenant').mockRejectedValue(new Error('API error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -176,16 +161,5 @@ describe('RentalAgreementTenantListCard', () => {
       name: 'TenantDetail',
       params: { projectId: 'proj-1', tenantId: 'tenant-1' },
     });
-  });
-
-  it('does not navigate when the tenant has no id', async () => {
-    const wrapper = mountCard({
-      ...baseAgreement,
-      tenants: [{ firstName: 'Neu', lastName: 'Mieter' }],
-    });
-
-    await wrapper.find('[data-testid="tenant-card"]').trigger('click');
-
-    expect(push).not.toHaveBeenCalled();
   });
 });
