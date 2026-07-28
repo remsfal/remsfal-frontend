@@ -41,20 +41,18 @@ onMounted(loadIssues);
 </script>
 
 <template>
-  <div>
-    <BaseCard>
-      <template #title>
-        {{ t('rentalAgreement.issue.heading.tasks') }}
-      </template>
-      <template #content>
-        <!-- Issues Table -->
-        <IssueTable
-          :issues="issues"
-          :projectId="props.projectId"
-          :columns="columns"
-          @rowSelect="onIssueSelect"
-        />
-      </template>
-    </BaseCard>
-  </div>
+  <BaseCard>
+    <template #title>
+      {{ t('rentalAgreement.issue.heading.tasks') }}
+    </template>
+    <template #content>
+      <!-- Issues Table -->
+      <IssueTable
+        :issues="issues"
+        :projectId="props.projectId"
+        :columns="columns"
+        @rowSelect="onIssueSelect"
+      />
+    </template>
+  </BaseCard>
 </template>
