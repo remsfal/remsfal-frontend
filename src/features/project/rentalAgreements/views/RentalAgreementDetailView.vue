@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import TenancyDataComponent from '../components/TenancyDataComponent.vue';
 import RentalAgreementTenantListCard from '../components/RentalAgreementTenantListCard.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
-import { useToast } from 'primevue/usetoast';
 import { onMounted, ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -18,7 +16,6 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const router = useRouter();
-const toast = useToast();
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
@@ -60,26 +57,6 @@ function redirectToTenanciesList() {
   router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
 
-function updateRentalAgreement(agreement: RentalAgreementJson | null) {
-  if (!agreement?.id || !props.projectId) return;
-
-  rentalAgreementService.updateRentalAgreement(
-    props.projectId,
-    agreement.id,
-    agreement
-  );
-  toast.add({
-    severity: 'success',
-    summary: 'Speichern erfolgreich',
-    detail: `Der Mietvertrag mit der ID ${agreement?.id} wurde erfolgreich aktualisiert.`,
-    life: 3000,
-  });
-}
-
-function handleTenancyDataChange(updatedAgreement: RentalAgreementJson) {
-  rentalAgreement.value = updatedAgreement;
-}
-
 defineExpose({
   confirmationDialogVisible,
   confirmDeletion,
@@ -88,13 +65,6 @@ defineExpose({
 
 <template>
   <div class="p-4">
-    <!-- Rental Agreement data form -->
-    <TenancyDataComponent
-      v-if="rentalAgreement"
-      :tenancy="rentalAgreement"
-      @onChange="handleTenancyDataChange"
-    />
-
     <div class="grid grid-cols-1 gap-6">
       <RentalAgreementSummaryCard
         v-if="rentalAgreement"
@@ -105,38 +75,14 @@ defineExpose({
       <!-- Tenants -->
       <RentalAgreementTenantListCard
         v-if="rentalAgreement"
-        :active="rentalAgreement.active ? true : false"
+        :active="!rentalAgreement.active"
         :projectId="projectId"
         :rentalAgreement="rentalAgreement"
         @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
       />
-
-      <!-- Action buttons -->
-      <div class="flex justify-end">
-        <Button
-          icon="pi pi-save"
-          label="Speichern"
-          text
-          raised
-          rounded
-          class="mb-2 mr-2 hover:bg-blue-600 transition-colors"
-          @click="updateRentalAgreement(rentalAgreement)"
-        />
-        <Button
-          icon="pi pi-trash"
-          label="Löschen"
-          severity="danger"
-          text
-          raised
-          rounded
-          class="mb-2 mr-2 hover:bg-red-600 transition-colors"
-          @click="confirmationDialogVisible = true"
-        />
-      </div>
     </div>
   </div>
 
-  <!-- Delete confirmation dialog -->
   <BaseDialog v-model:visible="confirmationDialogVisible" :header="t('projectTenancies.dialog.confirmationTitle')">
     <p>{{ t('rentalAgreement.dialog.confirmDelete', { id: rentalAgreement?.id }) }}</p>
     <template #footer>

@@ -1,6 +1,5 @@
 import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import ProjectTenanciesDetails from '@/features/project/rentalAgreements/views/RentalAgreementDetailView.vue';
-import TenancyDataComponent from '@/features/project/rentalAgreements/components/TenancyDataComponent.vue';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
@@ -10,9 +9,6 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
   useRoute: () => ({ params: { agreementId: 'agreement-1' } }),
 }));
-
-const toastSpy = vi.fn();
-vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastSpy }), }));
 
 // ---- Mock ProjectStore ----
 vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
@@ -48,7 +44,6 @@ describe('ProjectTenanciesDetails', () => {
   beforeEach(async () => {
     // re-apply mocks here (so they're active after vi.clearAllMocks)
     vi.spyOn(rentalAgreementService, 'getRentalAgreement').mockResolvedValue(mockRentalAgreement);
-    vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockResolvedValue(undefined);
     vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockResolvedValue(undefined);
 
     wrapper = mount(ProjectTenanciesDetails, {
@@ -66,27 +61,6 @@ describe('ProjectTenanciesDetails', () => {
     if (wrapper) {
       wrapper.unmount();
     }
-  });
-
-  it('opens confirmation dialog when delete is clicked', async () => {
-    const deleteBtn = wrapper
-      .findAll('button').find((btn) => btn.text().includes('Löschen'));
-    expect(deleteBtn).toBeTruthy();
-
-    await deleteBtn!.trigger('click');
-    expect((wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmationDialogVisible).toBe(true);
-  });
-
-  it('calls updateRentalAgreement and shows toast', async () => {
-    const saveBtn = wrapper
-      .findAll('button').find((btn) => btn.text().includes('Speichern'));
-    expect(saveBtn).toBeTruthy();
-
-    await saveBtn!.trigger('click');
-    await flushPromises();
-
-    expect(rentalAgreementService.updateRentalAgreement).toHaveBeenCalledWith('proj-1', 'agreement-1', mockRentalAgreement);
-    expect(toastSpy).toHaveBeenCalled();
   });
 
   it('deletes rental agreement and redirects', async () => {
@@ -112,31 +86,5 @@ describe('ProjectTenanciesDetails', () => {
     expect(consoleSpy).toHaveBeenCalledWith('Agreement ID or Project ID not found');
 
     localWrapper.unmount();
-  });
-
-  it('closes the dialog when the close button is used', async () => {
-    const openBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Löschen'));
-    await openBtn!.trigger('click');
-    await flushPromises();
-
-    const closeBtn = document.querySelector('.p-dialog-close-button') as HTMLButtonElement;
-    expect(closeBtn).not.toBeNull();
-    closeBtn.click();
-    await flushPromises();
-
-    expect(document.querySelector('.p-dialog')).toBeNull();
-  });
-
-  it('updates the rental agreement when tenancy data changes', async () => {
-    const updatedAgreement = {
-      ...mockRentalAgreement,
-      startOfRental: '2026-02-01',
-      endOfRental: '2026-11-30',
-    };
-
-    await wrapper.findComponent(TenancyDataComponent).vm.$emit('onChange', updatedAgreement);
-    await flushPromises();
-
-    expect(wrapper.findComponent(TenancyDataComponent).props('tenancy')).toEqual(updatedAgreement);
   });
 });
