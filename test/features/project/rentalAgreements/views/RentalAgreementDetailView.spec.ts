@@ -103,12 +103,12 @@ describe('ProjectTenanciesDetails', () => {
 
   it('does not load the rental agreement when agreementId is missing', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(rentalAgreementService, 'loadRentalAgreement').mockClear();
+    vi.spyOn(rentalAgreementService, 'getRentalAgreement').mockClear();
 
     const localWrapper = mount(ProjectTenanciesDetails, {props: { projectId: 'proj-1', agreementId: '' },});
     await flushPromises();
 
-    expect(rentalAgreementService.loadRentalAgreement).not.toHaveBeenCalled();
+    expect(rentalAgreementService.getRentalAgreement).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalledWith('Agreement ID or Project ID not found');
 
     localWrapper.unmount();
