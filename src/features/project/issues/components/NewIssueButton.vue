@@ -5,6 +5,7 @@ import { useToast } from 'primevue/usetoast';
 
 // PrimeVue Components
 import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
@@ -19,6 +20,8 @@ import { z } from 'zod';
 
 // Services & Types
 import { issueService, type IssueJson, type IssueType, type IssuePriority } from '@/services/IssueService';
+import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
+import type { RentalAgreementItemJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Props & Emits
 const props = defineProps<{
@@ -34,6 +37,37 @@ const { t } = useI18n();
 const toast = useToast();
 
 const visible = ref(false);
+const visibleToTenant = ref(false);
+
+// --- Rental agreement selection (kept outside the zod-managed Form: the
+// AutoComplete-backed RentalAgreementSelect binds a full object, not a
+// scalar id, so it can't be registered as a normal name="..." form field).
+// Only required when the issue should be visible to the tenant. ---
+const selectedAgreement = ref<RentalAgreementItemJson | null>(null);
+const agreementTouched = ref(false);
+const submitAttempted = ref(false);
+
+const agreementInvalid = computed(
+  () => visibleToTenant.value
+    && (agreementTouched.value || submitAttempted.value)
+    && !selectedAgreement.value,
+);
+
+// Reset to a clean state every time the dialog opens
+watch(visible, (isVisible) => {
+  if (!isVisible) return;
+  visibleToTenant.value = false;
+  selectedAgreement.value = null;
+  agreementTouched.value = false;
+  submitAttempted.value = false;
+});
+
+// Clear a stale selection/error when visibility is turned back off
+watch(visibleToTenant, (checked) => {
+  if (checked) return;
+  selectedAgreement.value = null;
+  agreementTouched.value = false;
+});
 
 // Zod Validation Schema
 const validationSchema = z.object({
@@ -99,6 +133,7 @@ const dialogHeader = computed(() =>
 
 // Form Submit Handler
 const onSubmit = (event: FormSubmitEvent) => {
+  submitAttempted.value = true;
   const formState = event.states;
 
   // Extract values from form state (workaround for PrimeVue Forms issue #6789)
@@ -106,13 +141,22 @@ const onSubmit = (event: FormSubmitEvent) => {
   const description = formState.issueDescription?.value?.trim() || '';
   const type = formState.issueType?.value;
   const priority = formState.issuePriority?.value;
+  const agreementId = selectedAgreement.value?.id;
 
   if (!event.valid || !title || !type || !priority) {
     return;
   }
+  if (visibleToTenant.value && !agreementId) {
+    return;
+  }
 
   createIssue({
-    title, description, type, priority,
+    title,
+    description,
+    type,
+    priority,
+    visibleToTenant: visibleToTenant.value,
+    agreementId: visibleToTenant.value ? agreementId : undefined,
   });
 };
 
@@ -122,6 +166,8 @@ async function createIssue(data: {
   description: string;
   type: IssueType;
   priority: IssuePriority;
+  visibleToTenant: boolean;
+  agreementId?: string;
 }) {
   try {
     // Check offline status
@@ -143,6 +189,8 @@ async function createIssue(data: {
       type: data.type,
       priority: data.priority,
       projectId: props.projectId,
+      visibleToTenants: data.visibleToTenant,
+      agreementId: data.agreementId,
     });
 
     // Success feedback
@@ -202,6 +250,33 @@ async function createIssue(data: {
             variant="simple"
           >
             {{ $form.issueTitle?.error?.message }}
+          </Message>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <Checkbox v-model="visibleToTenant" inputId="issueVisibleToTenant" binary />
+          <label for="issueVisibleToTenant" class="text-sm">{{ t('newIssueDialog.visibleToTenant.label') }}</label>
+        </div>
+
+        <div v-if="visibleToTenant" class="flex flex-col gap-1">
+          <label for="issueAgreement" class="font-semibold">
+            {{ t('newIssueDialog.agreement.label') }}<span aria-hidden="true"> *</span>
+          </label>
+          <RentalAgreementSelect
+            inputId="issueAgreement"
+            :projectId="props.projectId"
+            :modelValue="selectedAgreement"
+            :invalid="agreementInvalid"
+            @update:modelValue="selectedAgreement = $event"
+            @blur="agreementTouched = true"
+          />
+          <Message
+            v-if="agreementInvalid"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ t('newIssueDialog.agreement.required') }}
           </Message>
         </div>
 

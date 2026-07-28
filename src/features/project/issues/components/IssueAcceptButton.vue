@@ -60,7 +60,6 @@ async function handleAccept() {
   <Button
     :label="t('issueDetails.acceptRequest.button')"
     icon="pi pi-check"
-    severity="secondary"
     :disabled="loading"
     :loading="loading"
     @click="handleAccept"

@@ -29,6 +29,7 @@ type IssueUI = {
   category: IssueJson['category'];
   priority: IssueJson['priority'];
   modifiedAt?: IssueJson['modifiedAt'];
+  visibleToTenants: boolean;
 };
 
 /* State */
@@ -70,6 +71,7 @@ const fetchIssue = async () => {
       category: issue.category,
       priority: issue.priority,
       modifiedAt: issue.modifiedAt,
+      visibleToTenants: issue.visibleToTenants ?? false,
     };
     description.value = issue.description ?? '';
     attachments.value = issue.attachments ?? [];

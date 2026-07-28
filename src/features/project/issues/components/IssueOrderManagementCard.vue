@@ -23,9 +23,15 @@ const { t } = useI18n();
     <template #content>
       <Tabs value="quotationRequests">
         <TabList>
-          <Tab value="quotationRequests">{{ t('issueOrderManagement.tabs.quotationRequests') }}</Tab>
-          <Tab value="quotations">{{ t('issueOrderManagement.tabs.quotations') }}</Tab>
-          <Tab value="orders">{{ t('issueOrderManagement.tabs.orders') }}</Tab>
+          <Tab value="quotationRequests">
+            {{ t('issueOrderManagement.tabs.quotationRequests') }}
+          </Tab>
+          <Tab value="quotations">
+            {{ t('issueOrderManagement.tabs.quotations') }}
+          </Tab>
+          <Tab value="orders">
+            {{ t('issueOrderManagement.tabs.orders') }}
+          </Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="quotationRequests">
