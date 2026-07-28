@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
@@ -8,11 +8,13 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
+import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
 import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssueCategory, type IssuePriority }
   from '@/services/IssueService';
-import { useProjectStore } from '@/stores/ProjectStore';
+import { rentalAgreementService, type RentalAgreementItemJson }
+  from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
 
 /* =========================
@@ -27,9 +29,9 @@ const props = defineProps<{
     status: IssueJson["status"];
     assigneeId: string;
     reportedBy: string;
-    project: string;
     issueType: IssueJson["type"];
-    tenancy: string;
+    location: string;
+    agreementId: string;
     category: IssueJson["category"];
     priority: IssueJson["priority"];
     modifiedAt?: IssueJson["modifiedAt"];
@@ -42,7 +44,6 @@ const emit = defineEmits<{ saved: [] }>();
      Services & Store
   ========================= */
 const toast = useToast();
-const projectStore = useProjectStore();
 const { t, locale } = useI18n();
 
 /* =========================
@@ -131,12 +132,13 @@ const title = ref(props.initialData.title);
 const status = ref(props.initialData.status);
 const assigneeId = ref(props.initialData.assigneeId);
 const reportedBy = ref(props.initialData.reportedBy);
-const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
-const tenancy = ref(props.initialData.tenancy);
+const location = ref(props.initialData.location);
 const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category));
 const priority = ref(props.initialData.priority);
 const modifiedAt = ref(props.initialData.modifiedAt);
+
+const selectedAgreement = ref<RentalAgreementItemJson | null>(null);
 
 /* =========================
      Original Values (change detection)
@@ -145,9 +147,36 @@ const originalTitle = ref(title.value);
 const originalStatus = ref(status.value);
 const originalAssigneeId = ref(assigneeId.value);
 const originalIssueType = ref(issueType.value);
-const originalTenancy = ref(tenancy.value);
+const originalLocation = ref(location.value);
 const originalCategory = ref(category.value);
 const originalPriority = ref(priority.value);
+const originalSelectedAgreement = ref<RentalAgreementItemJson | null>(null);
+
+/* =========================
+     Rental Agreement Resolution
+  ========================= */
+// RentalAgreementSelect needs the full RentalAgreementItemJson as its v-model,
+// but the card only receives the raw agreementId, so resolve it via the same
+// list endpoint the picker itself uses for its dropdown suggestions.
+async function resolveAgreement(agreementId: string) {
+  if (!agreementId) {
+    selectedAgreement.value = null;
+    originalSelectedAgreement.value = null;
+    return;
+  }
+  try {
+    const agreements = await rentalAgreementService.getRentalAgreements(props.projectId);
+    const match = agreements.find((agreement) => agreement.id === agreementId) ?? null;
+    selectedAgreement.value = match;
+    originalSelectedAgreement.value = match;
+  } catch (err) {
+    console.error('Failed to resolve rental agreement:', err);
+    selectedAgreement.value = null;
+    originalSelectedAgreement.value = null;
+  }
+}
+
+onMounted(() => resolveAgreement(props.initialData.agreementId));
 
 /* =========================
      Change Detection
@@ -158,7 +187,8 @@ const canSave = computed(() =>
   status.value !== originalStatus.value ||
   assigneeId.value !== originalAssigneeId.value ||
   issueType.value !== originalIssueType.value ||
-  tenancy.value !== originalTenancy.value ||
+  location.value !== originalLocation.value ||
+  selectedAgreement.value?.id !== originalSelectedAgreement.value?.id ||
   category.value?.value !== originalCategory.value?.value ||
   priority.value !== originalPriority.value
 );
@@ -218,9 +248,8 @@ watch(
     status.value = newData.status;
     assigneeId.value = newData.assigneeId;
     reportedBy.value = newData.reportedBy;
-    project.value = newData.project;
     issueType.value = newData.issueType;
-    tenancy.value = newData.tenancy;
+    location.value = newData.location;
     category.value = findCategoryOption(newData.category);
     priority.value = newData.priority;
     modifiedAt.value = newData.modifiedAt;
@@ -229,9 +258,13 @@ watch(
     originalStatus.value = newData.status;
     originalAssigneeId.value = newData.assigneeId;
     originalIssueType.value = newData.issueType;
-    originalTenancy.value = newData.tenancy;
+    originalLocation.value = newData.location;
     originalCategory.value = category.value;
     originalPriority.value = priority.value;
+
+    if (newData.agreementId !== originalSelectedAgreement.value?.id) {
+      resolveAgreement(newData.agreementId);
+    }
   },
   { deep: true }
 );
@@ -255,6 +288,9 @@ const handleSave = async () => {
       payload.assigneeId = assigneeId.value;
     if (issueType.value !== originalIssueType.value)
       payload.type = issueType.value as IssueJson["type"];
+    if (location.value !== originalLocation.value) payload.location = location.value;
+    if (selectedAgreement.value?.id !== originalSelectedAgreement.value?.id)
+      payload.agreementId = selectedAgreement.value?.id;
     if (category.value?.value !== originalCategory.value?.value)
       payload.category = category.value?.value as IssueJson["category"];
     if (priority.value !== originalPriority.value)
@@ -266,7 +302,8 @@ const handleSave = async () => {
     originalStatus.value = status.value;
     originalAssigneeId.value = assigneeId.value;
     originalIssueType.value = issueType.value;
-    originalTenancy.value = tenancy.value;
+    originalLocation.value = location.value;
+    originalSelectedAgreement.value = selectedAgreement.value;
     originalCategory.value = category.value;
     originalPriority.value = priority.value;
     toast.add({
@@ -301,6 +338,7 @@ function applyIssueUpdate(updated: IssueJson) {
   if (updated.status !== undefined) status.value = updated.status;
   if (updated.assigneeId !== undefined) assigneeId.value = updated.assigneeId;
   if (updated.type !== undefined) issueType.value = updated.type;
+  if (updated.location !== undefined) location.value = updated.location;
   if (updated.category !== undefined) category.value = findCategoryOption(updated.category);
   if (updated.priority !== undefined) priority.value = updated.priority;
   if (updated.modifiedAt !== undefined) modifiedAt.value = updated.modifiedAt;
@@ -309,6 +347,7 @@ function applyIssueUpdate(updated: IssueJson) {
   originalStatus.value = status.value;
   originalAssigneeId.value = assigneeId.value;
   originalIssueType.value = issueType.value;
+  originalLocation.value = location.value;
   originalCategory.value = category.value;
   originalPriority.value = priority.value;
 
@@ -430,19 +469,24 @@ function applyIssueUpdate(updated: IssueJson) {
           </div>
         </div>
 
-        <!-- Project & Tenancy -->
+        <!-- Location & Tenancy -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1 flex-1">
-            <label for="issue-project" class="text-sm text-gray-600">{{ t('issueDetails.fields.project') }}</label>
+            <label for="issue-location" class="text-sm text-gray-600">{{ t('issueDetails.fields.location') }}</label>
             <InputText
-              id="issue-project"
-              :modelValue="projectStore.selectedProject?.name ?? ''"
+              id="issue-location"
+              v-model="location"
+              :placeholder="t('issueDetails.fields.locationPlaceholder')"
             />
           </div>
 
           <div class="flex flex-col gap-1 flex-1">
             <label for="issue-tenancy" class="text-sm text-gray-600">{{ t('issueDetails.fields.tenancy') }}</label>
-            <InputText id="issue-tenancy" v-model="tenancy" />
+            <RentalAgreementSelect
+              inputId="issue-tenancy"
+              :projectId="projectId"
+              v-model="selectedAgreement"
+            />
           </div>
         </div>
 

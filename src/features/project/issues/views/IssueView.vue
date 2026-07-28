@@ -22,8 +22,8 @@ type IssueUI = {
   title: string;
   assigneeId: string;
   reportedBy: string;
-  project: string;
-  tenancy: string;
+  location: string;
+  agreementId: string;
   status: IssueJson['status'];
   issueType: IssueJson['type'];
   category: IssueJson['category'];
@@ -64,9 +64,9 @@ const fetchIssue = async () => {
       status: issue.status ?? 'OPEN',
       assigneeId: issue.assigneeId ?? '',
       reportedBy: issue.reportedBy ?? '',
-      project: props.projectId,
       issueType: issue.type,
-      tenancy: issue.agreementId ?? '',
+      location: issue.location ?? '',
+      agreementId: issue.agreementId ?? '',
       category: issue.category,
       priority: issue.priority,
       modifiedAt: issue.modifiedAt,

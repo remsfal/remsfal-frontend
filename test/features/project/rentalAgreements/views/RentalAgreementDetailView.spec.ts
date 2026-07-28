@@ -45,6 +45,8 @@ describe('ProjectTenanciesDetails', () => {
   beforeEach(async () => {
     // re-apply mocks here (so they're active after vi.clearAllMocks)
     vi.spyOn(rentalAgreementService, 'loadRentalAgreement').mockResolvedValue(mockRentalAgreement);
+    vi.spyOn(rentalAgreementService, 'getRentalAgreement').mockResolvedValue(mockRentalAgreement);
+    vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockResolvedValue(undefined);
     vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockResolvedValue(undefined);
 
     wrapper = mount(ProjectTenanciesDetails, {

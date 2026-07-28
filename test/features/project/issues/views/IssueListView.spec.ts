@@ -20,7 +20,7 @@ vi.mock("@/services/IssueService", () => {
 // ---- IMPORT COMPONENT AFTER MOCKS ----
 import IssueListView from "@/features/project/issues/views/IssueListView.vue";
 import IssueTable from "@/features/project/issues/components/IssueTable.vue";
-import NewIssueDialog from "@/features/project/issues/components/NewIssueDialog.vue";
+import NewIssueButton from "@/features/project/issues/components/NewIssueButton.vue";
 import { issueService } from "@/services/IssueService";
 import type { IssueStatus, IssueType } from "@/services/IssueService";
 
@@ -41,7 +41,7 @@ describe("IssueListView.vue", () => {
       global: {
         stubs: {
           IssueTable: true,
-          NewIssueDialog: true,
+          NewIssueButton: true, NewTenantIssueButton: true,
           Button: false,
         },
       },
@@ -50,11 +50,6 @@ describe("IssueListView.vue", () => {
 
   test("renders component", () => {
     expect(wrapper.exists()).toBe(true);
-  });
-
-  test("opens create issue dialog", async () => {
-    await wrapper.get("button").trigger("click");
-    expect(wrapper.findComponent(NewIssueDialog).props("visible")).toBe(true);
   });
 
   test("fetches issues once on mount with status, type and assigneeId forwarded to the backend", async () => {
@@ -115,7 +110,11 @@ describe("IssueListView.vue", () => {
 
     const localWrapper = mount(IssueListView, {
       props: { projectId: "proj-1", type: 'TASK' as IssueType },
-      global: { stubs: { NewIssueDialog: true, Button: false } },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
     });
     await flushPromises();
 
@@ -140,7 +139,11 @@ describe("IssueListView.vue", () => {
 
     const localWrapper = mount(IssueListView, {
       props: { projectId: "proj-1" },
-      global: { stubs: { NewIssueDialog: true, Button: false } },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
     });
     await flushPromises();
 
@@ -166,7 +169,11 @@ describe("IssueListView.vue", () => {
 
     const localWrapper = mount(IssueListView, {
       props: { projectId: "proj-1" },
-      global: { stubs: { NewIssueDialog: true, Button: false } },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
     });
     await flushPromises();
 
@@ -284,7 +291,7 @@ describe("IssueListView.vue", () => {
       props: { projectId: "proj-1", type: 'TASK' as IssueType },
       global: {
         stubs: {
-          IssueTable: true, NewIssueDialog: true, Button: false
+          IssueTable: true, NewIssueButton: true, NewTenantIssueButton: true, Button: false
         }
       },
     });
@@ -296,17 +303,17 @@ describe("IssueListView.vue", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test("renders create button with the generic 'Vorgang erstellen' label regardless of the active filter", async () => {
+  test("renders the create-issue button regardless of the active filter", async () => {
     await wrapper.setProps({ type: "DEFECT" });
-    expect(wrapper.text()).toContain("Vorgang erstellen");
+    expect(wrapper.findComponent(NewIssueButton).exists()).toBe(true);
 
     await wrapper.setProps({ type: undefined });
-    expect(wrapper.text()).toContain("Vorgang erstellen");
+    expect(wrapper.findComponent(NewIssueButton).exists()).toBe(true);
   });
 
-  test("does not pass a category to NewIssueDialog", async () => {
+  test("does not pass a category to NewIssueButton", async () => {
     await flushPromises();
-    expect(wrapper.findComponent(NewIssueDialog).props("category")).toBeUndefined();
+    expect(wrapper.findComponent(NewIssueButton).props("category")).toBeUndefined();
   });
 
   test("handleIssueCreated re-fetches issues and navigates to the new issue", async () => {
@@ -326,7 +333,7 @@ describe("IssueListView.vue", () => {
       type: 'TASK' as IssueType,
     };
 
-    await wrapper.findComponent(NewIssueDialog).vm.$emit("issueCreated", newIssue);
+    await wrapper.findComponent(NewIssueButton).vm.$emit("issueCreated", newIssue);
     await flushPromises();
 
     expect(getIssuesMock).toHaveBeenCalledTimes(1);
@@ -342,7 +349,7 @@ describe("IssueListView.vue", () => {
       status: 'OPEN' as IssueStatus,
     };
 
-    await wrapper.findComponent(NewIssueDialog).vm.$emit("issueCreated", newIssue);
+    await wrapper.findComponent(NewIssueButton).vm.$emit("issueCreated", newIssue);
     await flushPromises();
 
     expect(pushMock).toHaveBeenCalledWith({
@@ -370,7 +377,7 @@ describe("IssueListView.vue", () => {
       global: {
         stubs: {
           IssueTable: true,
-          NewIssueDialog: true,
+          NewIssueButton: true, NewTenantIssueButton: true,
           Button: false,
         },
       },
