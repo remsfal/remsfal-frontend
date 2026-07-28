@@ -152,4 +152,43 @@ describe('RentalAgreementTenantListCard', () => {
       params: { projectId: 'proj-1', tenantId: 'tenant-1' },
     });
   });
+
+  it('shows the active tag on tenant cards when the rental agreement is active', () => {
+    const wrapper = mount(RentalAgreementTenantListCard, {
+      props: {
+        projectId: 'proj-1', rentalAgreement: baseAgreement, active: true 
+      },
+      attachTo: document.body,
+    });
+
+    expect(wrapper.text()).toContain('Aktiv');
+  });
+
+  it('logs the raw error and shows a toast when a non-Error rejection occurs', async () => {
+    vi.spyOn(rentalAgreementService, 'addTenant').mockRejectedValue('boom');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const wrapper = mountCard();
+    const addBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Neuen Mieter hinzufügen'));
+    await addBtn?.trigger('click');
+
+    const form = wrapper.findComponent(Form);
+    await form.vm.$emit('submit', {
+      valid: true,
+      states: {
+        firstName: { value: 'Erika' },
+        lastName: { value: 'Musterfrau' },
+        email: { value: '' },
+        mobilePhoneNumber: { value: '' },
+        businessPhoneNumber: { value: '' },
+        privatePhoneNumber: { value: '' },
+        placeOfBirth: { value: '' },
+      },
+    });
+    await flushPromises();
+
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to save tenants:', 'boom');
+    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    consoleSpy.mockRestore();
+  });
 });
