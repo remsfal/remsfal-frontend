@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RentalAgreementTenantListCard from '../components/RentalAgreementTenantListCard.vue';
+import RentalAgreementIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue";
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
@@ -8,17 +9,21 @@ import Button from 'primevue/button';
 import { onMounted, ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
 const props = defineProps<{
-  projectId: string;
-  agreementId: string;
+  projectId: string; agreementId: string; status?: IssueStatus; type?: IssueType; assigneeId?: string;
 }>();
 
 const { t } = useI18n();
 const router = useRouter();
+const issues = ref<IssueItemJson[]>([]);
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
+
+const rentalStart = ref<string | null>(null);
+const rentalEnd = ref<string | null>(null);
 
 onMounted(async () => {
   if (!props.agreementId || !props.projectId) {
@@ -30,6 +35,8 @@ onMounted(async () => {
     props.projectId,
     props.agreementId
   );
+  rentalStart.value = rentalAgreement.value?.startOfRental || null;
+  rentalEnd.value = rentalAgreement.value?.endOfRental || null;
 });
 
 function confirmDeletion() {
@@ -57,6 +64,17 @@ function redirectToTenanciesList() {
   router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
 
+const loadIssues = async () => {
+  try {
+    const issueList = await issueService.getIssues(props.projectId, props.status, props.type, props.assigneeId);
+    issues.value = issueList?.issues ?? [];
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+onMounted(loadIssues);
+
 defineExpose({
   confirmationDialogVisible,
   confirmDeletion,
@@ -79,6 +97,9 @@ defineExpose({
         :projectId="projectId"
         :rentalAgreement="rentalAgreement"
         @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
+      <RentalAgreementIssueCard
+        :projectId="props.projectId"
+        :agreementId="props.agreementId"
       />
     </div>
   </div>

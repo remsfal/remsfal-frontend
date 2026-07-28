@@ -717,6 +717,7 @@
   "validation.minValue": "Wert muss mindestens {min} sein",
   "rentalAgreement.dialog.title": "Neuer Mietvertrag",
   "rentalAgreement.dialog.confirmDelete": "Sind Sie sicher, dass Sie den Mietvertrag mit der ID {id} löschen möchten?",
+  "rentalAgreement.issue.heading.tasks": "Vorgänge",
   "rentalAgreement.step1.title": "Mietdaten",
   "rentalAgreement.step1.startDate": "Startdatum",
   "rentalAgreement.step1.endDate": "Enddatum (optional)",
