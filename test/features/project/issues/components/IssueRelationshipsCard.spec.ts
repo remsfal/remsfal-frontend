@@ -28,9 +28,7 @@ const projectIssues: IssueItemJson[] = [
 describe('IssueRelationshipsCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(issueService, 'getIssues').mockResolvedValue({
-      first: 0, size: 2, issues: projectIssues 
-    });
+    vi.spyOn(issueService, 'getIssues').mockResolvedValue({size: 2, issues: projectIssues});
     vi.spyOn(issueService, 'getIssue').mockResolvedValue({
       id: 'unknown-1', title: 'Unknown issue', type: 'TASK' 
     });

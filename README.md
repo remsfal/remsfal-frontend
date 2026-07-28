@@ -1,9 +1,9 @@
 <img src="https://remsfal.de/remsfal-logo.svg" width="60%">
 
-[![License](https://img.shields.io/github/license/remsfal/remsfal-frontend)](https://github.com/remsfal/remsfal-frontend/blob/main/LICENSE)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/remsfal/remsfal-frontend)
+![GitHub Release](https://img.shields.io/github/v/release/remsfal/remsfal-frontend?label=latest%20release)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=remsfal_remsfal-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=remsfal_remsfal-frontend)
+[![License](https://img.shields.io/github/license/remsfal/remsfal-frontend)](https://github.com/remsfal/remsfal-frontend/blob/main/LICENSE)
 ![Contributors](https://img.shields.io/github/contributors/remsfal/remsfal-frontend)
 
 # Open Source Facility Management Software (Frontend)

@@ -7,19 +7,9 @@ vi.mock("vue-router", () => ({useRouter: () => ({ push: pushMock }),}));
 
 // ---- MOCK IssueService MODULE ----
 vi.mock("@/services/IssueService", () => {
-  const createIssueMock = vi.fn().mockResolvedValue({
-    id: "1",
-    title: "Test Issue",
-    description: "Test Description",
-    status: "OPEN",
-  });
-
   const getIssuesMock = vi.fn().mockResolvedValue({ issues: [] });
 
-  const instanceMethods = {
-    createIssue: createIssueMock,
-    getIssues: getIssuesMock,
-  };
+  const instanceMethods = {getIssues: getIssuesMock,};
 
   return {
     IssueService: vi.fn().mockImplementation(() => instanceMethods),
@@ -30,8 +20,11 @@ vi.mock("@/services/IssueService", () => {
 // ---- IMPORT COMPONENT AFTER MOCKS ----
 import IssueListView from "@/features/project/issues/views/IssueListView.vue";
 import IssueTable from "@/features/project/issues/components/IssueTable.vue";
-import NewIssueDialog from "@/features/project/issues/components/NewIssueDialog.vue";
+import NewIssueButton from "@/features/project/issues/components/NewIssueButton.vue";
+import { issueService } from "@/services/IssueService";
 import type { IssueStatus, IssueType } from "@/services/IssueService";
+
+const getIssuesMock = vi.mocked(issueService.getIssues);
 
 // ---- TESTS ----
 describe("IssueListView.vue", () => {
@@ -39,15 +32,16 @@ describe("IssueListView.vue", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    getIssuesMock.mockResolvedValue({ size: 0, issues: []});
 
     wrapper = mount(IssueListView, {
       props: {
-        projectId: "proj-1", assigneeId: "user1", category: 'TASK' as IssueType
+        projectId: "proj-1", assigneeId: "user1", type: 'TASK' as IssueType
       },
       global: {
         stubs: {
           IssueTable: true,
-          NewIssueDialog: true,
+          NewIssueButton: true, NewTenantIssueButton: true,
           Button: false,
         },
       },
@@ -58,16 +52,152 @@ describe("IssueListView.vue", () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  test("opens create issue dialog", async () => {
-    await wrapper.get("button").trigger("click");
-    expect(wrapper.findComponent(NewIssueDialog).props("visible")).toBe(true);
+  test("fetches issues once on mount with status, type and assigneeId forwarded to the backend", async () => {
+    await flushPromises();
+    expect(getIssuesMock).toHaveBeenCalledTimes(1);
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", "user1");
   });
 
-  test("renders correct IssueTable based on props", async () => {
-    await wrapper.setProps({ assigneeId: undefined, status: 'OPEN' as IssueStatus });
-    expect(wrapper.findComponent({ name: "IssueTable" }).exists()).toBe(true);
+  test("re-fetches when status changes", async () => {
+    await flushPromises();
+    getIssuesMock.mockClear();
+
+    await wrapper.setProps({ status: 'OPEN' as IssueStatus });
+    await flushPromises();
+
+    expect(getIssuesMock).toHaveBeenCalledTimes(1);
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", "OPEN", "TASK", "user1");
   });
 
+  test("re-fetches when type changes (server-side filter)", async () => {
+    await flushPromises();
+    getIssuesMock.mockClear();
+
+    await wrapper.setProps({ type: 'DEFECT' as IssueType });
+    await flushPromises();
+
+    expect(getIssuesMock).toHaveBeenCalledTimes(1);
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "DEFECT", "user1");
+  });
+
+  test("forwards array-valued status/type filters to getIssues untouched", async () => {
+    await flushPromises();
+    getIssuesMock.mockClear();
+
+    await wrapper.setProps({
+      status: ['OPEN', 'IN_PROGRESS'] as IssueStatus[],
+      type: ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'] as IssueType[],
+    });
+    await flushPromises();
+
+    expect(getIssuesMock).toHaveBeenCalledWith(
+      "proj-1",
+      ['OPEN', 'IN_PROGRESS'],
+      ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'],
+      "user1",
+    );
+  });
+
+  test("passes type to the backend and displays issues returned by it as-is", async () => {
+    getIssuesMock.mockResolvedValueOnce({
+      size: 1,
+      issues: [
+        {
+          id: "1", title: "Task issue", type: 'TASK' as IssueType, status: 'OPEN' as IssueStatus
+        },
+      ],
+    });
+
+    const localWrapper = mount(IssueListView, {
+      props: { projectId: "proj-1", type: 'TASK' as IssueType },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
+    });
+    await flushPromises();
+
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", undefined);
+    const issues = localWrapper.findComponent(IssueTable).props("issues");
+    expect(issues).toHaveLength(1);
+    expect(issues[0].id).toBe("1");
+  });
+
+  test("shows all issues when type is not set", async () => {
+    getIssuesMock.mockResolvedValueOnce({
+      size: 2,
+      issues: [
+        {
+          id: "1", title: "Task issue", type: 'TASK' as IssueType, status: 'OPEN' as IssueStatus 
+        },
+        {
+          id: "2", title: "Defect issue", type: 'DEFECT' as IssueType, status: 'OPEN' as IssueStatus 
+        },
+      ],
+    });
+
+    const localWrapper = mount(IssueListView, {
+      props: { projectId: "proj-1" },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
+    });
+    await flushPromises();
+
+    expect(localWrapper.findComponent(IssueTable).props("issues")).toHaveLength(2);
+  });
+
+  test("follows nextCursor to load and merge all pages", async () => {
+    getIssuesMock.mockReset();
+    getIssuesMock
+      .mockResolvedValueOnce({
+        size: 1,
+        issues: [{
+          id: "1", title: "Page 1 issue", status: 'OPEN' as IssueStatus
+        }],
+        nextCursor: "cursor-abc",
+      })
+      .mockResolvedValueOnce({
+        size: 1,
+        issues: [{
+          id: "2", title: "Page 2 issue", status: 'OPEN' as IssueStatus
+        }],
+      });
+
+    const localWrapper = mount(IssueListView, {
+      props: { projectId: "proj-1" },
+      global: {
+        stubs: {
+          NewIssueButton: true, NewTenantIssueButton: true, Button: false 
+        } 
+      },
+    });
+    await flushPromises();
+
+    expect(getIssuesMock).toHaveBeenCalledTimes(2);
+    expect(getIssuesMock).toHaveBeenNthCalledWith(1, "proj-1", undefined, undefined, undefined);
+    expect(getIssuesMock).toHaveBeenNthCalledWith(
+      2, "proj-1", undefined, undefined, undefined, undefined, undefined, undefined, "cursor-abc",
+    );
+
+    const issues = localWrapper.findComponent(IssueTable).props("issues");
+    expect(issues).toHaveLength(2);
+    expect(issues.map((issue: { id?: string }) => issue.id)).toEqual(["1", "2"]);
+  });
+
+  test("uses the fallback columns when the filter signature matches no specific preset", async () => {
+    await flushPromises();
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
+
+    await wrapper.setProps({ type: ['DEFECT', 'TASK'] as IssueType[] });
+    await flushPromises();
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
+  });
 
   test("navigates to issue details on row select", async () => {
     const issue = {
@@ -81,63 +211,88 @@ describe("IssueListView.vue", () => {
     });
   });
 
-  test("renders correct header for assignee + DEFECT category", async () => {
+  test("renders 'Meine Aufgaben' with its columns when only assigneeId is set", async () => {
     await wrapper.setProps({
-      assigneeId: "user1", category: "DEFECT", status: undefined
+      assigneeId: "user1", type: undefined, status: undefined
     });
-    expect(wrapper.text()).toContain("Meine Mängel");
-  });
-
-  test("renders correct header for status + DEFECT category", async () => {
-    await wrapper.setProps({
-      assigneeId: undefined, category: "DEFECT", status: 'OPEN' as IssueStatus
-    });
-    expect(wrapper.text()).toContain("Offene Mängel");
-  });
-
-  test("renders correct header for no assignee/status + DEFECT", async () => {
-    await wrapper.setProps({
-      assigneeId: undefined, category: "DEFECT", status: undefined
-    });
-    expect(wrapper.text()).toContain("Alle Mängel");
-  });
-
-  test("renders correct header for assignee + TASK category", async () => {
-    await wrapper.setProps({
-      assigneeId: "user1", category: undefined, status: undefined
-    });
+    await flushPromises();
     expect(wrapper.text()).toContain("Meine Aufgaben");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['title', 'type', 'status', 'priority', 'modifiedAt']);
   });
 
-  test("renders correct header for status + TASK category", async () => {
+  test("renders 'Offene Aufgaben' with its columns when status is OPEN/IN_PROGRESS with no type", async () => {
     await wrapper.setProps({
-      assigneeId: undefined, category: undefined, status: 'OPEN' as IssueStatus
+      assigneeId: undefined, type: undefined, status: ['OPEN', 'IN_PROGRESS'] as IssueStatus[]
     });
+    await flushPromises();
     expect(wrapper.text()).toContain("Offene Aufgaben");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'assignee', 'priority']);
   });
 
-  test("renders correct header for no assignee/status + TASK", async () => {
+  test("renders 'Alle Aufgaben' with its columns when no filters are set", async () => {
     await wrapper.setProps({
-      assigneeId: undefined, category: undefined, status: undefined
+      assigneeId: undefined, type: undefined, status: undefined
     });
+    await flushPromises();
     expect(wrapper.text()).toContain("Alle Aufgaben");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
   });
 
-  test("handles error during loadIssuesWithOpenStatus", async () => {
+  test("renders 'Alle Aufgaben' as a fallback for an unrecognized filter combination", async () => {
+    await wrapper.setProps({
+      assigneeId: undefined, type: undefined, status: 'CLOSED' as IssueStatus
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Alle Aufgaben");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'status', 'modifiedAt']);
+  });
+
+  test("renders 'Neue Meldungen' with its columns when status is PENDING with no type", async () => {
+    await wrapper.setProps({
+      assigneeId: undefined, type: undefined, status: 'PENDING' as IssueStatus
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Neue Meldungen");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'modifiedAt']);
+  });
+
+  test("renders 'Offene Mängel' with its columns when status is OPEN/IN_PROGRESS and type is DEFECT", async () => {
+    await wrapper.setProps({
+      assigneeId: undefined, type: 'DEFECT' as IssueType, status: ['OPEN', 'IN_PROGRESS'] as IssueStatus[]
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Offene Mängel");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'assignee', 'priority']);
+  });
+
+  test("renders 'Offene Vorgänge' with its columns for status OPEN/IN_PROGRESS and the request-type set", async () => {
+    await wrapper.setProps({
+      assigneeId: undefined,
+      type: ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'] as IssueType[],
+      status: ['OPEN', 'IN_PROGRESS'] as IssueStatus[],
+    });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Offene Vorgänge");
+    expect(wrapper.findComponent(IssueTable).props("columns"))
+      .toEqual(['issueNumber', 'title', 'type', 'assignee', 'priority']);
+  });
+
+  test("handles error during loadIssues", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { issueService: mockedIssueService } = await import("@/services/IssueService");
-    vi.mocked(mockedIssueService.getIssues)
-      .mockResolvedValueOnce({
-        first: 0, size: 0, issues: [] 
-      }) // loadIssues()
-      .mockRejectedValueOnce(new Error("Network error")); // loadIssuesWithOpenStatus()
+    getIssuesMock.mockRejectedValueOnce(new Error("Network error"));
 
     const localWrapper = mount(IssueListView, {
-      props: { projectId: "proj-1", category: 'TASK' as IssueType }, // no assigneeId -> exactly 2 getIssues calls on mount
+      props: { projectId: "proj-1", type: 'TASK' as IssueType },
       global: {
         stubs: {
-          IssueTable: true, NewIssueDialog: true, Button: false 
-        } 
+          IssueTable: true, NewIssueButton: true, NewTenantIssueButton: true, Button: false
+        }
       },
     });
     await flushPromises();
@@ -148,98 +303,53 @@ describe("IssueListView.vue", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test("handles error during loadMyIssues", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { issueService: mockedIssueService } = await import("@/services/IssueService");
-    vi.mocked(mockedIssueService.getIssues)
-      .mockResolvedValueOnce({
-        first: 0, size: 0, issues: [] 
-      }) // loadIssues()
-      .mockResolvedValueOnce({
-        first: 0, size: 0, issues: [] 
-      }) // loadIssuesWithOpenStatus()
-      .mockRejectedValueOnce(new Error("Network error")); // loadMyIssues()
+  test("renders the create-issue button regardless of the active filter", async () => {
+    await wrapper.setProps({ type: "DEFECT" });
+    expect(wrapper.findComponent(NewIssueButton).exists()).toBe(true);
 
-    const localWrapper = mount(IssueListView, {
-      props: {
-        projectId: "proj-1", assigneeId: "user1", category: 'TASK' as IssueType 
-      }, // assigneeId set -> 3 calls
-      global: {
-        stubs: {
-          IssueTable: true, NewIssueDialog: true, Button: false 
-        } 
-      },
-    });
+    await wrapper.setProps({ type: undefined });
+    expect(wrapper.findComponent(NewIssueButton).exists()).toBe(true);
+  });
+
+  test("does not pass a category to NewIssueButton", async () => {
     await flushPromises();
-
-    expect(consoleErrorSpy).toHaveBeenCalled();
-    expect(localWrapper.exists()).toBe(true);
-
-    consoleErrorSpy.mockRestore();
+    expect(wrapper.findComponent(NewIssueButton).props("category")).toBeUndefined();
   });
 
-  test("renders create button with correct label for DEFECT", async () => {
-    await wrapper.setProps({ category: "DEFECT" });
-    expect(wrapper.text()).toContain("Mangel melden");
-  });
+  test("handleIssueCreated re-fetches issues and navigates to the new issue", async () => {
+    await flushPromises();
+    getIssuesMock.mockClear();
+    getIssuesMock.mockResolvedValueOnce({
+      size: 1,
+      issues: [{
+        id: "new-123", title: "New Issue", type: 'TASK' as IssueType, status: 'OPEN' as IssueStatus 
+      }],
+    });
 
-  test("renders create button with correct label for TASK", async () => {
-    await wrapper.setProps({ category: undefined });
-    expect(wrapper.text()).toContain("Aufgabe erstellen");
-  });
-
-  test("handleIssueCreated updates all issue arrays correctly", async () => {
     const newIssue = {
       id: "new-123",
       title: "New Issue",
-      description: "New Description",
       status: 'OPEN' as IssueStatus,
       type: 'TASK' as IssueType,
     };
 
-    await wrapper.findComponent(NewIssueDialog).vm.$emit("issueCreated", newIssue);
+    await wrapper.findComponent(NewIssueButton).vm.$emit("issueCreated", newIssue);
     await flushPromises();
 
-    // Only the currently-active IssueTable branch (myIssues, since assigneeId is set by default) is DOM-observable.
-    expect(wrapper.findComponent(IssueTable).props("issues")).toContainEqual(
-      expect.objectContaining({
-        id: "new-123",
-        assigneeId: "user1",
-      })
-    );
+    expect(getIssuesMock).toHaveBeenCalledTimes(1);
     expect(pushMock).toHaveBeenCalledWith({
       name: 'IssueDetails',
       params: { projectId: 'proj-1', issueId: 'new-123' },
     });
   });
 
-  test("handleIssueCreated does not touch issuesByStatusOpen/myIssues when status is not OPEN and no assignee", async () => {
-    await wrapper.setProps({ assigneeId: undefined });
-
-    const newIssue = {
-      id: "closed-1",
-      title: "Closed Issue",
-      status: 'CLOSED' as IssueStatus,
-    };
-
-    await wrapper.findComponent(NewIssueDialog).vm.$emit("issueCreated", newIssue);
-    await flushPromises();
-
-    // Only the currently-active IssueTable branch (plain issues, since assigneeId/status are unset) is DOM-observable.
-    expect(wrapper.findComponent(IssueTable).props("issues")).toContainEqual(newIssue);
-    expect(pushMock).toHaveBeenCalledWith({
-      name: 'IssueDetails',
-      params: { projectId: 'proj-1', issueId: 'closed-1' },
-    });
-  });
-
-  test("handleIssueCreated falls back to empty issueId when id is missing", async () => {
+  test("falls back to empty issueId when the created issue has no id", async () => {
     const newIssue = {
       title: "No Id Issue",
       status: 'OPEN' as IssueStatus,
     };
 
-    await wrapper.findComponent(NewIssueDialog).vm.$emit("issueCreated", newIssue);
+    await wrapper.findComponent(NewIssueButton).vm.$emit("issueCreated", newIssue);
     await flushPromises();
 
     expect(pushMock).toHaveBeenCalledWith({
@@ -259,16 +369,15 @@ describe("IssueListView.vue", () => {
     });
   });
 
-  test("does not load myIssues on mount when assigneeId prop is not set", async () => {
-    const { issueService: mockedIssueService } = await import("@/services/IssueService");
-    vi.clearAllMocks();
+  test("does not pass assigneeId to the backend when the prop is not set", async () => {
+    getIssuesMock.mockClear();
 
     const localWrapper = mount(IssueListView, {
-      props: { projectId: "proj-1", category: 'TASK' as IssueType },
+      props: { projectId: "proj-1", type: 'TASK' as IssueType },
       global: {
         stubs: {
           IssueTable: true,
-          NewIssueDialog: true,
+          NewIssueButton: true, NewTenantIssueButton: true,
           Button: false,
         },
       },
@@ -276,7 +385,8 @@ describe("IssueListView.vue", () => {
 
     await flushPromises();
 
-    expect(mockedIssueService.getIssues).toHaveBeenCalledTimes(2);
+    expect(getIssuesMock).toHaveBeenCalledTimes(1);
+    expect(getIssuesMock).toHaveBeenCalledWith("proj-1", undefined, "TASK", undefined);
     expect(localWrapper.findComponent(IssueTable).props("issues")).toHaveLength(0);
   });
 });

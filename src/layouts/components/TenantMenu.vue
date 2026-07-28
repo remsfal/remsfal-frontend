@@ -25,7 +25,7 @@ const model = ref([
       {
         label: 'tenantMenu.settings.personalData',
         icon: { type: 'pi', name: 'pi pi-fw pi-user' },
-        to: '/tenant/account-settings',
+        to: '/tenant/account-data',
       },
     ],
   },

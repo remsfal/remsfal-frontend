@@ -26,6 +26,11 @@ const model = computed<MenuItem[]>(() => {
           to: '/manager/dashboard',
         },
         {
+          label: 'managerMenu.myData.messages',
+          icon: { type: 'pi', name: 'pi pi-fw pi-inbox' },
+          to: '/manager/inbox',
+        },
+        {
           label: 'managerMenu.myData.properties',
           icon: { type: 'pi', name: 'pi pi-fw pi-building' },
           to: '/manager/projects',
@@ -38,12 +43,12 @@ const model = computed<MenuItem[]>(() => {
         {
           label: 'managerMenu.myData.personalData',
           icon: { type: 'pi', name: 'pi pi-fw pi-user' },
-          to: '/manager/account-settings',
+          to: '/manager/account-data',
         },
         {
           label: 'managerMenu.myData.settings',
-          icon: { type: 'pi', name: 'pi pi-fw pi-cog' },
-          to: '/manager/settings',
+          icon: { type: 'pi', name: 'pi pi-fw pi-user-edit' },
+          to: '/manager/account-settings',
         },
       ],
     },

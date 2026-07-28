@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount, flushPromises } from '@vue/test-utils';
+import { mount, flushPromises, DOMWrapper } from '@vue/test-utils';
 import AddressCard from '@/components/AddressCard.vue';
 import type { AddressJson } from '@/services/AddressService';
+
+// PrimeVue Select teleports its overlay (option list) to document.body, so it must
+// be located via a DOMWrapper rooted at document.body rather than the mounted wrapper.
+function body(): DOMWrapper<HTMLElement> {
+  return new DOMWrapper(document.body);
+}
 
 vi.mock('@/services/AddressService', () => ({
   default: vi.fn().mockImplementation(() =>
@@ -99,6 +105,90 @@ describe('AddressCard.vue', () => {
     await wrapper.find('input[name="street"]').setValue('Teststraße 1');
     await flushPromises();
     expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('save button is enabled after changing the province field', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+    await wrapper.find('input[name="province"]').setValue('Bayern');
+    await flushPromises();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('save button is enabled after changing the city field', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+    await wrapper.find('input[name="city"]').setValue('München');
+    await flushPromises();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('shows a validation error when the street field is cleared and blurred', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+    const street = wrapper.find('input[name="street"]');
+    await street.setValue('');
+    await street.trigger('blur');
+    await flushPromises();
+    expect(wrapper.text()).toContain('Dieses Feld ist erforderlich');
+  });
+
+  it('shows a validation error when the city field is cleared and blurred', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+    const city = wrapper.find('input[name="city"]');
+    await city.setValue('');
+    await city.trigger('blur');
+    await flushPromises();
+    expect(wrapper.text()).toContain('Dieses Feld ist erforderlich');
+  });
+
+  it('shows a validation error when the province field is cleared and blurred', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+    const province = wrapper.find('input[name="province"]');
+    await province.setValue('');
+    await province.trigger('blur');
+    await flushPromises();
+    expect(wrapper.text()).toContain('Dieses Feld ist erforderlich');
+  });
+
+  it('shows a validation error when the zip field is cleared and blurred', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+    const zip = wrapper.find('input[name="zip"]');
+    await zip.setValue('');
+    await zip.trigger('blur');
+    await flushPromises();
+    expect(wrapper.text()).toContain('Dieses Feld ist erforderlich');
+  });
+
+  it('save button is enabled after changing the zip field and blurring it', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+    const zip = wrapper.find('input[name="zip"]');
+    await zip.setValue('99999');
+    await zip.trigger('blur');
+    await flushPromises();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('updates the country via the select dropdown and renders the flag option', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    await wrapper.find('#countryCode').trigger('click');
+    await flushPromises();
+
+    const option = body()
+      .findAll('li[role="option"]')
+      .find((li) => li.text().includes('Österreich'));
+    expect(option).toBeTruthy();
+    await option!.trigger('mousedown');
+    await flushPromises();
+
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+    expect(wrapper.text()).toContain('Österreich');
   });
 
   it('calls saveAddress with the updated street on submit', async () => {

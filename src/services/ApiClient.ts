@@ -7,8 +7,8 @@ import type {AxiosError,
 import type { paths as ticketingPaths, components as ticketingComponents } from './api/ticketing-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
-import { useEventBus } from '@/stores/EventStore.ts';
-import { authService } from '@/services/AuthService.ts';
+import { useEventBus } from '@/stores/EventStore';
+import { authService } from '@/services/AuthService';
 
 // Combine all OpenAPI paths
 export type ApiPaths = ticketingPaths & platformPaths & notificationPaths;
@@ -51,7 +51,7 @@ declare module 'axios' {
  * @returns The URL with all placeholders replaced.
  * @throws Error if any required path parameter is missing.
  */
-function replacePlaceholders(
+export function replacePlaceholders(
   template: string,
   pathParams: AxiosRequestConfig['pathParams'] = {},
   style: AxiosRequestConfig['pathParamsPlaceholderStyle'] = 'curly',
@@ -106,7 +106,7 @@ function requestHandler(config: InternalAxiosRequestConfig): InternalAxiosReques
   return config;
 }
 
-function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
+export function requestErrorHandler(error: AxiosError): Promise<AxiosError> {
   console.error(`[request error] [${JSON.stringify(error)}]`);
   emitToast('error', 'error.general', 'error.apiRequest');
   return Promise.reject(error);
@@ -163,7 +163,9 @@ function responseHandler(response: AxiosResponse): AxiosResponse {
 }
 
 function createAxiosInstance() {
-  const instance = axios.create({});
+  // indexes: null serializes array params as repeated keys (status=OPEN&status=CLOSED)
+  // instead of axios' default bracket notation (status[]=OPEN), matching the backend's expected format.
+  const instance = axios.create({ paramsSerializer: { indexes: null } });
 
   let isRefreshing = false;
   let pendingQueue: Array<{ resolve: () => void; reject: (e: unknown) => void }> = [];
@@ -181,35 +183,37 @@ function createAxiosInstance() {
         return new Promise<void>((resolve, reject) => {
           pendingQueue.push({ resolve, reject });
         }).then(() => instance(originalConfig!))
-          .catch(e => Promise.reject(e));
+          .catch(e => { throw e; });
       }
 
       originalConfig!._retry = true;
       isRefreshing = true;
 
+      let refreshed: boolean;
       try {
-        const refreshed = await authService.refreshTokens();
-        if (refreshed) {
-          processQueue(null);
-          isRefreshing = false;
-          return instance(originalConfig!);
-        } else {
-          processQueue(error);
-          isRefreshing = false;
-          useEventBus().emit('auth:session-expired', {});
-          return Promise.reject(error);
-        }
+        refreshed = await authService.refreshTokens();
       } catch (e) {
         processQueue(e);
         isRefreshing = false;
         useEventBus().emit('auth:session-expired', {});
-        return Promise.reject(e);
+        throw e;
+      }
+
+      if (refreshed) {
+        processQueue(null);
+        isRefreshing = false;
+        return instance(originalConfig!);
+      } else {
+        processQueue(error);
+        isRefreshing = false;
+        useEventBus().emit('auth:session-expired', {});
+        throw error;
       }
     }
 
     console.error(`[response error] [${JSON.stringify(error)}]`);
     emitToast('error', 'error.general', 'error.apiResponse');
-    return Promise.reject(error);
+    throw error;
   };
 
   instance.interceptors.request.use(requestHandler, requestErrorHandler);

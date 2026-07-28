@@ -1,2 +1,2 @@
-export { default as TenantIssueList } from './components/TenantIssueList.vue';
-export { default as TenantIssueDetails } from './components/TenantIssueDetails.vue';
+export { default as TenantIssueList } from './views/TenantIssueListView.vue';
+export { default as TenantIssueDetails } from './views/TenantIssueDetailView.vue';

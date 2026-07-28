@@ -243,6 +243,28 @@ describe('OrganizationMemberSettingsCard.vue - member rows', () => {
     expect(deleteButtons).toHaveLength(mockOrganizationsWithMembers.length);
   });
 
+  test('updateOrganizationRole - applies the PATCH response to the table, including member roles', async () => {
+    vi.mocked(organizationMemberService.updateOrganizationRole).mockResolvedValueOnce({
+      organizationId: '11111111-1111-1111-1111-111111111111',
+      organizationName: 'Test GmbH',
+      role: 'STAFF',
+      members: [
+        {
+          id: 'member-1', name: 'Max Muster', email: 'max@test.de', role: 'STAFF' as MemberRole, active: true,
+        },
+        {
+          id: 'member-2', name: 'Erika Muster', email: 'erika@test.de', role: 'STAFF' as MemberRole, active: false,
+        },
+      ] as ProjectMemberJson[],
+    });
+
+    const roleSelect = wrapper.findComponent(ProjectMemberRoleSelect);
+    await selectRole(roleSelect, 'STAFF');
+
+    expect(wrapper.text()).toContain('Mitarbeiter');
+    expect(wrapper.text()).not.toContain('Manager');
+  });
+
   test('updateOrganizationRole still targets the organization when member rows are present', async () => {
     const org = mockOrganizationsWithMembers[0];
     vi.mocked(organizationMemberService.updateOrganizationRole).mockResolvedValueOnce(org);

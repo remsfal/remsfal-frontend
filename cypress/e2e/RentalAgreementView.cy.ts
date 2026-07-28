@@ -64,12 +64,11 @@ describe('ProjectTenancies E2E Tests', () => {
                 email: 'john.doe@example.com',
               },
             ],
-            apartmentRents: [
+            rentalUnits: [
               {
-                unitId: 'apt-101',
-                basicRent: 1200.0,
-                operatingCostsPrepayment: 150.0,
-                heatingCostsPrepayment: 80.0,
+                id: 'unit-101',
+                type: 'APARTMENT',
+                title: 'apt-101',
               },
             ],
           },
@@ -91,10 +90,11 @@ describe('ProjectTenancies E2E Tests', () => {
                 email: 'bob.johnson@example.com',
               },
             ],
-            buildingRents: [
+            rentalUnits: [
               {
-                unitId: 'bldg-202',
-                basicRent: 2500.0,
+                id: 'unit-202',
+                type: 'BUILDING',
+                title: 'bldg-202',
               },
             ],
           },
@@ -318,13 +318,49 @@ describe('ProjectTenancies E2E Tests', () => {
   });
 
   it('should display confirmation dialog when deleting tenant', () => {
-    cy.visit(`/projects/${projectId}/agreements`);
+    // UnitsTableComponent loads the property tree on mount regardless of context
+    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
+      statusCode: 200,
+      body: {
+        properties: [],
+      },
+    }).as('getProperties');
 
-    cy.wait('@getRentalAgreements');
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [
+          {
+            id: 'tenant-1',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john.doe@example.com',
+          },
+        ],
+        apartmentRents: [
+          {
+            unitId: 'apt-101',
+            basicRent: 1200.0,
+          },
+        ],
+      },
+    }).as('getRentalAgreementDetails');
 
-    // Note: This test assumes there's a delete button in the UI
-    // If the delete functionality is not implemented yet, this test will fail
-    // For now, we just check that the confirmation dialog structure exists in the component
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+
+    cy.wait('@getRentalAgreementDetails');
+
+    // Dialog is hidden until the delete button is clicked
+    cy.get('[role="dialog"]').should('not.exist');
+
+    // Click the delete button to trigger the confirmation dialog
+    cy.contains('button', /löschen|delete/i).click();
+
+    // Confirmation dialog should now be visible with the agreement id
+    cy.get('[role="dialog"]').should('be.visible').and('contain.text', 'agreement-1');
   });
 
   it('should refresh list after creating new rental agreement', () => {

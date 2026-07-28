@@ -3,7 +3,8 @@ import Dialog from 'primevue/dialog';
 import DataTable from 'primevue/datatable';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import RentalAgreementView from '@/features/project/rentalAgreements/views/RentalAgreementListView.vue';
-import { rentalAgreementService, type RentalAgreementJson } from '@/services/RentalAgreementService';
+import {rentalAgreementService,
+  type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Fix for "window is not defined" error
 if (typeof window === 'undefined') (global as Record<string, unknown>).window = {};
@@ -37,20 +38,14 @@ describe('RentalAgreementView.vue', () => {
       startOfRental: '2023-01-01',
       endOfRental: '2024-01-01',
       tenants: mockTenants,
-      apartmentRents: [
-        { unitId: 'unit-101', basicRent: 1000 }
+      rentalUnits: [
+        { id: 'unit-101', title: 'Apartment 1A' }
       ],
-      propertyRents: [],
-      siteRents: [],
-      buildingRents: [],
-      storageRents: [],
-      commercialRents: []
     },
   ];
 
   beforeEach(async () => {
-    vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockResolvedValue(mockRentalAgreements);
-    vi.spyOn(rentalAgreementService, 'extractTenants').mockReturnValue(mockTenants);
+    vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockResolvedValue(mockRentalAgreements);
 
     wrapper = mount(RentalAgreementView, {
       props: {projectId: 'proj-1',},
@@ -66,9 +61,9 @@ describe('RentalAgreementView.vue', () => {
   });
 
   it('shows loading indicator while fetching', async () => {
-    let resolveFetch!: (value: RentalAgreementJson[]) => void;
-    vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockImplementationOnce(
-      () => new Promise<RentalAgreementJson[]>((resolve) => { resolveFetch = resolve; }),
+    let resolveFetch!: (value: RentalAgreementItemJson[]) => void;
+    vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockImplementationOnce(
+      () => new Promise<RentalAgreementItemJson[]>((resolve) => { resolveFetch = resolve; }),
     );
 
     const loadingWrapper = mount(RentalAgreementView, {
@@ -84,9 +79,9 @@ describe('RentalAgreementView.vue', () => {
   });
 
   it('renders DataTable when loading is false', async () => {
-    let resolveFetch!: (value: RentalAgreementJson[]) => void;
-    vi.spyOn(rentalAgreementService, 'fetchRentalAgreements').mockImplementationOnce(
-      () => new Promise<RentalAgreementJson[]>((resolve) => { resolveFetch = resolve; }),
+    let resolveFetch!: (value: RentalAgreementItemJson[]) => void;
+    vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockImplementationOnce(
+      () => new Promise<RentalAgreementItemJson[]>((resolve) => { resolveFetch = resolve; }),
     );
 
     const loadingWrapper = mount(RentalAgreementView, {
@@ -131,6 +126,6 @@ describe('RentalAgreementView.vue', () => {
 
   it('renders unit information in the table', () => {
     const html = wrapper.html();
-    expect(html).toContain('unit-101');
+    expect(html).toContain('Apartment 1A');
   });
 });

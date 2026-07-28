@@ -11,7 +11,7 @@ describe('Service Worker Initialization', () => {
 
   describe('registerServiceWorker', () => {
     beforeEach(() => {
-      vi.stubGlobal('navigator', {serviceWorker: {register: vi.fn().mockResolvedValue({ scope: '/service-worker.js' }),},});
+      vi.stubGlobal('navigator', {serviceWorker: {register: vi.fn().mockResolvedValue({ scope: '/sw.js' }),},});
       vi.spyOn(console, 'log').mockImplementation(() => {});
       vi.spyOn(console, 'error').mockImplementation(() => {});
     });
@@ -29,7 +29,7 @@ describe('Service Worker Initialization', () => {
 
       await registerServiceWorker();
 
-      expect(navigator.serviceWorker.register).toHaveBeenCalledWith('/service-worker.js');
+      expect(navigator.serviceWorker.register).toHaveBeenCalledWith('/sw.js');
     });
   });
 

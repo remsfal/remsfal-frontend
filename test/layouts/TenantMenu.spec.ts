@@ -17,7 +17,7 @@ describe('TenantMenu.vue', () => {
   it('renders three root menu sections', async () => {
     await wrapper.vm.$nextTick();
     const rootItems = wrapper.findAll('.layout-root-menuitem');
-    expect(rootItems.length).toBe(3);
+    expect(rootItems).toHaveLength(3);
   });
 
   it('renders "Mietverhältnisse" as the first section label', async () => {
@@ -41,19 +41,19 @@ describe('TenantMenu.vue', () => {
   it('renders two submenu items under "Mietverhältnisse"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[0].findAll('.layout-menuitem-text').length).toBe(2);
+    expect(submenus[0].findAll('.layout-menuitem-text')).toHaveLength(2);
   });
 
   it('renders one submenu item under "Einstellungen"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[1].findAll('.layout-menuitem-text').length).toBe(1);
+    expect(submenus[1].findAll('.layout-menuitem-text')).toHaveLength(1);
   });
 
   it('renders two submenu items under "Weitere Leistungen"', async () => {
     await wrapper.vm.$nextTick();
     const submenus = wrapper.findAll('.layout-submenu');
-    expect(submenus[2].findAll('.layout-menuitem-text').length).toBe(2);
+    expect(submenus[2].findAll('.layout-menuitem-text')).toHaveLength(2);
   });
 
   it('renders expected submenu item labels', async () => {
@@ -82,10 +82,10 @@ describe('TenantMenu.vue', () => {
     expect(pushSpy).toHaveBeenCalledWith('/tenant/dashboard');
   });
 
-  it('navigates to /tenant/account-settings when personal data is clicked', async () => {
+  it('navigates to /tenant/account-data when personal data is clicked', async () => {
     await wrapper.vm.$nextTick();
     const pushSpy = vi.spyOn(wrapper.vm.$router, 'push');
     await wrapper.find('.pi-user').trigger('click');
-    expect(pushSpy).toHaveBeenCalledWith('/tenant/account-settings');
+    expect(pushSpy).toHaveBeenCalledWith('/tenant/account-data');
   });
 });

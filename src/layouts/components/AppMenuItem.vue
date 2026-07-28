@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onBeforeMount, ref, watch } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, type RouteLocationRaw } from 'vue-router';
 import { useLayout } from '@/layouts/composables/layout';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
+import { matchesRouteTarget } from '@/layouts/composables/useRouteActiveMatch';
 
 const props = withDefaults(defineProps<MenuItemProps>(), {
-  item: () => ({}) as MenuItem,
   index: 0,
   root: true,
   parentItemKey: undefined,
@@ -18,7 +18,7 @@ export interface MenuItem {
   label: string;
   rawLabel?: string;
   icon?: { type: 'pi' | 'fa'; name: string | [string, string] } | null;
-  to?: string;
+  to?: RouteLocationRaw;
   url?: string;
   navigate?: () => void;
   command?: (event: object) => void;
@@ -30,10 +30,10 @@ export interface MenuItem {
 }
 
 interface MenuItemProps {
-  item?: MenuItem;
+  item: MenuItem;
   index?: number;
   root?: boolean;
-  parentItemKey?: string | undefined;
+  parentItemKey?: string;
 }
 
 const route = useRoute();
@@ -79,21 +79,19 @@ const itemClick = (event: Event, item: MenuItem) => {
     item.navigate();
   }
 
-  const foundItemKey = item.items
-    ? isActiveMenu.value
-      ? props.parentItemKey
-      : itemKey
-    : itemKey.value;
+  let foundItemKey;
+  if (!item.items) {
+    foundItemKey = itemKey.value;
+  } else if (isActiveMenu.value) {
+    foundItemKey = props.parentItemKey;
+  } else {
+    foundItemKey = itemKey;
+  }
 
   setActiveMenuItem(foundItemKey);
 };
 
-const checkActiveRoute = (item: MenuItem) => {
-  if (!item.to) return false;
-  const matchPath = item.to.split('?')[0];
-  if (!matchPath || matchPath === '/') return false;
-  return route.path.startsWith(matchPath);
-};
+const checkActiveRoute = (item: MenuItem) => matchesRouteTarget(route, item.to);
 </script>
 
 <template>

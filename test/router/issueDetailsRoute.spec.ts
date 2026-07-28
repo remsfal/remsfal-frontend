@@ -40,7 +40,7 @@ describe('Router - Issue Details Route', () => {
       expect(route.path).toBe('/projects/proj-123/issues/issue-456');
     });
 
-    it('should resolve to ProjectIssueView component', async () => {
+    it('should resolve to IssueView component', async () => {
       const route = router.resolve({
         name: 'IssueDetails',
         params: { projectId: 'test-project', issueId: 'test-issue' },

@@ -12,7 +12,7 @@ beforeAll(() => {
 });
 
 import StorageDataCard from '@/features/project/rentableUnits/components/StorageDataCard.vue';
-import { storageService, type StorageJson } from '@/services/StorageService';
+import { storageService, type StorageJson } from '@/features/project/rentableUnits/services/StorageService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -25,14 +25,13 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/StorageService', () => ({storageService: { getStorage: vi.fn(), updateStorage: vi.fn() },}));
+const mockStorageService = vi.hoisted(() => ({ getStorage: vi.fn(), updateStorage: vi.fn() }));
+vi.mock('@/features/project/rentableUnits/services/StorageService', () => ({ storageService: mockStorageService }));
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
-  return {
-    ...actual, navigateToObjects: vi.fn(), showSavingErrorToast: vi.fn(),
-  };
+  return {...actual, showSavingErrorToast: vi.fn(),};
 });
 
 // ─── Test Data ────────────────────────────────────────────────────────────────

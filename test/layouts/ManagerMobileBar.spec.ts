@@ -50,47 +50,55 @@ describe('ManagerMobileBar.vue', () => {
   it('renders navigation items', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems).toHaveLength(2);
+    expect(navItems).toHaveLength(4);
   });
 
-  it('renders Projekte and Einstellungen items', () => {
+  it('renders the four expected menu items in order', () => {
     const { wrapper } = mountComponent();
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems[0].text()).toContain('Projekte');
-    expect(navItems[1].text()).toContain('Einstellungen');
+    expect(navItems[0].text()).toContain('Meine Übersicht');
+    expect(navItems[1].text()).toContain('Meine Nachrichten');
+    expect(navItems[2].text()).toContain('Meine Liegenschaften');
+    expect(navItems[3].text()).toContain('Meine Auftragnehmer');
   });
 
-  it('highlights Projekte when on ProjectSelection route', async () => {
+  it('highlights Meine Liegenschaften when on ProjectSelection route', async () => {
     const { wrapper } = mountComponent({
-      path: '/manager/projects', name: 'ProjectSelection', params: {}, query: {} 
+      path: '/manager/projects', name: 'ProjectSelection', params: {}, query: {}
     });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
-    expect(navItems[0].classes()).toContain('active');
+    expect(navItems[0].classes()).not.toContain('active');
     expect(navItems[1].classes()).not.toContain('active');
+    expect(navItems[2].classes()).toContain('active');
+    expect(navItems[3].classes()).not.toContain('active');
   });
 
-  it('highlights Einstellungen when on ManagerAccountSettings route', async () => {
+  it('highlights Meine Nachrichten when on Inbox route', async () => {
     const { wrapper } = mountComponent({
-      path: '/manager/account-settings', name: 'ManagerAccountSettings', params: {}, query: {} 
+      path: '/manager/inbox', name: 'Inbox', params: {}, query: {}
     });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
     expect(navItems[0].classes()).not.toContain('active');
     expect(navItems[1].classes()).toContain('active');
+    expect(navItems[2].classes()).not.toContain('active');
+    expect(navItems[3].classes()).not.toContain('active');
   });
 
   it('does not highlight any item on an unrelated route', async () => {
     const { wrapper } = mountComponent({
-      path: '/manager/other', name: 'SomeOtherRoute', params: {}, query: {} 
+      path: '/manager/other', name: 'SomeOtherRoute', params: {}, query: {}
     });
     await wrapper.vm.$nextTick();
 
     const navItems = wrapper.findAll('a.nav-item');
     expect(navItems[0].classes()).not.toContain('active');
     expect(navItems[1].classes()).not.toContain('active');
+    expect(navItems[2].classes()).not.toContain('active');
+    expect(navItems[3].classes()).not.toContain('active');
   });
 
   it('toggles sidebar', async () => {

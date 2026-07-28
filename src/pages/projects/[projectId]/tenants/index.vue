@@ -6,7 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import TenantListView from '@/views/project/TenantListView.vue'
+import { TenantListView } from '@/features/project/rentalAgreements'
 import { useRoute } from 'vue-router'
 const route = useRoute('TenantList')
 </script>

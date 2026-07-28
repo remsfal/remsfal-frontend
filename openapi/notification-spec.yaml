@@ -5,13 +5,13 @@ components:
     AddressJson:
       description: "The address of a customer, a building or a site"
       type: object
+      required:
+      - street
+      - city
+      - province
+      - zip
+      - countryCode
       properties:
-        addressLine1:
-          type: string
-        addressLine2:
-          type: string
-        addressLine3:
-          type: string
         street:
           type: string
           pattern: \S
@@ -29,12 +29,6 @@ components:
           pattern: \S
           minLength: 2
           maxLength: 2
-      required:
-      - street
-      - city
-      - province
-      - zip
-      - countryCode
     ApartmentJson:
       description: An apartment inside a building according to WoFIV
       type: object
@@ -456,6 +450,11 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
+        projectId:
+          description: Unique identifier of the project this issue belongs to
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
         modifiedAt:
           description: Last modification timestamp of the issue
           readOnly: true
@@ -492,7 +491,8 @@ components:
           $comment: "Only available for project issues, not for tenancy issues"
           $ref: "#/components/schemas/UUID"
     IssueJson:
-      description: An issue
+      description: "An issue, as visible to the project manager with full access to\
+        \ all fields and relations"
       type: object
       properties:
         id:
@@ -576,37 +576,37 @@ components:
             type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        tenantUpdate:
+          description: "Proposed data change submitted via self-service, for manager\
+            \ review"
+          type: object
+          $ref: "#/components/schemas/TenantJson"
         attachments:
           type: array
           items:
             $ref: "#/components/schemas/IssueAttachmentJson"
     IssueListJson:
-      description: A list of issues
+      description: A cursor-paginated list of issues
       type: object
-      required:
-      - first
-      - size
       properties:
-        first:
-          type: integer
-          format: int32
-          description: "Index of the first element in list of total available entries,\
-            \ starting at 1"
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
           readOnly: true
-          examples:
-          - 1
         size:
           type: integer
           format: int32
           maximum: 500
-          minimum: 1
-          description: Number of elements in list
+          minimum: 0
+          description: Number of elements in this page
           readOnly: true
-          default: 50
         issues:
           type: array
           items:
             $ref: "#/components/schemas/IssueItemJson"
+      required:
+      - size
     IssuePriority:
       type: string
       enum:
@@ -630,6 +630,7 @@ components:
       - DEFECT
       - INQUIRY
       - MAINTENANCE
+      - SELF_SERVICE
       - TASK
       - TERMINATION
     LocalDate:
@@ -650,6 +651,14 @@ components:
       - LESSOR
       - STAFF
       - COLLABORATOR
+    MessagePurpose:
+      type: string
+      enum:
+      - ISSUE_CREATED
+      - MESSAGE_SENT
+      - APPOINTMENT_REQUESTED
+      - APPOINTMENT_SCHEDULED
+      - STATUS_CHANGED
     OffsetDateTime:
       type: string
       format: date-time
@@ -1288,6 +1297,11 @@ components:
           $ref: "#/components/schemas/LocalDate"
         endOfRental:
           $ref: "#/components/schemas/LocalDate"
+        keys:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentalAgreementKeysJson"
+          description: List of key handovers for this rental agreement
         propertyRents:
           type: array
           items:
@@ -1318,6 +1332,28 @@ components:
           items:
             $ref: "#/components/schemas/RentJson"
           description: List of commercial rents
+    RentalAgreementKeysJson:
+      type: object
+      description: A key handover record for a rental agreement
+      required:
+      - amountOfKeys
+      properties:
+        amountOfKeys:
+          type: integer
+          format: int32
+          description: Number of keys of this type
+        issuedAt:
+          description: Date the key(s) were issued to the tenant
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        returnedAt:
+          description: Date the key(s) were returned by the tenant
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        keyDescription:
+          type: string
+          description: "Free text describing the type of key, e.g. front door, mailbox,\
+            \ garage"
     RentalAgreementListJson:
       description: A list of rental agreements for a project
       type: object
@@ -1534,6 +1570,78 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenancyJson"
+    TenantIssueJson:
+      description: "An issue, as visible to the tenant who reported it or is affected\
+        \ by it"
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        modifiedAt:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+        title:
+          type: string
+          pattern: \S
+          minLength: 3
+          maxLength: 255
+        type:
+          $ref: "#/components/schemas/IssueType"
+        category:
+          $ref: "#/components/schemas/IssueCategory"
+        status:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueStatus"
+        reporterId:
+          description: ID of the user who reported this issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        reportedBy:
+          type: string
+          description: Name of the user who reported this issue
+          readOnly: true
+        agreementId:
+          $ref: "#/components/schemas/UUID"
+        rentalUnitId:
+          $ref: "#/components/schemas/UUID"
+        rentalUnitType:
+          $ref: "#/components/schemas/UnitType"
+        location:
+          type: string
+        description:
+          type: string
+      required:
+      - title
+      - type
+      - agreementId
+      - description
+    TenantIssueListJson:
+      description: A cursor-paginated list of issues visible to a tenant
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
+          readOnly: true
+        size:
+          type: integer
+          format: int32
+          maximum: 500
+          minimum: 0
+          description: Number of elements in this page
+          readOnly: true
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantIssueJson"
+          description: The issues in this page
+          readOnly: true
     TenantItemJson:
       description: A tenant item with rental units and active status for list views
       type: object
@@ -1639,6 +1747,59 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenantItemJson"
+    TimelineJson:
+      description: An issue timeline entry
+      type: object
+      properties:
+        issueId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        tenancyId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        timelineId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueAttachmentJson"
+          readOnly: true
+        senderId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        senderName:
+          type: string
+          readOnly: true
+        purpose:
+          $ref: "#/components/schemas/MessagePurpose"
+        message:
+          type: string
+        createdAt:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+      required:
+      - purpose
+      - message
+    TimelineListJson:
+      description: A list of issue timelines
+      type: object
+      properties:
+        timelines:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelineJson"
+          description: Timeline entries
+          readOnly: true
     UUID:
       type: string
       format: uuid
@@ -1702,6 +1863,16 @@ components:
         locale:
           type: string
           maxLength: 2
+        placeOfBirth:
+          type: string
+          examples:
+          - Berlin
+          maxLength: 255
+        dateOfBirth:
+          type: string
+          examples:
+          - 1990-01-01
+          $ref: "#/components/schemas/LocalDate"
         additionalEmails:
           type: array
           items:
@@ -1806,7 +1977,7 @@ paths:
       - Mailing Resource
 info:
   title: remsfal-notification API
-  version: 1.0.12-SNAPSHOT
+  version: 1.0.13-SNAPSHOT
 servers:
 - url: http://localhost:8082
   description: Auto generated value

@@ -12,7 +12,9 @@ import StepPanels from 'primevue/steppanels';
 import StepPanel from 'primevue/steppanel';
 
 // Services & Types
-import { rentalAgreementService, type RentalAgreementJson, type TenantJson } from '@/services/RentalAgreementService';
+import {rentalAgreementService,
+  type RentalAgreementJson,
+  type TenantJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import type { ApiComponents } from '@/services/ApiClient';
 import type { SelectedUnit } from './Step2UnitsForm.vue';
 

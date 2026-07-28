@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
@@ -24,7 +25,7 @@ const phoneRegex = /^\+[1-9]\d{4,14}$/;
 const visible = ref(false);
 const phone = ref('');
 const initialValues = ref({
-  companyName: '', email: '', contactPerson: '', trade: ''
+  companyName: '', email: '', contactPerson: '', trade: '', remarks: ''
 });
 
 const validationSchema = z.object({
@@ -36,6 +37,7 @@ const validationSchema = z.object({
     .refine((v) => !v || z.string().email().safeParse(v).success, {message: t('contractor.new.validation.email'),}),
   contactPerson: z.string().trim().optional(),
   trade: z.string().trim().optional(),
+  remarks: z.string().trim().optional(),
 });
 
 const resolver = zodResolver(validationSchema);
@@ -47,7 +49,7 @@ const phoneError = computed(() => {
 
 function resetForm() {
   initialValues.value = {
-    companyName: '', email: '', contactPerson: '', trade: ''
+    companyName: '', email: '', contactPerson: '', trade: '', remarks: ''
   };
   phone.value = '';
 }
@@ -64,6 +66,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
     phone: phone.value || undefined,
     contactPerson: s.contactPerson?.value?.trim() || undefined,
     trade: s.trade?.value?.trim() || undefined,
+    remarks: s.remarks?.value?.trim() || undefined,
   };
 
   try {
@@ -167,6 +170,11 @@ const onSubmit = async (event: FormSubmitEvent) => {
         <div class="flex flex-col gap-1">
           <label for="trade" class="font-semibold">{{ t('contractor.new.trade') }}</label>
           <InputText id="trade" name="trade" fluid />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="remarks" class="font-semibold">{{ t('contractor.new.remarks') }}</label>
+          <Textarea id="remarks" name="remarks" rows="3" fluid />
         </div>
       </div>
 

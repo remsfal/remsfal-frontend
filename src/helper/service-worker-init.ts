@@ -3,7 +3,7 @@ export function registerServiceWorker() {
     const isServiceWorkerEnabled = import.meta.env.VITE_SERVICE_WORKER_ENABLED === 'true';
 
     if (isServiceWorkerEnabled) {
-      navigator.serviceWorker.register('/service-worker.js').catch((error) => {
+      navigator.serviceWorker.register('/sw.js').catch((error) => {
         console.error('Service Worker registration failed:', error);
       });
     } else {

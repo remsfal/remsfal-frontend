@@ -1,0 +1,14 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.json",
+  "include": ["src/sw.ts", "src/types/sw-global.d.ts", "src/helper/indexeddb.ts"],
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "lib": ["ES2022", "WebWorker"],
+    "types": [],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

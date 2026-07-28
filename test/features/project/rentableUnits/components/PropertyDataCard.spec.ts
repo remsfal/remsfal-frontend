@@ -29,9 +29,7 @@ vi.mock('@/services/PropertyService', () => ({propertyService: { getProperty: vi
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/helper/viewHelper')>();
-  return {
-    ...actual, navigateToObjects: vi.fn(), showSavingErrorToast: vi.fn() 
-  };
+  return {...actual, showSavingErrorToast: vi.fn()};
 });
 
 // ─── Test Data ────────────────────────────────────────────────────────────────

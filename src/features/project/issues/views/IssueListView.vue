@@ -1,83 +1,118 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import Button from 'primevue/button';
-import IssueTable from '../components/IssueTable.vue';
-import NewIssueDialog from '../components/NewIssueDialog.vue';
-import { issueService, type IssueItemJson, type IssueStatus } from '@/services/IssueService';
+import { useI18n } from 'vue-i18n';
+import BaseCard from '@/components/common/BaseCard.vue';
+import IssueTable, { type IssueColumn } from '../components/IssueTable.vue';
+import NewIssueButton from '../components/NewIssueButton.vue';
+import NewTenantIssueButton from '../components/NewTenantIssueButton.vue';
+import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
-const props = defineProps<{ projectId: string; assigneeId?: string; status?: IssueStatus; category?: string; }>();
+const props = defineProps<{
+  projectId: string;
+  assigneeId?: string;
+  status?: IssueStatus | IssueStatus[];
+  type?: IssueType | IssueType[];
+}>();
 const router = useRouter();
+const { t } = useI18n();
 
 // Reactive state
-const showNewIssueDialog = ref(false);
 const issues = ref<IssueItemJson[]>([]);
-const issuesByStatusOpen = ref<IssueItemJson[]>([]);
-const myIssues = ref<IssueItemJson[]>([]);
 
-// --- Handle issue created from dialog ---
-const handleIssueCreated = (newIssue: IssueItemJson) => {
-  // Update local state reactively
-  issues.value = [...issues.value, newIssue];
-
-  if (newIssue.status === 'OPEN') {
-    issuesByStatusOpen.value = [...issuesByStatusOpen.value, newIssue];
-  }
-
-  if (props.assigneeId) {
-    myIssues.value = [
-      ...myIssues.value,
-      {
-        ...newIssue,
-        assigneeId: props.assigneeId,
-      },
-    ];
-  }
-
-  router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: newIssue.id ?? '' } });
-};
-
-// --- Load all issues ---
+// --- Filters (status, type, assigneeId) are applied server-side ---
+// Follows nextCursor until exhausted, since the backend caps a single page at 100 issues.
 const loadIssues = async () => {
   try {
-    const issueList = await issueService.getIssues(
-      props.projectId,
-    );
-    issues.value = issueList?.issues ?? [];
+    const firstPage = await issueService.getIssues(props.projectId, props.status, props.type, props.assigneeId);
+    const allIssues = [...(firstPage?.issues ?? [])];
+    let cursor = firstPage?.nextCursor;
+
+    while (cursor) {
+      const nextPage = await issueService.getIssues(
+        props.projectId, props.status, props.type, props.assigneeId,
+        undefined, undefined, undefined, cursor,
+      );
+      allIssues.push(...(nextPage?.issues ?? []));
+      cursor = nextPage?.nextCursor;
+    }
+
+    issues.value = allIssues;
   } catch (err) {
     console.error(err);
   }
 };
 
-// --- Load only open issues ---
-const loadIssuesWithOpenStatus = async () => {
-  try {
-    const issueList = await issueService.getIssues(
-      props.projectId,
-      undefined,
-        'OPEN' as IssueStatus,
-    );
-    issuesByStatusOpen.value = issueList?.issues ?? [];
-  } catch (err) {
-    console.error(err);
-  }
-};
+function toArray<T>(value?: T | T[]): T[] {
+  if (value === undefined) return [];
+  return Array.isArray(value) ? value : [value];
+}
 
-// --- Load issues for current assigneeId ---
-const loadMyIssues = async () => {
-  try {
-    const issueList = await issueService.getIssues(
-      props.projectId,
-    );
+function isExactSet<T>(values: T[], expected: T[]): boolean {
+  if (values.length !== expected.length) return false;
+  const sorted = [...values].sort();
+  const expectedSorted = [...expected].sort();
+  return sorted.every((value, index) => value === expectedSorted[index]);
+}
 
-    myIssues.value =
-        issueList?.issues?.map((issue: IssueItemJson) => ({
-          ...issue,
-          assigneeId: props.assigneeId,
-        })) ?? [];
-  } catch (err) {
-    console.error(err);
-  }
+const OPEN_STATUSES: IssueStatus[] = ['OPEN', 'IN_PROGRESS'];
+const REQUEST_TYPES: IssueType[] = ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'];
+
+// Ordered filter-signature lookup, reusing the sidebar's own i18n keys instead
+// of re-deriving a label from the raw filter props (which share status/type
+// combinations across several distinct menu items). Each preset also carries
+// the column set for its menu item, since the two are defined by the same
+// filter signature.
+const VIEW_PRESETS: {
+  key: string;
+  columns: IssueColumn[];
+  matches: (statusArr: IssueStatus[], typeArr: IssueType[]) => boolean;
+}[] = [
+  {
+    key: 'projectMenu.issueManagement.mine',
+    columns: ['title', 'type', 'status', 'priority', 'modifiedAt'],
+    matches: (statusArr, typeArr) => !!props.assigneeId && statusArr.length === 0 && typeArr.length === 0,
+  },
+  {
+    key: 'projectMenu.tenantCommunication.open',
+    columns: ['issueNumber', 'title', 'type', 'assignee', 'priority'],
+    matches: (statusArr, typeArr) => isExactSet(statusArr, OPEN_STATUSES) && isExactSet(typeArr, ['DEFECT']),
+  },
+  {
+    key: 'projectMenu.tenantCommunication.requests',
+    columns: ['issueNumber', 'title', 'type', 'assignee', 'priority'],
+    matches: (statusArr, typeArr) => isExactSet(statusArr, OPEN_STATUSES) && isExactSet(typeArr, REQUEST_TYPES),
+  },
+  {
+    key: 'projectMenu.issueManagement.open',
+    columns: ['issueNumber', 'title', 'type', 'assignee', 'priority'],
+    matches: (statusArr, typeArr) => isExactSet(statusArr, OPEN_STATUSES) && typeArr.length === 0,
+  },
+  {
+    key: 'projectMenu.tenantCommunication.new',
+    columns: ['issueNumber', 'title', 'type', 'modifiedAt'],
+    matches: (statusArr, typeArr) => isExactSet(statusArr, ['PENDING']) && typeArr.length === 0,
+  },
+  {
+    key: 'projectMenu.issueManagement.all',
+    columns: ['issueNumber', 'title', 'type', 'status', 'modifiedAt'],
+    matches: () => true,
+  },
+];
+
+const activePreset = computed(() => {
+  const statusArr = toArray(props.status);
+  const typeArr = toArray(props.type);
+  return VIEW_PRESETS.find((candidate) => candidate.matches(statusArr, typeArr)) ?? VIEW_PRESETS[VIEW_PRESETS.length - 1];
+});
+
+const heading = computed(() => t(activePreset.value.key));
+const columns = computed<IssueColumn[]>(() => activePreset.value.columns);
+
+// --- Handle issue created from dialog ---
+const handleIssueCreated = async (newIssue: IssueItemJson) => {
+  await loadIssues();
+  router.push({ name: 'IssueDetails', params: { projectId: props.projectId, issueId: newIssue.id ?? '' } });
 };
 
 // --- Handle row selection ---
@@ -86,76 +121,31 @@ const onIssueSelect = (issue: IssueItemJson) => {
 };
 
 // --- Initialize on mount ---
-onMounted(() => {
-  loadIssues();
-  loadIssuesWithOpenStatus();
-  if (props.assigneeId) loadMyIssues();
-});
+onMounted(loadIssues);
 
-// --- Watch for prop changes ---
-watch(
-  () => props,
-  () => {
-    loadIssues();
-    loadIssuesWithOpenStatus();
-    if (props.assigneeId) loadMyIssues();
-  },
-  { deep: true }
-);
+// --- Re-fetch when the backend-relevant filters change ---
+watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadIssues);
 </script>
 
 <template>
-  <main>
-    <div class="grid grid-cols-12 gap-4">
-      <div class="col-span-12">
-        <h1 class="w-full">
-          <span v-if="props.category === 'DEFECT'">
-            <span v-if="props.assigneeId">Meine Mängel</span>
-            <span v-else-if="props.status">Offene Mängel</span>
-            <span v-else>Alle Mängel</span>
-          </span>
-          <span v-else>
-            <span v-if="props.assigneeId">Meine Aufgaben</span>
-            <span v-else-if="props.status">Offene Aufgaben</span>
-            <span v-else>Alle Aufgaben</span>
-          </span>
-        </h1>
+  <BaseCard>
+    <template #title>
+      {{ heading }}
+    </template>
+    <template #content>
+      <!-- Issues Table -->
+      <IssueTable
+        :issues="issues"
+        :projectId="props.projectId"
+        :columns="columns"
+        @rowSelect="onIssueSelect"
+      />
+
+      <!-- Create Buttons -->
+      <div class="flex justify-end gap-2 mt-6">
+        <NewTenantIssueButton :projectId="props.projectId" @issueCreated="handleIssueCreated" />
+        <NewIssueButton :projectId="props.projectId" @issueCreated="handleIssueCreated" />
       </div>
-
-      <div class="col-span-12">
-        <div class="card">
-          <!-- Create Issue Dialog -->
-          <NewIssueDialog
-            v-model:visible="showNewIssueDialog"
-            :projectId="props.projectId"
-            :category="props.category"
-            @issueCreated="handleIssueCreated"
-          />
-
-          <!-- Issues Table -->
-          <div v-if="props.assigneeId">
-            <IssueTable :issues="myIssues" @rowSelect="onIssueSelect" />
-          </div>
-
-          <div v-else-if="props.status">
-            <IssueTable :issues="issuesByStatusOpen" @rowSelect="onIssueSelect" />
-          </div>
-
-          <div v-else>
-            <IssueTable :issues="issues" @rowSelect="onIssueSelect" />
-          </div>
-
-          <!-- Create Button -->
-          <div class="flex justify-end mt-6">
-            <Button
-              :label="props.category === 'DEFECT' ? 'Mangel melden' : 'Aufgabe erstellen'"
-              icon="pi pi-plus"
-              @click="showNewIssueDialog = true"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+    </template>
+  </BaseCard>
 </template>
-    

@@ -162,9 +162,6 @@ export interface components {
   schemas: {
     /** @description The address of a customer, a building or a site */
     AddressJson: {
-      addressLine1?: string;
-      addressLine2?: string;
-      addressLine3?: string;
       street: string;
       city: string;
       province: string;
@@ -404,6 +401,8 @@ export interface components {
     IssueItemJson: {
       /** @description Unique identifier of the issue */
       readonly id?: components["schemas"]["UUID"];
+      /** @description Unique identifier of the project this issue belongs to */
+      readonly projectId?: components["schemas"]["UUID"];
       /** @description Last modification timestamp of the issue */
       readonly modifiedAt?: components["schemas"]["Instant"];
       /** @description Title of the issue */
@@ -419,7 +418,7 @@ export interface components {
       /** @description Unique identifier of the assignee of the issue */
       readonly assigneeId?: components["schemas"]["UUID"];
     };
-    /** @description An issue */
+    /** @description An issue, as visible to the project manager with full access to all fields and relations */
     IssueJson: {
       readonly id?: components["schemas"]["UUID"];
       projectId?: components["schemas"]["UUID"];
@@ -446,20 +445,17 @@ export interface components {
       duplicateOf?: string[];
       blockedBy?: string[];
       blocks?: string[];
+      /** @description Proposed data change submitted via self-service, for manager review */
+      tenantUpdate?: components["schemas"]["TenantJson"];
       attachments?: components["schemas"]["IssueAttachmentJson"][];
     };
-    /** @description A list of issues */
+    /** @description A cursor-paginated list of issues */
     IssueListJson: {
+      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+      readonly nextCursor?: string;
       /**
        * Format: int32
-       * @description Index of the first element in list of total available entries, starting at 1
-       * @example 1
-       */
-      readonly first: number;
-      /**
-       * Format: int32
-       * @description Number of elements in list
-       * @default 50
+       * @description Number of elements in this page
        */
       readonly size: number;
       issues?: components["schemas"]["IssueItemJson"][];
@@ -469,7 +465,7 @@ export interface components {
     /** @enum {string} */
     IssueStatus: "PENDING" | "OPEN" | "IN_PROGRESS" | "CLOSED" | "REJECTED";
     /** @enum {string} */
-    IssueType: "APPLICATION" | "DEFECT" | "INQUIRY" | "MAINTENANCE" | "TASK" | "TERMINATION";
+    IssueType: "APPLICATION" | "DEFECT" | "INQUIRY" | "MAINTENANCE" | "SELF_SERVICE" | "TASK" | "TERMINATION";
     /**
      * Format: date
      * @example 2022-03-10
@@ -482,6 +478,9 @@ export interface components {
     LocalDateTime: string;
     /** @enum {string} */
     MemberRole: "PROPRIETOR" | "MANAGER" | "LESSOR" | "STAFF" | "COLLABORATOR";
+    /** @enum {string} */
+    MessagePurpose:
+      "ISSUE_CREATED" | "MESSAGE_SENT" | "APPOINTMENT_REQUESTED" | "APPOINTMENT_SCHEDULED" | "STATUS_CHANGED";
     /**
      * Format: date-time
      * @example 2022-03-10T12:15:50-04:00
@@ -792,6 +791,8 @@ export interface components {
       tenants?: components["schemas"]["TenantJson"][];
       startOfRental?: components["schemas"]["LocalDate"];
       endOfRental?: components["schemas"]["LocalDate"];
+      /** @description List of key handovers for this rental agreement */
+      keys?: components["schemas"]["RentalAgreementKeysJson"][];
       /** @description List of property rents */
       propertyRents?: components["schemas"]["RentJson"][];
       /** @description List of site rents */
@@ -804,6 +805,20 @@ export interface components {
       storageRents?: components["schemas"]["RentJson"][];
       /** @description List of commercial rents */
       commercialRents?: components["schemas"]["RentJson"][];
+    };
+    /** @description A key handover record for a rental agreement */
+    RentalAgreementKeysJson: {
+      /**
+       * Format: int32
+       * @description Number of keys of this type
+       */
+      amountOfKeys: number;
+      /** @description Date the key(s) were issued to the tenant */
+      issuedAt?: components["schemas"]["LocalDate"];
+      /** @description Date the key(s) were returned by the tenant */
+      returnedAt?: components["schemas"]["LocalDate"];
+      /** @description Free text describing the type of key, e.g. front door, mailbox, garage */
+      keyDescription?: string;
     };
     /** @description A list of rental agreements for a project */
     RentalAgreementListJson: {
@@ -932,6 +947,36 @@ export interface components {
     TenancyListJson: {
       agreements?: components["schemas"]["TenancyJson"][];
     };
+    /** @description An issue, as visible to the tenant who reported it or is affected by it */
+    TenantIssueJson: {
+      readonly id?: components["schemas"]["UUID"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
+      title: string;
+      type: components["schemas"]["IssueType"];
+      category?: components["schemas"]["IssueCategory"];
+      readonly status?: components["schemas"]["IssueStatus"];
+      /** @description ID of the user who reported this issue */
+      readonly reporterId?: components["schemas"]["UUID"];
+      /** @description Name of the user who reported this issue */
+      readonly reportedBy?: string;
+      agreementId: components["schemas"]["UUID"];
+      rentalUnitId?: components["schemas"]["UUID"];
+      rentalUnitType?: components["schemas"]["UnitType"];
+      location?: string;
+      description: string;
+    };
+    /** @description A cursor-paginated list of issues visible to a tenant */
+    TenantIssueListJson: {
+      /** @description Opaque cursor to fetch the next page with; absent/null if there is no further page */
+      readonly nextCursor?: string;
+      /**
+       * Format: int32
+       * @description Number of elements in this page
+       */
+      readonly size?: number;
+      /** @description The issues in this page */
+      readonly issues?: components["schemas"]["TenantIssueJson"][];
+    };
     /** @description A tenant item with rental units and active status for list views */
     TenantItemJson: {
       /** @description Unique identifier of the tenant */
@@ -979,6 +1024,24 @@ export interface components {
     TenantListJson: {
       tenants?: components["schemas"]["TenantItemJson"][];
     };
+    /** @description An issue timeline entry */
+    TimelineJson: {
+      readonly issueId?: components["schemas"]["UUID"];
+      readonly tenancyId?: components["schemas"]["UUID"];
+      readonly timelineId?: components["schemas"]["UUID"];
+      readonly attachments?: components["schemas"]["IssueAttachmentJson"][];
+      readonly senderId?: components["schemas"]["UUID"];
+      readonly senderName?: string;
+      purpose: components["schemas"]["MessagePurpose"];
+      message: string;
+      readonly createdAt?: components["schemas"]["Instant"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
+    };
+    /** @description A list of issue timelines */
+    TimelineListJson: {
+      /** @description Timeline entries */
+      readonly timelines?: components["schemas"]["TimelineJson"][];
+    };
     /** Format: uuid */
     UUID: string;
     /** @enum {string} */
@@ -999,6 +1062,10 @@ export interface components {
       businessPhoneNumber?: string;
       privatePhoneNumber?: string;
       locale?: string;
+      /** @example Berlin */
+      placeOfBirth?: string;
+      /** @example 1990-01-01 */
+      dateOfBirth?: components["schemas"]["LocalDate"];
       /**
        * @example [
        *       "test@example.com",

@@ -7,8 +7,8 @@ meta:
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { UnitBreadcrumb, BuildingDataCard, RentableUnitDangerZoneCard } from '@/features/project/rentableUnits';
-import FacilityAddressCard from '@/components/FacilityAddressCard.vue';
+import { UnitBreadcrumb, BuildingDataCard, RentableUnitDangerZoneCard, FacilityAddressCard }
+  from '@/features/project/rentableUnits';
 
 const route = useRoute('BuildingView');
 </script>

@@ -178,7 +178,7 @@ const displayedColumns = computed(() =>
             <Select
               v-if="col.field !== 'actions'"
               v-model="data[field]"
-              :options="field === 'rentalObject' ? rentalObjects : unitTypes"
+              :options="field === 'type' ? rentalObjects : unitTypes"
               optionLabel="label"
               optionValue="value"
               placeholder="Auswählen..."

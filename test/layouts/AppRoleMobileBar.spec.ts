@@ -32,7 +32,7 @@ const navItems: MobileNavItem[] = [
     label: 'Dashboard', to: { name: 'ManagerDashboard' }, icon: 'pi-home'
   },
   {
-    label: 'Settings', to: { name: 'ManagerSettings' }, icon: 'pi-cog'
+    label: 'Settings', to: { name: 'ManagerAccountSettings' }, icon: 'pi-cog'
   },
 ]
 

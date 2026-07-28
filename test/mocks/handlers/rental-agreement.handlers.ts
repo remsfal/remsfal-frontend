@@ -20,18 +20,11 @@ export const rentalAgreementHandlers = [
               id: 'tenant-2', firstName: 'Julia', lastName: 'Schmidt', email: 'julia@example.com',
             }
           ],
-          apartmentRents: [
+          rentalUnits: [
             {
-              id: 'rent-1', rentalUnit: {
-                id: 'unit-1', title: 'Apartment 1A', type: 'APARTMENT',
-              },
+              id: 'unit-1', title: 'Apartment 1A', type: 'APARTMENT' 
             }
           ],
-          propertyRents: [],
-          siteRents: [],
-          buildingRents: [],
-          storageRents: [],
-          commercialRents: []
         },
         {
           id: 'agreement-2',
@@ -43,18 +36,11 @@ export const rentalAgreementHandlers = [
               id: 'tenant-3', firstName: 'Bob', lastName: 'Smith', email: 'bob@example.com',
             }
           ],
-          apartmentRents: [],
-          propertyRents: [
+          rentalUnits: [
             {
-              id: 'rent-2', rentalUnit: {
-                id: 'unit-2', title: 'Property A', type: 'PROPERTY',
-              },
+              id: 'unit-2', title: 'Property A', type: 'PROPERTY' 
             }
           ],
-          siteRents: [],
-          buildingRents: [],
-          storageRents: [],
-          commercialRents: []
         }
       ]
     });

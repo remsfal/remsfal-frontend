@@ -8,8 +8,8 @@ import Message from 'primevue/message';
 import AutoComplete from 'primevue/autocomplete';
 
 // Services & Types
-import { tenantService, type TenantItemJson as TenantItemFromList } from '@/services/TenantService';
-import type { TenantJson } from '@/services/RentalAgreementService';
+import { tenantService, type TenantItemJson as TenantItemFromList } from '../services/TenantService';
+import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Components
 import TenantForm from './TenantForm.vue';

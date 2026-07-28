@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import DataTable from 'primevue/datatable';
 import TenantsTableComponent from '@/features/project/rentalAgreements/components/TenantsTableComponent.vue';
-import type { TenantJson } from '@/services/TenantService';
+import type { TenantJson } from '@/features/project/rentalAgreements/services/TenantService';
 
 describe('TenantsTableComponent', () => {
   const tenantsMock = [{

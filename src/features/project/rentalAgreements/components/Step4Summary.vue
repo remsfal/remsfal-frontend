@@ -8,7 +8,7 @@ import BaseCard from '@/components/common/BaseCard.vue';
 
 // Types (imported from Step components)
 import type { SelectedUnit } from './Step2UnitsForm.vue';
-import type { TenantJson } from '@/services/RentalAgreementService';
+import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Props & Emits
 const props = defineProps<{

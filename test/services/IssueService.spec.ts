@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-import { issueService, type IssueJson, type IssueStatus } from '@/services/IssueService';
+import { issueService, type IssueJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
 const projectId = 'test-project';
 const issueId = 'test-issue';
@@ -49,14 +49,13 @@ describe('IssueService with MSW (http)', () => {
     const issueList = await issueService.getIssues(projectId);
     expect(issueList.issues).toBeDefined();
     expect(issueList.issues?.length).toBeGreaterThan(0);
-    expect(issueList.first).toBeDefined();
     expect(issueList.size).toBeDefined();
   });
-  
+
   test('getIssue handles non-existing issue (404)', async () => {
     await expect(issueService.getIssue('non-existing-id')).rejects.toThrow();
   });
-  
+
   test('getIssues fallback values are applied when data is missing', async () => {
     // Mock empty response
     server.use(
@@ -64,7 +63,6 @@ describe('IssueService with MSW (http)', () => {
     );
 
     const result = await issueService.getIssues(projectId);
-    expect(result.first).toBe(0);
     expect(result.size).toBe(0);
     expect(result.issues).toEqual([]);
   });
@@ -75,11 +73,123 @@ describe('IssueService with MSW (http)', () => {
   });
 
   test('deleteIssueRelation resolves successfully', async () => {
-    await issueService.deleteIssueRelation(issueId, 'related-to', 'related-issue');
+    await expect(
+      issueService.deleteIssueRelation(issueId, 'related-to', 'related-issue'),
+    ).resolves.toBeDefined();
   });
 
   test('setParentIssue returns the updated issue', async () => {
     const updatedIssue = await issueService.setParentIssue(issueId, 'parent-issue');
     expect(updatedIssue.id).toBe(issueId);
+  });
+
+  test('getIssues sends all optional parameters when provided', async () => {
+    let capturedParams: Record<string, string> = {};
+    server.use(
+      http.get('/ticketing/v1/issues', ({ request }) => {
+        const url = new URL(request.url);
+        capturedParams = Object.fromEntries(url.searchParams.entries());
+        return HttpResponse.json({ issues: [], size: 0 });
+      }),
+    );
+
+    await issueService.getIssues(
+      projectId,
+      'OPEN' as IssueStatus,
+      'DEFECT' as IssueType,
+      'assignee-1',
+      'agreement-1',
+      'unit-1',
+      'APARTMENT',
+      'cursor-1',
+      50,
+    );
+
+    expect(capturedParams).toMatchObject({
+      projectId,
+      status: 'OPEN', // repeated single-value query param collapses to one entry via fromEntries
+      type: 'DEFECT',
+      assigneeId: 'assignee-1',
+      agreementId: 'agreement-1',
+      rentalUnitId: 'unit-1',
+      rentalUnitType: 'APARTMENT',
+      cursor: 'cursor-1',
+      limit: '50',
+    });
+  });
+
+  test('getIssues sends array status/type values as repeated query params', async () => {
+    let capturedUrl: URL | undefined;
+    server.use(
+      http.get('/ticketing/v1/issues', ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ issues: [], size: 0 });
+      }),
+    );
+
+    await issueService.getIssues(
+      projectId,
+      ['OPEN', 'IN_PROGRESS'] as IssueStatus[],
+      ['APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION'] as IssueType[],
+    );
+
+    expect(capturedUrl?.searchParams.getAll('status')).toEqual(['OPEN', 'IN_PROGRESS']);
+    expect(capturedUrl?.searchParams.getAll('type')).toEqual([
+      'APPLICATION', 'INQUIRY', 'TASK', 'TERMINATION',
+    ]);
+  });
+
+  test('getIssues sends neither status nor type when no filter is provided', async () => {
+    let capturedUrl: URL | undefined;
+    server.use(
+      http.get('/ticketing/v1/issues', ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ issues: [], size: 0 });
+      }),
+    );
+
+    await issueService.getIssues(projectId);
+
+    expect(capturedUrl?.searchParams.getAll('status')).toEqual([]);
+    expect(capturedUrl?.searchParams.getAll('type')).toEqual([]);
+  });
+
+  test('deleteIssue resolves successfully', async () => {
+    await expect(issueService.deleteIssue(issueId)).resolves.toBeDefined();
+  });
+
+  test('deleteIssue rejects when deletion fails', async () => {
+    await expect(issueService.deleteIssue('cannot-delete')).rejects.toThrow();
+  });
+
+  test('deleteAttachment resolves successfully', async () => {
+    await expect(
+      issueService.deleteAttachment(issueId, 'attachment-1'),
+    ).resolves.toBeDefined();
+  });
+
+  test('deleteAttachment rejects when deletion fails', async () => {
+    await expect(
+      issueService.deleteAttachment(issueId, 'cannot-delete'),
+    ).rejects.toThrow();
+  });
+
+  test('uploadAttachments resolves successfully', async () => {
+    const file = new File(['file content'], 'photo.png', { type: 'image/png' });
+
+    await expect(issueService.uploadAttachments(issueId, [file])).resolves.toBeUndefined();
+  });
+
+  test('uploadAttachments throws when the upload fails', async () => {
+    server.use(
+      http.post('/ticketing/v1/issues/:issueId/attachments', () => {
+        return HttpResponse.json({ message: 'Server Error' }, { status: 500 });
+      }),
+    );
+    const file = new File(['file content'], 'photo.png', { type: 'image/png' });
+
+    await expect(issueService.uploadAttachments(issueId, [file])).rejects.toThrow(
+      'Failed to upload attachments: 500',
+    );
   });
 });

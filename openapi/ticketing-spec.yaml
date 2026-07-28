@@ -5,13 +5,13 @@ components:
     AddressJson:
       description: "The address of a customer, a building or a site"
       type: object
+      required:
+      - street
+      - city
+      - province
+      - zip
+      - countryCode
       properties:
-        addressLine1:
-          type: string
-        addressLine2:
-          type: string
-        addressLine3:
-          type: string
         street:
           type: string
           pattern: \S
@@ -29,12 +29,6 @@ components:
           pattern: \S
           minLength: 2
           maxLength: 2
-      required:
-      - street
-      - city
-      - province
-      - zip
-      - countryCode
     ApartmentJson:
       description: An apartment inside a building according to WoFIV
       type: object
@@ -456,6 +450,11 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
+        projectId:
+          description: Unique identifier of the project this issue belongs to
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
         modifiedAt:
           description: Last modification timestamp of the issue
           readOnly: true
@@ -492,7 +491,8 @@ components:
           $comment: "Only available for project issues, not for tenancy issues"
           $ref: "#/components/schemas/UUID"
     IssueJson:
-      description: An issue
+      description: "An issue, as visible to the project manager with full access to\
+        \ all fields and relations"
       type: object
       properties:
         id:
@@ -576,37 +576,37 @@ components:
             type: string
             format: uuid
             pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+        tenantUpdate:
+          description: "Proposed data change submitted via self-service, for manager\
+            \ review"
+          type: object
+          $ref: "#/components/schemas/TenantJson"
         attachments:
           type: array
           items:
             $ref: "#/components/schemas/IssueAttachmentJson"
     IssueListJson:
-      description: A list of issues
+      description: A cursor-paginated list of issues
       type: object
-      required:
-      - first
-      - size
       properties:
-        first:
-          type: integer
-          format: int32
-          description: "Index of the first element in list of total available entries,\
-            \ starting at 1"
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
           readOnly: true
-          examples:
-          - 1
         size:
           type: integer
           format: int32
           maximum: 500
-          minimum: 1
-          description: Number of elements in list
+          minimum: 0
+          description: Number of elements in this page
           readOnly: true
-          default: 50
         issues:
           type: array
           items:
             $ref: "#/components/schemas/IssueItemJson"
+      required:
+      - size
     IssuePriority:
       type: string
       enum:
@@ -630,6 +630,7 @@ components:
       - DEFECT
       - INQUIRY
       - MAINTENANCE
+      - SELF_SERVICE
       - TASK
       - TERMINATION
     LocalDate:
@@ -650,6 +651,14 @@ components:
       - LESSOR
       - STAFF
       - COLLABORATOR
+    MessagePurpose:
+      type: string
+      enum:
+      - ISSUE_CREATED
+      - MESSAGE_SENT
+      - APPOINTMENT_REQUESTED
+      - APPOINTMENT_SCHEDULED
+      - STATUS_CHANGED
     OffsetDateTime:
       type: string
       format: date-time
@@ -1288,6 +1297,11 @@ components:
           $ref: "#/components/schemas/LocalDate"
         endOfRental:
           $ref: "#/components/schemas/LocalDate"
+        keys:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentalAgreementKeysJson"
+          description: List of key handovers for this rental agreement
         propertyRents:
           type: array
           items:
@@ -1318,6 +1332,28 @@ components:
           items:
             $ref: "#/components/schemas/RentJson"
           description: List of commercial rents
+    RentalAgreementKeysJson:
+      type: object
+      description: A key handover record for a rental agreement
+      required:
+      - amountOfKeys
+      properties:
+        amountOfKeys:
+          type: integer
+          format: int32
+          description: Number of keys of this type
+        issuedAt:
+          description: Date the key(s) were issued to the tenant
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        returnedAt:
+          description: Date the key(s) were returned by the tenant
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        keyDescription:
+          type: string
+          description: "Free text describing the type of key, e.g. front door, mailbox,\
+            \ garage"
     RentalAgreementListJson:
       description: A list of rental agreements for a project
       type: object
@@ -1534,6 +1570,78 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenancyJson"
+    TenantIssueJson:
+      description: "An issue, as visible to the tenant who reported it or is affected\
+        \ by it"
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        modifiedAt:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+        title:
+          type: string
+          pattern: \S
+          minLength: 3
+          maxLength: 255
+        type:
+          $ref: "#/components/schemas/IssueType"
+        category:
+          $ref: "#/components/schemas/IssueCategory"
+        status:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/IssueStatus"
+        reporterId:
+          description: ID of the user who reported this issue
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        reportedBy:
+          type: string
+          description: Name of the user who reported this issue
+          readOnly: true
+        agreementId:
+          $ref: "#/components/schemas/UUID"
+        rentalUnitId:
+          $ref: "#/components/schemas/UUID"
+        rentalUnitType:
+          $ref: "#/components/schemas/UnitType"
+        location:
+          type: string
+        description:
+          type: string
+      required:
+      - title
+      - type
+      - agreementId
+      - description
+    TenantIssueListJson:
+      description: A cursor-paginated list of issues visible to a tenant
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          description: Opaque cursor to fetch the next page with; absent/null if there
+            is no further page
+          readOnly: true
+        size:
+          type: integer
+          format: int32
+          maximum: 500
+          minimum: 0
+          description: Number of elements in this page
+          readOnly: true
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantIssueJson"
+          description: The issues in this page
+          readOnly: true
     TenantItemJson:
       description: A tenant item with rental units and active status for list views
       type: object
@@ -1639,6 +1747,59 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TenantItemJson"
+    TimelineJson:
+      description: An issue timeline entry
+      type: object
+      properties:
+        issueId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        tenancyId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        timelineId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueAttachmentJson"
+          readOnly: true
+        senderId:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/UUID"
+        senderName:
+          type: string
+          readOnly: true
+        purpose:
+          $ref: "#/components/schemas/MessagePurpose"
+        message:
+          type: string
+        createdAt:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+        modifiedAt:
+          readOnly: true
+          type: string
+          $ref: "#/components/schemas/Instant"
+      required:
+      - purpose
+      - message
+    TimelineListJson:
+      description: A list of issue timelines
+      type: object
+      properties:
+        timelines:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelineJson"
+          description: Timeline entries
+          readOnly: true
     UUID:
       type: string
       format: uuid
@@ -1702,6 +1863,16 @@ components:
         locale:
           type: string
           maxLength: 2
+        placeOfBirth:
+          type: string
+          examples:
+          - Berlin
+          maxLength: 255
+        dateOfBirth:
+          type: string
+          examples:
+          - 1990-01-01
+          $ref: "#/components/schemas/LocalDate"
         additionalEmails:
           type: array
           items:
@@ -1814,7 +1985,10 @@ paths:
       - SecurityScheme: []
   /ticketing/v1/issues:
     get:
-      summary: Retrieve information for all issues.
+      summary: Retrieve information for all issues of a single project.
+      description: "This method is intended solely for use by a property manager,\
+        \ scoped to exactly one project at a time. Tenants must use the separate tenant\
+        \ issues endpoint instead."
       parameters:
       - description: Filter to return only issuesfor a specific rental agreement
         name: agreementId
@@ -1826,7 +2000,18 @@ paths:
         in: query
         schema:
           $ref: "#/components/schemas/UUID"
-      - description: Maximum number of projects to return
+      - description: Opaque cursor returned by a previous call to fetch the next page
+        name: cursor
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filter to return only issues that are (or are not) visible to
+          tenants
+        name: isVisibleToTenants
+        in: query
+        schema:
+          type: boolean
+      - description: Maximum number of issues to return
         name: limit
         in: query
         schema:
@@ -1836,22 +2021,8 @@ paths:
           exclusiveMinimum: 0
           default: "50"
         required: true
-      - description: Offset of the first project to return
-        name: offset
-        in: query
-        schema:
-          type: integer
-          format: int32
-          minimum: 0
-          default: "0"
+      - description: ID of the project to return issues of
         required: true
-      - description: Whether to prefer tenancy issues over project issues
-        name: preferTenancyIssues
-        in: query
-        schema:
-          type: boolean
-          default: false
-      - description: Filter to return only issues of a specific project
         name: projectId
         in: query
         schema:
@@ -1866,16 +2037,35 @@ paths:
         in: query
         schema:
           $ref: "#/components/schemas/UnitType"
-      - description: Filter to return only issues with a specific status
+      - description: "Filter to return only issues matching one of the given statuses\
+          \ (repeat the parameter for multiple values, e.g. status=OPEN&status=IN_PROGRESS);\
+          \ omit to return issues of all statuses"
         name: status
         in: query
         schema:
-          $ref: "#/components/schemas/IssueStatus"
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueStatus"
+      - description: "Filter to return only issues matching one of the given types\
+          \ (repeat the parameter for multiple values, e.g. type=DEFECT&type=MAINTENANCE);\
+          \ omit to return issues of all types"
+        name: type
+        in: query
+        schema:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueType"
       responses:
+        "200":
+          description: Issues retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueListJson"
         "401":
           description: No user authentication provided via session cookie
         "403":
-          description: Not Allowed
+          description: User does not have permission to read issues of this project
       security:
       - SecurityScheme: []
     post:
@@ -1884,9 +2074,6 @@ paths:
         method is intended solely for the creation of issues by a property manager.
       requestBody:
         content:
-          multipart/form-data:
-            schema:
-              type: object
           application/json:
             schema:
               $ref: "#/components/schemas/IssueJson"
@@ -1897,8 +2084,10 @@ paths:
           headers:
             Location:
               description: URL of the new issue
-        "400":
-          description: Invalid input or unsupported file type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueJson"
         "401":
           description: No user authentication provided via session cookie
         "403":
@@ -1922,6 +2111,12 @@ paths:
               $ref: "#/components/schemas/IssueJson"
         required: true
       responses:
+        "200":
+          description: Issue updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueJson"
         "401":
           description: No user authentication provided via session cookie
         "404":
@@ -1932,6 +2127,7 @@ paths:
       - SecurityScheme: []
     get:
       summary: Retrieve information of an issue.
+      description: This method is intended solely for use by a property manager.
       parameters:
       - description: ID of the issue
         required: true
@@ -1940,12 +2136,18 @@ paths:
         schema:
           $ref: "#/components/schemas/UUID"
       responses:
+        "200":
+          description: Issue retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueJson"
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to view this issue
         "404":
           description: The property does not exist
-        "403":
-          description: Not Allowed
       security:
       - SecurityScheme: []
     delete:
@@ -1982,7 +2184,16 @@ paths:
         content:
           multipart/form-data:
             schema:
+              required:
+              - attachment
               type: object
+              properties:
+                attachment:
+                  description: One or more image files to attach to the issue
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "200":
@@ -2099,6 +2310,10 @@ paths:
       responses:
         "201":
           description: Chat session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatSessionJson"
         "400":
           description: Invalid input
         "404":
@@ -2197,6 +2412,10 @@ paths:
       responses:
         "201":
           description: Chat message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessageJson"
         "400":
           description: Invalid input
         "403":
@@ -2258,11 +2477,35 @@ paths:
         content:
           multipart/form-data:
             schema:
+              required:
+              - file
               type: object
+              properties:
+                file:
+                  description: One or more files to send in the chat session
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "201":
           description: File sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fileId:
+                    $ref: "#/components/schemas/UUID"
+                  fileUrl:
+                    type: string
+                  sessionId:
+                    $ref: "#/components/schemas/UUID"
+                  createdAt:
+                    $ref: "#/components/schemas/Instant"
+                  sender:
+                    $ref: "#/components/schemas/UUID"
         "400":
           description: Invalid input
         "403":
@@ -2392,6 +2635,194 @@ paths:
           description: No user authentication provided via session cookie
       security:
       - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders:
+    get:
+      summary: Retrieve all orders placed for an issue.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Orders returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderPlacementListJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue
+        "404":
+          description: The issue does not exist
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders/{orderId}:
+    delete:
+      summary: Withdraw an order placement.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the order placement
+        required: true
+        name: orderId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: Order placement withdrawn successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue
+        "404":
+          description: The issue or order placement does not exist
+      security:
+      - SecurityScheme: []
+    get:
+      summary: Retrieve a single order placement.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the order placement
+        required: true
+        name: orderId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Order placement returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderPlacementJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue
+        "404":
+          description: The issue or order placement does not exist
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders/{processId}/attachments:
+    post:
+      summary: Upload one or more attachments.
+      description: "Uploads one or more files to an already-existing quotation request,\
+        \ quotation, or order placement. Each file must be provided as a separate\
+        \ 'attachment' part in the multipart request."
+      parameters:
+      - description: "ID of the quotation request, quotation, or order placement"
+        required: true
+        name: processId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - attachment
+              type: object
+              properties:
+                attachment:
+                  description: One or more files to attach
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+        required: true
+      responses:
+        "200":
+          description: Attachments uploaded successfully
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Invalid input or unsupported file type
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to upload attachments here
+        "404":
+          description: "The quotation request, quotation, or order placement not found"
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders/{processId}/attachments/{attachmentId}:
+    delete:
+      summary: Delete an order attachment
+      parameters:
+      - description: ID of the attachment
+        required: true
+        name: attachmentId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: "ID of the quotation request, quotation, or order placement"
+        required: true
+        name: processId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: Attachment deleted successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to delete this attachment
+        "404":
+          description: Attachment not found
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/orders/{processId}/attachments/{attachmentId}/{filename}:
+    get:
+      summary: Download an order attachment
+      parameters:
+      - description: ID of the attachment
+        required: true
+        name: attachmentId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filename of the attachment
+        required: true
+        name: filename
+        in: path
+        schema:
+          type: string
+      - description: "ID of the quotation request, quotation, or order placement"
+        required: true
+        name: processId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Attachment downloaded successfully
+          content:
+            application/octet-stream: {}
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this attachment
+        "404":
+          description: Attachment not found
+      security:
+      - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/parent/{parentIssueId}:
     put:
       summary: Set another issue as parent issue.
@@ -2464,6 +2895,10 @@ paths:
       responses:
         "201":
           description: Requests for quotation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuotationRequestListJson"
         "401":
           description: No user authentication provided via session cookie
         "403":
@@ -2487,7 +2922,16 @@ paths:
         content:
           multipart/form-data:
             schema:
+              required:
+              - attachment
               type: object
+              properties:
+                attachment:
+                  description: One or more files to attach
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "200":
@@ -2676,7 +3120,16 @@ paths:
         content:
           multipart/form-data:
             schema:
+              required:
+              - attachment
               type: object
+              properties:
+                attachment:
+                  description: One or more files to attach
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "200":
@@ -2787,33 +3240,7 @@ paths:
           description: The issue or quotation does not exist
       security:
       - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/order-placement:
-    delete:
-      summary: Withdraw the order placement for a quotation.
-      parameters:
-      - description: ID of the issue
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the quotation
-        required: true
-        name: quotationId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "204":
-          description: Order placement withdrawn successfully
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to access this issue
-        "404":
-          description: "The issue, quotation, or order placement does not exist"
-      security:
-      - SecurityScheme: []
+  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/orders:
     post:
       summary: Place an order based on a quotation.
       parameters:
@@ -2832,32 +3259,6 @@ paths:
       responses:
         "201":
           description: Order placement created successfully
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to access this issue
-        "404":
-          description: The issue or quotation does not exist
-      security:
-      - SecurityScheme: []
-    get:
-      summary: Retrieve the order placement for a quotation.
-      parameters:
-      - description: ID of the issue
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the quotation
-        required: true
-        name: quotationId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Order placement returned successfully
           content:
             application/json:
               schema:
@@ -2867,85 +3268,116 @@ paths:
         "403":
           description: User does not have permission to access this issue
         "404":
-          description: "The issue, quotation, or order placement does not exist"
+          description: The issue or quotation does not exist
       security:
       - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/order-placement/attachments:
+  /ticketing/v1/issues/{issueId}/timeline:
+    get:
+      summary: Get all timeline entries for an issue
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Timeline entries retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelineListJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: Issue not found
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
     post:
-      summary: Upload one or more attachments.
-      description: "Uploads one or more files to an already-existing quotation request,\
-        \ quotation, or order placement. Each file must be provided as a separate\
-        \ 'attachment' part in the multipart request."
+      summary: Create a new timeline entry with attachments for an issue
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           multipart/form-data:
             schema:
+              required:
+              - timeline
               type: object
+              properties:
+                timeline:
+                  description: Timeline entry information as JSON
+                  type: object
+                  properties:
+                    issueId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    tenancyId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    timelineId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    attachments:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/IssueAttachmentJson"
+                      readOnly: true
+                    senderId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    senderName:
+                      type: string
+                      readOnly: true
+                    purpose:
+                      $ref: "#/components/schemas/MessagePurpose"
+                    message:
+                      type: string
+                    createdAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                    modifiedAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                  required:
+                  - purpose
+                  - message
+                attachment:
+                  description: One or more files to attach to the timeline entry
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
-        "200":
-          description: Attachments uploaded successfully
+        "201":
+          description: Timeline entry created
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/TimelineJson"
         "400":
-          description: Invalid input or unsupported file type
+          description: Invalid input
         "401":
           description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to upload attachments here
         "404":
-          description: "The quotation request, quotation, or order placement not found"
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/order-placement/attachments/{attachmentId}:
-    delete:
-      summary: Delete an order attachment
-      parameters:
-      - description: ID of the attachment
-        required: true
-        name: attachmentId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "204":
-          description: Attachment deleted successfully
-        "401":
-          description: No user authentication provided via session cookie
+          description: Issue not found
         "403":
-          description: User does not have permission to delete this attachment
-        "404":
-          description: Attachment not found
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/quotations/{quotationId}/order-placement/attachments/{attachmentId}/{filename}:
-    get:
-      summary: Download an order attachment
-      parameters:
-      - description: ID of the attachment
-        required: true
-        name: attachmentId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: Filename of the attachment
-        required: true
-        name: filename
-        in: path
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Attachment downloaded successfully
-          content:
-            application/octet-stream: {}
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: User does not have permission to access this attachment
-        "404":
-          description: Attachment not found
+          description: Not Allowed
       security:
       - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/{relationType}/{relatedIssueId}:
@@ -3111,7 +3543,16 @@ paths:
         content:
           multipart/form-data:
             schema:
+              required:
+              - attachment
               type: object
+              properties:
+                attachment:
+                  description: One or more files to attach
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "200":
@@ -3226,7 +3667,16 @@ paths:
         content:
           multipart/form-data:
             schema:
+              required:
+              - attachment
               type: object
+              properties:
+                attachment:
+                  description: One or more files to attach
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "200":
@@ -3408,7 +3858,16 @@ paths:
         content:
           multipart/form-data:
             schema:
+              required:
+              - attachment
               type: object
+              properties:
+                attachment:
+                  description: One or more files to attach
+                  type: array
+                  items:
+                    type: string
+                    format: binary
         required: true
       responses:
         "200":
@@ -3513,9 +3972,319 @@ paths:
           description: Quotation not found
       security:
       - SecurityScheme: []
+  /ticketing/v1/tenant-relations/issues:
+    get:
+      summary: Retrieve information for all issues of the calling tenant.
+      description: Aggregates issues across all rental agreements the caller is a
+        tenant of.
+      parameters:
+      - description: Opaque cursor returned by a previous call to fetch the next page
+        name: cursor
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Maximum number of issues to return
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          maximum: 500
+          exclusiveMinimum: 0
+          default: "50"
+        required: true
+      responses:
+        "200":
+          description: Issues retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantIssueListJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+    post:
+      summary: Create a new issue with multiple image attachments.
+      description: Creates a new issue based on the provided issue information and
+        attaches multiple image files to it. This method is intended solely for the
+        creation of issues by a tenant.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - issue
+              type: object
+              properties:
+                issue:
+                  description: Issue information as JSON
+                  type: object
+                  properties:
+                    id:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    modifiedAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                    title:
+                      type: string
+                      pattern: \S
+                      minLength: 3
+                      maxLength: 255
+                    type:
+                      $ref: "#/components/schemas/IssueType"
+                    category:
+                      $ref: "#/components/schemas/IssueCategory"
+                    status:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/IssueStatus"
+                    reporterId:
+                      description: ID of the user who reported this issue
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    reportedBy:
+                      type: string
+                      description: Name of the user who reported this issue
+                      readOnly: true
+                    agreementId:
+                      $ref: "#/components/schemas/UUID"
+                    rentalUnitId:
+                      $ref: "#/components/schemas/UUID"
+                    rentalUnitType:
+                      $ref: "#/components/schemas/UnitType"
+                    location:
+                      type: string
+                    description:
+                      type: string
+                  required:
+                  - title
+                  - type
+                  - agreementId
+                  - description
+                attachment:
+                  description: One or more image files to attach to the issue
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+        required: true
+      responses:
+        "201":
+          description: Issue with attachments created successfully
+          headers:
+            Location:
+              description: URL of the new issue
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantIssueJson"
+        "400":
+          description: Invalid input or unsupported file type
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/tenant-relations/issues/{issueId}:
+    get:
+      summary: Retrieve information of an issue.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Issue retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantIssueJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to view this issue
+        "404":
+          description: The issue does not exist
+      security:
+      - SecurityScheme: []
+    delete:
+      summary: Close an existing issue.
+      description: Closes the issue (sets its status to CLOSED). Tenants cannot delete
+        issues outright.
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "204":
+          description: The issue was closed successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to close this issue
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/tenant-relations/issues/{issueId}/attachments/{attachmentId}/{filename}:
+    get:
+      summary: Download an issue attachment
+      parameters:
+      - description: ID of the attachment
+        required: true
+        name: attachmentId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Filename of the attachment
+        required: true
+        name: filename
+        in: path
+        schema:
+          type: string
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Attachment downloaded successfully
+          content:
+            application/octet-stream: {}
+        "401":
+          description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this attachment
+        "404":
+          description: Attachment not found
+      security:
+      - SecurityScheme: []
+  /ticketing/v1/tenant-relations/issues/{issueId}/timeline:
+    get:
+      summary: Get all timeline entries for an issue
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      responses:
+        "200":
+          description: Timeline entries retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelineListJson"
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: Issue not found
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
+    post:
+      summary: Create a new timeline entry with attachments for an issue
+      parameters:
+      - description: ID of the issue
+        required: true
+        name: issueId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - timeline
+              type: object
+              properties:
+                timeline:
+                  description: Timeline entry information as JSON
+                  type: object
+                  properties:
+                    issueId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    tenancyId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    timelineId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    attachments:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/IssueAttachmentJson"
+                      readOnly: true
+                    senderId:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/UUID"
+                    senderName:
+                      type: string
+                      readOnly: true
+                    purpose:
+                      $ref: "#/components/schemas/MessagePurpose"
+                    message:
+                      type: string
+                    createdAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                    modifiedAt:
+                      readOnly: true
+                      type: string
+                      $ref: "#/components/schemas/Instant"
+                  required:
+                  - purpose
+                  - message
+                attachment:
+                  description: One or more files to attach to the timeline entry
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+        required: true
+      responses:
+        "201":
+          description: Timeline entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelineJson"
+        "400":
+          description: Invalid input
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: Issue not found
+        "403":
+          description: Not Allowed
+      security:
+      - SecurityScheme: []
 info:
   title: remsfal-ticketing API
-  version: 1.0.12-SNAPSHOT
+  version: 1.0.13-SNAPSHOT
 servers:
 - url: http://localhost:8081
   description: Auto generated value

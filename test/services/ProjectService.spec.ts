@@ -117,6 +117,17 @@ describe('ProjectService', () => {
       const result = await projectService.searchProjects('any-id');
       expect(result.projects).toHaveLength(0);
     });
+
+    it('should handle a response with no projects field at all', async () => {
+      server.use(
+        http.get('/api/v1/projects', () => {
+          return HttpResponse.json({ offset: 0, limit: 100, total: 0 });
+        }),
+      );
+
+      const result = await projectService.searchProjects('any-id');
+      expect(result.projects).toEqual([]);
+    });
   });
 
   describe('createProject', () => {

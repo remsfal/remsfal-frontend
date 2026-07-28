@@ -6,7 +6,7 @@ meta:
 </route>
 
 <script setup lang="ts">
-import { AccountSettingsView } from '@/features/common/users'
+import { AccountSettingsView } from '@/features/common/users';
 </script>
 
 <template>

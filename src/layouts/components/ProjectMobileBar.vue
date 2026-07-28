@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute, type RouteLocationRaw } from 'vue-router';
 import AppRoleMobileBar from '@/layouts/components/AppRoleMobileBar.vue'
 import ProjectMenu from '@/layouts/components/ProjectMenu.vue';
+import { useUserSessionStore } from '@/stores/UserSession';
 import type { MobileNavItem } from '@/layouts/composables/useMobileBarActiveState';
+import { matchesRouteTarget } from '@/layouts/composables/useRouteActiveMatch';
 
 interface ProjectNavItem extends MobileNavItem {
   to: RouteLocationRaw;
   icon: string | { type: 'pi' | 'fa'; name: string | string[] };
 }
 
+const { t } = useI18n();
 const route = useRoute();
+const sessionStore = useUserSessionStore();
 const projectId = computed(() => (route.params as Record<string, string>).projectId);
 
 const navItems = computed<ProjectNavItem[]>(() => {
@@ -31,78 +36,38 @@ const navItems = computed<ProjectNavItem[]>(() => {
 
   return [
     {
-      label: 'Dashboard',
+      label: t('projectMenu.home.label'),
       to: { name: 'ProjectDashboard', params: { projectId: projectId.value } },
       icon: 'pi-chart-bar',
     },
     {
-      label: 'Aufgaben',
+      label: t('projectMenu.tenantCommunication.new'),
       to: {
         name: 'IssueOverview',
         params: { projectId: projectId.value },
-        query: { status: 'OPEN', category: 'TASK' },
+        query: { status: 'PENDING' },
       },
-      icon: 'pi-list',
+      icon: 'pi-envelope',
     },
     {
-      label: 'Mängel',
+      label: t('projectMenu.issueManagement.mine'),
       to: {
         name: 'IssueOverview',
         params: { projectId: projectId.value },
-        query: { status: 'OPEN', category: 'DEFECT' },
+        query: sessionStore.user?.id ? { assigneeId: sessionStore.user.id } : {},
       },
-      icon: 'pi-exclamation-circle',
+      icon: 'pi-list-check',
     },
     {
-      label: 'Chat',
-      to: { name: 'ProjectChatView', params: { projectId: projectId.value } },
-      icon: 'pi-comments',
+      label: t('projectMenu.masterData.tenants'),
+      to: { name: 'TenantList', params: { projectId: projectId.value } },
+      icon: 'pi-address-book',
     },
   ];
 });
 
-function matchesQuery(
-  targetQuery: Record<string, string>,
-  routeQuery: Record<string, string | null | (string | null)[]>,
-  strict: boolean,
-): boolean {
-  const targetKeys = Object.keys(targetQuery);
-  const routeKeys = Object.keys(routeQuery);
-
-  if (targetKeys.length > 0) {
-    for (const key of targetKeys) {
-      if (routeQuery[key] !== targetQuery[key]) return false;
-    }
-    return true;
-  }
-
-  if (strict && routeKeys.length > 0) {
-    return false;
-  }
-
-  return true;
-}
-
 function isActive(item: MobileNavItem): boolean {
-  if (!item.to) return false;
-
-  const target = item.to;
-  const currentRouteQuery = route.query as Record<string, string>;
-
-  if (typeof target === 'string') {
-    return route.path === target || (target !== '/' && route.path.startsWith(target));
-  }
-
-  if (typeof target === 'object' && target !== null && 'name' in target) {
-    if (target.name && route.name !== target.name) return false;
-
-    const targetQuery = (target as { query?: Record<string, string> }).query || {};
-    const strict = !Object.keys(targetQuery).length && route.name === (target as { name?: string }).name;
-
-    return matchesQuery(targetQuery, currentRouteQuery, strict);
-  }
-
-  return true;
+  return matchesRouteTarget(route, item.to);
 }
 </script>
 

@@ -2,11 +2,16 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import IssueDetailsCard from '@/features/project/issues/components/IssueDetailsCard.vue';
+import IssueAcceptButton from '@/features/project/issues/components/IssueAcceptButton.vue';
+import IssueRejectButton from '@/features/project/issues/components/IssueRejectButton.vue';
 import Select from 'primevue/select';
+import AutoComplete from 'primevue/autocomplete';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
 import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
 import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
+import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import { useUserSessionStore } from '@/stores/UserSession';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
 const addMock = vi.fn();
@@ -19,6 +24,17 @@ vi.mock('@/services/IssueService', async () => {
   return {
     ...actual,
     issueService: {updateIssue: vi.fn(),},
+  };
+});
+
+// IssueRejectButton (rendered as a real child) uses this to post the optional reject reason.
+vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/project/issues/services/IssueTimelineService')>(
+    '@/features/project/issues/services/IssueTimelineService',
+  );
+  return {
+    ...actual,
+    issueTimelineService: {createTimelineEntry: vi.fn(),},
   };
 });
 
@@ -41,11 +57,53 @@ vi.mock('@/services/OrganizationMemberService', async () => {
   };
 });
 
+// IssueDetailsCard resolves the initially selected rental agreement itself
+// (RentalAgreementSelect only accepts a full object as v-model, not a raw id).
+vi.mock('@/features/project/rentalAgreements/services/RentalAgreementService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/project/rentalAgreements/services/RentalAgreementService')>(
+    '@/features/project/rentalAgreements/services/RentalAgreementService',
+  );
+  return {
+    ...actual,
+    rentalAgreementService: {getRentalAgreements: vi.fn(),},
+  };
+});
+
 // ─── Test Helpers ────────────────────────────────────────────────────────────
 function findSaveButton(w: VueWrapper) {
   const button = w.findAll('button').find((b) => b.text().includes('Speichern'));
   if (!button) throw new Error('Save button not found');
   return button;
+}
+
+// RentalAgreementSelect has its own dedicated spec; stub it here so selection
+// can be driven directly via emitted events without hitting the real component.
+const RentalAgreementSelectStub = {
+  name: 'RentalAgreementSelect',
+  props: ['projectId', 'modelValue', 'invalid', 'inputId'],
+  emits: ['update:modelValue', 'blur'],
+  template: '<div data-testid="agreement-select" />',
+};
+
+const mockAgreement = {
+  id: 'agreement-1',
+  tenants: [{ firstName: 'Max', lastName: 'Mustermann' }],
+  rentalUnits: [{ id: 'unit-1', title: 'Wohnung 1A' }],
+  startOfRental: '2024-01-01',
+};
+
+const mockAgreement2 = {
+  id: 'agreement-2',
+  tenants: [{ firstName: 'Erika', lastName: 'Musterfrau' }],
+  rentalUnits: [{ id: 'unit-2', title: 'Wohnung 2B' }],
+  startOfRental: '2024-02-01',
+};
+
+function mountCard(props: typeof baseProps = baseProps) {
+  return mount(IssueDetailsCard, {
+    props,
+    global: { stubs: { RentalAgreementSelect: RentalAgreementSelectStub } },
+  });
 }
 
 // ─── Test Data ───────────────────────────────────────────────────────────────
@@ -58,9 +116,12 @@ const baseProps: {
     status: IssueJson['status'];
     assigneeId: string;
     reportedBy: string;
-    project: string;
     issueType: IssueJson['type'];
-    tenancy: string;
+    location: string;
+    agreementId: string;
+    category: IssueJson['category'];
+    priority: IssueJson['priority'];
+    modifiedAt?: IssueJson['modifiedAt'];
   };
 } = {
   projectId: 'project-1',
@@ -71,18 +132,25 @@ const baseProps: {
     status: 'OPEN',
     assigneeId: 'user-1',
     reportedBy: 'Jane Smith',
-    project: 'Project A',
     issueType: 'TASK',
-    tenancy: 'tenant-1',
+    location: 'Building A, 3rd floor',
+    agreementId: 'agreement-1',
+    category: 'GENERAL',
+    priority: 'MEDIUM',
+    modifiedAt: '2026-01-15T10:30:00Z',
   },
 };
 
 // ─── Test Suite ──────────────────────────────────────────────────────────────
 describe('IssueDetailsCard.vue', () => {
   let wrapper: VueWrapper<InstanceType<typeof IssueDetailsCard>>;
+  let sessionStore: ReturnType<typeof useUserSessionStore>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    sessionStore = useUserSessionStore();
+    sessionStore.user = { id: 'user-1', email: 'manager@example.com' } as ReturnType<typeof useUserSessionStore>['user'];
 
     vi.spyOn(projectMemberService, 'getMembers').mockResolvedValue({
       members: [
@@ -95,13 +163,15 @@ describe('IssueDetailsCard.vue', () => {
     vi.spyOn(organizationMemberService, 'getOrganizations')
       .mockResolvedValue({ organizations: [] } as OrganizationMemberListJson);
 
-    wrapper = mount(IssueDetailsCard, {props: baseProps,});
+    vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockResolvedValue([mockAgreement, mockAgreement2]);
+
+    wrapper = mountCard();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
   test('renders issue title in card header', () => {
     expect(wrapper.text()).toContain('Old title');
-    expect(wrapper.text()).toContain('Vorgangs-ID');
+    expect(wrapper.text()).toContain('Ticketnummer');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -229,8 +299,17 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
+  test('detects change in location field', async () => {
+    await wrapper.find('#issue-location').setValue('Building B, basement');
+
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
   test('detects change in tenancy field', async () => {
-    await wrapper.find('#issue-tenancy').setValue('tenant-2');
+    await flushPromises(); // let the initial getRentalAgreements resolution settle
+    await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('update:modelValue', mockAgreement2);
+    await nextTick();
 
     expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
@@ -251,6 +330,45 @@ describe('IssueDetailsCard.vue', () => {
       'issue-1',
       { title: 'New title', status: 'IN_PROGRESS' },
     );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('includes location in payload when changed', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
+
+    await wrapper.find('#issue-location').setValue('Building B, basement');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
+      'issue-1',
+      { location: 'Building B, basement' },
+    );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('includes agreementId in payload only when the selected agreement changes', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
+    await flushPromises(); // let the initial getRentalAgreements resolution settle
+
+    await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('update:modelValue', mockAgreement2);
+    await nextTick();
+
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
+      'issue-1',
+      { agreementId: 'agreement-2' },
+    );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('resolves the initially selected rental agreement on mount', async () => {
+    await flushPromises();
+
+    expect(rentalAgreementService.getRentalAgreements).toHaveBeenCalledWith('project-1');
+    expect(wrapper.findComponent(RentalAgreementSelectStub).props('modelValue')).toEqual(mockAgreement);
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -377,16 +495,248 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('shows noReporter fallback when reportedBy is empty', () => {
-    const wrapperWithoutReporter = mount(IssueDetailsCard, {
-      props: {
-        ...baseProps,
-        initialData: {
-          ...baseProps.initialData,
-          reportedBy: '',
-        },
+    const wrapperWithoutReporter = mountCard({
+      ...baseProps,
+      initialData: {
+        ...baseProps.initialData,
+        reportedBy: '',
       },
     });
 
     expect(wrapperWithoutReporter.find<HTMLInputElement>('#issue-reporter').element.value).toBe('Kein Melder');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('resolves category to null and priority to undefined when initialData omits them', () => {
+    const wrapperWithoutCategoryAndPriority = mountCard({
+      ...baseProps,
+      initialData: {
+        ...baseProps.initialData,
+        category: undefined as unknown as IssueJson['category'],
+        priority: undefined as unknown as IssueJson['priority'],
+      },
+    });
+
+    const categoryAutoComplete = wrapperWithoutCategoryAndPriority.findAllComponents(AutoComplete)[0];
+    const prioritySelect = wrapperWithoutCategoryAndPriority.findAllComponents(Select)[2];
+
+    expect(categoryAutoComplete.props('modelValue')).toBeNull();
+    expect(prioritySelect.props('modelValue')).toBeUndefined();
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test.each([
+    ['DEFECT', 'Wasserschaden'],
+    ['INQUIRY', 'Wohnungsgeberbestätigung'],
+    ['MAINTENANCE', 'Gartenpflege'],
+  ] as const)('offers %s-specific categories for %s issue type', async (issueType, expectedLabel) => {
+    await wrapper.findAllComponents(Select)[1].vm.$emit('update:modelValue', issueType);
+    await nextTick();
+
+    const categoryAutoComplete = wrapper.findAllComponents(AutoComplete)[0];
+    await categoryAutoComplete.vm.$emit('complete', { query: '' });
+    await nextTick();
+
+    const labels = categoryAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
+    expect(labels).toContain(expectedLabel);
+    expect(labels).toContain('Sonstiges');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('filters categories by query text', async () => {
+    const categoryAutoComplete = wrapper.findAllComponents(AutoComplete)[0];
+    await categoryAutoComplete.vm.$emit('complete', { query: 'sonst' });
+    await nextTick();
+
+    const labels = categoryAutoComplete.props('suggestions')!.map((option: { label: string }) => option.label);
+    expect(labels).toEqual(['Sonstiges']);
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('resets category when issue type change event fires', async () => {
+    await wrapper.findAllComponents(Select)[1].vm.$emit('change', { value: 'DEFECT' });
+    await nextTick();
+
+    const categoryAutoComplete = wrapper.findAllComponents(AutoComplete)[0];
+    expect(categoryAutoComplete.props('modelValue')).toBeNull();
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('falls back to em dash when issueId is empty', () => {
+    const wrapperWithoutIssueId = mountCard({
+      ...baseProps,
+      initialData: { ...baseProps.initialData, issueId: '' },
+    });
+
+    expect(wrapperWithoutIssueId.find<HTMLInputElement>('#issue-number').element.value).toBe('—');
+    expect(wrapperWithoutIssueId.text()).toContain('Ticketnummer —');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('falls back to em dash when modifiedAt is missing', () => {
+    const wrapperWithoutModifiedAt = mountCard({
+      ...baseProps,
+      initialData: { ...baseProps.initialData, modifiedAt: undefined },
+    });
+
+    expect(wrapperWithoutModifiedAt.find<HTMLInputElement>('#issue-assigned-at').element.value).toBe('—');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('shows raw modifiedAt value when it is not a valid date', () => {
+    const wrapperWithInvalidDate = mountCard({
+      ...baseProps,
+      initialData: { ...baseProps.initialData, modifiedAt: 'not-a-date' },
+    });
+
+    expect(wrapperWithInvalidDate.find<HTMLInputElement>('#issue-assigned-at').element.value).toBe('not-a-date');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('updates fields when initialData prop changes', async () => {
+    await wrapper.setProps({
+      initialData: {
+        issueId: 'issue-2',
+        title: 'Replaced title',
+        status: 'CLOSED',
+        assigneeId: 'user-2',
+        reportedBy: 'John Reporter',
+        issueType: 'DEFECT',
+        location: 'Building C, roof',
+        agreementId: 'agreement-2',
+        category: 'WATER_DAMAGE',
+        priority: 'HIGH',
+        modifiedAt: '2026-02-01T00:00:00Z',
+      },
+    });
+    await nextTick();
+    await flushPromises(); // let the re-triggered getRentalAgreements resolution settle
+
+    expect(wrapper.find<HTMLInputElement>('#issue-title').element.value).toBe('Replaced title');
+    expect(wrapper.find<HTMLInputElement>('#issue-reporter').element.value).toBe('John Reporter');
+    expect(wrapper.find<HTMLInputElement>('#issue-location').element.value).toBe('Building C, roof');
+    expect(wrapper.findComponent(RentalAgreementSelectStub).props('modelValue')).toEqual(mockAgreement2);
+    // canSave should be false again since original values now match the new data
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('includes assigneeId, category and priority in payload when changed', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
+
+    const categoryOption = { value: 'WATER_DAMAGE', label: 'Wasserschaden' };
+
+    await wrapper.findComponent(MemberAutoComplete).vm.$emit('update:modelValue', 'user-2');
+    await wrapper.findAllComponents(AutoComplete)[0].vm.$emit('update:modelValue', categoryOption);
+    await wrapper.findAllComponents(Select)[2].vm.$emit('update:modelValue', 'HIGH');
+    await nextTick();
+
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
+      'issue-1',
+      {
+        assigneeId: 'user-2', category: 'WATER_DAMAGE', priority: 'HIGH' 
+      },
+    );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('omits title from payload when only another field changes', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
+
+    await wrapper.findAllComponents(Select)[0].vm.$emit('update:modelValue', 'CLOSED');
+    await nextTick();
+
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
+      'issue-1',
+      { status: 'CLOSED' },
+    );
+  });
+
+  // ─── Accept/Reject Actions ───────────────────────────────────────────────────
+  describe('accept/reject actions', () => {
+    function mountPending() {
+      return mountCard({
+        ...baseProps,
+        initialData: { ...baseProps.initialData, status: 'PENDING' },
+      });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    test('accept/reject buttons are absent when status is not PENDING', () => {
+      expect(wrapper.findComponent(IssueAcceptButton).exists()).toBe(false);
+      expect(wrapper.findComponent(IssueRejectButton).exists()).toBe(false);
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────
+    test('accept/reject buttons appear when status is PENDING', () => {
+      const pendingWrapper = mountPending();
+
+      expect(pendingWrapper.findComponent(IssueAcceptButton).exists()).toBe(true);
+      expect(pendingWrapper.findComponent(IssueRejectButton).exists()).toBe(true);
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────
+    test('buttons remain visible after an unsaved status edit, based on the persisted status', async () => {
+      const pendingWrapper = mountPending();
+
+      await pendingWrapper.findAllComponents(Select)[0].vm.$emit('update:modelValue', 'CLOSED');
+      await nextTick();
+
+      expect(pendingWrapper.findComponent(IssueAcceptButton).exists()).toBe(true);
+      expect(pendingWrapper.findComponent(IssueRejectButton).exists()).toBe(true);
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────
+    test('accepted event syncs fields, disables save, and emits saved', async () => {
+      const pendingWrapper = mountPending();
+
+      await pendingWrapper.findComponent(IssueAcceptButton).vm.$emit('accepted', {
+        status: 'OPEN',
+        assigneeId: 'user-1',
+      } as IssueJson);
+      await nextTick();
+
+      expect(pendingWrapper.findComponent(IssueAcceptButton).exists()).toBe(false);
+      expect(findSaveButton(pendingWrapper).attributes('disabled')).toBeDefined();
+      expect(pendingWrapper.emitted('saved')).toBeTruthy();
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────
+    test('accepted event overwrites unsaved edits to other fields with the server response', async () => {
+      const pendingWrapper = mountPending();
+
+      await pendingWrapper.find('#issue-title').setValue('Unsaved local title');
+
+      await pendingWrapper.findComponent(IssueAcceptButton).vm.$emit('accepted', {
+        title: 'Old title',
+        status: 'OPEN',
+        assigneeId: 'user-1',
+      } as IssueJson);
+      await nextTick();
+
+      expect(pendingWrapper.find<HTMLInputElement>('#issue-title').element.value).toBe('Old title');
+      expect(findSaveButton(pendingWrapper).attributes('disabled')).toBeDefined();
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────
+    test('rejected event syncs fields, disables save, and emits saved', async () => {
+      const pendingWrapper = mountPending();
+
+      await pendingWrapper.findComponent(IssueRejectButton).vm.$emit('rejected', {
+        status: 'REJECTED',
+        assigneeId: 'user-1',
+      } as IssueJson);
+      await nextTick();
+
+      expect(pendingWrapper.findComponent(IssueRejectButton).exists()).toBe(false);
+      expect(findSaveButton(pendingWrapper).attributes('disabled')).toBeDefined();
+      expect(pendingWrapper.emitted('saved')).toBeTruthy();
+    });
   });
 });

@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import SitePage from '@/pages/projects/[projectId]/units/site/[unitId].vue';
 import SiteDataCard from '@/features/project/rentableUnits/components/SiteDataCard.vue';
 import RentableUnitTenantsCard from '@/features/project/rentableUnits/components/RentableUnitTenantsCard.vue';
-import FacilityAddressCard from '@/components/FacilityAddressCard.vue';
+import FacilityAddressCard from '@/features/project/rentableUnits/components/FacilityAddressCard.vue';
 
 vi.mock('vue-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('vue-router')>();
@@ -30,7 +30,7 @@ vi.mock('@/features/project/rentableUnits/components/RentableUnitTenantsCard.vue
   },
 }));
 
-vi.mock('@/components/FacilityAddressCard.vue', () => ({
+vi.mock('@/features/project/rentableUnits/components/FacilityAddressCard.vue', () => ({
   default: {
     name: 'FacilityAddressCard',
     props: ['projectId', 'unitId', 'facilityType'],

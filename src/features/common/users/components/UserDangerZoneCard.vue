@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import { userService } from '@/services/UserService';
+import { userService } from '@/features/common/users/services/UserService';
 import DangerZoneCard from '@/components/common/DangerZoneCard.vue';
 
 const { t } = useI18n();

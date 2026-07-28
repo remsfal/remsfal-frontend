@@ -2,10 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
 import Step3TenantsForm from '@/features/project/rentalAgreements/components/Step3TenantsForm.vue';
-import type { TenantJson as TenantItem } from '@/services/RentalAgreementService';
-import { tenantService } from '@/services/TenantService';
+import type { TenantJson as TenantItem } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import { tenantService } from '@/features/project/rentalAgreements/services/TenantService';
 
-vi.mock('@/services/TenantService', () => ({
+vi.mock('@/features/project/rentalAgreements/services/TenantService', () => ({
   tenantService: {fetchTenants: vi.fn(),},
   TenantItem: {},
 }));
@@ -117,7 +117,7 @@ describe('Step3TenantsForm', () => {
     await wrapper.vm.$nextTick();
 
     const tenantCards = wrapper.findAll('.bg-gray-50');
-    expect(tenantCards.length).toBe(2);
+    expect(tenantCards).toHaveLength(2);
     expect(tenantCards[0].text()).toContain('Max Mustermann');
     expect(tenantCards[1].text()).toContain('Erika Musterfrau');
   });

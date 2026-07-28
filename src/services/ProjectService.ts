@@ -1,4 +1,4 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient.ts';
+import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
 export type ProjectListJson = ApiComponents['schemas']['ProjectListJson'];
 export type ProjectItem = NonNullable<ProjectListJson['projects']>[number];
