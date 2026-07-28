@@ -2,6 +2,7 @@ import { apiClient, type ApiComponents } from '@/services/ApiClient';
 
 export type RentalAgreementJson = ApiComponents['schemas']['RentalAgreementJson'];
 export type RentalAgreementListJson = ApiComponents['schemas']['RentalAgreementListJson'];
+export type RentalAgreementItemJson = ApiComponents['schemas']['RentalAgreementItemJson'];
 export type TenantJson = ApiComponents['schemas']['TenantJson'];
 
 /**
@@ -10,18 +11,18 @@ export type TenantJson = ApiComponents['schemas']['TenantJson'];
  */
 export default class RentalAgreementService {
   /**
-   * Fetch all rental agreements for a project
+   * Get all rental agreements for a project
    */
-  async fetchRentalAgreements(projectId: string): Promise<RentalAgreementJson[]> {
+  async getRentalAgreements(projectId: string): Promise<RentalAgreementItemJson[]> {
     const result = await apiClient.get('/api/v1/projects/{projectId}/rental-agreements',
       {pathParams: { projectId },});
     return result.rentalAgreements || [];
   }
 
   /**
-   * Load a single rental agreement by ID
+   * Get a single rental agreement by ID
    */
-  async loadRentalAgreement(projectId: string, agreementId: string): Promise<RentalAgreementJson> {
+  async getRentalAgreement(projectId: string, agreementId: string): Promise<RentalAgreementJson> {
     return apiClient.get('/api/v1/projects/{projectId}/rental-agreements/{agreementId}',
       {pathParams: { projectId, agreementId },});
   }
@@ -79,8 +80,8 @@ export default class RentalAgreementService {
       '/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants/{tenantId}',
       {
         pathParams: {
-          projectId, agreementId, tenantId 
-        } 
+          projectId, agreementId, tenantId
+        }
       }
     );
   }

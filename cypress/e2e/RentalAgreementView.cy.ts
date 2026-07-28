@@ -64,12 +64,11 @@ describe('ProjectTenancies E2E Tests', () => {
                 email: 'john.doe@example.com',
               },
             ],
-            apartmentRents: [
+            rentalUnits: [
               {
-                unitId: 'apt-101',
-                basicRent: 1200.0,
-                operatingCostsPrepayment: 150.0,
-                heatingCostsPrepayment: 80.0,
+                id: 'unit-101',
+                type: 'APARTMENT',
+                title: 'apt-101',
               },
             ],
           },
@@ -91,10 +90,11 @@ describe('ProjectTenancies E2E Tests', () => {
                 email: 'bob.johnson@example.com',
               },
             ],
-            buildingRents: [
+            rentalUnits: [
               {
-                unitId: 'bldg-202',
-                basicRent: 2500.0,
+                id: 'unit-202',
+                type: 'BUILDING',
+                title: 'bldg-202',
               },
             ],
           },

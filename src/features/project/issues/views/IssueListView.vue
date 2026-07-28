@@ -2,10 +2,10 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import IssueTable, { type IssueColumn } from '../components/IssueTable.vue';
-import NewIssueDialog from '../components/NewIssueDialog.vue';
+import NewIssueButton from '../components/NewIssueButton.vue';
+import NewTenantIssueButton from '../components/NewTenantIssueButton.vue';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
 const props = defineProps<{
@@ -18,7 +18,6 @@ const router = useRouter();
 const { t } = useI18n();
 
 // Reactive state
-const showNewIssueDialog = ref(false);
 const issues = ref<IssueItemJson[]>([]);
 
 // --- Filters (status, type, assigneeId) are applied server-side ---
@@ -134,13 +133,6 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
       {{ heading }}
     </template>
     <template #content>
-      <!-- Create Issue Dialog -->
-      <NewIssueDialog
-        v-model:visible="showNewIssueDialog"
-        :projectId="props.projectId"
-        @issueCreated="handleIssueCreated"
-      />
-
       <!-- Issues Table -->
       <IssueTable
         :issues="issues"
@@ -149,13 +141,10 @@ watch(() => [props.projectId, props.status, props.type, props.assigneeId], loadI
         @rowSelect="onIssueSelect"
       />
 
-      <!-- Create Button -->
-      <div class="flex justify-end mt-6">
-        <Button
-          :label="t('newIssueDialog.title')"
-          icon="pi pi-plus"
-          @click="showNewIssueDialog = true"
-        />
+      <!-- Create Buttons -->
+      <div class="flex justify-end gap-2 mt-6">
+        <NewTenantIssueButton :projectId="props.projectId" @issueCreated="handleIssueCreated" />
+        <NewIssueButton :projectId="props.projectId" @issueCreated="handleIssueCreated" />
       </div>
     </template>
   </BaseCard>

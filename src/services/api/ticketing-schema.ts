@@ -198,6 +198,8 @@ export interface paths {
           assigneeId?: components["schemas"]["UUID"];
           /** @description Opaque cursor returned by a previous call to fetch the next page */
           cursor?: components["schemas"]["UUID"];
+          /** @description Filter to return only issues that are (or are not) visible to tenants */
+          isVisibleToTenants?: boolean;
           /** @description Maximum number of issues to return */
           limit: number;
           /** @description ID of the project to return issues of */
@@ -4853,6 +4855,8 @@ export interface components {
       tenants?: components["schemas"]["TenantJson"][];
       startOfRental?: components["schemas"]["LocalDate"];
       endOfRental?: components["schemas"]["LocalDate"];
+      /** @description List of key handovers for this rental agreement */
+      keys?: components["schemas"]["RentalAgreementKeysJson"][];
       /** @description List of property rents */
       propertyRents?: components["schemas"]["RentJson"][];
       /** @description List of site rents */
@@ -4865,6 +4869,20 @@ export interface components {
       storageRents?: components["schemas"]["RentJson"][];
       /** @description List of commercial rents */
       commercialRents?: components["schemas"]["RentJson"][];
+    };
+    /** @description A key handover record for a rental agreement */
+    RentalAgreementKeysJson: {
+      /**
+       * Format: int32
+       * @description Number of keys of this type
+       */
+      amountOfKeys: number;
+      /** @description Date the key(s) were issued to the tenant */
+      issuedAt?: components["schemas"]["LocalDate"];
+      /** @description Date the key(s) were returned by the tenant */
+      returnedAt?: components["schemas"]["LocalDate"];
+      /** @description Free text describing the type of key, e.g. front door, mailbox, garage */
+      keyDescription?: string;
     };
     /** @description A list of rental agreements for a project */
     RentalAgreementListJson: {

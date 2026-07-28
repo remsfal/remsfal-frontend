@@ -29,7 +29,7 @@ onMounted(async () => {
     return;
   }
 
-  rentalAgreement.value = await rentalAgreementService.loadRentalAgreement(
+  rentalAgreement.value = await rentalAgreementService.getRentalAgreement(
     props.projectId,
     props.agreementId
   );

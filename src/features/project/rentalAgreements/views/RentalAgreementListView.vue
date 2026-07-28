@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import {rentalAgreementService,
-  type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
+  type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -19,7 +19,7 @@ const router = useRouter();
 
 const isLoading = ref(true);
 
-const rentalAgreements = ref<RentalAgreementJson[]>([]);
+const rentalAgreements = ref<RentalAgreementItemJson[]>([]);
 
 const showNewRentalDialog = ref(false);
 
@@ -29,11 +29,11 @@ function navigateToRentalAgreementDetails(id: string) {
 
 async function handleRentalAgreementCreated() {
   // Refresh rental agreements list
-  rentalAgreements.value = await rentalAgreementService.fetchRentalAgreements(props.projectId);
+  rentalAgreements.value = await rentalAgreementService.getRentalAgreements(props.projectId);
 }
 
 onMounted(async () => {
-  rentalAgreements.value = await rentalAgreementService.fetchRentalAgreements(props.projectId);
+  rentalAgreements.value = await rentalAgreementService.getRentalAgreements(props.projectId);
   isLoading.value = false;
 });
 </script>
@@ -81,18 +81,11 @@ onMounted(async () => {
             <template #body="slotProps">
               <div class="space-y-2">
                 <div
-                  v-for="(rent, index) in [
-                    ...(slotProps.data.propertyRents || []),
-                    ...(slotProps.data.siteRents || []),
-                    ...(slotProps.data.buildingRents || []),
-                    ...(slotProps.data.apartmentRents || []),
-                    ...(slotProps.data.storageRents || []),
-                    ...(slotProps.data.commercialRents || [])
-                  ]"
-                  :key="`${rent.unitId}-${index}`"
+                  v-for="(unit, index) in (slotProps.data.rentalUnits || [])"
+                  :key="`${unit.id}-${index}`"
                   class="border-b last:border-none py-2"
                 >
-                  {{ rent.unitId || 'N/A' }}
+                  {{ unit.title || unit.location || 'N/A' }}
                 </div>
               </div>
             </template>
