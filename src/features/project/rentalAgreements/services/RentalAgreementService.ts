@@ -60,6 +60,38 @@ export default class RentalAgreementService {
     await apiClient.delete('/api/v1/projects/{projectId}/rental-agreements/{agreementId}',
       {pathParams: { projectId, agreementId },});
   }
+
+  /**
+   * Add a tenant to an existing rental agreement
+   */
+  async addTenant(projectId: string, agreementId: string, tenant: TenantJson): Promise<TenantJson> {
+    return apiClient.post(
+      '/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants',
+      tenant,
+      { pathParams: { projectId, agreementId } }
+    ) as Promise<TenantJson>;
+  }
+
+  /**
+   * Remove a tenant from an existing rental agreement
+   */
+  async removeTenant(projectId: string, agreementId: string, tenantId: string): Promise<void> {
+    await apiClient.delete(
+      '/api/v1/projects/{projectId}/rental-agreements/{agreementId}/tenants/{tenantId}',
+      {
+        pathParams: {
+          projectId, agreementId, tenantId
+        }
+      }
+    );
+  }
+
+  /**
+   * Extract all tenants from rental agreements
+   */
+  extractTenants(agreements: RentalAgreementJson[]): TenantJson[] {
+    return agreements.flatMap(agreement => agreement.tenants ?? []);
+  }
 }
 
 export const rentalAgreementService = new RentalAgreementService();
