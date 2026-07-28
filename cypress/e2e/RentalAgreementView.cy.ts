@@ -317,15 +317,7 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-datatable-tbody').should('exist');
   });
 
-  it('should display confirmation dialog when deleting tenant', () => {
-    // UnitsTableComponent loads the property tree on mount regardless of context
-    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
-      statusCode: 200,
-      body: {
-        properties: [],
-      },
-    }).as('getProperties');
-
+  it('deletes the rental agreement via the danger zone and redirects to the list', () => {
     cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
       statusCode: 200,
       body: {
@@ -349,18 +341,32 @@ describe('ProjectTenancies E2E Tests', () => {
       },
     }).as('getRentalAgreementDetails');
 
+    cy.intercept('DELETE', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 204,
+    }).as('deleteRentalAgreement');
+
     cy.visit(`/projects/${projectId}/agreements/agreement-1`);
 
     cy.wait('@getRentalAgreementDetails');
 
-    // Dialog is hidden until the delete button is clicked
+    // Dialog is hidden until the danger-zone delete button is clicked
     cy.get('[role="dialog"]').should('not.exist');
+    
+    cy.contains('Gefährliche Änderungen').parents('.p-card').within(() => {
+      cy.contains('button', 'Mietvertrag löschen').click();
+    });
 
-    // Click the delete button to trigger the confirmation dialog
-    cy.contains('button', /löschen|delete/i).click();
+    // Confirmation dialog should now be visible
+    cy.get('[role="dialog"]').should('be.visible').and('contain.text', 'Mietvertrag wirklich löschen?');
 
-    // Confirmation dialog should now be visible with the agreement id
-    cy.get('[role="dialog"]').should('be.visible').and('contain.text', 'agreement-1');
+    cy.get('[role="dialog"]').contains('button', 'Endgültig löschen').click();
+
+    cy.wait('@deleteRentalAgreement');
+
+    // Success toast is shown and the user is redirected back to the agreements list
+    cy.get('.p-toast-message-success').should('be.visible');
+    cy.wait('@getRentalAgreements');
+    cy.url().should('include', `/projects/${projectId}/agreements`).and('not.include', 'agreement-1');
   });
 
   it('should refresh list after creating new rental agreement', () => {
