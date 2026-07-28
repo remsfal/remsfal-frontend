@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/common/BaseCard.vue';
 import IssueTable, { type IssueColumn } from '../../issues/components/IssueTable.vue';
-import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
+import { issueService, type IssueItemJson } from '@/services/IssueService';
 
 const props = defineProps<{
-  projectId: string; agreementId?: string; assigneeId?: string; status?: IssueStatus; type?: IssueType;
+  projectId: string; agreementId: string;
 }>();
 const router = useRouter();
 const { t } = useI18n();
@@ -19,7 +19,7 @@ const issues = ref<IssueItemJson[]>([]);
 const loadIssues = async () => {
   try {
     const issueList = await issueService.getIssues(
-      props.projectId, props.status, props.type, props.assigneeId, props.agreementId,
+      props.projectId, undefined, undefined, undefined, props.agreementId,
     );
     issues.value = issueList?.issues ?? [];
   } catch (err) {
@@ -28,7 +28,7 @@ const loadIssues = async () => {
 };
 
 const columns = computed<IssueColumn[]>(() =>
-  props.type === 'DEFECT' ? ['title', 'status', 'priority'] : ['title', 'assignee', 'status'],
+  ['issueNumber', 'title', 'type', 'status', 'assignee', 'modifiedAt']
 );
 
 // --- Handle row selection ---
@@ -38,30 +38,25 @@ const onIssueSelect = (issue: IssueItemJson) => {
 
 // --- Initialize on mount ---
 onMounted(loadIssues);
-
-// --- Re-fetch when the backend-relevant filters change ---
-watch(() => [props.projectId, props.agreementId, props.status, props.type, props.assigneeId], loadIssues);
 </script>
 
 <template>
-  <main>
-    <div class="grid grid-cols-12 gap-4">
-      <div class="col-span-12">
-        <BaseCard>
-          <template #title>
-            {{ t('rentalAgreement.issue.heading.tasks') }}
-          </template>
-          <template #content>
-            <!-- Issues Table -->
-            <IssueTable
-              :issues="issues"
-              :projectId="props.projectId"
-              :columns="columns"
-              @rowSelect="onIssueSelect"
-            />
-          </template>
-        </BaseCard>
-      </div>
+  <div>
+    <div>
+      <BaseCard>
+        <template #title>
+          {{ t('rentalAgreement.issue.heading.tasks') }}
+        </template>
+        <template #content>
+          <!-- Issues Table -->
+          <IssueTable
+            :issues="issues"
+            :projectId="props.projectId"
+            :columns="columns"
+            @rowSelect="onIssueSelect"
+          />
+        </template>
+      </BaseCard>
     </div>
-  </main>
+  </div>
 </template>

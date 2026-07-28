@@ -6,9 +6,9 @@ import { issueService, type IssueItemJson } from '@/services/IssueService';
 const push = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }));
 
-vi.mock('vue-i18n', () => ({useI18n: () => ({ t: (key: string) => key }),}));
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 
-vi.mock('@/services/IssueService', () => ({issueService: { getIssues: vi.fn() },}));
+vi.mock('@/services/IssueService', () => ({ issueService: { getIssues: vi.fn() } }));
 
 const IssueTableStub = {
   props: ['issues', 'projectId', 'columns'],
@@ -27,7 +27,9 @@ describe('RentalAgreementIssueCard', () => {
 
   const mountCard = (props = {}) =>
     mount(RentalAgreementIssueCard, {
-      props: { projectId: 'project-1', ...props },
+      props: {
+        projectId: 'project-1', agreementId: 'agreement-1', ...props 
+      },
       global: {
         stubs: {
           BaseCard: { template: '<div><slot name="title" /><slot name="content" /></div>' },
@@ -46,41 +48,44 @@ describe('RentalAgreementIssueCard', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  test('forwards agreementId along with the other filters to getIssues', async () => {
-    wrapper = mountCard({
-      agreementId: 'agreement-1',
-      assigneeId: 'assignee-1',
-      status: 'OPEN',
-      type: 'DEFECT',
-    });
+  test('loads issues filtered by projectId and agreementId', async () => {
+    wrapper = mountCard({ agreementId: 'agreement-2' });
     await flushPromises();
 
     expect(issueService.getIssues).toHaveBeenCalledWith(
       'project-1',
-      'OPEN',
-      'DEFECT',
-      'assignee-1',
-      'agreement-1',
+      undefined,
+      undefined,
+      undefined,
+      'agreement-2',
     );
     expect(wrapper.findComponent(IssueTableStub).props('issues')).toEqual([sampleIssue]);
   });
 
-  test('uses title/status/priority columns for DEFECT type, title/assignee/status otherwise', async () => {
-    wrapper = mountCard({ type: 'DEFECT' });
+  test('uses the fixed column set', async () => {
+    wrapper = mountCard();
     await flushPromises();
-    expect(wrapper.findComponent(IssueTableStub).props('columns')).toEqual([
-      'title',
-      'status',
-      'priority',
-    ]);
 
-    await wrapper.setProps({ type: undefined });
-    await flushPromises();
     expect(wrapper.findComponent(IssueTableStub).props('columns')).toEqual([
+      'issueNumber',
       'title',
-      'assignee',
+      'type',
       'status',
+      'assignee',
+      'modifiedAt',
     ]);
+  });
+
+  test('logs an error and keeps the issue list empty when loading fails', async () => {
+    (issueService.getIssues as Mock).mockRejectedValue(new Error('network error'));
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    wrapper = mountCard();
+    await flushPromises();
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+    expect(wrapper.findComponent(IssueTableStub).props('issues')).toEqual([]);
+    consoleSpy.mockRestore();
   });
 
   test('navigates to issue details on row select', async () => {
