@@ -85,8 +85,9 @@ defineExpose({
     <div class="grid grid-cols-1 gap-6">
       <RentalAgreementSummaryCard
         v-if="rentalAgreement"
+        :projectId="props.projectId"
         :rentalAgreement="rentalAgreement"
-        @delete="confirmDeletion"
+        @update:rentalAgreement="rentalAgreement = $event"
       />
 
       <RentalAgreementIssueCard

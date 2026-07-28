@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import BaseCard from '@/components/common/BaseCard.vue';
-import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import BaseDialog from '@/components/common/BaseDialog.vue';
+import {rentalAgreementService,
+  type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import type { components } from '@/services/api/platform-schema';
+import { toISODateString } from '@/helper/dataHelper';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
-import Popover from 'primevue/popover';
+import DatePicker from 'primevue/datepicker';
 
 type RentJson = components['schemas']['RentJson'];
 type UnitType = components['schemas']['UnitType'];
@@ -20,15 +24,20 @@ type RentalUnitSummary = {
 };
 
 const props = defineProps<{
+  projectId: string;
   rentalAgreement: RentalAgreementJson;
 }>();
 
 const emit = defineEmits<{
-  delete: [];
+  (e: 'update:rentalAgreement', agreement: RentalAgreementJson): void;
 }>();
 
 const { t, d, n } = useI18n();
-const deleteWarningMenu = ref<InstanceType<typeof Popover> | null>(null);
+const toast = useToast();
+
+const terminateDialogVisible = ref(false);
+const endDateValue = ref<Date | null>(null);
+const saving = ref(false);
 
 function mapRentsToSummary(rents: RentJson[] | undefined, unitType: UnitType): RentalUnitSummary[] {
   return (rents || []).map((rent) => {
@@ -107,19 +116,50 @@ function formatLabel(key: string): string {
   return `${t(key)}:`;
 }
 
-function toggleDeleteWarningMenu(event: Event): void {
-  deleteWarningMenu.value?.toggle(event);
+const isEndDateValid = computed(() => {
+  if (!endDateValue.value) return false;
+  if (!props.rentalAgreement.startOfRental) return true;
+  return endDateValue.value > new Date(props.rentalAgreement.startOfRental);
+});
+
+function openTerminateDialog(): void {
+  endDateValue.value = props.rentalAgreement.endOfRental
+    ? new Date(props.rentalAgreement.endOfRental)
+    : null;
+  terminateDialogVisible.value = true;
 }
 
-function confirmDelete(): void {
-  deleteWarningMenu.value?.hide();
-  emit('delete');
+function closeTerminateDialog(): void {
+  terminateDialogVisible.value = false;
 }
 
-function closeDeleteWarningMenu(): void {
-  deleteWarningMenu.value?.hide();
-}
+async function confirmTerminate(): Promise<void> {
+  if (!isEndDateValid.value || !props.rentalAgreement.id) return;
 
+  const endOfRental = toISODateString(endDateValue.value);
+  saving.value = true;
+  try {
+    await rentalAgreementService.updateRentalAgreement(props.projectId, props.rentalAgreement.id, {endOfRental,});
+    emit('update:rentalAgreement', { ...props.rentalAgreement, endOfRental });
+    toast.add({
+      severity: 'success',
+      summary: t('rentalAgreement.terminate.success'),
+      detail: t('rentalAgreement.terminate.successDetail'),
+      life: 3000,
+    });
+    terminateDialogVisible.value = false;
+  } catch (error) {
+    console.error('Failed to terminate rental agreement:', error);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('rentalAgreement.terminate.error'),
+      life: 5000,
+    });
+  } finally {
+    saving.value = false;
+  }
+}
 </script>
 
 <template>
@@ -134,10 +174,10 @@ function closeDeleteWarningMenu(): void {
         </div>
         <div class="flex items-end justify-end">
           <Button
-            :label="t('projectTenancies.table.delete')"
-            icon="pi pi-trash"
+            :label="t('rentalAgreement.terminate.button')"
+            icon="pi pi-calendar-times"
             severity="danger"
-            @click="toggleDeleteWarningMenu"
+            @click="openTerminateDialog"
           />
         </div>
       </div>
@@ -207,32 +247,44 @@ function closeDeleteWarningMenu(): void {
           </div>
         </dl>
       </div>
-      <Popover ref="deleteWarningMenu">
-        <div class="flex max-w-80 flex-col gap-3">
-          <p class="font-semibold text-red-600">
-            {{ t('projectTenancies.dialog.confirmationTitle') }}
-          </p>
-          <p class="text-sm text-gray-700">
-            {{ t('rentalAgreement.dialog.confirmDelete', { id: rentalAgreement.id }) }}
-          </p>
-          <div class="flex justify-end gap-2">
-            <Button
-              :label="t('button.cancel')"
-              severity="secondary"
-              text
-              size="small"
-              @click="closeDeleteWarningMenu"
-            />
-            <Button
-              :label="t('button.delete')"
-              icon="pi pi-trash"
-              severity="danger"
-              size="small"
-              @click="confirmDelete"
-            />
-          </div>
-        </div>
-      </Popover>
     </template>
   </BaseCard>
+
+  <BaseDialog
+    v-model:visible="terminateDialogVisible"
+    :closable="false"
+    :header="t('rentalAgreement.terminate.dialogTitle')"
+  >
+    <div class="flex flex-col gap-2">
+      <label for="terminateEndDate" class="font-semibold">
+        {{ t('rentalAgreement.terminate.selectEndDate') }}
+      </label>
+      <DatePicker
+        v-model="endDateValue"
+        inputId="terminateEndDate"
+        dateFormat="dd.mm.yy"
+        showIcon
+        fluid
+      />
+      <small v-if="endDateValue && !isEndDateValid" class="text-red-600">
+        {{ t('rentalAgreement.terminate.invalidDate') }}
+      </small>
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <Button
+        :label="t('button.cancel')"
+        severity="secondary"
+        text
+        :disabled="saving"
+        @click="closeTerminateDialog"
+      />
+      <Button
+        :label="t('rentalAgreement.terminate.confirmButton')"
+        icon="pi pi-calendar-times"
+        severity="danger"
+        :disabled="!isEndDateValid || saving"
+        @click="confirmTerminate"
+      />
+    </div>
+  </BaseDialog>
 </template>
