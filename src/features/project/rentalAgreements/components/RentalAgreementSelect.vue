@@ -94,12 +94,27 @@ onMounted(async () => {
 
 watch(() => props.initialAgreementId, () => resolveInitialAgreement());
 
+// AutoComplete (non-multiple) emits update:modelValue for the transient text
+// the user is typing while searching too, not only for a genuine selection —
+// it's a raw string, not an agreement. Forwarding it would round-trip through
+// `displayValue`/toOption() below and overwrite the input with the
+// "unknown tenant" fallback label as soon as a letter is typed. Only forward
+// real selections (an agreement object) or an explicit clear (null).
+function onModelValueUpdate(value: AgreementOption | string | null) {
+  if (typeof value === 'string') return;
+  emit('update:modelValue', value);
+}
+
 // AutoComplete Filter Function (client-side, no search endpoint exists)
 const searchAgreements = (event: { query: string }) => {
   const query = event.query.toLowerCase().trim();
 
   if (!query) {
-    filteredAgreements.value = allAgreements.value;
+    // Always assign a new array reference: AutoComplete only opens its
+    // overlay when its `suggestions` prop changes, so reusing the exact
+    // same array (e.g. on the very first dropdown click, before any
+    // filtering happened) would silently no-op and leave the dropdown closed.
+    filteredAgreements.value = [...allAgreements.value];
     return;
   }
 
@@ -133,7 +148,7 @@ const searchAgreements = (event: { query: string }) => {
     fluid
     dropdown
     @complete="searchAgreements"
-    @update:modelValue="emit('update:modelValue', $event)"
+    @update:modelValue="onModelValueUpdate"
     @blur="emit('blur')"
   >
     <template #option="slotProps">

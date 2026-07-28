@@ -64,6 +64,19 @@ describe('RentalAgreementSelect.vue', () => {
     expect(autoComplete.props('suggestions')[0].id).toBe('agreement-2');
   });
 
+  it('opens the overlay when the dropdown button is clicked without a prior search', async () => {
+    // Regression test: the very first click reuses the exact array reference
+    // set on mount, which previously left AutoComplete's overlay closed
+    // because it only opens when its `suggestions` prop reference changes.
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    const dropdownButton = wrapper.find('.p-autocomplete-dropdown');
+
+    await dropdownButton.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    expect(autoComplete.vm.overlayVisible).toBe(true);
+  });
+
   it('resets to full list when the query is cleared', async () => {
     const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
     await autoComplete.vm.$emit('complete', { query: 'Erika' });
