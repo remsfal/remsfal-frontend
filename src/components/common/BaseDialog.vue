@@ -5,7 +5,7 @@ import { computed } from 'vue';
 defineOptions({ inheritAttrs: false });
 
 const props = withDefaults(defineProps<Props>(), {
-  dialogClass: 'w-full max-w-lg',
+  dialogClass: 'w-full max-w-xl',
   modal: true,
 });
 

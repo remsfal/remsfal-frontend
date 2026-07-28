@@ -22,18 +22,18 @@ import { issueService, type IssueJson, type IssueType, type IssuePriority } from
 
 // Props & Emits
 const props = defineProps<{
-  visible: boolean;
   projectId: string;
   category?: string;
 }>();
 
 const emit = defineEmits<{
-  'update:visible': [value: boolean];
   issueCreated: [issue: IssueJson];
 }>();
 
 const { t } = useI18n();
 const toast = useToast();
+
+const visible = ref(false);
 
 // Zod Validation Schema
 const validationSchema = z.object({
@@ -132,7 +132,7 @@ async function createIssue(data: {
         detail: t('newIssueDialog.offlineSaved'),
         life: 4000,
       });
-      emit('update:visible', false);
+      visible.value = false;
       return;
     }
 
@@ -153,9 +153,9 @@ async function createIssue(data: {
       life: 4000,
     });
 
-    // Emit events
+    // Emit event and close dialog
+    visible.value = false;
     emit('issueCreated', newIssue);
-    emit('update:visible', false);
   } catch (error) {
     console.error('Failed to create issue:', error);
     toast.add({
@@ -166,20 +166,19 @@ async function createIssue(data: {
     });
   }
 }
-
-// Cancel Handler
-function abort() {
-  emit('update:visible', false);
-}
 </script>
 
 <template>
+  <Button
+    :label="t('newIssueDialog.title')"
+    icon="pi pi-plus"
+    @click="visible = true"
+  />
+
   <BaseDialog
-    :visible="visible"
+    v-model:visible="visible"
     :header="dialogHeader"
     closable
-    @update:visible="emit('update:visible', $event)"
-    @hide="abort"
   >
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
       <div class="flex flex-col gap-6">
@@ -276,7 +275,7 @@ function abort() {
           type="button"
           :label="t('button.cancel')"
           severity="secondary"
-          @click="abort"
+          @click="visible = false"
         />
         <Button
           type="submit"

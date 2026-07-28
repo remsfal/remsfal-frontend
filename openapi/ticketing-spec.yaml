@@ -1297,6 +1297,11 @@ components:
           $ref: "#/components/schemas/LocalDate"
         endOfRental:
           $ref: "#/components/schemas/LocalDate"
+        keys:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentalAgreementKeysJson"
+          description: List of key handovers for this rental agreement
         propertyRents:
           type: array
           items:
@@ -1327,6 +1332,28 @@ components:
           items:
             $ref: "#/components/schemas/RentJson"
           description: List of commercial rents
+    RentalAgreementKeysJson:
+      type: object
+      description: A key handover record for a rental agreement
+      required:
+      - amountOfKeys
+      properties:
+        amountOfKeys:
+          type: integer
+          format: int32
+          description: Number of keys of this type
+        issuedAt:
+          description: Date the key(s) were issued to the tenant
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        returnedAt:
+          description: Date the key(s) were returned by the tenant
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        keyDescription:
+          type: string
+          description: "Free text describing the type of key, e.g. front door, mailbox,\
+            \ garage"
     RentalAgreementListJson:
       description: A list of rental agreements for a project
       type: object
@@ -1978,6 +2005,12 @@ paths:
         in: query
         schema:
           $ref: "#/components/schemas/UUID"
+      - description: Filter to return only issues that are (or are not) visible to
+          tenants
+        name: isVisibleToTenants
+        in: query
+        schema:
+          type: boolean
       - description: Maximum number of issues to return
         name: limit
         in: query

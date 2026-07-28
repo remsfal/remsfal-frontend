@@ -10,6 +10,7 @@ import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
 import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
 import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
+import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
@@ -56,11 +57,53 @@ vi.mock('@/services/OrganizationMemberService', async () => {
   };
 });
 
+// IssueDetailsCard resolves the initially selected rental agreement itself
+// (RentalAgreementSelect only accepts a full object as v-model, not a raw id).
+vi.mock('@/features/project/rentalAgreements/services/RentalAgreementService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/project/rentalAgreements/services/RentalAgreementService')>(
+    '@/features/project/rentalAgreements/services/RentalAgreementService',
+  );
+  return {
+    ...actual,
+    rentalAgreementService: {getRentalAgreements: vi.fn(),},
+  };
+});
+
 // ─── Test Helpers ────────────────────────────────────────────────────────────
 function findSaveButton(w: VueWrapper) {
   const button = w.findAll('button').find((b) => b.text().includes('Speichern'));
   if (!button) throw new Error('Save button not found');
   return button;
+}
+
+// RentalAgreementSelect has its own dedicated spec; stub it here so selection
+// can be driven directly via emitted events without hitting the real component.
+const RentalAgreementSelectStub = {
+  name: 'RentalAgreementSelect',
+  props: ['projectId', 'modelValue', 'invalid', 'inputId'],
+  emits: ['update:modelValue', 'blur'],
+  template: '<div data-testid="agreement-select" />',
+};
+
+const mockAgreement = {
+  id: 'agreement-1',
+  tenants: [{ firstName: 'Max', lastName: 'Mustermann' }],
+  rentalUnits: [{ id: 'unit-1', title: 'Wohnung 1A' }],
+  startOfRental: '2024-01-01',
+};
+
+const mockAgreement2 = {
+  id: 'agreement-2',
+  tenants: [{ firstName: 'Erika', lastName: 'Musterfrau' }],
+  rentalUnits: [{ id: 'unit-2', title: 'Wohnung 2B' }],
+  startOfRental: '2024-02-01',
+};
+
+function mountCard(props: typeof baseProps = baseProps) {
+  return mount(IssueDetailsCard, {
+    props,
+    global: { stubs: { RentalAgreementSelect: RentalAgreementSelectStub } },
+  });
 }
 
 // ─── Test Data ───────────────────────────────────────────────────────────────
@@ -73,9 +116,9 @@ const baseProps: {
     status: IssueJson['status'];
     assigneeId: string;
     reportedBy: string;
-    project: string;
     issueType: IssueJson['type'];
-    tenancy: string;
+    location: string;
+    agreementId: string;
     category: IssueJson['category'];
     priority: IssueJson['priority'];
     modifiedAt?: IssueJson['modifiedAt'];
@@ -89,9 +132,9 @@ const baseProps: {
     status: 'OPEN',
     assigneeId: 'user-1',
     reportedBy: 'Jane Smith',
-    project: 'Project A',
     issueType: 'TASK',
-    tenancy: 'tenant-1',
+    location: 'Building A, 3rd floor',
+    agreementId: 'agreement-1',
     category: 'GENERAL',
     priority: 'MEDIUM',
     modifiedAt: '2026-01-15T10:30:00Z',
@@ -120,7 +163,9 @@ describe('IssueDetailsCard.vue', () => {
     vi.spyOn(organizationMemberService, 'getOrganizations')
       .mockResolvedValue({ organizations: [] } as OrganizationMemberListJson);
 
-    wrapper = mount(IssueDetailsCard, {props: baseProps,});
+    vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockResolvedValue([mockAgreement, mockAgreement2]);
+
+    wrapper = mountCard();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -254,8 +299,17 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
+  test('detects change in location field', async () => {
+    await wrapper.find('#issue-location').setValue('Building B, basement');
+
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
   test('detects change in tenancy field', async () => {
-    await wrapper.find('#issue-tenancy').setValue('tenant-2');
+    await flushPromises(); // let the initial getRentalAgreements resolution settle
+    await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('update:modelValue', mockAgreement2);
+    await nextTick();
 
     expect(findSaveButton(wrapper).attributes('disabled')).toBeUndefined();
   });
@@ -276,6 +330,45 @@ describe('IssueDetailsCard.vue', () => {
       'issue-1',
       { title: 'New title', status: 'IN_PROGRESS' },
     );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('includes location in payload when changed', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
+
+    await wrapper.find('#issue-location').setValue('Building B, basement');
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
+      'issue-1',
+      { location: 'Building B, basement' },
+    );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('includes agreementId in payload only when the selected agreement changes', async () => {
+    vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
+    await flushPromises(); // let the initial getRentalAgreements resolution settle
+
+    await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('update:modelValue', mockAgreement2);
+    await nextTick();
+
+    await findSaveButton(wrapper).trigger('click');
+    await flushPromises();
+
+    expect(issueService.updateIssue).toHaveBeenCalledWith(
+      'issue-1',
+      { agreementId: 'agreement-2' },
+    );
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('resolves the initially selected rental agreement on mount', async () => {
+    await flushPromises();
+
+    expect(rentalAgreementService.getRentalAgreements).toHaveBeenCalledWith('project-1');
+    expect(wrapper.findComponent(RentalAgreementSelectStub).props('modelValue')).toEqual(mockAgreement);
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -402,13 +495,11 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('shows noReporter fallback when reportedBy is empty', () => {
-    const wrapperWithoutReporter = mount(IssueDetailsCard, {
-      props: {
-        ...baseProps,
-        initialData: {
-          ...baseProps.initialData,
-          reportedBy: '',
-        },
+    const wrapperWithoutReporter = mountCard({
+      ...baseProps,
+      initialData: {
+        ...baseProps.initialData,
+        reportedBy: '',
       },
     });
 
@@ -417,14 +508,12 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('resolves category to null and priority to undefined when initialData omits them', () => {
-    const wrapperWithoutCategoryAndPriority = mount(IssueDetailsCard, {
-      props: {
-        ...baseProps,
-        initialData: {
-          ...baseProps.initialData,
-          category: undefined as unknown as IssueJson['category'],
-          priority: undefined as unknown as IssueJson['priority'],
-        },
+    const wrapperWithoutCategoryAndPriority = mountCard({
+      ...baseProps,
+      initialData: {
+        ...baseProps.initialData,
+        category: undefined as unknown as IssueJson['category'],
+        priority: undefined as unknown as IssueJson['priority'],
       },
     });
 
@@ -474,11 +563,9 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('falls back to em dash when issueId is empty', () => {
-    const wrapperWithoutIssueId = mount(IssueDetailsCard, {
-      props: {
-        ...baseProps,
-        initialData: { ...baseProps.initialData, issueId: '' },
-      },
+    const wrapperWithoutIssueId = mountCard({
+      ...baseProps,
+      initialData: { ...baseProps.initialData, issueId: '' },
     });
 
     expect(wrapperWithoutIssueId.find<HTMLInputElement>('#issue-number').element.value).toBe('—');
@@ -487,11 +574,9 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('falls back to em dash when modifiedAt is missing', () => {
-    const wrapperWithoutModifiedAt = mount(IssueDetailsCard, {
-      props: {
-        ...baseProps,
-        initialData: { ...baseProps.initialData, modifiedAt: undefined },
-      },
+    const wrapperWithoutModifiedAt = mountCard({
+      ...baseProps,
+      initialData: { ...baseProps.initialData, modifiedAt: undefined },
     });
 
     expect(wrapperWithoutModifiedAt.find<HTMLInputElement>('#issue-assigned-at').element.value).toBe('—');
@@ -499,11 +584,9 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('shows raw modifiedAt value when it is not a valid date', () => {
-    const wrapperWithInvalidDate = mount(IssueDetailsCard, {
-      props: {
-        ...baseProps,
-        initialData: { ...baseProps.initialData, modifiedAt: 'not-a-date' },
-      },
+    const wrapperWithInvalidDate = mountCard({
+      ...baseProps,
+      initialData: { ...baseProps.initialData, modifiedAt: 'not-a-date' },
     });
 
     expect(wrapperWithInvalidDate.find<HTMLInputElement>('#issue-assigned-at').element.value).toBe('not-a-date');
@@ -518,19 +601,21 @@ describe('IssueDetailsCard.vue', () => {
         status: 'CLOSED',
         assigneeId: 'user-2',
         reportedBy: 'John Reporter',
-        project: 'Project B',
         issueType: 'DEFECT',
-        tenancy: 'tenant-2',
+        location: 'Building C, roof',
+        agreementId: 'agreement-2',
         category: 'WATER_DAMAGE',
         priority: 'HIGH',
         modifiedAt: '2026-02-01T00:00:00Z',
       },
     });
     await nextTick();
+    await flushPromises(); // let the re-triggered getRentalAgreements resolution settle
 
     expect(wrapper.find<HTMLInputElement>('#issue-title').element.value).toBe('Replaced title');
     expect(wrapper.find<HTMLInputElement>('#issue-reporter').element.value).toBe('John Reporter');
-    expect(wrapper.find<HTMLInputElement>('#issue-tenancy').element.value).toBe('tenant-2');
+    expect(wrapper.find<HTMLInputElement>('#issue-location').element.value).toBe('Building C, roof');
+    expect(wrapper.findComponent(RentalAgreementSelectStub).props('modelValue')).toEqual(mockAgreement2);
     // canSave should be false again since original values now match the new data
     expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
   });
@@ -576,11 +661,9 @@ describe('IssueDetailsCard.vue', () => {
   // ─── Accept/Reject Actions ───────────────────────────────────────────────────
   describe('accept/reject actions', () => {
     function mountPending() {
-      return mount(IssueDetailsCard, {
-        props: {
-          ...baseProps,
-          initialData: { ...baseProps.initialData, status: 'PENDING' },
-        },
+      return mountCard({
+        ...baseProps,
+        initialData: { ...baseProps.initialData, status: 'PENDING' },
       });
     }
 

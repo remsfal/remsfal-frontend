@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import NewIssueDialog from '@/features/project/issues/components/NewIssueDialog.vue';
+import NewIssueButton from '@/features/project/issues/components/NewIssueButton.vue';
 import { issueService } from '@/services/IssueService';
 import { Form } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
@@ -10,8 +10,15 @@ import Message from 'primevue/message';
 
 vi.mock('@/services/IssueService', { spy: true });
 
-describe('NewIssueDialog.vue', () => {
-  let wrapper: VueWrapper<InstanceType<typeof NewIssueDialog>>;
+// Always render dialog content so form fields are accessible without needing to simulate open
+const BaseDialogStub = {
+  name: 'BaseDialog',
+  inheritAttrs: false,
+  template: '<div data-testid="dialog" :data-visible="String($attrs.visible)"><slot /></div>',
+};
+
+describe('NewIssueButton.vue', () => {
+  let wrapper: VueWrapper<InstanceType<typeof NewIssueButton>>;
 
   beforeEach(() => {
     vi.spyOn(issueService, 'createProjectIssue').mockResolvedValue({
@@ -23,16 +30,10 @@ describe('NewIssueDialog.vue', () => {
       priority: 'MEDIUM',
     });
 
-    wrapper = mount(NewIssueDialog, {
-      props: {
-        visible: true,
-        projectId: 'project-123',
-      },
+    wrapper = mount(NewIssueButton, {
+      props: {projectId: 'project-123',},
       global: {
-        stubs: {
-          Dialog: { template: '<div><slot /></div>' },
-          Button: { template: '<button type="button" @click="$emit(\'click\')"><slot /></button>' },
-        },
+        stubs: {BaseDialog: BaseDialogStub,},
         components: {
           Form,
           InputText,
@@ -42,6 +43,18 @@ describe('NewIssueDialog.vue', () => {
         },
       },
     });
+  });
+
+  it('dialog is initially not visible', () => {
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    expect(dialog.attributes('data-visible')).toBe('false');
+  });
+
+  it('dialog becomes visible when button is clicked', async () => {
+    await wrapper.find('button').trigger('click');
+
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    expect(dialog.attributes('data-visible')).toBe('true');
   });
 
   it('shows error when title is too short', async () => {
@@ -82,17 +95,13 @@ describe('NewIssueDialog.vue', () => {
   });
 
   it('defaults type to DEFECT when category="DEFECT"', async () => {
-    const wrapperDefect = mount(NewIssueDialog, {
+    const wrapperDefect = mount(NewIssueButton, {
       props: {
-        visible: true,
         projectId: 'project-123',
         category: 'DEFECT',
       },
       global: {
-        stubs: {
-          Dialog: { template: '<div><slot /></div>' },
-          Button: { template: '<button @click="$emit(\'click\')"><slot /></button>' },
-        },
+        stubs: {BaseDialog: BaseDialogStub,},
         components: {
           Form, InputText, Textarea, Select, Message,
         },
@@ -124,7 +133,9 @@ describe('NewIssueDialog.vue', () => {
     );
   });
 
-  it('emits issueCreated event on success', async () => {
+  it('emits issueCreated event and closes dialog on success', async () => {
+    await wrapper.find('button').trigger('click');
+
     const input = wrapper.find('input[name="issueTitle"]');
     await input.setValue('Valid Issue');
 
@@ -135,6 +146,7 @@ describe('NewIssueDialog.vue', () => {
     await wrapper.vm.$nextTick();
 
     expect(wrapper.emitted('issueCreated')).toBeTruthy();
-    expect(wrapper.emitted('update:visible')).toBeTruthy();
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    expect(dialog.attributes('data-visible')).toBe('false');
   });
 });
