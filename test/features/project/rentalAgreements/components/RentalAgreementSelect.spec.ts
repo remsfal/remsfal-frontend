@@ -158,9 +158,7 @@ describe('RentalAgreementSelect.vue', () => {
     });
 
     it('emits resolved with null when there is no initialAgreementId', async () => {
-      wrapper = mount(RentalAgreementSelect, {
-        props: { projectId: 'project-123', modelValue: null },
-      });
+      wrapper = mount(RentalAgreementSelect, {props: { projectId: 'project-123', modelValue: null },});
       await flushPromises();
 
       expect(wrapper.emitted('resolved')?.[0]?.[0]).toBeNull();
