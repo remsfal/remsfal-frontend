@@ -1,19 +1,15 @@
 <script setup lang="ts">
 import RentalAgreementIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue";
-import UnitsTableComponent from '../components/UnitsTableComponent.vue';
+import RentalAgreementUnitsCard from '../components/RentalAgreementUnitsCard.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import type { components } from '@/services/api/platform-schema';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
-
-type RentJson = components['schemas']['RentJson'];
-type RentalUnitJson = components['schemas']['RentalUnitJson'];
 
 const props = defineProps<{
   projectId: string; agreementId: string; status?: IssueStatus; type?: IssueType; assigneeId?: string;
@@ -25,27 +21,6 @@ const issues = ref<IssueItemJson[]>([]);
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
-
-// Compute all units from all rent types
-const listOfUnits = computed<RentalUnitJson[]>(() => {
-  if (!rentalAgreement.value) return [];
-
-  const mapRentsToUnits = (rents: RentJson[] | undefined, type: RentalUnitJson['type']): RentalUnitJson[] =>
-    (rents || []).map((rent) => ({
-      id: rent.unitId,
-      type,
-      title: rent.unitId,
-    }));
-
-  return [
-    ...mapRentsToUnits(rentalAgreement.value.propertyRents, 'PROPERTY'),
-    ...mapRentsToUnits(rentalAgreement.value.siteRents, 'SITE'),
-    ...mapRentsToUnits(rentalAgreement.value.buildingRents, 'BUILDING'),
-    ...mapRentsToUnits(rentalAgreement.value.apartmentRents, 'APARTMENT'),
-    ...mapRentsToUnits(rentalAgreement.value.storageRents, 'STORAGE'),
-    ...mapRentsToUnits(rentalAgreement.value.commercialRents, 'COMMERCIAL'),
-  ];
-});
 
 const rentalStart = ref<string | null>(null);
 const rentalEnd = ref<string | null>(null);
@@ -115,16 +90,16 @@ defineExpose({
         @delete="confirmDeletion"
       />
 
+      <RentalAgreementUnitsCard
+          v-if="rentalAgreement"
+          :projectId="props.projectId"
+          :rentalAgreement="rentalAgreement"
+          @update:rentalAgreement="rentalAgreement = $event"
+      />
+
       <RentalAgreementIssueCard
         :projectId="props.projectId"
         :agreementId="props.agreementId"
-      />
-
-      <!-- Units Table -->
-      <UnitsTableComponent
-        :projectId="props.projectId"
-        :listOfUnits="listOfUnits"
-        :isDeleteButtonEnabled="false"
       />
     </div>
   </div>
