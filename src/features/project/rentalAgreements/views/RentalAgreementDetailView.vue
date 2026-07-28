@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import TenancyDataComponent from '../components/TenancyDataComponent.vue';
 import TenantsTableComponent from '../components/TenantsTableComponent.vue';
+import UnitsTableComponent from '../components/UnitsTableComponent.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { components } from '@/services/api/platform-schema';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, ref} from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+
+type RentJson = components['schemas']['RentJson'];
+type RentalUnitJson = components['schemas']['RentalUnitJson'];
 
 const props = defineProps<{
   projectId: string;
@@ -22,6 +27,29 @@ const toast = useToast();
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
+
+// Compute all units from all rent types
+const listOfUnits = computed<RentalUnitJson[]>(() => {
+  if (!rentalAgreement.value) return [];
+
+  const mapRentsToUnits = (rents: RentJson[] | undefined, type: RentalUnitJson['type']): RentalUnitJson[] =>
+    (rents || []).map((rent) => ({
+      id: rent.unitId,
+      type,
+      // RentJson only carries the unitId, not the full rental unit (title/location/...),
+      // so we fall back to the unitId as a placeholder title.
+      title: rent.unitId,
+    }));
+
+  return [
+    ...mapRentsToUnits(rentalAgreement.value.propertyRents, 'PROPERTY'),
+    ...mapRentsToUnits(rentalAgreement.value.siteRents, 'SITE'),
+    ...mapRentsToUnits(rentalAgreement.value.buildingRents, 'BUILDING'),
+    ...mapRentsToUnits(rentalAgreement.value.apartmentRents, 'APARTMENT'),
+    ...mapRentsToUnits(rentalAgreement.value.storageRents, 'STORAGE'),
+    ...mapRentsToUnits(rentalAgreement.value.commercialRents, 'COMMERCIAL'),
+  ];
+});
 
 onMounted(async () => {
   if (!props.agreementId || !props.projectId) {
@@ -105,6 +133,13 @@ defineExpose({
       <!-- Tenants Table -->
       <TenantsTableComponent
         :tenants="rentalAgreement?.tenants || []"
+        :isDeleteButtonEnabled="false"
+      />
+
+      <!-- Units Table -->
+      <UnitsTableComponent
+        :projectId="props.projectId"
+        :listOfUnits="listOfUnits"
         :isDeleteButtonEnabled="false"
       />
 
