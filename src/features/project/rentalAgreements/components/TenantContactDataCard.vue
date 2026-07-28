@@ -251,8 +251,8 @@ async function onSubmit(event: FormSubmitEvent) {
                 {{ t('tenantDetail.form.dateOfBirth') }}
               </label>
               <DatePicker
-                inputId="dateOfBirth"
                 v-model="dateOfBirthValue"
+                inputId="dateOfBirth"
                 dateFormat="dd.mm.yy"
                 fluid
                 showIcon
