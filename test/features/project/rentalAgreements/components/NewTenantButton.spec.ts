@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
 import NewTenantButton from '@/features/project/rentalAgreements/components/NewTenantButton.vue';
@@ -27,6 +27,10 @@ describe('NewTenantButton', () => {
     vi.mocked(tenantService.fetchTenants).mockResolvedValue(mockTenants);
   });
 
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
   const mountButton = (props: Record<string, unknown> = {}) =>
     mount(NewTenantButton, {
       props: { projectId: 'proj-1', ...props },
@@ -51,6 +55,26 @@ describe('NewTenantButton', () => {
     expect(suggestions).toHaveLength(2);
     expect(suggestions[0].label).toBe('Max Mustermann (max@example.com)');
     expect(suggestions[1].label).toBe('Erika Musterfrau');
+  });
+
+  it('renders the tenant name and email in the AutoComplete option template', async () => {
+    const wrapper = mountButton();
+    await wrapper.find('button').trigger('click');
+    await flushPromises();
+
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    await autoComplete.vm.$emit('complete', { query: '' });
+    await wrapper.vm.$nextTick();
+
+    (autoComplete.vm as unknown as { overlayVisible: boolean }).overlayVisible = true;
+    await wrapper.vm.$nextTick();
+
+    const options = document.querySelectorAll('.p-autocomplete-option');
+    expect(options).toHaveLength(2);
+    expect(options[0].textContent).toContain('Max Mustermann');
+    expect(options[0].textContent).toContain('max@example.com');
+    expect(options[1].textContent).toContain('Erika Musterfrau');
+    expect(options[1].textContent).not.toContain('@');
   });
 
   it('logs an error when loading tenants fails', async () => {
