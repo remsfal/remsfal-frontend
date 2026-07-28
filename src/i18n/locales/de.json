@@ -588,6 +588,8 @@
   "issueDetails.fields.issueNumber": "Vorgangsnummer",
   "issueDetails.fields.category": "Kategorie",
   "issueDetails.fields.categoryPlaceholder": "Kategorie auswählen",
+  "issueDetails.visibleToTenant.tag": "Für Mieter sichtbar",
+  "issueDetails.visibleToTenant.internalTag": "Interner Vorgang",
   "issueDetails.fields.priority": "Priorität",
   "issueDetails.fields.priorityPlaceholder": "Priorität auswählen",
   "issueDetails.fields.assignedAt": "Zugewiesen am",

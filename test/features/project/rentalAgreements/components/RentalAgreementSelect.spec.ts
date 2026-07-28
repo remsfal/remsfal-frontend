@@ -94,6 +94,26 @@ describe('RentalAgreementSelect.vue', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toEqual(mockAgreements[0]);
   });
 
+  it('does not forward the raw typeahead text as update:modelValue', async () => {
+    // Regression test: AutoComplete (non-multiple) also emits update:modelValue
+    // with the raw string the user is typing while searching, not only on a
+    // genuine selection. Forwarding it used to round-trip through toOption()
+    // and overwrite the input with the "unknown tenant" fallback label as
+    // soon as a letter was typed.
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    await autoComplete.vm.$emit('update:modelValue', 'M');
+
+    expect(wrapper.emitted('update:modelValue')).toBeFalsy();
+  });
+
+  it('still forwards update:modelValue with null (explicit clear)', async () => {
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    await autoComplete.vm.$emit('update:modelValue', null);
+
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy();
+    expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toBeNull();
+  });
+
   it('emits blur when the AutoComplete is blurred', async () => {
     const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
     await autoComplete.vm.$emit('blur');

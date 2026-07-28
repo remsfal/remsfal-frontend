@@ -110,6 +110,7 @@ const baseProps: {
     category: IssueJson['category'];
     priority: IssueJson['priority'];
     modifiedAt?: IssueJson['modifiedAt'];
+    visibleToTenants: boolean;
   };
 } = {
   projectId: 'project-1',
@@ -126,6 +127,7 @@ const baseProps: {
     category: 'GENERAL',
     priority: 'MEDIUM',
     modifiedAt: '2026-01-15T10:30:00Z',
+    visibleToTenants: false,
   },
 };
 
@@ -158,6 +160,25 @@ describe('IssueDetailsCard.vue', () => {
   test('renders issue title in card header', () => {
     expect(wrapper.text()).toContain('Old title');
     expect(wrapper.text()).toContain('Ticketnummer');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('shows "internal issue" tag with info severity when visibleToTenants is false', () => {
+    const tag = wrapper.findComponent({ name: 'Tag' });
+    expect(tag.props('value')).toBe('Interner Vorgang');
+    expect(tag.props('severity')).toBe('info');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('shows "visible to tenant" tag with warn severity when visibleToTenants is true', () => {
+    const visibleWrapper = mountCard({
+      ...baseProps,
+      initialData: { ...baseProps.initialData, visibleToTenants: true },
+    });
+
+    const tag = visibleWrapper.findComponent({ name: 'Tag' });
+    expect(tag.props('value')).toBe('Für Mieter sichtbar');
+    expect(tag.props('severity')).toBe('warn');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -605,6 +626,7 @@ describe('IssueDetailsCard.vue', () => {
         category: 'WATER_DAMAGE',
         priority: 'HIGH',
         modifiedAt: '2026-02-01T00:00:00Z',
+        visibleToTenants: true,
       },
     });
     await nextTick();

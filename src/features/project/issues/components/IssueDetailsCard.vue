@@ -6,6 +6,7 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
+import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
@@ -41,6 +42,7 @@ const props = defineProps<{
     category: IssueJson["category"];
     priority: IssueJson["priority"];
     modifiedAt?: IssueJson["modifiedAt"];
+    visibleToTenants: boolean;
   };
 }>();
 
@@ -86,6 +88,8 @@ const location = ref(props.initialData.location);
 const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category, t));
 const priority = ref(props.initialData.priority);
 const modifiedAt = ref(props.initialData.modifiedAt);
+// Fixed at creation time (see NewIssueButton/NewTenantIssueButton) — not editable here.
+const visibleToTenants = ref(props.initialData.visibleToTenants);
 
 const selectedAgreement = ref<RentalAgreementItemJson | null>(null);
 
@@ -145,6 +149,11 @@ const modifiedAtLabel = computed(() => {
   return date.toLocaleString(locale.value);
 });
 
+// Fixed at creation, so this is a display-only tag next to the title, not a form field.
+const visibilityTag = computed(() => (visibleToTenants.value
+  ? { label: t('issueDetails.visibleToTenant.tag'), severity: 'warn' as const }
+  : { label: t('issueDetails.visibleToTenant.internalTag'), severity: 'info' as const }));
+
 /* =========================
      Dropdown Options
   ========================= */
@@ -188,6 +197,7 @@ watch(
     category.value = findCategoryOption(newData.category, t);
     priority.value = newData.priority;
     modifiedAt.value = newData.modifiedAt;
+    visibleToTenants.value = newData.visibleToTenants;
 
     originalTitle.value = newData.title;
     originalStatus.value = newData.status;
@@ -289,13 +299,14 @@ function applyIssueUpdate(updated: IssueJson) {
 <template>
   <BaseCard>
     <template #title>
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
-        <div>
+      <div class="flex flex-col gap-1 border-b border-gray-200 pb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <span class="text-xl font-semibold">{{ title || t('issueDetails.fields.untitled') }}</span>
-          <p class="text-base text-gray-500 font-normal mt-1">
-            {{ t('issueDetails.fields.ticketNumber') }} {{ issueId || '—' }}
-          </p>
+          <Tag :value="visibilityTag.label" :severity="visibilityTag.severity" />
         </div>
+        <p class="text-base text-gray-500 font-normal">
+          {{ t('issueDetails.fields.ticketNumber') }} {{ issueId || '—' }}
+        </p>
       </div>
     </template>
 

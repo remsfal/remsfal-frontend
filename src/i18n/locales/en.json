@@ -585,6 +585,8 @@
   "issueDetails.fields.issueNumber": "Issue number",
   "issueDetails.fields.category": "Category",
   "issueDetails.fields.categoryPlaceholder": "Select category",
+  "issueDetails.visibleToTenant.tag": "Visible to tenant",
+  "issueDetails.visibleToTenant.internalTag": "Internal issue",
   "issueDetails.fields.priority": "Priority",
   "issueDetails.fields.priorityPlaceholder": "Select priority",
   "issueDetails.fields.assignedAt": "Assigned on",
