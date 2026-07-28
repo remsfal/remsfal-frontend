@@ -34,8 +34,6 @@ const listOfUnits = computed<RentalUnitJson[]>(() => {
     (rents || []).map((rent) => ({
       id: rent.unitId,
       type,
-      // RentJson only carries the unitId, not the full rental unit (title/location/...),
-      // so we fall back to the unitId as a placeholder title.
       title: rent.unitId,
     }));
 
@@ -128,29 +126,6 @@ defineExpose({
         :listOfUnits="listOfUnits"
         :isDeleteButtonEnabled="false"
       />
-
-      <!-- Action buttons -->
-      <div class="flex justify-end">
-        <Button
-          icon="pi pi-save"
-          label="Speichern"
-          text
-          raised
-          rounded
-          class="mb-2 mr-2 hover:bg-blue-600 transition-colors"
-          @click="updateRentalAgreement(rentalAgreement)"
-        />
-        <Button
-          icon="pi pi-trash"
-          label="Löschen"
-          severity="danger"
-          text
-          raised
-          rounded
-          class="mb-2 mr-2 hover:bg-red-600 transition-colors"
-          @click="confirmationDialogVisible = true"
-        />
-      </div>
     </div>
   </div>
 
