@@ -63,12 +63,15 @@ function searchTenants(event: { query: string }) {
   );
 }
 
-function onTenantSelected(tenant: TenantItemJson | null) {
-  selectedExistingTenant.value = null;
-  if (!tenant) return;
+const isSelectedTenantAlreadyAdded = computed(() => {
+  const tenant = selectedExistingTenant.value;
+  if (!tenant) return false;
+  return (props.existingTenants ?? []).some((t) => t.id === tenant.id);
+});
 
-  const alreadyAdded = (props.existingTenants ?? []).some((t) => t.id === tenant.id);
-  if (alreadyAdded) return;
+function confirmExistingTenant() {
+  const tenant = selectedExistingTenant.value;
+  if (!tenant || isSelectedTenantAlreadyAdded.value) return;
 
   const tenantForRental: TenantJson = {
     firstName: tenant.firstName,
@@ -80,12 +83,8 @@ function onTenantSelected(tenant: TenantItemJson | null) {
   };
 
   emit('newTenant', tenantForRental);
-  visible.value = false;
-}
-
-function addNewTenant() {
-  showTenantForm.value = true;
   selectedExistingTenant.value = null;
+  visible.value = false;
 }
 
 function openDialog() {
@@ -139,7 +138,6 @@ function onCancel() {
             fluid
             dropdown
             @complete="searchTenants"
-            @update:modelValue="onTenantSelected"
           >
             <template #option="slotProps">
               <div class="flex flex-col">
@@ -148,14 +146,17 @@ function onCancel() {
               </div>
             </template>
           </AutoComplete>
+          <small v-if="isSelectedTenantAlreadyAdded" class="text-red-600">
+            {{ t('newTenantButton.tenantAlreadyAdded') }}
+          </small>
         </div>
 
         <Button
           type="button"
-          :label="t('rentalAgreement.step3.addNewTenant')"
-          icon="pi pi-plus"
-          severity="secondary"
-          @click="addNewTenant"
+          :label="t('newTenantButton.confirmTenant')"
+          icon="pi pi-check"
+          :disabled="!selectedExistingTenant || isSelectedTenantAlreadyAdded"
+          @click="confirmExistingTenant"
         />
       </div>
 

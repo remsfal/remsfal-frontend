@@ -726,6 +726,8 @@
   "rentalAgreement.step3.selectTenant": "Bestehenden Mieter auswählen",
   "rentalAgreement.step3.searchTenant": "Mieter suchen...",
   "rentalAgreement.step3.noTenants": "Keine Mieter gefunden",
+  "newTenantButton.confirmTenant": "Mieter hinzufügen",
+  "newTenantButton.tenantAlreadyAdded": "Dieser Mieter wurde bereits hinzugefügt",
   "rentalAgreement.step3.addNewTenant": "Neuen Mieter hinzufügen",
   "rentalAgreement.step3.newTenantDetails": "Neue Mieterinformationen",
   "rentalAgreement.step3.addTenantToList": "Mieter zur Liste hinzufügen",
