@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import TenancyDataComponent from '../components/TenancyDataComponent.vue';
-import TenantsTableComponent from '../components/TenantsTableComponent.vue';
+import RentalAgreementIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue";
 import UnitsTableComponent from '../components/UnitsTableComponent.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
@@ -8,22 +7,21 @@ import {rentalAgreementService,
 import type { components } from '@/services/api/platform-schema';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
-import { useToast } from 'primevue/usetoast';
 import { onMounted, ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
 
 type RentJson = components['schemas']['RentJson'];
 type RentalUnitJson = components['schemas']['RentalUnitJson'];
 
 const props = defineProps<{
-  projectId: string;
-  agreementId: string;
+  projectId: string; agreementId: string; status?: IssueStatus; type?: IssueType; assigneeId?: string;
 }>();
 
 const { t } = useI18n();
 const router = useRouter();
-const toast = useToast();
+const issues = ref<IssueItemJson[]>([]);
 
 const confirmationDialogVisible = ref(false);
 const rentalAgreement = ref<RentalAgreementJson | null>(null);
@@ -51,6 +49,9 @@ const listOfUnits = computed<RentalUnitJson[]>(() => {
   ];
 });
 
+const rentalStart = ref<string | null>(null);
+const rentalEnd = ref<string | null>(null);
+
 onMounted(async () => {
   if (!props.agreementId || !props.projectId) {
     console.error('Agreement ID or Project ID not found');
@@ -61,6 +62,8 @@ onMounted(async () => {
     props.projectId,
     props.agreementId
   );
+  rentalStart.value = rentalAgreement.value?.startOfRental || null;
+  rentalEnd.value = rentalAgreement.value?.endOfRental || null;
 });
 
 function confirmDeletion() {
@@ -88,25 +91,16 @@ function redirectToTenanciesList() {
   router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
 
-function updateRentalAgreement(agreement: RentalAgreementJson | null) {
-  if (!agreement?.id || !props.projectId) return;
+const loadIssues = async () => {
+  try {
+    const issueList = await issueService.getIssues(props.projectId, props.status, props.type, props.assigneeId);
+    issues.value = issueList?.issues ?? [];
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  rentalAgreementService.updateRentalAgreement(
-    props.projectId,
-    agreement.id,
-    agreement
-  );
-  toast.add({
-    severity: 'success',
-    summary: 'Speichern erfolgreich',
-    detail: `Der Mietvertrag mit der ID ${agreement?.id} wurde erfolgreich aktualisiert.`,
-    life: 3000,
-  });
-}
-
-function handleTenancyDataChange(updatedAgreement: RentalAgreementJson) {
-  rentalAgreement.value = updatedAgreement;
-}
+onMounted(loadIssues);
 
 defineExpose({
   confirmationDialogVisible,
@@ -116,13 +110,6 @@ defineExpose({
 
 <template>
   <div class="p-4">
-    <!-- Rental Agreement data form -->
-    <TenancyDataComponent
-      v-if="rentalAgreement"
-      :tenancy="rentalAgreement"
-      @onChange="handleTenancyDataChange"
-    />
-
     <div class="grid grid-cols-1 gap-6">
       <RentalAgreementSummaryCard
         v-if="rentalAgreement"
@@ -130,10 +117,9 @@ defineExpose({
         @delete="confirmDeletion"
       />
 
-      <!-- Tenants Table -->
-      <TenantsTableComponent
-        :tenants="rentalAgreement?.tenants || []"
-        :isDeleteButtonEnabled="false"
+      <RentalAgreementIssueCard
+        :projectId="props.projectId"
+        :agreementId="props.agreementId"
       />
 
       <!-- Units Table -->
