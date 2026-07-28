@@ -11,9 +11,10 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import type { IssueStatus, IssueType } from '@/services/IssueService';
-import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
-import NewTenancyIssueDialog from '@/components/tenantIssue/NewTenancyIssueDialog.vue';
+import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
+import NewTenancyIssueDialog from '../components/NewTenancyIssueDialog.vue';
 import TenantIssueCard from '../components/TenantIssueCard.vue';
+import { getIssueStatusLabel, getIssueTypeLabel } from '@/features/common/issues/issueLabels';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -42,23 +43,16 @@ const tenancyOptions = computed(() => [
   })),
 ]);
 
+const STATUS_ORDER: IssueStatus[] = ['PENDING', 'OPEN', 'IN_PROGRESS', 'CLOSED', 'REJECTED'];
 const statusOptions = computed(() => [
   { label: t('tenantIssues.filter.allStatuses'), value: null },
-  { label: t('inbox.filters.status.pending'), value: 'PENDING' },
-  { label: t('inbox.filters.status.open'), value: 'OPEN' },
-  { label: t('inbox.filters.status.inProgress'), value: 'IN_PROGRESS' },
-  { label: t('inbox.filters.status.closed'), value: 'CLOSED' },
-  { label: t('inbox.filters.status.rejected'), value: 'REJECTED' },
+  ...STATUS_ORDER.map((value) => ({ label: getIssueStatusLabel(value, t), value })),
 ]);
 
+const TYPE_ORDER: IssueType[] = ['APPLICATION', 'TASK', 'DEFECT', 'MAINTENANCE', 'TERMINATION', 'INQUIRY'];
 const typeOptions = computed(() => [
   { label: t('tenantIssues.filter.allTypes'), value: null },
-  { label: t('issueType.application'), value: 'APPLICATION' },
-  { label: t('issueType.task'), value: 'TASK' },
-  { label: t('issueType.defect'), value: 'DEFECT' },
-  { label: t('issueType.maintenance'), value: 'MAINTENANCE' },
-  { label: t('issueType.termination'), value: 'TERMINATION' },
-  { label: t('issueType.inquiry'), value: 'INQUIRY' },
+  ...TYPE_ORDER.map((value) => ({ label: getIssueTypeLabel(value, t), value })),
 ]);
 
 const getStatusOrder = (status: string | undefined) => {

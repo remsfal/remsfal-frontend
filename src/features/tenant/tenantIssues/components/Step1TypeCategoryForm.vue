@@ -13,13 +13,7 @@ import Message from 'primevue/message';
 import type { IssueCategory, IssueType } from '@/services/IssueService';
 import type { TenancyJson, RentalUnitJson } from '@/services/TenancyService';
 import { formatTenancyLabel } from '@/services/TenancyService';
-
-// Category type definition
-interface CategoryOption {
-  value: IssueCategory;
-  label: string;
-  examples?: string;
-}
+import { getDefectCategories, getInquiryCategories, type CategoryOption } from '@/features/common/issues/issueCategories';
 
 // Props & Emits
 const props = defineProps<{
@@ -47,80 +41,9 @@ const typeOptions = computed(() => [
   { label: t('tenantIssue.step1.typeTermination'), value: 'TERMINATION' },
 ]);
 
-// DEFECT Categories with Examples
-const DEFECT_CATEGORIES = computed<CategoryOption[]>(() => [
-  {
-    value: 'BLOCKED_DRAIN',
-    label: t('tenantIssue.categories.BLOCKED_DRAIN'),
-    examples: t('tenantIssue.categoryExamples.BLOCKED_DRAIN'),
-  },
-  {
-    value: 'ELECTRICAL_FAULT',
-    label: t('tenantIssue.categories.ELECTRICAL_FAULT'),
-    examples: t('tenantIssue.categoryExamples.ELECTRICAL_FAULT'),
-  },
-  {
-    value: 'FIRE_DAMAGE',
-    label: t('tenantIssue.categories.FIRE_DAMAGE'),
-    examples: t('tenantIssue.categoryExamples.FIRE_DAMAGE'),
-  },
-  {
-    value: 'HEATING_SYSTEM_MALFUNCTION',
-    label: t('tenantIssue.categories.HEATING_SYSTEM_MALFUNCTION'),
-    examples: t('tenantIssue.categoryExamples.HEATING_SYSTEM_MALFUNCTION'),
-  },
-  {
-    value: 'PEST_INFESTATION',
-    label: t('tenantIssue.categories.PEST_INFESTATION'),
-    examples: t('tenantIssue.categoryExamples.PEST_INFESTATION'),
-  },
-  {
-    value: 'POLLUTION_INSIDE_BUILDING',
-    label: t('tenantIssue.categories.POLLUTION_INSIDE_BUILDING'),
-    examples: t('tenantIssue.categoryExamples.POLLUTION_INSIDE_BUILDING'),
-  },
-  {
-    value: 'POLLUTION_OUTSIDE_BUILDING',
-    label: t('tenantIssue.categories.POLLUTION_OUTSIDE_BUILDING'),
-    examples: t('tenantIssue.categoryExamples.POLLUTION_OUTSIDE_BUILDING'),
-  },
-  {
-    value: 'SANITARY_SYSTEM_DAMAGE',
-    label: t('tenantIssue.categories.SANITARY_SYSTEM_DAMAGE'),
-    examples: t('tenantIssue.categoryExamples.SANITARY_SYSTEM_DAMAGE'),
-  },
-  {
-    value: 'ROLLER_SHUTTER_DAMAGE',
-    label: t('tenantIssue.categories.ROLLER_SHUTTER_DAMAGE'),
-    examples: t('tenantIssue.categoryExamples.ROLLER_SHUTTER_DAMAGE'),
-  },
-  {
-    value: 'WATER_DAMAGE',
-    label: t('tenantIssue.categories.WATER_DAMAGE'),
-    examples: t('tenantIssue.categoryExamples.WATER_DAMAGE'),
-  },
-  {
-    value: 'GENERAL',
-    label: t('tenantIssue.categories.GENERAL'),
-    examples: t('tenantIssue.categoryExamples.GENERAL'),
-  },
-]);
-
-// INQUIRY Categories
-const INQUIRY_CATEGORIES = computed<CategoryOption[]>(() => [
-  {
-    value: 'CERTIFICATE_OF_NO_RENT_ARREARS',
-    label: t('tenantIssue.categories.CERTIFICATE_OF_NO_RENT_ARREARS'),
-  },
-  {
-    value: 'CONFIRMATION_OF_RESIDENCE',
-    label: t('tenantIssue.categories.CONFIRMATION_OF_RESIDENCE'),
-  },
-  {
-    value: 'GENERAL',
-    label: t('tenantIssue.categories.GENERAL'),
-  },
-]);
+// DEFECT/INQUIRY Categories (shared across tenant + project issue features)
+const DEFECT_CATEGORIES = computed<CategoryOption[]>(() => getDefectCategories(t));
+const INQUIRY_CATEGORIES = computed<CategoryOption[]>(() => getInquiryCategories(t));
 
 // Local state for form fields
 const localTenancyId = ref(props.tenancyId);

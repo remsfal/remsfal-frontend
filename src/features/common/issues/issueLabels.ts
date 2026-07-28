@@ -9,15 +9,15 @@ export const getIssueStatusLabel = (
 ): string => {
   switch (status) {
     case 'PENDING':
-      return t('inbox.filters.status.pending');
+      return t('issueStatus.pending');
     case 'OPEN':
-      return t('inbox.filters.status.open');
+      return t('issueStatus.open');
     case 'IN_PROGRESS':
-      return t('inbox.filters.status.inProgress');
+      return t('issueStatus.inProgress');
     case 'CLOSED':
-      return t('inbox.filters.status.closed');
+      return t('issueStatus.closed');
     case 'REJECTED':
-      return t('inbox.filters.status.rejected');
+      return t('issueStatus.rejected');
     default:
       return status ?? '—';
   }
@@ -113,7 +113,7 @@ export const getIssueCategoryLabel = (
     return '—';
   }
 
-  const labelKey = `tenantIssue.categories.${category}`;
+  const labelKey = `issueCategory.${category}`;
   const label = t(labelKey);
   return label === labelKey ? category : label;
 };

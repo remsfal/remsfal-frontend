@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
-import type { TenantIssueJson } from '@/services/TenantIssueService';
-import { tenantIssueService } from '@/services/TenantIssueService';
+import type { TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
+import { tenantIssueService } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import TenantIssueDetailView from '@/features/tenant/tenantIssues/views/TenantIssueDetailView.vue';
 
 const pushMock = vi.fn();
@@ -18,9 +18,9 @@ vi.mock('vue-router', async () => {
 
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
-vi.mock('@/services/TenantIssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/TenantIssueService')>(
-    '@/services/TenantIssueService',
+vi.mock('@/features/tenant/tenantIssues/services/TenantIssueService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/tenant/tenantIssues/services/TenantIssueService')>(
+    '@/features/tenant/tenantIssues/services/TenantIssueService',
   );
 
   return {

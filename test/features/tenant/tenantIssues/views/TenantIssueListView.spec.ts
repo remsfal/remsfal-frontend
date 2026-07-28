@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
-import { tenantIssueService } from '@/services/TenantIssueService';
+import { tenantIssueService } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import { tenancyService } from '@/services/TenancyService';
 import Select from 'primevue/select';
 
@@ -25,9 +25,9 @@ vi.mock('@/services/TenancyService', async () => {
   };
 });
 
-vi.mock('@/services/TenantIssueService', async () => {
-  const actual = await vi.importActual<typeof import('@/services/TenantIssueService')>(
-    '@/services/TenantIssueService',
+vi.mock('@/features/tenant/tenantIssues/services/TenantIssueService', async () => {
+  const actual = await vi.importActual<typeof import('@/features/tenant/tenantIssues/services/TenantIssueService')>(
+    '@/features/tenant/tenantIssues/services/TenantIssueService',
   );
 
   return {
