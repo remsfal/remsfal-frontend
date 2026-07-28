@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Tag from 'primevue/tag';
-import type { TenantIssueJson } from '@/services/TenantIssueService';
+import type { TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import TenantIssueSummaryCard from '@/features/tenant/tenantIssues/components/TenantIssueSummaryCard.vue';
 
 describe('TenantIssueSummaryCard component', () => {

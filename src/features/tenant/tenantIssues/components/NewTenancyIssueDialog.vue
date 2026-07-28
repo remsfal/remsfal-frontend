@@ -15,7 +15,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 
 // Services & Types
 import type { IssueCategory, IssueType } from '@/services/IssueService';
-import { tenantIssueService, type TenantIssueJson } from '@/services/TenantIssueService';
+import { tenantIssueService, type TenantIssueJson } from '@/features/tenant/tenantIssues/services/TenantIssueService';
 import { tenancyService, type TenancyJson } from '@/services/TenancyService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
@@ -146,7 +146,7 @@ function generateIssueTitle(state: TenantIssueFormState): string {
 
   // Category or Type label
   const categoryText = issueCategory
-    ? t(`tenantIssue.categories.${issueCategory}`)
+    ? t(`issueCategory.${issueCategory}`)
     : issueType
       ? t(`tenantIssue.types.${issueType}`)
       : '';
