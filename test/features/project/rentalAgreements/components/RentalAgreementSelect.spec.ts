@@ -64,6 +64,19 @@ describe('RentalAgreementSelect.vue', () => {
     expect(autoComplete.props('suggestions')[0].id).toBe('agreement-2');
   });
 
+  it('opens the overlay when the dropdown button is clicked without a prior search', async () => {
+    // Regression test: the very first click reuses the exact array reference
+    // set on mount, which previously left AutoComplete's overlay closed
+    // because it only opens when its `suggestions` prop reference changes.
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    const dropdownButton = wrapper.find('.p-autocomplete-dropdown');
+
+    await dropdownButton.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    expect(autoComplete.vm.overlayVisible).toBe(true);
+  });
+
   it('resets to full list when the query is cleared', async () => {
     const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
     await autoComplete.vm.$emit('complete', { query: 'Erika' });
@@ -81,6 +94,26 @@ describe('RentalAgreementSelect.vue', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toEqual(mockAgreements[0]);
   });
 
+  it('does not forward the raw typeahead text as update:modelValue', async () => {
+    // Regression test: AutoComplete (non-multiple) also emits update:modelValue
+    // with the raw string the user is typing while searching, not only on a
+    // genuine selection. Forwarding it used to round-trip through toOption()
+    // and overwrite the input with the "unknown tenant" fallback label as
+    // soon as a letter was typed.
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    await autoComplete.vm.$emit('update:modelValue', 'M');
+
+    expect(wrapper.emitted('update:modelValue')).toBeFalsy();
+  });
+
+  it('still forwards update:modelValue with null (explicit clear)', async () => {
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    await autoComplete.vm.$emit('update:modelValue', null);
+
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy();
+    expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toBeNull();
+  });
+
   it('emits blur when the AutoComplete is blurred', async () => {
     const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
     await autoComplete.vm.$emit('blur');
@@ -91,5 +124,62 @@ describe('RentalAgreementSelect.vue', () => {
   it('passes the invalid prop through as p-invalid class', async () => {
     await wrapper.setProps({ invalid: true });
     expect(wrapper.html()).toContain('p-invalid');
+  });
+
+  it('gives the bound modelValue a display label instead of rendering the raw object', () => {
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    // modelValue starts out null in the outer beforeEach; simulate a caller
+    // binding the raw agreement object (no synthetic `label`) as v-model.
+    return wrapper.setProps({ modelValue: mockAgreements[0] }).then(() => {
+      expect(autoComplete.props('modelValue')).toMatchObject({
+        id: 'agreement-1',
+        label: 'Max Mustermann (Wohnung 1A)',
+      });
+    });
+  });
+
+  describe('initialAgreementId resolution', () => {
+    it('resolves the id against the already-loaded list without fetching again', async () => {
+      vi.mocked(rentalAgreementService.getRentalAgreements).mockClear();
+      wrapper = mount(RentalAgreementSelect, {
+        props: {
+          projectId: 'project-123',
+          modelValue: null,
+          initialAgreementId: 'agreement-2',
+        },
+      });
+      await flushPromises();
+
+      expect(rentalAgreementService.getRentalAgreements).toHaveBeenCalledTimes(1);
+      expect(wrapper.emitted('resolved')?.[0]?.[0]).toMatchObject({
+        id: 'agreement-2',
+        label: 'Erika Musterfrau (Keller)',
+      });
+    });
+
+    it('emits resolved with null when there is no initialAgreementId', async () => {
+      wrapper = mount(RentalAgreementSelect, {props: { projectId: 'project-123', modelValue: null },});
+      await flushPromises();
+
+      expect(wrapper.emitted('resolved')?.[0]?.[0]).toBeNull();
+    });
+
+    it('re-resolves from the cached list when initialAgreementId changes', async () => {
+      vi.mocked(rentalAgreementService.getRentalAgreements).mockClear();
+      wrapper = mount(RentalAgreementSelect, {
+        props: {
+          projectId: 'project-123',
+          modelValue: null,
+          initialAgreementId: 'agreement-1',
+        },
+      });
+      await flushPromises();
+
+      await wrapper.setProps({ initialAgreementId: 'agreement-2' });
+      await flushPromises();
+
+      expect(rentalAgreementService.getRentalAgreements).toHaveBeenCalledTimes(1);
+      expect(wrapper.emitted('resolved')?.[1]?.[0]).toMatchObject({ id: 'agreement-2' });
+    });
   });
 });

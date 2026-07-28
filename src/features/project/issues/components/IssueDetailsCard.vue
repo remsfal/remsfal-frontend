@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
+import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
@@ -13,7 +14,7 @@ import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
 import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssuePriority }
   from '@/services/IssueService';
-import { rentalAgreementService, type RentalAgreementItemJson }
+import { type RentalAgreementItemJson }
   from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
 import {getDefectCategories,
@@ -41,6 +42,7 @@ const props = defineProps<{
     category: IssueJson["category"];
     priority: IssueJson["priority"];
     modifiedAt?: IssueJson["modifiedAt"];
+    visibleToTenants: boolean;
   };
 }>();
 
@@ -86,6 +88,8 @@ const location = ref(props.initialData.location);
 const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category, t));
 const priority = ref(props.initialData.priority);
 const modifiedAt = ref(props.initialData.modifiedAt);
+// Fixed at creation time (see NewIssueButton/NewTenantIssueButton) — not editable here.
+const visibleToTenants = ref(props.initialData.visibleToTenants);
 
 const selectedAgreement = ref<RentalAgreementItemJson | null>(null);
 
@@ -105,27 +109,13 @@ const originalSelectedAgreement = ref<RentalAgreementItemJson | null>(null);
      Rental Agreement Resolution
   ========================= */
 // RentalAgreementSelect needs the full RentalAgreementItemJson as its v-model,
-// but the card only receives the raw agreementId, so resolve it via the same
-// list endpoint the picker itself uses for its dropdown suggestions.
-async function resolveAgreement(agreementId: string) {
-  if (!agreementId) {
-    selectedAgreement.value = null;
-    originalSelectedAgreement.value = null;
-    return;
-  }
-  try {
-    const agreements = await rentalAgreementService.getRentalAgreements(props.projectId);
-    const match = agreements.find((agreement) => agreement.id === agreementId) ?? null;
-    selectedAgreement.value = match;
-    originalSelectedAgreement.value = match;
-  } catch (err) {
-    console.error('Failed to resolve rental agreement:', err);
-    selectedAgreement.value = null;
-    originalSelectedAgreement.value = null;
-  }
+// but the card only receives the raw agreementId. RentalAgreementSelect already
+// loads the full list for its own dropdown, so it resolves the id itself and
+// reports the result back here instead of the card fetching a second time.
+function onAgreementResolved(agreement: RentalAgreementItemJson | null) {
+  selectedAgreement.value = agreement;
+  originalSelectedAgreement.value = agreement;
 }
-
-onMounted(() => resolveAgreement(props.initialData.agreementId));
 
 /* =========================
      Change Detection
@@ -158,6 +148,11 @@ const modifiedAtLabel = computed(() => {
   if (Number.isNaN(date.getTime())) return modifiedAt.value;
   return date.toLocaleString(locale.value);
 });
+
+// Fixed at creation, so this is a display-only tag next to the title, not a form field.
+const visibilityTag = computed(() => (visibleToTenants.value
+  ? { label: t('issueDetails.visibleToTenant.tag'), severity: 'warn' as const }
+  : { label: t('issueDetails.visibleToTenant.internalTag'), severity: 'info' as const }));
 
 /* =========================
      Dropdown Options
@@ -202,6 +197,7 @@ watch(
     category.value = findCategoryOption(newData.category, t);
     priority.value = newData.priority;
     modifiedAt.value = newData.modifiedAt;
+    visibleToTenants.value = newData.visibleToTenants;
 
     originalTitle.value = newData.title;
     originalStatus.value = newData.status;
@@ -210,10 +206,6 @@ watch(
     originalLocation.value = newData.location;
     originalCategory.value = category.value;
     originalPriority.value = priority.value;
-
-    if (newData.agreementId !== originalSelectedAgreement.value?.id) {
-      resolveAgreement(newData.agreementId);
-    }
   },
   { deep: true }
 );
@@ -307,13 +299,14 @@ function applyIssueUpdate(updated: IssueJson) {
 <template>
   <BaseCard>
     <template #title>
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
-        <div>
+      <div class="flex flex-col gap-1 border-b border-gray-200 pb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <span class="text-xl font-semibold">{{ title || t('issueDetails.fields.untitled') }}</span>
-          <p class="text-base text-gray-500 font-normal mt-1">
-            {{ t('issueDetails.fields.ticketNumber') }} {{ issueId || '—' }}
-          </p>
+          <Tag :value="visibilityTag.label" :severity="visibilityTag.severity" />
         </div>
+        <p class="text-base text-gray-500 font-normal">
+          {{ t('issueDetails.fields.ticketNumber') }} {{ issueId || '—' }}
+        </p>
       </div>
     </template>
 
@@ -435,6 +428,8 @@ function applyIssueUpdate(updated: IssueJson) {
               v-model="selectedAgreement"
               inputId="issue-tenancy"
               :projectId="projectId"
+              :initialAgreementId="initialData.agreementId"
+              @resolved="onAgreementResolved"
             />
           </div>
         </div>
@@ -455,12 +450,3 @@ function applyIssueUpdate(updated: IssueJson) {
     </template>
   </BaseCard>
 </template>
-
-<style scoped>
-:deep(.p-inputtext),
-:deep(.p-select),
-:deep(.p-dropdown),
-:deep(.p-autocomplete-input) {
-  border-radius: 0.5rem;
-}
-</style>
