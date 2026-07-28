@@ -3,6 +3,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import Button from 'primevue/button';
 import Step4SummaryForm from '@/features/tenant/tenantIssues/components/Step4SummaryForm.vue';
 import type { TenancyJson } from '@/services/TenancyService';
+import type { IssueType } from '@/services/IssueService';
 import i18n from '@/i18n/i18n';
 
 describe('Step4SummaryForm', () => {
@@ -19,7 +20,7 @@ describe('Step4SummaryForm', () => {
 
   const defaultProps = {
     tenancyId: 'agreement-1',
-    issueType: 'DEFECT' as const,
+    issueType: 'DEFECT' as IssueType | null,
     issueCategory: 'WATER_DAMAGE' as string | null,
     rentalUnitId: 'unit-1' as string | null,
     causedBy: 'Nachbar 2. OG' as string | null,

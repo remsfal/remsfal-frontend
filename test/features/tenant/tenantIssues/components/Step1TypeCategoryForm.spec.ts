@@ -6,6 +6,7 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Step1TypeCategoryForm from '@/features/tenant/tenantIssues/components/Step1TypeCategoryForm.vue';
 import type { TenancyJson } from '@/services/TenancyService';
+import type { IssueType, IssueCategory } from '@/services/IssueService';
 import i18n from '@/i18n/i18n';
 
 describe('Step1TypeCategoryForm', () => {
@@ -25,10 +26,10 @@ describe('Step1TypeCategoryForm', () => {
   };
 
   const defaultProps = {
-    tenancyId: null,
-    issueType: null,
-    issueCategory: null,
-    rentalUnitId: null,
+    tenancyId: null as string | null,
+    issueType: null as IssueType | null,
+    issueCategory: null as IssueCategory | null,
+    rentalUnitId: null as string | null,
     tenancies: [] as TenancyJson[],
   };
 

@@ -77,6 +77,7 @@ describe('NewTenancyIssueDialog', () => {
   const createdIssue: TenantIssueJson = {
     id: 'issue-1',
     title: 'Wasserschaden bei Max Mustermann',
+    description: 'Es tropft aus der Wand',
     status: 'OPEN',
     type: 'DEFECT',
     agreementId: 'agreement-a',
