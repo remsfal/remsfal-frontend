@@ -12,7 +12,6 @@ import type { UnitType } from '@/services/PropertyService';
 const props = withDefaults(
   defineProps<{
     tenant: TenantItemJson;
-    deletable?: boolean;
     showUnits?: boolean;
   }>(),
   { showUnits: true },
@@ -20,7 +19,6 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   click: [];
-  delete: [];
 }>();
 
 const { t } = useI18n();
@@ -121,18 +119,15 @@ const unitLabel = (unit: { type?: string; title?: string; location?: string }) =
           :severity="tenant.active ? 'success' : 'secondary'"
         />
 
-        <!-- Contact Buttons (with click.stop) -->
-        <div @click.stop>
+        <!-- Contact Buttons & Actions (with click.stop) -->
+        <div class="flex items-center gap-2" @click.stop>
           <TenantContactButtons
-            :tenantId="tenant.id || ''"
-            :tenantName="fullName"
             :email="tenant.email"
             :mobilePhoneNumber="tenant.mobilePhoneNumber"
             :businessPhoneNumber="tenant.businessPhoneNumber"
             :privatePhoneNumber="tenant.privatePhoneNumber"
-            :deletable="deletable"
-            @delete="emit('delete')"
           />
+          <slot name="actions" />
         </div>
       </div>
     </div>

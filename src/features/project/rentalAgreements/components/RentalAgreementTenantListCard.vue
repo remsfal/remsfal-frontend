@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import BaseCard from '@/components/common/BaseCard.vue';
 import TenantCard from './TenantCard.vue';
+import TenantDeleteButton from './TenantDeleteButton.vue';
 import NewTenantButton from './NewTenantButton.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,
@@ -84,6 +85,10 @@ function onTenantClick(tenant: TenantJson) {
   if (!tenant.id) return;
   router.push({ name: 'TenantDetail', params: { projectId: props.projectId, tenantId: tenant.id } });
 }
+
+function tenantName(tenant: TenantJson) {
+  return `${tenant.firstName ?? ''} ${tenant.lastName ?? ''}`.trim();
+}
 </script>
 
 <template>
@@ -103,11 +108,17 @@ function onTenantClick(tenant: TenantJson) {
         >
           <TenantCard
             :tenant="{ ...tenant, active: props.active ? true : undefined }"
-            :deletable="!saving"
             :showUnits="false"
             @click="onTenantClick(tenant)"
-            @delete="onDeleteTenant(tenant.id)"
-          />
+          >
+            <template #actions>
+              <TenantDeleteButton
+                :tenantName="tenantName(tenant)"
+                :deletable="!saving"
+                @delete="onDeleteTenant(tenant.id)"
+              />
+            </template>
+          </TenantCard>
         </div>
       </div>
       <div class="flex justify-end mt-6">
