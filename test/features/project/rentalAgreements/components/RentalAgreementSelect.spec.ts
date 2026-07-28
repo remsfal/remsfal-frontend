@@ -92,4 +92,63 @@ describe('RentalAgreementSelect.vue', () => {
     await wrapper.setProps({ invalid: true });
     expect(wrapper.html()).toContain('p-invalid');
   });
+
+  it('gives the bound modelValue a display label instead of rendering the raw object', () => {
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    // modelValue starts out null in the outer beforeEach; simulate a caller
+    // binding the raw agreement object (no synthetic `label`) as v-model.
+    return wrapper.setProps({ modelValue: mockAgreements[0] }).then(() => {
+      expect(autoComplete.props('modelValue')).toMatchObject({
+        id: 'agreement-1',
+        label: 'Max Mustermann (Wohnung 1A)',
+      });
+    });
+  });
+
+  describe('initialAgreementId resolution', () => {
+    it('resolves the id against the already-loaded list without fetching again', async () => {
+      vi.mocked(rentalAgreementService.getRentalAgreements).mockClear();
+      wrapper = mount(RentalAgreementSelect, {
+        props: {
+          projectId: 'project-123',
+          modelValue: null,
+          initialAgreementId: 'agreement-2',
+        },
+      });
+      await flushPromises();
+
+      expect(rentalAgreementService.getRentalAgreements).toHaveBeenCalledTimes(1);
+      expect(wrapper.emitted('resolved')?.[0]?.[0]).toMatchObject({
+        id: 'agreement-2',
+        label: 'Erika Musterfrau (Keller)',
+      });
+    });
+
+    it('emits resolved with null when there is no initialAgreementId', async () => {
+      wrapper = mount(RentalAgreementSelect, {
+        props: { projectId: 'project-123', modelValue: null },
+      });
+      await flushPromises();
+
+      expect(wrapper.emitted('resolved')?.[0]?.[0]).toBeNull();
+    });
+
+    it('re-resolves from the cached list when initialAgreementId changes', async () => {
+      vi.mocked(rentalAgreementService.getRentalAgreements).mockClear();
+      wrapper = mount(RentalAgreementSelect, {
+        props: {
+          projectId: 'project-123',
+          modelValue: null,
+          initialAgreementId: 'agreement-1',
+        },
+      });
+      await flushPromises();
+
+      await wrapper.setProps({ initialAgreementId: 'agreement-2' });
+      await flushPromises();
+
+      expect(rentalAgreementService.getRentalAgreements).toHaveBeenCalledTimes(1);
+      expect(wrapper.emitted('resolved')?.[1]?.[0]).toMatchObject({ id: 'agreement-2' });
+    });
+  });
 });

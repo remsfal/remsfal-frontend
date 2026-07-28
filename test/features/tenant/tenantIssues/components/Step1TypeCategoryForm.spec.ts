@@ -112,7 +112,7 @@ describe('Step1TypeCategoryForm', () => {
     await autoComplete.vm.$emit('complete', { query: '' });
 
     const suggestions = autoComplete.props('suggestions') as Array<{ label: string }>;
-    expect(suggestions.length).toBe(3);
+    expect(suggestions).toHaveLength(3);
   });
 
   it('resets the selected category when the issue type changes', async () => {

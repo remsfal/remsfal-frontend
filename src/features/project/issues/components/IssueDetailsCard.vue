@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
@@ -13,7 +13,7 @@ import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
 import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssuePriority }
   from '@/services/IssueService';
-import { rentalAgreementService, type RentalAgreementItemJson }
+import { type RentalAgreementItemJson }
   from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
 import {getDefectCategories,
@@ -105,27 +105,13 @@ const originalSelectedAgreement = ref<RentalAgreementItemJson | null>(null);
      Rental Agreement Resolution
   ========================= */
 // RentalAgreementSelect needs the full RentalAgreementItemJson as its v-model,
-// but the card only receives the raw agreementId, so resolve it via the same
-// list endpoint the picker itself uses for its dropdown suggestions.
-async function resolveAgreement(agreementId: string) {
-  if (!agreementId) {
-    selectedAgreement.value = null;
-    originalSelectedAgreement.value = null;
-    return;
-  }
-  try {
-    const agreements = await rentalAgreementService.getRentalAgreements(props.projectId);
-    const match = agreements.find((agreement) => agreement.id === agreementId) ?? null;
-    selectedAgreement.value = match;
-    originalSelectedAgreement.value = match;
-  } catch (err) {
-    console.error('Failed to resolve rental agreement:', err);
-    selectedAgreement.value = null;
-    originalSelectedAgreement.value = null;
-  }
+// but the card only receives the raw agreementId. RentalAgreementSelect already
+// loads the full list for its own dropdown, so it resolves the id itself and
+// reports the result back here instead of the card fetching a second time.
+function onAgreementResolved(agreement: RentalAgreementItemJson | null) {
+  selectedAgreement.value = agreement;
+  originalSelectedAgreement.value = agreement;
 }
-
-onMounted(() => resolveAgreement(props.initialData.agreementId));
 
 /* =========================
      Change Detection
@@ -210,10 +196,6 @@ watch(
     originalLocation.value = newData.location;
     originalCategory.value = category.value;
     originalPriority.value = priority.value;
-
-    if (newData.agreementId !== originalSelectedAgreement.value?.id) {
-      resolveAgreement(newData.agreementId);
-    }
   },
   { deep: true }
 );
@@ -435,6 +417,8 @@ function applyIssueUpdate(updated: IssueJson) {
               v-model="selectedAgreement"
               inputId="issue-tenancy"
               :projectId="projectId"
+              :initialAgreementId="initialData.agreementId"
+              @resolved="onAgreementResolved"
             />
           </div>
         </div>
@@ -455,12 +439,3 @@ function applyIssueUpdate(updated: IssueJson) {
     </template>
   </BaseCard>
 </template>
-
-<style scoped>
-:deep(.p-inputtext),
-:deep(.p-select),
-:deep(.p-dropdown),
-:deep(.p-autocomplete-input) {
-  border-radius: 0.5rem;
-}
-</style>
