@@ -2,10 +2,10 @@
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
-import AutoComplete from 'primevue/autocomplete';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import TenantForm from './TenantForm.vue';
-import { tenantService, type TenantItemJson } from '../services/TenantService';
+import TenantSelect from './TenantSelect.vue';
+import type { TenantItemJson } from '../services/TenantService';
 import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 const props = defineProps<{
@@ -22,46 +22,7 @@ const { t } = useI18n();
 const visible = ref(false);
 const showTenantForm = ref(true);
 
-const allTenants = ref<TenantItemJson[]>([]);
-const isLoadingTenants = ref(false);
-const filteredTenants = ref<TenantItemJson[]>([]);
 const selectedExistingTenant = ref<TenantItemJson | null>(null);
-
-type TenantOption = TenantItemJson & { label: string };
-
-const tenantOptions = computed<TenantOption[]>(() =>
-  filteredTenants.value.map((tenant) => {
-    const emailSuffix = tenant.email ? ` (${tenant.email})` : '';
-    return { ...tenant, label: `${tenant.firstName} ${tenant.lastName}${emailSuffix}` };
-  }),
-);
-
-async function loadTenants() {
-  isLoadingTenants.value = true;
-  try {
-    allTenants.value = await tenantService.fetchTenants(props.projectId);
-  } catch (error) {
-    console.error('Failed to load tenants:', error);
-  } finally {
-    isLoadingTenants.value = false;
-  }
-}
-
-function searchTenants(event: { query: string }) {
-  const query = event.query.toLowerCase().trim();
-
-  if (!query) {
-    filteredTenants.value = allTenants.value;
-    return;
-  }
-
-  filteredTenants.value = allTenants.value.filter(
-    (tenant) =>
-      tenant.firstName?.toLowerCase().includes(query) ||
-      tenant.lastName?.toLowerCase().includes(query) ||
-      tenant.email?.toLowerCase().includes(query),
-  );
-}
 
 const isSelectedTenantAlreadyAdded = computed(() => {
   const tenant = selectedExistingTenant.value;
@@ -91,7 +52,6 @@ function openDialog() {
   showTenantForm.value = true;
   selectedExistingTenant.value = null;
   visible.value = true;
-  loadTenants();
 }
 
 function onSubmit(tenant: TenantJson) {
@@ -127,25 +87,11 @@ function onCancel() {
           <label for="tenantSelector" class="font-semibold">
             {{ t('rentalAgreement.step3.selectTenant') }}
           </label>
-          <AutoComplete
+          <TenantSelect
             v-model="selectedExistingTenant"
-            :suggestions="tenantOptions"
-            :loading="isLoadingTenants"
-            :placeholder="t('rentalAgreement.step3.searchTenant')"
-            :emptySearchMessage="t('rentalAgreement.step3.noTenants')"
-            dataKey="id"
-            optionLabel="label"
-            fluid
-            dropdown
-            @complete="searchTenants"
-          >
-            <template #option="slotProps">
-              <div class="flex flex-col">
-                <span class="font-semibold">{{ slotProps.option.firstName }} {{ slotProps.option.lastName }}</span>
-                <span v-if="slotProps.option.email" class="text-sm text-gray-600">{{ slotProps.option.email }}</span>
-              </div>
-            </template>
-          </AutoComplete>
+            inputId="tenantSelector"
+            :projectId="projectId"
+          />
           <small v-if="isSelectedTenantAlreadyAdded" class="text-red-600">
             {{ t('newTenantButton.tenantAlreadyAdded') }}
           </small>
