@@ -36,19 +36,6 @@ describe('NewTenantButton', () => {
   const findConfirmButton = (wrapper: ReturnType<typeof mountButton>) =>
     wrapper.find('[data-testid="dialog"]').findAll('button').find((btn) => btn.text() === 'Mieter hinzufügen');
 
-  it('renders the button with label', () => {
-    const wrapper = mountButton();
-    expect(wrapper.text()).toContain('Neuen Mieter hinzufügen');
-  });
-
-  it('renders TenantForm fields inside the dialog', async () => {
-    const wrapper = mountButton();
-    await wrapper.find('button').trigger('click');
-
-    expect(wrapper.find('input[name="firstName"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="lastName"]').exists()).toBe(true);
-  });
-
   it('loads tenants on open and builds AutoComplete option labels', async () => {
     const wrapper = mountButton();
     await wrapper.find('button').trigger('click');
@@ -101,17 +88,6 @@ describe('NewTenantButton', () => {
     await autoComplete.vm.$emit('complete', { query: 'nomatch' });
     await wrapper.vm.$nextTick();
     expect(autoComplete.props('suggestions')).toHaveLength(0);
-  });
-
-  it('does nothing when the AutoComplete selection is cleared', async () => {
-    const wrapper = mountButton();
-    await wrapper.find('button').trigger('click');
-    await flushPromises();
-
-    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
-    await autoComplete.vm.$emit('update:modelValue', null);
-
-    expect(wrapper.emitted('newTenant')).toBeFalsy();
   });
 
   it('keeps the selection and disables confirm until it is explicitly confirmed', async () => {

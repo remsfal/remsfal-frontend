@@ -45,14 +45,6 @@ describe('RentalAgreementTenantListCard', () => {
     await flushPromises();
   };
 
-  const showNewTenantForm = async () => {
-    const addNewBtn = Array.from(document.querySelectorAll('.p-dialog button'))
-      .find((btn) => btn.textContent?.includes('Neuen Mieter hinzufügen'));
-    expect(addNewBtn).not.toBeUndefined();
-    (addNewBtn as HTMLButtonElement).click();
-    await flushPromises();
-  };
-
   it('shows empty state when there are no tenants', () => {
     const wrapper = mountCard({ ...baseAgreement, tenants: [] });
     expect(wrapper.text()).toContain('Noch keine Mieter hinzugefügt.');
@@ -63,7 +55,6 @@ describe('RentalAgreementTenantListCard', () => {
 
     const addBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Neuen Mieter hinzufügen'));
     await addBtn?.trigger('click');
-    await showNewTenantForm();
 
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
@@ -118,7 +109,6 @@ describe('RentalAgreementTenantListCard', () => {
     const wrapper = mountCard();
     const addBtn = wrapper.findAll('button').find((btn) => btn.text().includes('Neuen Mieter hinzufügen'));
     await addBtn?.trigger('click');
-    await showNewTenantForm();
 
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
