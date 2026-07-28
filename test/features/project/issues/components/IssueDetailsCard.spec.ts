@@ -10,7 +10,6 @@ import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import { issueService, type IssueJson } from '@/services/IssueService';
 import { projectMemberService, type ProjectMemberListJson } from '@/services/ProjectMemberService';
 import { organizationMemberService, type OrganizationMemberListJson } from '@/services/OrganizationMemberService';
-import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 // ─── Toast Mock ──────────────────────────────────────────────────────────────
@@ -57,18 +56,6 @@ vi.mock('@/services/OrganizationMemberService', async () => {
   };
 });
 
-// IssueDetailsCard resolves the initially selected rental agreement itself
-// (RentalAgreementSelect only accepts a full object as v-model, not a raw id).
-vi.mock('@/features/project/rentalAgreements/services/RentalAgreementService', async () => {
-  const actual = await vi.importActual<typeof import('@/features/project/rentalAgreements/services/RentalAgreementService')>(
-    '@/features/project/rentalAgreements/services/RentalAgreementService',
-  );
-  return {
-    ...actual,
-    rentalAgreementService: {getRentalAgreements: vi.fn(),},
-  };
-});
-
 // ─── Test Helpers ────────────────────────────────────────────────────────────
 function findSaveButton(w: VueWrapper) {
   const button = w.findAll('button').find((b) => b.text().includes('Speichern'));
@@ -77,11 +64,12 @@ function findSaveButton(w: VueWrapper) {
 }
 
 // RentalAgreementSelect has its own dedicated spec; stub it here so selection
-// can be driven directly via emitted events without hitting the real component.
+// and id resolution can be driven directly via emitted events without hitting
+// the real component (which resolves initialAgreementId against its own fetch).
 const RentalAgreementSelectStub = {
   name: 'RentalAgreementSelect',
-  props: ['projectId', 'modelValue', 'invalid', 'inputId'],
-  emits: ['update:modelValue', 'blur'],
+  props: ['projectId', 'modelValue', 'invalid', 'inputId', 'initialAgreementId'],
+  emits: ['update:modelValue', 'resolved', 'blur'],
   template: '<div data-testid="agreement-select" />',
 };
 
@@ -122,6 +110,7 @@ const baseProps: {
     category: IssueJson['category'];
     priority: IssueJson['priority'];
     modifiedAt?: IssueJson['modifiedAt'];
+    visibleToTenants: boolean;
   };
 } = {
   projectId: 'project-1',
@@ -138,6 +127,7 @@ const baseProps: {
     category: 'GENERAL',
     priority: 'MEDIUM',
     modifiedAt: '2026-01-15T10:30:00Z',
+    visibleToTenants: false,
   },
 };
 
@@ -163,8 +153,6 @@ describe('IssueDetailsCard.vue', () => {
     vi.spyOn(organizationMemberService, 'getOrganizations')
       .mockResolvedValue({ organizations: [] } as OrganizationMemberListJson);
 
-    vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockResolvedValue([mockAgreement, mockAgreement2]);
-
     wrapper = mountCard();
   });
 
@@ -172,6 +160,25 @@ describe('IssueDetailsCard.vue', () => {
   test('renders issue title in card header', () => {
     expect(wrapper.text()).toContain('Old title');
     expect(wrapper.text()).toContain('Ticketnummer');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('shows "internal issue" tag with info severity when visibleToTenants is false', () => {
+    const tag = wrapper.findComponent({ name: 'Tag' });
+    expect(tag.props('value')).toBe('Interner Vorgang');
+    expect(tag.props('severity')).toBe('info');
+  });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  test('shows "visible to tenant" tag with warn severity when visibleToTenants is true', () => {
+    const visibleWrapper = mountCard({
+      ...baseProps,
+      initialData: { ...baseProps.initialData, visibleToTenants: true },
+    });
+
+    const tag = visibleWrapper.findComponent({ name: 'Tag' });
+    expect(tag.props('value')).toBe('Für Mieter sichtbar');
+    expect(tag.props('severity')).toBe('warn');
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -307,7 +314,6 @@ describe('IssueDetailsCard.vue', () => {
 
   // ───────────────────────────────────────────────────────────────────────────
   test('detects change in tenancy field', async () => {
-    await flushPromises(); // let the initial getRentalAgreements resolution settle
     await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('update:modelValue', mockAgreement2);
     await nextTick();
 
@@ -349,7 +355,10 @@ describe('IssueDetailsCard.vue', () => {
   // ───────────────────────────────────────────────────────────────────────────
   test('includes agreementId in payload only when the selected agreement changes', async () => {
     vi.spyOn(issueService, 'updateIssue').mockResolvedValue({});
-    await flushPromises(); // let the initial getRentalAgreements resolution settle
+
+    // Simulate RentalAgreementSelect resolving the initial agreementId, establishing the save baseline.
+    await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('resolved', mockAgreement);
+    await nextTick();
 
     await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('update:modelValue', mockAgreement2);
     await nextTick();
@@ -364,11 +373,21 @@ describe('IssueDetailsCard.vue', () => {
   });
 
   // ───────────────────────────────────────────────────────────────────────────
-  test('resolves the initially selected rental agreement on mount', async () => {
-    await flushPromises();
+  test('passes the raw agreementId to RentalAgreementSelect for resolution instead of fetching it itself', () => {
+    // The card no longer calls rentalAgreementService itself; RentalAgreementSelect
+    // resolves the id against the list it already loads for its own dropdown,
+    // which avoids firing the rental-agreements request twice on page load.
+    expect(wrapper.findComponent(RentalAgreementSelectStub).props('initialAgreementId')).toBe('agreement-1');
+  });
 
-    expect(rentalAgreementService.getRentalAgreements).toHaveBeenCalledWith('project-1');
+  // ───────────────────────────────────────────────────────────────────────────
+  test('adopts the agreement resolved by RentalAgreementSelect as the save baseline', async () => {
+    await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('resolved', mockAgreement);
+    await nextTick();
+
     expect(wrapper.findComponent(RentalAgreementSelectStub).props('modelValue')).toEqual(mockAgreement);
+    // Resolving the initial agreement is not an unsaved change.
+    expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -607,14 +626,21 @@ describe('IssueDetailsCard.vue', () => {
         category: 'WATER_DAMAGE',
         priority: 'HIGH',
         modifiedAt: '2026-02-01T00:00:00Z',
+        visibleToTenants: true,
       },
     });
     await nextTick();
-    await flushPromises(); // let the re-triggered getRentalAgreements resolution settle
 
     expect(wrapper.find<HTMLInputElement>('#issue-title').element.value).toBe('Replaced title');
     expect(wrapper.find<HTMLInputElement>('#issue-reporter').element.value).toBe('John Reporter');
     expect(wrapper.find<HTMLInputElement>('#issue-location').element.value).toBe('Building C, roof');
+    // The raw id is forwarded reactively; RentalAgreementSelect resolves it against
+    // its own already-loaded list and reports back via `resolved`.
+    expect(wrapper.findComponent(RentalAgreementSelectStub).props('initialAgreementId')).toBe('agreement-2');
+
+    await wrapper.findComponent(RentalAgreementSelectStub).vm.$emit('resolved', mockAgreement2);
+    await nextTick();
+
     expect(wrapper.findComponent(RentalAgreementSelectStub).props('modelValue')).toEqual(mockAgreement2);
     // canSave should be false again since original values now match the new data
     expect(findSaveButton(wrapper).attributes('disabled')).toBeDefined();
