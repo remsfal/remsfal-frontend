@@ -10,10 +10,16 @@ import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
-import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssueCategory, type IssuePriority }
+import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssuePriority }
   from '@/services/IssueService';
 import { useProjectStore } from '@/stores/ProjectStore';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
+import {getDefectCategories,
+  getInquiryCategories,
+  getMaintenanceCategories,
+  getGeneralCategory,
+  findCategoryOption,
+  type CategoryOption,} from '@/features/common/issues/issueCategories';
 
 /* =========================
      Props & Emits
@@ -48,61 +54,9 @@ const { t, locale } = useI18n();
 /* =========================
      Category & Priority Options
   ========================= */
-interface CategoryOption {
-  value: IssueCategory;
-  label: string;
-}
-
-const GENERAL_CATEGORY = computed<CategoryOption>(() => ({
-  value: 'GENERAL',
-  label: t('tenantIssue.categories.GENERAL'),
-}));
-
-const DEFECT_CATEGORIES = computed<CategoryOption[]>(() => [
-  { value: 'BLOCKED_DRAIN', label: t('tenantIssue.categories.BLOCKED_DRAIN') },
-  { value: 'ELECTRICAL_FAULT', label: t('tenantIssue.categories.ELECTRICAL_FAULT') },
-  { value: 'FIRE_DAMAGE', label: t('tenantIssue.categories.FIRE_DAMAGE') },
-  { value: 'HEATING_SYSTEM_MALFUNCTION', label: t('tenantIssue.categories.HEATING_SYSTEM_MALFUNCTION') },
-  { value: 'PEST_INFESTATION', label: t('tenantIssue.categories.PEST_INFESTATION') },
-  { value: 'POLLUTION_INSIDE_BUILDING', label: t('tenantIssue.categories.POLLUTION_INSIDE_BUILDING') },
-  { value: 'POLLUTION_OUTSIDE_BUILDING', label: t('tenantIssue.categories.POLLUTION_OUTSIDE_BUILDING') },
-  { value: 'SANITARY_SYSTEM_DAMAGE', label: t('tenantIssue.categories.SANITARY_SYSTEM_DAMAGE') },
-  { value: 'ROLLER_SHUTTER_DAMAGE', label: t('tenantIssue.categories.ROLLER_SHUTTER_DAMAGE') },
-  { value: 'WATER_DAMAGE', label: t('tenantIssue.categories.WATER_DAMAGE') },
-  GENERAL_CATEGORY.value,
-]);
-
-const INQUIRY_CATEGORIES = computed<CategoryOption[]>(() => [
-  { value: 'CERTIFICATE_OF_NO_RENT_ARREARS', label: t('tenantIssue.categories.CERTIFICATE_OF_NO_RENT_ARREARS') },
-  { value: 'CONFIRMATION_OF_RESIDENCE', label: t('tenantIssue.categories.CONFIRMATION_OF_RESIDENCE') },
-  GENERAL_CATEGORY.value,
-]);
-
-const MAINTENANCE_CATEGORIES = computed<CategoryOption[]>(() => [
-  { value: 'ALARM_SYSTEM_MAINTENANCE', label: t('tenantIssue.categories.ALARM_SYSTEM_MAINTENANCE') },
-  { value: 'CHIMNEY_SWEEP_MAINTENANCE', label: t('tenantIssue.categories.CHIMNEY_SWEEP_MAINTENANCE') },
-  { value: 'CLEANING_MAINTENANCE', label: t('tenantIssue.categories.CLEANING_MAINTENANCE') },
-  { value: 'FIRE_ALARM_MAINTENANCE', label: t('tenantIssue.categories.FIRE_ALARM_MAINTENANCE') },
-  { value: 'FIRE_EXTINGUISHER_MAINTENANCE', label: t('tenantIssue.categories.FIRE_EXTINGUISHER_MAINTENANCE') },
-  { value: 'GARDEN_MAINTENANCE', label: t('tenantIssue.categories.GARDEN_MAINTENANCE') },
-  { value: 'HEATING_MAINTENANCE', label: t('tenantIssue.categories.HEATING_MAINTENANCE') },
-  { value: 'PUMP_MAINTENANCE', label: t('tenantIssue.categories.PUMP_MAINTENANCE') },
-  { value: 'SNOW_REMOVAL_MAINTENANCE', label: t('tenantIssue.categories.SNOW_REMOVAL_MAINTENANCE') },
-  { value: 'TREE_CARE_MAINTENANCE', label: t('tenantIssue.categories.TREE_CARE_MAINTENANCE') },
-  GENERAL_CATEGORY.value,
-]);
-
-// Full flat list, deduplicated by value, used to resolve a category string back to its option object
-const ALL_CATEGORIES = computed<CategoryOption[]>(() => {
-  const combined = [
-    ...DEFECT_CATEGORIES.value,
-    ...INQUIRY_CATEGORIES.value,
-    ...MAINTENANCE_CATEGORIES.value,
-  ];
-  return combined.filter(
-    (option, index) => combined.findIndex((other) => other.value === option.value) === index
-  );
-});
+const DEFECT_CATEGORIES = computed<CategoryOption[]>(() => getDefectCategories(t));
+const INQUIRY_CATEGORIES = computed<CategoryOption[]>(() => getInquiryCategories(t));
+const MAINTENANCE_CATEGORIES = computed<CategoryOption[]>(() => getMaintenanceCategories(t));
 
 // Categories available for the currently selected Typ
 const availableCategories = computed<CategoryOption[]>(() => {
@@ -114,14 +68,9 @@ const availableCategories = computed<CategoryOption[]>(() => {
     case 'MAINTENANCE':
       return MAINTENANCE_CATEGORIES.value;
     default:
-      return [GENERAL_CATEGORY.value];
+      return [getGeneralCategory(t)];
   }
 });
-
-function findCategoryOption(value: IssueCategory | undefined): CategoryOption | null {
-  if (!value) return null;
-  return ALL_CATEGORIES.value.find((option) => option.value === value) ?? null;
-}
 
 /* =========================
      Local State
@@ -134,7 +83,7 @@ const reportedBy = ref(props.initialData.reportedBy);
 const project = ref(props.initialData.project);
 const issueType = ref(props.initialData.issueType);
 const tenancy = ref(props.initialData.tenancy);
-const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category));
+const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category, t));
 const priority = ref(props.initialData.priority);
 const modifiedAt = ref(props.initialData.modifiedAt);
 
@@ -221,7 +170,7 @@ watch(
     project.value = newData.project;
     issueType.value = newData.issueType;
     tenancy.value = newData.tenancy;
-    category.value = findCategoryOption(newData.category);
+    category.value = findCategoryOption(newData.category, t);
     priority.value = newData.priority;
     modifiedAt.value = newData.modifiedAt;
 
@@ -301,7 +250,7 @@ function applyIssueUpdate(updated: IssueJson) {
   if (updated.status !== undefined) status.value = updated.status;
   if (updated.assigneeId !== undefined) assigneeId.value = updated.assigneeId;
   if (updated.type !== undefined) issueType.value = updated.type;
-  if (updated.category !== undefined) category.value = findCategoryOption(updated.category);
+  if (updated.category !== undefined) category.value = findCategoryOption(updated.category, t);
   if (updated.priority !== undefined) priority.value = updated.priority;
   if (updated.modifiedAt !== undefined) modifiedAt.value = updated.modifiedAt;
 
