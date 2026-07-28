@@ -146,7 +146,7 @@ function generateIssueTitle(state: TenantIssueFormState): string {
 
   // Category or Type label
   const categoryText = issueCategory
-    ? t(`tenantIssue.categories.${issueCategory}`)
+    ? t(`issueCategory.${issueCategory}`)
     : issueType
       ? t(`tenantIssue.types.${issueType}`)
       : '';
