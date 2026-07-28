@@ -44,9 +44,7 @@ describe('ProjectTenanciesDetails', () => {
 
   beforeEach(async () => {
     // re-apply mocks here (so they're active after vi.clearAllMocks)
-    vi.spyOn(rentalAgreementService, 'loadRentalAgreement').mockResolvedValue(mockRentalAgreement);
     vi.spyOn(rentalAgreementService, 'getRentalAgreement').mockResolvedValue(mockRentalAgreement);
-    vi.spyOn(rentalAgreementService, 'updateRentalAgreement').mockResolvedValue(undefined);
     vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockResolvedValue(undefined);
 
     wrapper = mount(ProjectTenanciesDetails, {
@@ -105,12 +103,12 @@ describe('ProjectTenanciesDetails', () => {
 
   it('does not load the rental agreement when agreementId is missing', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(rentalAgreementService, 'loadRentalAgreement').mockClear();
+    vi.spyOn(rentalAgreementService, 'getRentalAgreement').mockClear();
 
     const localWrapper = mount(ProjectTenanciesDetails, {props: { projectId: 'proj-1', agreementId: '' },});
     await flushPromises();
 
-    expect(rentalAgreementService.loadRentalAgreement).not.toHaveBeenCalled();
+    expect(rentalAgreementService.getRentalAgreement).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalledWith('Agreement ID or Project ID not found');
 
     localWrapper.unmount();
