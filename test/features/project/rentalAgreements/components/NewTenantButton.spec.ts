@@ -4,9 +4,7 @@ import { Form } from '@primevue/forms';
 import NewTenantButton from '@/features/project/rentalAgreements/components/NewTenantButton.vue';
 import { tenantService, type TenantItemJson } from '@/features/project/rentalAgreements/services/TenantService';
 
-vi.mock('@/features/project/rentalAgreements/services/TenantService', () => ({
-  tenantService: { fetchTenants: vi.fn() },
-}));
+vi.mock('@/features/project/rentalAgreements/services/TenantService', () => ({tenantService: { fetchTenants: vi.fn() },}));
 
 const BaseDialogStub = {
   name: 'BaseDialog',
@@ -16,8 +14,12 @@ const BaseDialogStub = {
 
 describe('NewTenantButton', () => {
   const mockTenants: TenantItemJson[] = [
-    { id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@example.com' },
-    { id: '2', firstName: 'Erika', lastName: 'Musterfrau' },
+    {
+      id: '1', firstName: 'Max', lastName: 'Mustermann', email: 'max@example.com' 
+    },
+    {
+      id: '2', firstName: 'Erika', lastName: 'Musterfrau' 
+    },
   ];
 
   beforeEach(() => {
@@ -146,7 +148,9 @@ describe('NewTenantButton', () => {
 
   it('disables confirm and shows a hint when the selected tenant already exists', async () => {
     const wrapper = mountButton({
-      existingTenants: [{ id: '1', firstName: 'Max', lastName: 'Mustermann' }],
+      existingTenants: [{
+        id: '1', firstName: 'Max', lastName: 'Mustermann' 
+      }],
     });
     await wrapper.find('button').trigger('click');
     await flushPromises();
