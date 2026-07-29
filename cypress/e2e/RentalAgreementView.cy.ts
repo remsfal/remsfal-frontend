@@ -441,7 +441,7 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.wait('@getRentalAgreementDetails');
     cy.wait('@getApartment101');
 
-    cy.contains('Mietobjekte').parents('.p-card').within(() => {
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
       cy.get('.p-datatable').should('be.visible');
       cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 1);
       cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Apartment 101');
@@ -493,9 +493,9 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.visit(`/projects/${projectId}/agreements/agreement-1`);
     cy.wait('@getRentalAgreementDetails');
 
-    cy.contains('Mietobjekte').parents('.p-card').within(() => {
-      cy.contains(/noch keine mietobjekte/i).should('be.visible');
-      cy.contains('button', 'Mietobjekt hinzufügen').click();
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
+      cy.contains(/noch keine wirtschaftseinheiten/i).should('be.visible');
+      cy.contains('button', 'Wirtschaftseinheit hinzufügen').click();
     });
 
     cy.wait('@getPropertyTree');
@@ -515,7 +515,7 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-toast-message-success').should('be.visible');
     cy.get('[role="dialog"]').should('not.exist');
 
-    cy.contains('Mietobjekte').parents('.p-card').within(() => {
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
       cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 1);
       cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Neue Wohnung');
     });
@@ -556,7 +556,7 @@ describe('ProjectTenancies E2E Tests', () => {
 
     cy.get('[role="dialog"]').should('not.exist');
 
-    cy.contains('Mietobjekte').parents('.p-card').within(() => {
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
       cy.get('[aria-label="Löschen"]').click();
     });
 
@@ -571,8 +571,8 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-toast-message-success').should('be.visible');
     cy.get('[role="dialog"]').should('not.exist');
 
-    cy.contains('Mietobjekte').parents('.p-card').within(() => {
-      cy.contains(/noch keine mietobjekte/i).should('be.visible');
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
+      cy.contains(/noch keine wirtschaftseinheiten/i).should('be.visible');
     });
   });
 });
