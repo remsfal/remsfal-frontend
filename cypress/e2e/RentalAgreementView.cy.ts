@@ -102,6 +102,21 @@ describe('ProjectTenancies E2E Tests', () => {
       },
     }).as('getRentalAgreements');
 
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, {
+      statusCode: 200,
+      body: { members: [] },
+    }).as('getMembers');
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    }).as('getOrganizations');
+
+    cy.intercept('GET', '/ticketing/v1/issues**', {
+      statusCode: 200,
+      body: { issues: [] },
+    }).as('getIssues');
+
     // Mock tenants list
     cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
       statusCode: 200,
