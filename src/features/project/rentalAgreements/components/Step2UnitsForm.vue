@@ -26,13 +26,16 @@ export interface SelectedUnit extends RentJson {
 }
 
 // Props & Emits
-const props = defineProps<{
+const props = withDefaults(
+  defineProps<{
     projectId: string;
     selectedUnits: SelectedUnit[];
     startOfRental: string | null;
     endOfRental: string | null;
     keys?: RentalAgreementKeysJson[];
-  }>();
+  }>(),
+  { keys: () => [] },
+);
 
 const emit = defineEmits<{
   'update:selectedUnits': [value: SelectedUnit[]];
