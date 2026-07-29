@@ -175,7 +175,7 @@ async function confirmTerminate(): Promise<void> {
         <div class="flex items-end justify-end">
           <Button
             :label="t('rentalAgreement.terminate.button')"
-            icon="pi pi-calendar-times"
+            icon="pi pi-trash"
             severity="danger"
             @click="openTerminateDialog"
           />
@@ -280,7 +280,7 @@ async function confirmTerminate(): Promise<void> {
       />
       <Button
         :label="t('rentalAgreement.terminate.confirmButton')"
-        icon="pi pi-calendar-times"
+        icon="pi pi-trash"
         severity="danger"
         :disabled="!isEndDateValid || saving"
         @click="confirmTerminate"
