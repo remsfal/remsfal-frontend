@@ -103,7 +103,9 @@ describe('RentableUnitsKpiCards', () => {
             // node without a `data` object at all: `type` is undefined, must not be counted
             { key: 'unknown-1', children: [] },
             // node with a type but no `space`: falls back to 0 instead of throwing
-            { key: 'building-1', data: { type: 'BUILDING', title: 'Gebäude 1' }, children: [] },
+            {
+              key: 'building-1', data: { type: 'BUILDING', title: 'Gebäude 1' }, children: [] 
+            },
           ],
         },
       ],
