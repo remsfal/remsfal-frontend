@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import RentalAgreementTenantListCard from '../components/RentalAgreementTenantListCard.vue';
 import RentalAgreementIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue";
+import RentalAgreementUnitListCard from '../components/RentalAgreementUnitListCard.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
-import { onMounted, ref} from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
@@ -121,6 +122,13 @@ defineExpose({
         :projectId="projectId"
         :rentalAgreement="rentalAgreement"
         @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
+      />
+
+      <RentalAgreementUnitListCard
+        v-if="rentalAgreement"
+        :projectId="props.projectId"
+        :rentalAgreement="rentalAgreement"
+        @update:rentalAgreement="rentalAgreement = $event"
       />
 
       <RentalAgreementIssueCard

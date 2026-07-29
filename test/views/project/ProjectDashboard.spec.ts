@@ -4,10 +4,10 @@ import { mount, flushPromises } from '@vue/test-utils';
 import ProjectDashboard from '@/views/project/ProjectDashboard.vue';
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
-import { propertyService } from '@/services/PropertyService';
+import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 
 vi.mock('vue-router', () => ({useRoute: () => ({params: {projectId: '1',},}),}));
-vi.mock('@/services/PropertyService');
+vi.mock('@/features/project/rentableUnits/services/PropertyService');
 
 describe('ProjectDashboard.vue', () => {
   beforeEach(() => {

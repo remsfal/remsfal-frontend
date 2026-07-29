@@ -6,7 +6,9 @@ import { useToast } from 'primevue/usetoast';
 import Skeleton from 'primevue/skeleton';
 import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
-import { propertyService, type RentalUnitTreeNodeJson, type UnitType } from '@/services/PropertyService';
+import {propertyService,
+  type RentalUnitTreeNodeJson,
+  type UnitType,} from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
 
 const props = defineProps<{ projectId: string }>();

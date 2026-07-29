@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import UnitBreadcrumb from '@/features/project/rentableUnits/components/UnitBreadcrumb.vue';
-import { propertyService, type PropertyListJson } from '@/services/PropertyService';
+import { propertyService, type PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
 
-vi.mock('@/services/PropertyService', () => ({
+vi.mock('@/features/project/rentableUnits/services/PropertyService', () => ({
   propertyService: {getPropertyTree: vi.fn(),},
   EntityType: { Property: 'PROPERTY' },
   toRentableUnitView: (type: string) => type[0]! + type.slice(1).toLowerCase() + 'View',

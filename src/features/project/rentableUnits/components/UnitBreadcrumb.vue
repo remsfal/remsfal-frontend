@@ -7,7 +7,7 @@ import Breadcrumb from 'primevue/breadcrumb';
 import type { MenuItem } from 'primevue/menuitem';
 import BaseCard from '@/components/common/BaseCard.vue';
 import {propertyService, toRentableUnitView, EntityType,
-  type RentalUnitTreeNodeJson, type RentalUnitNodeDataJson,} from '@/services/PropertyService';
+  type RentalUnitTreeNodeJson, type RentalUnitNodeDataJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType } from '../unitTypeIcons';
 
 const props = defineProps<{

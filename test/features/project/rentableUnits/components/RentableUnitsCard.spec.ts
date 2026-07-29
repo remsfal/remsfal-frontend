@@ -1,9 +1,9 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import RentableUnitsCard from '@/features/project/rentableUnits/components/RentableUnitsCard.vue';
-import { type PropertyListJson, propertyService } from '@/services/PropertyService';
+import { type PropertyListJson, propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 
-vi.mock('@/services/PropertyService');
+vi.mock('@/features/project/rentableUnits/services/PropertyService');
 
 describe('RentableUnitsCard', () => {
   let wrapper: VueWrapper;
