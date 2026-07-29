@@ -14,11 +14,7 @@ describe('NewKeyDialog', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    wrapper = mount(NewKeyDialog, {
-      global: {
-        stubs: { BaseDialog: BaseDialogStub },
-      },
-    });
+    wrapper = mount(NewKeyDialog, {global: {stubs: { BaseDialog: BaseDialogStub },},});
   });
 
   it('renders the trigger button', () => {
