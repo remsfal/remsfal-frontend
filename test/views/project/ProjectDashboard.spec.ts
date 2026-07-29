@@ -1,14 +1,20 @@
 // tests/views/ProjectDashboard.spec.ts
-import {describe, it, expect, vi} from 'vitest';
-import { mount } from '@vue/test-utils';
+import {describe, it, expect, vi, beforeEach} from 'vitest';
+import { mount, flushPromises } from '@vue/test-utils';
 import ProjectDashboard from '@/views/project/ProjectDashboard.vue';
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
+import { propertyService } from '@/services/PropertyService';
 
 vi.mock('vue-router', () => ({useRoute: () => ({params: {projectId: '1',},}),}));
+vi.mock('@/services/PropertyService');
 
 describe('ProjectDashboard.vue', () => {
-  it('renders the dashboard page with correct translation', () => {
+  beforeEach(() => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({ properties: [] });
+  });
+
+  it('renders the dashboard page with correct translation', async () => {
     const wrapper = mount(ProjectDashboard, {
       global: {
         components: {
@@ -17,6 +23,7 @@ describe('ProjectDashboard.vue', () => {
         },
       },
     });
+    await flushPromises();
 
     const text = wrapper.text().replace(/\s+/g, ' ');
     expect(text).toContain('Dies ist die Projekt-Dashboard-Seite für Projekt 1');
@@ -44,7 +51,7 @@ describe('ProjectDashboard.vue', () => {
 
   });
 
-  it('renders the dashboard page with correct German translation', () => {
+  it('renders the dashboard page with correct German translation', async () => {
     const wrapper = mount(ProjectDashboard, {
       global: {
         components: {
@@ -53,6 +60,7 @@ describe('ProjectDashboard.vue', () => {
         },
       },
     });
+    await flushPromises();
 
     const text = wrapper.text().replace(/\s+/g, ' ');
     expect(text).toContain('Dies ist die Projekt-Dashboard-Seite für Projekt 1');

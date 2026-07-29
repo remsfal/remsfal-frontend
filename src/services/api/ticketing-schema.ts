@@ -4935,15 +4935,12 @@ export interface components {
     };
     /** @description A tree node representing a project entity */
     RentalUnitTreeNodeJson: {
-      /**
-       * @description Key of the node
-       * @example Property 1
-       */
-      key: components["schemas"]["UUID"];
+      /** @description Key of the node */
+      readonly key: components["schemas"]["UUID"];
       /** @description Data encapsulating node attributes */
-      data?: components["schemas"]["RentalUnitNodeDataJson"];
+      readonly data?: components["schemas"]["RentalUnitNodeDataJson"];
       /** @description Children nodes */
-      children?: components["schemas"]["RentalUnitTreeNodeJson"][];
+      readonly children?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };
     /** @enum {string} */
     RequestStatus: "REQUESTED" | "WITHDRAWN" | "VIEWING_REQUIRED" | "CONSULTATION_REQUIRED" | "REJECTED" | "SUBMITTED";

@@ -14,6 +14,9 @@ vi.mock('vue-router', () => ({
 // ---- Mock ProjectStore ----
 vi.mock('@/stores/ProjectStore', () => ({useProjectStore: () => ({ projectId: 'proj-1' }),}));
 
+const toastSpy = vi.fn();
+vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastSpy }) }));
+
 // ---- Mock window.location.href ----
 Object.defineProperty(window, 'location', {
   value: { href: 'http://localhost/project/proj-1/agreements/agreement-1' },
@@ -103,6 +106,46 @@ describe('ProjectTenanciesDetails', () => {
     expect(consoleSpy).not.toHaveBeenCalled();
 
     localWrapper.unmount();
+  });
+
+  it('shows a success toast and redirects when deleting via the danger zone succeeds', async () => {
+    const deleteBtn = wrapper.findComponent({ name: 'DangerZoneCard' }).find('button');
+    await deleteBtn.trigger('click');
+    await flushPromises();
+
+    const confirmBtn = Array.from(document.querySelectorAll('.p-dialog button')).find(
+      (btn) => btn.textContent?.trim() === 'Endgültig löschen',
+    ) as HTMLButtonElement;
+    expect(confirmBtn).toBeTruthy();
+    confirmBtn.click();
+    await flushPromises();
+
+    expect(rentalAgreementService.deleteRentalAgreement).toHaveBeenCalledWith('proj-1', 'agreement-1');
+    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
+    expect(push).toHaveBeenCalledWith({
+      name: 'RentalAgreementView',
+      params: { projectId: 'proj-1' },
+    });
+  });
+
+  it('shows an error toast and does not redirect when deleting via the danger zone fails', async () => {
+    vi.spyOn(rentalAgreementService, 'deleteRentalAgreement').mockRejectedValueOnce(new Error('network error'));
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const deleteBtn = wrapper.findComponent({ name: 'DangerZoneCard' }).find('button');
+    await deleteBtn.trigger('click');
+    await flushPromises();
+
+    const confirmBtn = Array.from(document.querySelectorAll('.p-dialog button')).find(
+      (btn) => btn.textContent?.trim() === 'Endgültig löschen',
+    ) as HTMLButtonElement;
+    confirmBtn.click();
+    await flushPromises();
+
+    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    expect(push).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith('Error deleting rental agreement:', expect.any(Error));
+    consoleSpy.mockRestore();
   });
 
   it('does not load the rental agreement when agreementId is missing', async () => {
