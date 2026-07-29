@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
 import Button from 'primevue/button';
 import Message from 'primevue/message';
-import AutoComplete from 'primevue/autocomplete';
 
 // Services & Types
-import { tenantService, type TenantItemJson as TenantItemFromList } from '../services/TenantService';
+import type { TenantItemJson } from '../services/TenantService';
 import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Components
 import TenantForm from './TenantForm.vue';
+import TenantSelect from './TenantSelect.vue';
 
 // Re-export for parent components
 export type { TenantJson };
@@ -32,54 +32,11 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 // State
-const allTenants = ref<TenantItemFromList[]>([]);
-const isLoadingTenants = ref(false);
-const filteredTenants = ref<TenantItemFromList[]>([]);
-const selectedExistingTenant = ref<TenantItemFromList | null>(null);
+const selectedExistingTenant = ref<TenantItemJson | null>(null);
 const showTenantForm = ref(false);
 
-// Type for AutoComplete options with label
-type TenantOption = TenantItemFromList & { label: string };
-
-// Computed property for TenantOptions with label
-const tenantOptions = computed<TenantOption[]>(() =>
-  filteredTenants.value.map((t) => ({
-    ...t,
-    label: `${t.firstName} ${t.lastName}${t.email ? ` (${t.email})` : ''}`,
-  })),
-);
-
-// Load tenants on mount
-onMounted(async () => {
-  isLoadingTenants.value = true;
-  try {
-    allTenants.value = await tenantService.fetchTenants(props.projectId);
-  } catch (error) {
-    console.error('Failed to load tenants:', error);
-  } finally {
-    isLoadingTenants.value = false;
-  }
-});
-
-// AutoComplete Filter Function
-const searchTenants = (event: { query: string }) => {
-  const query = event.query.toLowerCase().trim();
-
-  if (!query) {
-    filteredTenants.value = allTenants.value;
-    return;
-  }
-
-  filteredTenants.value = allTenants.value.filter(
-    (t) =>
-      t.firstName?.toLowerCase().includes(query) ||
-      t.lastName?.toLowerCase().includes(query) ||
-      t.email?.toLowerCase().includes(query),
-  );
-};
-
-// When existing tenant is selected from AutoComplete
-const onTenantSelected = (tenant: TenantItemFromList | null) => {
+// When existing tenant is selected from TenantSelect
+const onTenantSelected = (tenant: TenantItemJson | null) => {
   if (!tenant) {
     showTenantForm.value = false;
     return;
@@ -93,7 +50,7 @@ const onTenantSelected = (tenant: TenantItemFromList | null) => {
     return;
   }
 
-  // Convert TenantItemFromList to TenantJson (add missing fields as undefined)
+  // Convert TenantItemJson to TenantJson (add missing fields as undefined)
   const tenantForRental: TenantJson = {
     id: tenant.id,
     firstName: tenant.firstName,
@@ -102,7 +59,7 @@ const onTenantSelected = (tenant: TenantItemFromList | null) => {
     mobilePhoneNumber: tenant.mobilePhoneNumber,
     businessPhoneNumber: tenant.businessPhoneNumber,
     privatePhoneNumber: tenant.privatePhoneNumber,
-    // These fields are not in TenantItemFromList but are in TenantItem
+    // These fields are not in TenantItemJson but are in TenantJson
     placeOfBirth: undefined,
     dateOfBirth: undefined,
   };
@@ -164,26 +121,12 @@ const onTenantFormCancel = () => {
         <label for="tenantSelector" class="font-semibold">
           {{ t('rentalAgreement.step3.selectTenant') }}
         </label>
-        <AutoComplete
+        <TenantSelect
           v-model="selectedExistingTenant"
-          :suggestions="tenantOptions"
-          :loading="isLoadingTenants"
-          :placeholder="t('rentalAgreement.step3.searchTenant')"
-          :emptySearchMessage="t('rentalAgreement.step3.noTenants')"
-          dataKey="id"
-          optionLabel="label"
-          fluid
-          dropdown
-          @complete="searchTenants"
+          inputId="tenantSelector"
+          :projectId="projectId"
           @update:modelValue="onTenantSelected"
-        >
-          <template #option="slotProps">
-            <div class="flex flex-col">
-              <span class="font-semibold">{{ slotProps.option.firstName }} {{ slotProps.option.lastName }}</span>
-              <span v-if="slotProps.option.email" class="text-sm text-gray-600">{{ slotProps.option.email }}</span>
-            </div>
-          </template>
-        </AutoComplete>
+        />
       </div>
 
       <Button
