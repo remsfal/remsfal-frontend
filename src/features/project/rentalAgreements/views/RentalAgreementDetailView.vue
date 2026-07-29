@@ -59,11 +59,11 @@ function deleteRentalAgreement(agreementId: string) {
 
   rentalAgreementService
     .deleteRentalAgreement(props.projectId, agreementId)
-    .then(() => redirectToTenanciesList())
+    .then(() => redirectToRentalAgreementList())
     .catch((error) => console.error('Error deleting rental agreement:', error));
 }
 
-function redirectToTenanciesList() {
+function redirectToRentalAgreementList() {
   router.push({ name: 'RentalAgreementView', params: { projectId: props.projectId } });
 }
 
@@ -87,7 +87,7 @@ const deleteAgreement = async () => {
       detail: t('rentalAgreement.dangerZone.deleteSuccess'),
       life: 3000,
     });
-    redirectToTenanciesList();
+    redirectToRentalAgreementList();
   } catch (err) {
     console.error('Error deleting rental agreement:', err);
     toast.add({

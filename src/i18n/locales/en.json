@@ -719,7 +719,7 @@
   "validation.minValue": "Value must be at least {min}",
   "rentalAgreement.dialog.title": "New Rental Agreement",
   "rentalAgreement.dialog.confirmDelete": "Are you sure you want to delete the rental agreement with ID {id}?",
-  "rentalAgreement.dangerZone.description": "Delete this rental agreement. Once this rental agreement is deleted, it cannot be restored.",
+  "rentalAgreement.dangerZone.description": "Delete this rental agreement. This action cannot be undone. Deleting this rental agreement will permanently remove all associated tenant data, history, and related information.",
   "rentalAgreement.dangerZone.deleteButton": "Delete Rental Agreement",
   "rentalAgreement.dangerZone.confirmTitle": "Really delete rental agreement?",
   "rentalAgreement.dangerZone.confirmMessage": "Are you sure you want to delete this rental agreement? This action cannot be undone.",
