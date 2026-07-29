@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Skeleton from 'primevue/skeleton';
+import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
 import { propertyService, type RentalUnitTreeNodeJson, type UnitType } from '@/services/PropertyService';
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
@@ -57,19 +59,32 @@ onMounted(() => fetchPropertyTree(props.projectId));
 </script>
 
 <template>
-  <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    <template v-if="isLoading">
-      <Skeleton v-for="i in 6" :key="i" height="6rem" borderRadius="0.75rem" />
+  <div v-if="isLoading" class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <Skeleton v-for="i in 6" :key="i" height="6rem" borderRadius="0.75rem" />
+  </div>
+  <Message v-else-if="kpis.length === 0" severity="success" closable class="mb-6">
+    <template #icon>
+      <i class="pi pi-sparkles text-xl" />
     </template>
-    <template v-else>
-      <KpiCard
-        v-for="kpi in kpis"
-        :key="kpi.type"
-        :icon="getIconForUnitType(kpi.type)"
-        :title="t(`unitTypes.${kpi.type.toLowerCase()}`)"
-        :value="kpi.count"
-        :subtext="`${kpi.space} m²`"
-      />
-    </template>
+    <span>
+      {{ t('rentableUnits.kpi.emptyState.text') }}
+      <br>
+      <RouterLink
+        :to="{ name: 'RentableUnits', params: { projectId } }"
+        class="font-semibold underline"
+      >
+        {{ t('rentableUnits.kpi.emptyState.link') }}
+      </RouterLink>
+    </span>
+  </Message>
+  <div v-else class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <KpiCard
+      v-for="kpi in kpis"
+      :key="kpi.type"
+      :icon="getIconForUnitType(kpi.type)"
+      :title="t(`unitTypes.${kpi.type.toLowerCase()}`)"
+      :value="kpi.count"
+      :subtext="`${kpi.space} m²`"
+    />
   </div>
 </template>

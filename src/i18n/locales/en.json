@@ -342,6 +342,8 @@
   "rentableUnits.delete.confirmMessage": "Are you sure you want to delete {type} \"{title}\"? This action cannot be undone.",
   "rentableUnits.delete.confirmDeleteButton": "Delete permanently",
   "rentableUnits.loadError": "Failed to load rentable units",
+  "rentableUnits.kpi.emptyState.text": "Congratulations on your new property! To manage your project, you first need to create rentable units.",
+  "rentableUnits.kpi.emptyState.link": "Create rentable units now",
   "rentableUnits.dangerZone.title": "Dangerous Changes",
   "rentableUnits.dangerZone.description": "Delete this {type}. This action cannot be undone.",
   "rentableUnits.dangerZone.deleteButton": "Delete {type}",

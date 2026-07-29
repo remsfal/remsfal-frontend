@@ -1,5 +1,6 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import Message from 'primevue/message';
 import RentableUnitsKpiCards from '@/features/project/rentableUnits/components/RentableUnitsKpiCards.vue';
 import KpiCard from '@/components/common/KpiCard.vue';
 import { type PropertyListJson, propertyService } from '@/services/PropertyService';
@@ -88,6 +89,22 @@ describe('RentableUnitsKpiCards', () => {
 
     const titles = wrapper.findAllComponents(KpiCard).map((card) => card.props('title'));
     expect(titles).toEqual(['Grundstück']);
+  });
+
+  it('shows an empty-state message with a link to create rentable units when none exist', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({properties: [],} as unknown as PropertyListJson);
+
+    wrapper = mount(RentableUnitsKpiCards, { props: { projectId: '123' } });
+    await flushPromises();
+
+    expect(wrapper.findComponent(KpiCard).exists()).toBe(false);
+
+    const message = wrapper.findComponent(Message);
+    expect(message.exists()).toBe(true);
+    expect(message.props('severity')).toBe('success');
+
+    const link = wrapper.find('a[href="/projects/123/units"]');
+    expect(link.exists()).toBe(true);
   });
 
   it('shows skeletons while loading', () => {
