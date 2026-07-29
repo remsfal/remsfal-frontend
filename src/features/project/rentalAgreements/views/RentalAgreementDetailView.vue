@@ -101,10 +101,10 @@ defineExpose({
       />
 
       <RentalAgreementUnitListCard
-          v-if="rentalAgreement"
-          :projectId="props.projectId"
-          :rentalAgreement="rentalAgreement"
-          @update:rentalAgreement="rentalAgreement = $event"
+        v-if="rentalAgreement"
+        :projectId="props.projectId"
+        :rentalAgreement="rentalAgreement"
+        @update:rentalAgreement="rentalAgreement = $event"
       />
 
       <RentalAgreementIssueCard

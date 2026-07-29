@@ -303,7 +303,7 @@ async function confirmRemove() {
           </template>
         </Column>
         <Column field="id" :header="t('rentalAgreement.unitsCard.columnId')" />
-        <Column>
+        <Column bodyStyle="text-align: right">
           <template #body="{ data }">
             <Button
               icon="pi pi-trash"
@@ -335,8 +335,12 @@ async function confirmRemove() {
     dialogClass="w-full max-w-2xl"
   >
     <div class="flex flex-col gap-4">
+      <label for="rentalAgreementUnitSelect" class="font-semibold">
+        {{ t('rentalAgreement.step2.selectUnit') }}
+      </label>
       <TreeSelect
         v-model="selectedNodeKey"
+        inputId="rentalAgreementUnitSelect"
         :options="propertyTree"
         :loading="isLoadingTree"
         :placeholder="t('rentalAgreement.step2.selectUnit')"
