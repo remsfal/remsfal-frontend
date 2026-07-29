@@ -91,6 +91,35 @@ describe('RentableUnitsKpiCards', () => {
     expect(titles).toEqual(['Grundstück']);
   });
 
+  it('ignores nodes without data/type and defaults missing space to 0', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
+      properties: [
+        {
+          key: 'property-1',
+          data: {
+            type: 'PROPERTY', title: 'Grundstück 1', space: 500
+          },
+          children: [
+            // node without a `data` object at all: `type` is undefined, must not be counted
+            { key: 'unknown-1', children: [] },
+            // node with a type but no `space`: falls back to 0 instead of throwing
+            { key: 'building-1', data: { type: 'BUILDING', title: 'Gebäude 1' }, children: [] },
+          ],
+        },
+      ],
+    } as PropertyListJson);
+
+    wrapper = mount(RentableUnitsKpiCards, { props: { projectId: '123' } });
+    await flushPromises();
+
+    const cards = wrapper.findAllComponents(KpiCard);
+    expect(cards).toHaveLength(2);
+
+    expect(cards[1]!.props('title')).toBe('Gebäude');
+    expect(cards[1]!.props('value')).toBe(1);
+    expect(cards[1]!.props('subtext')).toBe('0 m²');
+  });
+
   it('shows an empty-state message with a link to create rentable units when none exist', async () => {
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue({properties: [],} as unknown as PropertyListJson);
 
