@@ -1815,12 +1815,13 @@
         "properties" : {
           "key" : {
             "description" : "Key of the node",
+            "readOnly" : true,
             "type" : "string",
-            "examples" : [ "Property 1" ],
             "$ref" : "#/components/schemas/UUID"
           },
           "data" : {
             "description" : "Data encapsulating node attributes",
+            "readOnly" : true,
             "type" : "object",
             "$ref" : "#/components/schemas/RentalUnitNodeDataJson"
           },
@@ -1829,7 +1830,8 @@
             "items" : {
               "$ref" : "#/components/schemas/RentalUnitTreeNodeJson"
             },
-            "description" : "Children nodes"
+            "description" : "Children nodes",
+            "readOnly" : true
           }
         }
       },
