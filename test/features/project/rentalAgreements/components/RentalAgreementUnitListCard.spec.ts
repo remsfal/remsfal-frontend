@@ -5,8 +5,8 @@ import TreeSelect from 'primevue/treeselect';
 import RentalAgreementUnitListCard from '@/features/project/rentalAgreements/components/RentalAgreementUnitListCard.vue';
 import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import { propertyService } from '@/services/PropertyService';
-import type { UnitType } from '@/services/PropertyService';
+import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
+import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
@@ -19,8 +19,8 @@ vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }));
 const toastSpy = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: toastSpy }) }));
 
-vi.mock('@/services/PropertyService', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/services/PropertyService')>();
+vi.mock('@/features/project/rentableUnits/services/PropertyService', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/features/project/rentableUnits/services/PropertyService')>();
   return {
     ...actual,
     propertyService: { getProperty: vi.fn(), getPropertyTree: vi.fn() },
@@ -118,7 +118,7 @@ describe('RentalAgreementUnitListCard', () => {
   it('shows empty state when the rental agreement has no rent entries', async () => {
     const wrapper = mountCard({ id: 'agreement-1' });
     await flushPromises();
-    expect(wrapper.text()).toContain('Noch keine Mietobjekte hinzugefügt.');
+    expect(wrapper.text()).toContain('Noch keine Wirtschaftseinheiten hinzugefügt.');
   });
 
   it('hydrates units from mixed rent-array types via their respective services', async () => {
@@ -174,7 +174,7 @@ describe('RentalAgreementUnitListCard', () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const addBtn = wrapper.findAll('button').find((btn) => btn.text() === 'Mietobjekt hinzufügen');
+    const addBtn = wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen');
     await addBtn?.trigger('click');
     await flushPromises();
 
@@ -201,7 +201,7 @@ describe('RentalAgreementUnitListCard', () => {
     const wrapper = mountCard();
     await flushPromises();
 
-    const addBtn = wrapper.findAll('button').find((btn) => btn.text() === 'Mietobjekt hinzufügen');
+    const addBtn = wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen');
     await addBtn?.trigger('click');
     await flushPromises();
 
@@ -226,7 +226,7 @@ describe('RentalAgreementUnitListCard', () => {
 
     const wrapper = mountCard();
     await flushPromises();
-    await wrapper.findAll('button').find((btn) => btn.text() === 'Mietobjekt hinzufügen')?.trigger('click');
+    await wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen')?.trigger('click');
     await flushPromises();
 
     expect(findDialogButton('Hinzufügen')?.disabled).toBe(true);
@@ -253,7 +253,7 @@ describe('RentalAgreementUnitListCard', () => {
 
     const wrapper = mountCard();
     await flushPromises();
-    await wrapper.findAll('button').find((btn) => btn.text() === 'Mietobjekt hinzufügen')?.trigger('click');
+    await wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen')?.trigger('click');
     await flushPromises();
     await wrapper.findComponent(TreeSelect).vm.$emit('node-select', {
       key: 'apt-2',
@@ -292,7 +292,7 @@ describe('RentalAgreementUnitListCard', () => {
 
     const wrapper = mountCard();
     await flushPromises();
-    await wrapper.findAll('button').find((btn) => btn.text() === 'Mietobjekt hinzufügen')?.trigger('click');
+    await wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen')?.trigger('click');
     await flushPromises();
     await wrapper.findComponent(TreeSelect).vm.$emit('node-select', {
       key: 'apt-2',

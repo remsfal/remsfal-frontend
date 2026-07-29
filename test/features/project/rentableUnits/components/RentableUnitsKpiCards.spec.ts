@@ -3,9 +3,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Message from 'primevue/message';
 import RentableUnitsKpiCards from '@/features/project/rentableUnits/components/RentableUnitsKpiCards.vue';
 import KpiCard from '@/components/common/KpiCard.vue';
-import { type PropertyListJson, propertyService } from '@/services/PropertyService';
+import { type PropertyListJson, propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 
-vi.mock('@/services/PropertyService');
+vi.mock('@/features/project/rentableUnits/services/PropertyService');
 
 describe('RentableUnitsKpiCards', () => {
   let wrapper: VueWrapper;

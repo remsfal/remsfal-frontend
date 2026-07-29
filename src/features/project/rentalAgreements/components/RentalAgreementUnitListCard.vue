@@ -6,7 +6,6 @@ import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import TreeSelect from 'primevue/treeselect';
 import type { TreeNode } from 'primevue/treenode';
 import BaseCard from '@/components/common/BaseCard.vue';
 import BaseDialog from '@/components/common/BaseDialog.vue';
@@ -14,8 +13,8 @@ import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import {propertyService,
   toRentableUnitView,
-  type RentalUnitTreeNodeJson,
-  type UnitType,} from '@/services/PropertyService';
+  type UnitType,} from '@/features/project/rentableUnits/services/PropertyService';
+import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
@@ -162,57 +161,24 @@ function onRowSelect(event: { data: DisplayUnit }) {
 }
 
 const addDialogVisible = ref(false);
-const propertyTree = ref<TreeNode[]>([]);
-const isLoadingTree = ref(false);
 const selectedNodeKey = ref<string | null>(null);
 const selectedNode = ref<TreeNode | null>(null);
 
 const existingUnitIds = computed(() => new Set(units.value.map((unit) => unit.id)));
 
-function transformTreeNodes(nodes: RentalUnitTreeNodeJson[]): TreeNode[] {
-  return nodes.map((node) => {
-    const unitType = node.data?.type ? t(`unitTypes.${node.data.type.toLowerCase()}`) : '';
-    const title = node.data?.title || 'Unbenannt';
-
-    return {
-      key: node.key,
-      label: `${title} (${unitType})`,
-      data: node.data,
-      children: node.children ? transformTreeNodes(node.children) : undefined,
-      selectable:
-        node.data?.type !== undefined &&
-        node.data.type !== 'PROPERTY' &&
-        !existingUnitIds.value.has(node.key),
-    };
-  });
-}
-
-async function openAddDialog() {
+function openAddDialog() {
   selectedNodeKey.value = null;
   selectedNode.value = null;
   addDialogVisible.value = true;
-  isLoadingTree.value = true;
-  try {
-    const data = await propertyService.getPropertyTree(props.projectId);
-    propertyTree.value = transformTreeNodes((data.properties || []) as RentalUnitTreeNodeJson[]);
-  } catch (error) {
-    console.error('Failed to load property tree:', error);
-  } finally {
-    isLoadingTree.value = false;
-  }
 }
 
 function onNodeSelect(node: TreeNode) {
   selectedNode.value = node;
 }
 
-const isSelectedUnitAlreadyAdded = computed(
-  () => !!selectedNode.value && existingUnitIds.value.has(selectedNode.value.key as string),
-);
-
 async function confirmAdd() {
   const node = selectedNode.value;
-  if (!node?.data?.type || isSelectedUnitAlreadyAdded.value || !props.rentalAgreement.id) return;
+  if (!node?.data?.type || !props.rentalAgreement.id) return;
 
   const type = node.data.type as UnitType;
   const field = RENT_FIELD_BY_TYPE[type];
@@ -338,26 +304,20 @@ async function confirmRemove() {
       <label for="rentalAgreementUnitSelect" class="font-semibold">
         {{ t('rentalAgreement.step2.selectUnit') }}
       </label>
-      <TreeSelect
+      <RentableUnitSelect
         v-model="selectedNodeKey"
+        :projectId="projectId"
+        :excludeUnitIds="[...existingUnitIds]"
         inputId="rentalAgreementUnitSelect"
-        :options="propertyTree"
-        :loading="isLoadingTree"
-        :placeholder="t('rentalAgreement.step2.selectUnit')"
-        selectionMode="single"
-        fluid
         @nodeSelect="onNodeSelect"
       />
-      <small v-if="isSelectedUnitAlreadyAdded" class="text-red-600">
-        {{ t('rentalAgreement.unitsCard.unitAlreadyAdded') }}
-      </small>
       <div class="flex justify-end gap-2">
         <Button type="button" :label="t('button.cancel')" severity="secondary" @click="addDialogVisible = false" />
         <Button
           type="button"
           :label="t('rentalAgreement.unitsCard.confirmAdd')"
           icon="pi pi-check"
-          :disabled="!selectedNode || isSelectedUnitAlreadyAdded || saving"
+          :disabled="!selectedNode || saving"
           @click="confirmAdd"
         />
       </div>
