@@ -64,8 +64,8 @@ describe('ProjectTenanciesDetails', () => {
     }
   });
 
-  it('renders RentalAgreementUnitsCard once the rental agreement is loaded', () => {
-    expect(wrapper.findComponent({ name: 'RentalAgreementUnitsCard' }).exists()).toBe(true);
+  it('renders RentalAgreementUnitListCard once the rental agreement is loaded', () => {
+    expect(wrapper.findComponent({ name: 'RentalAgreementUnitListCard' }).exists()).toBe(true);
   });
 
   it('deletes rental agreement and redirects', async () => {

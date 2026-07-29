@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import DataTable from 'primevue/datatable';
 import TreeSelect from 'primevue/treeselect';
-import RentalAgreementUnitsCard from '@/features/project/rentalAgreements/components/RentalAgreementUnitsCard.vue';
+import RentalAgreementUnitListCard from '@/features/project/rentalAgreements/components/RentalAgreementUnitListCard.vue';
 import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { propertyService } from '@/services/PropertyService';
@@ -77,9 +77,9 @@ const UNIT_TYPE_CASES: Array<{ unitId: string; type: UnitType; view: string }> =
   },
 ];
 
-describe('RentalAgreementUnitsCard', () => {
+describe('RentalAgreementUnitListCard', () => {
   const mountCard = (agreement: RentalAgreementJson = baseAgreement) =>
-    mount(RentalAgreementUnitsCard, {
+    mount(RentalAgreementUnitListCard, {
       props: { projectId: 'proj-1', rentalAgreement: agreement },
       attachTo: document.body,
     });

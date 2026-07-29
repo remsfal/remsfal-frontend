@@ -5,6 +5,6 @@ export { default as TenantDetailView } from './views/TenantDetailView.vue';
 export { default as NewRentalAgreementDialog } from './components/NewRentalAgreementDialog.vue';
 export { default as TenancyDataComponent } from './components/TenancyDataComponent.vue';
 export { default as RentalAgreementTenantListCard } from './components/RentalAgreementTenantListCard.vue';
-export { default as RentalAgreementUnitsCard } from './components/RentalAgreementUnitsCard.vue';
+export { default as RentalAgreementUnitListCard } from './components/RentalAgreementUnitListCard.vue';
 export { default as TenantContactDataCard } from './components/TenantContactDataCard.vue';
 export { default as TenantAddressCard } from './components/TenantAddressCard.vue';

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import RentalAgreementTenantListCard from '../components/RentalAgreementTenantListCard.vue';
 import RentalAgreementIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue";
-import RentalAgreementUnitsCard from '../components/RentalAgreementUnitsCard.vue';
+import RentalAgreementUnitListCard from '../components/RentalAgreementUnitListCard.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
@@ -100,7 +100,7 @@ defineExpose({
         @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
       />
 
-      <RentalAgreementUnitsCard
+      <RentalAgreementUnitListCard
           v-if="rentalAgreement"
           :projectId="props.projectId"
           :rentalAgreement="rentalAgreement"
