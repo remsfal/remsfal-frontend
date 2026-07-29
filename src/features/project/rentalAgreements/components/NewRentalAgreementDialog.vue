@@ -14,6 +14,7 @@ import StepPanel from 'primevue/steppanel';
 // Services & Types
 import {rentalAgreementService,
   type RentalAgreementJson,
+  type RentalAgreementKeysJson,
   type TenantJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import type { ApiComponents } from '@/services/ApiClient';
 import type { SelectedUnit } from './Step2UnitsForm.vue';
@@ -50,11 +51,13 @@ const formState = ref<{
   endOfRental: string | null;
   selectedUnits: SelectedUnit[];
   tenants: TenantJson[];
+  keys: RentalAgreementKeysJson[];
 }>({
   startOfRental: null,
   endOfRental: null,
   selectedUnits: [],
   tenants: [],
+  keys: [],
 });
 
 // Loading State
@@ -134,6 +137,7 @@ function transformFormDataToRentalAgreement(
     startOfRental: state.startOfRental!,
     endOfRental: state.endOfRental || undefined,
     tenants,
+    keys: state.keys,
     propertyRents,
     siteRents,
     buildingRents,
@@ -195,6 +199,7 @@ function resetForm() {
     endOfRental: null,
     selectedUnits: [],
     tenants: [],
+    keys: [],
   };
 }
 </script>
@@ -241,6 +246,7 @@ function resetForm() {
         <StepPanel v-slot="{ activateCallback }" value="2">
           <Step2UnitsForm
             v-model:selectedUnits="formState.selectedUnits"
+            v-model:keys="formState.keys"
             :projectId="projectId"
             :startOfRental="formState.startOfRental"
             :endOfRental="formState.endOfRental"
