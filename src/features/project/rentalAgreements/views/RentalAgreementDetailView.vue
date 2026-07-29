@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import RentalAgreementTenantListCard from '../components/RentalAgreementTenantListCard.vue';
 import RentalAgreementIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue";
 import RentalAgreementUnitsCard from '../components/RentalAgreementUnitsCard.vue';
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
@@ -90,6 +91,15 @@ defineExpose({
         @delete="confirmDeletion"
       />
 
+      <!-- Tenants -->
+      <RentalAgreementTenantListCard
+        v-if="rentalAgreement"
+        :active="rentalAgreement.active"
+        :projectId="projectId"
+        :rentalAgreement="rentalAgreement"
+        @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
+      />
+
       <RentalAgreementUnitsCard
           v-if="rentalAgreement"
           :projectId="props.projectId"
@@ -104,7 +114,6 @@ defineExpose({
     </div>
   </div>
 
-  <!-- Delete confirmation dialog -->
   <BaseDialog v-model:visible="confirmationDialogVisible" :header="t('projectTenancies.dialog.confirmationTitle')">
     <p>{{ t('rentalAgreement.dialog.confirmDelete', { id: rentalAgreement?.id }) }}</p>
     <template #footer>

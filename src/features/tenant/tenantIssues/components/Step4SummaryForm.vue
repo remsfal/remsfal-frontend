@@ -60,7 +60,7 @@ const typeLabel = computed(() => {
 // Get category label
 const categoryLabel = computed(() => {
   if (!props.issueCategory) return '-';
-  return t(`tenantIssue.categories.${props.issueCategory}`);
+  return t(`issueCategory.${props.issueCategory}`);
 });
 
 // Format file size

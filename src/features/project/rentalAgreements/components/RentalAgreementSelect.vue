@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
@@ -14,10 +14,14 @@ const props = defineProps<{
   modelValue: RentalAgreementItemJson | null;
   invalid?: boolean;
   inputId?: string;
+  // Raw agreement id from the caller (e.g. IssueJson.agreementId) to resolve against
+  // the list this component already loads, instead of the caller fetching it again.
+  initialAgreementId?: string;
 }>();
 
 const emit = defineEmits<{
   'update:modelValue': [value: RentalAgreementItemJson | null];
+  resolved: [value: RentalAgreementItemJson | null];
   blur: [];
 }>();
 
@@ -44,14 +48,35 @@ function unitLabelFor(agreement: RentalAgreementItemJson): string {
     .join(', ');
 }
 
+function toOption(agreement: RentalAgreementItemJson): AgreementOption {
+  const unit = unitLabelFor(agreement);
+  const tenants = tenantNamesFor(agreement);
+  return { ...agreement, label: unit ? `${tenants} (${unit})` : tenants };
+}
+
 // Computed property for AutoComplete options with a synthetic display label
 const agreementOptions = computed<AgreementOption[]>(() =>
-  filteredAgreements.value.map((agreement) => {
-    const unit = unitLabelFor(agreement);
-    const tenants = tenantNamesFor(agreement);
-    return { ...agreement, label: unit ? `${tenants} (${unit})` : tenants };
-  }),
+  filteredAgreements.value.map(toOption),
 );
+
+// The bound modelValue may come from the caller without a synthetic `label`
+// (e.g. resolved via `initialAgreementId`); always derive the display value
+// here so AutoComplete never falls back to rendering the raw object.
+const displayValue = computed<AgreementOption | null>(() =>
+  props.modelValue ? toOption(props.modelValue) : null,
+);
+
+// Resolves `initialAgreementId` against the already-loaded list, so callers
+// don't need to fetch rental agreements a second time just to turn a raw id
+// into the full object RentalAgreementSelect requires as its v-model.
+function resolveInitialAgreement() {
+  if (!props.initialAgreementId) {
+    emit('resolved', null);
+    return;
+  }
+  const match = allAgreements.value.find((agreement) => agreement.id === props.initialAgreementId) ?? null;
+  emit('resolved', match ? toOption(match) : null);
+}
 
 // Load rental agreements on mount
 onMounted(async () => {
@@ -59,6 +84,7 @@ onMounted(async () => {
   try {
     allAgreements.value = await rentalAgreementService.getRentalAgreements(props.projectId);
     filteredAgreements.value = allAgreements.value;
+    resolveInitialAgreement();
   } catch (error) {
     console.error('Failed to load rental agreements:', error);
   } finally {
@@ -66,12 +92,29 @@ onMounted(async () => {
   }
 });
 
+watch(() => props.initialAgreementId, () => resolveInitialAgreement());
+
+// AutoComplete (non-multiple) emits update:modelValue for the transient text
+// the user is typing while searching too, not only for a genuine selection —
+// it's a raw string, not an agreement. Forwarding it would round-trip through
+// `displayValue`/toOption() below and overwrite the input with the
+// "unknown tenant" fallback label as soon as a letter is typed. Only forward
+// real selections (an agreement object) or an explicit clear (null).
+function onModelValueUpdate(value: AgreementOption | string | null) {
+  if (typeof value === 'string') return;
+  emit('update:modelValue', value);
+}
+
 // AutoComplete Filter Function (client-side, no search endpoint exists)
 const searchAgreements = (event: { query: string }) => {
   const query = event.query.toLowerCase().trim();
 
   if (!query) {
-    filteredAgreements.value = allAgreements.value;
+    // Always assign a new array reference: AutoComplete only opens its
+    // overlay when its `suggestions` prop changes, so reusing the exact
+    // same array (e.g. on the very first dropdown click, before any
+    // filtering happened) would silently no-op and leave the dropdown closed.
+    filteredAgreements.value = [...allAgreements.value];
     return;
   }
 
@@ -93,7 +136,7 @@ const searchAgreements = (event: { query: string }) => {
 <template>
   <AutoComplete
     :inputId="inputId"
-    :modelValue="modelValue"
+    :modelValue="displayValue"
     :suggestions="agreementOptions"
     :loading="isLoading"
     :placeholder="t('rentalAgreementSelect.placeholder')"
@@ -105,7 +148,7 @@ const searchAgreements = (event: { query: string }) => {
     fluid
     dropdown
     @complete="searchAgreements"
-    @update:modelValue="emit('update:modelValue', $event)"
+    @update:modelValue="onModelValueUpdate"
     @blur="emit('blur')"
   >
     <template #option="slotProps">

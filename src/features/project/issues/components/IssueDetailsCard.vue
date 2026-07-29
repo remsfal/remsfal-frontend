@@ -1,21 +1,28 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
+import Tag from 'primevue/tag';
 import BaseCard from '@/components/common/BaseCard.vue';
 import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
-import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssueCategory, type IssuePriority }
+import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssuePriority }
   from '@/services/IssueService';
-import { rentalAgreementService, type RentalAgreementItemJson }
+import { type RentalAgreementItemJson }
   from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { getIssueStatusLabel, getIssueTypeLabel, getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
+import {getDefectCategories,
+  getInquiryCategories,
+  getMaintenanceCategories,
+  getGeneralCategory,
+  findCategoryOption,
+  type CategoryOption,} from '@/features/common/issues/issueCategories';
 
 /* =========================
      Props & Emits
@@ -35,6 +42,7 @@ const props = defineProps<{
     category: IssueJson["category"];
     priority: IssueJson["priority"];
     modifiedAt?: IssueJson["modifiedAt"];
+    visibleToTenants: boolean;
   };
 }>();
 
@@ -49,61 +57,9 @@ const { t, locale } = useI18n();
 /* =========================
      Category & Priority Options
   ========================= */
-interface CategoryOption {
-  value: IssueCategory;
-  label: string;
-}
-
-const GENERAL_CATEGORY = computed<CategoryOption>(() => ({
-  value: 'GENERAL',
-  label: t('tenantIssue.categories.GENERAL'),
-}));
-
-const DEFECT_CATEGORIES = computed<CategoryOption[]>(() => [
-  { value: 'BLOCKED_DRAIN', label: t('tenantIssue.categories.BLOCKED_DRAIN') },
-  { value: 'ELECTRICAL_FAULT', label: t('tenantIssue.categories.ELECTRICAL_FAULT') },
-  { value: 'FIRE_DAMAGE', label: t('tenantIssue.categories.FIRE_DAMAGE') },
-  { value: 'HEATING_SYSTEM_MALFUNCTION', label: t('tenantIssue.categories.HEATING_SYSTEM_MALFUNCTION') },
-  { value: 'PEST_INFESTATION', label: t('tenantIssue.categories.PEST_INFESTATION') },
-  { value: 'POLLUTION_INSIDE_BUILDING', label: t('tenantIssue.categories.POLLUTION_INSIDE_BUILDING') },
-  { value: 'POLLUTION_OUTSIDE_BUILDING', label: t('tenantIssue.categories.POLLUTION_OUTSIDE_BUILDING') },
-  { value: 'SANITARY_SYSTEM_DAMAGE', label: t('tenantIssue.categories.SANITARY_SYSTEM_DAMAGE') },
-  { value: 'ROLLER_SHUTTER_DAMAGE', label: t('tenantIssue.categories.ROLLER_SHUTTER_DAMAGE') },
-  { value: 'WATER_DAMAGE', label: t('tenantIssue.categories.WATER_DAMAGE') },
-  GENERAL_CATEGORY.value,
-]);
-
-const INQUIRY_CATEGORIES = computed<CategoryOption[]>(() => [
-  { value: 'CERTIFICATE_OF_NO_RENT_ARREARS', label: t('tenantIssue.categories.CERTIFICATE_OF_NO_RENT_ARREARS') },
-  { value: 'CONFIRMATION_OF_RESIDENCE', label: t('tenantIssue.categories.CONFIRMATION_OF_RESIDENCE') },
-  GENERAL_CATEGORY.value,
-]);
-
-const MAINTENANCE_CATEGORIES = computed<CategoryOption[]>(() => [
-  { value: 'ALARM_SYSTEM_MAINTENANCE', label: t('tenantIssue.categories.ALARM_SYSTEM_MAINTENANCE') },
-  { value: 'CHIMNEY_SWEEP_MAINTENANCE', label: t('tenantIssue.categories.CHIMNEY_SWEEP_MAINTENANCE') },
-  { value: 'CLEANING_MAINTENANCE', label: t('tenantIssue.categories.CLEANING_MAINTENANCE') },
-  { value: 'FIRE_ALARM_MAINTENANCE', label: t('tenantIssue.categories.FIRE_ALARM_MAINTENANCE') },
-  { value: 'FIRE_EXTINGUISHER_MAINTENANCE', label: t('tenantIssue.categories.FIRE_EXTINGUISHER_MAINTENANCE') },
-  { value: 'GARDEN_MAINTENANCE', label: t('tenantIssue.categories.GARDEN_MAINTENANCE') },
-  { value: 'HEATING_MAINTENANCE', label: t('tenantIssue.categories.HEATING_MAINTENANCE') },
-  { value: 'PUMP_MAINTENANCE', label: t('tenantIssue.categories.PUMP_MAINTENANCE') },
-  { value: 'SNOW_REMOVAL_MAINTENANCE', label: t('tenantIssue.categories.SNOW_REMOVAL_MAINTENANCE') },
-  { value: 'TREE_CARE_MAINTENANCE', label: t('tenantIssue.categories.TREE_CARE_MAINTENANCE') },
-  GENERAL_CATEGORY.value,
-]);
-
-// Full flat list, deduplicated by value, used to resolve a category string back to its option object
-const ALL_CATEGORIES = computed<CategoryOption[]>(() => {
-  const combined = [
-    ...DEFECT_CATEGORIES.value,
-    ...INQUIRY_CATEGORIES.value,
-    ...MAINTENANCE_CATEGORIES.value,
-  ];
-  return combined.filter(
-    (option, index) => combined.findIndex((other) => other.value === option.value) === index
-  );
-});
+const DEFECT_CATEGORIES = computed<CategoryOption[]>(() => getDefectCategories(t));
+const INQUIRY_CATEGORIES = computed<CategoryOption[]>(() => getInquiryCategories(t));
+const MAINTENANCE_CATEGORIES = computed<CategoryOption[]>(() => getMaintenanceCategories(t));
 
 // Categories available for the currently selected Typ
 const availableCategories = computed<CategoryOption[]>(() => {
@@ -115,14 +71,9 @@ const availableCategories = computed<CategoryOption[]>(() => {
     case 'MAINTENANCE':
       return MAINTENANCE_CATEGORIES.value;
     default:
-      return [GENERAL_CATEGORY.value];
+      return [getGeneralCategory(t)];
   }
 });
-
-function findCategoryOption(value: IssueCategory | undefined): CategoryOption | null {
-  if (!value) return null;
-  return ALL_CATEGORIES.value.find((option) => option.value === value) ?? null;
-}
 
 /* =========================
      Local State
@@ -134,9 +85,11 @@ const assigneeId = ref(props.initialData.assigneeId);
 const reportedBy = ref(props.initialData.reportedBy);
 const issueType = ref(props.initialData.issueType);
 const location = ref(props.initialData.location);
-const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category));
+const category = ref<CategoryOption | null>(findCategoryOption(props.initialData.category, t));
 const priority = ref(props.initialData.priority);
 const modifiedAt = ref(props.initialData.modifiedAt);
+// Fixed at creation time (see NewIssueButton/NewTenantIssueButton) — not editable here.
+const visibleToTenants = ref(props.initialData.visibleToTenants);
 
 const selectedAgreement = ref<RentalAgreementItemJson | null>(null);
 
@@ -156,27 +109,13 @@ const originalSelectedAgreement = ref<RentalAgreementItemJson | null>(null);
      Rental Agreement Resolution
   ========================= */
 // RentalAgreementSelect needs the full RentalAgreementItemJson as its v-model,
-// but the card only receives the raw agreementId, so resolve it via the same
-// list endpoint the picker itself uses for its dropdown suggestions.
-async function resolveAgreement(agreementId: string) {
-  if (!agreementId) {
-    selectedAgreement.value = null;
-    originalSelectedAgreement.value = null;
-    return;
-  }
-  try {
-    const agreements = await rentalAgreementService.getRentalAgreements(props.projectId);
-    const match = agreements.find((agreement) => agreement.id === agreementId) ?? null;
-    selectedAgreement.value = match;
-    originalSelectedAgreement.value = match;
-  } catch (err) {
-    console.error('Failed to resolve rental agreement:', err);
-    selectedAgreement.value = null;
-    originalSelectedAgreement.value = null;
-  }
+// but the card only receives the raw agreementId. RentalAgreementSelect already
+// loads the full list for its own dropdown, so it resolves the id itself and
+// reports the result back here instead of the card fetching a second time.
+function onAgreementResolved(agreement: RentalAgreementItemJson | null) {
+  selectedAgreement.value = agreement;
+  originalSelectedAgreement.value = agreement;
 }
-
-onMounted(() => resolveAgreement(props.initialData.agreementId));
 
 /* =========================
      Change Detection
@@ -209,6 +148,11 @@ const modifiedAtLabel = computed(() => {
   if (Number.isNaN(date.getTime())) return modifiedAt.value;
   return date.toLocaleString(locale.value);
 });
+
+// Fixed at creation, so this is a display-only tag next to the title, not a form field.
+const visibilityTag = computed(() => (visibleToTenants.value
+  ? { label: t('issueDetails.visibleToTenant.tag'), severity: 'warn' as const }
+  : { label: t('issueDetails.visibleToTenant.internalTag'), severity: 'info' as const }));
 
 /* =========================
      Dropdown Options
@@ -250,9 +194,10 @@ watch(
     reportedBy.value = newData.reportedBy;
     issueType.value = newData.issueType;
     location.value = newData.location;
-    category.value = findCategoryOption(newData.category);
+    category.value = findCategoryOption(newData.category, t);
     priority.value = newData.priority;
     modifiedAt.value = newData.modifiedAt;
+    visibleToTenants.value = newData.visibleToTenants;
 
     originalTitle.value = newData.title;
     originalStatus.value = newData.status;
@@ -261,10 +206,6 @@ watch(
     originalLocation.value = newData.location;
     originalCategory.value = category.value;
     originalPriority.value = priority.value;
-
-    if (newData.agreementId !== originalSelectedAgreement.value?.id) {
-      resolveAgreement(newData.agreementId);
-    }
   },
   { deep: true }
 );
@@ -339,7 +280,7 @@ function applyIssueUpdate(updated: IssueJson) {
   if (updated.assigneeId !== undefined) assigneeId.value = updated.assigneeId;
   if (updated.type !== undefined) issueType.value = updated.type;
   if (updated.location !== undefined) location.value = updated.location;
-  if (updated.category !== undefined) category.value = findCategoryOption(updated.category);
+  if (updated.category !== undefined) category.value = findCategoryOption(updated.category, t);
   if (updated.priority !== undefined) priority.value = updated.priority;
   if (updated.modifiedAt !== undefined) modifiedAt.value = updated.modifiedAt;
 
@@ -358,13 +299,14 @@ function applyIssueUpdate(updated: IssueJson) {
 <template>
   <BaseCard>
     <template #title>
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4">
-        <div>
+      <div class="flex flex-col gap-1 border-b border-gray-200 pb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <span class="text-xl font-semibold">{{ title || t('issueDetails.fields.untitled') }}</span>
-          <p class="text-base text-gray-500 font-normal mt-1">
-            {{ t('issueDetails.fields.ticketNumber') }} {{ issueId || '—' }}
-          </p>
+          <Tag :value="visibilityTag.label" :severity="visibilityTag.severity" />
         </div>
+        <p class="text-base text-gray-500 font-normal">
+          {{ t('issueDetails.fields.ticketNumber') }} {{ issueId || '—' }}
+        </p>
       </div>
     </template>
 
@@ -483,9 +425,11 @@ function applyIssueUpdate(updated: IssueJson) {
           <div class="flex flex-col gap-1 flex-1">
             <label for="issue-tenancy" class="text-sm text-gray-600">{{ t('issueDetails.fields.tenancy') }}</label>
             <RentalAgreementSelect
+              v-model="selectedAgreement"
               inputId="issue-tenancy"
               :projectId="projectId"
-              v-model="selectedAgreement"
+              :initialAgreementId="initialData.agreementId"
+              @resolved="onAgreementResolved"
             />
           </div>
         </div>
@@ -506,12 +450,3 @@ function applyIssueUpdate(updated: IssueJson) {
     </template>
   </BaseCard>
 </template>
-
-<style scoped>
-:deep(.p-inputtext),
-:deep(.p-select),
-:deep(.p-dropdown),
-:deep(.p-autocomplete-input) {
-  border-radius: 0.5rem;
-}
-</style>

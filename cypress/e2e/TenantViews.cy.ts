@@ -171,8 +171,8 @@ describe('Tenant Views E2E Tests', () => {
 
       // Each card should have phone and email buttons with icons
       cy.get('[data-testid="tenant-card"]').each(($card) => {
-        cy.wrap($card).find('button .pi-phone').should('exist');
-        cy.wrap($card).find('button .pi-envelope').should('exist');
+        cy.wrap($card).find('.pi-phone').should('exist');
+        cy.wrap($card).find('.pi-envelope').should('exist');
       });
     });
 

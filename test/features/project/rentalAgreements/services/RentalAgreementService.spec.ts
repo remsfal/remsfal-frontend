@@ -55,4 +55,60 @@ describe('RentalAgreementService', () => {
       service.deleteRentalAgreement(testProjectId, 'cannot-delete'),
     ).rejects.toThrow();
   });
+
+  test('addTenant resolves with the created tenant', async () => {
+    server.use(
+      http.post(
+        `/api/v1/projects/${testProjectId}/rental-agreements/agreement-1/tenants`,
+        async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json({ id: 'new-tenant-id', ...body }, { status: 201 });
+        },
+      ),
+    );
+
+    const tenant = { firstName: 'New', lastName: 'Tenant' };
+    const created = await service.addTenant(testProjectId, 'agreement-1', tenant);
+    expect(created).toMatchObject(tenant);
+    expect(created.id).toBeDefined();
+  });
+
+  test('addTenant rejects when the rental agreement does not exist', async () => {
+    server.use(
+      http.post(
+        `/api/v1/projects/${testProjectId}/rental-agreements/not-found/tenants`,
+        () => HttpResponse.json({ message: 'Rental agreement not found' }, { status: 404 }),
+      ),
+    );
+
+    await expect(
+      service.addTenant(testProjectId, 'not-found', { firstName: 'New', lastName: 'Tenant' }),
+    ).rejects.toThrow();
+  });
+
+  test('removeTenant resolves successfully', async () => {
+    server.use(
+      http.delete(
+        `/api/v1/projects/${testProjectId}/rental-agreements/agreement-1/tenants/tenant-1`,
+        () => HttpResponse.json({}, { status: 204 }),
+      ),
+    );
+
+    await expect(
+      service.removeTenant(testProjectId, 'agreement-1', 'tenant-1'),
+    ).resolves.toBeUndefined();
+  });
+
+  test('removeTenant rejects when removal fails', async () => {
+    server.use(
+      http.delete(
+        `/api/v1/projects/${testProjectId}/rental-agreements/agreement-1/tenants/cannot-delete`,
+        () => HttpResponse.json({ message: 'Cannot delete' }, { status: 403 }),
+      ),
+    );
+
+    await expect(
+      service.removeTenant(testProjectId, 'agreement-1', 'cannot-delete'),
+    ).rejects.toThrow();
+  });
 });
