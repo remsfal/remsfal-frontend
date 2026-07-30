@@ -115,7 +115,7 @@ function onCancel() {
 <template>
   <Button
     type="button"
-    :label="t('returnKeyDialog.triggerButton')"
+    :label="t('returnKeyDialog.dialogTitle')"
     icon="pi pi-pencil"
     severity="secondary"
     :disabled="triggerDisabled"
@@ -212,7 +212,12 @@ function onCancel() {
 
       <div class="flex justify-end gap-3 mt-6">
         <Button type="button" :label="t('button.cancel')" severity="secondary" @click="onCancel" />
-        <Button type="submit" :label="t('returnKeyDialog.confirmReturn')" icon="pi pi-check" />
+        <Button
+          type="submit"
+          :label="t('returnKeyDialog.confirmReturn')"
+          icon="pi pi-check"
+          :disabled="!$form.keyDescription?.value || !$form.amount?.value || !$form.returnedAt?.value"
+        />
       </div>
     </Form>
   </BaseDialog>

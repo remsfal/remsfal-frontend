@@ -190,7 +190,7 @@ function onCancel() {
         <Button type="button" :label="t('button.cancel')" severity="secondary" @click="onCancel" />
         <Button
           type="submit"
-          :label="t('rentalAgreement.step2.keys.confirmAdd')"
+          :label="t('rentalAgreement.step2.keys.dialogTitle')"
           icon="pi pi-plus"
           :disabled="!issuedAtValue"
         />

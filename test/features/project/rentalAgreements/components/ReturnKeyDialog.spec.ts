@@ -97,4 +97,26 @@ describe('ReturnKeyDialog', () => {
     const returnedAtValue = (datePicker.vm as unknown as { d_value: Date }).d_value;
     expect(returnedAtValue.toDateString()).toBe(chosenDate.toDateString());
   });
+
+  it('disables the submit button until description, amount and date are all filled in', async () => {
+    await wrapper.find('button').trigger('click');
+
+    const submitButton = wrapper.findAll('button').find((btn) => btn.text().includes('Rückgabe erfassen'));
+    expect(submitButton?.attributes('disabled')).toBeDefined();
+
+    const select = wrapper.findComponent({ name: 'Select' });
+    (select.vm as unknown as { writeValue: (v: string) => void }).writeValue('Haustürschlüssel');
+    await wrapper.vm.$nextTick();
+    expect(submitButton?.attributes('disabled')).toBeDefined();
+
+    const amountInput = wrapper.findComponent({ name: 'InputNumber' });
+    (amountInput.vm as unknown as { writeValue: (v: number) => void }).writeValue(1);
+    await wrapper.vm.$nextTick();
+    expect(submitButton?.attributes('disabled')).toBeDefined();
+
+    const datePicker = wrapper.findComponent({ name: 'DatePicker' });
+    (datePicker.vm as unknown as { writeValue: (v: Date) => void }).writeValue(new Date('2024-05-01'));
+    await wrapper.vm.$nextTick();
+    expect(submitButton?.attributes('disabled')).toBeUndefined();
+  });
 });
