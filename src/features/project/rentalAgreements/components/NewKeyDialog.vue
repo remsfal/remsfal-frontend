@@ -108,7 +108,7 @@ function onCancel() {
 <template>
   <Button
     type="button"
-    :label="t('rentalAgreement.step2.keys.addButton')"
+    :label="t('rentalAgreement.step2.keys.dialogTitle')"
     icon="pi pi-plus"
     :disabled="props.disabled"
     @click="openDialog"

@@ -758,7 +758,6 @@
   "rentalAgreement.step2.removeUnit": "Remove Rentable Unit",
   "rentalAgreement.step2.backButton": "Back",
   "rentalAgreement.step2.nextButton": "Continue to Tenant Information",
-  "rentalAgreement.step2.keys.addButton": "Add Keys to the contract",
   "rentalAgreement.step2.keys.dialogTitle": "Add Key",
   "rentalAgreement.step2.keys.amount": "Number of Keys",
   "rentalAgreement.step2.keys.amountRequired": "Please enter the number of keys",

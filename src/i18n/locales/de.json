@@ -761,7 +761,6 @@
   "rentalAgreement.step2.removeUnit": "Einheit entfernen",
   "rentalAgreement.step2.backButton": "Zurück",
   "rentalAgreement.step2.nextButton": "Weiter zu Mieterinformationen",
-  "rentalAgreement.step2.keys.addButton": "Schlüssel zum Mietertrag hinzufügen",
   "rentalAgreement.step2.keys.dialogTitle": "Schlüssel hinzufügen",
   "rentalAgreement.step2.keys.amount": "Anzahl der Schlüssel",
   "rentalAgreement.step2.keys.amountRequired": "Bitte geben Sie die Anzahl der Schlüssel an",
