@@ -138,6 +138,7 @@ function onCancel() {
             name="keyDescription"
             :options="outstandingDescriptions"
             :placeholder="t('returnKeyDialog.descriptionPlaceholder')"
+            :emptyMessage="t('returnKeyDialog.noKeyOptions')"
             :class="{ 'p-invalid': $form.keyDescription?.invalid && $form.keyDescription?.touched }"
             fluid
           />

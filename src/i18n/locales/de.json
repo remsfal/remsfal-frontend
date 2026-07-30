@@ -820,6 +820,7 @@
   "returnKeyDialog.dialogTitle": "Schlüsselrückgabe erfassen",
   "returnKeyDialog.descriptionLabel": "Schlüssel",
   "returnKeyDialog.descriptionPlaceholder": "Schlüssel auswählen",
+  "returnKeyDialog.noKeyOptions": "Keine Schlüssel verfügbar",
   "returnKeyDialog.amountLabel": "Anzahl",
   "returnKeyDialog.returnAllButton": "Alle zurückgeben",
   "returnKeyDialog.amountRequired": "Bitte geben Sie die Anzahl an",

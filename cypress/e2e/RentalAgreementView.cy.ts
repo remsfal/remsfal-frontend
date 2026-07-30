@@ -575,4 +575,230 @@ describe('ProjectTenancies E2E Tests', () => {
       cy.contains(/noch keine wirtschaftseinheiten/i).should('be.visible');
     });
   });
+
+  it('shows the empty state when the rental agreement has no keys yet', () => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+        keys: [],
+      },
+    }).as('getRentalAgreementDetails');
+
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+    cy.wait('@getRentalAgreementDetails');
+
+    cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
+      cy.contains('Noch keine Schlüssel hinzugefügt.').should('be.visible');
+    });
+  });
+
+  it('adds a key via the key dialog and shows it in the table', () => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+        keys: [],
+      },
+    }).as('getRentalAgreementDetails');
+
+    cy.intercept('PATCH', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: { id: 'agreement-1' },
+    }).as('updateRentalAgreement');
+
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+    cy.wait('@getRentalAgreementDetails');
+
+    cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
+      cy.contains('button', 'Schlüssel hinzufügen').click();
+    });
+
+    cy.get('[role="dialog"]').within(() => {
+      cy.get('input[name="amountOfKeys"]').type('2');
+      cy.get('input[name="keyDescription"]').type('Haustürschlüssel');
+    });
+
+    cy.get('input#issuedAt').click();
+    cy.get('.p-datepicker-panel td[data-p-today="true"] span').first().click();
+    cy.get('.p-datepicker-panel').should('not.exist');
+
+    cy.get('[role="dialog"]').within(() => {
+      cy.contains('button', 'Schlüssel hinzufügen').should('not.be.disabled').click();
+    });
+
+    cy.wait('@updateRentalAgreement');
+    cy.get('.p-toast-message-success').should('be.visible');
+    cy.get('[role="dialog"]').should('not.exist');
+
+    cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
+      cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 1);
+      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Haustürschlüssel');
+      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', '2');
+    });
+  });
+
+  it('returns part of the outstanding keys and keeps the original issued entry unchanged', () => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+        keys: [
+          { amountOfKeys: 3, keyDescription: 'Haustürschlüssel', issuedAt: '2024-01-01' },
+        ],
+      },
+    }).as('getRentalAgreementDetails');
+
+    cy.intercept('PATCH', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: { id: 'agreement-1' },
+    }).as('updateRentalAgreement');
+
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+    cy.wait('@getRentalAgreementDetails');
+
+    cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
+      cy.contains('button', 'Schlüsselrückgabe erfassen').click();
+    });
+
+    cy.get('#keyDescription').click();
+    cy.get('.p-select-overlay', { timeout: 5000 }).should('be.visible');
+    cy.get('.p-select-overlay .p-select-option').contains('Haustürschlüssel').click();
+
+    cy.get('[role="dialog"]').within(() => {
+      cy.get('input[name="amount"]').type('1');
+    });
+
+    cy.get('input#returnedAt').click();
+    cy.get('.p-datepicker-panel td[data-p-today="true"] span').first().click();
+    cy.get('.p-datepicker-panel').should('not.exist');
+
+    cy.get('[role="dialog"]').within(() => {
+      cy.contains('button', 'Rückgabe erfassen').should('not.be.disabled').click();
+    });
+
+    cy.wait('@updateRentalAgreement');
+    cy.get('.p-toast-message-success').should('be.visible');
+    cy.get('[role="dialog"]').should('not.exist');
+
+    cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
+      cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 2);
+      cy.get('.p-datatable-tbody tr[role="row"]').should('contain', '3');
+      cy.get('.p-datatable-tbody tr[role="row"]').should('contain', '1');
+    });
+  });
+
+  it('fills in the full outstanding amount via the "Alle zurückgeben" button and submits it', () => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+        keys: [
+          { amountOfKeys: 2, keyDescription: 'Kellerschlüssel', issuedAt: '2024-01-01' },
+        ],
+      },
+    }).as('getRentalAgreementDetails');
+
+    cy.intercept('PATCH', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: { id: 'agreement-1' },
+    }).as('updateRentalAgreement');
+
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+    cy.wait('@getRentalAgreementDetails');
+
+    cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
+      cy.contains('button', 'Schlüsselrückgabe erfassen').click();
+    });
+
+    cy.get('#keyDescription').click();
+    cy.get('.p-select-overlay', { timeout: 5000 }).should('be.visible');
+    cy.get('.p-select-overlay .p-select-option').contains('Kellerschlüssel').click();
+
+    cy.get('[role="dialog"]').within(() => {
+      cy.contains('button', 'Alle zurückgeben').click();
+      cy.get('input[name="amount"]').should('have.value', '2');
+      cy.contains('button', 'Rückgabe erfassen').should('not.be.disabled').click();
+    });
+
+    cy.wait('@updateRentalAgreement');
+    cy.get('.p-toast-message-success').should('be.visible');
+    cy.get('[role="dialog"]').should('not.exist');
+
+    cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
+      cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 2);
+    });
+  });
+
+  it('shows sortable columns in the key history table', () => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+        keys: [
+          { amountOfKeys: 3, keyDescription: 'Haustürschlüssel', issuedAt: '2024-01-01' },
+          { amountOfKeys: 1, keyDescription: 'Briefkastenschlüssel', issuedAt: '2024-02-01' },
+        ],
+      },
+    }).as('getRentalAgreementDetails');
+
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+    cy.wait('@getRentalAgreementDetails');
+
+    cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
+      cy.get('.p-datatable-thead th.p-datatable-sortable-column').should('have.length', 4);
+      cy.get('.p-datatable-thead th.p-datatable-sortable-column').contains('Beschreibung').click();
+      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Briefkastenschlüssel');
+    });
+  });
 });

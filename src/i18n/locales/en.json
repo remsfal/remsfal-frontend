@@ -817,6 +817,7 @@
   "returnKeyDialog.dialogTitle": "Record Key Return",
   "returnKeyDialog.descriptionLabel": "Key",
   "returnKeyDialog.descriptionPlaceholder": "Select key",
+  "returnKeyDialog.noKeyOptions": "No keys available",
   "returnKeyDialog.amountLabel": "Amount",
   "returnKeyDialog.returnAllButton": "Return all",
   "returnKeyDialog.amountRequired": "Please enter the amount",
