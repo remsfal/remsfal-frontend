@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import RentableUnitDangerZoneCard from '@/features/project/rentableUnits/components/RentableUnitDangerZoneCard.vue';
-import { propertyService } from '@/services/PropertyService';
+import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 
-vi.mock('@/services/PropertyService');
+vi.mock('@/features/project/rentableUnits/services/PropertyService');
 vi.mock('@/features/project/rentableUnits/services/BuildingService');
 vi.mock('@/features/project/rentableUnits/services/ApartmentService');
 vi.mock('@/features/project/rentableUnits/services/CommercialService');

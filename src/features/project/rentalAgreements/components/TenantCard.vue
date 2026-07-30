@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';
 import { getIconForUnitType } from '@/features/project/rentableUnits';
-import type { UnitType } from '@/services/PropertyService';
+import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 
 const props = withDefaults(
   defineProps<{

@@ -11,7 +11,7 @@ import { Form } from '@primevue/forms';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import { propertyService } from '@/services/PropertyService';
+import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 import { useToast } from 'primevue/usetoast';
 
 const props = defineProps<{

@@ -13,7 +13,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue';
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
-import { EntityType, propertyService } from '@/services/PropertyService';
+import { EntityType, propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 import { UNIT_TYPE_ICONS } from '../unitTypeIcons';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';

@@ -1,4 +1,4 @@
-import type { UnitType } from '@/services/PropertyService';
+import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 
 export const UNIT_TYPE_ICONS: Record<UnitType, string> = {
   PROPERTY: 'pi pi-map',

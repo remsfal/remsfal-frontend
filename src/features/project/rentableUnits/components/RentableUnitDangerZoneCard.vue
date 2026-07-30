@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import DangerZoneCard from '@/components/common/DangerZoneCard.vue';
-import { propertyService, type UnitType } from '@/services/PropertyService';
+import { propertyService, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import { apartmentService } from '@/features/project/rentableUnits/services/ApartmentService';
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';

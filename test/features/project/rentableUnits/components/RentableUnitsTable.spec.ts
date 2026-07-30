@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import RentableUnitsTable from '@/features/project/rentableUnits/components/RentableUnitsTable.vue';
-import type { RentalUnitTreeNodeJson, RentalUnitNodeDataJson } from '@/services/PropertyService';
+import type { RentalUnitTreeNodeJson, RentalUnitNodeDataJson } from '@/features/project/rentableUnits/services/PropertyService';
 
 // ---- Mock Data ----
 const mockTreeData: RentalUnitTreeNodeJson[] = [
