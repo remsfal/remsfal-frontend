@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
+import AutoComplete from 'primevue/autocomplete';
 import DatePicker from 'primevue/datepicker';
 import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
@@ -25,18 +25,28 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const visible = ref(false);
 const issuedAtValue = ref<Date | null>(null);
-const returnedAtValue = ref<Date | null>(null);
 const formKey = ref(0);
 const issuedAtTouched = ref(false);
 const submitAttempted = ref(false);
+const filteredDescriptions = ref<string[]>([]);
 
-const dateValidationError = computed(() => {
-  if (!issuedAtValue.value || !returnedAtValue.value) return null;
-  if (returnedAtValue.value < issuedAtValue.value) {
-    return t('rentalAgreement.step2.keys.returnedBeforeIssued');
-  }
-  return null;
-});
+function getCommonKeyDescriptions(): string[] {
+  return [
+    t('rentalAgreementKeyCard.commonDescriptions.frontDoor'),
+    t('rentalAgreementKeyCard.commonDescriptions.apartmentDoor'),
+    t('rentalAgreementKeyCard.commonDescriptions.mailbox'),
+    t('rentalAgreementKeyCard.commonDescriptions.basement'),
+    t('rentalAgreementKeyCard.commonDescriptions.garage'),
+    t('rentalAgreementKeyCard.commonDescriptions.attic'),
+    t('rentalAgreementKeyCard.commonDescriptions.mainEntrance'),
+  ];
+}
+
+function searchDescriptions(event: { query: string }) {
+  const query = event.query.toLowerCase();
+  const all = getCommonKeyDescriptions();
+  filteredDescriptions.value = query ? all.filter((d) => d.toLowerCase().includes(query)) : all;
+}
 
 const issuedAtRequiredError = computed(() => {
   if (issuedAtValue.value) return null;
@@ -69,7 +79,6 @@ function openDialog() {
 function resetForm() {
   initialValues.value = { amountOfKeys: null, keyDescription: '' };
   issuedAtValue.value = null;
-  returnedAtValue.value = null;
   issuedAtTouched.value = false;
   submitAttempted.value = false;
   formKey.value += 1;
@@ -77,14 +86,13 @@ function resetForm() {
 
 function onSubmit(event: FormSubmitEvent) {
   submitAttempted.value = true;
-  if (!event.valid || !issuedAtValue.value || dateValidationError.value) return;
+  if (!event.valid || !issuedAtValue.value) return;
 
   const formState = event.states;
   emit('newKey', {
     amountOfKeys: formState.amountOfKeys?.value,
     keyDescription: formState.keyDescription?.value?.trim(),
     issuedAt: toISODateString(issuedAtValue.value),
-    returnedAt: toISODateString(returnedAtValue.value) || undefined,
   });
 
   resetForm();
@@ -102,7 +110,6 @@ function onCancel() {
     type="button"
     :label="t('rentalAgreement.step2.keys.addButton')"
     icon="pi pi-plus"
-    severity="secondary"
     :disabled="props.disabled"
     @click="openDialog"
   />
@@ -141,12 +148,14 @@ function onCancel() {
           <label for="keyDescription" class="font-semibold">
             {{ t('rentalAgreement.step2.keys.description') }} *
           </label>
-          <InputText
-            id="keyDescription"
+          <AutoComplete
+            inputId="keyDescription"
             name="keyDescription"
+            :suggestions="filteredDescriptions"
             :placeholder="t('rentalAgreement.step2.keys.descriptionPlaceholder')"
             :class="{ 'p-invalid': $form.keyDescription?.invalid && $form.keyDescription?.touched }"
             fluid
+            @complete="searchDescriptions"
           />
           <Message
             v-if="$form.keyDescription?.invalid && $form.keyDescription?.touched"
@@ -183,7 +192,7 @@ function onCancel() {
           type="submit"
           :label="t('rentalAgreement.step2.keys.confirmAdd')"
           icon="pi pi-plus"
-          :disabled="!!dateValidationError || !issuedAtValue"
+          :disabled="!issuedAtValue"
         />
       </div>
     </Form>

@@ -91,6 +91,15 @@ describe('NewKeyDialog', () => {
     expect(wrapper.emitted('newKey')).toBeFalsy();
   });
 
+  it('offers common key description suggestions when typing', async () => {
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    await autoComplete.vm.$emit('complete', { query: 'haus' });
+
+    const suggestions = autoComplete.props('suggestions') as string[];
+    expect(suggestions).toContain('Haustürschlüssel');
+    expect(suggestions.every((s) => s.toLowerCase().includes('haus'))).toBe(true);
+  });
+
   it('does not emit newKey when the issue date is missing, even with other fields valid', async () => {
     await wrapper.find('button').trigger('click');
 

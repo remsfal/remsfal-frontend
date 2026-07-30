@@ -1,0 +1,142 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { mount, VueWrapper } from '@vue/test-utils';
+import ReturnKeyDialog from '@/features/project/rentalAgreements/components/ReturnKeyDialog.vue';
+import type { RentalAgreementKeysJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+
+const BaseDialogStub = {
+  name: 'BaseDialog',
+  inheritAttrs: false,
+  template: '<div data-testid="dialog" :data-visible="String($attrs.visible)"><slot /></div>',
+};
+
+const outstandingKeys: RentalAgreementKeysJson[] = [
+  {
+    amountOfKeys: 2, keyDescription: 'Haustürschlüssel', issuedAt: '2024-01-01' 
+  },
+  {
+    amountOfKeys: 1, keyDescription: 'Briefkastenschlüssel', issuedAt: '2024-01-01' 
+  },
+];
+
+describe('ReturnKeyDialog', () => {
+  let wrapper: VueWrapper;
+
+  beforeEach(() => {
+    wrapper = mount(ReturnKeyDialog, {
+      props: { keys: outstandingKeys },
+      global: { stubs: { BaseDialog: BaseDialogStub } },
+    });
+  });
+
+  it('renders the trigger button', () => {
+    expect(wrapper.find('button').text()).toContain('Schlüssel');
+  });
+
+  it('dialog is initially not visible', () => {
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    expect(dialog.attributes('data-visible')).toBe('false');
+  });
+
+  it('opens the dialog when the trigger button is clicked', async () => {
+    await wrapper.find('button').trigger('click');
+
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    expect(dialog.attributes('data-visible')).toBe('true');
+  });
+
+  it('keeps the trigger button enabled when there are no outstanding keys', () => {
+    const emptyWrapper = mount(ReturnKeyDialog, {
+      props: { keys: [] },
+      global: { stubs: { BaseDialog: BaseDialogStub } },
+    });
+
+    expect(emptyWrapper.find('button').attributes('disabled')).toBeUndefined();
+  });
+
+  it('disables the trigger button when disabled prop is true', () => {
+    const disabledWrapper = mount(ReturnKeyDialog, {
+      props: { keys: outstandingKeys, disabled: true },
+      global: { stubs: { BaseDialog: BaseDialogStub } },
+    });
+
+    expect(disabledWrapper.find('button').attributes('disabled')).toBeDefined();
+  });
+
+  it('shows the outstanding key descriptions as selectable options', async () => {
+    await wrapper.find('button').trigger('click');
+
+    const select = wrapper.findComponent({ name: 'Select' });
+    expect(select.props('options')).toEqual(['Briefkastenschlüssel', 'Haustürschlüssel']);
+  });
+
+  it('renders a returnedAt date picker field', () => {
+    expect(wrapper.findComponent({ name: 'DatePicker' }).exists()).toBe(true);
+  });
+
+  it('renders an amount input field', () => {
+    expect(wrapper.find('input[name="amount"]').exists()).toBe(true);
+  });
+
+  it('closes the dialog without emitting keyReturned when cancelled', async () => {
+    await wrapper.find('button').trigger('click');
+
+    const cancelButton = wrapper.findAll('button').find((btn) => btn.text().includes('Abbrechen'));
+    await cancelButton?.trigger('click');
+
+    const dialog = wrapper.find('[data-testid="dialog"]');
+    expect(dialog.attributes('data-visible')).toBe('false');
+    expect(wrapper.emitted('keyReturned')).toBeFalsy();
+  });
+
+  it('disables the "return all" button until a key description is selected', async () => {
+    await wrapper.find('button').trigger('click');
+
+    const returnAllButton = wrapper.findAll('button').find((btn) => btn.text().includes('Alle zurückgeben'));
+    expect(returnAllButton?.attributes('disabled')).toBeDefined();
+
+    const select = wrapper.findComponent({ name: 'Select' });
+    (select.vm as unknown as { writeValue: (v: string) => void }).writeValue('Haustürschlüssel');
+    await wrapper.vm.$nextTick();
+
+    expect(returnAllButton?.attributes('disabled')).toBeUndefined();
+  });
+
+  it('fills in the full outstanding amount and defaults the return date to today', async () => {
+    await wrapper.find('button').trigger('click');
+
+    const select = wrapper.findComponent({ name: 'Select' });
+    (select.vm as unknown as { writeValue: (v: string) => void }).writeValue('Haustürschlüssel');
+    await wrapper.vm.$nextTick();
+
+    const returnAllButton = wrapper.findAll('button').find((btn) => btn.text().includes('Alle zurückgeben'));
+    await returnAllButton?.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const amountInput = wrapper.findComponent({ name: 'InputNumber' });
+    expect((amountInput.vm as unknown as { d_value: number }).d_value).toBe(2);
+
+    const datePicker = wrapper.findComponent({ name: 'DatePicker' });
+    const returnedAtValue = (datePicker.vm as unknown as { d_value: Date }).d_value;
+    expect(returnedAtValue).toBeInstanceOf(Date);
+    expect(returnedAtValue.toDateString()).toBe(new Date().toDateString());
+  });
+
+  it('does not override an already selected return date', async () => {
+    await wrapper.find('button').trigger('click');
+
+    const select = wrapper.findComponent({ name: 'Select' });
+    (select.vm as unknown as { writeValue: (v: string) => void }).writeValue('Haustürschlüssel');
+
+    const datePicker = wrapper.findComponent({ name: 'DatePicker' });
+    const chosenDate = new Date('2024-06-15');
+    (datePicker.vm as unknown as { writeValue: (v: Date) => void }).writeValue(chosenDate);
+    await wrapper.vm.$nextTick();
+
+    const returnAllButton = wrapper.findAll('button').find((btn) => btn.text().includes('Alle zurückgeben'));
+    await returnAllButton?.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const returnedAtValue = (datePicker.vm as unknown as { d_value: Date }).d_value;
+    expect(returnedAtValue.toDateString()).toBe(chosenDate.toDateString());
+  });
+});

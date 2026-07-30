@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RentalAgreementTenantListCard from '../components/RentalAgreementTenantListCard.vue';
+import RentalAgreementKeyCard from '../components/RentalAgreementKeyCard.vue';
 import RentalAgreementIssueCard from "@/features/project/rentalAgreements/components/RentalAgreementIssueCard.vue";
 import RentalAgreementSummaryCard from '../components/RentalAgreementSummaryCard.vue';
 import {rentalAgreementService,
@@ -118,6 +119,13 @@ defineExpose({
       <RentalAgreementTenantListCard
         v-if="rentalAgreement"
         :active="rentalAgreement.active"
+        :projectId="projectId"
+        :rentalAgreement="rentalAgreement"
+        @update:rentalAgreement="(updated) => (rentalAgreement = updated)"
+      />
+
+      <RentalAgreementKeyCard
+        v-if="rentalAgreement"
         :projectId="projectId"
         :rentalAgreement="rentalAgreement"
         @update:rentalAgreement="(updated) => (rentalAgreement = updated)"

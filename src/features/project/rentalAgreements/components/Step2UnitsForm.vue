@@ -13,8 +13,6 @@ import type { ApiComponents } from '@/services/ApiClient';
 
 // Components
 import RentalDetailsForm, { type RentalDetails } from './RentalDetailsForm.vue';
-import NewKeyDialog from './NewKeyDialog.vue';
-import type { RentalAgreementKeysJson } from '../services/RentalAgreementService';
 
 // Extract RentJson from API schema
 type RentJson = ApiComponents['schemas']['RentJson'];
@@ -26,20 +24,15 @@ export interface SelectedUnit extends RentJson {
 }
 
 // Props & Emits
-const props = withDefaults(
-  defineProps<{
-    projectId: string;
-    selectedUnits: SelectedUnit[];
-    startOfRental: string | null;
-    endOfRental: string | null;
-    keys?: RentalAgreementKeysJson[];
-  }>(),
-  { keys: () => [] },
-);
+const props = defineProps<{
+  projectId: string;
+  selectedUnits: SelectedUnit[];
+  startOfRental: string | null;
+  endOfRental: string | null;
+}>();
 
 const emit = defineEmits<{
   'update:selectedUnits': [value: SelectedUnit[]];
-  'update:keys': [value: RentalAgreementKeysJson[]];
   back: [];
   next: [];
 }>();
@@ -142,16 +135,6 @@ function removeUnit(index: number) {
   emit('update:selectedUnits', updated);
 }
 
-// Keys (key handovers)
-function onKeyAdded(key: RentalAgreementKeysJson) {
-  emit('update:keys', [...props.keys, key]);
-}
-
-function removeKey(index: number) {
-  const updated = props.keys.filter((_, i) => i !== index);
-  emit('update:keys', updated);
-}
-
 // Validation
 const canProceed = computed(() => {
   return props.selectedUnits.length > 0;
@@ -226,41 +209,6 @@ const canProceed = computed(() => {
           size="small"
           :aria-label="t('rentalAgreement.step2.removeUnit')"
           @click="removeUnit(index)"
-        />
-      </div>
-    </div>
-
-    <!-- Keys (Key Handovers) -->
-    <div class="flex flex-col gap-2">
-      <h4 class="font-semibold">
-        {{ t('rentalAgreement.step2.keys.sectionTitle') }}
-      </h4>
-
-      <div>
-        <NewKeyDialog @newKey="onKeyAdded" />
-      </div>
-
-      <div
-        v-for="(key, index) in keys"
-        :key="index"
-        class="flex items-center justify-between p-3 border rounded-lg bg-gray-50"
-      >
-        <div class="flex-1">
-          <p class="font-semibold">
-            {{ t('rentalAgreement.step2.keys.amount') }}: {{ key.amountOfKeys }}
-          </p>
-          <p v-if="key.keyDescription" class="text-sm text-gray-600">
-            {{ key.keyDescription }}
-          </p>
-        </div>
-        <Button
-          icon="pi pi-trash"
-          severity="danger"
-          text
-          rounded
-          size="small"
-          :aria-label="t('rentalAgreement.step2.keys.removeKey')"
-          @click="removeKey(index)"
         />
       </div>
     </div>

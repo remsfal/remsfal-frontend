@@ -4,7 +4,6 @@ import { flushPromises } from '@vue/test-utils';
 import Step2UnitsForm from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import type { SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import { propertyService, type PropertyListJson } from '@/services/PropertyService';
-import type { RentalAgreementKeysJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 vi.mock('@/services/PropertyService', () => ({propertyService: {getPropertyTree: vi.fn(),},}));
 
@@ -59,7 +58,6 @@ describe('Step2UnitsForm', () => {
     selectedUnits: [],
     startOfRental: '2024-01-01',
     endOfRental: '2024-12-31',
-    keys: [],
   };
 
   beforeEach(async () => {
@@ -241,63 +239,8 @@ describe('Step2UnitsForm', () => {
     expect(unitCard.text()).not.toContain('Betriebskostenvorauszahlung');
   });
 
-  it('adds a key via NewKeyDialog and removes it again', async () => {
-    const key: RentalAgreementKeysJson = {
-      amountOfKeys: 2,
-      keyDescription: 'Haustürschlüssel',
-      issuedAt: '2024-01-01',
-    };
-
+  it('does not render a key handover section', () => {
     const newKeyDialog = wrapper.findComponent({ name: 'NewKeyDialog' });
-    expect(newKeyDialog.exists()).toBe(true);
-
-    await newKeyDialog.vm.$emit('newKey', key);
-
-    expect(wrapper.emitted('update:keys')?.[0]?.[0]).toEqual([key]);
-
-    await wrapper.setProps({ keys: [key] });
-
-    const keyCard = wrapper.find('.bg-gray-50');
-    expect(keyCard.text()).toContain('2');
-    expect(keyCard.text()).toContain('Haustürschlüssel');
-
-    const removeButton = wrapper
-      .findAllComponents({ name: 'Button' })
-      .find((btn) => btn.props('icon') === 'pi pi-trash');
-    expect(removeButton).toBeDefined();
-
-    await removeButton?.trigger('click');
-
-    expect(wrapper.emitted('update:keys')?.[1]?.[0]).toEqual([]);
-  });
-
-  it('allows adding more than one key', async () => {
-    const firstKey: RentalAgreementKeysJson = {
-      amountOfKeys: 1,
-      keyDescription: 'Haustürschlüssel',
-      issuedAt: '2024-01-01',
-    };
-    const secondKey: RentalAgreementKeysJson = {
-      amountOfKeys: 3,
-      keyDescription: 'Briefkastenschlüssel',
-      issuedAt: '2024-02-01',
-    };
-
-    const newKeyDialog = wrapper.findComponent({ name: 'NewKeyDialog' });
-
-    await newKeyDialog.vm.$emit('newKey', firstKey);
-    expect(wrapper.emitted('update:keys')?.[0]?.[0]).toEqual([firstKey]);
-
-    await wrapper.setProps({ keys: [firstKey] });
-
-    await newKeyDialog.vm.$emit('newKey', secondKey);
-    expect(wrapper.emitted('update:keys')?.[1]?.[0]).toEqual([firstKey, secondKey]);
-
-    await wrapper.setProps({ keys: [firstKey, secondKey] });
-
-    const keyCards = wrapper.findAll('.bg-gray-50');
-    expect(keyCards).toHaveLength(2);
-    expect(keyCards[0].text()).toContain('Haustürschlüssel');
-    expect(keyCards[1].text()).toContain('Briefkastenschlüssel');
+    expect(newKeyDialog.exists()).toBe(false);
   });
 });
