@@ -137,7 +137,6 @@ model.value = buildMenuModel(projectId.value);
 watch(
   () => projectStore.projectId,
   (newId) => {
-    console.log('projectId changed to:', newId);
     projectId.value = newId;
     model.value = buildMenuModel(newId);
   },

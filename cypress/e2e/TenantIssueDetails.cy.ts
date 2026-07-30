@@ -43,6 +43,12 @@ describe('TenantIssueDetails E2E Tests', () => {
       statusCode: 200,
       body: { size: 1, issues: [baseIssue] },
     }).as('getIssueList');
+
+    // TenantIssueTimelineCard loads the timeline for the viewed issue on mount.
+    cy.intercept('GET', '/ticketing/v1/tenant-relations/issues/*/timeline', {
+      statusCode: 200,
+      body: { timelines: [] },
+    }).as('getTimeline');
   }
 
   function setupIssueDetail(issue = baseIssue) {
