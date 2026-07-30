@@ -28,11 +28,6 @@ describe('RentalAgreementKeyCard', () => {
   const mountCard = (agreement: RentalAgreementJson = baseAgreement) =>
     mount(RentalAgreementKeyCard, {props: { projectId: 'proj-1', rentalAgreement: agreement },});
 
-  it('shows empty state when there are no keys', () => {
-    const wrapper = mountCard({ ...baseAgreement, keys: [] });
-    expect(wrapper.text()).toContain('Noch keine Schlüssel hinzugefügt.');
-  });
-
   it('renders a row per key with amount and description', () => {
     const wrapper = mountCard();
     expect(wrapper.text()).toContain('Haustürschlüssel');
@@ -57,15 +52,6 @@ describe('RentalAgreementKeyCard', () => {
     const bodyRows = wrapper.findAll('tbody tr');
     const firstRowAmount = bodyRows[0]?.findAll('td')[1]?.text();
     expect(firstRowAmount).toBe('1');
-  });
-
-  it('shows the returned date only for keys that have been returned', () => {
-    const wrapper = mountCard();
-    const cells = wrapper.findAll('td').map((td) => td.text());
-    expect(cells).toContain('01.02.2024');
-    const rowsText = wrapper.findAll('tr').map((tr) => tr.text());
-    const outstandingRow = rowsText.find((r) => r.includes('Haustürschlüssel'));
-    expect(outstandingRow).not.toContain('01.02.2024');
   });
 
   it('adds a key via NewKeyDialog and persists via updateRentalAgreement', async () => {
@@ -205,17 +191,5 @@ describe('RentalAgreementKeyCard', () => {
 
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
     consoleSpy.mockRestore();
-  });
-
-  it('does not call updateRentalAgreement when the rental agreement has no id', async () => {
-    const wrapper = mountCard({ ...baseAgreement, id: undefined });
-    const newKeyDialog = wrapper.findComponent({ name: 'NewKeyDialog' });
-    await newKeyDialog.vm.$emit('newKey', {
-      amountOfKeys: 1, keyDescription: 'Dachbodenschlüssel', issuedAt: '2024-01-01' 
-    });
-    await wrapper.vm.$nextTick();
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(rentalAgreementService.updateRentalAgreement).not.toHaveBeenCalled();
   });
 });

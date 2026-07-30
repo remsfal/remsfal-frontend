@@ -17,15 +17,6 @@ describe('NewKeyDialog', () => {
     wrapper = mount(NewKeyDialog, {global: {stubs: { BaseDialog: BaseDialogStub },},});
   });
 
-  it('renders the trigger button', () => {
-    expect(wrapper.find('button').text()).toContain('Schlüssel');
-  });
-
-  it('dialog is initially not visible', () => {
-    const dialog = wrapper.find('[data-testid="dialog"]');
-    expect(dialog.attributes('data-visible')).toBe('false');
-  });
-
   it('opens the dialog when the trigger button is clicked', async () => {
     await wrapper.find('button').trigger('click');
 

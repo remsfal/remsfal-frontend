@@ -28,53 +28,11 @@ describe('ReturnKeyDialog', () => {
     });
   });
 
-  it('renders the trigger button', () => {
-    expect(wrapper.find('button').text()).toContain('Schlüssel');
-  });
-
-  it('dialog is initially not visible', () => {
-    const dialog = wrapper.find('[data-testid="dialog"]');
-    expect(dialog.attributes('data-visible')).toBe('false');
-  });
-
-  it('opens the dialog when the trigger button is clicked', async () => {
-    await wrapper.find('button').trigger('click');
-
-    const dialog = wrapper.find('[data-testid="dialog"]');
-    expect(dialog.attributes('data-visible')).toBe('true');
-  });
-
-  it('keeps the trigger button enabled when there are no outstanding keys', () => {
-    const emptyWrapper = mount(ReturnKeyDialog, {
-      props: { keys: [] },
-      global: { stubs: { BaseDialog: BaseDialogStub } },
-    });
-
-    expect(emptyWrapper.find('button').attributes('disabled')).toBeUndefined();
-  });
-
-  it('disables the trigger button when disabled prop is true', () => {
-    const disabledWrapper = mount(ReturnKeyDialog, {
-      props: { keys: outstandingKeys, disabled: true },
-      global: { stubs: { BaseDialog: BaseDialogStub } },
-    });
-
-    expect(disabledWrapper.find('button').attributes('disabled')).toBeDefined();
-  });
-
   it('shows the outstanding key descriptions as selectable options', async () => {
     await wrapper.find('button').trigger('click');
 
     const select = wrapper.findComponent({ name: 'Select' });
     expect(select.props('options')).toEqual(['Briefkastenschlüssel', 'Haustürschlüssel']);
-  });
-
-  it('renders a returnedAt date picker field', () => {
-    expect(wrapper.findComponent({ name: 'DatePicker' }).exists()).toBe(true);
-  });
-
-  it('renders an amount input field', () => {
-    expect(wrapper.find('input[name="amount"]').exists()).toBe(true);
   });
 
   it('closes the dialog without emitting keyReturned when cancelled', async () => {

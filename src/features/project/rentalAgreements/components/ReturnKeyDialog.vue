@@ -7,7 +7,7 @@ import InputNumber from 'primevue/inputnumber';
 import DatePicker from 'primevue/datepicker';
 import Message from 'primevue/message';
 import { Form } from '@primevue/forms';
-import type { FormSubmitEvent } from '@primevue/forms';
+import type { FormSubmitEvent, FormFieldState } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseDialog from '@/components/common/BaseDialog.vue';
@@ -45,11 +45,7 @@ function maxForDescription(description?: string | null): number | undefined {
   return outstandingTotals.value.get(description);
 }
 
-function returnAllKeys(form: {
-  keyDescription?: { value?: string };
-  amount?: { value?: number | null };
-  returnedAt?: { value?: Date | string | null };
-}) {
+function returnAllKeys(form: Record<string, FormFieldState>) {
   const max = maxForDescription(form.keyDescription?.value);
   if (!max || !form.amount) return;
 

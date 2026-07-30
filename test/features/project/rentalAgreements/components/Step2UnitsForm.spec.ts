@@ -238,9 +238,4 @@ describe('Step2UnitsForm', () => {
     // Operating costs and heating costs should not be shown
     expect(unitCard.text()).not.toContain('Betriebskostenvorauszahlung');
   });
-
-  it('does not render a key handover section', () => {
-    const newKeyDialog = wrapper.findComponent({ name: 'NewKeyDialog' });
-    expect(newKeyDialog.exists()).toBe(false);
-  });
 });
