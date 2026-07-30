@@ -53,6 +53,10 @@ describe('ReturnKeyDialog', () => {
     expect(returnAllButton?.attributes('disabled')).toBeDefined();
 
     const select = wrapper.findComponent({ name: 'Select' });
+    // PrimeVue's Select/InputNumber/DatePicker build their value from internal keydown/overlay
+    // handling rather than plain DOM `input`/`change` events, so simulating those doesn't update
+    // them in jsdom. `writeValue()` is the same method PrimeVue itself calls when the user picks
+    // a value, so casting to it is the only reliable way to drive these components in tests.
     (select.vm as unknown as { writeValue: (v: string) => void }).writeValue('Haustürschlüssel');
     await wrapper.vm.$nextTick();
 

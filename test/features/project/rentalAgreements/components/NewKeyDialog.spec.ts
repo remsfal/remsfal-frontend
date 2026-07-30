@@ -43,9 +43,28 @@ describe('NewKeyDialog', () => {
     expect(wrapper.findComponent({ name: 'DatePicker' }).exists()).toBe(true);
   });
 
-  it('disables the submit button until an issue date is set', () => {
+  it('disables the submit button until amount, description and issue date are all filled in', async () => {
     const submitButton = wrapper.findAll('button').find((btn) => btn.attributes('type') === 'submit');
     expect(submitButton?.attributes('disabled')).toBeDefined();
+
+    const amountInput = wrapper.findComponent({ name: 'InputNumber' });
+    // PrimeVue's InputNumber/AutoComplete build their value from internal keydown handling
+    // rather than plain DOM `input` events, so simulating those doesn't update them in jsdom.
+    // `writeValue()` is the same method PrimeVue itself calls when the user types a value, so
+    // casting to it is the only reliable way to drive these components in tests.
+    (amountInput.vm as unknown as { writeValue: (v: number) => void }).writeValue(2);
+    await wrapper.vm.$nextTick();
+    expect(submitButton?.attributes('disabled')).toBeDefined();
+
+    const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
+    (autoComplete.vm as unknown as { writeValue: (v: string) => void }).writeValue('Haustürschlüssel');
+    await wrapper.vm.$nextTick();
+    expect(submitButton?.attributes('disabled')).toBeDefined();
+
+    const datePicker = wrapper.findComponent({ name: 'DatePicker' });
+    await datePicker.vm.$emit('update:modelValue', new Date('2024-01-01'));
+    await wrapper.vm.$nextTick();
+    expect(submitButton?.attributes('disabled')).toBeUndefined();
   });
 
   it('shows a required error for the issue date once touched', async () => {

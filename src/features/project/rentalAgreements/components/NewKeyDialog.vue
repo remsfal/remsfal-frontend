@@ -56,9 +56,9 @@ const issuedAtRequiredError = computed(() => {
 
 const schema = z.object({
   amountOfKeys: z
-    .number({ message: t('rentalAgreement.step2.keys.amountRequired') })
+    .number({ message: t('newKeyDialog.amountRequired') })
     .int()
-    .min(1, { message: t('rentalAgreement.step2.keys.amountRequired') }),
+    .min(1, { message: t('newKeyDialog.amountRequired') }),
   keyDescription: z
     .string()
     .trim()
@@ -108,13 +108,13 @@ function onCancel() {
 <template>
   <Button
     type="button"
-    :label="t('rentalAgreement.step2.keys.dialogTitle')"
+    :label="t('newKeyDialog.dialogTitle')"
     icon="pi pi-plus"
     :disabled="props.disabled"
     @click="openDialog"
   />
 
-  <BaseDialog v-model:visible="visible" :closable="false" :header="t('rentalAgreement.step2.keys.dialogTitle')">
+  <BaseDialog v-model:visible="visible" :closable="false" :header="t('newKeyDialog.dialogTitle')">
     <Form
       :key="formKey" v-slot="$form"
       :initialValues :resolver
@@ -123,7 +123,7 @@ function onCancel() {
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
           <label for="amountOfKeys" class="font-semibold">
-            {{ t('rentalAgreement.step2.keys.amount') }} *
+            {{ t('newKeyDialog.amountLabel') }} *
           </label>
           <InputNumber
             inputId="amountOfKeys"
@@ -146,13 +146,13 @@ function onCancel() {
 
         <div class="flex flex-col gap-2">
           <label for="keyDescription" class="font-semibold">
-            {{ t('rentalAgreement.step2.keys.description') }} *
+            {{ t('newKeyDialog.descriptionLabel') }} *
           </label>
           <AutoComplete
             inputId="keyDescription"
             name="keyDescription"
             :suggestions="filteredDescriptions"
-            :placeholder="t('rentalAgreement.step2.keys.descriptionPlaceholder')"
+            :placeholder="t('newKeyDialog.descriptionPlaceholder')"
             :class="{ 'p-invalid': $form.keyDescription?.invalid && $form.keyDescription?.touched }"
             fluid
             @complete="searchDescriptions"
@@ -169,7 +169,7 @@ function onCancel() {
 
         <div class="flex flex-col gap-2">
           <label for="issuedAt" class="font-semibold">
-            {{ t('rentalAgreement.step2.keys.issuedAt') }} *
+            {{ t('newKeyDialog.issuedAtLabel') }} *
           </label>
           <DatePicker
             v-model="issuedAtValue"
@@ -190,9 +190,9 @@ function onCancel() {
         <Button type="button" :label="t('button.cancel')" severity="secondary" @click="onCancel" />
         <Button
           type="submit"
-          :label="t('rentalAgreement.step2.keys.dialogTitle')"
+          :label="t('newKeyDialog.dialogTitle')"
           icon="pi pi-plus"
-          :disabled="!issuedAtValue"
+          :disabled="!issuedAtValue || !$form.amountOfKeys?.value || !$form.keyDescription?.value"
         />
       </div>
     </Form>
