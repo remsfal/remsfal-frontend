@@ -411,4 +411,168 @@ describe('ProjectTenancies E2E Tests', () => {
     // Check if table is scrollable
     cy.get('.p-datatable-scrollable').should('exist');
   });
+
+  it('renders existing rental units in the units table', () => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+        apartmentRents: [{ unitId: 'apt-101', basicRent: 1200.0 }],
+      },
+    }).as('getRentalAgreementDetails');
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/apartments/apt-101`, {
+      statusCode: 200,
+      body: { title: 'Apartment 101' },
+    }).as('getApartment101');
+
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+
+    cy.wait('@getRentalAgreementDetails');
+    cy.wait('@getApartment101');
+
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
+      cy.get('.p-datatable').should('be.visible');
+      cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 1);
+      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Apartment 101');
+      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'apt-101');
+      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Wohnung');
+    });
+  });
+
+  it('adds a rental unit via the add-unit dialog', () => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+      },
+    }).as('getRentalAgreementDetails');
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
+      statusCode: 200,
+      body: {
+        properties: [
+          {
+            key: 'apt-999',
+            data: { id: 'apt-999', type: 'APARTMENT', title: 'Neue Wohnung' },
+          },
+        ],
+      },
+    }).as('getPropertyTree');
+
+    cy.intercept('PATCH', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: { id: 'agreement-1' },
+    }).as('updateRentalAgreement');
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/apartments/apt-999`, {
+      statusCode: 200,
+      body: { title: 'Neue Wohnung' },
+    }).as('getNewApartment');
+
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+    cy.wait('@getRentalAgreementDetails');
+
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
+      cy.contains(/noch keine wirtschaftseinheiten/i).should('be.visible');
+      cy.contains('button', 'Wirtschaftseinheit hinzufügen').click();
+    });
+
+    cy.wait('@getPropertyTree');
+
+    cy.get('[role="dialog"]').should('be.visible').within(() => {
+      cy.get('.p-treeselect').click();
+    });
+
+    cy.get('.p-treeselect-overlay').should('be.visible');
+    cy.get('.p-treeselect-overlay').contains('.p-tree-node-content', 'Neue Wohnung').click();
+
+    cy.get('[role="dialog"]').contains('button', 'Hinzufügen').should('not.be.disabled').click();
+
+    cy.wait('@updateRentalAgreement');
+    cy.wait('@getNewApartment');
+
+    cy.get('.p-toast-message-success').should('be.visible');
+    cy.get('[role="dialog"]').should('not.exist');
+
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
+      cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 1);
+      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Neue Wohnung');
+    });
+  });
+
+  it('removes a rental unit via the remove-unit dialog', () => {
+    cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
+    cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
+      statusCode: 200,
+      body: { organizations: [] },
+    });
+    cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+        apartmentRents: [{ unitId: 'apt-101', basicRent: 1200.0 }],
+      },
+    }).as('getRentalAgreementDetails');
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/apartments/apt-101`, {
+      statusCode: 200,
+      body: { title: 'Apartment 101' },
+    }).as('getApartment101');
+
+    cy.intercept('PATCH', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
+      statusCode: 200,
+      body: { id: 'agreement-1' },
+    }).as('updateRentalAgreement');
+
+    cy.visit(`/projects/${projectId}/agreements/agreement-1`);
+    cy.wait('@getRentalAgreementDetails');
+    cy.wait('@getApartment101');
+
+    cy.get('[role="dialog"]').should('not.exist');
+
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
+      cy.get('[aria-label="Löschen"]').click();
+    });
+
+    cy.get('[role="dialog"]').should('be.visible')
+      .and('contain.text', 'Apartment 101')
+      .and('contain.text', 'entfernen');
+
+    cy.get('[role="dialog"]').contains('button', 'Löschen').click();
+
+    cy.wait('@updateRentalAgreement');
+
+    cy.get('.p-toast-message-success').should('be.visible');
+    cy.get('[role="dialog"]').should('not.exist');
+
+    cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
+      cy.contains(/noch keine wirtschaftseinheiten/i).should('be.visible');
+    });
+  });
 });

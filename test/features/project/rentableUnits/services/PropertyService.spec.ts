@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
-import { propertyService, type PropertyJson, type PropertyListJson } from '@/services/PropertyService';
-import { toRentableUnitView, EntityType } from '@/services/PropertyService';
-import { testErrorHandling } from '../utils/testHelpers';
-import { server } from '../mocks/server';
+import {propertyService,
+  type PropertyJson,
+  type PropertyListJson,} from '@/features/project/rentableUnits/services/PropertyService';
+import { toRentableUnitView, EntityType } from '@/features/project/rentableUnits/services/PropertyService';
+import { testErrorHandling } from '../../../../utils/testHelpers';
+import { server } from '../../../../mocks/server';
 
 // --- MOCK DATA ---
 

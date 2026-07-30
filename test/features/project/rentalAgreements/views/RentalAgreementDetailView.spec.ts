@@ -67,6 +67,10 @@ describe('ProjectTenanciesDetails', () => {
     }
   });
 
+  it('renders RentalAgreementUnitListCard once the rental agreement is loaded', () => {
+    expect(wrapper.findComponent({ name: 'RentalAgreementUnitListCard' }).exists()).toBe(true);
+  });
+
   it('deletes rental agreement and redirects', async () => {
     (wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmationDialogVisible = true;
     await (wrapper.vm as unknown as ProjectTenanciesDetailsExposed).confirmDeletion();

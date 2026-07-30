@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 // PrimeVue Components
 import Button from 'primevue/button';
-import TreeSelect from 'primevue/treeselect';
 import type { TreeNode } from 'primevue/treenode';
 
 // Services & Types
-import { propertyService, type RentalUnitTreeNodeJson, type UnitType } from '@/services/PropertyService';
+import type { UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import type { ApiComponents } from '@/services/ApiClient';
 
 // Components
+import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import RentalDetailsForm, { type RentalDetails } from './RentalDetailsForm.vue';
 
 // Extract RentJson from API schema
@@ -40,9 +40,7 @@ const emit = defineEmits<{
 const { t, n } = useI18n();
 
 // State
-const propertyTree = ref<TreeNode[]>([]);
 const selectedNodeKey = ref<string | null>(null);
-const isLoadingTree = ref(false);
 
 // Current unit being edited (before adding to list)
 const currentUnit = ref<{
@@ -51,48 +49,11 @@ const currentUnit = ref<{
   unitTitle: string;
 } | null>(null);
 
-// Transform RentalUnitTreeNodeJson to TreeSelect format
-function transformTreeNodes(nodes: RentalUnitTreeNodeJson[]): TreeNode[] {
-  return nodes.map((node) => {
-    const unitType = node.data?.type ? t(`unitTypes.${node.data.type.toLowerCase()}`) : '';
-    const title = node.data?.title || 'Unbenannt';
+const selectedUnitIds = computed(() => props.selectedUnits.map((u) => u.unitId));
 
-    return {
-      key: node.key,
-      label: `${title} (${unitType})`,
-      data: node.data,
-      children: node.children ? transformTreeNodes(node.children) : undefined,
-      // All units with a type are selectable (except PROPERTY which is a container)
-      selectable: node.data?.type !== undefined &&
-                  node.data.type !== 'PROPERTY',
-    };
-  });
-}
-
-// Load Property Tree
-onMounted(async () => {
-  isLoadingTree.value = true;
-  try {
-    const data = await propertyService.getPropertyTree(props.projectId);
-    const rawTree = (data.properties || []) as RentalUnitTreeNodeJson[];
-    propertyTree.value = transformTreeNodes(rawTree);
-  } catch (error) {
-    console.error('Failed to load property tree:', error);
-  } finally {
-    isLoadingTree.value = false;
-  }
-});
-
-// When TreeSelect selection changes
+// When the unit selection changes
 function onUnitSelected(node: TreeNode) {
   if (!node || !node.data) {
-    currentUnit.value = null;
-    return;
-  }
-
-  const alreadyAdded = props.selectedUnits.some((u) => u.unitId === node.key);
-  if (alreadyAdded) {
-    selectedNodeKey.value = null;
     currentUnit.value = null;
     return;
   }
@@ -152,13 +113,11 @@ const canProceed = computed(() => {
       <label for="unitSelector" class="font-semibold">
         {{ t('rentalAgreement.step2.selectUnit') }}
       </label>
-      <TreeSelect
+      <RentableUnitSelect
         v-model="selectedNodeKey"
-        :options="propertyTree"
-        :loading="isLoadingTree"
-        :placeholder="t('rentalAgreement.step2.selectUnit')"
-        selectionMode="single"
-        fluid
+        :projectId="projectId"
+        :excludeUnitIds="selectedUnitIds"
+        inputId="unitSelector"
         @nodeSelect="onUnitSelected"
       />
     </div>

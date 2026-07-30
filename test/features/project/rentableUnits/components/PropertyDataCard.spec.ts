@@ -11,7 +11,7 @@ beforeAll(() => {
   global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 });
 import PropertyDataCard from '@/features/project/rentableUnits/components/PropertyDataCard.vue';
-import { propertyService } from '@/services/PropertyService';
+import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 import * as viewHelper from '@/helper/viewHelper';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -24,7 +24,10 @@ const addMock = vi.fn();
 vi.mock('primevue/usetoast', () => ({ useToast: () => ({ add: addMock }) }));
 
 // ─── Service Mock ─────────────────────────────────────────────────────────────
-vi.mock('@/services/PropertyService', () => ({propertyService: { getProperty: vi.fn(), updateProperty: vi.fn() },}));
+vi.mock(
+  '@/features/project/rentableUnits/services/PropertyService',
+  () => ({ propertyService: { getProperty: vi.fn(), updateProperty: vi.fn() } }),
+);
 
 // ─── viewHelper Mock ──────────────────────────────────────────────────────────
 vi.mock('@/helper/viewHelper', async (importOriginal) => {
