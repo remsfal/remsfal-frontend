@@ -189,7 +189,67 @@ describe('CommercialDataCard.vue', () => {
     expect(wrapper.find('input[name="usableFloorArea"]').exists()).toBe(true);
     expect(wrapper.find('input[name="technicalServicesArea"]').exists()).toBe(true);
     expect(wrapper.find('input[name="trafficArea"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(false);
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="netFloorArea"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('shows the NF+TF+VF sum in the netFloorArea field in detail mode', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: undefined,
+      usableFloorArea: 30,
+      technicalServicesArea: 20,
+      trafficArea: 10,
+    });
+
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect((wrapper.find('input[name="netFloorArea"]').element as HTMLInputElement).value).toBe('60 m²');
+  });
+
+  it('submits the NF+TF+VF sum as netFloorArea in detail mode', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: undefined,
+      usableFloorArea: 30,
+      technicalServicesArea: 20,
+      trafficArea: 10,
+    });
+
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({
+        netFloorArea: 60, usableFloorArea: 30, technicalServicesArea: 20, trafficArea: 10,
+      }),
+    );
+  });
+
+  it('submits usableFloorArea/technicalServicesArea/trafficArea as 0 in total mode', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({
+        usableFloorArea: 0, technicalServicesArea: 0, trafficArea: 0 
+      }),
+    );
   });
 
   it('auto-detects detail mode when API returns detail fields', async () => {
@@ -205,7 +265,8 @@ describe('CommercialDataCard.vue', () => {
     await flushPromises();
 
     expect(wrapper.find('input[name="usableFloorArea"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(false);
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="netFloorArea"]').attributes('disabled')).toBeDefined();
   });
 
   it('location input is disabled when title matches location on load', async () => {
@@ -250,6 +311,96 @@ describe('CommercialDataCard.vue', () => {
       'project1',
       'unit1',
       expect.objectContaining({ location: 'Neuer Titel' }),
+    );
+  });
+
+  it('renders heatingSpace field inside the DIN 277 fieldset', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    const fieldset = wrapper.find('.p-fieldset');
+    expect(fieldset.find('input[name="heatingSpace"]').exists()).toBe(true);
+  });
+
+  it('shows the "matches NRF" checkbox label in total mode', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Heizfläche entspricht Netto-Raumfläche (NRF)');
+  });
+
+  it('shows the "matches NF" checkbox label in detail mode', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: undefined,
+      usableFloorArea: 30,
+      technicalServicesArea: 20,
+      trafficArea: 10,
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Heizfläche entspricht Nutzungsfläche (NF)');
+  });
+
+  it('auto-checks heatingSpaceMatchesArea when heatingSpace equals netFloorArea on load (total mode)', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial, netFloorArea: 200, heatingSpace: 200,
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('200 m²');
+  });
+
+  it('auto-checks heatingSpaceMatchesArea when heatingSpace equals usableFloorArea on load (detail mode)', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: undefined,
+      usableFloorArea: 30,
+      technicalServicesArea: 20,
+      trafficArea: 10,
+      heatingSpace: 30,
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('30 m²');
+  });
+
+  it('does not check heatingSpaceMatchesArea when heatingSpace differs from netFloorArea', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('checking heatingSpaceMatchesArea disables and live-fills heatingSpace with netFloorArea', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesArea').setValue(true);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('200 m²');
+  });
+
+  it('submits netFloorArea reference value as heatingSpace when heatingSpaceMatchesArea is checked', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesArea').setValue(true);
+    await flushPromises();
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ heatingSpace: 200 }),
     );
   });
 });

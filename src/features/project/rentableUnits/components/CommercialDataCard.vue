@@ -7,6 +7,7 @@ import InputNumber from 'primevue/inputnumber';
 import Fieldset from 'primevue/fieldset';
 import Message from 'primevue/message';
 import SelectButton from 'primevue/selectbutton';
+import Checkbox from 'primevue/checkbox';
 
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -72,11 +73,55 @@ const isDirty = computed(() =>
   currentValues.heatingSpace !== serverValues.heatingSpace,
 );
 
+// ─── DIN 277 sum (NF + TF + VF) ─────────────────────────────────────────────────
+const din277Sum = computed(() => {
+  const { usableFloorArea, technicalServicesArea, trafficArea } = currentValues;
+  if (usableFloorArea === null && technicalServicesArea === null && trafficArea === null) {
+    return null;
+  }
+  return (usableFloorArea ?? 0) + (technicalServicesArea ?? 0) + (trafficArea ?? 0);
+});
+
+// InputNumber renders its displayed text from an uncontrolled `defaultValue` that
+// is only applied once at mount, so a `:key` change is needed to force it to
+// re-render the live sum while the user types into NF/TF/VF.
+const netFloorAreaKey = computed(() =>
+  din277Mode.value === 'detail' ? `netFloorArea-detail-${din277Sum.value}` : 'netFloorArea-total',
+);
+
+// ─── Heizfläche entspricht NRF/NF ──────────────────────────────────────────────
+const heatingSpaceMatchesArea = ref(false);
+
+// NRF im Gesamt-Modus, NF im Aufgeschlüsselt-Modus
+const heatingSpaceReferenceArea = computed(() =>
+  din277Mode.value === 'total' ? currentValues.netFloorArea : currentValues.usableFloorArea,
+);
+
+const heatingSpaceKey = computed(() =>
+  heatingSpaceMatchesArea.value ? `heatingSpace-linked-${heatingSpaceReferenceArea.value}` : 'heatingSpace-free',
+);
+
+const heatingSpaceMatchLabel = computed(() =>
+  din277Mode.value === 'total'
+    ? 'commercial.heatingSpaceMatchesNetFloorArea'
+    : 'commercial.heatingSpaceMatchesUsableFloorArea',
+);
+
+watch(heatingSpaceMatchesArea, (checked) => {
+  if (checked) {
+    currentValues.heatingSpace = heatingSpaceReferenceArea.value;
+  }
+});
+
+watch(heatingSpaceReferenceArea, (newValue) => {
+  if (heatingSpaceMatchesArea.value) {
+    currentValues.heatingSpace = newValue;
+  }
+});
+
 // ─── Mode switch handler ───────────────────────────────────────────────────────
 watch(din277Mode, (newMode) => {
-  if (newMode === 'detail') {
-    currentValues.netFloorArea = null;
-  } else {
+  if (newMode === 'total') {
     currentValues.usableFloorArea = null;
     currentValues.technicalServicesArea = null;
     currentValues.trafficArea = null;
@@ -105,9 +150,12 @@ onMounted(async () => {
       trafficArea: data.trafficArea ?? null,
       heatingSpace: data.heatingSpace ?? null,
     });
-    if (data.usableFloorArea !== null || data.technicalServicesArea !== null || data.trafficArea !== null) {
+    if ((data.usableFloorArea ?? 0) > 0 || (data.technicalServicesArea ?? 0) > 0 || (data.trafficArea ?? 0) > 0) {
       din277Mode.value = 'detail';
     }
+    const referenceValue = din277Mode.value === 'detail' ? (data.usableFloorArea ?? null) : (data.netFloorArea ?? null);
+    heatingSpaceMatchesArea.value =
+      !data.heatingSpace || (referenceValue != null && data.heatingSpace === referenceValue);
   } catch (err) {
     console.error('Fehler beim Laden der Gewerbeeinheit:', err);
     toast.add({
@@ -125,16 +173,18 @@ async function onSubmit(event: FormSubmitEvent) {
     title: s.title?.value || undefined,
     description: s.description?.value || undefined,
     location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
-    heatingSpace: s.heatingSpace?.value ?? undefined,
+    heatingSpace: heatingSpaceMatchesArea.value
+      ? (heatingSpaceReferenceArea.value ?? undefined)
+      : (s.heatingSpace?.value ?? undefined),
   };
 
   if (din277Mode.value === 'total') {
     payload.netFloorArea = s.netFloorArea?.value ?? undefined;
-    payload.usableFloorArea = undefined;
-    payload.technicalServicesArea = undefined;
-    payload.trafficArea = undefined;
+    payload.usableFloorArea = 0;
+    payload.technicalServicesArea = 0;
+    payload.trafficArea = 0;
   } else {
-    payload.netFloorArea = undefined;
+    payload.netFloorArea = din277Sum.value ?? undefined;
     payload.usableFloorArea = s.usableFloorArea?.value ?? undefined;
     payload.technicalServicesArea = s.technicalServicesArea?.value ?? undefined;
     payload.trafficArea = s.trafficArea?.value ?? undefined;
@@ -185,12 +235,15 @@ async function onSubmit(event: FormSubmitEvent) {
         <div class="flex flex-col gap-4">
           <!-- NRF / Mode toggle -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-end">
-            <!-- Netto-Raumfläche (total mode) -->
-            <div v-if="din277Mode === 'total'" class="flex flex-col gap-1">
+            <!-- Netto-Raumfläche -->
+            <div class="flex flex-col gap-1">
               <label for="netFloorArea" class="font-medium">{{ t('commercial.netFloorArea') }}</label>
               <InputNumber
                 id="netFloorArea"
+                :key="netFloorAreaKey"
                 name="netFloorArea"
+                :modelValue="din277Mode === 'detail' ? din277Sum : currentValues.netFloorArea"
+                :disabled="din277Mode === 'detail'"
                 :min="0"
                 :maxFractionDigits="2"
                 suffix=" m²"
@@ -206,7 +259,6 @@ async function onSubmit(event: FormSubmitEvent) {
                 {{ form.netFloorArea.error?.message }}
               </Message>
             </div>
-            <div v-else class="hidden md:block" />
 
             <!-- Mode toggle -->
             <div class="flex flex-col gap-1">
@@ -290,32 +342,41 @@ async function onSubmit(event: FormSubmitEvent) {
               </Message>
             </div>
           </div>
+
+          <!-- Heizfläche -->
+          <div class="grid grid-cols-1 gap-x-6 gap-y-4">
+            <div class="flex flex-col gap-1">
+              <label for="heatingSpace" class="font-medium">{{ t('commercial.heatingSpace') }}</label>
+              <InputNumber
+                id="heatingSpace"
+                :key="heatingSpaceKey"
+                name="heatingSpace"
+                :modelValue="heatingSpaceMatchesArea ? heatingSpaceReferenceArea : currentValues.heatingSpace"
+                :disabled="heatingSpaceMatchesArea"
+                :min="0"
+                :maxFractionDigits="2"
+                suffix=" m²"
+                fluid
+                @update:modelValue="(v) => (currentValues.heatingSpace = v as number | null)"
+              />
+              <div class="flex items-center gap-2 mt-1">
+                <Checkbox v-model="heatingSpaceMatchesArea" inputId="heatingSpaceMatchesArea" binary />
+                <label for="heatingSpaceMatchesArea" class="text-sm text-surface-600">
+                  {{ t(heatingSpaceMatchLabel) }}
+                </label>
+              </div>
+              <Message
+                v-if="form.heatingSpace?.invalid && form.heatingSpace?.touched"
+                severity="error"
+                size="small"
+                variant="simple"
+              >
+                {{ form.heatingSpace.error?.message }}
+              </Message>
+            </div>
+          </div>
         </div>
       </Fieldset>
-
-      <div class="grid grid-cols-1 gap-x-6 gap-y-4">
-        <!-- Heizfläche -->
-        <div class="flex flex-col gap-1">
-          <label for="heatingSpace" class="font-medium">{{ t('commercial.heatingSpace') }}</label>
-          <InputNumber
-            id="heatingSpace"
-            name="heatingSpace"
-            :min="0"
-            :maxFractionDigits="2"
-            suffix=" m²"
-            fluid
-            @update:modelValue="(v) => (currentValues.heatingSpace = v as number | null)"
-          />
-          <Message
-            v-if="form.heatingSpace?.invalid && form.heatingSpace?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ form.heatingSpace.error?.message }}
-          </Message>
-        </div>
-      </div>
     </template>
   </RentableUnitBaseDataCard>
 </template>
