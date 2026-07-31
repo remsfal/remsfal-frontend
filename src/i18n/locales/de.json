@@ -292,6 +292,7 @@
   "apartment.livingSpace": "Wohnfläche",
   "apartment.usableSpace": "Nutzfläche",
   "apartment.heatingSpace": "Heizfläche",
+  "apartment.heatingSpaceMatchesLivingSpace": "Heizfläche entspricht Wohnfläche",
   "apartment.saveSuccess": "Wohnung erfolgreich gespeichert.",
   "apartment.saveError": "Wohnung konnte nicht gespeichert werden.",
   "apartment.loadError": "Wohnung konnte nicht geladen werden.",

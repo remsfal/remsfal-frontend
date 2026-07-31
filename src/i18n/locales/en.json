@@ -292,6 +292,7 @@
   "apartment.livingSpace": "Living Space",
   "apartment.usableSpace": "Usable Space",
   "apartment.heatingSpace": "Heating Space",
+  "apartment.heatingSpaceMatchesLivingSpace": "Heating Space matches Living Space",
   "apartment.saveSuccess": "Apartment saved successfully.",
   "apartment.saveError": "Apartment could not be saved.",
   "apartment.loadError": "Apartment could not be loaded.",

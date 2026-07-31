@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
 import InputNumber from 'primevue/inputnumber';
 import Fieldset from 'primevue/fieldset';
 import Message from 'primevue/message';
+import Checkbox from 'primevue/checkbox';
 
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -56,6 +57,29 @@ const isDirty = computed(() =>
   currentValues.heatingSpace !== serverValues.heatingSpace,
 );
 
+const heatingSpaceMatchesLiving = ref(false);
+
+const heatingSpaceKey = computed(() =>
+  heatingSpaceMatchesLiving.value
+    ? `heatingSpace-linked-${currentValues.livingSpace}`
+    : 'heatingSpace-free',
+);
+
+watch(heatingSpaceMatchesLiving, (checked) => {
+  if (checked) {
+    currentValues.heatingSpace = currentValues.livingSpace;
+  }
+});
+
+watch(
+  () => currentValues.livingSpace,
+  (newValue) => {
+    if (heatingSpaceMatchesLiving.value) {
+      currentValues.heatingSpace = newValue;
+    }
+  },
+);
+
 onMounted(async () => {
   if (!props.unitId) {
     toast.add({
@@ -73,6 +97,8 @@ onMounted(async () => {
       usableSpace: data.usableSpace ?? null,
       heatingSpace: data.heatingSpace ?? null,
     });
+    heatingSpaceMatchesLiving.value =
+      !data.heatingSpace || data.heatingSpace === (data.livingSpace ?? null);
   } catch (err) {
     console.error('Fehler beim Laden der Wohnung:', err);
     toast.add({
@@ -90,7 +116,9 @@ async function onSubmit(event: FormSubmitEvent) {
     location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
     livingSpace: s.livingSpace?.value ?? undefined,
     usableSpace: s.usableSpace?.value ?? undefined,
-    heatingSpace: s.heatingSpace?.value ?? undefined,
+    heatingSpace: heatingSpaceMatchesLiving.value
+      ? (s.livingSpace?.value ?? undefined)
+      : (s.heatingSpace?.value ?? undefined),
   };
   try {
     await apartmentService.updateApartment(props.projectId, props.unitId, payload as ApartmentJson);
@@ -131,7 +159,7 @@ async function onSubmit(event: FormSubmitEvent) {
   >
     <template #fields="{ form }">
       <Fieldset :legend="t('apartment.woflv.legend')">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
           <!-- Wohnfläche -->
           <div class="flex flex-col gap-1">
             <label for="livingSpace" class="font-medium">{{ t('apartment.livingSpace') }}</label>
@@ -175,28 +203,37 @@ async function onSubmit(event: FormSubmitEvent) {
               {{ form.usableSpace.error?.message }}
             </Message>
           </div>
+        </div>
 
-          <!-- Heizfläche -->
-          <div class="flex flex-col gap-1">
-            <label for="heatingSpace" class="font-medium">{{ t('apartment.heatingSpace') }}</label>
-            <InputNumber
-              id="heatingSpace"
-              name="heatingSpace"
-              :min="0"
-              :maxFractionDigits="2"
-              suffix=" m²"
-              fluid
-              @update:modelValue="(v) => (currentValues.heatingSpace = v as number | null)"
-            />
-            <Message
-              v-if="form.heatingSpace?.invalid && form.heatingSpace?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ form.heatingSpace.error?.message }}
-            </Message>
+        <!-- Heizfläche -->
+        <div class="flex flex-col gap-1 mt-4">
+          <label for="heatingSpace" class="font-medium">{{ t('apartment.heatingSpace') }}</label>
+          <InputNumber
+            id="heatingSpace"
+            :key="heatingSpaceKey"
+            name="heatingSpace"
+            :modelValue="heatingSpaceMatchesLiving ? currentValues.livingSpace : currentValues.heatingSpace"
+            :disabled="heatingSpaceMatchesLiving"
+            :min="0"
+            :maxFractionDigits="2"
+            suffix=" m²"
+            fluid
+            @update:modelValue="(v) => (currentValues.heatingSpace = v as number | null)"
+          />
+          <div class="flex items-center gap-2 mt-1">
+            <Checkbox v-model="heatingSpaceMatchesLiving" inputId="heatingSpaceMatchesLiving" binary />
+            <label for="heatingSpaceMatchesLiving" class="text-sm text-surface-600">
+              {{ t('apartment.heatingSpaceMatchesLivingSpace') }}
+            </label>
           </div>
+          <Message
+            v-if="form.heatingSpace?.invalid && form.heatingSpace?.touched"
+            severity="error"
+            size="small"
+            variant="simple"
+          >
+            {{ form.heatingSpace.error?.message }}
+          </Message>
         </div>
       </Fieldset>
     </template>

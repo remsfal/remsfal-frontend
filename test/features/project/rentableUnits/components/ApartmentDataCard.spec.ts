@@ -215,4 +215,57 @@ describe('ApartmentDataCard.vue', () => {
       expect.objectContaining({ location: 'Neuer Titel' }),
     );
   });
+
+  it('shows the "heating space matches living space" checkbox label', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Heizfläche entspricht Wohnfläche');
+  });
+
+  it('auto-checks heatingSpaceMatchesLiving when heatingSpace equals livingSpace on load', async () => {
+    vi.mocked(apartmentService.getApartment).mockResolvedValue({
+      ...mockApartment, livingSpace: 80, heatingSpace: 80,
+    });
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('80 m²');
+  });
+
+  it('does not check heatingSpaceMatchesLiving when heatingSpace differs from livingSpace', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('checking heatingSpaceMatchesLiving disables and live-fills heatingSpace with livingSpace', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesLiving').setValue(true);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('80 m²');
+  });
+
+  it('submits livingSpace value as heatingSpace when heatingSpaceMatchesLiving is checked', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesLiving').setValue(true);
+    await flushPromises();
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(apartmentService.updateApartment).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ heatingSpace: 80 }),
+    );
+  });
 });
