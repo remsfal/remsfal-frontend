@@ -29,7 +29,6 @@ const schema = z.object({
   ...createBaseRentableUnitSchema(t),
   usableSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   heatingSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
-  space: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
 });
 
 const resolver = zodResolver(schema);
@@ -40,7 +39,6 @@ const serverValues = reactive({
   location: '',
   usableSpace: null as number | null,
   heatingSpace: null as number | null,
-  space: null as number | null,
 });
 
 const currentValues = reactive({ ...serverValues });
@@ -51,8 +49,7 @@ const isDirty = computed(() =>
   currentValues.description !== serverValues.description ||
   currentValues.location !== serverValues.location ||
   currentValues.usableSpace !== serverValues.usableSpace ||
-  currentValues.heatingSpace !== serverValues.heatingSpace ||
-  currentValues.space !== serverValues.space,
+  currentValues.heatingSpace !== serverValues.heatingSpace,
 );
 
 onMounted(async () => {
@@ -70,7 +67,6 @@ onMounted(async () => {
       location: data.location || '',
       usableSpace: data.usableSpace ?? null,
       heatingSpace: data.heatingSpace ?? null,
-      space: data.space ?? null,
     });
   } catch (err) {
     console.error('Fehler beim Laden des Lagers:', err);
@@ -89,7 +85,6 @@ async function onSubmit(event: FormSubmitEvent) {
     location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
     usableSpace: s.usableSpace?.value ?? undefined,
     heatingSpace: s.heatingSpace?.value ?? undefined,
-    space: s.space?.value ?? undefined,
   };
   try {
     await storageService.updateStorage(props.projectId, props.unitId, payload as StorageJson);
@@ -99,7 +94,6 @@ async function onSubmit(event: FormSubmitEvent) {
       location: payload.location || '',
       usableSpace: payload.usableSpace ?? null,
       heatingSpace: payload.heatingSpace ?? null,
-      space: payload.space ?? null,
     });
     toast.add({
       severity: 'success', summary: t('success.saved'), detail: t('storage.saveSuccess'), life: 3000 
@@ -129,7 +123,7 @@ async function onSubmit(event: FormSubmitEvent) {
     @update:description="(v) => (currentValues.description = v)"
   >
     <template #fields="{ form }">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
         <!-- Nutzfläche -->
         <div class="flex flex-col gap-1">
           <label for="usableSpace" class="font-medium">{{ t('storage.usableSpace') }}</label>
@@ -171,28 +165,6 @@ async function onSubmit(event: FormSubmitEvent) {
             variant="simple"
           >
             {{ form.heatingSpace.error?.message }}
-          </Message>
-        </div>
-
-        <!-- Fläche -->
-        <div class="flex flex-col gap-1">
-          <label for="space" class="font-medium">{{ t('storage.space') }}</label>
-          <InputNumber
-            id="space"
-            name="space"
-            :min="0"
-            :maxFractionDigits="2"
-            suffix=" m²"
-            fluid
-            @update:modelValue="(v) => (currentValues.space = v as number | null)"
-          />
-          <Message
-            v-if="form.space?.invalid && form.space?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ form.space.error?.message }}
           </Message>
         </div>
       </div>

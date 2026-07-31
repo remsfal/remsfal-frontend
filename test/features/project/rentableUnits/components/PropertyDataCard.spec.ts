@@ -48,7 +48,6 @@ const mockProperty = {
   economyType: 'GF Wohnen',
   location: 'Musterstraße 1',
   plotArea: 500,
-  space: 250.5,
 };
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };

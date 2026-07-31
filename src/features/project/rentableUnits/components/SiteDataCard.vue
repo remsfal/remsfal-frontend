@@ -28,7 +28,6 @@ const toast = useToast();
 const schema = z.object({
   ...createBaseRentableUnitSchema(t),
   outdoorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
-  space: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
 });
 
 const resolver = zodResolver(schema);
@@ -38,7 +37,6 @@ const serverValues = reactive({
   description: '',
   location: '',
   outdoorArea: null as number | null,
-  space: null as number | null,
 });
 
 const currentValues = reactive({ ...serverValues });
@@ -48,8 +46,7 @@ const isDirty = computed(() =>
   currentValues.title !== serverValues.title ||
   currentValues.description !== serverValues.description ||
   currentValues.location !== serverValues.location ||
-  currentValues.outdoorArea !== serverValues.outdoorArea ||
-  currentValues.space !== serverValues.space,
+  currentValues.outdoorArea !== serverValues.outdoorArea,
 );
 
 onMounted(async () => {
@@ -66,7 +63,6 @@ onMounted(async () => {
       description: data.description || '',
       location: data.location || '',
       outdoorArea: data.outdoorArea ?? null,
-      space: data.space ?? null,
     });
   } catch (err) {
     console.error('Fehler beim Laden der Außenanlage:', err);
@@ -84,7 +80,6 @@ async function onSubmit(event: FormSubmitEvent) {
     description: s.description?.value || undefined,
     location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
     outdoorArea: s.outdoorArea?.value ?? undefined,
-    space: s.space?.value ?? undefined,
   };
   try {
     await siteService.updateSite(props.projectId, props.unitId, payload);
@@ -93,7 +88,6 @@ async function onSubmit(event: FormSubmitEvent) {
       description: payload.description || '',
       location: payload.location || '',
       outdoorArea: payload.outdoorArea ?? null,
-      space: payload.space ?? null,
     });
     toast.add({
       severity: 'success', summary: t('success.saved'), detail: t('site.saveSuccess'), life: 3000 
@@ -123,7 +117,7 @@ async function onSubmit(event: FormSubmitEvent) {
     @update:description="(v) => (currentValues.description = v)"
   >
     <template #fields="{ form }">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      <div class="grid grid-cols-1 gap-x-6 gap-y-4">
         <!-- Außenfläche -->
         <div class="flex flex-col gap-1">
           <label for="outdoorArea" class="font-medium">{{ t('site.outdoorArea') }}</label>
@@ -143,28 +137,6 @@ async function onSubmit(event: FormSubmitEvent) {
             variant="simple"
           >
             {{ form.outdoorArea.error?.message }}
-          </Message>
-        </div>
-
-        <!-- Nutzfläche -->
-        <div class="flex flex-col gap-1">
-          <label for="space" class="font-medium">{{ t('site.space') }}</label>
-          <InputNumber
-            id="space"
-            name="space"
-            :min="0"
-            :maxFractionDigits="2"
-            suffix=" m²"
-            fluid
-            @update:modelValue="(v) => (currentValues.space = v as number | null)"
-          />
-          <Message
-            v-if="form.space?.invalid && form.space?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ form.space.error?.message }}
           </Message>
         </div>
       </div>

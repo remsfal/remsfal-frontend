@@ -31,7 +31,6 @@ const schema = z.object({
   livingSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   usableSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   heatingSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
-  space: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
 });
 
 const resolver = zodResolver(schema);
@@ -43,7 +42,6 @@ const serverValues = reactive({
   livingSpace: null as number | null,
   usableSpace: null as number | null,
   heatingSpace: null as number | null,
-  space: null as number | null,
 });
 
 const currentValues = reactive({ ...serverValues });
@@ -55,8 +53,7 @@ const isDirty = computed(() =>
   currentValues.location !== serverValues.location ||
   currentValues.livingSpace !== serverValues.livingSpace ||
   currentValues.usableSpace !== serverValues.usableSpace ||
-  currentValues.heatingSpace !== serverValues.heatingSpace ||
-  currentValues.space !== serverValues.space,
+  currentValues.heatingSpace !== serverValues.heatingSpace,
 );
 
 onMounted(async () => {
@@ -75,7 +72,6 @@ onMounted(async () => {
       livingSpace: data.livingSpace ?? null,
       usableSpace: data.usableSpace ?? null,
       heatingSpace: data.heatingSpace ?? null,
-      space: data.space ?? null,
     });
   } catch (err) {
     console.error('Fehler beim Laden der Wohnung:', err);
@@ -95,7 +91,6 @@ async function onSubmit(event: FormSubmitEvent) {
     livingSpace: s.livingSpace?.value ?? undefined,
     usableSpace: s.usableSpace?.value ?? undefined,
     heatingSpace: s.heatingSpace?.value ?? undefined,
-    space: s.space?.value ?? undefined,
   };
   try {
     await apartmentService.updateApartment(props.projectId, props.unitId, payload as ApartmentJson);
@@ -106,7 +101,6 @@ async function onSubmit(event: FormSubmitEvent) {
       livingSpace: payload.livingSpace ?? null,
       usableSpace: payload.usableSpace ?? null,
       heatingSpace: payload.heatingSpace ?? null,
-      space: payload.space ?? null,
     });
     toast.add({
       severity: 'success', summary: t('success.saved'), detail: t('apartment.saveSuccess'), life: 3000 
@@ -137,7 +131,7 @@ async function onSubmit(event: FormSubmitEvent) {
   >
     <template #fields="{ form }">
       <Fieldset :legend="t('apartment.woflv.legend')">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-6 gap-y-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
           <!-- Wohnfläche -->
           <div class="flex flex-col gap-1">
             <label for="livingSpace" class="font-medium">{{ t('apartment.livingSpace') }}</label>
@@ -201,28 +195,6 @@ async function onSubmit(event: FormSubmitEvent) {
               variant="simple"
             >
               {{ form.heatingSpace.error?.message }}
-            </Message>
-          </div>
-
-          <!-- Fläche -->
-          <div class="flex flex-col gap-1">
-            <label for="space" class="font-medium">{{ t('apartment.space') }}</label>
-            <InputNumber
-              id="space"
-              name="space"
-              :min="0"
-              :maxFractionDigits="2"
-              suffix=" m²"
-              fluid
-              @update:modelValue="(v) => (currentValues.space = v as number | null)"
-            />
-            <Message
-              v-if="form.space?.invalid && form.space?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ form.space.error?.message }}
             </Message>
           </div>
         </div>

@@ -34,7 +34,6 @@ const schema = z.object({
   technicalServicesArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   trafficArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   heatingSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
-  space: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
 });
 
 const resolver = zodResolver(schema);
@@ -57,7 +56,6 @@ const serverValues = reactive({
   technicalServicesArea: null as number | null,
   trafficArea: null as number | null,
   heatingSpace: null as number | null,
-  space: null as number | null,
 });
 
 const currentValues = reactive({ ...serverValues });
@@ -71,8 +69,7 @@ const isDirty = computed(() =>
   currentValues.usableFloorArea !== serverValues.usableFloorArea ||
   currentValues.technicalServicesArea !== serverValues.technicalServicesArea ||
   currentValues.trafficArea !== serverValues.trafficArea ||
-  currentValues.heatingSpace !== serverValues.heatingSpace ||
-  currentValues.space !== serverValues.space,
+  currentValues.heatingSpace !== serverValues.heatingSpace,
 );
 
 // ─── Mode switch handler ───────────────────────────────────────────────────────
@@ -107,7 +104,6 @@ onMounted(async () => {
       technicalServicesArea: data.technicalServicesArea ?? null,
       trafficArea: data.trafficArea ?? null,
       heatingSpace: data.heatingSpace ?? null,
-      space: data.space ?? null,
     });
     if (data.usableFloorArea !== null || data.technicalServicesArea !== null || data.trafficArea !== null) {
       din277Mode.value = 'detail';
@@ -130,7 +126,6 @@ async function onSubmit(event: FormSubmitEvent) {
     description: s.description?.value || undefined,
     location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
     heatingSpace: s.heatingSpace?.value ?? undefined,
-    space: s.space?.value ?? undefined,
   };
 
   if (din277Mode.value === 'total') {
@@ -156,7 +151,6 @@ async function onSubmit(event: FormSubmitEvent) {
       technicalServicesArea: payload.technicalServicesArea ?? null,
       trafficArea: payload.trafficArea ?? null,
       heatingSpace: payload.heatingSpace ?? null,
-      space: payload.space ?? null,
     });
     toast.add({
       severity: 'success', summary: t('success.saved'), detail: t('commercial.saveSuccess'), life: 3000 
@@ -299,8 +293,7 @@ async function onSubmit(event: FormSubmitEvent) {
         </div>
       </Fieldset>
 
-      <!-- Heizfläche + Fläche -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      <div class="grid grid-cols-1 gap-x-6 gap-y-4">
         <!-- Heizfläche -->
         <div class="flex flex-col gap-1">
           <label for="heatingSpace" class="font-medium">{{ t('commercial.heatingSpace') }}</label>
@@ -320,28 +313,6 @@ async function onSubmit(event: FormSubmitEvent) {
             variant="simple"
           >
             {{ form.heatingSpace.error?.message }}
-          </Message>
-        </div>
-
-        <!-- Fläche -->
-        <div class="flex flex-col gap-1">
-          <label for="space" class="font-medium">{{ t('commercial.space') }}</label>
-          <InputNumber
-            id="space"
-            name="space"
-            :min="0"
-            :maxFractionDigits="2"
-            suffix=" m²"
-            fluid
-            @update:modelValue="(v) => (currentValues.space = v as number | null)"
-          />
-          <Message
-            v-if="form.space?.invalid && form.space?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ form.space.error?.message }}
           </Message>
         </div>
       </div>

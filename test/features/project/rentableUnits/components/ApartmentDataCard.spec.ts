@@ -43,7 +43,6 @@ const mockApartment = {
   livingSpace: 80,
   usableSpace: 70,
   heatingSpace: 75,
-  space: 85,
 };
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
@@ -164,7 +163,6 @@ describe('ApartmentDataCard.vue', () => {
     expect(wrapper.find('input[name="livingSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="usableSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="heatingSpace"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="space"]').exists()).toBe(true);
   });
 
   it('renders WoFlV fieldset', async () => {

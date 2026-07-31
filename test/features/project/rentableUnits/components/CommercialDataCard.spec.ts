@@ -48,7 +48,6 @@ const mockCommercial = {
   technicalServicesArea: null,
   trafficArea: null,
   heatingSpace: 180,
-  space: 210,
 } as unknown as CommercialJson;
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
@@ -166,7 +165,6 @@ describe('CommercialDataCard.vue', () => {
     expect(wrapper.find('input[name="location"]').exists()).toBe(true);
     expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
     expect(wrapper.find('input[name="heatingSpace"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="space"]').exists()).toBe(true);
   });
 
   it('renders DIN 277 fieldset', async () => {

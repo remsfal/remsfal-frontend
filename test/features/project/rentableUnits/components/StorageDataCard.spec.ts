@@ -41,7 +41,6 @@ const mockStorage = {
   location: 'Keller 1',
   usableSpace: 20,
   heatingSpace: 15,
-  space: 25,
 };
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
@@ -159,7 +158,6 @@ describe('StorageDataCard.vue', () => {
     expect(wrapper.find('input[name="location"]').exists()).toBe(true);
     expect(wrapper.find('input[name="usableSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="heatingSpace"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="space"]').exists()).toBe(true);
   });
 
   it('location input is disabled when title matches location on load', async () => {

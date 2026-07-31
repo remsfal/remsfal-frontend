@@ -40,7 +40,6 @@ const mockSite = {
   description: 'Eine Beschreibung',
   location: 'Musterstraße 1',
   outdoorArea: 300,
-  space: 150.5,
 };
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
@@ -162,7 +161,6 @@ describe('SiteDataCard.vue', () => {
     expect(wrapper.find('textarea[name="description"]').exists()).toBe(true);
     expect(wrapper.find('input[name="location"]').exists()).toBe(true);
     expect(wrapper.find('input[name="outdoorArea"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="space"]').exists()).toBe(true);
   });
 
   it('location input is disabled when title matches location on load', async () => {
