@@ -279,7 +279,7 @@ async function confirmTerminate(): Promise<void> {
         @click="closeTerminateDialog"
       />
       <Button
-        :label="t('rentalAgreement.terminate.confirmButton')"
+        :label="t('rentalAgreement.terminate.dialogTitle')"
         icon="pi pi-times"
         severity="danger"
         :disabled="!isEndDateValid || saving"

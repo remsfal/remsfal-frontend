@@ -178,15 +178,15 @@ describe('RentalAgreementSummaryCard', () => {
     const openBtn = wrapper.findAll('button').find((btn) => btn.text() === 'rentalAgreement.terminate.button');
     await openBtn?.trigger('click');
 
-    expect(findDialogButton('rentalAgreement.terminate.confirmButton')?.disabled).toBe(true);
+    expect(findDialogButton('rentalAgreement.terminate.dialogTitle')?.disabled).toBe(true);
 
     await wrapper.findComponent(DatePicker).vm.$emit('update:modelValue', new Date(2025, 5, 15));
     await wrapper.vm.$nextTick();
-    expect(findDialogButton('rentalAgreement.terminate.confirmButton')?.disabled).toBe(false);
+    expect(findDialogButton('rentalAgreement.terminate.dialogTitle')?.disabled).toBe(false);
 
     await wrapper.findComponent(DatePicker).vm.$emit('update:modelValue', new Date(2024, 0, 1));
     await wrapper.vm.$nextTick();
-    expect(findDialogButton('rentalAgreement.terminate.confirmButton')?.disabled).toBe(true);
+    expect(findDialogButton('rentalAgreement.terminate.dialogTitle')?.disabled).toBe(true);
     expect(document.body.textContent).toContain('rentalAgreement.terminate.invalidDate');
   });
 
@@ -197,7 +197,7 @@ describe('RentalAgreementSummaryCard', () => {
 
     await wrapper.findComponent(DatePicker).vm.$emit('update:modelValue', new Date(2025, 5, 15));
     await wrapper.vm.$nextTick();
-    findDialogButton('rentalAgreement.terminate.confirmButton')?.click();
+    findDialogButton('rentalAgreement.terminate.dialogTitle')?.click();
     await flushPromises();
 
     expect(rentalAgreementService.updateRentalAgreement).toHaveBeenCalledWith(
@@ -222,7 +222,7 @@ describe('RentalAgreementSummaryCard', () => {
 
     await wrapper.findComponent(DatePicker).vm.$emit('update:modelValue', new Date(2025, 5, 15));
     await wrapper.vm.$nextTick();
-    findDialogButton('rentalAgreement.terminate.confirmButton')?.click();
+    findDialogButton('rentalAgreement.terminate.dialogTitle')?.click();
     await flushPromises();
 
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));

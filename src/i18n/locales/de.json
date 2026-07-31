@@ -727,7 +727,6 @@
   "rentalAgreement.terminate.button": "Mietvertrag beenden",
   "rentalAgreement.terminate.dialogTitle": "Mietvertrag beenden",
   "rentalAgreement.terminate.selectEndDate": "Enddatum auswählen",
-  "rentalAgreement.terminate.confirmButton": "Beenden",
   "rentalAgreement.terminate.invalidDate": "Das Enddatum muss nach dem Mietbeginn liegen.",
   "rentalAgreement.terminate.success": "Mietvertrag beendet",
   "rentalAgreement.terminate.successDetail": "Das Enddatum wurde erfolgreich gespeichert.",

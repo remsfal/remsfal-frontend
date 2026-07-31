@@ -724,7 +724,6 @@
   "rentalAgreement.terminate.button": "Terminate Rental Agreement",
   "rentalAgreement.terminate.dialogTitle": "Terminate Rental Agreement",
   "rentalAgreement.terminate.selectEndDate": "Select End Date",
-  "rentalAgreement.terminate.confirmButton": "Terminate",
   "rentalAgreement.terminate.invalidDate": "The end date must be after the rental start date.",
   "rentalAgreement.terminate.success": "Rental agreement terminated",
   "rentalAgreement.terminate.successDetail": "The end date was saved successfully.",
