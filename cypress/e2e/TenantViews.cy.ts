@@ -130,6 +130,7 @@ describe('Tenant Views E2E Tests', () => {
 
       // Loading spinner should be visible during the delayed response
       cy.get('.p-progressspinner', { timeout: 2500 }).should('exist');
+      cy.wait('@getDelayedTenants');
     });
 
     it('should display tenant cards in a grid', () => {
@@ -375,6 +376,7 @@ describe('Tenant Views E2E Tests', () => {
 
       // Loading spinner should be visible during the delayed response
       cy.get('.p-progressspinner', { timeout: 2500 }).should('exist');
+      cy.wait('@getDelayedTenant');
     });
 
     it('should populate form fields with tenant data', () => {
