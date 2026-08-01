@@ -161,6 +161,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.get('[role="dialog"]').within(() => {
         cy.get('[role="progressbar"]').should('exist');
       });
+      cy.wait('@getSlowTenancies');
     });
   });
 
@@ -675,6 +676,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.get('[role="dialog"]').within(() => {
         cy.get('[role="progressbar"]').should('exist');
       });
+      cy.wait('@createIssueDelayed');
     });
 
     it('should show an error toast when the API returns a server error', () => {
