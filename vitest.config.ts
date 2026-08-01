@@ -10,6 +10,9 @@ export default mergeConfig(
       maxWorkers: '50%',
       pool: 'forks',
       logHeapUsage: true,
+      // Hide console output (console.error/warn/log from tested code) for passing
+      // tests to keep the run readable; failing tests still show their output.
+      silent: 'passed-only',
       coverage: {
         provider: 'istanbul',
         reporter: ['json', 'text', 'html', 'lcov'],

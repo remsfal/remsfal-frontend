@@ -198,6 +198,7 @@ describe('ProjectTenancies E2E Tests', () => {
 
     // Check if loading message is displayed
     cy.contains(/laden|loading/i).should('be.visible');
+    cy.wait('@getDelayedRentalAgreements');
   });
 
   it('should display rental agreements in a data table', () => {
@@ -295,6 +296,13 @@ describe('ProjectTenancies E2E Tests', () => {
       },
     }).as('getProperties');
 
+    // RentalAgreementUnitListCard resolves each apartmentRents entry via a follow-up
+    // GET to the apartments endpoint on mount.
+    cy.intercept('GET', `/api/v1/projects/${projectId}/apartments/apt-101`, {
+      statusCode: 200,
+      body: { title: 'Apartment 101' },
+    }).as('getApartment101');
+
     cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
@@ -304,6 +312,8 @@ describe('ProjectTenancies E2E Tests', () => {
 
     // Check if URL changed to details page
     cy.url().should('include', `/projects/${projectId}/agreements/agreement-1`);
+    cy.wait('@getRentalAgreementDetails');
+    cy.wait('@getApartment101');
   });
 
   it('should display rental agreements with multiple units', () => {
@@ -360,9 +370,17 @@ describe('ProjectTenancies E2E Tests', () => {
       statusCode: 204,
     }).as('deleteRentalAgreement');
 
+    // RentalAgreementUnitListCard resolves each apartmentRents entry via a follow-up
+    // GET to the apartments endpoint on mount.
+    cy.intercept('GET', `/api/v1/projects/${projectId}/apartments/apt-101`, {
+      statusCode: 200,
+      body: { title: 'Apartment 101' },
+    }).as('getApartment101');
+
     cy.visit(`/projects/${projectId}/agreements/agreement-1`);
 
     cy.wait('@getRentalAgreementDetails');
+    cy.wait('@getApartment101');
 
     // Dialog is hidden until the danger-zone delete button is clicked
     cy.get('[role="dialog"]').should('not.exist');
