@@ -4241,12 +4241,12 @@ export interface components {
       usableSpace?: number;
       /** Format: float */
       heatingSpace?: number;
-      /** Format: float */
-      space?: number;
       id?: components["schemas"]["UUID"];
       title?: string;
       location?: string;
       description?: string;
+      /** Format: float */
+      space?: number;
     };
     /** @enum {string} */
     BillingCycle: "WEEKLY" | "MONTHLY";
@@ -4260,18 +4260,20 @@ export interface components {
       /** Format: float */
       constructionFloorArea?: number;
       /** Format: float */
+      commercialHeatingSpace?: number;
+      /** Format: float */
       livingSpace?: number;
       /** Format: float */
       usableSpace?: number;
       /** Format: float */
       heatingSpace?: number;
-      /** Format: float */
-      space?: number;
       id?: components["schemas"]["UUID"];
       title?: string;
       location?: string;
       description?: string;
       address?: components["schemas"]["AddressJson"];
+      /** Format: float */
+      space?: number;
     };
     /** @description A single chat message */
     ChatMessageJson: {
@@ -4325,12 +4327,12 @@ export interface components {
       trafficArea?: number;
       /** Format: float */
       heatingSpace?: number;
-      /** Format: float */
-      space?: number;
       id?: components["schemas"]["UUID"];
       title?: string;
       location?: string;
       description?: string;
+      /** Format: float */
+      space?: number;
     };
     /** @description A contractor employee */
     ContractorEmployeeJson: {
@@ -4714,11 +4716,11 @@ export interface components {
       location?: string;
       /** Format: int32 */
       plotArea?: number;
-      /** Format: float */
-      space?: number;
       id?: components["schemas"]["UUID"];
       title?: string;
       description?: string;
+      /** Format: float */
+      space?: number;
     };
     /** @description A list of properties */
     PropertyListJson: {
@@ -4893,10 +4895,10 @@ export interface components {
       type?: components["schemas"]["UnitType"];
       location?: string;
       description?: string;
-      /** Format: float */
-      space?: number;
       readonly id?: components["schemas"]["UUID"];
       title?: string;
+      /** Format: float */
+      readonly space?: number;
     };
     /** @description Encapsulated data of a project tree node */
     RentalUnitNodeDataJson: {
@@ -4905,33 +4907,33 @@ export interface components {
        * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
        * @example PROPERTY
        */
-      type: components["schemas"]["UnitType"];
+      readonly type?: components["schemas"]["UnitType"];
       /**
        * @description Title of the node
        * @example Main Building
        */
-      title?: string;
+      readonly title?: string;
       /**
        * @description Location of the rental unit
        * @example first floor left
        */
-      location?: string;
+      readonly location?: string;
       /**
        * @description Description of the rental unit
        * @example A multi-story office building
        */
-      description?: string;
+      readonly description?: string;
       /**
        * @description Name of the tenant associated with this node
        * @example Doe, John
        */
-      tenant?: string;
+      readonly tenant?: string;
       /**
        * Format: float
        * @description Usable space in square meters
        * @example 350.5
        */
-      space?: number;
+      readonly space?: number;
     };
     /** @description A tree node representing a project entity */
     RentalUnitTreeNodeJson: {
@@ -4949,13 +4951,13 @@ export interface components {
       type?: components["schemas"]["UnitType"];
       /** Format: float */
       outdoorArea?: number;
-      /** Format: float */
-      space?: number;
       id?: components["schemas"]["UUID"];
       title?: string;
       location?: string;
       description?: string;
       address?: components["schemas"]["AddressJson"];
+      /** Format: float */
+      space?: number;
     };
     /** @description A storage inside a building but with living space according to WoFIV */
     StorageJson: {
@@ -4964,12 +4966,13 @@ export interface components {
       usableSpace?: number;
       /** Format: float */
       heatingSpace?: number;
-      /** Format: float */
-      space?: number;
       id?: components["schemas"]["UUID"];
       title?: string;
       location?: string;
       description?: string;
+      /** Format: float */
+      space?: number;
+      heated?: boolean;
     };
     /** @description A read-only rental agreement of a rentable unit from a tenant's perspective */
     TenancyJson: {

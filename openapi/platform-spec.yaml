@@ -47,9 +47,6 @@ components:
           type: number
           format: float
           minimum: 0
-        space:
-          type: number
-          format: float
         id:
           $ref: "#/components/schemas/UUID"
         title:
@@ -59,6 +56,9 @@ components:
           type: string
         description:
           type: string
+        space:
+          type: number
+          format: float
     BillingCycle:
       type: string
       enum:
@@ -82,6 +82,10 @@ components:
           type: number
           format: float
           minimum: 0
+        commercialHeatingSpace:
+          type: number
+          format: float
+          minimum: 0
         livingSpace:
           type: number
           format: float
@@ -94,9 +98,6 @@ components:
           type: number
           format: float
           minimum: 0
-        space:
-          type: number
-          format: float
         id:
           $ref: "#/components/schemas/UUID"
         title:
@@ -108,6 +109,9 @@ components:
           type: string
         address:
           $ref: "#/components/schemas/AddressJson"
+        space:
+          type: number
+          format: float
     ChatMessageJson:
       description: A single chat message
       type: object
@@ -208,9 +212,6 @@ components:
           type: number
           format: float
           minimum: 0
-        space:
-          type: number
-          format: float
         id:
           $ref: "#/components/schemas/UUID"
         title:
@@ -220,6 +221,9 @@ components:
           type: string
         description:
           type: string
+        space:
+          type: number
+          format: float
     ContractorEmployeeJson:
       description: A contractor employee
       type: object
@@ -1035,9 +1039,6 @@ components:
           type: integer
           format: int32
           minimum: 0
-        space:
-          type: number
-          format: float
         id:
           $ref: "#/components/schemas/UUID"
         title:
@@ -1045,6 +1046,9 @@ components:
           maxLength: 255
         description:
           type: string
+        space:
+          type: number
+          format: float
     PropertyListJson:
       description: A list of properties
       type: object
@@ -1386,9 +1390,6 @@ components:
           type: string
         description:
           type: string
-        space:
-          type: number
-          format: float
         id:
           readOnly: true
           type: string
@@ -1396,6 +1397,10 @@ components:
         title:
           type: string
           maxLength: 255
+        space:
+          type: number
+          format: float
+          readOnly: true
     RentalUnitNodeDataJson:
       type: object
       description: Encapsulated data of a project tree node
@@ -1404,6 +1409,7 @@ components:
           $ref: "#/components/schemas/UUID"
         type:
           description: "Type of the node (e.g., 'PROPERTY', 'BUILDING')"
+          readOnly: true
           type: string
           examples:
           - PROPERTY
@@ -1411,31 +1417,34 @@ components:
         title:
           type: string
           description: Title of the node
+          readOnly: true
           examples:
           - Main Building
         location:
           type: string
           description: Location of the rental unit
+          readOnly: true
           examples:
           - first floor left
         description:
           type: string
           description: Description of the rental unit
+          readOnly: true
           examples:
           - A multi-story office building
         tenant:
           type: string
           description: Name of the tenant associated with this node
+          readOnly: true
           examples:
           - "Doe, John"
         space:
           type: number
           format: float
           description: Usable space in square meters
+          readOnly: true
           examples:
           - 350.5
-      required:
-      - type
     RentalUnitTreeNodeJson:
       type: object
       description: A tree node representing a project entity
@@ -1477,9 +1486,6 @@ components:
           type: number
           format: float
           minimum: 0
-        space:
-          type: number
-          format: float
         id:
           $ref: "#/components/schemas/UUID"
         title:
@@ -1491,6 +1497,9 @@ components:
           type: string
         address:
           $ref: "#/components/schemas/AddressJson"
+        space:
+          type: number
+          format: float
     StorageJson:
       description: A storage inside a building but with living space according to
         WoFIV
@@ -1506,9 +1515,6 @@ components:
           type: number
           format: float
           minimum: 0
-        space:
-          type: number
-          format: float
         id:
           $ref: "#/components/schemas/UUID"
         title:
@@ -1518,6 +1524,11 @@ components:
           type: string
         description:
           type: string
+        space:
+          type: number
+          format: float
+        heated:
+          type: boolean
     TenancyJson:
       description: A read-only rental agreement of a rentable unit from a tenant's
         perspective
