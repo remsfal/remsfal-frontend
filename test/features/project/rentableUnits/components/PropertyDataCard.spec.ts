@@ -10,6 +10,8 @@ class MockResizeObserver {
 beforeAll(() => {
   global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 });
+import Select from 'primevue/select';
+
 import PropertyDataCard from '@/features/project/rentableUnits/components/PropertyDataCard.vue';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 import * as viewHelper from '@/helper/viewHelper';
@@ -217,6 +219,97 @@ describe('PropertyDataCard.vue', () => {
       'project1',
       'unit1',
       expect.objectContaining({ location: 'Neuer Titel' }),
+    );
+  });
+
+  it('does not call updateProperty when the form is invalid on submit', async () => {
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('ab');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(propertyService.updateProperty).not.toHaveBeenCalled();
+  });
+
+  it('checking titleMatchesLocation disables and syncs the location field', async () => {
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeUndefined();
+
+    await wrapper.find('input#titleMatchesLocation').setValue(true);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('save button becomes enabled after description field changes', async () => {
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
+    await flushPromises();
+    await wrapper.find('textarea[name="description"]').setValue('Neue Beschreibung');
+    await flushPromises();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('calls updateProperty with cadastral, land registry and area fields when changed', async () => {
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('textarea[name="description"]').setValue('Neue Beschreibung');
+    await wrapper.find('input[name="cadastralDistrict"]').setValue('Neue Gemarkung');
+    await wrapper.find('input[name="sheetNumber"]').setValue('S999');
+    await wrapper.find('input[name="cadastralSection"]').setValue('Flur 9');
+    await wrapper.find('input[name="plot"]').setValue('Flurstück 9/9');
+    await wrapper.find('input[name="landRegistry"]').setValue('LR999');
+    await wrapper.find('input[name="plotNumber"]').setValue('99');
+    await wrapper.find('input[name="plotNumber"]').trigger('blur');
+    await wrapper.find('input[name="plotArea"]').setValue('999');
+    await wrapper.find('input[name="plotArea"]').trigger('blur');
+    await flushPromises();
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(propertyService.updateProperty).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({
+        description: 'Neue Beschreibung',
+        cadastralDistrict: 'Neue Gemarkung',
+        sheetNumber: 'S999',
+        cadastralSection: 'Flur 9',
+        plot: 'Flurstück 9/9',
+        plotNumber: 99,
+        landRegistry: 'LR999',
+        plotArea: 999,
+      }),
+    );
+  });
+
+  it('calls updateProperty with economyType when changed via the Select field', async () => {
+    const wrapper = mount(PropertyDataCard, { props: defaultProps });
+    await flushPromises();
+
+    // PrimeVue Select commits its value through `writeValue` (called internally on option
+    // selection), which both emits `update:modelValue` and registers the value with the
+    // surrounding @primevue/forms Form. Simulating a plain DOM/UI interaction with the
+    // overlay panel is unreliable in jsdom, so the commit is invoked directly here.
+    const selectVm = wrapper.findComponent(Select).vm as unknown as {
+      writeValue: (value: unknown, event: Event) => void;
+    };
+    selectVm.writeValue('Bauplatz', new Event('change'));
+    await flushPromises();
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(propertyService.updateProperty).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ economyType: 'Bauplatz' }),
     );
   });
 });

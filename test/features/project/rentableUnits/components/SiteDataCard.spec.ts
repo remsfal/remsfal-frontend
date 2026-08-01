@@ -207,4 +207,55 @@ describe('SiteDataCard.vue', () => {
       expect.objectContaining({ location: 'Neuer Titel' }),
     );
   });
+
+  it('does not call updateSite when the form is invalid on submit', async () => {
+    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('ab');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(siteService.updateSite).not.toHaveBeenCalled();
+  });
+
+  it('checking titleMatchesLocation disables and syncs the location field', async () => {
+    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeUndefined();
+
+    await wrapper.find('input#titleMatchesLocation').setValue(true);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('save button becomes enabled after description field changes', async () => {
+    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    await flushPromises();
+    await wrapper.find('textarea[name="description"]').setValue('Neue Beschreibung');
+    await flushPromises();
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('calls updateSite with description and outdoorArea when changed', async () => {
+    const wrapper = mount(SiteDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('textarea[name="description"]').setValue('Neue Beschreibung');
+    await wrapper.find('input[name="outdoorArea"]').setValue('450');
+    await wrapper.find('input[name="outdoorArea"]').trigger('blur');
+    await flushPromises();
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(siteService.updateSite).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ description: 'Neue Beschreibung', outdoorArea: 450 }),
+    );
+  });
 });

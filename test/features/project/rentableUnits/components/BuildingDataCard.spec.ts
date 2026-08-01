@@ -154,6 +154,18 @@ describe('BuildingDataCard.vue', () => {
     expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
   });
 
+  it('does not call updateBuilding when the form is invalid on submit', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('ab');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).not.toHaveBeenCalled();
+  });
+
   it('renders DIN 277 and WoFlV fieldsets', async () => {
     const wrapper = mount(BuildingDataCard, { props: defaultProps });
     await flushPromises();
@@ -247,6 +259,43 @@ describe('BuildingDataCard.vue', () => {
     );
   });
 
+  it('switches back to total mode and resets NRF/KGF fields', async () => {
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+      ...mockBuilding,
+      grossFloorArea: undefined,
+      netFloorArea: 40,
+      constructionFloorArea: 10,
+    });
+
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    // starts in detail mode because both NRF/KGF are present
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
+
+    const totalButton = wrapper.findAll('.p-selectbutton .p-togglebutton').find(
+      (btn) => btn.text() === 'BGF gesamt',
+    );
+    if (totalButton) {
+      await totalButton.trigger('click');
+      await flushPromises();
+    }
+
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(false);
+    expect(wrapper.find('input[name="grossFloorArea"]').attributes('disabled')).toBeUndefined();
+
+    const detailButtonAgain = wrapper.findAll('.p-selectbutton .p-togglebutton').find(
+      (btn) => btn.text() === 'Aufgeschlüsselt',
+    );
+    if (detailButtonAgain) {
+      await detailButtonAgain.trigger('click');
+      await flushPromises();
+    }
+
+    expect((wrapper.find('input[name="netFloorArea"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="constructionFloorArea"]').element as HTMLInputElement).value).toBe('');
+  });
+
   it('auto-detects detail mode when API returns detail fields', async () => {
     vi.mocked(buildingService.getBuilding).mockResolvedValue({
       ...mockBuilding,
@@ -260,6 +309,34 @@ describe('BuildingDataCard.vue', () => {
 
     expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
     expect(wrapper.find('input[name="grossFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="grossFloorArea"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('auto-detects detail mode when only netFloorArea is present', async () => {
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+      ...mockBuilding,
+      netFloorArea: 40,
+      constructionFloorArea: undefined,
+    });
+
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="grossFloorArea"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('auto-detects detail mode when only constructionFloorArea is present', async () => {
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+      ...mockBuilding,
+      netFloorArea: undefined,
+      constructionFloorArea: 15,
+    });
+
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="constructionFloorArea"]').exists()).toBe(true);
     expect(wrapper.find('input[name="grossFloorArea"]').attributes('disabled')).toBeDefined();
   });
 

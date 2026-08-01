@@ -268,4 +268,65 @@ describe('ApartmentDataCard.vue', () => {
       expect.objectContaining({ heatingSpace: 80 }),
     );
   });
+
+  it('live-updates heatingSpace when livingSpace changes while heatingSpaceMatchesLiving is checked', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesLiving').setValue(true);
+    await flushPromises();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('80 m²');
+
+    const livingSpaceInput = wrapper.find('input[name="livingSpace"]');
+    await livingSpaceInput.setValue('95');
+    await livingSpaceInput.trigger('blur');
+    await flushPromises();
+
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('95 m²');
+  });
+
+  it('unchecking heatingSpaceMatchesLiving keeps the last value and makes heatingSpace editable again', async () => {
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesLiving').setValue(true);
+    await flushPromises();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('80 m²');
+
+    await wrapper.find('input#heatingSpaceMatchesLiving').setValue(false);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeUndefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('80 m²');
+
+    const heatingSpaceInput = wrapper.find('input[name="heatingSpace"]');
+    await heatingSpaceInput.setValue('42');
+    await heatingSpaceInput.trigger('blur');
+    await flushPromises();
+    await flushPromises();
+
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toContain('42');
+  });
+
+  it('auto-checks heatingSpaceMatchesLiving when heatingSpace is 0 on load', async () => {
+    vi.mocked(apartmentService.getApartment).mockResolvedValue({
+      ...mockApartment, livingSpace: 80, heatingSpace: 0,
+    });
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('80 m²');
+  });
+
+  it('auto-checks heatingSpaceMatchesLiving when heatingSpace is null on load', async () => {
+    vi.mocked(apartmentService.getApartment).mockResolvedValue({
+      ...mockApartment, livingSpace: 80, heatingSpace: null,
+    } as unknown as ApartmentJson);
+    const wrapper = mount(ApartmentDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('80 m²');
+  });
 });

@@ -1,5 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
+import InputNumber from 'primevue/inputnumber';
 
 // PrimeVue Textarea with autoResize uses ResizeObserver — mock it for jsdom
 class MockResizeObserver {
@@ -401,6 +402,164 @@ describe('CommercialDataCard.vue', () => {
       'project1',
       'unit1',
       expect.objectContaining({ heatingSpace: 200 }),
+    );
+  });
+
+  // ─── Mode ↔ heatingSpaceMatchesArea interaction ────────────────────────────
+  async function switchToDetailMode(wrapper: ReturnType<typeof mount>) {
+    const detailButton = wrapper.findAll('.p-selectbutton .p-togglebutton').find(
+      (btn) => btn.text() === 'Aufgeschlüsselt',
+    );
+    if (detailButton) {
+      await detailButton.trigger('click');
+      await flushPromises();
+    }
+  }
+
+  // PrimeVue's InputNumber (with a " m²" suffix) does not parse a plain-text
+  // `.setValue()` on the native input reliably — it leaves the field in an
+  // invalid, unparsed state. Emitting `update:modelValue` directly on the
+  // component simulates a completed edit without that formatting quirk.
+  async function setInputNumber(wrapper: ReturnType<typeof mount>, name: string, value: number) {
+    const component = wrapper.findAllComponents(InputNumber).find((c) => c.props('name') === name);
+    expect(component).toBeTruthy();
+    component!.vm.$emit('update:modelValue', value);
+    await flushPromises();
+  }
+
+  it('live-updates heatingSpace when netFloorArea changes while heatingSpaceMatchesArea is checked (total mode)', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesArea').setValue(true);
+    await flushPromises();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('200 m²');
+
+    await setInputNumber(wrapper, 'netFloorArea', 250);
+
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('250 m²');
+  });
+
+  it('follows heatingSpaceReferenceArea switching to usableFloorArea after changing to detail mode while checked', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesArea').setValue(true);
+    await flushPromises();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('200 m²');
+
+    await switchToDetailMode(wrapper);
+    await flushPromises();
+
+    await setInputNumber(wrapper, 'usableFloorArea', 75);
+
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('75 m²');
+  });
+
+  it('changes the checkbox label from NRF to NF wording when switching to detail mode', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Heizfläche entspricht Netto-Raumfläche (NRF)');
+
+    await switchToDetailMode(wrapper);
+
+    expect(wrapper.text()).toContain('Heizfläche entspricht Nutzungsfläche (NF)');
+    expect(wrapper.text()).not.toContain('Heizfläche entspricht Netto-Raumfläche (NRF)');
+  });
+
+  it('auto-detects detail mode when only usableFloorArea is > 0', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: undefined,
+      usableFloorArea: 40,
+      technicalServicesArea: 0,
+      trafficArea: 0,
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="usableFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="netFloorArea"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('auto-detects detail mode when only technicalServicesArea is > 0', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: undefined,
+      usableFloorArea: 0,
+      technicalServicesArea: 25,
+      trafficArea: 0,
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="technicalServicesArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="netFloorArea"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('auto-detects detail mode when only trafficArea is > 0', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: undefined,
+      usableFloorArea: 0,
+      technicalServicesArea: 0,
+      trafficArea: 15,
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="trafficArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="netFloorArea"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('auto-checks heatingSpaceMatchesArea when heatingSpace is falsy on load', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial, netFloorArea: 200, heatingSpace: undefined,
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('200 m²');
+  });
+
+  it('unchecking heatingSpaceMatchesArea re-enables heatingSpace for free editing without resetting its value', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heatingSpaceMatchesArea').setValue(true);
+    await flushPromises();
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('200 m²');
+
+    await wrapper.find('input#heatingSpaceMatchesArea').setValue(false);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeUndefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('200 m²');
+  });
+
+  it('submits usableFloorArea reference value as heatingSpace when checked in detail mode', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial,
+      netFloorArea: undefined,
+      usableFloorArea: 30,
+      technicalServicesArea: 20,
+      trafficArea: 10,
+      heatingSpace: 30,
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ heatingSpace: 30 }),
     );
   });
 });
