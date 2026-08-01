@@ -5760,12 +5760,12 @@ export interface components {
        * @description Type of the node (e.g., 'PROPERTY', 'BUILDING')
        * @example PROPERTY
        */
-      readonly type?: components["schemas"]["UnitType"];
+      readonly type: components["schemas"]["UnitType"];
       /**
        * @description Title of the node
        * @example Main Building
        */
-      readonly title?: string;
+      readonly title: string;
       /**
        * @description Location of the rental unit
        * @example first floor left
@@ -5793,7 +5793,7 @@ export interface components {
       /** @description Key of the node */
       readonly key: components["schemas"]["UUID"];
       /** @description Data encapsulating node attributes */
-      readonly data?: components["schemas"]["RentalUnitNodeDataJson"];
+      readonly data: components["schemas"]["RentalUnitNodeDataJson"];
       /** @description Children nodes */
       readonly children?: components["schemas"]["RentalUnitTreeNodeJson"][];
     };

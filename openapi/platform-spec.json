@@ -1817,12 +1817,13 @@
             "readOnly" : true,
             "examples" : [ 350.5 ]
           }
-        }
+        },
+        "required" : [ "type", "title" ]
       },
       "RentalUnitTreeNodeJson" : {
         "type" : "object",
         "description" : "A tree node representing a project entity",
-        "required" : [ "key" ],
+        "required" : [ "key", "data" ],
         "properties" : {
           "key" : {
             "description" : "Key of the node",
