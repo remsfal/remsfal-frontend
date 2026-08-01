@@ -119,17 +119,6 @@ watch(heatingSpaceReferenceArea, (newValue) => {
   }
 });
 
-// ─── Mode switch handler ───────────────────────────────────────────────────────
-watch(din277Mode, (newMode) => {
-  if (newMode === 'total') {
-    currentValues.usableFloorArea = null;
-    currentValues.technicalServicesArea = null;
-    currentValues.trafficArea = null;
-  }
-  initialValues.value = { ...currentValues };
-  formKey.value++;
-});
-
 // ─── Load ─────────────────────────────────────────────────────────────────────
 onMounted(async () => {
   if (!props.unitId) {

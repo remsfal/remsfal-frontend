@@ -57,7 +57,6 @@ async function onSubmit(event: FormSubmitEvent) {
       title: titleVal,
       location: loc,
       description: s.description?.value || undefined,
-      plotArea: 0,
     });
 
     emit('newUnit', titleVal);

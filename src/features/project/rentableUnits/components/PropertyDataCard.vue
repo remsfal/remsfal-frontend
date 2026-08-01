@@ -223,6 +223,7 @@ async function onSubmit(event: FormSubmitEvent) {
           <InputText
             id="cadastralDistrict"
             name="cadastralDistrict"
+            :placeholder="t('property.exampleCadastralDistrict')"
             fluid
             @update:modelValue="(v) => (currentValues.cadastralDistrict = v as string)"
           />
@@ -234,6 +235,7 @@ async function onSubmit(event: FormSubmitEvent) {
           <InputText
             id="sheetNumber"
             name="sheetNumber"
+            :placeholder="t('property.exampleSheetNumber')"
             fluid
             @update:modelValue="(v) => (currentValues.sheetNumber = v as string)"
           />
@@ -245,6 +247,7 @@ async function onSubmit(event: FormSubmitEvent) {
           <InputText
             id="cadastralSection"
             name="cadastralSection"
+            :placeholder="t('property.exampleCadastralSection')"
             fluid
             @update:modelValue="(v) => (currentValues.cadastralSection = v as string)"
           />
@@ -256,6 +259,7 @@ async function onSubmit(event: FormSubmitEvent) {
           <InputText
             id="plot"
             name="plot"
+            :placeholder="t('property.examplePlot')"
             fluid
             @update:modelValue="(v) => (currentValues.plot = v as string)"
           />
@@ -270,6 +274,7 @@ async function onSubmit(event: FormSubmitEvent) {
             :minFractionDigits="0"
             :maxFractionDigits="0"
             :min="1"
+            :placeholder="t('property.examplePlotNumber')"
             fluid
             @update:modelValue="(v) => (currentValues.plotNumber = v as number | null)"
           />
@@ -289,6 +294,7 @@ async function onSubmit(event: FormSubmitEvent) {
           <InputText
             id="landRegistry"
             name="landRegistry"
+            :placeholder="t('property.exampleLandRegister')"
             fluid
             @update:modelValue="(v) => (currentValues.landRegistry = v as string)"
           />
@@ -303,6 +309,7 @@ async function onSubmit(event: FormSubmitEvent) {
             :options="usageOptions"
             optionLabel="label"
             optionValue="value"
+            :placeholder="t('property.exampleEconomyType')"
             showClear
             filter
             fluid
@@ -318,6 +325,7 @@ async function onSubmit(event: FormSubmitEvent) {
             name="plotArea"
             :min="0"
             :maxFractionDigits="2"
+            :placeholder="t('property.examplePlotArea')"
             fluid
             @update:modelValue="(v) => (currentValues.plotArea = v as number | null)"
           />
