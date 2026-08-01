@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { reactive, computed, onMounted } from 'vue';
+import { reactive, computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
 import InputNumber from 'primevue/inputnumber';
 import Fieldset from 'primevue/fieldset';
 import Message from 'primevue/message';
+import SelectButton from 'primevue/selectbutton';
 
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -38,6 +39,14 @@ const schema = z.object({
 
 const resolver = zodResolver(schema);
 
+// ─── DIN 277 mode toggle ──────────────────────────────────────────────────────
+type Din277Mode = 'total' | 'detail';
+const din277Mode = ref<Din277Mode>('total');
+const din277ModeOptions = [
+  { label: t('building.din277Mode.total'), value: 'total' },
+  { label: t('building.din277Mode.detail'), value: 'detail' },
+];
+
 const serverValues = reactive({
   title: '',
   description: '',
@@ -65,6 +74,32 @@ const isDirty = computed(() =>
   currentValues.heatingSpace !== serverValues.heatingSpace,
 );
 
+// ─── DIN 277 sum (NRF + KGF) ────────────────────────────────────────────────────
+const din277Sum = computed(() => {
+  const { netFloorArea, constructionFloorArea } = currentValues;
+  if (netFloorArea === null && constructionFloorArea === null) {
+    return null;
+  }
+  return (netFloorArea ?? 0) + (constructionFloorArea ?? 0);
+});
+
+// InputNumber renders its displayed text from an uncontrolled `defaultValue` that
+// is only applied once at mount, so a `:key` change is needed to force it to
+// re-render the live sum while the user types into NRF/KGF.
+const grossFloorAreaKey = computed(() =>
+  din277Mode.value === 'detail' ? `grossFloorArea-detail-${din277Sum.value}` : 'grossFloorArea-total',
+);
+
+// ─── Mode switch handler ───────────────────────────────────────────────────────
+watch(din277Mode, (newMode) => {
+  if (newMode === 'total') {
+    currentValues.netFloorArea = null;
+    currentValues.constructionFloorArea = null;
+  }
+  initialValues.value = { ...currentValues };
+  formKey.value++;
+});
+
 onMounted(async () => {
   if (!props.unitId) {
     toast.add({
@@ -85,6 +120,9 @@ onMounted(async () => {
       usableSpace: data.usableSpace ?? null,
       heatingSpace: data.heatingSpace ?? null,
     });
+    if ((data.netFloorArea ?? 0) > 0 || (data.constructionFloorArea ?? 0) > 0) {
+      din277Mode.value = 'detail';
+    }
   } catch (err) {
     console.error('Fehler beim Laden der Gebäudedaten:', err);
     toast.add({
@@ -100,13 +138,21 @@ async function onSubmit(event: FormSubmitEvent) {
     title: s.title?.value || undefined,
     description: s.description?.value || undefined,
     location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
-    grossFloorArea: s.grossFloorArea?.value ?? undefined,
-    netFloorArea: s.netFloorArea?.value ?? undefined,
-    constructionFloorArea: s.constructionFloorArea?.value ?? undefined,
     livingSpace: s.livingSpace?.value ?? undefined,
     usableSpace: s.usableSpace?.value ?? undefined,
     heatingSpace: s.heatingSpace?.value ?? undefined,
   };
+
+  if (din277Mode.value === 'total') {
+    payload.grossFloorArea = s.grossFloorArea?.value ?? undefined;
+    payload.netFloorArea = 0;
+    payload.constructionFloorArea = 0;
+  } else {
+    payload.grossFloorArea = din277Sum.value ?? undefined;
+    payload.netFloorArea = s.netFloorArea?.value ?? undefined;
+    payload.constructionFloorArea = s.constructionFloorArea?.value ?? undefined;
+  }
+
   try {
     await buildingService.updateBuilding(props.projectId, props.unitId, payload);
     syncState(serverValues, currentValues, {
@@ -150,71 +196,93 @@ async function onSubmit(event: FormSubmitEvent) {
     <template #fields="{ form }">
       <!-- DIN 277 -->
       <Fieldset :legend="t('building.din277.legend')">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4">
-          <!-- Brutto-Grundfläche BGF -->
-          <div class="flex flex-col gap-1">
-            <label for="grossFloorArea" class="font-medium">{{ t('building.grossFloorArea') }}</label>
-            <InputNumber
-              id="grossFloorArea"
-              name="grossFloorArea"
-              :min="0"
-              :maxFractionDigits="2"
-              suffix=" m²"
-              fluid
-              @update:modelValue="(v) => (currentValues.grossFloorArea = v as number | null)"
-            />
-            <Message
-              v-if="form.grossFloorArea?.invalid && form.grossFloorArea?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ form.grossFloorArea.error?.message }}
-            </Message>
+        <div class="flex flex-col gap-4">
+          <!-- BGF / Mode toggle -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-end">
+            <!-- Brutto-Grundfläche BGF -->
+            <div class="flex flex-col gap-1">
+              <label for="grossFloorArea" class="font-medium">{{ t('building.grossFloorArea') }}</label>
+              <InputNumber
+                id="grossFloorArea"
+                :key="grossFloorAreaKey"
+                name="grossFloorArea"
+                :modelValue="din277Mode === 'detail' ? din277Sum : currentValues.grossFloorArea"
+                :disabled="din277Mode === 'detail'"
+                :min="0"
+                :maxFractionDigits="2"
+                suffix=" m²"
+                fluid
+                @update:modelValue="(v) => (currentValues.grossFloorArea = v as number | null)"
+              />
+              <Message
+                v-if="form.grossFloorArea?.invalid && form.grossFloorArea?.touched"
+                severity="error"
+                size="small"
+                variant="simple"
+              >
+                {{ form.grossFloorArea.error?.message }}
+              </Message>
+            </div>
+
+            <!-- Mode toggle -->
+            <div class="flex flex-col gap-1">
+              <SelectButton
+                v-model="din277Mode"
+                :options="din277ModeOptions"
+                optionLabel="label"
+                optionValue="value"
+              />
+            </div>
           </div>
 
-          <!-- Netto-Raumfläche NRF -->
-          <div class="flex flex-col gap-1">
-            <label for="netFloorArea" class="font-medium">{{ t('building.netFloorArea') }}</label>
-            <InputNumber
-              id="netFloorArea"
-              name="netFloorArea"
-              :min="0"
-              :maxFractionDigits="2"
-              suffix=" m²"
-              fluid
-              @update:modelValue="(v) => (currentValues.netFloorArea = v as number | null)"
-            />
-            <Message
-              v-if="form.netFloorArea?.invalid && form.netFloorArea?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ form.netFloorArea.error?.message }}
-            </Message>
-          </div>
+          <!-- Detail fields (NRF / KGF) -->
+          <div
+            v-if="din277Mode === 'detail'"
+            class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4"
+          >
+            <!-- Netto-Raumfläche NRF -->
+            <div class="flex flex-col gap-1">
+              <label for="netFloorArea" class="font-medium">{{ t('building.netFloorArea') }}</label>
+              <InputNumber
+                id="netFloorArea"
+                name="netFloorArea"
+                :min="0"
+                :maxFractionDigits="2"
+                suffix=" m²"
+                fluid
+                @update:modelValue="(v) => (currentValues.netFloorArea = v as number | null)"
+              />
+              <Message
+                v-if="form.netFloorArea?.invalid && form.netFloorArea?.touched"
+                severity="error"
+                size="small"
+                variant="simple"
+              >
+                {{ form.netFloorArea.error?.message }}
+              </Message>
+            </div>
 
-          <!-- Konstruktions-Grundfläche KGF -->
-          <div class="flex flex-col gap-1">
-            <label for="constructionFloorArea" class="font-medium">{{ t('building.constructionFloorArea') }}</label>
-            <InputNumber
-              id="constructionFloorArea"
-              name="constructionFloorArea"
-              :min="0"
-              :maxFractionDigits="2"
-              suffix=" m²"
-              fluid
-              @update:modelValue="(v) => (currentValues.constructionFloorArea = v as number | null)"
-            />
-            <Message
-              v-if="form.constructionFloorArea?.invalid && form.constructionFloorArea?.touched"
-              severity="error"
-              size="small"
-              variant="simple"
-            >
-              {{ form.constructionFloorArea.error?.message }}
-            </Message>
+            <!-- Konstruktions-Grundfläche KGF -->
+            <div class="flex flex-col gap-1">
+              <label for="constructionFloorArea" class="font-medium">{{ t('building.constructionFloorArea') }}</label>
+              <InputNumber
+                id="constructionFloorArea"
+                name="constructionFloorArea"
+                :min="0"
+                :maxFractionDigits="2"
+                suffix=" m²"
+                fluid
+                @update:modelValue="(v) => (currentValues.constructionFloorArea = v as number | null)"
+              />
+              <Message
+                v-if="form.constructionFloorArea?.invalid && form.constructionFloorArea?.touched"
+                severity="error"
+                size="small"
+                variant="simple"
+              >
+                {{ form.constructionFloorArea.error?.message }}
+              </Message>
+            </div>
           </div>
         </div>
       </Fieldset>

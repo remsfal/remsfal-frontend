@@ -39,8 +39,8 @@ const mockBuilding = {
   title: 'Testgebäude',
   description: 'Eine Beschreibung',
   grossFloorArea: 300,
-  netFloorArea: 250,
-  constructionFloorArea: 50,
+  netFloorArea: null,
+  constructionFloorArea: null,
   livingSpace: 200,
   usableSpace: 180,
   heatingSpace: 220,
@@ -162,18 +162,105 @@ describe('BuildingDataCard.vue', () => {
     expect(wrapper.text()).toContain('WoFlV');
   });
 
-  it('renders all required form fields', async () => {
+  it('renders required form fields in total mode', async () => {
     const wrapper = mount(BuildingDataCard, { props: defaultProps });
     await flushPromises();
 
     expect(wrapper.find('input[name="title"]').exists()).toBe(true);
     expect(wrapper.find('textarea[name="description"]').exists()).toBe(true);
     expect(wrapper.find('input[name="grossFloorArea"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
-    expect(wrapper.find('input[name="constructionFloorArea"]').exists()).toBe(true);
     expect(wrapper.find('input[name="livingSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="usableSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="heatingSpace"]').exists()).toBe(true);
+  });
+
+  it('switches to detail mode and shows NRF/KGF fields', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    const detailButton = wrapper.findAll('.p-selectbutton .p-togglebutton').find(
+      (btn) => btn.text() === 'Aufgeschlüsselt',
+    );
+    if (detailButton) {
+      await detailButton.trigger('click');
+      await flushPromises();
+    }
+
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="constructionFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="grossFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="grossFloorArea"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('shows the NRF+KGF sum in the grossFloorArea field in detail mode', async () => {
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+      ...mockBuilding,
+      grossFloorArea: undefined,
+      netFloorArea: 40,
+      constructionFloorArea: 10,
+    });
+
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect((wrapper.find('input[name="grossFloorArea"]').element as HTMLInputElement).value).toBe('50 m²');
+  });
+
+  it('submits the NRF+KGF sum as grossFloorArea in detail mode', async () => {
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+      ...mockBuilding,
+      grossFloorArea: undefined,
+      netFloorArea: 40,
+      constructionFloorArea: 10,
+    });
+
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({
+        grossFloorArea: 50, netFloorArea: 40, constructionFloorArea: 10,
+      }),
+    );
+  });
+
+  it('submits netFloorArea/constructionFloorArea as 0 in total mode', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ netFloorArea: 0, constructionFloorArea: 0 }),
+    );
+  });
+
+  it('auto-detects detail mode when API returns detail fields', async () => {
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+      ...mockBuilding,
+      grossFloorArea: undefined,
+      netFloorArea: 40,
+      constructionFloorArea: 10,
+    });
+
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="netFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="grossFloorArea"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="grossFloorArea"]').attributes('disabled')).toBeDefined();
   });
 
   it('location input is disabled when title matches location on load', async () => {
