@@ -134,11 +134,11 @@ describe('RentableUnitsTable.vue', () => {
   });
 
   test('does not navigate when node has no type', async () => {
-    const node: RentalUnitTreeNodeJson = {
+    const node = {
       key: 'invalid-node',
       data: undefined,
       children: [],
-    };
+    } as unknown as RentalUnitTreeNodeJson;
 
     await wrapper.findComponent({ name: 'TreeTable' }).vm.$emit('nodeSelect', node);
     await flushPromises();
