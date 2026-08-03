@@ -100,12 +100,12 @@ async function onSubmit(event: FormSubmitEvent) {
   try {
     await storageService.updateStorage(props.projectId, props.unitId, payload as StorageJson);
     syncState(serverValues, currentValues, {
-      title: payload.title || '',
+      title: payload.title,
       description: payload.description || '',
       location: payload.location || '',
       usableSpace: payload.usableSpace ?? null,
       heatingSpace: payload.heatingSpace ?? null,
-      heated: payload.heated ?? false,
+      heated: payload.heated,
     });
     toast.add({
       severity: 'success', summary: t('success.saved'), detail: t('storage.saveSuccess'), life: 3000 

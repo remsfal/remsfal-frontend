@@ -182,7 +182,7 @@ async function onSubmit(event: FormSubmitEvent) {
   try {
     await commercialService.updateCommercial(props.projectId, props.unitId, payload as CommercialJson);
     syncState(serverValues, currentValues, {
-      title: payload.title || '',
+      title: payload.title,
       description: payload.description || '',
       location: payload.location || '',
       netFloorArea: payload.netFloorArea ?? null,

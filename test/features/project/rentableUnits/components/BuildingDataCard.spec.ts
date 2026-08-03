@@ -167,6 +167,52 @@ describe('BuildingDataCard.vue', () => {
     expect(buildingService.updateBuilding).not.toHaveBeenCalled();
   });
 
+  it('treats missing optional fields as undefined on load and submit', async () => {
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({});
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect((wrapper.find('input[name="title"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="commercialHeatingSpace"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="livingSpace"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="usableSpace"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('');
+
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({
+        description: undefined,
+        grossFloorArea: undefined,
+        commercialHeatingSpace: undefined,
+        livingSpace: undefined,
+        usableSpace: undefined,
+        heatingSpace: undefined,
+      }),
+    );
+  });
+
+  it('submits the new location value when it differs from title and was changed', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="location"]').setValue('Neue Lage');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ location: 'Neue Lage' }),
+    );
+  });
+
   it('renders DIN 277 and WoFlV fieldsets', async () => {
     const wrapper = mount(BuildingDataCard, { props: defaultProps });
     await flushPromises();

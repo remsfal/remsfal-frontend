@@ -112,6 +112,63 @@ describe('StorageDataCard.vue', () => {
     );
   });
 
+  it('does not call updateStorage when the form is invalid on submit', async () => {
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('ab');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(storageService.updateStorage).not.toHaveBeenCalled();
+  });
+
+  it('submits usableSpace as undefined when it was never set on load', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({});
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('Titel mit genug Zeichen');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(storageService.updateStorage).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ usableSpace: undefined }),
+    );
+  });
+
+  it('applies fallback defaults when getStorage returns a payload with all fields undefined', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({});
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect((wrapper.find('input[name="title"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('input[name="location"]').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.find('textarea[name="description"]').element as HTMLTextAreaElement).value).toBe('');
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('submits description and location as undefined when both are cleared', async () => {
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('textarea[name="description"]').setValue('');
+    await wrapper.find('input[name="location"]').setValue('');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(storageService.updateStorage).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ description: undefined, location: undefined }),
+    );
+  });
+
   it('shows success toast after successful save', async () => {
     const wrapper = mount(StorageDataCard, { props: defaultProps });
     await flushPromises();

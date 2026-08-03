@@ -161,7 +161,7 @@ async function onSubmit(event: FormSubmitEvent) {
   try {
     await buildingService.updateBuilding(props.projectId, props.unitId, payload);
     syncState(serverValues, currentValues, {
-      title: payload.title || '',
+      title: payload.title,
       description: payload.description || '',
       location: payload.location || '',
       grossFloorArea: payload.grossFloorArea ?? null,
