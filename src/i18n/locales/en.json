@@ -346,7 +346,6 @@
   "rentableUnits.table.title": "Title",
   "rentableUnits.table.type": "Type",
   "rentableUnits.table.description": "Location/Description",
-  "rentableUnits.table.tenant": "Tenant",
   "rentableUnits.table.area": "Area",
   "rentableUnits.view.title": "Rentable Units",
   "rentableUnits.delete.confirmTitle": "Really delete rentable unit?",

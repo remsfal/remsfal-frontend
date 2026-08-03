@@ -123,17 +123,6 @@ function onNewRentableUnit(title: string) {
     </Column>
 
     <Column
-      field="tenant"
-      :header="t('rentableUnits.table.tenant')"
-      headerClass="hidden md:table-cell"
-      bodyClass="hidden md:table-cell"
-    >
-      <template #body="{ node }">
-        <div>{{ node.data.tenant }}</div>
-      </template>
-    </Column>
-
-    <Column
       field="space"
       :header="t('rentableUnits.table.area')"
       headerClass="hidden lg:table-cell"
