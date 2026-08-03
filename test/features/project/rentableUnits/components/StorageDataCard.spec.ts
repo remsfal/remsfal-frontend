@@ -342,4 +342,53 @@ describe('StorageDataCard.vue', () => {
       expect.objectContaining({ heated: false, heatingSpace: 0 }),
     );
   });
+
+  it('re-enables location editing when titleMatchesLocation is unchecked', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({
+      ...mockStorage, title: 'Same', location: 'Same'
+    });
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
+
+    await wrapper.find('input#titleMatchesLocation').setValue(false);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('updates usableSpace via the field and submits the new value', async () => {
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="usableSpace"]').setValue('42');
+    await wrapper.find('input[name="usableSpace"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(storageService.updateStorage).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ usableSpace: 42 }),
+    );
+  });
+
+  it('updates heatingSpace via the field while heated and submits the new value', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, heated: true });
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="heatingSpace"]').setValue('33');
+    await wrapper.find('input[name="heatingSpace"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(storageService.updateStorage).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ heatingSpace: 33 }),
+    );
+  });
 });

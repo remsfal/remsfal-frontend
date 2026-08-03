@@ -484,4 +484,102 @@ describe('BuildingDataCard.vue', () => {
       expect.objectContaining({ location: 'Neuer Titel' }),
     );
   });
+
+  it('re-enables location editing when titleMatchesLocation is unchecked', async () => {
+    vi.mocked(buildingService.getBuilding).mockResolvedValue({
+      ...mockBuilding, title: 'Same', location: 'Same'
+    });
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
+
+    await wrapper.find('input#titleMatchesLocation').setValue(false);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('updates the description and submits the new value', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('textarea[name="description"]').setValue('Neue Beschreibung');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ description: 'Neue Beschreibung' }),
+    );
+  });
+
+  it('updates grossFloorArea via the field in total mode and submits the new value', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="grossFloorArea"]').setValue('99');
+    await wrapper.find('input[name="grossFloorArea"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ grossFloorArea: 99 }),
+    );
+  });
+
+  it('updates netFloorArea and constructionFloorArea via the fields in detail mode', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    const detailButton = wrapper.findAll('.p-selectbutton .p-togglebutton').find(
+      (btn) => btn.text() === 'Aufgeschlüsselt',
+    );
+    await detailButton?.trigger('click');
+    await flushPromises();
+
+    await wrapper.find('input[name="netFloorArea"]').setValue('40');
+    await wrapper.find('input[name="netFloorArea"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('input[name="constructionFloorArea"]').setValue('10');
+    await wrapper.find('input[name="constructionFloorArea"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ netFloorArea: 40, constructionFloorArea: 10 }),
+    );
+  });
+
+  it('updates livingSpace, usableSpace and heatingSpace via the fields and submits the new values', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="livingSpace"]').setValue('11');
+    await wrapper.find('input[name="livingSpace"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('input[name="usableSpace"]').setValue('22');
+    await wrapper.find('input[name="usableSpace"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('input[name="heatingSpace"]').setValue('33');
+    await wrapper.find('input[name="heatingSpace"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({
+        livingSpace: 11, usableSpace: 22, heatingSpace: 33 
+      }),
+    );
+  });
 });

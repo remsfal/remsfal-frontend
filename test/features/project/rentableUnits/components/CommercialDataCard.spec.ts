@@ -638,4 +638,74 @@ describe('CommercialDataCard.vue', () => {
       expect.objectContaining({ heatingSpace: 30 }),
     );
   });
+
+  it('re-enables location editing when titleMatchesLocation is unchecked', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial, title: 'Same', location: 'Same'
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
+
+    await wrapper.find('input#titleMatchesLocation').setValue(false);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('updates the description and submits the new value', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('textarea[name="description"]').setValue('Neue Beschreibung');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ description: 'Neue Beschreibung' }),
+    );
+  });
+
+  it('updates technicalServicesArea and trafficArea via the fields in detail mode', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await switchToDetailMode(wrapper);
+    await flushPromises();
+
+    await wrapper.find('input[name="technicalServicesArea"]').setValue('15');
+    await wrapper.find('input[name="technicalServicesArea"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('input[name="trafficArea"]').setValue('5');
+    await wrapper.find('input[name="trafficArea"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ technicalServicesArea: 15, trafficArea: 5 }),
+    );
+  });
+
+  it('updates heatingSpace directly via the field when heatingSpaceMatchesArea is unchecked', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="heatingSpace"]').setValue('77');
+    await wrapper.find('input[name="heatingSpace"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ heatingSpace: 77 }),
+    );
+  });
 });
