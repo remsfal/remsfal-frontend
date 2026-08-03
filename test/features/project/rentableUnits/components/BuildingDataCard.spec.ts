@@ -41,6 +41,7 @@ const mockBuilding = {
   grossFloorArea: 300,
   netFloorArea: undefined,
   constructionFloorArea: undefined,
+  commercialHeatingSpace: 50,
   livingSpace: 200,
   usableSpace: 180,
   heatingSpace: 220,
@@ -184,6 +185,59 @@ describe('BuildingDataCard.vue', () => {
     expect(wrapper.find('input[name="livingSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="usableSpace"]').exists()).toBe(true);
     expect(wrapper.find('input[name="heatingSpace"]').exists()).toBe(true);
+    expect(wrapper.find('input[name="commercialHeatingSpace"]').exists()).toBe(true);
+  });
+
+  it('loads commercialHeatingSpace value', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect((wrapper.find('input[name="commercialHeatingSpace"]').element as HTMLInputElement).value).toBe('50 m²');
+  });
+
+  it('save button becomes enabled after commercialHeatingSpace changes', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    const input = wrapper.find('input[name="commercialHeatingSpace"]');
+    await input.setValue('75');
+    await input.trigger('blur');
+    await flushPromises();
+
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('submits commercialHeatingSpace correctly', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    const input = wrapper.find('input[name="commercialHeatingSpace"]');
+    await input.setValue('75');
+    await input.trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(buildingService.updateBuilding).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ commercialHeatingSpace: 75 }),
+    );
+  });
+
+  it('keeps commercialHeatingSpace unchanged when switching DIN277 mode', async () => {
+    const wrapper = mount(BuildingDataCard, { props: defaultProps });
+    await flushPromises();
+
+    const detailButton = wrapper.findAll('.p-selectbutton .p-togglebutton').find(
+      (btn) => btn.text() === 'Aufgeschlüsselt',
+    );
+    if (detailButton) {
+      await detailButton.trigger('click');
+      await flushPromises();
+    }
+
+    expect((wrapper.find('input[name="commercialHeatingSpace"]').element as HTMLInputElement).value).toBe('50 m²');
   });
 
   it('switches to detail mode and shows NRF/KGF fields', async () => {

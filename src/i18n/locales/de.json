@@ -275,6 +275,7 @@
   "building.constructionFloorArea": "Konstruktions-Grundfläche KGF",
   "building.din277Mode.total": "BGF gesamt",
   "building.din277Mode.detail": "Aufgeschlüsselt",
+  "building.commercialHeatingSpace": "Heizfläche (Gewerbe)",
   "building.woflv.legend": "Flächenberechnung nach Wohnflächenverordnung (WoFlV)",
   "building.livingSpace": "Wohnfläche",
   "building.usableSpace": "Nutzfläche",

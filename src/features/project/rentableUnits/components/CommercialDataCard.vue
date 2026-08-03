@@ -323,7 +323,7 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <!-- Mode toggle -->
             <div class="flex flex-col gap-1">
-              <span class="font-medium invisible" aria-hidden="true">&nbsp;</span>
+              <span class="hidden md:block font-medium invisible" aria-hidden="true">&nbsp;</span>
               <SelectButton
                 v-model="din277Mode"
                 :options="din277ModeOptions"

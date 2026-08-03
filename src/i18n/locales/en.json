@@ -275,6 +275,7 @@
   "building.constructionFloorArea": "Construction Floor Area KGF",
   "building.din277Mode.total": "Total GFA",
   "building.din277Mode.detail": "Itemized",
+  "building.commercialHeatingSpace": "Heating Space (Commercial)",
   "building.woflv.legend": "Floor Area Calculation (WoFlV)",
   "building.livingSpace": "Living Space",
   "building.usableSpace": "Usable Space",
