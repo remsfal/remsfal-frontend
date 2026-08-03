@@ -157,6 +157,58 @@ describe('CommercialDataCard.vue', () => {
     expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined();
   });
 
+  it('does not call updateCommercial when the form is invalid on submit', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('ab');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).not.toHaveBeenCalled();
+  });
+
+  it('treats missing optional fields as undefined on load and submits them as undefined in total mode', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({} as CommercialJson);
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect((wrapper.find('input[name="title"]').element as HTMLInputElement).value).toBe('');
+    expect(wrapper.find('input[name="netFloorArea"]').attributes('disabled')).toBeUndefined();
+
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({
+        description: undefined,
+        netFloorArea: undefined,
+        heatingSpace: undefined,
+      }),
+    );
+  });
+
+  it('submits the new location value when it differs from title and was changed', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="location"]').setValue('Neue Lage');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ location: 'Neue Lage' }),
+    );
+  });
+
   it('renders required form fields in total mode', async () => {
     const wrapper = mount(CommercialDataCard, { props: defaultProps });
     await flushPromises();
@@ -467,6 +519,30 @@ describe('CommercialDataCard.vue', () => {
     expect(wrapper.text()).not.toContain('Heizfläche entspricht Netto-Raumfläche (NRF)');
   });
 
+  it('computes din277Sum as null and submits area fields as undefined when all detail values are empty', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await switchToDetailMode(wrapper);
+    await flushPromises();
+
+    await wrapper.find('input[name="title"]').setValue('Neuer Titel');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({
+        netFloorArea: undefined,
+        usableFloorArea: undefined,
+        technicalServicesArea: undefined,
+        trafficArea: undefined,
+      }),
+    );
+  });
+
   it('auto-detects detail mode when only usableFloorArea is > 0', async () => {
     vi.mocked(commercialService.getCommercial).mockResolvedValue({
       ...mockCommercial,
@@ -560,6 +636,76 @@ describe('CommercialDataCard.vue', () => {
       'project1',
       'unit1',
       expect.objectContaining({ heatingSpace: 30 }),
+    );
+  });
+
+  it('re-enables location editing when titleMatchesLocation is unchecked', async () => {
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      ...mockCommercial, title: 'Same', location: 'Same'
+    });
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeDefined();
+
+    await wrapper.find('input#titleMatchesLocation').setValue(false);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="location"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('updates the description and submits the new value', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('textarea[name="description"]').setValue('Neue Beschreibung');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ description: 'Neue Beschreibung' }),
+    );
+  });
+
+  it('updates technicalServicesArea and trafficArea via the fields in detail mode', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await switchToDetailMode(wrapper);
+    await flushPromises();
+
+    await wrapper.find('input[name="technicalServicesArea"]').setValue('15');
+    await wrapper.find('input[name="technicalServicesArea"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('input[name="trafficArea"]').setValue('5');
+    await wrapper.find('input[name="trafficArea"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ technicalServicesArea: 15, trafficArea: 5 }),
+    );
+  });
+
+  it('updates heatingSpace directly via the field when heatingSpaceMatchesArea is unchecked', async () => {
+    const wrapper = mount(CommercialDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input[name="heatingSpace"]').setValue('77');
+    await wrapper.find('input[name="heatingSpace"]').trigger('blur');
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(commercialService.updateCommercial).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ heatingSpace: 77 }),
     );
   });
 });

@@ -32,6 +32,7 @@ const schema = z.object({
   grossFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   netFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   constructionFloorArea: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
+  commercialHeatingSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   livingSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   usableSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
   heatingSpace: z.number().min(0, { message: t('validation.minValue', { min: 0 }) }).nullable().optional(),
@@ -54,6 +55,7 @@ const serverValues = reactive({
   grossFloorArea: null as number | null,
   netFloorArea: null as number | null,
   constructionFloorArea: null as number | null,
+  commercialHeatingSpace: null as number | null,
   livingSpace: null as number | null,
   usableSpace: null as number | null,
   heatingSpace: null as number | null,
@@ -69,6 +71,7 @@ const isDirty = computed(() =>
   currentValues.grossFloorArea !== serverValues.grossFloorArea ||
   currentValues.netFloorArea !== serverValues.netFloorArea ||
   currentValues.constructionFloorArea !== serverValues.constructionFloorArea ||
+  currentValues.commercialHeatingSpace !== serverValues.commercialHeatingSpace ||
   currentValues.livingSpace !== serverValues.livingSpace ||
   currentValues.usableSpace !== serverValues.usableSpace ||
   currentValues.heatingSpace !== serverValues.heatingSpace,
@@ -116,6 +119,7 @@ onMounted(async () => {
       grossFloorArea: data.grossFloorArea ?? null,
       netFloorArea: data.netFloorArea ?? null,
       constructionFloorArea: data.constructionFloorArea ?? null,
+      commercialHeatingSpace: data.commercialHeatingSpace ?? null,
       livingSpace: data.livingSpace ?? null,
       usableSpace: data.usableSpace ?? null,
       heatingSpace: data.heatingSpace ?? null,
@@ -141,6 +145,7 @@ async function onSubmit(event: FormSubmitEvent) {
     livingSpace: s.livingSpace?.value ?? undefined,
     usableSpace: s.usableSpace?.value ?? undefined,
     heatingSpace: s.heatingSpace?.value ?? undefined,
+    commercialHeatingSpace: s.commercialHeatingSpace?.value ?? undefined,
   };
 
   if (din277Mode.value === 'total') {
@@ -156,12 +161,13 @@ async function onSubmit(event: FormSubmitEvent) {
   try {
     await buildingService.updateBuilding(props.projectId, props.unitId, payload);
     syncState(serverValues, currentValues, {
-      title: payload.title || '',
+      title: payload.title,
       description: payload.description || '',
       location: payload.location || '',
       grossFloorArea: payload.grossFloorArea ?? null,
       netFloorArea: payload.netFloorArea ?? null,
       constructionFloorArea: payload.constructionFloorArea ?? null,
+      commercialHeatingSpace: payload.commercialHeatingSpace ?? null,
       livingSpace: payload.livingSpace ?? null,
       usableSpace: payload.usableSpace ?? null,
       heatingSpace: payload.heatingSpace ?? null,
@@ -197,8 +203,8 @@ async function onSubmit(event: FormSubmitEvent) {
       <!-- DIN 277 -->
       <Fieldset :legend="t('building.din277.legend')">
         <div class="flex flex-col gap-4">
-          <!-- BGF / Mode toggle -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-end">
+          <!-- BGF / Mode toggle / Heizfläche (Gewerbe) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4 items-start">
             <!-- Brutto-Grundfläche BGF -->
             <div class="flex flex-col gap-1">
               <label for="grossFloorArea" class="font-medium">{{ t('building.grossFloorArea') }}</label>
@@ -226,12 +232,35 @@ async function onSubmit(event: FormSubmitEvent) {
 
             <!-- Mode toggle -->
             <div class="flex flex-col gap-1">
+              <span class="hidden md:block font-medium invisible" aria-hidden="true">&nbsp;</span>
               <SelectButton
                 v-model="din277Mode"
                 :options="din277ModeOptions"
                 optionLabel="label"
                 optionValue="value"
               />
+            </div>
+
+            <!-- Heizfläche (Gewerbe) -->
+            <div class="flex flex-col gap-1">
+              <label for="commercialHeatingSpace" class="font-medium">{{ t('building.commercialHeatingSpace') }}</label>
+              <InputNumber
+                id="commercialHeatingSpace"
+                name="commercialHeatingSpace"
+                :min="0"
+                :maxFractionDigits="2"
+                suffix=" m²"
+                fluid
+                @update:modelValue="(v) => (currentValues.commercialHeatingSpace = v as number | null)"
+              />
+              <Message
+                v-if="form.commercialHeatingSpace?.invalid && form.commercialHeatingSpace?.touched"
+                severity="error"
+                size="small"
+                variant="simple"
+              >
+                {{ form.commercialHeatingSpace.error?.message }}
+              </Message>
             </div>
           </div>
 

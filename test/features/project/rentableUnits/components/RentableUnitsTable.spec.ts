@@ -11,7 +11,6 @@ const mockTreeData: RentalUnitTreeNodeJson[] = [
       title: 'Test Property',
       type: 'PROPERTY',
       description: 'A test property',
-      tenant: '',
       space: undefined,
     },
     children: [
@@ -21,7 +20,6 @@ const mockTreeData: RentalUnitTreeNodeJson[] = [
           title: 'Test Site',
           type: 'SITE',
           description: 'A test site',
-          tenant: '',
           space: undefined,
         },
         children: [
@@ -31,7 +29,6 @@ const mockTreeData: RentalUnitTreeNodeJson[] = [
               title: 'Test Building',
               type: 'BUILDING',
               description: 'A test building',
-              tenant: '',
               space: undefined,
             },
             children: [
@@ -41,7 +38,6 @@ const mockTreeData: RentalUnitTreeNodeJson[] = [
                   title: 'Test Apartment',
                   type: 'APARTMENT',
                   description: 'A test apartment',
-                  tenant: 'John Doe',
                   space: 75,
                 },
                 children: [],
@@ -118,7 +114,6 @@ describe('RentableUnitsTable.vue', () => {
         title: 'Test Apartment',
         type: 'APARTMENT',
         description: 'A test apartment',
-        tenant: 'John Doe',
         space: 75,
       },
       children: [],
@@ -134,11 +129,11 @@ describe('RentableUnitsTable.vue', () => {
   });
 
   test('does not navigate when node has no type', async () => {
-    const node: RentalUnitTreeNodeJson = {
+    const node = {
       key: 'invalid-node',
       data: undefined,
       children: [],
-    };
+    } as unknown as RentalUnitTreeNodeJson;
 
     await wrapper.findComponent({ name: 'TreeTable' }).vm.$emit('nodeSelect', node);
     await flushPromises();
@@ -174,7 +169,6 @@ describe('RentableUnitsTable.vue', () => {
           title: 'Test Apartment',
           type: 'APARTMENT',
           description: 'A test apartment',
-          tenant: 'John Doe',
           space: 75,
         },
         children: [],
