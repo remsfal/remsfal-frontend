@@ -45,8 +45,9 @@ function body(): DOMWrapper<HTMLElement> {
 }
 
 type Wrapper = VueWrapper<InstanceType<typeof NewRentableUnitButton>>;
+type ButtonProps = InstanceType<typeof NewRentableUnitButton>['$props'];
 
-function mountButton(props: Record<string, unknown>): Wrapper {
+function mountButton(props: ButtonProps): Wrapper {
   return mount(NewRentableUnitButton, { props, attachTo: document.body });
 }
 
