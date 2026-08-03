@@ -4924,11 +4924,6 @@ export interface components {
        */
       readonly description?: string;
       /**
-       * @description Name of the tenant associated with this node
-       * @example Doe, John
-       */
-      readonly tenant?: string;
-      /**
        * Format: float
        * @description Usable space in square meters
        * @example 350.5

@@ -1804,12 +1804,6 @@
             "readOnly" : true,
             "examples" : [ "A multi-story office building" ]
           },
-          "tenant" : {
-            "type" : "string",
-            "description" : "Name of the tenant associated with this node",
-            "readOnly" : true,
-            "examples" : [ "Doe, John" ]
-          },
           "space" : {
             "type" : "number",
             "format" : "float",
