@@ -71,6 +71,79 @@ describe('UnitBreadcrumb.vue', () => {
     expect(typeof model[2].command).toBe('function');
   });
 
+  it('shows "Unbenannt" fallback when a node has no title', async () => {
+    const treeWithoutTitle = {
+      properties: [
+        // title intentionally omitted to simulate a backend response violating its own contract
+        {
+          key: 'prop-1', data: { type: 'PROPERTY' }, children: [] 
+        },
+      ],
+    } as unknown as PropertyListJson;
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(treeWithoutTitle);
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: { projectId: 'proj-1', unitId: 'prop-1' },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
+    expect(model[1].label).toBe('Unbenannt');
+  });
+
+  it('defaults node type to Property when a node has no type', async () => {
+    const treeWithoutType = {
+      properties: [
+        // type intentionally omitted to simulate a backend response violating its own contract
+        {
+          key: 'prop-1', data: { title: 'No Type Node' }, children: [] 
+        },
+      ],
+    } as unknown as PropertyListJson;
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(treeWithoutType);
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: { projectId: 'proj-1', unitId: 'prop-1' },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
+    expect(model[1].icon).toBe('pi pi-map');
+  });
+
+  it('does not crash and shows only overview link when backend response has no properties key', async () => {
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({} as unknown as PropertyListJson);
+
+    const wrapper = mount(UnitBreadcrumb, {
+      props: { projectId: 'proj-1', unitId: 'unit-1' },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
+    expect(model).toHaveLength(1);
+    expect(model[0].label).toBe('breadcrumb.overview');
+  });
+
+  it('does not fetch breadcrumb path when projectId is empty', async () => {
+    const wrapper = mount(UnitBreadcrumb, {
+      props: { projectId: '', unitId: 'unit-1' },
+      global: { stubs: { Breadcrumb: BreadcrumbStub } },
+    });
+
+    await flushPromises();
+
+    expect(propertyService.getPropertyTree).not.toHaveBeenCalled();
+    const model = wrapper.findComponent(BreadcrumbStub).props('model');
+    expect(model).toHaveLength(1);
+    expect(model[0].label).toBe('breadcrumb.overview');
+  });
+
   it('shows only overview link when backend fails', async () => {
     vi.mocked(propertyService.getPropertyTree).mockRejectedValue(new Error('Backend down'));
 

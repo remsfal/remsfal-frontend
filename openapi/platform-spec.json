@@ -53,10 +53,6 @@
             "format" : "float",
             "minimum" : 0
           },
-          "space" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -69,6 +65,10 @@
           },
           "description" : {
             "type" : "string"
+          },
+          "space" : {
+            "type" : "number",
+            "format" : "float"
           }
         }
       },
@@ -98,6 +98,11 @@
             "format" : "float",
             "minimum" : 0
           },
+          "commercialHeatingSpace" : {
+            "type" : "number",
+            "format" : "float",
+            "minimum" : 0
+          },
           "livingSpace" : {
             "type" : "number",
             "format" : "float",
@@ -112,10 +117,6 @@
             "type" : "number",
             "format" : "float",
             "minimum" : 0
-          },
-          "space" : {
-            "type" : "number",
-            "format" : "float"
           },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
@@ -132,6 +133,10 @@
           },
           "address" : {
             "$ref" : "#/components/schemas/AddressJson"
+          },
+          "space" : {
+            "type" : "number",
+            "format" : "float"
           }
         }
       },
@@ -272,10 +277,6 @@
             "format" : "float",
             "minimum" : 0
           },
-          "space" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -288,6 +289,10 @@
           },
           "description" : {
             "type" : "string"
+          },
+          "space" : {
+            "type" : "number",
+            "format" : "float"
           }
         }
       },
@@ -1276,10 +1281,6 @@
             "format" : "int32",
             "minimum" : 0
           },
-          "space" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -1289,6 +1290,10 @@
           },
           "description" : {
             "type" : "string"
+          },
+          "space" : {
+            "type" : "number",
+            "format" : "float"
           }
         }
       },
@@ -1751,10 +1756,6 @@
           "description" : {
             "type" : "string"
           },
-          "space" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "id" : {
             "readOnly" : true,
             "type" : "string",
@@ -1763,6 +1764,11 @@
           "title" : {
             "type" : "string",
             "maxLength" : 255
+          },
+          "space" : {
+            "type" : "number",
+            "format" : "float",
+            "readOnly" : true
           }
         }
       },
@@ -1775,6 +1781,7 @@
           },
           "type" : {
             "description" : "Type of the node (e.g., 'PROPERTY', 'BUILDING')",
+            "readOnly" : true,
             "type" : "string",
             "examples" : [ "PROPERTY" ],
             "$ref" : "#/components/schemas/UnitType"
@@ -1782,36 +1789,35 @@
           "title" : {
             "type" : "string",
             "description" : "Title of the node",
+            "readOnly" : true,
             "examples" : [ "Main Building" ]
           },
           "location" : {
             "type" : "string",
             "description" : "Location of the rental unit",
+            "readOnly" : true,
             "examples" : [ "first floor left" ]
           },
           "description" : {
             "type" : "string",
             "description" : "Description of the rental unit",
+            "readOnly" : true,
             "examples" : [ "A multi-story office building" ]
-          },
-          "tenant" : {
-            "type" : "string",
-            "description" : "Name of the tenant associated with this node",
-            "examples" : [ "Doe, John" ]
           },
           "space" : {
             "type" : "number",
             "format" : "float",
             "description" : "Usable space in square meters",
+            "readOnly" : true,
             "examples" : [ 350.5 ]
           }
         },
-        "required" : [ "type" ]
+        "required" : [ "type", "title" ]
       },
       "RentalUnitTreeNodeJson" : {
         "type" : "object",
         "description" : "A tree node representing a project entity",
-        "required" : [ "key" ],
+        "required" : [ "key", "data" ],
         "properties" : {
           "key" : {
             "description" : "Key of the node",
@@ -1851,10 +1857,6 @@
             "format" : "float",
             "minimum" : 0
           },
-          "space" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -1870,6 +1872,10 @@
           },
           "address" : {
             "$ref" : "#/components/schemas/AddressJson"
+          },
+          "space" : {
+            "type" : "number",
+            "format" : "float"
           }
         }
       },
@@ -1890,10 +1896,6 @@
             "format" : "float",
             "minimum" : 0
           },
-          "space" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "id" : {
             "$ref" : "#/components/schemas/UUID"
           },
@@ -1906,6 +1908,13 @@
           },
           "description" : {
             "type" : "string"
+          },
+          "space" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "heated" : {
+            "type" : "boolean"
           }
         }
       },
