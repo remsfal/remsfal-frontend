@@ -41,6 +41,7 @@ const mockStorage = {
   location: 'Keller 1',
   usableSpace: 20,
   heatingSpace: 15,
+  heated: true,
 };
 
 const defaultProps = { projectId: 'project1', unitId: 'unit1' };
@@ -202,6 +203,86 @@ describe('StorageDataCard.vue', () => {
       'project1',
       'unit1',
       expect.objectContaining({ location: 'Neuer Titel' }),
+    );
+  });
+
+  it('shows the "usable space is heated" checkbox label', async () => {
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Nutzfläche wird beheizt');
+  });
+
+  it('heatingSpace field is disabled when heated is false on load', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, heated: false });
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('heatingSpace field is enabled when heated is true on load', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, heated: true });
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeUndefined();
+  });
+
+  it('checking heated fills heatingSpace with the current usableSpace value', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, heated: false });
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heated').setValue(true);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeUndefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('20 m²');
+  });
+
+  it('unchecking heated disables heatingSpace and resets it to 0', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, heated: true });
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heated').setValue(false);
+    await flushPromises();
+
+    expect(wrapper.find('input[name="heatingSpace"]').attributes('disabled')).toBeDefined();
+    expect((wrapper.find('input[name="heatingSpace"]').element as HTMLInputElement).value).toBe('0 m²');
+  });
+
+  it('submits heated flag and heatingSpace correctly when heated is checked', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, heated: false });
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heated').setValue(true);
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(storageService.updateStorage).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ heated: true, heatingSpace: 20 }),
+    );
+  });
+
+  it('submits heated=false and heatingSpace=0 when heated is unchecked', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({ ...mockStorage, heated: true });
+    const wrapper = mount(StorageDataCard, { props: defaultProps });
+    await flushPromises();
+
+    await wrapper.find('input#heated').setValue(false);
+    await flushPromises();
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(storageService.updateStorage).toHaveBeenCalledWith(
+      'project1',
+      'unit1',
+      expect.objectContaining({ heated: false, heatingSpace: 0 }),
     );
   });
 });

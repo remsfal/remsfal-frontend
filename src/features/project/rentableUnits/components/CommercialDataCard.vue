@@ -222,44 +222,6 @@ async function onSubmit(event: FormSubmitEvent) {
       <!-- DIN 277 -->
       <Fieldset :legend="t('commercial.din277.legend')">
         <div class="flex flex-col gap-4">
-          <!-- NRF / Mode toggle -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-end">
-            <!-- Netto-Raumfläche -->
-            <div class="flex flex-col gap-1">
-              <label for="netFloorArea" class="font-medium">{{ t('commercial.netFloorArea') }}</label>
-              <InputNumber
-                id="netFloorArea"
-                :key="netFloorAreaKey"
-                name="netFloorArea"
-                :modelValue="din277Mode === 'detail' ? din277Sum : currentValues.netFloorArea"
-                :disabled="din277Mode === 'detail'"
-                :min="0"
-                :maxFractionDigits="2"
-                suffix=" m²"
-                fluid
-                @update:modelValue="(v) => (currentValues.netFloorArea = v as number | null)"
-              />
-              <Message
-                v-if="form.netFloorArea?.invalid && form.netFloorArea?.touched"
-                severity="error"
-                size="small"
-                variant="simple"
-              >
-                {{ form.netFloorArea.error?.message }}
-              </Message>
-            </div>
-
-            <!-- Mode toggle -->
-            <div class="flex flex-col gap-1">
-              <SelectButton
-                v-model="din277Mode"
-                :options="din277ModeOptions"
-                optionLabel="label"
-                optionValue="value"
-              />
-            </div>
-          </div>
-
           <!-- Detail fields (NUF / TF / VF) -->
           <div
             v-if="din277Mode === 'detail'"
@@ -332,8 +294,45 @@ async function onSubmit(event: FormSubmitEvent) {
             </div>
           </div>
 
-          <!-- Heizfläche -->
-          <div class="grid grid-cols-1 gap-x-6 gap-y-4">
+          <!-- NRF / Mode toggle -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4 items-start">
+            <!-- Netto-Raumfläche -->
+            <div class="flex flex-col gap-1">
+              <label for="netFloorArea" class="font-medium">{{ t('commercial.netFloorArea') }}</label>
+              <InputNumber
+                id="netFloorArea"
+                :key="netFloorAreaKey"
+                name="netFloorArea"
+                :modelValue="din277Mode === 'detail' ? din277Sum : currentValues.netFloorArea"
+                :disabled="din277Mode === 'detail'"
+                :min="0"
+                :maxFractionDigits="2"
+                suffix=" m²"
+                fluid
+                @update:modelValue="(v) => (currentValues.netFloorArea = v as number | null)"
+              />
+              <Message
+                v-if="form.netFloorArea?.invalid && form.netFloorArea?.touched"
+                severity="error"
+                size="small"
+                variant="simple"
+              >
+                {{ form.netFloorArea.error?.message }}
+              </Message>
+            </div>
+
+            <!-- Mode toggle -->
+            <div class="flex flex-col gap-1">
+              <span class="font-medium invisible" aria-hidden="true">&nbsp;</span>
+              <SelectButton
+                v-model="din277Mode"
+                :options="din277ModeOptions"
+                optionLabel="label"
+                optionValue="value"
+              />
+            </div>
+
+            <!-- Heizfläche -->
             <div class="flex flex-col gap-1">
               <label for="heatingSpace" class="font-medium">{{ t('commercial.heatingSpace') }}</label>
               <InputNumber

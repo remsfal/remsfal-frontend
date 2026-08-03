@@ -4,7 +4,9 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 
 import InputNumber from 'primevue/inputnumber';
+import Fieldset from 'primevue/fieldset';
 import Message from 'primevue/message';
+import Checkbox from 'primevue/checkbox';
 
 import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
@@ -39,6 +41,7 @@ const serverValues = reactive({
   location: '',
   usableSpace: null as number | null,
   heatingSpace: null as number | null,
+  heated: false,
 });
 
 const currentValues = reactive({ ...serverValues });
@@ -49,8 +52,14 @@ const isDirty = computed(() =>
   currentValues.description !== serverValues.description ||
   currentValues.location !== serverValues.location ||
   currentValues.usableSpace !== serverValues.usableSpace ||
-  currentValues.heatingSpace !== serverValues.heatingSpace,
+  currentValues.heatingSpace !== serverValues.heatingSpace ||
+  currentValues.heated !== serverValues.heated,
 );
+
+function onHeatedChange(checked: boolean) {
+  currentValues.heated = checked;
+  currentValues.heatingSpace = checked ? currentValues.usableSpace : 0;
+}
 
 onMounted(async () => {
   if (!props.unitId) {
@@ -67,6 +76,7 @@ onMounted(async () => {
       location: data.location || '',
       usableSpace: data.usableSpace ?? null,
       heatingSpace: data.heatingSpace ?? null,
+      heated: data.heated ?? false,
     });
   } catch (err) {
     console.error('Fehler beim Laden des Lagers:', err);
@@ -84,7 +94,8 @@ async function onSubmit(event: FormSubmitEvent) {
     description: s.description?.value || undefined,
     location: titleMatchesLocation.value ? (s.title?.value || undefined) : (s.location?.value || undefined),
     usableSpace: s.usableSpace?.value ?? undefined,
-    heatingSpace: s.heatingSpace?.value ?? undefined,
+    heatingSpace: currentValues.heated ? (currentValues.heatingSpace ?? undefined) : 0,
+    heated: currentValues.heated,
   };
   try {
     await storageService.updateStorage(props.projectId, props.unitId, payload as StorageJson);
@@ -94,6 +105,7 @@ async function onSubmit(event: FormSubmitEvent) {
       location: payload.location || '',
       usableSpace: payload.usableSpace ?? null,
       heatingSpace: payload.heatingSpace ?? null,
+      heated: payload.heated ?? false,
     });
     toast.add({
       severity: 'success', summary: t('success.saved'), detail: t('storage.saveSuccess'), life: 3000 
@@ -123,51 +135,66 @@ async function onSubmit(event: FormSubmitEvent) {
     @update:description="(v) => (currentValues.description = v)"
   >
     <template #fields="{ form }">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
-        <!-- Nutzfläche -->
-        <div class="flex flex-col gap-1">
-          <label for="usableSpace" class="font-medium">{{ t('storage.usableSpace') }}</label>
-          <InputNumber
-            id="usableSpace"
-            name="usableSpace"
-            :min="0"
-            :maxFractionDigits="2"
-            suffix=" m²"
-            fluid
-            @update:modelValue="(v) => (currentValues.usableSpace = v as number | null)"
-          />
-          <Message
-            v-if="form.usableSpace?.invalid && form.usableSpace?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ form.usableSpace.error?.message }}
-          </Message>
-        </div>
+      <Fieldset :legend="t('storage.woflv.legend')">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
+          <!-- Nutzfläche -->
+          <div class="flex flex-col gap-1">
+            <label for="usableSpace" class="font-medium">{{ t('storage.usableSpace') }}</label>
+            <InputNumber
+              id="usableSpace"
+              name="usableSpace"
+              :min="0"
+              :maxFractionDigits="2"
+              suffix=" m²"
+              fluid
+              @update:modelValue="(v) => (currentValues.usableSpace = v as number | null)"
+            />
+            <Message
+              v-if="form.usableSpace?.invalid && form.usableSpace?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ form.usableSpace.error?.message }}
+            </Message>
+          </div>
 
-        <!-- Heizfläche -->
-        <div class="flex flex-col gap-1">
-          <label for="heatingSpace" class="font-medium">{{ t('storage.heatingSpace') }}</label>
-          <InputNumber
-            id="heatingSpace"
-            name="heatingSpace"
-            :min="0"
-            :maxFractionDigits="2"
-            suffix=" m²"
-            fluid
-            @update:modelValue="(v) => (currentValues.heatingSpace = v as number | null)"
-          />
-          <Message
-            v-if="form.heatingSpace?.invalid && form.heatingSpace?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ form.heatingSpace.error?.message }}
-          </Message>
+          <!-- Heizfläche -->
+          <div class="flex flex-col gap-1">
+            <label for="heatingSpace" class="font-medium">{{ t('storage.heatingSpace') }}</label>
+            <InputNumber
+              id="heatingSpace"
+              name="heatingSpace"
+              :modelValue="currentValues.heatingSpace"
+              :disabled="!currentValues.heated"
+              :min="0"
+              :maxFractionDigits="2"
+              suffix=" m²"
+              fluid
+              @update:modelValue="(v) => (currentValues.heatingSpace = v as number | null)"
+            />
+            <div class="flex items-center gap-2 mt-1">
+              <Checkbox
+                :modelValue="currentValues.heated"
+                inputId="heated"
+                binary
+                @update:modelValue="onHeatedChange"
+              />
+              <label for="heated" class="text-sm text-surface-600">
+                {{ t('storage.usableSpaceHeated') }}
+              </label>
+            </div>
+            <Message
+              v-if="form.heatingSpace?.invalid && form.heatingSpace?.touched"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ form.heatingSpace.error?.message }}
+            </Message>
+          </div>
         </div>
-      </div>
+      </Fieldset>
     </template>
   </RentableUnitBaseDataCard>
 </template>
