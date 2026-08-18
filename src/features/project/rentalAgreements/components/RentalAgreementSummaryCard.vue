@@ -169,7 +169,7 @@ async function confirmTerminate(): Promise<void> {
         <div>
           <span class="text-xl font-semibold">{{ t('projectTenancies.table.title', { tenant: tenantTitleLabel }) }}</span>
           <p class="text-base text-gray-500 font-normal mt-1">
-            {{ formatLabel('projectTenancies.table.mietvertragsNummer') }} {{ rentalAgreement.id || '—' }}
+            {{ formatLabel('projectTenancies.table.tenancyNumber') }} {{ rentalAgreement.id || '—' }}
           </p>
         </div>
         <div class="flex items-end justify-end">

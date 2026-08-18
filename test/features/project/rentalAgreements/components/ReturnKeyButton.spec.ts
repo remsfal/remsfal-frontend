@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
-import ReturnKeyDialog from '@/features/project/rentalAgreements/components/ReturnKeyDialog.vue';
+import ReturnKeyButton from '@/features/project/rentalAgreements/components/ReturnKeyButton.vue';
 import type { RentalAgreementKeysJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 const BaseDialogStub = {
@@ -18,11 +18,11 @@ const outstandingKeys: RentalAgreementKeysJson[] = [
   },
 ];
 
-describe('ReturnKeyDialog', () => {
+describe('ReturnKeyButton', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    wrapper = mount(ReturnKeyDialog, {
+    wrapper = mount(ReturnKeyButton, {
       props: { keys: outstandingKeys },
       global: { stubs: { BaseDialog: BaseDialogStub } },
     });

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import RentalAgreementKeyCard from '@/features/project/rentalAgreements/components/RentalAgreementKeyCard.vue';
-import ReturnKeyDialog from '@/features/project/rentalAgreements/components/ReturnKeyDialog.vue';
+import ReturnKeyButton from '@/features/project/rentalAgreements/components/ReturnKeyButton.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
@@ -34,35 +34,15 @@ describe('RentalAgreementKeyCard', () => {
     expect(wrapper.text()).toContain('Kellerschlüssel');
   });
 
-  it('sorts rows alphabetically when the description column header is clicked', async () => {
+  it('adds a key via NewKeyButton and persists via updateRentalAgreement', async () => {
     const wrapper = mountCard();
-    const descriptionHeader = wrapper.findAll('th').find((th) => th.text().includes('Beschreibung'));
-    await descriptionHeader?.trigger('click');
-
-    const bodyRows = wrapper.findAll('tbody tr');
-    const firstRowDescription = bodyRows[0]?.findAll('td')[0]?.text();
-    expect(firstRowDescription).toBe('Haustürschlüssel');
-  });
-
-  it('sorts rows by amount when the amount column header is clicked', async () => {
-    const wrapper = mountCard();
-    const amountHeader = wrapper.findAll('th').find((th) => th.text().includes('Anzahl'));
-    await amountHeader?.trigger('click');
-
-    const bodyRows = wrapper.findAll('tbody tr');
-    const firstRowAmount = bodyRows[0]?.findAll('td')[1]?.text();
-    expect(firstRowAmount).toBe('1');
-  });
-
-  it('adds a key via NewKeyDialog and persists via updateRentalAgreement', async () => {
-    const wrapper = mountCard();
-    const newKeyDialog = wrapper.findComponent({ name: 'NewKeyDialog' });
-    expect(newKeyDialog.exists()).toBe(true);
+    const newKeyButton = wrapper.findComponent({ name: 'NewKeyButton' });
+    expect(newKeyButton.exists()).toBe(true);
 
     const newKey = {
       amountOfKeys: 3, keyDescription: 'Garagenschlüssel', issuedAt: '2024-03-01' 
     };
-    await newKeyDialog.vm.$emit('newKey', newKey);
+    await newKeyButton.vm.$emit('newKey', newKey);
     await wrapper.vm.$nextTick();
     await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -77,19 +57,19 @@ describe('RentalAgreementKeyCard', () => {
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('passes the net outstanding amount per key description to ReturnKeyDialog', () => {
+  it('passes the net outstanding amount per key description to ReturnKeyButton', () => {
     const wrapper = mountCard();
-    const returnKeyDialog = wrapper.findComponent(ReturnKeyDialog);
-    expect(returnKeyDialog.props('keys')).toEqual([
+    const returnKeyButton = wrapper.findComponent(ReturnKeyButton);
+    expect(returnKeyButton.props('keys')).toEqual([
       { keyDescription: 'Haustürschlüssel', amountOfKeys: 2 },
     ]);
   });
 
   it('records a full key return as a new history entry without altering the issued entry', async () => {
     const wrapper = mountCard();
-    const returnKeyDialog = wrapper.findComponent(ReturnKeyDialog);
+    const returnKeyButton = wrapper.findComponent(ReturnKeyButton);
 
-    await returnKeyDialog.vm.$emit('keyReturned', {
+    returnKeyButton.vm.$emit('keyReturned', {
       keyDescription: 'Haustürschlüssel',
       amount: 2,
       returnedAt: '2024-05-01',
@@ -114,9 +94,9 @@ describe('RentalAgreementKeyCard', () => {
 
   it('appends a new history entry for a partial return and leaves the issued entry untouched', async () => {
     const wrapper = mountCard();
-    const returnKeyDialog = wrapper.findComponent(ReturnKeyDialog);
+    const returnKeyButton = wrapper.findComponent(ReturnKeyButton);
 
-    await returnKeyDialog.vm.$emit('keyReturned', {
+    returnKeyButton.vm.$emit('keyReturned', {
       keyDescription: 'Haustürschlüssel',
       amount: 1,
       returnedAt: '2024-05-01',
@@ -153,13 +133,13 @@ describe('RentalAgreementKeyCard', () => {
       ],
     };
     const wrapper = mountCard(partiallyReturnedAgreement);
-    const returnKeyDialog = wrapper.findComponent(ReturnKeyDialog);
+    const returnKeyButton = wrapper.findComponent(ReturnKeyButton);
 
-    expect(returnKeyDialog.props('keys')).toEqual([
+    expect(returnKeyButton.props('keys')).toEqual([
       { keyDescription: 'Briefkastenschlüssel', amountOfKeys: 3 },
     ]);
 
-    await returnKeyDialog.vm.$emit('keyReturned', {
+    returnKeyButton.vm.$emit('keyReturned', {
       keyDescription: 'Briefkastenschlüssel',
       amount: 3,
       returnedAt: '2024-05-01',
@@ -182,8 +162,8 @@ describe('RentalAgreementKeyCard', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const wrapper = mountCard();
-    const newKeyDialog = wrapper.findComponent({ name: 'NewKeyDialog' });
-    await newKeyDialog.vm.$emit('newKey', {
+    const newKeyButton = wrapper.findComponent({ name: 'NewKeyButton' });
+    await newKeyButton.vm.$emit('newKey', {
       amountOfKeys: 1, keyDescription: 'Dachbodenschlüssel', issuedAt: '2024-01-01' 
     });
     await wrapper.vm.$nextTick();

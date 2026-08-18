@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { Form } from '@primevue/forms';
-import NewKeyDialog from '@/features/project/rentalAgreements/components/NewKeyDialog.vue';
+import NewKeyButton from '@/features/project/rentalAgreements/components/NewKeyButton.vue';
 
 // Always render dialog content so form fields are accessible without needing to simulate open
 const BaseDialogStub = {
@@ -10,11 +10,11 @@ const BaseDialogStub = {
   template: '<div data-testid="dialog" :data-visible="String($attrs.visible)"><slot /></div>',
 };
 
-describe('NewKeyDialog', () => {
+describe('NewKeyButton', () => {
   let wrapper: VueWrapper;
 
   beforeEach(() => {
-    wrapper = mount(NewKeyDialog, {global: {stubs: { BaseDialog: BaseDialogStub },},});
+    wrapper = mount(NewKeyButton, {global: {stubs: { BaseDialog: BaseDialogStub },},});
   });
 
   it('opens the dialog when the trigger button is clicked', async () => {
@@ -25,7 +25,7 @@ describe('NewKeyDialog', () => {
   });
 
   it('disables the trigger button when disabled prop is true', () => {
-    const disabledWrapper = mount(NewKeyDialog, {
+    const disabledWrapper = mount(NewKeyButton, {
       props: { disabled: true },
       global: { stubs: { BaseDialog: BaseDialogStub } },
     });

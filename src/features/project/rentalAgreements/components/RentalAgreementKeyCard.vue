@@ -5,8 +5,8 @@ import { useToast } from 'primevue/usetoast';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import BaseCard from '@/components/common/BaseCard.vue';
-import NewKeyDialog from './NewKeyDialog.vue';
-import ReturnKeyDialog from './ReturnKeyDialog.vue';
+import NewKeyButton from './NewKeyButton.vue';
+import ReturnKeyButton from './ReturnKeyButton.vue';
 import {rentalAgreementService,
   type RentalAgreementJson,
   type RentalAgreementKeysJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
@@ -103,19 +103,19 @@ function onKeyReturned(payload: { keyDescription: string; returnedAt: string; am
       <div v-if="rows.length === 0" class="text-muted-color text-sm">
         {{ t('rentalAgreementKeyCard.empty') }}
       </div>
-      <DataTable v-else :value="rows" dataKey="_rowId" removableSort>
-        <Column field="keyDescription" :header="t('rentalAgreementKeyCard.table.description')" sortable>
+      <DataTable v-else :value="rows" dataKey="_rowId">
+        <Column field="keyDescription" :header="t('rentalAgreementKeyCard.table.description')">
           <template #body="slotProps">
             {{ slotProps.data.keyDescription || t('rentalAgreementKeyCard.table.noDescription') }}
           </template>
         </Column>
-        <Column field="amountOfKeys" :header="t('rentalAgreementKeyCard.table.amount')" sortable />
-        <Column field="issuedAt" :header="t('rentalAgreementKeyCard.table.issuedAt')" sortable>
+        <Column field="amountOfKeys" :header="t('rentalAgreementKeyCard.table.amount')" />
+        <Column field="issuedAt" :header="t('rentalAgreementKeyCard.table.issuedAt')">
           <template #body="slotProps">
             {{ slotProps.data.issuedAt ? d(new Date(slotProps.data.issuedAt), 'shortFormat') : '' }}
           </template>
         </Column>
-        <Column field="returnedAt" :header="t('rentalAgreementKeyCard.table.returnedAt')" sortable>
+        <Column field="returnedAt" :header="t('rentalAgreementKeyCard.table.returnedAt')">
           <template #body="slotProps">
             {{ slotProps.data.returnedAt ? d(new Date(slotProps.data.returnedAt), 'shortFormat') : '' }}
           </template>
@@ -123,8 +123,8 @@ function onKeyReturned(payload: { keyDescription: string; returnedAt: string; am
       </DataTable>
 
       <div class="flex justify-end gap-3 mt-6">
-        <ReturnKeyDialog :keys="outstandingKeys" :disabled="saving" @keyReturned="onKeyReturned" />
-        <NewKeyDialog :disabled="saving" @newKey="onNewKey" />
+        <ReturnKeyButton :keys="outstandingKeys" :disabled="saving" @keyReturned="onKeyReturned" />
+        <NewKeyButton :disabled="saving" @newKey="onNewKey" />
       </div>
     </template>
   </BaseCard>
