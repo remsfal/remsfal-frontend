@@ -121,10 +121,10 @@
     "glob": "^13.0.6"
   },
   "allowScripts": {
-    "@parcel/watcher@2.5.1": true,
-    "unrs-resolver@1.12.2": true,
-    "cypress@15.16.0": true,
-    "fsevents@2.3.3": true,
-    "msw@2.14.6": true
+    "@parcel/watcher": true,
+    "unrs-resolver": true,
+    "cypress": true,
+    "fsevents": true,
+    "msw": true
   }
 }
