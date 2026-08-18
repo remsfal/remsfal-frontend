@@ -268,5 +268,4 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     // Should be able to proceed
     cy.contains('button', /Weiter zu Mieteinheiten|Continue to Units/i).should('not.be.disabled');
   });
-
 });

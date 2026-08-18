@@ -4,6 +4,7 @@ export type RentalAgreementJson = ApiComponents['schemas']['RentalAgreementJson'
 export type RentalAgreementListJson = ApiComponents['schemas']['RentalAgreementListJson'];
 export type RentalAgreementItemJson = ApiComponents['schemas']['RentalAgreementItemJson'];
 export type TenantJson = ApiComponents['schemas']['TenantJson'];
+export type RentalAgreementKeysJson = ApiComponents['schemas']['RentalAgreementKeysJson'];
 
 /**
  * Service for managing rental agreements in the manager/property owner context.
