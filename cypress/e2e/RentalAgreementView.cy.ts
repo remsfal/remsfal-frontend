@@ -386,11 +386,11 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('[role="dialog"]').should('not.exist');
     
     cy.contains('Gefährliche Änderungen').parents('.p-card').within(() => {
-      cy.contains('button', 'Mietvertrag löschen').click();
+      cy.contains('button', 'Mietverhältnis löschen').click();
     });
 
     // Confirmation dialog should now be visible
-    cy.get('[role="dialog"]').should('be.visible').and('contain.text', 'Mietvertrag wirklich löschen?');
+    cy.get('[role="dialog"]').should('be.visible').and('contain.text', 'Mietverhältnis wirklich löschen?');
 
     cy.get('[role="dialog"]').contains('button', 'Endgültig löschen').click();
 

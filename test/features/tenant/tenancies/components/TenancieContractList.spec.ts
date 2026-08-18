@@ -85,7 +85,7 @@ describe('TenancieContractList', () => {
     const wrapper = mount(TenancieContractList);
     await nextTick();
 
-    expect(wrapper.text()).toContain('Lade Verträge');
+    expect(wrapper.text()).toContain('Lade Mietverhältnisse');
     expect(wrapper.find('[data-testid="empty-state"]').exists()).toBe(false);
   });
 
@@ -105,6 +105,6 @@ describe('TenancieContractList', () => {
     const wrapper = mount(TenancieContractList);
     await flushPromises();
 
-    expect(wrapper.text()).toContain('Verträge konnten nicht geladen werden');
+    expect(wrapper.text()).toContain('Mietverhältnisse konnten nicht geladen werden');
   });
 });

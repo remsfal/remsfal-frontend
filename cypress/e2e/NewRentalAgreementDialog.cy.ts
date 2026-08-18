@@ -138,7 +138,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
     // Dialog should be visible
     cy.get('[role="dialog"]').should('be.visible');
-    cy.get('[role="dialog"]').should('contain.text', 'Neuer Mietvertrag');
+    cy.get('[role="dialog"]').should('contain.text', 'Neues Mietverhältnis');
   });
 
   it('should display stepper with 4 steps', () => {

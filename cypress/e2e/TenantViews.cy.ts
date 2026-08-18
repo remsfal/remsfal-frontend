@@ -264,7 +264,7 @@ describe('Tenant Views E2E Tests', () => {
       cy.wait('@getEmptyTenants');
 
       // Empty state should be displayed
-      cy.contains(/keine mietverträge|no agreements/i).should('be.visible');
+      cy.contains(/keine mietverhältnisse|no tenancies/i).should('be.visible');
       cy.get('.pi-inbox').should('exist');
     });
 
