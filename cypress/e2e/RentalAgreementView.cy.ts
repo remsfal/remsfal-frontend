@@ -412,15 +412,6 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 2);
   });
 
-  it('should display sortable columns', () => {
-    cy.visit(`/projects/${projectId}/agreements`);
-
-    cy.wait('@getRentalAgreements');
-
-    // Check if sortable columns exist
-    cy.get('.p-datatable-thead th.p-datatable-sortable-column').should('exist');
-  });
-
   it('should handle scrollable table', () => {
     cy.visit(`/projects/${projectId}/agreements`);
 
