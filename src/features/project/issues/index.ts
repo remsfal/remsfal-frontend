@@ -2,6 +2,7 @@ export { default as IssueListView } from './views/IssueListView.vue';
 export { default as IssueView } from './views/IssueView.vue';
 export { default as NewIssueButton } from './components/NewIssueButton.vue';
 export { default as IssueTable } from './components/IssueTable.vue';
+export { default as IssueKpiCards } from './components/IssueKpiCards.vue';
 export { default as IssueDetailsCard } from './components/IssueDetailsCard.vue';
 export { default as IssueDescriptionCard } from './components/IssueDescriptionCard.vue';
 export { default as IssueAttachmentCard } from './components/IssueAttachmentCard.vue';

@@ -71,6 +71,12 @@ describe('NewProjectButton E2E Tests', () => {
       body: { properties: [] },
     }).as('getProperties');
 
+    // Mock the issues loaded by IssueKpiCards on the same dashboard.
+    cy.intercept('GET', '/ticketing/v1/issues**', {
+      statusCode: 200,
+      body: { issues: [] },
+    }).as('getIssues');
+
     // Visit the manager projects page and open dialog via "+" button
     cy.visit('/manager/projects');
 
