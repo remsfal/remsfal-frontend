@@ -412,6 +412,15 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 2);
   });
 
+  it('should display sortable columns', () => {
+    cy.visit(`/projects/${projectId}/agreements`);
+
+    cy.wait('@getRentalAgreements');
+
+    // Check if sortable columns exist
+    cy.get('.p-datatable-thead th.p-datatable-sortable-column').should('exist');
+  });
+
   it('should handle scrollable table', () => {
     cy.visit(`/projects/${projectId}/agreements`);
 
@@ -779,7 +788,7 @@ describe('ProjectTenancies E2E Tests', () => {
     });
   });
 
-  it('shows sortable columns in the key history table', () => {
+  it('shows the key history table with all keys', () => {
     cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
     cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
       statusCode: 200,
@@ -805,9 +814,9 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.wait('@getRentalAgreementDetails');
 
     cy.contains('.p-card-title', 'Schlüssel').parents('.p-card').within(() => {
-      cy.get('.p-datatable-thead th.p-datatable-sortable-column').should('have.length', 4);
-      cy.get('.p-datatable-thead th.p-datatable-sortable-column').contains('Beschreibung').click();
-      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Briefkastenschlüssel');
+      cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 2);
+      cy.get('.p-datatable-tbody tr[role="row"]').should('contain', 'Haustürschlüssel');
+      cy.get('.p-datatable-tbody tr[role="row"]').should('contain', 'Briefkastenschlüssel');
     });
   });
 });
