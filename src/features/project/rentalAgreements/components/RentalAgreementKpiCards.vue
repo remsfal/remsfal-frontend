@@ -13,7 +13,7 @@ import {tenantService,
   type TenantItemJson,} from '@/features/project/rentalAgreements/services/TenantService';
 
 const props = withDefaults(
-  defineProps<{ projectId: string; unitIdsByType?: Record<string, string[]> }>(),
+  defineProps<{ projectId: string; unitIdsByType?: Partial<Record<UnitType, string[]>> }>(),
   { unitIdsByType: () => ({}) },
 );
 const { t, n } = useI18n();
@@ -134,6 +134,7 @@ onMounted(() => fetchData(props.projectId));
       :icon="getIconForUnitType(vacancy.type)"
       :title="t('rentalAgreement.kpi.vacancyByType', { type: t(`unitTypes.${vacancy.type.toLowerCase()}`) })"
       :value="vacancy.count"
+      :iconBackground="vacancy.count > 0 ? 'var(--color-orange-600)' : undefined"
     />
   </div>
 </template>

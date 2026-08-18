@@ -12,7 +12,7 @@ import {propertyService,
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
 
 const props = defineProps<{ projectId: string }>();
-const emit = defineEmits<{ (e: 'update:unitIdsByType', idsByType: Record<string, string[]>): void }>();
+const emit = defineEmits<{ (e: 'update:unitIdsByType', idsByType: Record<UnitType, string[]>): void }>();
 const { t } = useI18n();
 const toast = useToast();
 
@@ -59,7 +59,7 @@ async function fetchPropertyTree(projectId: string) {
     isLoading.value = false;
     const idsByType = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
       (result, type) => ({ ...result, [type]: unitAggregates.value[type].ids }),
-      {} as Record<string, string[]>,
+      {} as Record<UnitType, string[]>,
     );
     emit('update:unitIdsByType', idsByType);
   } catch {
