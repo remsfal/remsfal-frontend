@@ -5,10 +5,8 @@ import RentalAgreementKpiCards from '@/features/project/rentalAgreements/compone
 import KpiCard from '@/components/common/KpiCard.vue';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import { tenantService, type TenantItemJson } from '@/features/project/rentalAgreements/services/TenantService';
 
 vi.mock('@/features/project/rentalAgreements/services/RentalAgreementService');
-vi.mock('@/features/project/rentalAgreements/services/TenantService');
 
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
@@ -36,7 +34,9 @@ describe('RentalAgreementKpiCards', () => {
       {
         id: 'agreement-open-ended',
         startOfRental: '2024-01-01',
-        tenants: [],
+        tenants: [{
+          id: 't1', firstName: 'Max', lastName: 'Mustermann' 
+        }],
         rentalUnits: [{ id: 'apt-1', type: 'APARTMENT' }],
         basicRent: 1000,
         heatingCostsPrepayment: 100,
@@ -46,7 +46,9 @@ describe('RentalAgreementKpiCards', () => {
         id: 'agreement-future-end',
         startOfRental: '2024-01-01',
         endOfRental: daysFromNow(30),
-        tenants: [],
+        tenants: [{
+          id: 't2', firstName: 'Erika', lastName: 'Musterfrau' 
+        }],
         rentalUnits: [{ id: 'building-1', type: 'BUILDING' }],
         basicRent: 500,
         heatingCostsPrepayment: 50,
@@ -56,26 +58,16 @@ describe('RentalAgreementKpiCards', () => {
         id: 'agreement-ended',
         startOfRental: '2020-01-01',
         endOfRental: daysFromNow(-30),
-        tenants: [],
+        tenants: [{
+          id: 't3', firstName: 'John', lastName: 'Doe' 
+        }],
         rentalUnits: [{ id: 'apt-2', type: 'APARTMENT' }],
         basicRent: 9999,
         heatingCostsPrepayment: 9999,
         operatingCostsPrepayment: 9999,
       },
     ];
-    const tenants: TenantItemJson[] = [
-      {
-        id: 't1', firstName: 'Max', lastName: 'Mustermann', active: true 
-      },
-      {
-        id: 't2', firstName: 'Erika', lastName: 'Musterfrau', active: false 
-      },
-      {
-        id: 't3', firstName: 'John', lastName: 'Doe', active: true 
-      },
-    ];
     vi.mocked(rentalAgreementService.getRentalAgreements).mockResolvedValue(agreements);
-    vi.mocked(tenantService.fetchTenants).mockResolvedValue(tenants);
 
     wrapper = mount(RentalAgreementKpiCards, {
       props: {
@@ -116,13 +108,41 @@ describe('RentalAgreementKpiCards', () => {
     expect(cards[5]!.props('icon')).toBe('pi pi-home');
   });
 
+  it('deduplicates tenants that appear in multiple active agreements', async () => {
+    vi.mocked(rentalAgreementService.getRentalAgreements).mockResolvedValue([
+      {
+        id: 'agreement-a',
+        startOfRental: '2024-01-01',
+        tenants: [{
+          id: 'shared-tenant', firstName: 'Max', lastName: 'Mustermann' 
+        }],
+        rentalUnits: [],
+      },
+      {
+        id: 'agreement-b',
+        startOfRental: '2024-01-01',
+        endOfRental: daysFromNow(30),
+        tenants: [{
+          id: 'shared-tenant', firstName: 'Max', lastName: 'Mustermann' 
+        }],
+        rentalUnits: [],
+      },
+    ]);
+
+    wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123' } });
+    await flushPromises();
+
+    const cards = wrapper.findAllComponents(KpiCard);
+    expect(cards[3]!.props('title')).toBe('rentalAgreement.kpi.tenantCount');
+    expect(cards[3]!.props('value')).toBe(1);
+  });
+
   it('omits vacancy cards for unit types without any units', async () => {
     vi.mocked(rentalAgreementService.getRentalAgreements).mockResolvedValue([
       {
         id: 'a1', startOfRental: '2024-01-01', tenants: [], rentalUnits: [],
       },
     ]);
-    vi.mocked(tenantService.fetchTenants).mockResolvedValue([]);
 
     wrapper = mount(RentalAgreementKpiCards, {props: { projectId: '123', unitIdsByType: { SITE: [], STORAGE: [] } },});
     await flushPromises();
@@ -138,7 +158,6 @@ describe('RentalAgreementKpiCards', () => {
 
   it('shows an empty-state message with a link to create a rental agreement when none exist', async () => {
     vi.mocked(rentalAgreementService.getRentalAgreements).mockResolvedValue([]);
-    vi.mocked(tenantService.fetchTenants).mockResolvedValue([]);
 
     wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123' } });
     await flushPromises();
@@ -155,7 +174,6 @@ describe('RentalAgreementKpiCards', () => {
 
   it('shows skeletons while loading', () => {
     vi.mocked(rentalAgreementService.getRentalAgreements).mockReturnValue(new Promise(() => {}));
-    vi.mocked(tenantService.fetchTenants).mockReturnValue(new Promise(() => {}));
 
     wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123' } });
 
@@ -165,7 +183,6 @@ describe('RentalAgreementKpiCards', () => {
 
   it('shows skeletons and a toast when the fetch fails', async () => {
     vi.mocked(rentalAgreementService.getRentalAgreements).mockRejectedValueOnce(new Error('Fetch failed'));
-    vi.mocked(tenantService.fetchTenants).mockResolvedValue([]);
 
     wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123' } });
     await flushPromises();
