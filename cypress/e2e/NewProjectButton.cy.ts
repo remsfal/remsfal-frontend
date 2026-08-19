@@ -63,7 +63,7 @@ describe('NewProjectButton E2E Tests', () => {
             memberRole: 'MANAGER'
       },
     }).as('createProject');
-    
+
     // Visit the manager projects page and open dialog via "+" button
     cy.visit('/manager/projects');
 
