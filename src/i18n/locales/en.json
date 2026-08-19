@@ -507,7 +507,7 @@
   "issueKpi.loadError": "Issues could not be loaded.",
   "issueKpi.status.pending": "Pending Tasks and Issues",
   "issueKpi.status.open": "Open Tasks and Issues",
-  "issueKpi.status.inProgress": "Tasks in Progress and Issues",
+  "issueKpi.status.inProgress": "Tasks and Issues in Progress",
   "success.created": "Success",
   "success.propertyCreated": "Property created successfully.",
   "success.savedOffline": "Saved offline",

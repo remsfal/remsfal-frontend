@@ -532,7 +532,7 @@
   "issueKpi.loadError": "Aufgaben konnten nicht geladen werden.",
   "issueKpi.status.pending": "Ausstehende Aufgaben und Issues",
   "issueKpi.status.open": "Offene Aufgaben und Issues",
-  "issueKpi.status.inProgress": "Aufgaben in Bearbeitung und Issues",
+  "issueKpi.status.inProgress": "Aufgaben und Issues in Bearbeitung",
   "success.created": "Erfolg",
   "success.propertyCreated": "Die Immobilie wurde erfolgreich erstellt.",
   "success.saved": "Gespeichert",

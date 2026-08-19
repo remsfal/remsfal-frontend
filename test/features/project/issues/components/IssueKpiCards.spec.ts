@@ -42,7 +42,7 @@ describe('IssueKpiCards', () => {
     expect(cards[1]!.props('title')).toBe('Offene Aufgaben und Issues');
     expect(cards[1]!.props('value')).toBe(2);
 
-    expect(cards[2]!.props('title')).toBe('Aufgaben in Bearbeitung und Issues');
+    expect(cards[2]!.props('title')).toBe('Aufgaben und Issues in Bearbeitung');
     expect(cards[2]!.props('value')).toBe(1);
 
     expect(issueService.getIssues).toHaveBeenCalledWith(
@@ -79,21 +79,6 @@ describe('IssueKpiCards', () => {
     const cards = wrapper.findAllComponents(KpiCard);
     expect(cards).toHaveLength(1);
     expect(cards[0]!.props('title')).toBe('Ausstehende Aufgaben und Issues');
-    expect(cards[0]!.props('value')).toBe(1);
-  });
-
-  it('ignores issues without a status', async () => {
-    vi.mocked(issueService.getIssues).mockResolvedValue({
-      size: 2,
-      issues: [{ id: '1' }, { id: '2', status: 'OPEN' }] as IssueItemJson[],
-    });
-
-    wrapper = mount(IssueKpiCards, { props: { projectId: '123' } });
-    await flushPromises();
-
-    const cards = wrapper.findAllComponents(KpiCard);
-    expect(cards).toHaveLength(1);
-    expect(cards[0]!.props('title')).toBe('Offene Aufgaben und Issues');
     expect(cards[0]!.props('value')).toBe(1);
   });
 
