@@ -53,15 +53,17 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
       body: { rentalAgreements: [] },
     }).as('getRentalAgreements');
 
-    // Mock available units (for Step 2)
+    // Mock available units (for Step 2) — RentableUnitSelect consumes the property tree shape
     cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
       statusCode: 200,
-      body: [
-        {
-          id: 'property-1',
-          title: 'Main Property',
-        },
-      ],
+      body: {
+        properties: [
+          {
+            key: 'apt-101',
+            data: { id: 'apt-101', type: 'APARTMENT', title: 'Apartment 101' },
+          },
+        ],
+      },
     }).as('getProperties');
 
     cy.intercept('GET', `/api/v1/projects/${projectId}/apartments`, {
@@ -267,5 +269,60 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
     // Should be able to proceed
     cy.contains('button', /Weiter zu Mieteinheiten|Continue to Units/i).should('not.be.disabled');
+  });
+
+  it('completes all steps and creates a rental agreement', () => {
+    cy.intercept('POST', `/api/v1/projects/${projectId}/rental-agreements`, {
+      statusCode: 201,
+    }).as('createRentalAgreement');
+
+    // Open dialog
+    cy.contains('button', /neuen mieter hinzufügen|add new tenant/i).click();
+    cy.get('[role="dialog"]').should('be.visible');
+
+    // Step 1: Dates
+    cy.get('[role="dialog"]').within(() => {
+      cy.get('input[name="startOfRental"]').type('2024-01-01');
+      cy.get('input[name="startOfRental"]').type('{esc}');
+    });
+    cy.get('.p-datepicker-panel').should('not.exist');
+    cy.get('[role="dialog"]').within(() => {
+      cy.contains('button', 'Weiter zu Mieteinheiten').click();
+    });
+
+    // Step 2: Units — select the mocked apartment from the property tree
+    cy.wait('@getProperties');
+    cy.get('[role="dialog"]').within(() => {
+      cy.get('.p-treeselect').click();
+    });
+    cy.get('.p-treeselect-overlay').should('be.visible');
+    cy.get('.p-treeselect-overlay').contains('.p-tree-node-content', 'Apartment 101').click();
+
+    cy.get('[role="dialog"]').within(() => {
+      cy.contains('button', 'Einheit hinzufügen').click();
+      cy.contains('button', 'Weiter zu Mieterinformationen').click();
+
+      // Step 3: Tenants — add a new tenant via the inline form
+      cy.contains('button', 'Neuen Mieter hinzufügen').click();
+      cy.get('input[name="firstName"]').type('Max');
+      cy.get('input[name="lastName"]').type('Mustermann');
+      cy.contains('button', 'Mieter zur Liste hinzufügen').click();
+      cy.contains('button', 'Weiter zur Zusammenfassung').click();
+
+      // Step 4: Summary — submit
+      cy.contains('button', 'Mietverhältnis anlegen').click();
+    });
+
+    cy.wait('@createRentalAgreement').its('request.body').should((body) => {
+      expect(body.startOfRental).to.eq('2024-01-01');
+      expect(body.apartmentRents).to.have.length(1);
+      expect(body.apartmentRents[0].rentalUnitId).to.eq('apt-101');
+      expect(body.tenants).to.have.length(1);
+      expect(body.tenants[0].firstName).to.eq('Max');
+      expect(body.tenants[0].lastName).to.eq('Mustermann');
+    });
+
+    cy.get('.p-toast-message-success').should('be.visible');
+    cy.get('[role="dialog"]').should('not.exist');
   });
 });
