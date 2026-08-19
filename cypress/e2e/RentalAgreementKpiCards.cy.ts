@@ -47,8 +47,8 @@ describe('RentalAgreementKpiCards E2E Tests', () => {
       body: { issues: [] },
     }).as('getIssues');
 
-    // The dashboard also mounts RentableUnitsKpiCards, whose emitted unit ids feed
-    // RentalAgreementKpiCards' vacancy calculation, so this endpoint must always be mocked.
+    // The dashboard also mounts RentableUnitsKpiCards, whose emitted rentable unit tree
+    // feeds RentalAgreementKpiCards' vacancy calculation, so this endpoint must always be mocked.
     cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
       statusCode: 200,
       body: {
@@ -76,6 +76,29 @@ describe('RentalAgreementKpiCards E2E Tests', () => {
                     key: 'apt-2',
                     data: {
                       id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 2', space: 70,
+                    },
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            key: 'property-2',
+            data: {
+              id: 'property-2', type: 'PROPERTY', title: 'Grundstück 2', space: 300,
+            },
+            children: [
+              {
+                key: 'building-2',
+                data: {
+                  id: 'building-2', type: 'BUILDING', title: 'Gebäude 2', space: 150,
+                },
+                children: [
+                  {
+                    key: 'apt-3',
+                    data: {
+                      id: 'apt-3', type: 'APARTMENT', title: 'Wohnung 3', space: 40,
                     },
                     children: [],
                   },
@@ -170,11 +193,12 @@ describe('RentalAgreementKpiCards E2E Tests', () => {
     cy.visit(`/projects/${projectId}/dashboard`);
     cy.wait(['@getPropertyTree', '@getRentalAgreements', '@getTenants']);
 
-    // property-1 and building-1 are never referenced by a rental agreement -> fully vacant.
+    // property-1/building-1 contain apt-1 (rented) -> NOT vacant. Only property-2/building-2
+    // (fully vacant) count -> 1 each.
     cy.contains('.p-card', 'Leerstand Grundstück').should('contain.text', '1');
     cy.contains('.p-card', 'Leerstand Gebäude').should('contain.text', '1');
-    // apt-1 is rented, apt-2 is not -> exactly one vacant apartment.
-    cy.contains('.p-card', 'Leerstand Wohnung').should('contain.text', '1');
+    // apt-2 (in the rented building) and apt-3 (in the fully-vacant building) are both vacant.
+    cy.contains('.p-card', 'Leerstand Wohnung').should('contain.text', '2');
   });
 
   it('shows an empty-state message with a link to create a rental agreement when none exist', () => {

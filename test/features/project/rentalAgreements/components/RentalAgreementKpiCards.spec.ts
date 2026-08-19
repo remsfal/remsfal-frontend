@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Message from 'primevue/message';
 import RentalAgreementKpiCards from '@/features/project/rentalAgreements/components/RentalAgreementKpiCards.vue';
 import KpiCard from '@/components/common/KpiCard.vue';
+import type { RentalUnitTreeNodeJson } from '@/features/project/rentableUnits';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { tenantService, type TenantItemJson } from '@/features/project/rentalAgreements/services/TenantService';
@@ -77,20 +78,45 @@ describe('RentalAgreementKpiCards', () => {
     vi.mocked(rentalAgreementService.getRentalAgreements).mockResolvedValue(agreements);
     vi.mocked(tenantService.fetchTenants).mockResolvedValue(tenants);
 
-    wrapper = mount(RentalAgreementKpiCards, {
-      props: {
-        projectId: '123',
-        unitIdsByType: {
-          APARTMENT: ['apt-1', 'apt-2', 'apt-3'],
-          BUILDING: ['building-1'],
-          SITE: [],
+    const rentableUnitTree: RentalUnitTreeNodeJson[] = [
+      {
+        key: 'property-1',
+        data: {
+          id: 'property-1', type: 'PROPERTY', title: 'Property 1' 
         },
+        children: [
+          {
+            key: 'building-1',
+            data: {
+              id: 'building-1', type: 'BUILDING', title: 'Building 1' 
+            },
+            children: [
+              {
+                key: 'apt-1', data: {
+                  id: 'apt-1', type: 'APARTMENT', title: 'Apt 1' 
+                }, children: [] 
+              },
+              {
+                key: 'apt-2', data: {
+                  id: 'apt-2', type: 'APARTMENT', title: 'Apt 2' 
+                }, children: [] 
+              },
+              {
+                key: 'apt-3', data: {
+                  id: 'apt-3', type: 'APARTMENT', title: 'Apt 3' 
+                }, children: [] 
+              },
+            ],
+          },
+        ],
       },
-    });
+    ];
+
+    wrapper = mount(RentalAgreementKpiCards, {props: { projectId: '123', rentableUnitTree },});
     await flushPromises();
 
     const cards = wrapper.findAllComponents(KpiCard);
-    expect(cards).toHaveLength(6);
+    expect(cards).toHaveLength(7);
 
     expect(cards[0]!.props('title')).toBe('rentalAgreement.kpi.totalRent');
     expect(cards[0]!.props('value')).toBe('1500 €');
@@ -105,18 +131,106 @@ describe('RentalAgreementKpiCards', () => {
     expect(cards[3]!.props('title')).toBe('rentalAgreement.kpi.tenantCount');
     expect(cards[3]!.props('value')).toBe(2);
 
-    // apt-2 is only referenced by the ended agreement, so it counts as vacant; apt-3 has no agreement at all.
-    expect(cards[4]!.props('title')).toBe('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.apartment"}');
-    expect(cards[4]!.props('value')).toBe(2);
-    expect(cards[4]!.props('icon')).toBe('pi pi-building');
+    // property-1 is not directly rented, but building-1 (its child) is -> not vacant.
+    expect(cards[4]!.props('title')).toBe('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.property"}');
+    expect(cards[4]!.props('value')).toBe(0);
+    expect(cards[4]!.props('icon')).toBe('pi pi-map');
 
     // building-1 is rented by the still-current "future end" agreement, so no vacancy.
     expect(cards[5]!.props('title')).toBe('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.building"}');
     expect(cards[5]!.props('value')).toBe(0);
     expect(cards[5]!.props('icon')).toBe('pi pi-home');
+
+    // apt-2 is only referenced by the ended agreement, so it counts as vacant; apt-3 has no agreement at all.
+    expect(cards[6]!.props('title')).toBe('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.apartment"}');
+    expect(cards[6]!.props('value')).toBe(2);
+    expect(cards[6]!.props('icon')).toBe('pi pi-building');
   });
 
-  it('omits vacancy cards for unit types without any units', async () => {
+  it('rolls up vacancy bottom-up: a container is vacant only when none of its descendants are rented', async () => {
+    const rentableUnitTree: RentalUnitTreeNodeJson[] = [
+      {
+        key: 'property-1',
+        data: {
+          id: 'property-1', type: 'PROPERTY', title: 'Property 1' 
+        },
+        children: [
+          {
+            key: 'building-1',
+            data: {
+              id: 'building-1', type: 'BUILDING', title: 'Building 1' 
+            },
+            children: [
+              {
+                key: 'apt-1', data: {
+                  id: 'apt-1', type: 'APARTMENT', title: 'Apt 1' 
+                }, children: [] 
+              },
+              {
+                key: 'apt-2', data: {
+                  id: 'apt-2', type: 'APARTMENT', title: 'Apt 2' 
+                }, children: [] 
+              },
+            ],
+          },
+        ],
+      },
+      {
+        key: 'property-2',
+        data: {
+          id: 'property-2', type: 'PROPERTY', title: 'Property 2' 
+        },
+        children: [
+          {
+            key: 'building-2',
+            data: {
+              id: 'building-2', type: 'BUILDING', title: 'Building 2' 
+            },
+            children: [
+              {
+                key: 'apt-3', data: {
+                  id: 'apt-3', type: 'APARTMENT', title: 'Apt 3' 
+                }, children: [] 
+              },
+              {
+                key: 'apt-4', data: {
+                  id: 'apt-4', type: 'APARTMENT', title: 'Apt 4' 
+                }, children: [] 
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    // Only apt-1 is referenced directly -- neither building-1 nor property-1 are referenced
+    // by any agreement, yet both must roll up to "not vacant" because of their rented child.
+    vi.mocked(rentalAgreementService.getRentalAgreements).mockResolvedValue([
+      {
+        id: 'a1', startOfRental: '2024-01-01', tenants: [], rentalUnits: [{ id: 'apt-1', type: 'APARTMENT' }],
+      },
+    ]);
+    vi.mocked(tenantService.fetchTenants).mockResolvedValue([]);
+
+    wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123', rentableUnitTree } });
+    await flushPromises();
+
+    const vacancyCards = wrapper.findAllComponents(KpiCard).slice(4);
+    const values = Object.fromEntries(
+      vacancyCards.map((card) => [
+        (card.props('title') as string).match(/unitTypes\.(\w+)/)![1],
+        card.props('value'),
+      ]),
+    );
+
+    // property-1/building-1 (containing the rented apt-1) are NOT vacant; property-2/building-2
+    // (fully vacant) ARE.
+    expect(values.property).toBe(1);
+    expect(values.building).toBe(1);
+    // apt-2, apt-3, apt-4 are vacant; apt-1 is rented.
+    expect(values.apartment).toBe(3);
+  });
+
+  it('omits vacancy cards for unit types absent from the tree', async () => {
     vi.mocked(rentalAgreementService.getRentalAgreements).mockResolvedValue([
       {
         id: 'a1', startOfRental: '2024-01-01', tenants: [], rentalUnits: [],
@@ -124,7 +238,7 @@ describe('RentalAgreementKpiCards', () => {
     ]);
     vi.mocked(tenantService.fetchTenants).mockResolvedValue([]);
 
-    wrapper = mount(RentalAgreementKpiCards, {props: { projectId: '123', unitIdsByType: { SITE: [], STORAGE: [] } },});
+    wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123', rentableUnitTree: [] } });
     await flushPromises();
 
     const titles = wrapper.findAllComponents(KpiCard).map((card) => card.props('title'));
