@@ -6,15 +6,16 @@ import { useToast } from 'primevue/usetoast';
 import Skeleton from 'primevue/skeleton';
 import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
-import { getIconForUnitType, type UnitType } from '@/features/project/rentableUnits';
+import {getIconForUnitType, UNIT_TYPE_ICONS,
+  type RentalUnitTreeNodeJson, type UnitType,} from '@/features/project/rentableUnits';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import {tenantService,
   type TenantItemJson,} from '@/features/project/rentalAgreements/services/TenantService';
 
 const props = withDefaults(
-  defineProps<{ projectId: string; unitIdsByType?: Partial<Record<UnitType, string[]>> }>(),
-  { unitIdsByType: () => ({}) },
+  defineProps<{ projectId: string; rentableUnitTree?: RentalUnitTreeNodeJson[] }>(),
+  { rentableUnitTree: () => [] },
 );
 const { t, n } = useI18n();
 const toast = useToast();
@@ -56,14 +57,43 @@ const rentedUnitIds = computed(() => {
   return ids;
 });
 
-function countVacant(unitIds: string[]): number {
-  return unitIds.filter((id) => !rentedUnitIds.value.has(id)).length;
+type VacancyAgg = { total: number; vacant: number };
+
+// Returns true if this node's subtree contains at least one currently-rented unit —
+// either because the node itself is directly rented (its own id is referenced by a
+// current agreement, e.g. a fully rented building) or because one of its descendants is.
+function collectVacancy(
+  node: RentalUnitTreeNodeJson,
+  rentedIds: Set<string>,
+  acc: Record<UnitType, VacancyAgg>,
+): boolean {
+  const type = node.data?.type;
+  const children = node.children ?? [];
+
+  const anyChildRented = children.map((child) => collectVacancy(child, rentedIds, acc)).some(Boolean);
+  const selfRented = !!node.data?.id && rentedIds.has(node.data.id);
+  const subtreeRented = anyChildRented || selfRented;
+
+  if (type) {
+    acc[type].total += 1;
+    if (!subtreeRented) acc[type].vacant += 1;
+  }
+  return subtreeRented;
 }
 
+const vacancyAgg = computed(() => {
+  const acc = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
+    (result, type) => ({ ...result, [type]: { total: 0, vacant: 0 } }),
+    {} as Record<UnitType, VacancyAgg>,
+  );
+  props.rentableUnitTree.forEach((node) => collectVacancy(node, rentedUnitIds.value, acc));
+  return acc;
+});
+
 const vacancyByType = computed(() =>
-  Object.entries(props.unitIdsByType)
-    .filter(([, ids]) => ids.length > 0)
-    .map(([type, ids]) => ({ type: type as UnitType, count: countVacant(ids) })),
+  (Object.keys(UNIT_TYPE_ICONS) as UnitType[])
+    .filter((type) => vacancyAgg.value[type].total > 0)
+    .map((type) => ({ type, count: vacancyAgg.value[type].vacant })),
 );
 
 async function fetchData(projectId: string) {
