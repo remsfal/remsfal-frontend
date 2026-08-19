@@ -10,6 +10,7 @@ import { computed, ref } from 'vue'
 import ProjectDashboard from '@/views/project/ProjectDashboard.vue'
 import { RentableUnitsKpiCards, type UnitType } from "@/features/project/rentableUnits";
 import { RentalAgreementKpiCards } from "@/features/project/rentalAgreements";
+import { IssueKpiCards } from "@/features/project/issues";
 import { useRoute } from 'vue-router'
 const route = useRoute('ProjectDashboard')
 const unitIdsByType = ref<Partial<Record<UnitType, string[]>>>({})
@@ -26,6 +27,8 @@ const hasUnits = computed(() => Object.values(unitIdsByType.value).some((ids) =>
     :projectId="(route.params.projectId as string)"
     :unitIdsByType="unitIdsByType"
   />
+
+  <IssueKpiCards :projectId="(route.params.projectId as string)" />
 
   <ProjectDashboard />
 </template>
