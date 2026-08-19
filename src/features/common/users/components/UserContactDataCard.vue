@@ -13,6 +13,7 @@ import Message from 'primevue/message';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
+import Skeleton from 'primevue/skeleton';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import { userService } from '@/features/common/users/services/UserService';
 import { type Locale } from '@/i18n/i18n';
@@ -90,6 +91,7 @@ const dialogVisible = ref(false);
 const alternativeEmailInput = ref('');
 const isEmailInvalid = ref(false);
 const emailErrorMessage = ref('');
+const isLoading = ref(true);
 
 const localeOptions = [
   { language: 'Deutsch', value: 'de' },
@@ -129,6 +131,8 @@ onMounted(async () => {
     formKey.value++;
   } catch (error) {
     console.error('Failed to load user profile', error);
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -240,9 +244,15 @@ async function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading">
     <template #title>
       {{ t('accountSettings.userProfile.title') }}
+    </template>
+
+    <template #loading>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Skeleton v-for="i in 8" :key="i" height="3.5rem" />
+      </div>
     </template>
 
     <template #content>

@@ -69,6 +69,7 @@ export function useAddressForm<E extends Record<string, string> = Record<string,
   initialValues: Ref<AddressFormFields & E>;
   formKey: Ref<number>;
   isDirty: ComputedRef<boolean>;
+  isLoading: Ref<boolean>;
   localizedCountries: ComputedRef<{ code: string; displayName: string }[]>;
   handleZipBlur: () => Promise<void>;
   onSubmit: (event: FormSubmitEvent) => Promise<void>;
@@ -93,6 +94,7 @@ export function useAddressForm<E extends Record<string, string> = Record<string,
   // initialValues drives what the Form component displays
   const initialValues = ref({ ...currentValues }) as Ref<AddressFormFields & E>;
   const formKey = ref(0);
+  const isLoading = ref(true);
 
   const isDirty = computed(() =>
     (Object.keys(serverValues) as (keyof (AddressFormFields & E))[]).some(
@@ -113,6 +115,8 @@ export function useAddressForm<E extends Record<string, string> = Record<string,
       formKey.value++;
     } catch (error) {
       console.error(options.loadErrorLogLabel ?? 'Failed to load address', error);
+    } finally {
+      isLoading.value = false;
     }
   });
 
@@ -168,6 +172,6 @@ export function useAddressForm<E extends Record<string, string> = Record<string,
   }
 
   return {
-    currentValues, initialValues, formKey, isDirty, localizedCountries, handleZipBlur, onSubmit,
+    currentValues, initialValues, formKey, isDirty, isLoading, localizedCountries, handleZipBlur, onSubmit,
   };
 }

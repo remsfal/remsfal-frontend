@@ -1,4 +1,4 @@
-import { mount, VueWrapper } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../../mocks/server';
@@ -44,7 +44,7 @@ describe('InboxCard.vue', () => {
   ];
 
 
-  beforeEach(() => {
+  beforeEach(async () => {
     store = useInboxStore();
 
     server.use(
@@ -54,6 +54,7 @@ describe('InboxCard.vue', () => {
     );
 
     wrapper = mount(InboxCard);
+    await flushPromises();
   });
 
   it('calls fetchInbox on mount', async () => {

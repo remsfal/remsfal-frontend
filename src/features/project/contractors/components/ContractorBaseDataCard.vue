@@ -45,6 +45,7 @@ const initialValues = ref({
   companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
 });
 const formKey = ref(0);
+const isLoading = ref(true);
 
 const isDirty = computed(() =>
   Object.keys(serverValues).some(
@@ -75,6 +76,8 @@ onMounted(async () => {
     formKey.value++;
   } catch {
     // silently ignore — form stays empty
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -115,7 +118,7 @@ async function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading">
     <template #title>
       {{ t('contractor.detail.title') }}
     </template>

@@ -4,7 +4,6 @@ import { useI18n } from 'vue-i18n';
 import { propertyService, type RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import { useToast } from 'primevue/usetoast';
-import Skeleton from 'primevue/skeleton';
 import BaseCard from '@/components/common/BaseCard.vue';
 import RentableUnitsTable from './RentableUnitsTable.vue';
 
@@ -22,7 +21,6 @@ async function fetchPropertyTree(projectId: string) {
   try {
     const data = await propertyService.getPropertyTree(projectId);
     rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
-    isLoading.value = false;
     expandAll();
   } catch {
     toast.add({
@@ -31,6 +29,8 @@ async function fetchPropertyTree(projectId: string) {
       detail: t('rentableUnits.loadError'),
       life: 6000,
     });
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -69,17 +69,13 @@ defineExpose({expandedKeys,});
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="6">
     <template #title>
       {{ t('rentableUnits.view.title') }}
     </template>
 
     <template #content>
-      <template v-if="isLoading">
-        <Skeleton v-for="i in 6" :key="i" height="2.5rem" class="mb-2" />
-      </template>
       <RentableUnitsTable
-        v-else
         :projectId="props.projectId"
         :rentableUnitTree="rentableUnitTree"
         :expandedKeys="expandedKeys"

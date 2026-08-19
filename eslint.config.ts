@@ -103,6 +103,13 @@ export default [
     },
   },
 
+  // Vite's native config loader requires explicit extensions on relative imports
+  // in root-level config files (e.g. vitest.config.ts importing vite.config.ts).
+  {
+    files: ['*.config.ts'],
+    rules: { 'import/extensions': 'off' },
+  },
+
   // ignore files at the end of the config
   {ignores: ['dist/**', 'node_modules/**', 'cypress/**', 'html/**', 'coverage/**', 'src/services/api/*-schema.ts'],},
 ] satisfies Linter.Config[];
