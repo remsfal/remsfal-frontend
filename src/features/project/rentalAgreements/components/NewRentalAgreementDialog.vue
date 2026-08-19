@@ -88,7 +88,7 @@ function transformFormDataToRentalAgreement(
 
   state.selectedUnits.forEach((unit) => {
     const rent: RentJson = {
-      unitId: unit.unitId,
+      rentalUnitId: unit.rentalUnitId,
       basicRent: unit.basicRent,
       operatingCostsPrepayment: unit.operatingCostsPrepayment,
       heatingCostsPrepayment: unit.heatingCostsPrepayment,
