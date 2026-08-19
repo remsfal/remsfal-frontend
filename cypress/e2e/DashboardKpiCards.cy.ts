@@ -73,7 +73,10 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait('@getUser');
-      cy.wait('@getIssues');
+      // CI runs this spec against `vite dev` with code-coverage instrumentation (see
+      // coverage:e2e), which is slower to first-mount than the local `vite preview` build
+      // and has occasionally missed the default 5000ms requestTimeout.
+      cy.wait('@getIssues', { timeout: 10000 });
 
       // Scoped to the component's own test id: "Offene Aufgaben" also appears as the
       // sidebar menu label, and ProjectDashboard renders its own (unrelated) demo stat
@@ -102,7 +105,10 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait('@getUser');
-      cy.wait('@getIssues');
+      // CI runs this spec against `vite dev` with code-coverage instrumentation (see
+      // coverage:e2e), which is slower to first-mount than the local `vite preview` build
+      // and has occasionally missed the default 5000ms requestTimeout.
+      cy.wait('@getIssues', { timeout: 10000 });
 
       cy.get('[data-testid="issue-kpi-cards"]').within(() => {
         cy.contains('Offene Aufgaben und Issues').should('be.visible');
@@ -120,7 +126,10 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait('@getUser');
-      cy.wait('@getIssues');
+      // CI runs this spec against `vite dev` with code-coverage instrumentation (see
+      // coverage:e2e), which is slower to first-mount than the local `vite preview` build
+      // and has occasionally missed the default 5000ms requestTimeout.
+      cy.wait('@getIssues', { timeout: 10000 });
 
       cy.get('[data-testid="issue-kpi-cards"]').should('not.exist');
     });
