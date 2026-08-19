@@ -1,5 +1,5 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RentableUnitsCard from '@/features/project/rentableUnits/components/RentableUnitsCard.vue';
 import { type PropertyListJson, propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 
@@ -10,6 +10,10 @@ describe('RentableUnitsCard', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    wrapper?.unmount();
   });
 
   it('renders RentableUnitsTable after successful data fetch', async () => {
@@ -49,7 +53,7 @@ describe('RentableUnitsCard', () => {
     expect(wrapper.findComponent({ name: 'RentableUnitsTable' }).exists()).toBe(false);
   });
 
-  it('shows skeleton and toast when fetch fails', async () => {
+  it('hides the skeleton after a failed fetch instead of loading forever', async () => {
     vi.mocked(propertyService.getPropertyTree).mockRejectedValueOnce(new Error('Fetch failed'));
 
     wrapper = mount(RentableUnitsCard, {
@@ -59,8 +63,8 @@ describe('RentableUnitsCard', () => {
 
     await flushPromises();
 
-    expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
-    expect(wrapper.findComponent({ name: 'RentableUnitsTable' }).exists()).toBe(false);
+    expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(false);
+    expect(wrapper.findComponent({ name: 'RentableUnitsTable' }).exists()).toBe(true);
   });
 
 });

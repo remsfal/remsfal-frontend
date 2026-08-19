@@ -14,6 +14,7 @@ const { t } = useI18n();
 const router = useRouter();
 
 const contractors = ref<ContractorJson[]>([]);
+const isLoading = ref(true);
 
 const sortedContractors = computed(() =>
   [...contractors.value].sort((a, b) =>
@@ -22,11 +23,14 @@ const sortedContractors = computed(() =>
 );
 
 const fetchContractors = async () => {
+  isLoading.value = true;
   try {
     const result = await projectContractorService.getContractors(props.projectId);
     contractors.value = result.contractors ?? [];
   } catch (error) {
     console.error('Failed to fetch contractors', error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -48,7 +52,7 @@ function onTableRowClick(event: { data: ContractorJson }) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="4">
     <template #title>
       {{ t('contractor.list.title') }}
     </template>

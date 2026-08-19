@@ -22,6 +22,7 @@ const { t } = useI18n();
 const toast = useToast();
 
 const organizations = ref<OrganizationMemberJson[]>([]);
+const isLoading = ref(true);
 
 const tableRows = computed<(OrganizationRow | MemberRow)[]>(() =>
   organizations.value.flatMap((organization) => [
@@ -37,14 +38,15 @@ const tableRows = computed<(OrganizationRow | MemberRow)[]>(() =>
 );
 
 const fetchOrganizations = async () => {
-  await organizationMemberService
-    .getOrganizations(props.projectId)
-    .then((list) => {
-      organizations.value = list.organizations ?? [];
-    })
-    .catch((error) => {
-      console.error('Failed to fetch organizations', error);
-    });
+  isLoading.value = true;
+  try {
+    const list = await organizationMemberService.getOrganizations(props.projectId);
+    organizations.value = list.organizations ?? [];
+  } catch (error) {
+    console.error('Failed to fetch organizations', error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const updateOrganizationRole = async (org: OrganizationMemberJson) => {
@@ -109,7 +111,7 @@ function onNewOrganization(organizationName: string) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="4">
     <template #title>
       {{ t('projectSettings.organizationMemberTable.title') }}
     </template>

@@ -11,6 +11,7 @@ const { t } = useI18n();
 const router = useRouter();
 
 const organizations = ref<OrganizationJson[]>([]);
+const isLoading = ref(true);
 
 const sortedOrganizations = computed(() =>
   [...organizations.value].sort((a, b) =>
@@ -24,6 +25,8 @@ onMounted(async () => {
     organizations.value = result.organizations ?? [];
   } catch (error) {
     console.error('Failed to fetch contractor organizations', error);
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -38,7 +41,7 @@ function onTableRowClick(event: { data: OrganizationJson }) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="4">
     <template #title>
       {{ t('managerContractors.list.title') }}
     </template>

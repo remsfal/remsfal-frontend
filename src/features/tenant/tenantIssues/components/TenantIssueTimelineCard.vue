@@ -6,10 +6,10 @@ import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import Message from 'primevue/message';
-import ProgressSpinner from 'primevue/progressspinner';
 import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/common/BaseCard.vue';
+import CardSkeletonRows from '@/components/common/CardSkeletonRows.vue';
 import TenantIssueTimelineItemCard from './TenantIssueTimelineItemCard.vue';
 import { tenantTimelineService, type TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 
@@ -116,10 +116,12 @@ watch(
       <span class="text-xl font-semibold">{{ t('tenantIssues.timeline.title') }}</span>
     </template>
     <template #content>
-      <div v-if="loading" class="flex items-center gap-3 py-2">
-        <ProgressSpinner data-testid="tenant-issue-timeline-loading" style="width: 24px; height: 24px" />
-        <span class="text-gray-600">{{ t('tenantIssues.loading') }}</span>
-      </div>
+      <CardSkeletonRows
+        v-if="loading"
+        :rows="3"
+        rowHeight="3rem"
+        data-testid="tenant-issue-timeline-loading"
+      />
 
       <Message v-else-if="error" severity="error" :closable="false" data-testid="tenant-issue-timeline-error">
         {{ t('tenantIssues.timeline.loadError') }}
