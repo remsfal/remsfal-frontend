@@ -164,7 +164,7 @@ describe('ProjectMenu.vue', () => {
     await wrapper.vm.$nextTick();
     const labels = wrapper.findAll('.layout-submenu .layout-menuitem-text').map(el => el.text());
     expect(labels).toContain('Wirtschaftseinheiten');
-    expect(labels).toContain('Mietverträge');
+    expect(labels).toContain('Mietverhältnisse');
     expect(labels).toContain('Mieter');
     expect(labels).toContain('Auftragnehmer');
   });

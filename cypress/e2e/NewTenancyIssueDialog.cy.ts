@@ -178,7 +178,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.visit('/tenant/issues');
       cy.contains('button', /neue meldung/i).click();
       cy.get('[role="dialog"]').should('be.visible');
-      cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverträge');
+      cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverhältnisse');
     });
 
     it('should NOT show the stepper when no tenancies exist', () => {
@@ -747,7 +747,7 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.contains('button', /neue meldung/i).click();
       cy.get('[role="dialog"]').should('be.visible');
       // After the error the tenancies array stays empty → no-contracts message
-      cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverträge');
+      cy.get('[role="dialog"]').should('contain.text', 'Keine aktiven Mietverhältnisse');
     });
   });
 

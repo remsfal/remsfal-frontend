@@ -138,7 +138,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
 
     // Dialog should be visible
     cy.get('[role="dialog"]').should('be.visible');
-    cy.get('[role="dialog"]').should('contain.text', 'Neuer Mietvertrag');
+    cy.get('[role="dialog"]').should('contain.text', 'Neues Mietverhältnis');
   });
 
   it('should display stepper with 4 steps', () => {
@@ -268,5 +268,4 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     // Should be able to proceed
     cy.contains('button', /Weiter zu Mieteinheiten|Continue to Units/i).should('not.be.disabled');
   });
-
 });
