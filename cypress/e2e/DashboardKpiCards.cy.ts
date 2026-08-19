@@ -74,6 +74,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait('@getUser');
       cy.wait('@getIssues');
+
       // Scoped to the component's own test id: "Offene Aufgaben" also appears as the
       // sidebar menu label, and ProjectDashboard renders its own (unrelated) demo stat
       // cards further down the same page.
