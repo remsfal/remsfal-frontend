@@ -9,18 +9,21 @@ const props = defineProps<{ organizationId: string }>();
 const { t } = useI18n();
 
 const org = ref<OrganizationJson | null>(null);
+const isLoading = ref(true);
 
 onMounted(async () => {
   try {
     org.value = await organizationService.getOrganization(props.organizationId);
   } catch (error) {
     console.error('Failed to fetch organization', error);
+  } finally {
+    isLoading.value = false;
   }
 });
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading">
     <template #title>
       {{ t('managerContractors.detail.title') }}
     </template>

@@ -16,16 +16,18 @@ const { t } = useI18n();
 const toast = useToast();
 
 const employees = ref<OrganizationEmployeeJson[]>([]);
+const isLoading = ref(true);
 
 const fetchEmployees = async () => {
-  await organizationService
-    .getEmployees(props.organizationId)
-    .then((list) => {
-      employees.value = list.employees;
-    })
-    .catch((error) => {
-      console.error('Failed to fetch employees', error);
-    });
+  isLoading.value = true;
+  try {
+    const list = await organizationService.getEmployees(props.organizationId);
+    employees.value = list.employees;
+  } catch (error) {
+    console.error('Failed to fetch employees', error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const updateEmployeeRole = async (employee: OrganizationEmployeeJson) => {
@@ -80,7 +82,7 @@ function onNewEmployee(email: string) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="4">
     <template #title>
       {{ t('organization.employees.title') }}
     </template>

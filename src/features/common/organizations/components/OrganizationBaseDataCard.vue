@@ -46,6 +46,7 @@ const currentValues = reactive({
 });
 const initialValues = ref({ name: '', trade: '' });
 const formKey = ref(0);
+const isLoading = ref(true);
 
 const isDirty = computed(
   () =>
@@ -82,6 +83,8 @@ onMounted(async () => {
     formKey.value++;
   } catch {
     // silently ignore load error — form stays empty
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -123,7 +126,7 @@ async function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading">
     <template #title>
       {{ t('organization.settings.title') }}
     </template>

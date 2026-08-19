@@ -8,6 +8,7 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
+import Skeleton from 'primevue/skeleton';
 import type { AddressJson } from '@/services/AddressService';
 import { useAddressForm, buildAddressSchema } from '@/composables/useAddressForm';
 
@@ -24,16 +25,31 @@ const { t, locale } = useI18n();
 const schema = buildAddressSchema(t);
 const resolver = zodResolver(schema);
 
-const {currentValues, initialValues, formKey, isDirty, localizedCountries, handleZipBlur, onSubmit,} = useAddressForm({
+const {
+  currentValues,
+  initialValues,
+  formKey,
+  isDirty,
+  isLoading,
+  localizedCountries,
+  handleZipBlur,
+  onSubmit,
+} = useAddressForm({
   load: props.loadAddress,
   save: props.saveAddress,
 });
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading">
     <template #title>
       {{ title ?? t('address.title') }}
+    </template>
+
+    <template #loading>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Skeleton v-for="i in 4" :key="i" height="3.5rem" />
+      </div>
     </template>
 
     <template #content>
