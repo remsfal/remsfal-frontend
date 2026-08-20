@@ -9,6 +9,7 @@ meta:
 import { useRoute } from 'vue-router';
 import { UnitBreadcrumb, BuildingDataCard, RentableUnitDangerZoneCard, FacilityAddressCard }
   from '@/features/project/rentableUnits';
+import { RentalAgreementListCard } from '@/features/project/rentalAgreements';
 
 const route = useRoute('BuildingView');
 </script>
@@ -28,6 +29,12 @@ const route = useRoute('BuildingView');
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
     facilityType="BUILDING"
+  />
+
+  <RentalAgreementListCard
+    :projectId="(route.params.projectId as string)"
+    :rentalUnitId="(route.params.unitId as string)"
+    rentalUnitType="BUILDING"
   />
 
   <RentableUnitDangerZoneCard

@@ -23,15 +23,15 @@ const route = useRoute('SiteView');
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
   />
-  <RentalAgreementListCard
-    :projectId="(route.params.projectId as string)"
-    :rentalUnitId="(route.params.unitId as string)"
-    rentalUnitType="SITE"
-  />
   <FacilityAddressCard
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
     facilityType="SITE"
+  />
+  <RentalAgreementListCard
+    :projectId="(route.params.projectId as string)"
+    :rentalUnitId="(route.params.unitId as string)"
+    rentalUnitType="SITE"
   />
   <RentableUnitDangerZoneCard
     :projectId="(route.params.projectId as string)"

@@ -91,7 +91,7 @@ describe('RentalDetailsForm', () => {
 
   it('renders optional fields without required marker', () => {
     const labels = wrapper.findAll('label');
-    const basicRentLabel = labels.find((label) => label.text().includes('Grundmiete'));
+    const basicRentLabel = labels.find((label) => label.text().includes('Nettokaltmiete'));
     const operatingCostsLabel = labels.find((label) =>
       label.text().includes('Betriebskostenvorauszahlung'),
     );

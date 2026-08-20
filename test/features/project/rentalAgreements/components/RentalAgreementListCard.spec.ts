@@ -30,6 +30,11 @@ describe('RentalAgreementListCard.vue', () => {
       rentalUnits: [
         { id: 'unit-101', title: 'Apartment 1A' }
       ],
+      currentRents: [
+        {
+          rentalUnitId: 'unit-101', basicRent: 500, operatingCostsPrepayment: 100, heatingCostsPrepayment: 50 
+        }
+      ],
     },
   ];
 
@@ -114,6 +119,13 @@ describe('RentalAgreementListCard.vue', () => {
   it('renders unit information in the table', () => {
     const html = wrapper.html();
     expect(html).toContain('Apartment 1A');
+  });
+
+  it('renders the current rent amounts matched by rentalUnitId in the table', () => {
+    const html = wrapper.html();
+    expect(html).toContain('500,00');
+    expect(html).toContain('100,00');
+    expect(html).toContain('50,00');
   });
 
   it('passes projectId to NewRentalAgreementDialog', () => {

@@ -66,7 +66,6 @@ function flattenRentEntries(agreement: RentalAgreementJson): Array<{ type: UnitT
 
 function toUpdatePayload(agreement: RentalAgreementJson): RentalAgreementJson {
   return {
-    active: agreement.active,
     tenants: agreement.tenants?.map((tenant) => ({
       id: tenant.id,
       firstName: tenant.firstName,
