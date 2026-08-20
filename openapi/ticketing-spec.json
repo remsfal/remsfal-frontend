@@ -1470,9 +1470,9 @@
       "RentJson" : {
         "description" : "Rent information for a rentable unit",
         "type" : "object",
-        "required" : [ "unitId" ],
+        "required" : [ "rentalUnitId" ],
         "properties" : {
-          "unitId" : {
+          "rentalUnitId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "billingCycle" : {
@@ -1504,7 +1504,7 @@
       "RentModel" : {
         "type" : "object",
         "properties" : {
-          "unitId" : {
+          "rentalUnitId" : {
             "$ref" : "#/components/schemas/UUID"
           },
           "firstPaymentDate" : {

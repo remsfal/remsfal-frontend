@@ -3,7 +3,6 @@ import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import Skeleton from 'primevue/skeleton';
 import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
 import { getIconForUnitType, type UnitType } from '@/features/project/rentableUnits';
@@ -87,6 +86,8 @@ async function fetchData(projectId: string) {
       detail: t('rentalAgreement.kpi.loadError'),
       life: 6000,
     });
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -94,10 +95,7 @@ onMounted(() => fetchData(props.projectId));
 </script>
 
 <template>
-  <div v-if="isLoading" class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    <Skeleton v-for="i in 6" :key="i" height="6rem" borderRadius="0.75rem" />
-  </div>
-  <Message v-else-if="!hasData" severity="success" closable class="mb-6">
+  <Message v-if="!isLoading && !hasData" severity="success" closable class="mb-6">
     <template #icon>
       <i class="pi pi-sparkles text-xl" />
     </template>
@@ -113,33 +111,38 @@ onMounted(() => fetchData(props.projectId));
     </span>
   </Message>
   <div v-else class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    <KpiCard
-      icon="pi pi-euro"
-      :title="t('rentalAgreement.kpi.totalRent')"
-      :value="n(totalBasicRent, 'currency')"
-    />
-    <KpiCard
-      icon="pi pi-bolt"
-      :title="t('rentalAgreement.kpi.totalHeatingCosts')"
-      :value="n(totalHeatingCosts, 'currency')"
-    />
-    <KpiCard
-      icon="pi pi-wallet"
-      :title="t('rentalAgreement.kpi.totalOperatingCosts')"
-      :value="n(totalOperatingCosts, 'currency')"
-    />
-    <KpiCard
-      icon="pi pi-users"
-      :title="t('rentalAgreement.kpi.tenantCount')"
-      :value="tenantCount"
-    />
-    <KpiCard
-      v-for="vacancy in vacancyByType"
-      :key="vacancy.type"
-      :icon="getIconForUnitType(vacancy.type)"
-      :title="t('rentalAgreement.kpi.vacancyByType', { type: t(`unitTypes.${vacancy.type.toLowerCase()}`) })"
-      :value="vacancy.count"
-      :iconBackground="vacancy.count > 0 ? 'var(--color-orange-600)' : undefined"
-    />
+    <template v-if="isLoading">
+      <KpiCard v-for="i in 6" :key="i" loading />
+    </template>
+    <template v-else>
+      <KpiCard
+        icon="pi pi-euro"
+        :title="t('rentalAgreement.kpi.totalRent')"
+        :value="n(totalBasicRent, 'currency')"
+      />
+      <KpiCard
+        icon="pi pi-bolt"
+        :title="t('rentalAgreement.kpi.totalHeatingCosts')"
+        :value="n(totalHeatingCosts, 'currency')"
+      />
+      <KpiCard
+        icon="pi pi-wallet"
+        :title="t('rentalAgreement.kpi.totalOperatingCosts')"
+        :value="n(totalOperatingCosts, 'currency')"
+      />
+      <KpiCard
+        icon="pi pi-users"
+        :title="t('rentalAgreement.kpi.tenantCount')"
+        :value="tenantCount"
+      />
+      <KpiCard
+        v-for="vacancy in vacancyByType"
+        :key="vacancy.type"
+        :icon="getIconForUnitType(vacancy.type)"
+        :title="t('rentalAgreement.kpi.vacancyByType', { type: t(`unitTypes.${vacancy.type.toLowerCase()}`) })"
+        :value="vacancy.count"
+        :iconBackground="vacancy.count > 0 ? 'var(--color-orange-600)' : undefined"
+      />
+    </template>
   </div>
 </template>

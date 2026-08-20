@@ -1,5 +1,5 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Message from 'primevue/message';
 import RentalAgreementKpiCards from '@/features/project/rentalAgreements/components/RentalAgreementKpiCards.vue';
 import KpiCard from '@/components/common/KpiCard.vue';
@@ -27,6 +27,10 @@ describe('RentalAgreementKpiCards', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    wrapper?.unmount();
   });
 
   it('sums costs/tenants and computes vacancy only from current agreements', async () => {
@@ -172,22 +176,27 @@ describe('RentalAgreementKpiCards', () => {
     expect(link.exists()).toBe(true);
   });
 
-  it('shows skeletons while loading', () => {
+  it('shows loading KpiCard placeholders while loading', () => {
     vi.mocked(rentalAgreementService.getRentalAgreements).mockReturnValue(new Promise(() => {}));
 
     wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123' } });
 
+    const cards = wrapper.findAllComponents(KpiCard);
+    expect(cards).toHaveLength(6);
+    expect(cards.every((card) => card.props('loading'))).toBe(true);
     expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
-    expect(wrapper.findComponent(KpiCard).exists()).toBe(false);
   });
 
-  it('shows skeletons and a toast when the fetch fails', async () => {
+  it('hides the loading placeholders after a failed fetch instead of loading forever', async () => {
     vi.mocked(rentalAgreementService.getRentalAgreements).mockRejectedValueOnce(new Error('Fetch failed'));
 
-    wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123' } });
+    wrapper = mount(RentalAgreementKpiCards, {
+      props: { projectId: '123' },
+      global: { stubs: { RouterLink: true } },
+    });
     await flushPromises();
 
-    expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
-    expect(wrapper.findComponent(KpiCard).exists()).toBe(false);
+    expect(wrapper.findAllComponents(KpiCard).filter((card) => card.props('loading'))).toHaveLength(0);
+    expect(wrapper.findComponent(Message).exists()).toBe(true);
   });
 });

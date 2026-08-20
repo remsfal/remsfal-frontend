@@ -359,8 +359,8 @@ describe('Tenant Views E2E Tests', () => {
       cy.contains(/kontaktdaten von john doe|contact data of john doe/i).should('be.visible');
     });
 
-    it('should display loading spinner while loading tenant data', () => {
-      // Delay API response - use long delay for reliable spinner detection
+    it('should display a loading skeleton while loading tenant data', () => {
+      // Delay API response - use long delay for reliable skeleton detection
       cy.intercept('GET', `/api/v1/projects/${projectId}/tenants/${tenantId}`, {
         statusCode: 200,
         delay: 2000,
@@ -374,8 +374,8 @@ describe('Tenant Views E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/tenants/${tenantId}`);
 
-      // Loading spinner should be visible during the delayed response
-      cy.get('.p-progressspinner', { timeout: 2500 }).should('exist');
+      // Loading skeleton should be visible during the delayed response
+      cy.get('.p-skeleton', { timeout: 2500 }).should('exist');
       cy.wait('@getDelayedTenant');
     });
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
 import { computed } from 'vue';
+import CardSkeletonRows from '@/components/common/CardSkeletonRows.vue';
 
 interface Props {
   /**
@@ -21,12 +22,31 @@ interface Props {
    * When true, title slot content is used as-is without wrapper div.
    */
   unstyled?: boolean;
+
+  /**
+   * When true, replaces the #content slot with a skeleton placeholder
+   * instead of rendering the real content.
+   */
+  loading?: boolean;
+
+  /** Row count for the default skeleton (ignored if a #loading slot is provided). */
+  skeletonRows?: number;
+
+  /** Height of each default skeleton row. */
+  skeletonRowHeight?: string;
+
+  /** CSS class applied to each default skeleton row. */
+  skeletonRowClass?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   cardClass: 'flex flex-col gap-4 basis-full',
   titleClass: 'font-semibold text-xl',
   unstyled: false,
+  loading: false,
+  skeletonRows: 3,
+  skeletonRowHeight: '2.5rem',
+  skeletonRowClass: 'mb-2',
 });
 
 const cardClasses = computed(() => {
@@ -54,7 +74,16 @@ const cardClasses = computed(() => {
       <slot name="header" />
     </template>
 
-    <template v-if="$slots.content" #content>
+    <template v-if="loading" #content>
+      <slot name="loading">
+        <CardSkeletonRows
+          :rows="skeletonRows"
+          :rowHeight="skeletonRowHeight"
+          :rowClass="skeletonRowClass"
+        />
+      </slot>
+    </template>
+    <template v-else-if="$slots.content" #content>
       <slot name="content" />
     </template>
 

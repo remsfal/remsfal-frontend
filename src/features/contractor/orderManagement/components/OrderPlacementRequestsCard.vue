@@ -12,17 +12,21 @@ const { t, d } = useI18n();
 const toast = useToast();
 
 const placements = ref<OrderPlacementJson[]>([]);
+const isLoading = ref(true);
 
 const orderPlacementRequests = computed(() =>
   placements.value.filter((p) => p.status === 'PLACED'),
 );
 
 async function fetchOrderPlacements() {
+  isLoading.value = true;
   try {
     const result = await orderPlacementService.getOrderPlacements();
     placements.value = result.items ?? [];
   } catch (error) {
     console.error('Failed to fetch order placements:', error);
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -53,7 +57,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="4">
     <template #title>
       {{ t('orderManagement.orderPlacementRequests.title') }}
     </template>

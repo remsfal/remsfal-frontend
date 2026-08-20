@@ -3,7 +3,6 @@ import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import Skeleton from 'primevue/skeleton';
 import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
 import {propertyService,
@@ -56,7 +55,6 @@ async function fetchPropertyTree(projectId: string) {
   try {
     const data = await propertyService.getPropertyTree(projectId);
     rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
-    isLoading.value = false;
     const idsByType = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
       (result, type) => ({ ...result, [type]: unitAggregates.value[type].ids }),
       {} as Record<UnitType, string[]>,
@@ -69,6 +67,8 @@ async function fetchPropertyTree(projectId: string) {
       detail: t('rentableUnits.loadError'),
       life: 6000,
     });
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -76,10 +76,7 @@ onMounted(() => fetchPropertyTree(props.projectId));
 </script>
 
 <template>
-  <div v-if="isLoading" class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    <Skeleton v-for="i in 6" :key="i" height="6rem" borderRadius="0.75rem" />
-  </div>
-  <Message v-else-if="kpis.length === 0" severity="success" closable class="mb-6">
+  <Message v-if="!isLoading && kpis.length === 0" severity="success" closable class="mb-6">
     <template #icon>
       <i class="pi pi-sparkles text-xl" />
     </template>
@@ -95,13 +92,18 @@ onMounted(() => fetchPropertyTree(props.projectId));
     </span>
   </Message>
   <div v-else class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    <KpiCard
-      v-for="kpi in kpis"
-      :key="kpi.type"
-      :icon="getIconForUnitType(kpi.type)"
-      :title="t(`unitTypes.${kpi.type.toLowerCase()}`)"
-      :value="kpi.count"
-      :subtext="`${kpi.space} m²`"
-    />
+    <template v-if="isLoading">
+      <KpiCard v-for="i in 6" :key="i" loading />
+    </template>
+    <template v-else>
+      <KpiCard
+        v-for="kpi in kpis"
+        :key="kpi.type"
+        :icon="getIconForUnitType(kpi.type)"
+        :title="t(`unitTypes.${kpi.type.toLowerCase()}`)"
+        :value="kpi.count"
+        :subtext="`${kpi.space} m²`"
+      />
+    </template>
   </div>
 </template>

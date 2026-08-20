@@ -9,17 +9,21 @@ import { quotationRequestService, type QuotationRequestJson } from '@/services/Q
 const { t, d } = useI18n();
 
 const requests = ref<QuotationRequestJson[]>([]);
+const isLoading = ref(true);
 
 const quotationRequests = computed(() =>
   requests.value.filter((r) => r.status === 'REQUESTED'),
 );
 
 async function fetchRequests() {
+  isLoading.value = true;
   try {
     const result = await quotationRequestService.getContractorQuotationRequests();
     requests.value = result.items ?? [];
   } catch (error) {
     console.error('Failed to fetch quotation requests:', error);
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -29,7 +33,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="4">
     <template #title>
       {{ t('orderManagement.quotationRequests.title') }}
     </template>
