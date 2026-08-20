@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import RentalAgreementListCard from '@/features/project/rentalAgreements/components/RentalAgreementListCard.vue';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { UnitType } from '@/features/project/rentableUnits';
 
 // Fix for "window is not defined" error
 if (typeof window === 'undefined') (global as Record<string, unknown>).window = {};
@@ -32,9 +33,30 @@ describe('RentalAgreementListCard.vue', () => {
     },
   ];
 
-  const mountCard = (projectId = 'proj-1') =>
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + 30);
+  const mockGroupingAgreements: RentalAgreementItemJson[] = [
+    {
+      id: 'former-older', startOfRental: '2020-01-01', endOfRental: '2021-01-01', tenants: [], rentalUnits: [] 
+    },
+    {
+      id: 'former-newer', startOfRental: '2022-01-01', endOfRental: '2023-01-01', tenants: [], rentalUnits: [] 
+    },
+    {
+      id: 'current-open-ended', startOfRental: '2024-01-01', tenants: [], rentalUnits: [] 
+    },
+    {
+      id: 'current-future-end',
+      startOfRental: '2023-06-01',
+      endOfRental: futureDate.toISOString().slice(0, 10),
+      tenants: [],
+      rentalUnits: [],
+    },
+  ];
+
+  const mountCard = (props: { projectId?: string; rentalUnitId?: string; rentalUnitType?: UnitType } = {}) =>
     mount(RentalAgreementListCard, {
-      props: { projectId },
+      props: { projectId: 'proj-1', ...props },
       global: { stubs: { NewRentalAgreementDialog: true } },
     });
 
@@ -107,5 +129,27 @@ describe('RentalAgreementListCard.vue', () => {
     await flushPromises();
 
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('forwards rentalUnitId and rentalUnitType props to the service call', async () => {
+    const spy = vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockResolvedValue([]);
+    mountCard({ rentalUnitId: 'unit-1', rentalUnitType: 'SITE' });
+    await flushPromises();
+
+    expect(spy).toHaveBeenCalledWith('proj-1', { rentalUnitId: 'unit-1', rentalUnitType: 'SITE' });
+  });
+
+  it('groups agreements into current/former subheaders, sorted by startOfRental desc', async () => {
+    vi.spyOn(rentalAgreementService, 'getRentalAgreements').mockResolvedValue(mockGroupingAgreements);
+    const groupedWrapper = mountCard();
+    await flushPromises();
+
+    const currentLabel = groupedWrapper.vm.$t('projectTenancies.group.current');
+    const formerLabel = groupedWrapper.vm.$t('projectTenancies.group.former');
+    const html = groupedWrapper.html();
+
+    expect(html).toContain(currentLabel);
+    expect(html).toContain(formerLabel);
+    expect(html.indexOf(currentLabel)).toBeLessThan(html.indexOf(formerLabel));
   });
 });

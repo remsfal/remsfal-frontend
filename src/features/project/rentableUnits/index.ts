@@ -7,7 +7,6 @@ export { default as BuildingDataCard } from './components/BuildingDataCard.vue';
 export { default as PropertyDataCard } from './components/PropertyDataCard.vue';
 export { default as CommercialDataCard } from './components/CommercialDataCard.vue';
 export { default as SiteDataCard } from './components/SiteDataCard.vue';
-export { default as RentableUnitTenantsCard } from './components/RentableUnitTenantsCard.vue';
 export { default as StorageDataCard } from './components/StorageDataCard.vue';
 export { default as FacilityAddressCard } from './components/FacilityAddressCard.vue';
 export { getIconForUnitType, UNIT_TYPE_ICONS } from './unitTypeIcons';

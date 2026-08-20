@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { UnitType } from '@/features/project/rentableUnits';
 
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -13,6 +14,8 @@ import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   projectId: string;
+  rentalUnitId?: string;
+  rentalUnitType?: UnitType;
 }>();
 const { t } = useI18n();
 
@@ -24,6 +27,38 @@ const rentalAgreements = ref<RentalAgreementItemJson[]>([]);
 
 const showNewRentalDialog = ref(false);
 
+type RentalAgreementCategory = 'current' | 'former';
+type GroupedRentalAgreementItem = RentalAgreementItemJson & { category: RentalAgreementCategory };
+
+function categoryFor(agreement: RentalAgreementItemJson): RentalAgreementCategory {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  // Strictly "after today" (unlike RentalAgreementKpiCards.vue's `>=` currentAgreements
+  // filter) — an agreement ending today already counts as former here, by design.
+  const isCurrent = !agreement.endOfRental || new Date(agreement.endOfRental) > today;
+  return isCurrent ? 'current' : 'former';
+}
+
+// Pre-grouped/sorted for PrimeVue's rowGroupMode="subheader": current agreements before
+// former ones, each sorted by startOfRental descending. This is a fixed business rule, not
+// user-controlled sorting, so the DataTable columns below are not marked `sortable`.
+const groupedRentalAgreements = computed<GroupedRentalAgreementItem[]>(() => {
+  const categoryOrder: Record<RentalAgreementCategory, number> = { current: 0, former: 1 };
+
+  return rentalAgreements.value
+    .map((agreement) => ({ ...agreement, category: categoryFor(agreement) }))
+    .sort((a, b) => {
+      if (categoryOrder[a.category] !== categoryOrder[b.category]) {
+        return categoryOrder[a.category] - categoryOrder[b.category];
+      }
+      return new Date(b.startOfRental).getTime() - new Date(a.startOfRental).getTime();
+    });
+});
+
+function categoryLabel(category: RentalAgreementCategory): string {
+  return category === 'current' ? t('projectTenancies.group.current') : t('projectTenancies.group.former');
+}
+
 function navigateToRentalAgreementDetails(id: string) {
   router.push({ name: 'RentalAgreementDetails', params: { projectId: props.projectId, agreementId: id } });
 }
@@ -31,7 +66,10 @@ function navigateToRentalAgreementDetails(id: string) {
 async function fetchRentalAgreements() {
   isLoading.value = true;
   try {
-    rentalAgreements.value = await rentalAgreementService.getRentalAgreements(props.projectId);
+    rentalAgreements.value = await rentalAgreementService.getRentalAgreements(props.projectId, {
+      rentalUnitId: props.rentalUnitId,
+      rentalUnitType: props.rentalUnitType,
+    });
   } finally {
     isLoading.value = false;
   }
@@ -47,7 +85,7 @@ onMounted(fetchRentalAgreements);
     </template>
     <template #content>
       <DataTable
-        :value="rentalAgreements"
+        :value="groupedRentalAgreements"
         :rows="10"
         rowHover
         dataKey="id"
@@ -56,10 +94,12 @@ onMounted(fetchRentalAgreements);
         scrollDirection="both"
         scrollHeight="var(--custom-scroll-height)"
         class="custom-scroll-height cursor-pointer"
+        rowGroupMode="subheader"
+        groupRowsBy="category"
         @rowClick="navigateToRentalAgreementDetails($event.data.id)"
       >
-        <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" sortable />
-        <Column field="endOfRental" :header="t('projectTenancies.table.rentalEnd')" sortable />
+        <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" />
+        <Column field="endOfRental" :header="t('projectTenancies.table.rentalEnd')" />
 
         <Column field="tenants" :header="t('projectTenancies.table.tenants')">
           <template #body="slotProps">
@@ -88,6 +128,10 @@ onMounted(fetchRentalAgreements);
             </div>
           </template>
         </Column>
+
+        <template #groupheader="slotProps">
+          <span class="font-semibold">{{ categoryLabel(slotProps.data.category) }}</span>
+        </template>
       </DataTable>
 
       <div class="flex justify-end mt-6">
