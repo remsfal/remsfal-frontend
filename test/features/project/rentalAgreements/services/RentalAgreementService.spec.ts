@@ -21,6 +21,39 @@ describe('RentalAgreementService', () => {
     expect(agreements).toEqual([]);
   });
 
+  test('getRentalAgreements forwards rentalUnitId and rentalUnitType as query params', async () => {
+    let capturedUrl: URL | undefined;
+    server.use(
+      http.get(`/api/v1/projects/${testProjectId}/rental-agreements`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ rentalAgreements: [] });
+      }),
+    );
+
+    await service.getRentalAgreements(testProjectId, {
+      rentalUnitId: 'unit-1',
+      rentalUnitType: 'SITE',
+    });
+
+    expect(capturedUrl?.searchParams.get('rentalUnitId')).toBe('unit-1');
+    expect(capturedUrl?.searchParams.get('rentalUnitType')).toBe('SITE');
+  });
+
+  test('getRentalAgreements omits rentalUnitId/rentalUnitType from query when not provided', async () => {
+    let capturedUrl: URL | undefined;
+    server.use(
+      http.get(`/api/v1/projects/${testProjectId}/rental-agreements`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ rentalAgreements: [] });
+      }),
+    );
+
+    await service.getRentalAgreements(testProjectId);
+
+    expect(capturedUrl?.searchParams.has('rentalUnitId')).toBe(false);
+    expect(capturedUrl?.searchParams.has('rentalUnitType')).toBe(false);
+  });
+
   test('getRentalAgreement returns single agreement', async () => {
     const agreementId = 'agreement-1';
     const agreement = await service.getRentalAgreement(testProjectId, agreementId);

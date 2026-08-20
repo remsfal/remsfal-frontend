@@ -47,6 +47,32 @@ function matchesQueryParams(targetQuery: QueryRecord, routeQuery: QueryRecord): 
   return targetKeys.every((key) => valuesMatch(targetQuery[key], routeQuery[key]));
 }
 
+function matchesStringTarget(route: RouteLocationNormalizedLoaded, target: string): boolean {
+  const [matchPath, queryString] = target.split('?');
+  if (!matchPath || matchPath === '/') return false;
+  if (!route.path.startsWith(matchPath)) return false;
+  if (!queryString) return true;
+
+  const targetQuery = Object.fromEntries(new URLSearchParams(queryString));
+  return matchesQueryParams(targetQuery, (route.query ?? {}) as QueryRecord);
+}
+
+function matchesNamedTarget(
+  route: RouteLocationNormalizedLoaded,
+  target: Extract<RouteLocationRaw, { name?: unknown }>,
+): boolean {
+  if (route.name !== target.name) return false;
+  return matchesQueryParams((target.query ?? {}) as QueryRecord, (route.query ?? {}) as QueryRecord);
+}
+
+function matchesPathTarget(
+  route: RouteLocationNormalizedLoaded,
+  target: Extract<RouteLocationRaw, { path?: unknown }>,
+): boolean {
+  if (!target.path || !route.path.startsWith(target.path)) return false;
+  return matchesQueryParams((target.query ?? {}) as QueryRecord, (route.query ?? {}) as QueryRecord);
+}
+
 /**
  * Whether `target` (a menu/nav item's `to`) should be considered the active
  * navigation entry for `route`. Unlike a plain `route.path.startsWith(...)` check,
@@ -57,26 +83,9 @@ function matchesQueryParams(targetQuery: QueryRecord, routeQuery: QueryRecord): 
 export function matchesRouteTarget(route: RouteLocationNormalizedLoaded, target?: RouteLocationRaw): boolean {
   if (!target) return false;
 
-  const routeQuery = (route.query ?? {}) as QueryRecord;
-
-  if (typeof target === 'string') {
-    const [matchPath, queryString] = target.split('?');
-    if (!matchPath || matchPath === '/') return false;
-    if (!route.path.startsWith(matchPath)) return false;
-    if (!queryString) return true;
-    const targetQuery = Object.fromEntries(new URLSearchParams(queryString));
-    return matchesQueryParams(targetQuery, routeQuery);
-  }
-
-  if ('name' in target && target.name) {
-    if (route.name !== target.name) return false;
-    return matchesQueryParams((target.query ?? {}) as QueryRecord, routeQuery);
-  }
-
-  if ('path' in target && target.path) {
-    if (!route.path.startsWith(target.path)) return false;
-    return matchesQueryParams((target.query ?? {}) as QueryRecord, routeQuery);
-  }
+  if (typeof target === 'string') return matchesStringTarget(route, target);
+  if ('name' in target && target.name) return matchesNamedTarget(route, target);
+  if ('path' in target && target.path) return matchesPathTarget(route, target);
 
   return false;
 }

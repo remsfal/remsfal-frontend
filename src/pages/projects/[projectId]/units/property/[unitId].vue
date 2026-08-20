@@ -8,6 +8,7 @@ meta:
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { UnitBreadcrumb, PropertyDataCard, RentableUnitDangerZoneCard } from '@/features/project/rentableUnits';
+import { RentalAgreementListCard } from '@/features/project/rentalAgreements';
 const route = useRoute('PropertyView')
 </script>
 
@@ -20,6 +21,12 @@ const route = useRoute('PropertyView')
   <PropertyDataCard
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
+  />
+
+  <RentalAgreementListCard
+    :projectId="(route.params.projectId as string)"
+    :rentalUnitId="(route.params.unitId as string)"
+    rentalUnitType="PROPERTY"
   />
 
   <RentableUnitDangerZoneCard

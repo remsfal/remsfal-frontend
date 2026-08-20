@@ -8,7 +8,7 @@ import {rentalAgreementService,
   type RentalAgreementJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import Button from 'primevue/button';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { issueService, type IssueItemJson, type IssueStatus, type IssueType } from '@/services/IssueService';
@@ -29,6 +29,14 @@ const rentalAgreement = ref<RentalAgreementJson | null>(null);
 
 const rentalStart = ref<string | null>(null);
 const rentalEnd = ref<string | null>(null);
+
+const isAgreementActive = computed(() => {
+  const endOfRental = rentalAgreement.value?.endOfRental;
+  if (!endOfRental) return true;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(endOfRental) >= today;
+});
 
 onMounted(async () => {
   if (!props.agreementId || !props.projectId) {
@@ -120,7 +128,7 @@ defineExpose({
       <!-- Tenants -->
       <RentalAgreementTenantListCard
         v-if="rentalAgreement"
-        :active="rentalAgreement.active"
+        :active="isAgreementActive"
         :projectId="projectId"
         :rentalAgreement="rentalAgreement"
         @update:rentalAgreement="(updated) => (rentalAgreement = updated)"

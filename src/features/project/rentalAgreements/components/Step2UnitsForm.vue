@@ -150,13 +150,13 @@ const canProceed = computed(() => {
           <p class="text-sm text-gray-600">
             {{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}
             <span v-if="unit.basicRent !== undefined">
-              • {{ t('rentalAgreement.step2.basicRent') }} {{ n(unit.basicRent, 'currency') }}
+              • {{ t('rentalAgreement.common.basicRent') }} {{ n(unit.basicRent, 'currency') }}
             </span>
             <span v-if="unit.operatingCostsPrepayment !== undefined">
-              • {{ t('rentalAgreement.step2.operatingCosts') }} {{ n(unit.operatingCostsPrepayment, 'currency') }}
+              • {{ t('rentalAgreement.common.operatingCosts') }} {{ n(unit.operatingCostsPrepayment, 'currency') }}
             </span>
             <span v-if="unit.heatingCostsPrepayment !== undefined">
-              • {{ t('rentalAgreement.step2.heatingCosts') }} {{ n(unit.heatingCostsPrepayment, 'currency') }}
+              • {{ t('rentalAgreement.common.heatingCosts') }} {{ n(unit.heatingCostsPrepayment, 'currency') }}
             </span>
           </p>
         </div>

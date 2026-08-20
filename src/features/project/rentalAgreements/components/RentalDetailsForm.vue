@@ -129,7 +129,7 @@ function onSubmit(event: FormSubmitEvent) {
         <!-- Basic Rent -->
         <div class="flex flex-col gap-2">
           <label for="basicRent" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.basicRent') }}
+            {{ t('rentalAgreement.common.basicRent') }}
           </label>
           <InputNumber
             name="basicRent"
@@ -170,7 +170,7 @@ function onSubmit(event: FormSubmitEvent) {
         <!-- Operating Costs -->
         <div class="flex flex-col gap-2">
           <label for="operatingCostsPrepayment" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.operatingCosts') }}
+            {{ t('rentalAgreement.common.operatingCosts') }}
           </label>
           <InputNumber
             name="operatingCostsPrepayment"
@@ -198,7 +198,7 @@ function onSubmit(event: FormSubmitEvent) {
         <!-- Heating Costs -->
         <div class="flex flex-col gap-2">
           <label for="heatingCostsPrepayment" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.heatingCosts') }}
+            {{ t('rentalAgreement.common.heatingCosts') }}
           </label>
           <InputNumber
             name="heatingCostsPrepayment"

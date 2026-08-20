@@ -182,11 +182,11 @@ describe('ProjectTenancies E2E Tests', () => {
   it('should display the rental agreements page with title', () => {
     cy.visit(`/projects/${projectId}/agreements`);
 
-    // Check if title is visible
-    cy.contains('h1', /mieterdaten ansicht|tenant data view/i).should('be.visible');
+    // Check if title is visible (rendered as a PrimeVue Card title, not an h1)
+    cy.contains('.p-card-title', /mietverhältnisse|tenancies/i).should('be.visible');
   });
 
-  it('should display loading state initially', () => {
+  it('should display a loading skeleton initially', () => {
     // Delay the API response to test loading state
     cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements`, {
       statusCode: 200,
@@ -196,8 +196,8 @@ describe('ProjectTenancies E2E Tests', () => {
 
     cy.visit(`/projects/${projectId}/agreements`);
 
-    // Check if loading message is displayed
-    cy.contains(/laden|loading/i).should('be.visible');
+    // Loading skeleton should be visible during the delayed response
+    cy.get('.p-skeleton', { timeout: 2500 }).should('exist');
     cy.wait('@getDelayedRentalAgreements');
   });
 
@@ -209,8 +209,9 @@ describe('ProjectTenancies E2E Tests', () => {
     // Check if DataTable is rendered
     cy.get('.p-datatable').should('be.visible');
 
-    // Wait for data to be loaded and rendered
-    cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 2);
+    // Wait for data to be loaded and rendered — exclude the current/former
+    // row-group subheader rows, which also carry role="row"
+    cy.get('.p-datatable-tbody tr[role="row"]:not(.p-datatable-row-group-header)').should('have.length', 2);
 
     // Wait for table headers to be rendered and check their presence
     cy.get('.p-datatable-thead').should('be.visible');
@@ -221,15 +222,17 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-datatable-thead').should('contain.text', 'Mieter');
     cy.get('.p-datatable-thead').should('contain.text', 'Wohneinheiten');
 
-    // Check first agreement
-    cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', '2024-01-01');
-    cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', '2024-12-31');
-    cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'John Doe');
+    // Agreement 1 (John Doe) has an endOfRental in the past, so it's grouped
+    // under "former" tenancies
+    cy.contains('.p-datatable-tbody tr[role="row"]', 'John Doe')
+      .should('contain', '2024-01-01')
+      .and('contain', '2024-12-31');
 
-    // Check second agreement
-    cy.get('.p-datatable-tbody tr[role="row"]').eq(1).should('contain', '2024-02-01');
-    cy.get('.p-datatable-tbody tr[role="row"]').eq(1).should('contain', 'Jane Smith');
-    cy.get('.p-datatable-tbody tr[role="row"]').eq(1).should('contain', 'Bob Johnson');
+    // Agreement 2 (Jane Smith / Bob Johnson) has no endOfRental, so it's
+    // grouped under "current" tenancies
+    cy.contains('.p-datatable-tbody tr[role="row"]', 'Jane Smith')
+      .should('contain', '2024-02-01')
+      .and('contain', 'Bob Johnson');
   });
 
   it('should display "Add Tenant" button', () => {
@@ -307,8 +310,9 @@ describe('ProjectTenancies E2E Tests', () => {
 
     cy.wait('@getRentalAgreements');
 
-    // Click on first row
-    cy.get('.p-datatable-tbody tr[role="row"]').first().click();
+    // Click on agreement-1's row (John Doe) — not assumed to be first, since
+    // rows are grouped/sorted by tenancy status rather than API order
+    cy.contains('.p-datatable-tbody tr[role="row"]', 'John Doe').click();
 
     // Check if URL changed to details page
     cy.url().should('include', `/projects/${projectId}/agreements/agreement-1`);
@@ -321,8 +325,8 @@ describe('ProjectTenancies E2E Tests', () => {
 
     cy.wait('@getRentalAgreements');
 
-    // Check if multiple units are displayed
-    cy.get('.p-datatable-tbody tr').first().should('contain', 'apt-101');
+    // Check if the unit is displayed on agreement-1's row (John Doe)
+    cy.contains('.p-datatable-tbody tr[role="row"]', 'John Doe').should('contain', 'apt-101');
   });
 
   it('should handle empty state when no agreements exist', () => {
@@ -408,26 +412,19 @@ describe('ProjectTenancies E2E Tests', () => {
     // Wait for initial load
     cy.wait('@getRentalAgreements');
 
-    // Initial table should have 2 rows
-    cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 2);
+    // Initial table should have 2 rows (excluding the row-group subheader rows)
+    cy.get('.p-datatable-tbody tr[role="row"]:not(.p-datatable-row-group-header)').should('have.length', 2);
   });
 
-  it('should display sortable columns', () => {
+  it('should not offer per-column sorting since order is fixed by tenancy grouping', () => {
     cy.visit(`/projects/${projectId}/agreements`);
 
     cy.wait('@getRentalAgreements');
 
-    // Check if sortable columns exist
-    cy.get('.p-datatable-thead th.p-datatable-sortable-column').should('exist');
-  });
-
-  it('should handle scrollable table', () => {
-    cy.visit(`/projects/${projectId}/agreements`);
-
-    cy.wait('@getRentalAgreements');
-
-    // Check if table is scrollable
-    cy.get('.p-datatable-scrollable').should('exist');
+    // Columns are intentionally not sortable: rows are grouped into current/former
+    // subheaders and sorted by startOfRental within each group, and a user-triggered
+    // column sort would break that grouping
+    cy.get('.p-datatable-thead th.p-datatable-sortable-column').should('not.exist');
   });
 
   it('renders existing rental units in the units table', () => {

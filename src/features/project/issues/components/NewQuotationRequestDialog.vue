@@ -50,7 +50,7 @@ async function fetchBillingRecipientData() {
     const project = await projectService.getProject(props.projectId);
     projectOwner.value = project.owner;
     projectCareOf.value = project.careOf;
-    billingAddress.value = project.address;
+    billingAddress.value = project.billingAddress;
   } catch (error) {
     console.error('Failed to fetch billing recipient data:', error);
   }
