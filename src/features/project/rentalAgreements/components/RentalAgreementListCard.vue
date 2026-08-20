@@ -96,6 +96,7 @@ onMounted(fetchRentalAgreements);
         class="custom-scroll-height cursor-pointer"
         rowGroupMode="subheader"
         groupRowsBy="category"
+        :pt="{ rowGroupHeaderCell: { colspan: 4 } }"
         @rowClick="navigateToRentalAgreementDetails($event.data.id)"
       >
         <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" />
@@ -107,7 +108,9 @@ onMounted(fetchRentalAgreements);
               <div
                 v-for="(tenant, index) in slotProps.data.tenants"
                 :key="`${tenant.id}-${index}`"
-                class="border-b last:border-none py-2"
+                class="py-2"
+                :class="{ 'border-t': index !== 0 }"
+                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
               >
                 {{ tenant.firstName }} {{ tenant.lastName }}
               </div>
@@ -115,13 +118,15 @@ onMounted(fetchRentalAgreements);
           </template>
         </Column>
 
-        <Column :header="t('projectTenancies.table.units')">
+        <Column field="rentalUnits" :header="t('projectTenancies.table.units')">
           <template #body="slotProps">
             <div class="space-y-2">
               <div
-                v-for="(unit, index) in (slotProps.data.rentalUnits || [])"
+                v-for="(unit, index) in slotProps.data.rentalUnits"
                 :key="`${unit.id}-${index}`"
-                class="border-b last:border-none py-2"
+                class="py-2"
+                :class="{ 'border-t': index !== 0 }"
+                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
               >
                 {{ unit.title || unit.location || 'N/A' }}
               </div>

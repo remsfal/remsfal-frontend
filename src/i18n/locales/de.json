@@ -96,7 +96,7 @@
   "projectSettings.dangerZone.confirmDeleteButton": "Endgültig löschen",
   "projectSettings.deleteSuccess": "Liegenschaft erfolgreich gelöscht",
   "projectSettings.deleteError": "Fehler beim Löschen der Liegenschaft",
-  "projectTenancies.title": "Mieterdaten Ansicht",
+  "projectTenancies.title": "Mietverhältnisse",
   "projectTenancies.table.rentalStart": "Mietbeginn",
   "projectTenancies.table.rentalEnd": "Mietende",
   "projectTenancies.table.tenants": "Mieter",

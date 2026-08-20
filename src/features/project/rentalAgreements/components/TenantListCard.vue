@@ -107,7 +107,8 @@ function onTenantClick(tenant: TenantItemJson) {
             <div v-for="(tenant, index) in slotProps.items" :key="tenant.id">
               <div
                 class="flex flex-col sm:flex-row sm:items-center gap-4"
-                :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }"
+                :class="{ 'border-t': index !== 0 }"
+                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
               >
                 <TenantCard :tenant="tenant" @click="onTenantClick(tenant)" />
               </div>
