@@ -381,8 +381,8 @@ const recentActivities = [
     <button
       v-if="showScrollToTop"
       type="button"
-      class="fixed bottom-4 right-4 z-50 rounded-full bg-blue-600 p-3 text-white shadow-lg transition
-      hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+      class="fixed bottom-4 right-4 z-50 rounded-full bg-green-600 p-3 text-white shadow-lg transition
+      hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
       aria-label="Scroll to top"
       @click="scrollToTop"
     >
