@@ -83,7 +83,7 @@ export default [
   // languageOptions.ecmaVersion to 2018 project-wide, which this config already
   // configures correctly via the blocks above.
   ...i18n.configs['flat/recommended'].filter(
-    (config) => !config.languageOptions && !config.files,
+    (config) => !('languageOptions' in config) && !('files' in config),
   ),
   {
     settings: {
