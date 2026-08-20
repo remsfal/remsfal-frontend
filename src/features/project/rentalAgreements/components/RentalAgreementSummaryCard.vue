@@ -42,7 +42,7 @@ const saving = ref(false);
 function mapRentsToSummary(rents: RentJson[] | undefined, unitType: UnitType): RentalUnitSummary[] {
   return (rents || []).map((rent) => {
     return {
-      unitId: rent.unitId,
+      unitId: rent.rentalUnitId,
       unitType,
       title: null,
       location: null,

@@ -726,7 +726,7 @@ export interface components {
     QuotationStatus: "VALID" | "INVALID" | "ACCEPTED" | "REJECTED";
     /** @description Rent information for a rentable unit */
     RentJson: {
-      unitId: components["schemas"]["UUID"];
+      rentalUnitId: components["schemas"]["UUID"];
       billingCycle?: components["schemas"]["BillingCycle"];
       firstPaymentDate?: components["schemas"]["LocalDate"];
       lastPaymentDate?: components["schemas"]["LocalDate"];
@@ -738,7 +738,7 @@ export interface components {
       heatingCostsPrepayment?: number;
     };
     RentModel: {
-      unitId?: components["schemas"]["UUID"];
+      rentalUnitId?: components["schemas"]["UUID"];
       firstPaymentDate?: components["schemas"]["LocalDate"];
       lastPaymentDate?: components["schemas"]["LocalDate"];
       billingCycle?: components["schemas"]["BillingCycle"];

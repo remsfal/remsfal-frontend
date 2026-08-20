@@ -4100,7 +4100,12 @@ export interface paths {
     /** Retrieve information of all rental agreements */
     get: {
       parameters: {
-        query?: never;
+        query?: {
+          /** @description ID of the rental unit to filter by; only evaluated when rentalUnitType is set */
+          rentalUnitId?: components["schemas"]["UUID"];
+          /** @description Type of the rental unit to filter by */
+          rentalUnitType?: components["schemas"]["UnitType"];
+        };
         header?: never;
         path: {
           /** @description ID of the project */
@@ -4399,6 +4404,117 @@ export interface paths {
       requestBody?: never;
       responses: {
         /** @description Tenant was removed from the rental agreement successfully */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The rental agreement does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/{rentalUnitType}/{rentalUnitId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Add a new rent for a rental unit of a rental agreement */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the tenancy */
+          agreementId: components["schemas"]["UUID"];
+          /** @description ID of the project */
+          projectId: components["schemas"]["UUID"];
+          /** @description ID of the rental unit */
+          rentalUnitId: components["schemas"]["UUID"];
+          /** @description Type of the rental unit */
+          rentalUnitType: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["RentJson"];
+        };
+      };
+      responses: {
+        /** @description Rent created successfully */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["RentalAgreementJson"];
+          };
+        };
+        /** @description Invalid request message */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The rental agreement does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    /** Delete all rents of a rental unit from a rental agreement */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the tenancy */
+          agreementId: components["schemas"]["UUID"];
+          /** @description ID of the project */
+          projectId: components["schemas"]["UUID"];
+          /** @description ID of the rental unit */
+          rentalUnitId: components["schemas"]["UUID"];
+          /** @description Type of the rental unit */
+          rentalUnitType: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Rents were deleted successfully */
         204: {
           headers: {
             [name: string]: unknown;
@@ -5643,7 +5759,7 @@ export interface components {
     QuotationStatus: "VALID" | "INVALID" | "ACCEPTED" | "REJECTED";
     /** @description Rent information for a rentable unit */
     RentJson: {
-      unitId: components["schemas"]["UUID"];
+      rentalUnitId: components["schemas"]["UUID"];
       billingCycle?: components["schemas"]["BillingCycle"];
       firstPaymentDate?: components["schemas"]["LocalDate"];
       lastPaymentDate?: components["schemas"]["LocalDate"];
@@ -5655,7 +5771,7 @@ export interface components {
       heatingCostsPrepayment?: number;
     };
     RentModel: {
-      unitId?: components["schemas"]["UUID"];
+      rentalUnitId?: components["schemas"]["UUID"];
       firstPaymentDate?: components["schemas"]["LocalDate"];
       lastPaymentDate?: components["schemas"]["LocalDate"];
       billingCycle?: components["schemas"]["BillingCycle"];

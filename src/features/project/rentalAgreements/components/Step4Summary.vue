@@ -114,7 +114,7 @@ const totalRent = computed(() => {
         <div v-else class="flex flex-col gap-4">
           <div
             v-for="unit in selectedUnits"
-            :key="unit.unitId"
+            :key="unit.rentalUnitId"
             class="p-3 border rounded-lg"
           >
             <div class="flex justify-between items-start mb-3">

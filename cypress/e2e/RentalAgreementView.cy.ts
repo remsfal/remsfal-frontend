@@ -281,7 +281,7 @@ describe('ProjectTenancies E2E Tests', () => {
         ],
         apartmentRents: [
           {
-            unitId: 'apt-101',
+            rentalUnitId: 'apt-101',
             basicRent: 1200.0,
           },
         ],
@@ -359,7 +359,7 @@ describe('ProjectTenancies E2E Tests', () => {
         ],
         apartmentRents: [
           {
-            unitId: 'apt-101',
+            rentalUnitId: 'apt-101',
             basicRent: 1200.0,
           },
         ],
@@ -445,7 +445,7 @@ describe('ProjectTenancies E2E Tests', () => {
         startOfRental: '2024-01-01',
         endOfRental: '2024-12-31',
         tenants: [],
-        apartmentRents: [{ unitId: 'apt-101', basicRent: 1200.0 }],
+        apartmentRents: [{ rentalUnitId: 'apt-101', basicRent: 1200.0 }],
       },
     }).as('getRentalAgreementDetails');
 
@@ -554,7 +554,7 @@ describe('ProjectTenancies E2E Tests', () => {
         startOfRental: '2024-01-01',
         endOfRental: '2024-12-31',
         tenants: [],
-        apartmentRents: [{ unitId: 'apt-101', basicRent: 1200.0 }],
+        apartmentRents: [{ rentalUnitId: 'apt-101', basicRent: 1200.0 }],
       },
     }).as('getRentalAgreementDetails');
 
