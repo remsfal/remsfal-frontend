@@ -41,15 +41,15 @@ describe('IssueDashboardCards', () => {
     wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
     await flushPromises();
 
-    expect(issueService.getIssues).toHaveBeenCalledWith('123', ['OPEN', 'IN_PROGRESS']);
+    expect(issueService.getIssues).toHaveBeenCalledWith('123', ['OPEN', 'IN_PROGRESS'], undefined, 'me');
     expect(issueService.getIssues).toHaveBeenCalledWith(
       '123', ['PENDING', 'OPEN', 'IN_PROGRESS'], undefined, 'me', undefined, undefined, undefined, undefined, 5,
     );
   });
 
   it('shows the top 5 urgent issues by priority with title and priority label', async () => {
-    vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, _status, _type, assigneeId) => {
-      if (assigneeId) return { size: 0, issues: [] };
+    vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, status) => {
+      if (status?.includes('PENDING')) return { size: 0, issues: [] };
       return {
         size: 6,
         issues: [
@@ -85,8 +85,8 @@ describe('IssueDashboardCards', () => {
   });
 
   it('shows the recent issues assigned to me in the order returned by the backend', async () => {
-    vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, _status, _type, assigneeId) => {
-      if (!assigneeId) return { size: 0, issues: [] };
+    vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, status) => {
+      if (!status?.includes('PENDING')) return { size: 0, issues: [] };
       return {
         size: 3,
         issues: [
@@ -134,8 +134,8 @@ describe('IssueDashboardCards', () => {
 
   it('shows a toast and an empty urgent card when only the urgent fetch fails, without affecting the recent card',
     async () => {
-      vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, _status, _type, assigneeId) => {
-        if (assigneeId) return { size: 1, issues: [issue({ id: 'mine' })] };
+      vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, status) => {
+        if (status?.includes('PENDING')) return { size: 1, issues: [issue({ id: 'mine' })] };
         throw new Error('fail');
       });
 
@@ -148,8 +148,8 @@ describe('IssueDashboardCards', () => {
     });
 
   it('renders fewer than 5 rows when fewer active issues exist', async () => {
-    vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, _status, _type, assigneeId) => {
-      if (assigneeId) return { size: 0, issues: [] };
+    vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, status) => {
+      if (status?.includes('PENDING')) return { size: 0, issues: [] };
       return { size: 2, issues: [issue({ id: 'a' }), issue({ id: 'b' })] };
     });
 
@@ -160,8 +160,8 @@ describe('IssueDashboardCards', () => {
   });
 
   it('navigates to the issue details page when a row is clicked', async () => {
-    vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, _status, _type, assigneeId) => {
-      if (assigneeId) return { size: 0, issues: [] };
+    vi.mocked(issueService.getIssues).mockImplementation(async (_projectId, status) => {
+      if (status?.includes('PENDING')) return { size: 0, issues: [] };
       return { size: 1, issues: [issue({ id: 'clickable' })] };
     });
 

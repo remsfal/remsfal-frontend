@@ -37,9 +37,9 @@ function reportLoadError() {
   });
 }
 
-async function loadUrgentIssues(projectId: string): Promise<IssueItemJson[]> {
+async function loadUrgentIssues(projectId: string, assigneeId?: string): Promise<IssueItemJson[]> {
   try {
-    const page = await issueService.getIssues(projectId, OPEN_STATUSES);
+    const page = await issueService.getIssues(projectId, OPEN_STATUSES, undefined, assigneeId);
     const open = (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
     return [...open].sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority)).slice(0, 5);
   } catch {
@@ -64,7 +64,7 @@ async function loadData(projectId: string) {
   isLoading.value = true;
   const assigneeId = sessionStore.user?.id;
   const [urgent, recent] = await Promise.all([
-    loadUrgentIssues(projectId),
+    loadUrgentIssues(projectId, assigneeId),
     assigneeId ? loadRecentIssues(projectId, assigneeId) : Promise.resolve([]),
   ]);
   urgentIssues.value = urgent;
