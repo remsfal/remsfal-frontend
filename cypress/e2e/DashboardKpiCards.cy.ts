@@ -59,7 +59,8 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
     it('renders the top urgent issues by priority and the current user\'s recent issues', () => {
       cy.intercept('GET', '/ticketing/v1/issues**', (req) => {
-        if (req.query.assigneeId) {
+        const status = new URL(req.url).searchParams.getAll('status');
+        if (status.includes('PENDING')) {
           req.reply({
             statusCode: 200,
             body: {
