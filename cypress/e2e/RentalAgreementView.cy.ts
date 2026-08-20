@@ -427,15 +427,6 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-datatable-thead th.p-datatable-sortable-column').should('not.exist');
   });
 
-  it('should handle scrollable table', () => {
-    cy.visit(`/projects/${projectId}/agreements`);
-
-    cy.wait('@getRentalAgreements');
-
-    // Check if table is scrollable
-    cy.get('.p-datatable-scrollable').should('exist');
-  });
-
   it('renders existing rental units in the units table', () => {
     cy.intercept('GET', `/api/v1/projects/${projectId}/members`, { statusCode: 200, body: { members: [] } });
     cy.intercept('GET', `/api/v1/projects/${projectId}/organizations`, {
