@@ -17,7 +17,7 @@ const props = defineProps<{
   rentalUnitId?: string;
   rentalUnitType?: UnitType;
 }>();
-const { t } = useI18n();
+const { t, n } = useI18n();
 
 const router = useRouter();
 
@@ -59,6 +59,15 @@ function categoryLabel(category: RentalAgreementCategory): string {
   return category === 'current' ? t('projectTenancies.group.current') : t('projectTenancies.group.former');
 }
 
+function rentFor(agreement: RentalAgreementItemJson, unitId?: string) {
+  return agreement.currentRents?.find((rent) => rent.rentalUnitId === unitId);
+}
+
+function formatCurrency(value: number | null | undefined): string {
+  if (value === null || value === undefined) return t('common.notSet');
+  return n(value, 'currency');
+}
+
 function navigateToRentalAgreementDetails(id: string) {
   router.push({ name: 'RentalAgreementDetails', params: { projectId: props.projectId, agreementId: id } });
 }
@@ -89,14 +98,10 @@ onMounted(fetchRentalAgreements);
         :rows="10"
         rowHover
         dataKey="id"
-        tableStyle="min-width: 60rem"
-        scrollable
-        scrollDirection="both"
-        scrollHeight="var(--custom-scroll-height)"
-        class="custom-scroll-height cursor-pointer"
+        class="cursor-pointer"
         rowGroupMode="subheader"
         groupRowsBy="category"
-        :pt="{ rowGroupHeaderCell: { colspan: 4 } }"
+        :pt="{ rowGroupHeaderCell: { colspan: 7 } }"
         @rowClick="navigateToRentalAgreementDetails($event.data.id)"
       >
         <Column field="startOfRental" :header="t('projectTenancies.table.rentalStart')" />
@@ -129,6 +134,69 @@ onMounted(fetchRentalAgreements);
                 :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
               >
                 {{ unit.title || unit.location || 'N/A' }}
+              </div>
+            </div>
+          </template>
+        </Column>
+
+        <Column
+          field="currentRents"
+          :header="t('rentalAgreement.common.basicRent')"
+          headerClass="hidden lg:table-cell"
+          bodyClass="hidden lg:table-cell"
+        >
+          <template #body="slotProps">
+            <div class="space-y-2">
+              <div
+                v-for="(unit, index) in slotProps.data.rentalUnits"
+                :key="`${unit.id}-${index}`"
+                class="py-2"
+                :class="{ 'border-t': index !== 0 }"
+                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+              >
+                {{ formatCurrency(rentFor(slotProps.data, unit.id)?.basicRent) }}
+              </div>
+            </div>
+          </template>
+        </Column>
+
+        <Column
+          field="currentRents"
+          :header="t('rentalAgreement.common.operatingCosts')"
+          headerClass="hidden lg:table-cell"
+          bodyClass="hidden lg:table-cell"
+        >
+          <template #body="slotProps">
+            <div class="space-y-2">
+              <div
+                v-for="(unit, index) in slotProps.data.rentalUnits"
+                :key="`${unit.id}-${index}`"
+                class="py-2"
+                :class="{ 'border-t': index !== 0 }"
+                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+              >
+                {{ formatCurrency(rentFor(slotProps.data, unit.id)?.operatingCostsPrepayment) }}
+              </div>
+            </div>
+          </template>
+        </Column>
+
+        <Column
+          field="currentRents"
+          :header="t('rentalAgreement.common.heatingCosts')"
+          headerClass="hidden lg:table-cell"
+          bodyClass="hidden lg:table-cell"
+        >
+          <template #body="slotProps">
+            <div class="space-y-2">
+              <div
+                v-for="(unit, index) in slotProps.data.rentalUnits"
+                :key="`${unit.id}-${index}`"
+                class="py-2"
+                :class="{ 'border-t': index !== 0 }"
+                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+              >
+                {{ formatCurrency(rentFor(slotProps.data, unit.id)?.heatingCostsPrepayment) }}
               </div>
             </div>
           </template>
