@@ -2,6 +2,7 @@
 import 'chart.js/auto';
 import { Chart as ChartJS, ArcElement } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { onMounted, onUnmounted, ref } from 'vue';
 ChartJS.register(ArcElement);
 
 import { useI18n } from 'vue-i18n';
@@ -14,6 +15,24 @@ const chartPlugins = [ChartDataLabels];
 const { t } = useI18n();
 const route = useRoute('ProjectDashboard');
 const projectId = route.params.projectId as string;
+const showScrollToTop = ref(false);
+
+const handleScroll = () => {
+  showScrollToTop.value = window.scrollY > 200;
+};
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+onMounted(() => {
+  handleScroll();
+  window.addEventListener('scroll', handleScroll, { passive: true });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 
 const statCards = [
   {
@@ -359,5 +378,15 @@ const recentActivities = [
         />
       </template>
     </Card>
+    <button
+      v-if="showScrollToTop"
+      type="button"
+      class="fixed bottom-4 right-4 z-50 rounded-full bg-blue-600 p-3 text-white shadow-lg transition
+      hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+      aria-label="Scroll to top"
+      @click="scrollToTop"
+    >
+      <i class="pi pi-arrow-up" />
+    </button>
   </main>
 </template>
