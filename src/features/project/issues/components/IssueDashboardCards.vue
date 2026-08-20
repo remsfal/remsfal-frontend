@@ -32,7 +32,7 @@ function reportLoadError() {
   toast.add({
     severity: 'error',
     summary: t('error.general'),
-    detail: t('issueOverview.loadError'),
+    detail: t('issueDashboard.loadError'),
     life: 6000,
   });
 }
@@ -81,23 +81,23 @@ onMounted(() => loadData(props.projectId));
 </script>
 
 <template>
-  <div class="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4" data-testid="issue-overview-cards">
+  <div class="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4" data-testid="issue-dashboard-cards">
     <BaseCard :loading="isLoading" :skeletonRows="5">
       <template #title>
-        {{ t('issueOverview.urgentTitle') }}
+        {{ t('projectMenu.issueManagement.mine') }}
       </template>
       <template #content>
         <div v-if="urgentIssues.length === 0" class="text-muted-color text-sm">
-          {{ t('issueOverview.empty') }}
+          {{ t('issueDashboard.empty') }}
         </div>
         <DataTable
           v-else
-          class="issue-overview-table"
+          class="issue-dashboard-table"
           :value="urgentIssues"
           selectionMode="single"
           :metaKeySelection="false"
           :showHeaders="false"
-          :pt="{ bodyRow: { 'data-testid': 'issue-overview-urgent-row' } }"
+          :pt="{ bodyRow: { 'data-testid': 'issue-dashboard-urgent-row' } }"
           @rowSelect="onRowSelect"
         >
           <Column field="title" :header="t('issueDetails.fields.title')">
@@ -116,20 +116,20 @@ onMounted(() => loadData(props.projectId));
 
     <BaseCard :loading="isLoading" :skeletonRows="5">
       <template #title>
-        {{ t('issueOverview.myRecentTitle') }}
+        {{ t('projectMenu.tenantCommunication.new') }}
       </template>
       <template #content>
         <div v-if="recentIssues.length === 0" class="text-muted-color text-sm">
-          {{ t('issueOverview.empty') }}
+          {{ t('issueDashboard.empty') }}
         </div>
         <DataTable
           v-else
-          class="issue-overview-table"
+          class="issue-dashboard-table"
           :value="recentIssues"
           selectionMode="single"
           :metaKeySelection="false"
           :showHeaders="false"
-          :pt="{ bodyRow: { 'data-testid': 'issue-overview-recent-row' } }"
+          :pt="{ bodyRow: { 'data-testid': 'issue-dashboard-recent-row' } }"
           @rowSelect="onRowSelect"
         >
           <Column field="title" :header="t('issueDetails.fields.title')">

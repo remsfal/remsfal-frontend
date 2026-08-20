@@ -1,6 +1,6 @@
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import IssueOverviewCards from '@/features/project/issues/components/IssueOverviewCards.vue';
+import IssueDashboardCards from '@/features/project/issues/components/IssueDashboardCards.vue';
 import { issueService, type IssueItemJson } from '@/services/IssueService';
 import { useUserSessionStore } from '@/stores/UserSession';
 
@@ -26,7 +26,7 @@ function issue(overrides: Partial<IssueItemJson>): IssueItemJson {
   };
 }
 
-describe('IssueOverviewCards', () => {
+describe('IssueDashboardCards', () => {
   let wrapper: VueWrapper;
   let sessionStore: ReturnType<typeof useUserSessionStore>;
 
@@ -38,7 +38,7 @@ describe('IssueOverviewCards', () => {
   });
 
   it('fetches open issues project-wide and active recent issues scoped to me with limit 5', async () => {
-    wrapper = mount(IssueOverviewCards, { props: { projectId: '123' } });
+    wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
     await flushPromises();
 
     expect(issueService.getIssues).toHaveBeenCalledWith('123', ['OPEN', 'IN_PROGRESS']);
@@ -75,10 +75,10 @@ describe('IssueOverviewCards', () => {
       };
     });
 
-    wrapper = mount(IssueOverviewCards, { props: { projectId: '123' } });
+    wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
     await flushPromises();
 
-    const rows = wrapper.findAll('[data-testid="issue-overview-urgent-row"]');
+    const rows = wrapper.findAll('[data-testid="issue-dashboard-urgent-row"]');
     expect(rows).toHaveLength(5);
     expect(rows[0]!.text()).toContain('Urgent one');
     expect(rows[0]!.text()).toContain('issuePriority.urgent');
@@ -99,10 +99,10 @@ describe('IssueOverviewCards', () => {
       };
     });
 
-    wrapper = mount(IssueOverviewCards, { props: { projectId: '123' } });
+    wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
     await flushPromises();
 
-    const rows = wrapper.findAll('[data-testid="issue-overview-recent-row"]');
+    const rows = wrapper.findAll('[data-testid="issue-dashboard-recent-row"]');
     expect(rows).toHaveLength(3);
     expect(rows[0]!.text()).toContain('Newest');
     expect(rows[0]!.text()).toContain('issuePriority.high');
@@ -116,18 +116,18 @@ describe('IssueOverviewCards', () => {
       issues: [issue({ id: 'u1' })],
     });
 
-    wrapper = mount(IssueOverviewCards, { props: { projectId: '123' } });
+    wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
     await flushPromises();
 
     expect(issueService.getIssues).toHaveBeenCalledTimes(1);
-    expect(wrapper.findAll('[data-testid="issue-overview-recent-row"]')).toHaveLength(0);
-    expect(wrapper.findAll('[data-testid="issue-overview-urgent-row"]')).toHaveLength(1);
+    expect(wrapper.findAll('[data-testid="issue-dashboard-recent-row"]')).toHaveLength(0);
+    expect(wrapper.findAll('[data-testid="issue-dashboard-urgent-row"]')).toHaveLength(1);
   });
 
   it('shows loading skeletons while fetching', () => {
     vi.mocked(issueService.getIssues).mockReturnValue(new Promise(() => {}));
 
-    wrapper = mount(IssueOverviewCards, { props: { projectId: '123' } });
+    wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
 
     expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
   });
@@ -139,12 +139,12 @@ describe('IssueOverviewCards', () => {
         throw new Error('fail');
       });
 
-      wrapper = mount(IssueOverviewCards, { props: { projectId: '123' } });
+      wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
       await flushPromises();
 
       expect(addMock).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
-      expect(wrapper.findAll('[data-testid="issue-overview-urgent-row"]')).toHaveLength(0);
-      expect(wrapper.findAll('[data-testid="issue-overview-recent-row"]')).toHaveLength(1);
+      expect(wrapper.findAll('[data-testid="issue-dashboard-urgent-row"]')).toHaveLength(0);
+      expect(wrapper.findAll('[data-testid="issue-dashboard-recent-row"]')).toHaveLength(1);
     });
 
   it('renders fewer than 5 rows when fewer active issues exist', async () => {
@@ -153,10 +153,10 @@ describe('IssueOverviewCards', () => {
       return { size: 2, issues: [issue({ id: 'a' }), issue({ id: 'b' })] };
     });
 
-    wrapper = mount(IssueOverviewCards, { props: { projectId: '123' } });
+    wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
     await flushPromises();
 
-    expect(wrapper.findAll('[data-testid="issue-overview-urgent-row"]')).toHaveLength(2);
+    expect(wrapper.findAll('[data-testid="issue-dashboard-urgent-row"]')).toHaveLength(2);
   });
 
   it('navigates to the issue details page when a row is clicked', async () => {
@@ -165,10 +165,10 @@ describe('IssueOverviewCards', () => {
       return { size: 1, issues: [issue({ id: 'clickable' })] };
     });
 
-    wrapper = mount(IssueOverviewCards, { props: { projectId: '123' } });
+    wrapper = mount(IssueDashboardCards, { props: { projectId: '123' } });
     await flushPromises();
 
-    await wrapper.find('[data-testid="issue-overview-urgent-row"]').trigger('click');
+    await wrapper.find('[data-testid="issue-dashboard-urgent-row"]').trigger('click');
 
     expect(push).toHaveBeenCalledWith({name: 'IssueDetails', params: { projectId: '123', issueId: 'clickable' },});
   });

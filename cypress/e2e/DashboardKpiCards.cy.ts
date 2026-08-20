@@ -48,7 +48,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
     }).as('getInboxMessages');
   });
 
-  describe('IssueOverviewCards', () => {
+  describe('IssueDashboardCards', () => {
     beforeEach(() => {
       // The dashboard also mounts RentableUnitsKpiCards, so its endpoint must always be mocked.
       cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
@@ -96,9 +96,9 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       // and has occasionally missed the default 5000ms requestTimeout.
       cy.wait(['@getIssues', '@getIssues'], { timeout: 10000 });
 
-      cy.get('[data-testid="issue-overview-cards"]').within(() => {
-        cy.get('[data-testid="issue-overview-urgent-row"]').first().should('contain.text', 'Urgent issue');
-        cy.get('[data-testid="issue-overview-recent-row"]').first().should('contain.text', 'My assigned issue');
+      cy.get('[data-testid="issue-dashboard-cards"]').within(() => {
+        cy.get('[data-testid="issue-dashboard-urgent-row"]').first().should('contain.text', 'Urgent issue');
+        cy.get('[data-testid="issue-dashboard-recent-row"]').first().should('contain.text', 'My assigned issue');
       });
     });
 
@@ -112,11 +112,11 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       cy.wait('@getUser');
       cy.wait('@getIssues', { timeout: 10000 });
 
-      cy.get('[data-testid="issue-overview-cards"]').within(() => {
-        cy.get('[data-testid="issue-overview-urgent-row"]').should('not.exist');
-        cy.get('[data-testid="issue-overview-recent-row"]').should('not.exist');
+      cy.get('[data-testid="issue-dashboard-cards"]').within(() => {
+        cy.get('[data-testid="issue-dashboard-urgent-row"]').should('not.exist');
+        cy.get('[data-testid="issue-dashboard-recent-row"]').should('not.exist');
       });
-      cy.get('[data-testid="issue-overview-cards"]').invoke('text').then((text) => {
+      cy.get('[data-testid="issue-dashboard-cards"]').invoke('text').then((text) => {
         expect(text.match(/Keine aktiven Aufgaben\./g)).to.have.length(2);
       });
     });
