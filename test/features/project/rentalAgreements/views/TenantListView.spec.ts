@@ -1,12 +1,12 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import RentalAgreementListView from '@/features/project/rentalAgreements/views/RentalAgreementListView.vue';
+import TenantListView from '@/features/project/rentalAgreements/views/TenantListView.vue';
 
-describe('RentalAgreementListView.vue', () => {
+describe('TenantListView.vue', () => {
   const mountView = (projectId = 'proj-1') =>
-    mount(RentalAgreementListView, {
+    mount(TenantListView, {
       props: { projectId },
-      global: { stubs: { RentalAgreementListCard: true } },
+      global: { stubs: { TenantListCard: true } },
     });
 
   it('renders correctly', () => {
@@ -14,9 +14,9 @@ describe('RentalAgreementListView.vue', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('renders RentalAgreementListCard and forwards projectId', () => {
+  it('renders TenantListCard and forwards projectId', () => {
     const wrapper = mountView();
-    const card = wrapper.findComponent({ name: 'RentalAgreementListCard' });
+    const card = wrapper.findComponent({ name: 'TenantListCard' });
     expect(card.exists()).toBe(true);
     expect(card.props('projectId')).toBe('proj-1');
   });
