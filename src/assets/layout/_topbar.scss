@@ -80,8 +80,8 @@
             position: absolute;
             top: 0.25rem;
             right: 0.25rem;
-            background-color: #e53935;
-            color: white;
+            background-color: var(--color-red-600);
+            color: var(--color-white);
             border-radius: 9999px;
             font-size: 0.65rem;
             line-height: 0.75rem;
@@ -91,7 +91,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 0 1.5px white;
+            box-shadow: 0 0 0 1.5px var(--color-white);
         }
     }
 
@@ -185,8 +185,8 @@
                 .unread-badge {
                     top: 0.25rem;
                     right: 0.25rem;
-                    background-color: #e53935;
-                    color: white;
+                    background-color: var(--color-red-600);
+                    color: var(--color-white);
                     border-radius: 9999px;
                     font-size: 0.65rem;
                     line-height: 0.75rem;
@@ -196,7 +196,7 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    box-shadow: 0 0 0 1.5px white;
+                    box-shadow: 0 0 0 1.5px var(--color-white);
                 }
             }
         }
