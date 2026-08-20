@@ -97,7 +97,6 @@
   "projectSettings.deleteSuccess": "Property deleted successfully",
   "projectSettings.deleteError": "Error deleting property",
   "projectTenancies.title": "Tenant Data View",
-  "projectTenancies.loading": "Loading...",
   "projectTenancies.table.rentalStart": "Rental Start",
   "projectTenancies.table.rentalEnd": "Rental End",
   "projectTenancies.table.tenants": "Tenants",
