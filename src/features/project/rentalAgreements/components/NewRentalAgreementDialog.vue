@@ -74,6 +74,18 @@ function editStep(stepValue: string) {
   currentStep.value = stepValue;
 }
 
+// Build a RentJson payload for a single selected unit
+function toRentJson(unit: SelectedUnit, state: typeof formState.value): RentJson {
+  return {
+    rentalUnitId: unit.rentalUnitId,
+    basicRent: unit.basicRent,
+    operatingCostsPrepayment: unit.operatingCostsPrepayment,
+    heatingCostsPrepayment: unit.heatingCostsPrepayment,
+    firstPaymentDate: unit.firstPaymentDate || state.startOfRental || undefined,
+    lastPaymentDate: unit.lastPaymentDate || state.endOfRental || undefined,
+  };
+}
+
 // Transform Form Data to RentalAgreement API Schema
 function transformFormDataToRentalAgreement(
   state: typeof formState.value,
@@ -87,14 +99,7 @@ function transformFormDataToRentalAgreement(
   const storageRents: RentJson[] = [];
 
   state.selectedUnits.forEach((unit) => {
-    const rent: RentJson = {
-      rentalUnitId: unit.rentalUnitId,
-      basicRent: unit.basicRent,
-      operatingCostsPrepayment: unit.operatingCostsPrepayment,
-      heatingCostsPrepayment: unit.heatingCostsPrepayment,
-      firstPaymentDate: unit.firstPaymentDate || state.startOfRental || undefined,
-      lastPaymentDate: unit.lastPaymentDate || state.endOfRental || undefined,
-    };
+    const rent = toRentJson(unit, state);
 
     switch (unit.unitType) {
       case 'PROPERTY':
