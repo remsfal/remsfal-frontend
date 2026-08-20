@@ -48,12 +48,12 @@ vi.mock('@/features/project/rentalAgreements/services/RentalAgreementService', a
 
 const baseAgreement: RentalAgreementJson = {
   id: 'agreement-1',
-  propertyRents: [{ unitId: 'prop-1' }],
-  siteRents: [{ unitId: 'site-1' }],
-  buildingRents: [{ unitId: 'building-1' }],
-  apartmentRents: [{ unitId: 'apt-1' }],
-  storageRents: [{ unitId: 'storage-1' }],
-  commercialRents: [{ unitId: 'comm-1' }],
+  propertyRents: [{ rentalUnitId: 'prop-1' }],
+  siteRents: [{ rentalUnitId: 'site-1' }],
+  buildingRents: [{ rentalUnitId: 'building-1' }],
+  apartmentRents: [{ rentalUnitId: 'apt-1' }],
+  storageRents: [{ rentalUnitId: 'storage-1' }],
+  commercialRents: [{ rentalUnitId: 'comm-1' }],
 };
 
 const UNIT_TYPE_CASES: Array<{ unitId: string; type: UnitType; view: string }> = [
@@ -268,13 +268,13 @@ describe('RentalAgreementUnitListCard', () => {
     expect(rentalAgreementService.updateRentalAgreement).toHaveBeenCalledWith(
       'proj-1',
       'agreement-1',
-      expect.objectContaining({apartmentRents: [{ unitId: 'apt-1' }, { unitId: 'apt-2' }],}),
+      expect.objectContaining({apartmentRents: [{ rentalUnitId: 'apt-1' }, { rentalUnitId: 'apt-2' }],}),
     );
     const emitted = wrapper.emitted('update:rentalAgreement');
     expect(emitted).toBeTruthy();
     expect((emitted![0][0] as RentalAgreementJson).apartmentRents).toEqual([
-      { unitId: 'apt-1' },
-      { unitId: 'apt-2' },
+      { rentalUnitId: 'apt-1' },
+      { rentalUnitId: 'apt-2' },
     ]);
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });

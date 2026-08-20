@@ -44,12 +44,12 @@ const selectedNodeKey = ref<string | null>(null);
 
 // Current unit being edited (before adding to list)
 const currentUnit = ref<{
-  unitId: string;
+  rentalUnitId: string;
   unitType: UnitType;
   unitTitle: string;
 } | null>(null);
 
-const selectedUnitIds = computed(() => props.selectedUnits.map((u) => u.unitId));
+const selectedUnitIds = computed(() => props.selectedUnits.map((u) => u.rentalUnitId));
 
 // When the unit selection changes
 function onUnitSelected(node: TreeNode) {
@@ -59,7 +59,7 @@ function onUnitSelected(node: TreeNode) {
   }
 
   currentUnit.value = {
-    unitId: node.key,
+    rentalUnitId: node.key,
     unitType: node.data.type as UnitType,
     unitTitle: node.data.title || 'Unbenannt',
   };
@@ -70,7 +70,7 @@ function onRentalDetailsSubmit(details: RentalDetails) {
   if (!currentUnit.value) return;
 
   const unit: SelectedUnit = {
-    unitId: currentUnit.value.unitId,
+    rentalUnitId: currentUnit.value.rentalUnitId,
     unitType: currentUnit.value.unitType,
     unitTitle: currentUnit.value.unitTitle,
     ...details,
@@ -140,7 +140,7 @@ const canProceed = computed(() => {
       </h4>
       <div
         v-for="(unit, index) in selectedUnits"
-        :key="unit.unitId"
+        :key="unit.rentalUnitId"
         class="flex items-center justify-between p-3 border rounded-lg bg-gray-50"
       >
         <div class="flex-1">
