@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
@@ -17,6 +17,7 @@ const toast = useToast();
 const sessionStore = useUserSessionStore();
 
 const ACTIVE_STATUSES: IssueStatus[] = ['PENDING', 'OPEN', 'IN_PROGRESS'];
+const OPEN_STATUSES: IssueStatus[] = ['OPEN', 'IN_PROGRESS'];
 
 const PRIORITY_RANK: Record<IssuePriority, number> = {
   URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3, UNCLASSIFIED: 4,
@@ -24,41 +25,51 @@ const PRIORITY_RANK: Record<IssuePriority, number> = {
 const priorityRank = (p?: IssuePriority): number => (p ? PRIORITY_RANK[p] : PRIORITY_RANK.UNCLASSIFIED);
 
 const isLoading = ref(true);
-const issues = ref<IssueItemJson[]>([]);
+const urgentIssues = ref<IssueItemJson[]>([]);
+const recentIssues = ref<IssueItemJson[]>([]);
 
-async function loadIssues(projectId: string): Promise<IssueItemJson[]> {
-  const page = await issueService.getIssues(projectId, ACTIVE_STATUSES);
-  return (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
+function reportLoadError() {
+  toast.add({
+    severity: 'error',
+    summary: t('error.general'),
+    detail: t('issueOverview.loadError'),
+    life: 6000,
+  });
 }
 
-const urgentIssues = computed(() => [...issues.value]
-  .sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority))
-  .slice(0, 5));
+async function loadUrgentIssues(projectId: string): Promise<IssueItemJson[]> {
+  try {
+    const page = await issueService.getIssues(projectId, OPEN_STATUSES);
+    const open = (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
+    return [...open].sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority)).slice(0, 5);
+  } catch {
+    reportLoadError();
+    return [];
+  }
+}
 
-const recentIssues = computed(() => {
-  const assigneeId = sessionStore.user?.id;
-  if (!assigneeId) return [];
-  return [...issues.value]
-    .filter((issue) => issue.assigneeId === assigneeId)
-    .sort((a, b) => new Date(b.modifiedAt ?? 0).getTime() - new Date(a.modifiedAt ?? 0).getTime())
-    .slice(0, 5);
-});
+async function loadRecentIssues(projectId: string, assigneeId: string): Promise<IssueItemJson[]> {
+  try {
+    const page = await issueService.getIssues(
+      projectId, ACTIVE_STATUSES, undefined, assigneeId, undefined, undefined, undefined, undefined, 5,
+    );
+    return (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
+  } catch {
+    reportLoadError();
+    return [];
+  }
+}
 
 async function loadData(projectId: string) {
   isLoading.value = true;
-  try {
-    issues.value = await loadIssues(projectId);
-  } catch {
-    issues.value = [];
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('issueOverview.loadError'),
-      life: 6000,
-    });
-  } finally {
-    isLoading.value = false;
-  }
+  const assigneeId = sessionStore.user?.id;
+  const [urgent, recent] = await Promise.all([
+    loadUrgentIssues(projectId),
+    assigneeId ? loadRecentIssues(projectId, assigneeId) : Promise.resolve([]),
+  ]);
+  urgentIssues.value = urgent;
+  recentIssues.value = recent;
+  isLoading.value = false;
 }
 
 function onRowSelect(event: { data: IssueItemJson }) {

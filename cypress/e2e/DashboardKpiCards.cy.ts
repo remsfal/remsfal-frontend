@@ -58,32 +58,43 @@ describe('Dashboard KPI Cards E2E Tests', () => {
     });
 
     it('renders the top urgent issues by priority and the current user\'s recent issues', () => {
-      cy.intercept('GET', '/ticketing/v1/issues**', {
-        statusCode: 200,
-        body: {
-          size: 3,
-          issues: [
-            {
-              id: '1', title: 'Low prio issue', status: 'OPEN', priority: 'LOW',
+      cy.intercept('GET', '/ticketing/v1/issues**', (req) => {
+        if (req.query.assigneeId) {
+          req.reply({
+            statusCode: 200,
+            body: {
+              size: 1,
+              issues: [
+                {
+                  id: '3', title: 'My assigned issue', status: 'IN_PROGRESS', priority: 'MEDIUM',
+                },
+              ],
             },
-            {
-              id: '2', title: 'Urgent issue', status: 'OPEN', priority: 'URGENT',
-            },
-            {
-              id: '3',
-              title: 'My assigned issue',
-              status: 'IN_PROGRESS',
-              priority: 'MEDIUM',
-              assigneeId: 'user-123',
-              modifiedAt: '2024-06-01T00:00:00Z',
-            },
-          ],
-        },
+          });
+          return;
+        }
+        req.reply({
+          statusCode: 200,
+          body: {
+            size: 2,
+            issues: [
+              {
+                id: '1', title: 'Low prio issue', status: 'OPEN', priority: 'LOW',
+              },
+              {
+                id: '2', title: 'Urgent issue', status: 'OPEN', priority: 'URGENT',
+              },
+            ],
+          },
+        });
       }).as('getIssues');
 
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait('@getUser');
-      cy.wait('@getIssues', { timeout: 10000 });
+      // CI runs this spec against `vite dev` with code-coverage instrumentation (see
+      // coverage:e2e), which is slower to first-mount than the local `vite preview` build
+      // and has occasionally missed the default 5000ms requestTimeout.
+      cy.wait(['@getIssues', '@getIssues'], { timeout: 10000 });
 
       cy.get('[data-testid="issue-overview-cards"]').within(() => {
         cy.get('[data-testid="issue-overview-urgent-row"]').first().should('contain.text', 'Urgent issue');
