@@ -48,7 +48,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
     }).as('getInboxMessages');
   });
 
-  describe('IssueKpiCards', () => {
+  describe('IssueOverviewCards', () => {
     beforeEach(() => {
       // The dashboard also mounts RentableUnitsKpiCards, so its endpoint must always be mocked.
       cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
@@ -57,48 +57,26 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       }).as('getPropertyTree');
     });
 
-    it('renders the 3 KPI cards in order pending, open, in-progress, with counts aggregated', () => {
-      cy.intercept('GET', '/ticketing/v1/issues**', {
-        statusCode: 200,
-        body: {
-          size: 4,
-          issues: [
-            { id: '1', title: 'Issue 1', status: 'OPEN' },
-            { id: '2', title: 'Issue 2', status: 'OPEN' },
-            { id: '3', title: 'Issue 3', status: 'IN_PROGRESS' },
-            { id: '4', title: 'Issue 4', status: 'PENDING' },
-          ],
-        },
-      }).as('getIssues');
-
-      cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait('@getUser');
-      // CI runs this spec against `vite dev` with code-coverage instrumentation (see
-      // coverage:e2e), which is slower to first-mount than the local `vite preview` build
-      // and has occasionally missed the default 5000ms requestTimeout.
-      cy.wait('@getIssues', { timeout: 10000 });
-
-      // Scoped to the component's own test id: "Offene Aufgaben" also appears as the
-      // sidebar menu label, and ProjectDashboard renders its own (unrelated) demo stat
-      // cards further down the same page.
-      cy.get('[data-testid="issue-kpi-cards"]').within(() => {
-        cy.get('.p-card').should('have.length', 3);
-
-        cy.get('.p-card').eq(0).should('contain.text', 'Ausstehende Aufgaben und Issues').and('contain.text', '1');
-        cy.get('.p-card').eq(1).should('contain.text', 'Offene Aufgaben und Issues').and('contain.text', '2');
-        cy.get('.p-card').eq(2).should('contain.text', 'Aufgaben und Issues in Bearbeitung').and('contain.text', '1');
-      });
-    });
-
-    it('does not render a card for statuses with no issues, and ignores closed/rejected', () => {
+    it('renders the top urgent issues by priority and the current user\'s recent issues', () => {
       cy.intercept('GET', '/ticketing/v1/issues**', {
         statusCode: 200,
         body: {
           size: 3,
           issues: [
-            { id: '1', title: 'Issue 1', status: 'CLOSED' },
-            { id: '2', title: 'Issue 2', status: 'REJECTED' },
-            { id: '3', title: 'Issue 3', status: 'OPEN' },
+            {
+              id: '1', title: 'Low prio issue', status: 'OPEN', priority: 'LOW',
+            },
+            {
+              id: '2', title: 'Urgent issue', status: 'OPEN', priority: 'URGENT',
+            },
+            {
+              id: '3',
+              title: 'My assigned issue',
+              status: 'IN_PROGRESS',
+              priority: 'MEDIUM',
+              assigneeId: 'user-123',
+              modifiedAt: '2024-06-01T00:00:00Z',
+            },
           ],
         },
       }).as('getIssues');
@@ -110,15 +88,13 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       // and has occasionally missed the default 5000ms requestTimeout.
       cy.wait('@getIssues', { timeout: 10000 });
 
-      cy.get('[data-testid="issue-kpi-cards"]').within(() => {
-        cy.contains('Offene Aufgaben und Issues').should('be.visible');
-        cy.contains('Ausstehende Aufgaben und Issues').should('not.exist');
-        cy.contains('Aufgaben und Issues in Bearbeitung').should('not.exist');
-        cy.get('.p-card').should('have.length', 1);
+      cy.get('[data-testid="issue-overview-cards"]').within(() => {
+        cy.get('[data-testid="issue-overview-urgent-row"]').first().should('contain.text', 'Urgent issue');
+        cy.get('[data-testid="issue-overview-recent-row"]').first().should('contain.text', 'My assigned issue');
       });
     });
 
-    it('renders no KPI cards when the project has no issues', () => {
+    it('shows the empty state for both cards when the project has no active issues', () => {
       cy.intercept('GET', '/ticketing/v1/issues**', {
         statusCode: 200,
         body: { size: 0, issues: [] },
@@ -126,12 +102,15 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait('@getUser');
-      // CI runs this spec against `vite dev` with code-coverage instrumentation (see
-      // coverage:e2e), which is slower to first-mount than the local `vite preview` build
-      // and has occasionally missed the default 5000ms requestTimeout.
       cy.wait('@getIssues', { timeout: 10000 });
 
-      cy.get('[data-testid="issue-kpi-cards"]').should('not.exist');
+      cy.get('[data-testid="issue-overview-cards"]').within(() => {
+        cy.get('[data-testid="issue-overview-urgent-row"]').should('not.exist');
+        cy.get('[data-testid="issue-overview-recent-row"]').should('not.exist');
+      });
+      cy.get('[data-testid="issue-overview-cards"]').invoke('text').then((text) => {
+        expect(text.match(/Keine aktiven Aufgaben\./g)).to.have.length(2);
+      });
     });
   });
 
