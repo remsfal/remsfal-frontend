@@ -45,7 +45,7 @@ describe('Step2UnitsForm', () => {
 
   const mockSelectedUnits: SelectedUnit[] = [
     {
-      unitId: 'apartment-1',
+      rentalUnitId: 'apartment-1',
       unitType: 'APARTMENT',
       unitTitle: 'Apartment 101',
       basicRent: 1000,
@@ -147,7 +147,7 @@ describe('Step2UnitsForm', () => {
   it('displays unit details in the list', async () => {
     const unitsWithDetails: SelectedUnit[] = [
       {
-        unitId: 'apartment-1',
+        rentalUnitId: 'apartment-1',
         unitType: 'APARTMENT',
         unitTitle: 'Apartment 101',
         basicRent: 1000,
@@ -202,7 +202,7 @@ describe('Step2UnitsForm', () => {
   it('formats rent values with two decimal places', async () => {
     const unitsWithRent: SelectedUnit[] = [
       {
-        unitId: 'apartment-1',
+        rentalUnitId: 'apartment-1',
         unitType: 'APARTMENT',
         unitTitle: 'Apartment 101',
         basicRent: 1234.5,
@@ -221,7 +221,7 @@ describe('Step2UnitsForm', () => {
   it('shows only rent fields that are defined', async () => {
     const unitsMinimal: SelectedUnit[] = [
       {
-        unitId: 'apartment-1',
+        rentalUnitId: 'apartment-1',
         unitType: 'APARTMENT',
         unitTitle: 'Apartment 101',
         basicRent: 1000,

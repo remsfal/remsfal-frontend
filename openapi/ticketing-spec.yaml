@@ -1179,9 +1179,9 @@ components:
       description: Rent information for a rentable unit
       type: object
       required:
-      - unitId
+      - rentalUnitId
       properties:
-        unitId:
+        rentalUnitId:
           $ref: "#/components/schemas/UUID"
         billingCycle:
           $ref: "#/components/schemas/BillingCycle"
@@ -1204,7 +1204,7 @@ components:
     RentModel:
       type: object
       properties:
-        unitId:
+        rentalUnitId:
           $ref: "#/components/schemas/UUID"
         firstPaymentDate:
           $ref: "#/components/schemas/LocalDate"

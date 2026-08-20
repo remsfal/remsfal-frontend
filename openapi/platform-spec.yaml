@@ -1193,9 +1193,9 @@ components:
       description: Rent information for a rentable unit
       type: object
       required:
-      - unitId
+      - rentalUnitId
       properties:
-        unitId:
+        rentalUnitId:
           $ref: "#/components/schemas/UUID"
         billingCycle:
           $ref: "#/components/schemas/BillingCycle"
@@ -1218,7 +1218,7 @@ components:
     RentModel:
       type: object
       properties:
-        unitId:
+        rentalUnitId:
           $ref: "#/components/schemas/UUID"
         firstPaymentDate:
           $ref: "#/components/schemas/LocalDate"
@@ -4272,6 +4272,17 @@ paths:
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
+      - description: ID of the rental unit to filter by; only evaluated when rentalUnitType
+          is set
+        name: rentalUnitId
+        in: query
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Type of the rental unit to filter by
+        name: rentalUnitType
+        in: query
+        schema:
+          $ref: "#/components/schemas/UnitType"
       responses:
         "200":
           description: The requested tenancies were successfully returned
@@ -4446,6 +4457,89 @@ paths:
       responses:
         "204":
           description: Tenant was removed from the rental agreement successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: The rental agreement does not exist
+  /api/v1/projects/{projectId}/rental-agreements/{agreementId}/{rentalUnitType}/{rentalUnitId}:
+    delete:
+      summary: Delete all rents of a rental unit from a rental agreement
+      parameters:
+      - description: ID of the tenancy
+        required: true
+        name: agreementId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the rental unit
+        required: true
+        name: rentalUnitId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Type of the rental unit
+        required: true
+        name: rentalUnitType
+        in: path
+        schema:
+          type: string
+          pattern: property|site|building|apartment|storage|commercial
+      responses:
+        "204":
+          description: Rents were deleted successfully
+        "401":
+          description: No user authentication provided via session cookie
+        "404":
+          description: The rental agreement does not exist
+    post:
+      summary: Add a new rent for a rental unit of a rental agreement
+      parameters:
+      - description: ID of the tenancy
+        required: true
+        name: agreementId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the project
+        required: true
+        name: projectId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: ID of the rental unit
+        required: true
+        name: rentalUnitId
+        in: path
+        schema:
+          $ref: "#/components/schemas/UUID"
+      - description: Type of the rental unit
+        required: true
+        name: rentalUnitType
+        in: path
+        schema:
+          type: string
+          pattern: property|site|building|apartment|storage|commercial
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RentJson"
+        required: true
+      responses:
+        "201":
+          description: Rent created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentalAgreementJson"
+        "400":
+          description: Invalid request message
         "401":
           description: No user authentication provided via session cookie
         "404":
