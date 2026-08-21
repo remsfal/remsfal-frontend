@@ -225,22 +225,18 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.contains('Kündigung aussprechen').should('be.visible');
     });
 
-    it('should show category AutoComplete after selecting DEFECT type', () => {
-      selectTenancy();
-      selectIssueType('DEFECT');
-      cy.get('#issueCategory').should('be.visible');
-    });
-
-    it('should show category AutoComplete after selecting INQUIRY type', () => {
-      selectTenancy();
-      selectIssueType('INQUIRY');
-      cy.get('#issueCategory').should('be.visible');
-    });
-
-    it('should NOT show category field for TERMINATION type', () => {
-      selectTenancy();
-      selectIssueType('TERMINATION');
-      cy.get('#issueCategory').should('not.exist');
+    (
+      [
+        { type: 'DEFECT', showsCategory: true },
+        { type: 'INQUIRY', showsCategory: true },
+        { type: 'TERMINATION', showsCategory: false },
+      ] as const
+    ).forEach(({ type, showsCategory }) => {
+      it(`should ${showsCategory ? 'show' : 'NOT show'} category AutoComplete after selecting ${type} type`, () => {
+        selectTenancy();
+        selectIssueType(type);
+        cy.get('#issueCategory').should(showsCategory ? 'be.visible' : 'not.exist');
+      });
     });
 
     it('should enable Next button for TERMINATION without needing a category', () => {
@@ -526,19 +522,17 @@ describe('NewTenancyIssueDialog E2E Tests', () => {
       cy.get('.p-step').eq(3).should('have.class', 'p-step-active');
     }
 
-    it('should show the Step 4 heading "Zusammenfassung"', () => {
-      navigateToStep4();
-      cy.get('[role="dialog"]').contains('Zusammenfassung').should('be.visible');
-    });
-
-    it('should display the "Bitte überprüfen" review hint', () => {
-      navigateToStep4();
-      cy.contains('Bitte überprüfen').should('be.visible');
-    });
-
-    it('should display the generated title section', () => {
-      navigateToStep4();
-      cy.contains('Titel der Meldung').should('be.visible');
+    (
+      [
+        { description: 'the Step 4 heading "Zusammenfassung"', text: 'Zusammenfassung' },
+        { description: 'the "Bitte überprüfen" review hint', text: 'Bitte überprüfen' },
+        { description: 'the generated title section', text: 'Titel der Meldung' },
+      ] as const
+    ).forEach(({ description, text }) => {
+      it(`should display ${description}`, () => {
+        navigateToStep4();
+        cy.get('[role="dialog"]').contains(text).should('be.visible');
+      });
     });
 
     it('should include the reporter name in the TERMINATION generated title', () => {

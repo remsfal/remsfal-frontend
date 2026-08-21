@@ -4100,7 +4100,12 @@ export interface paths {
     /** Retrieve information of all rental agreements */
     get: {
       parameters: {
-        query?: never;
+        query?: {
+          /** @description ID of the rental unit to filter by; only evaluated when rentalUnitType is set */
+          rentalUnitId?: components["schemas"]["UUID"];
+          /** @description Type of the rental unit to filter by */
+          rentalUnitType?: components["schemas"]["UnitType"];
+        };
         header?: never;
         path: {
           /** @description ID of the project */
@@ -4399,6 +4404,117 @@ export interface paths {
       requestBody?: never;
       responses: {
         /** @description Tenant was removed from the rental agreement successfully */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The rental agreement does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/projects/{projectId}/rental-agreements/{agreementId}/{rentalUnitType}/{rentalUnitId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Add a new rent for a rental unit of a rental agreement */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the tenancy */
+          agreementId: components["schemas"]["UUID"];
+          /** @description ID of the project */
+          projectId: components["schemas"]["UUID"];
+          /** @description ID of the rental unit */
+          rentalUnitId: components["schemas"]["UUID"];
+          /** @description Type of the rental unit */
+          rentalUnitType: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["RentJson"];
+        };
+      };
+      responses: {
+        /** @description Rent created successfully */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["RentalAgreementJson"];
+          };
+        };
+        /** @description Invalid request message */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description No user authentication provided via session cookie */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description The rental agreement does not exist */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    /** Delete all rents of a rental unit from a rental agreement */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ID of the tenancy */
+          agreementId: components["schemas"]["UUID"];
+          /** @description ID of the project */
+          projectId: components["schemas"]["UUID"];
+          /** @description ID of the rental unit */
+          rentalUnitId: components["schemas"]["UUID"];
+          /** @description Type of the rental unit */
+          rentalUnitType: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Rents were deleted successfully */
         204: {
           headers: {
             [name: string]: unknown;
@@ -5514,7 +5630,7 @@ export interface components {
       title: string;
       owner?: string;
       careOf?: string;
-      address?: components["schemas"]["AddressJson"];
+      billingAddress?: components["schemas"]["AddressJson"];
       /** @description Project members (managed separately via members endpoint) */
       readonly members?: components["schemas"]["ProjectMemberJson"][];
     };
@@ -5643,22 +5759,10 @@ export interface components {
     QuotationStatus: "VALID" | "INVALID" | "ACCEPTED" | "REJECTED";
     /** @description Rent information for a rentable unit */
     RentJson: {
-      unitId: components["schemas"]["UUID"];
+      rentalUnitId: components["schemas"]["UUID"];
       billingCycle?: components["schemas"]["BillingCycle"];
       firstPaymentDate?: components["schemas"]["LocalDate"];
       lastPaymentDate?: components["schemas"]["LocalDate"];
-      /** Format: float */
-      basicRent?: number;
-      /** Format: float */
-      operatingCostsPrepayment?: number;
-      /** Format: float */
-      heatingCostsPrepayment?: number;
-    };
-    RentModel: {
-      unitId?: components["schemas"]["UUID"];
-      firstPaymentDate?: components["schemas"]["LocalDate"];
-      lastPaymentDate?: components["schemas"]["LocalDate"];
-      billingCycle?: components["schemas"]["BillingCycle"];
       /** Format: float */
       basicRent?: number;
       /** Format: float */
@@ -5671,41 +5775,34 @@ export interface components {
       /** @description Unique identifier of the rental agreement */
       readonly id?: components["schemas"]["UUID"];
       /** @description List of tenants in this rental agreement */
-      tenants?: components["schemas"]["TenantJson"][];
+      readonly tenants?: components["schemas"]["TenantJson"][];
       /** @description Start date of the rental period */
-      startOfRental: components["schemas"]["LocalDate"];
+      readonly startOfRental: components["schemas"]["LocalDate"];
       /** @description End date of the rental period */
-      endOfRental?: components["schemas"]["LocalDate"];
+      readonly endOfRental?: components["schemas"]["LocalDate"];
       /** @description List of rental units in this agreement */
-      rentalUnits?: components["schemas"]["RentalUnitJson"][];
+      readonly rentalUnits?: components["schemas"]["RentalUnitJson"][];
+      /** @description The currently valid rent for each rental unit in this agreement */
+      readonly currentRents?: components["schemas"]["RentJson"][];
       /**
        * Format: float
-       * @description Sum of basic rent from all currently active rents
+       * @description Sum of basic rent from the currently valid rent of each rental unit
        */
-      basicRent?: number;
+      readonly basicRent?: number;
       /**
        * Format: float
-       * @description Sum of operating costs prepayment from all currently active rents
+       * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
        */
-      operatingCostsPrepayment?: number;
+      readonly operatingCostsPrepayment?: number;
       /**
        * Format: float
-       * @description Sum of heating costs prepayment from all currently active rents
+       * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
        */
-      heatingCostsPrepayment?: number;
+      readonly heatingCostsPrepayment?: number;
     };
     /** @description A rental agreement for rentable units */
     RentalAgreementJson: {
       projectId?: components["schemas"]["UUID"];
-      allRents?: components["schemas"]["RentModel"][];
-      /** Format: float */
-      basicRent?: number;
-      /** Format: float */
-      operatingCostsPrepayment?: number;
-      /** Format: float */
-      heatingCostsPrepayment?: number;
-      activeRents?: components["schemas"]["RentModel"][];
-      active?: boolean;
       readonly id?: components["schemas"]["UUID"];
       tenants?: components["schemas"]["TenantJson"][];
       startOfRental?: components["schemas"]["LocalDate"];
@@ -5724,6 +5821,21 @@ export interface components {
       storageRents?: components["schemas"]["RentJson"][];
       /** @description List of commercial rents */
       commercialRents?: components["schemas"]["RentJson"][];
+      /**
+       * Format: float
+       * @description Sum of basic rent from the currently valid rent of each rental unit
+       */
+      readonly basicRent?: number;
+      /**
+       * Format: float
+       * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
+       */
+      readonly operatingCostsPrepayment?: number;
+      /**
+       * Format: float
+       * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
+       */
+      readonly heatingCostsPrepayment?: number;
     };
     /** @description A key handover record for a rental agreement */
     RentalAgreementKeysJson: {
@@ -5824,7 +5936,6 @@ export interface components {
     };
     /** @description A read-only rental agreement of a rentable unit from a tenant's perspective */
     TenancyJson: {
-      active?: boolean;
       /** @description Unique identifier of the rental agreement */
       readonly agreementId?: components["schemas"]["UUID"];
       /** @description Title of the project this rental agreement belongs to */
@@ -5841,17 +5952,17 @@ export interface components {
       readonly rentalUnits?: components["schemas"]["RentalUnitJson"][];
       /**
        * Format: float
-       * @description Sum of basic rent from all currently active rents
+       * @description Sum of basic rent from the currently valid rent of each rental unit
        */
       readonly basicRent?: number;
       /**
        * Format: float
-       * @description Sum of operating costs prepayment from all currently active rents
+       * @description Sum of operating costs prepayment from the currently valid rent of each rental unit
        */
       readonly operatingCostsPrepayment?: number;
       /**
        * Format: float
-       * @description Sum of heating costs prepayment from all currently active rents
+       * @description Sum of heating costs prepayment from the currently valid rent of each rental unit
        */
       readonly heatingCostsPrepayment?: number;
     };

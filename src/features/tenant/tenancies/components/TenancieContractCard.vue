@@ -12,8 +12,15 @@ defineProps<{
 
 const { t } = useI18n();
 
-const getSeverity = (active: boolean | undefined) => {
-  return active === false ? 'secondary' : 'success';
+const isActive = (contract: TenancyJson) => {
+  if (!contract.endOfRental) return true;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(contract.endOfRental) >= today;
+};
+
+const getSeverity = (contract: TenancyJson) => {
+  return isActive(contract) ? 'success' : 'secondary';
 };
 
 const formatCurrency = (value: number) =>
@@ -67,10 +74,10 @@ const formatUnitLabel = (unit: NonNullable<TenancyJson['rentalUnits']>[number]) 
               </div>
             </div>
             <Tag
-              :value="contract.active !== false
+              :value="isActive(contract)
                 ? t('tenantDashboard.status.active')
                 : t('tenantDashboard.status.expired')"
-              :severity="getSeverity(contract.active)"
+              :severity="getSeverity(contract)"
               rounded
             />
           </div>

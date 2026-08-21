@@ -8,6 +8,7 @@ meta:
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { UnitBreadcrumb, StorageDataCard, RentableUnitDangerZoneCard } from '@/features/project/rentableUnits';
+import { RentalAgreementListCard } from '@/features/project/rentalAgreements';
 
 const route = useRoute('StorageView');
 </script>
@@ -20,6 +21,11 @@ const route = useRoute('StorageView');
   <StorageDataCard
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
+  />
+  <RentalAgreementListCard
+    :projectId="(route.params.projectId as string)"
+    :rentalUnitId="(route.params.unitId as string)"
+    rentalUnitType="STORAGE"
   />
   <RentableUnitDangerZoneCard
     :projectId="(route.params.projectId as string)"

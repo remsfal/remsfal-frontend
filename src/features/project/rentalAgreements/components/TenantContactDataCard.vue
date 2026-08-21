@@ -13,7 +13,7 @@ import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
-import ProgressSpinner from 'primevue/progressspinner';
+import Skeleton from 'primevue/skeleton';
 import { tenantService, type TenantJson } from '../services/TenantService';
 import { toISODateString } from '@/helper/dataHelper';
 
@@ -185,18 +185,19 @@ async function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading">
     <template #title>
       {{ cardTitle }}
     </template>
 
-    <template #content>
-      <div v-if="isLoading" class="flex justify-center items-center py-8">
-        <ProgressSpinner />
+    <template #loading>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Skeleton v-for="i in 6" :key="i" height="3.5rem" />
       </div>
+    </template>
 
+    <template #content>
       <Form
-        v-else
         :key="formKey"
         v-slot="$form"
         :initialValues

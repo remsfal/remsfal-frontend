@@ -7,8 +7,9 @@ meta:
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { UnitBreadcrumb, SiteDataCard, RentableUnitTenantsCard, RentableUnitDangerZoneCard, FacilityAddressCard }
+import { UnitBreadcrumb, SiteDataCard, RentableUnitDangerZoneCard, FacilityAddressCard }
   from '@/features/project/rentableUnits';
+import { RentalAgreementListCard } from '@/features/project/rentalAgreements';
 
 const route = useRoute('SiteView');
 </script>
@@ -22,14 +23,15 @@ const route = useRoute('SiteView');
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
   />
-  <RentableUnitTenantsCard
-    :projectId="(route.params.projectId as string)"
-    :unitId="(route.params.unitId as string)"
-  />
   <FacilityAddressCard
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
     facilityType="SITE"
+  />
+  <RentalAgreementListCard
+    :projectId="(route.params.projectId as string)"
+    :rentalUnitId="(route.params.unitId as string)"
+    rentalUnitType="SITE"
   />
   <RentableUnitDangerZoneCard
     :projectId="(route.params.projectId as string)"

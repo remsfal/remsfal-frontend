@@ -3,6 +3,7 @@ import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import vue from 'eslint-plugin-vue';
 import importPlugin from 'eslint-plugin-import';
+import i18n from '@intlify/eslint-plugin-vue-i18n';
 import type { Linter } from 'eslint';
 
 export default [
@@ -76,6 +77,24 @@ export default [
     },
   },
 
+  // vue-i18n
+  // Only keep the plugin registration + rules from flat/recommended: the other
+  // entries opt every *.json/*.yaml file in the repo into linting and reset
+  // languageOptions.ecmaVersion to 2018 project-wide, which this config already
+  // configures correctly via the blocks above.
+  ...i18n.configs['flat/recommended'].filter(
+    (config) => !('languageOptions' in config) && !('files' in config),
+  ),
+  {
+    settings: {
+      'vue-i18n': {
+        localeDir: './src/i18n/locales/*.json',
+        messageSyntaxVersion: '^11.0.0',
+      },
+    },
+    rules: {'@intlify/vue-i18n/no-raw-text': ['warn', {ignorePattern: '^[-*()&:]+$',}],},
+  },
+
   // general rules
   {
     plugins: { import: importPlugin },
@@ -101,6 +120,13 @@ export default [
         },
       ],
     },
+  },
+
+  // Vite's native config loader requires explicit extensions on relative imports
+  // in root-level config files (e.g. vitest.config.ts importing vite.config.ts).
+  {
+    files: ['*.config.ts'],
+    rules: { 'import/extensions': 'off' },
   },
 
   // ignore files at the end of the config

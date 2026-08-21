@@ -18,16 +18,18 @@ const { t } = useI18n();
 const toast = useToast();
 
 const members = ref<ProjectMemberJson[]>([]);
+const isLoading = ref(true);
 
 const fetchMembers = async () => {
-  await projectMemberService
-    .getMembers(props.projectId)
-    .then((list) => {
-      members.value = (list as { members: ProjectMemberJson[] }).members;
-    })
-    .catch((error) => {
-      console.error('Failed to fetch members', error);
-    });
+  isLoading.value = true;
+  try {
+    const list = await projectMemberService.getMembers(props.projectId);
+    members.value = (list as { members: ProjectMemberJson[] }).members;
+  } catch (error) {
+    console.error('Failed to fetch members', error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const updateMemberRole = async (member: ProjectMemberJson) => {
@@ -82,7 +84,7 @@ function onNewMember(email: string) {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="4">
     <template #title>
       {{ t('projectSettings.projectMemberTable.title') }}
     </template>

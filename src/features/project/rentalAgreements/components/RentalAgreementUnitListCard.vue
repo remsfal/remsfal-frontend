@@ -60,13 +60,12 @@ function flattenRentEntries(agreement: RentalAgreementJson): Array<{ type: UnitT
   return (Object.keys(RENT_FIELD_BY_TYPE) as UnitType[]).flatMap((type) => {
     const field = RENT_FIELD_BY_TYPE[type];
     const rents = (agreement[field] as RentJson[] | undefined) ?? [];
-    return rents.map((rent) => ({ type, unitId: rent.unitId }));
+    return rents.map((rent) => ({ type, unitId: rent.rentalUnitId }));
   });
 }
 
 function toUpdatePayload(agreement: RentalAgreementJson): RentalAgreementJson {
   return {
-    active: agreement.active,
     tenants: agreement.tenants?.map((tenant) => ({
       id: tenant.id,
       firstName: tenant.firstName,
@@ -184,7 +183,7 @@ async function confirmAdd() {
   const field = RENT_FIELD_BY_TYPE[type];
   const updated: RentalAgreementJson = {
     ...props.rentalAgreement,
-    [field]: [...((props.rentalAgreement[field] as RentJson[] | undefined) ?? []), { unitId: node.key as string }],
+    [field]: [...((props.rentalAgreement[field] as RentJson[] | undefined) ?? []), { rentalUnitId: node.key as string }],
   };
 
   saving.value = true;
@@ -221,7 +220,7 @@ async function confirmRemove() {
   const updated: RentalAgreementJson = {
     ...props.rentalAgreement,
     [field]: ((props.rentalAgreement[field] as RentJson[] | undefined) ?? []).filter(
-      (rent) => rent.unitId !== unit.id,
+      (rent) => rent.rentalUnitId !== unit.id,
     ),
   };
 

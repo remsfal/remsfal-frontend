@@ -19,7 +19,7 @@ const mockProject = {
   title: 'Projekt Muster',
   owner: 'Leistungsempfänger Alt',
   careOf: 'Vertreter Alt',
-  address: {
+  billingAddress: {
     street: 'Musterstraße 1',
     zip: '12345',
     city: 'Berlin',
@@ -64,7 +64,7 @@ describe('BillingAddressCard.vue', () => {
         title: 'Projekt Muster',
         owner: 'Leistungsempfänger Neu',
         careOf: 'Vertreter Neu',
-        address: expect.objectContaining({
+        billingAddress: expect.objectContaining({
           street: 'Neue Straße 2',
           zip: '12345',
           city: 'Berlin',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Column from "primevue/column";
@@ -9,11 +9,13 @@ import { useOrganizationStore } from '@/stores/OrganizationStore';
 
 const { t } = useI18n();
 const organizationStore = useOrganizationStore();
+const isLoading = ref(!organizationStore.initialized);
 
-onMounted(() => {
+onMounted(async () => {
   if (!organizationStore.initialized) {
-    organizationStore.fetchUserOrganization();
+    await organizationStore.fetchUserOrganization();
   }
+  isLoading.value = false;
 });
 
 const employments = computed(() => organizationStore.userEmployments);
@@ -24,7 +26,7 @@ function roleLabel(role: string): string {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="4">
     <template #title>
       {{ t('managerSettings.employments.title') }}
     </template>

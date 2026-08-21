@@ -70,7 +70,7 @@ describe('RentalAgreementSummaryCard', () => {
         rentalAgreement: createAgreement({
           apartmentRents: [
             {
-              unitId: 'apartment-1',
+              rentalUnitId: 'apartment-1',
               basicRent: 1000,
               operatingCostsPrepayment: 200,
               heatingCostsPrepayment: 100,

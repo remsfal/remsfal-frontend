@@ -8,6 +8,7 @@ meta:
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { UnitBreadcrumb, CommercialDataCard, RentableUnitDangerZoneCard } from '@/features/project/rentableUnits';
+import { RentalAgreementListCard } from '@/features/project/rentalAgreements';
 
 const route = useRoute('CommercialView');
 </script>
@@ -20,6 +21,11 @@ const route = useRoute('CommercialView');
   <CommercialDataCard
     :projectId="(route.params.projectId as string)"
     :unitId="(route.params.unitId as string)"
+  />
+  <RentalAgreementListCard
+    :projectId="(route.params.projectId as string)"
+    :rentalUnitId="(route.params.unitId as string)"
+    rentalUnitType="COMMERCIAL"
   />
   <RentableUnitDangerZoneCard
     :projectId="(route.params.projectId as string)"

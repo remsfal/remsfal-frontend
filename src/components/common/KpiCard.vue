@@ -1,22 +1,37 @@
 <script setup lang="ts">
 import BaseCard from '@/components/common/BaseCard.vue';
+import Skeleton from 'primevue/skeleton';
 
 interface Props {
-  icon: string;
-  title: string;
-  value: string | number;
+  icon?: string;
+  title?: string;
+  value?: string | number;
   subtext?: string;
   iconBackground?: string;
+  loading?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
+  icon: undefined,
+  title: undefined,
+  value: undefined,
   subtext: undefined,
   iconBackground: 'var(--primary-color)',
+  loading: false,
 });
 </script>
 
 <template>
-  <BaseCard cardClass="">
+  <BaseCard cardClass="" :loading="loading">
+    <template #loading>
+      <div class="flex items-center gap-4">
+        <Skeleton shape="circle" size="3rem" />
+        <div class="flex-1 flex flex-col gap-2">
+          <Skeleton width="60%" height="1.25rem" />
+          <Skeleton width="40%" height="1.75rem" />
+        </div>
+      </div>
+    </template>
     <template #content>
       <div class="flex items-center gap-4">
         <div

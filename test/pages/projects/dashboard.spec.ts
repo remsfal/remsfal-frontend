@@ -9,6 +9,20 @@ vi.mock('@/views/project/ProjectDashboard.vue', () => ({
   },
 }));
 
+vi.mock('@/features/project/rentableUnits', () => ({
+  RentableUnitsKpiCards: {
+    name: 'RentableUnitsKpiCards',
+    template: '<div />',
+  },
+}));
+
+vi.mock('@/features/project/rentalAgreements', () => ({
+  RentalAgreementKpiCards: {
+    name: 'RentalAgreementKpiCards',
+    template: '<div />',
+  },
+}));
+
 describe('projects/[projectId]/dashboard.vue', () => {
   it('renders without errors', () => {
     const wrapper = mount(ProjectDashboardPage);

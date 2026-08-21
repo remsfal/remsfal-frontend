@@ -26,6 +26,7 @@ const {
   filteredMessages,
   projectOptions,
   grouping,
+  isLoading,
 } = storeToRefs(inbox);
 
 const customFilters = computed<CustomFilter[]>(() => {
@@ -146,7 +147,7 @@ const displayedMessages = computed(() => {
 </script>
 
 <template>
-  <BaseCard>
+  <BaseCard :loading="isLoading" :skeletonRows="6">
     <template #content>
       <div class="flex h-full">
         <!-- Main Content -->

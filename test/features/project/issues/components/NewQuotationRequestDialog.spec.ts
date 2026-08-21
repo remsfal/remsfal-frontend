@@ -23,7 +23,7 @@ const mockProject = {
   title: 'Projekt 1',
   owner: 'Muster Eigentümer GmbH',
   careOf: 'Max Mustermann',
-  address: {
+  billingAddress: {
     street: 'Musterstraße 1',
     zip: '12345',
     city: 'Berlin',
@@ -120,7 +120,7 @@ describe('NewQuotationRequestDialog', () => {
         contractors: selectedContractors,
         projectOwner: 'Muster Eigentümer GmbH',
         projectCareOf: 'Max Mustermann',
-        billingAddress: mockProject.address,
+        billingAddress: mockProject.billingAddress,
       }),
     );
   });

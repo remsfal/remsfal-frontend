@@ -1,4 +1,5 @@
 import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 
 export type RentalAgreementJson = ApiComponents['schemas']['RentalAgreementJson'];
 export type RentalAgreementListJson = ApiComponents['schemas']['RentalAgreementListJson'];
@@ -12,11 +13,20 @@ export type RentalAgreementKeysJson = ApiComponents['schemas']['RentalAgreementK
  */
 export default class RentalAgreementService {
   /**
-   * Get all rental agreements for a project
+   * Get all rental agreements for a project, optionally filtered to a single rental unit.
+   * `rentalUnitId` is only evaluated by the backend when `rentalUnitType` is also set.
    */
-  async getRentalAgreements(projectId: string): Promise<RentalAgreementItemJson[]> {
-    const result = await apiClient.get('/api/v1/projects/{projectId}/rental-agreements',
-      {pathParams: { projectId },});
+  async getRentalAgreements(
+    projectId: string,
+    filter?: { rentalUnitId?: string; rentalUnitType?: UnitType },
+  ): Promise<RentalAgreementItemJson[]> {
+    const result = await apiClient.get('/api/v1/projects/{projectId}/rental-agreements', {
+      pathParams: { projectId },
+      params: {
+        ...(filter?.rentalUnitId ? { rentalUnitId: filter.rentalUnitId } : {}),
+        ...(filter?.rentalUnitType ? { rentalUnitType: filter.rentalUnitType } : {}),
+      },
+    });
     return result.rentalAgreements || [];
   }
 

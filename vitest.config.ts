@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url';
 import {mergeConfig, defineConfig, configDefaults} from 'vitest/config';
-import viteConfig from './vite.config';
+import viteConfig from './vite.config.ts';
 import { resolve } from 'node:path';
 
 export default mergeConfig(
@@ -42,8 +42,8 @@ export default mergeConfig(
       clearMocks: true,
       exclude: [...configDefaults.exclude, 'e2e/*', '.claude/**'],
       setupFiles: [
-        resolve(__dirname, 'test/setup/jsdom-fix.ts'),
-        resolve(__dirname, 'test/setup/vitest.setup.ts'),
+        resolve(import.meta.dirname, 'test/setup/jsdom-fix.ts'),
+        resolve(import.meta.dirname, 'test/setup/vitest.setup.ts'),
       ],
       root: fileURLToPath(new URL('./', import.meta.url)),
     },
