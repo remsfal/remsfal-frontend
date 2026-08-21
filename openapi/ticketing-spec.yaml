@@ -494,6 +494,10 @@ components:
           type: string
           $comment: "Only available for project issues, not for tenancy issues"
           $ref: "#/components/schemas/UUID"
+        reportedBy:
+          type: string
+          description: Name of the user who reported this issue
+          readOnly: true
     IssueJson:
       description: "An issue, as visible to the project manager with full access to\
         \ all fields and relations"
