@@ -131,7 +131,7 @@ const totalRent = computed(() => {
             <dl class="grid grid-cols-2 gap-2 text-sm">
               <div v-if="unit.basicRent !== undefined && unit.basicRent !== null">
                 <dt class="text-gray-600">
-                  {{ t('rentalAgreement.step2.basicRent') }}
+                  {{ t('rentalAgreement.common.basicRent') }}
                 </dt>
                 <dd class="font-semibold">
                   {{ n(unit.basicRent, 'currency') }}
@@ -139,7 +139,7 @@ const totalRent = computed(() => {
               </div>
               <div v-if="unit.operatingCostsPrepayment !== undefined && unit.operatingCostsPrepayment !== null">
                 <dt class="text-gray-600">
-                  {{ t('rentalAgreement.step2.operatingCosts') }}
+                  {{ t('rentalAgreement.common.operatingCosts') }}
                 </dt>
                 <dd class="font-semibold">
                   {{ n(unit.operatingCostsPrepayment, 'currency') }}
@@ -147,7 +147,7 @@ const totalRent = computed(() => {
               </div>
               <div v-if="unit.heatingCostsPrepayment !== undefined && unit.heatingCostsPrepayment !== null">
                 <dt class="text-gray-600">
-                  {{ t('rentalAgreement.step2.heatingCosts') }}
+                  {{ t('rentalAgreement.common.heatingCosts') }}
                 </dt>
                 <dd class="font-semibold">
                   {{ n(unit.heatingCostsPrepayment, 'currency') }}

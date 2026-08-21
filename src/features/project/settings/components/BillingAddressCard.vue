@@ -38,11 +38,11 @@ const {currentValues, initialValues, formKey, isDirty, localizedCountries, handl
     return {
       owner: project.owner || '',
       careOf: project.careOf || '',
-      street: project.address?.street || '',
-      zip: project.address?.zip || '',
-      city: project.address?.city || '',
-      province: project.address?.province || '',
-      countryCode: project.address?.countryCode || '',
+      street: project.billingAddress?.street || '',
+      zip: project.billingAddress?.zip || '',
+      city: project.billingAddress?.city || '',
+      province: project.billingAddress?.province || '',
+      countryCode: project.billingAddress?.countryCode || '',
     };
   },
   save: async (payload) => {
@@ -50,7 +50,7 @@ const {currentValues, initialValues, formKey, isDirty, localizedCountries, handl
       title: projectTitle.value,
       owner: payload.owner || undefined,
       careOf: payload.careOf || undefined,
-      address: {
+      billingAddress: {
         street: payload.street,
         zip: payload.zip,
         city: payload.city,

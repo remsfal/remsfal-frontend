@@ -9,3 +9,5 @@ export { default as RentalAgreementUnitListCard } from './components/RentalAgree
 export { default as TenantContactDataCard } from './components/TenantContactDataCard.vue';
 export { default as TenantAddressCard } from './components/TenantAddressCard.vue';
 export { default as RentalAgreementKpiCards } from './components/RentalAgreementKpiCards.vue';
+export { default as RentalAgreementListCard } from './components/RentalAgreementListCard.vue';
+export { default as TenantListCard } from './components/TenantListCard.vue';

@@ -7,7 +7,6 @@ import type { TenancyJson } from '@/services/TenancyService';
 describe('TenancieContractCard', () => {
   const contract: TenancyJson = {
     agreementId: 'aaaaaaaa-0000-0000-0000-000000000001',
-    active: true,
     startOfRental: '2024-01-01',
     basicRent: 850,
     operatingCostsPrepayment: 150,
@@ -54,7 +53,7 @@ describe('TenancieContractCard', () => {
       props: {
         contract: {
           ...contract,
-          active: false,
+          endOfRental: '2020-01-01',
           basicRent: undefined,
           operatingCostsPrepayment: undefined,
           heatingCostsPrepayment: undefined,

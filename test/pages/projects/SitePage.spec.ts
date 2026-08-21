@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import SitePage from '@/pages/projects/[projectId]/units/site/[unitId].vue';
 import SiteDataCard from '@/features/project/rentableUnits/components/SiteDataCard.vue';
-import RentableUnitTenantsCard from '@/features/project/rentableUnits/components/RentableUnitTenantsCard.vue';
+import RentalAgreementListCard from '@/features/project/rentalAgreements/components/RentalAgreementListCard.vue';
 import FacilityAddressCard from '@/features/project/rentableUnits/components/FacilityAddressCard.vue';
 
 vi.mock('vue-router', async (importOriginal) => {
@@ -22,11 +22,11 @@ vi.mock('@/features/project/rentableUnits/components/SiteDataCard.vue', () => ({
   },
 }));
 
-vi.mock('@/features/project/rentableUnits/components/RentableUnitTenantsCard.vue', () => ({
+vi.mock('@/features/project/rentalAgreements/components/RentalAgreementListCard.vue', () => ({
   default: {
-    name: 'RentableUnitTenantsCard',
-    props: ['projectId', 'unitId'],
-    template: '<div data-test="rentable-unit-tenants-card-stub" />',
+    name: 'RentalAgreementListCard',
+    props: ['projectId', 'rentalUnitId', 'rentalUnitType'],
+    template: '<div data-test="rental-agreement-list-card-stub" />',
   },
 }));
 
@@ -39,11 +39,11 @@ vi.mock('@/features/project/rentableUnits/components/FacilityAddressCard.vue', (
 }));
 
 describe('SitePage', () => {
-  it('renders UnitBreadcrumb, SiteDataCard, RentableUnitTenantsCard and FacilityAddressCard', () => {
+  it('renders UnitBreadcrumb, SiteDataCard, RentalAgreementListCard and FacilityAddressCard', () => {
     const wrapper = mount(SitePage);
     expect(wrapper.findComponent({ name: 'UnitBreadcrumb' }).exists()).toBe(true);
     expect(wrapper.findComponent(SiteDataCard).exists()).toBe(true);
-    expect(wrapper.findComponent(RentableUnitTenantsCard).exists()).toBe(true);
+    expect(wrapper.findComponent(RentalAgreementListCard).exists()).toBe(true);
     expect(wrapper.findComponent(FacilityAddressCard).exists()).toBe(true);
   });
 
@@ -60,5 +60,13 @@ describe('SitePage', () => {
     expect(card.props('projectId')).toBe('project1');
     expect(card.props('unitId')).toBe('unit1');
     expect(card.props('facilityType')).toBe('SITE');
+  });
+
+  it('passes route params and unit filter to RentalAgreementListCard', () => {
+    const wrapper = mount(SitePage);
+    const card = wrapper.findComponent(RentalAgreementListCard);
+    expect(card.props('projectId')).toBe('project1');
+    expect(card.props('rentalUnitId')).toBe('unit1');
+    expect(card.props('rentalUnitType')).toBe('SITE');
   });
 });

@@ -213,7 +213,7 @@ async function confirmTerminate(): Promise<void> {
         <dl class="space-y-2 text-[14.5px] text-gray-600">
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('rentalAgreement.step2.basicRent') }}
+              {{ formatLabel('rentalAgreement.common.basicRent') }}
             </dt>
             <dd class="text-gray-900">
               {{ formatCurrency(totalBasicRent) }}
@@ -221,7 +221,7 @@ async function confirmTerminate(): Promise<void> {
           </div>
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('rentalAgreement.step2.operatingCosts') }}
+              {{ formatLabel('rentalAgreement.common.operatingCosts') }}
             </dt>
             <dd class="text-gray-900">
               {{ formatCurrency(totalOperatingCosts) }}
@@ -229,7 +229,7 @@ async function confirmTerminate(): Promise<void> {
           </div>
           <div class="flex items-center justify-start gap-2">
             <dt class="font-medium text-gray-500">
-              {{ formatLabel('rentalAgreement.step2.heatingCosts') }}
+              {{ formatLabel('rentalAgreement.common.heatingCosts') }}
             </dt>
             <dd class="text-gray-900">
               {{ formatCurrency(totalHeatingCosts) }}
