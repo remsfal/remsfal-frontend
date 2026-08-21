@@ -76,17 +76,43 @@ describe('RentalAgreementKpiCards', () => {
     wrapper = mount(RentalAgreementKpiCards, {
       props: {
         projectId: '123',
-        unitIdsByType: {
-          APARTMENT: ['apt-1', 'apt-2', 'apt-3'],
-          BUILDING: ['building-1'],
-          SITE: [],
-        },
+        rentableUnitTree: [
+          {
+            key: 'property-1',
+            data: {
+              id: 'property-1', title: 'Property 1', type: 'PROPERTY' 
+            },
+            children: [
+              {
+                key: 'apt-1', data: {
+                  id: 'apt-1', title: 'Apartment 1', type: 'APARTMENT' 
+                } 
+              },
+              {
+                key: 'apt-2', data: {
+                  id: 'apt-2', title: 'Apartment 2', type: 'APARTMENT' 
+                } 
+              },
+              {
+                key: 'apt-3', data: {
+                  id: 'apt-3', title: 'Apartment 3', type: 'APARTMENT' 
+                } 
+              },
+              // childless -> structurally a leaf, so it can be counted for vacancy
+              {
+                key: 'building-1', data: {
+                  id: 'building-1', title: 'Building 1', type: 'BUILDING' 
+                } 
+              },
+            ],
+          },
+        ],
       },
     });
     await flushPromises();
 
     const cards = wrapper.findAllComponents(KpiCard);
-    expect(cards).toHaveLength(6);
+    expect(cards).toHaveLength(5);
 
     expect(cards[0]!.props('title')).toBe('rentalAgreement.kpi.totalRent');
     expect(cards[0]!.props('value')).toBe('1500 €');
@@ -106,10 +132,68 @@ describe('RentalAgreementKpiCards', () => {
     expect(cards[4]!.props('value')).toBe(2);
     expect(cards[4]!.props('icon')).toBe('pi pi-building');
 
-    // building-1 is rented by the still-current "future end" agreement, so no vacancy.
-    expect(cards[5]!.props('title')).toBe('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.building"}');
-    expect(cards[5]!.props('value')).toBe(0);
-    expect(cards[5]!.props('icon')).toBe('pi pi-home');
+    // building-1 is rented by the still-current "future end" agreement, so its vacancy is 0 -> no card.
+    const titles = cards.map((card) => card.props('title'));
+    expect(titles).not.toContain('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.building"}');
+  });
+
+  it('excludes container units (with children) from vacancy, but counts childless containers', async () => {
+    vi.mocked(rentalAgreementService.getRentalAgreements).mockResolvedValue([
+      {
+        id: 'a1', startOfRental: '2024-01-01', tenants: [], rentalUnits: [],
+      },
+    ]);
+
+    wrapper = mount(RentalAgreementKpiCards, {
+      props: {
+        projectId: '123',
+        rentableUnitTree: [
+          {
+            key: 'property-1',
+            data: {
+              id: 'property-1', title: 'Property 1', type: 'PROPERTY' 
+            },
+            children: [
+              {
+                key: 'building-1',
+                data: {
+                  id: 'building-1', title: 'Building 1', type: 'BUILDING' 
+                },
+                children: [
+                  {
+                    key: 'apt-1', data: {
+                      id: 'apt-1', title: 'Apartment 1', type: 'APARTMENT' 
+                    } 
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            key: 'property-2',
+            data: {
+              id: 'property-2', title: 'Property 2', type: 'PROPERTY' 
+            },
+          },
+        ],
+      },
+    });
+    await flushPromises();
+
+    const cards = wrapper.findAllComponents(KpiCard);
+    const vacancyCards = new Map(
+      cards
+        .map((card): [string, number] => [card.props('title') as string, card.props('value') as number])
+        .filter(([title]) => title.startsWith('rentalAgreement.kpi.vacancyByType')),
+    );
+
+    // building-1 has a child (apt-1), so it's not a leaf and is excluded from vacancy entirely.
+    expect(vacancyCards.has('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.building"}')).toBe(false);
+    // apt-1 is a leaf -> counted as vacant (no agreements at all).
+    expect(vacancyCards.get('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.apartment"}')).toBe(1);
+    // property-1 has a child so it's excluded; property-2 is childless (a leaf) and is the only
+    // contributor to the PROPERTY vacancy count.
+    expect(vacancyCards.get('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.property"}')).toBe(1);
   });
 
   it('deduplicates tenants that appear in multiple active agreements', async () => {
@@ -148,7 +232,7 @@ describe('RentalAgreementKpiCards', () => {
       },
     ]);
 
-    wrapper = mount(RentalAgreementKpiCards, {props: { projectId: '123', unitIdsByType: { SITE: [], STORAGE: [] } },});
+    wrapper = mount(RentalAgreementKpiCards, { props: { projectId: '123' } });
     await flushPromises();
 
     const titles = wrapper.findAllComponents(KpiCard).map((card) => card.props('title'));

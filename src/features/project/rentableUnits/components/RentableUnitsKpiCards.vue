@@ -11,14 +11,14 @@ import {propertyService,
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
 
 const props = defineProps<{ projectId: string }>();
-const emit = defineEmits<{ (e: 'update:unitIdsByType', idsByType: Record<UnitType, string[]>): void }>();
+const emit = defineEmits<{ (e: 'update:rentableUnitTree', tree: RentalUnitTreeNodeJson[]): void }>();
 const { t } = useI18n();
 const toast = useToast();
 
 const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
 const isLoading = ref(true);
 
-type UnitTypeAgg = { count: number; space: number; ids: string[] };
+type UnitTypeAgg = { count: number; space: number };
 
 function aggregate(nodes: RentalUnitTreeNodeJson[], acc: Record<UnitType, UnitTypeAgg>) {
   nodes.forEach((node) => {
@@ -26,7 +26,6 @@ function aggregate(nodes: RentalUnitTreeNodeJson[], acc: Record<UnitType, UnitTy
     if (type) {
       acc[type].count += 1;
       acc[type].space += node.data?.space ?? 0;
-      if (node.data?.id) acc[type].ids.push(node.data.id);
     }
     if (node.children?.length) aggregate(node.children, acc);
   });
@@ -34,11 +33,7 @@ function aggregate(nodes: RentalUnitTreeNodeJson[], acc: Record<UnitType, UnitTy
 
 const unitAggregates = computed(() => {
   const acc = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
-    (result, type) => ({
-      ...result, [type]: {
-        count: 0, space: 0, ids: [] 
-      } 
-    }),
+    (result, type) => ({ ...result, [type]: { count: 0, space: 0 } }),
     {} as Record<UnitType, UnitTypeAgg>,
   );
   aggregate(rentableUnitTree.value, acc);
@@ -55,11 +50,7 @@ async function fetchPropertyTree(projectId: string) {
   try {
     const data = await propertyService.getPropertyTree(projectId);
     rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
-    const idsByType = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
-      (result, type) => ({ ...result, [type]: unitAggregates.value[type].ids }),
-      {} as Record<UnitType, string[]>,
-    );
-    emit('update:unitIdsByType', idsByType);
+    emit('update:rentableUnitTree', rentableUnitTree.value);
   } catch {
     toast.add({
       severity: 'error',

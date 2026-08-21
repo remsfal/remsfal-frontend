@@ -165,7 +165,23 @@ describe('Dashboard KPI Cards E2E Tests', () => {
                     },
                   ],
                 },
+                // Childless -> structurally a leaf, so it counts towards BUILDING vacancy.
+                {
+                  key: 'building-2',
+                  data: {
+                    id: 'building-2', type: 'BUILDING', title: 'Garage', space: 20,
+                  },
+                  children: [],
+                },
               ],
+            },
+            // Childless -> structurally a leaf, so it counts towards PROPERTY vacancy.
+            {
+              key: 'property-2',
+              data: {
+                id: 'property-2', type: 'PROPERTY', title: 'Grundstück 2', space: 300,
+              },
+              children: [],
             },
           ],
         },
@@ -234,7 +250,8 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       cy.visit(`/projects/${projectId}/dashboard`);
       cy.wait(['@getPropertyTree', '@getRentalAgreements']);
 
-      // property-1 and building-1 are never referenced by a rental agreement -> fully vacant.
+      // property-1 and building-1 have children, so they're excluded from vacancy entirely;
+      // property-2 and building-2 are childless (leaves) and unreferenced -> fully vacant.
       cy.contains('.p-card', 'Leerstand Grundstück').should('contain.text', '1');
       cy.contains('.p-card', 'Leerstand Gebäude').should('contain.text', '1');
       // apt-1 is rented, apt-2 is not -> exactly one vacant apartment.

@@ -96,7 +96,7 @@ function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <div class="p-4 border rounded-lg bg-blue-50">
+  <div class="p-4 border rounded-lg bg-gray-50">
     <h4 class="font-semibold mb-4">
       {{ t('rentalAgreement.step3.newTenantDetails') }}
     </h4>
