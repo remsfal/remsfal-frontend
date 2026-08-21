@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { propertyService, type RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
+import { type RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import { useToast } from 'primevue/usetoast';
 import Skeleton from 'primevue/skeleton';
 import BaseCard from '@/components/common/BaseCard.vue';
 import RentableUnitsTable from './RentableUnitsTable.vue';
+import { useDashboardStore } from '@/stores/DashboardStore';
 
 const props = defineProps<{ projectId: string }>();
 const { t } = useI18n();
 const toast = useToast();
+const dashboardStore = useDashboardStore();
 
 // --- Refs ---
 const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
@@ -20,8 +22,8 @@ const expandedKeys = ref<TreeTableExpandedKeys>({});
 // --- Functions ---
 async function fetchPropertyTree(projectId: string) {
   try {
-    const data = await propertyService.getPropertyTree(projectId);
-    rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
+    await dashboardStore.fetchRentalUnitTree(projectId);
+    rentableUnitTree.value = dashboardStore.rentableUnitTree;
     isLoading.value = false;
     expandAll();
   } catch {
@@ -52,6 +54,7 @@ function collapseAll() {
 
 function onNewRentableUnit(title: string) {
   isLoading.value = true;
+  dashboardStore.invalidate();
   fetchPropertyTree(props.projectId);
   toast.add({
     severity: 'success',
