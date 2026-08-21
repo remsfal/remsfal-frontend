@@ -1,22 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import RentalDetailsForm from '@/features/project/rentalAgreements/components/RentalDetailsForm.vue';
 
 describe('RentalDetailsForm', () => {
   let wrapper: VueWrapper;
 
-  const defaultProps = {
-    unitTitle: 'Apartment 101',
-    unitType: 'APARTMENT',
-  };
+  const defaultProps = {};
 
   beforeEach(() => {
     wrapper = mount(RentalDetailsForm, {props: defaultProps,});
-  });
-
-  it('renders the form with unit title and type', () => {
-    expect(wrapper.find('h4').text()).toBe('Apartment 101');
-    expect(wrapper.text()).toContain('Wohnung');
   });
 
   it('renders all input fields', () => {
@@ -29,7 +21,7 @@ describe('RentalDetailsForm', () => {
 
   it('has required field indicator for billing cycle', () => {
     const labels = wrapper.findAll('label');
-    const billingCycleLabel = labels.find((label) => label.text().includes('Abrechnungszeitraum'));
+    const billingCycleLabel = labels.find((label) => label.text().includes('Zahlungszyklus'));
     expect(billingCycleLabel?.text()).toContain('*');
   });
 
@@ -46,21 +38,32 @@ describe('RentalDetailsForm', () => {
     expect(wrapper.emitted('cancel')).toBeTruthy();
   });
 
-  it('enables submit button initially (all fields optional except billing cycle)', () => {
+  it('disables the submit button while payment start is missing', () => {
     const submitButton = wrapper
       .findAll('button')
-      .find((btn) => btn.text().includes('Weitere Einheit hinzufügen'));
-    // Button should not be disabled initially since all fields are optional
+      .find((btn) => btn.attributes('type') === 'submit');
+    expect(submitButton?.attributes('disabled')).toBeDefined();
+  });
+
+  it('shows a required-field indicator and error message for payment start', () => {
+    const labels = wrapper.findAll('label');
+    const paymentStartLabel = labels.find((label) => label.text().includes('Zahlungsbeginn'));
+    expect(paymentStartLabel?.text()).toContain('*');
+    expect(wrapper.text()).toContain('Zahlungsbeginn ist erforderlich');
+  });
+
+  it('enables the submit button once payment start is provided', () => {
+    const wrapperWithStart = mount(RentalDetailsForm, {props: { initialFirstPaymentDate: '2024-01-01' },});
+
+    const submitButton = wrapperWithStart
+      .findAll('button')
+      .find((btn) => btn.attributes('type') === 'submit');
     expect(submitButton?.attributes('disabled')).toBeUndefined();
   });
 
   it('has date pickers for first and last payment', () => {
     const datePickers = wrapper.findAllComponents({ name: 'DatePicker' });
     expect(datePickers).toHaveLength(2);
-  });
-
-  it('displays unit type correctly', () => {
-    expect(wrapper.text()).toContain('Wohnung');
   });
 
   it('has currency inputs for rent fields', () => {
@@ -102,5 +105,98 @@ describe('RentalDetailsForm', () => {
   it('has billing cycle options', () => {
     const selectButton = wrapper.findComponent({ name: 'SelectButton' });
     expect(selectButton.exists()).toBe(true);
+  });
+
+  it('prefills amounts and billing cycle from the initial* props', () => {
+    const wrapperWithInitialRent = mount(RentalDetailsForm, {
+      props: {
+        initialBasicRent: 750,
+        initialOperatingCostsPrepayment: 120,
+        initialHeatingCostsPrepayment: 80,
+        initialBillingCycle: 'WEEKLY',
+      },
+    });
+
+    expect(
+      (wrapperWithInitialRent.find('input[name="basicRent"]').element as HTMLInputElement).value,
+    ).toContain('750');
+    expect(
+      (wrapperWithInitialRent.find('input[name="operatingCostsPrepayment"]').element as HTMLInputElement).value,
+    ).toContain('120');
+    expect(
+      (wrapperWithInitialRent.find('input[name="heatingCostsPrepayment"]').element as HTMLInputElement).value,
+    ).toContain('80');
+    const weeklyButton = wrapperWithInitialRent
+      .findAll('button')
+      .find((btn) => btn.text() === 'Wöchentlich');
+    expect(weeklyButton?.attributes('aria-pressed')).toBe('true');
+  });
+
+  it('emits submit with the entered values and resets the form', async () => {
+    const [firstDatePicker, lastDatePicker] = wrapper.findAllComponents({ name: 'DatePicker' });
+    await firstDatePicker.vm.$emit('update:modelValue', new Date('2024-01-01'));
+    await lastDatePicker.vm.$emit('update:modelValue', new Date('2024-12-31'));
+    await wrapper.vm.$nextTick();
+
+    const basicRentInput = wrapper.findComponent({ name: 'InputNumber' });
+    (basicRentInput.vm as unknown as { writeValue: (v: number) => void }).writeValue(500);
+    await wrapper.vm.$nextTick();
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    const emitted = wrapper.emitted('submit');
+    expect(emitted).toBeTruthy();
+    expect(emitted![0][0]).toEqual(expect.objectContaining({
+      basicRent: 500,
+      billingCycle: 'MONTHLY',
+      firstPaymentDate: '2024-01-01',
+      lastPaymentDate: '2024-12-31',
+    }));
+  });
+
+  it('does not emit submit when the form is submitted without a payment start date', async () => {
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.emitted('submit')).toBeFalsy();
+  });
+
+  it('emits submit with optional cost fields populated and basic rent left unset', async () => {
+    const [firstDatePicker] = wrapper.findAllComponents({ name: 'DatePicker' });
+    await firstDatePicker.vm.$emit('update:modelValue', new Date('2024-03-01'));
+    await wrapper.vm.$nextTick();
+
+    const [, operatingCostsInput, heatingCostsInput] = wrapper.findAllComponents({ name: 'InputNumber' });
+    (operatingCostsInput.vm as unknown as { writeValue: (v: number) => void }).writeValue(150);
+    (heatingCostsInput.vm as unknown as { writeValue: (v: number) => void }).writeValue(80);
+    await wrapper.vm.$nextTick();
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    const emitted = wrapper.emitted('submit');
+    expect(emitted).toBeTruthy();
+    expect(emitted![0][0]).toEqual(expect.objectContaining({
+      basicRent: undefined,
+      operatingCostsPrepayment: 150,
+      heatingCostsPrepayment: 80,
+      firstPaymentDate: '2024-03-01',
+    }));
+  });
+
+  it('shows a validation error and disables submit when the end date is before the start date', () => {
+    const wrapperWithInvalidOrder = mount(RentalDetailsForm, {
+      props: {
+        initialFirstPaymentDate: '2024-12-31',
+        initialLastPaymentDate: '2024-01-01',
+      },
+    });
+
+    expect(wrapperWithInvalidOrder.text()).toContain('Enddatum muss nach dem Startdatum liegen');
+    const submitButton = wrapperWithInvalidOrder
+      .findAll('button')
+      .find((btn) => btn.attributes('type') === 'submit');
+    expect(submitButton?.attributes('disabled')).toBeDefined();
   });
 });

@@ -419,6 +419,8 @@ export interface components {
       readonly priority?: components["schemas"]["IssuePriority"];
       /** @description Unique identifier of the assignee of the issue */
       readonly assigneeId?: components["schemas"]["UUID"];
+      /** @description Name of the user who reported this issue */
+      readonly reportedBy?: string;
     };
     /** @description An issue, as visible to the project manager with full access to all fields and relations */
     IssueJson: {

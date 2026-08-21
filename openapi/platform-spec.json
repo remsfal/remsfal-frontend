@@ -637,6 +637,11 @@
             "type" : "string",
             "$comment" : "Only available for project issues, not for tenancy issues",
             "$ref" : "#/components/schemas/UUID"
+          },
+          "reportedBy" : {
+            "type" : "string",
+            "description" : "Name of the user who reported this issue",
+            "readOnly" : true
           }
         }
       },
