@@ -144,7 +144,7 @@ describe('AdjustRentDialog', () => {
     });
 
     it('treats a selected node without a title as active (empty title fallback)', async () => {
-      const untitledNode = { key: 'apt-3', data: { id: 'apt-3', type: 'APARTMENT' } };
+      const untitledNode = { key: 'apt-3', data: { id: 'apt-3', type: 'APARTMENT' as const, title: '' } };
       vi.mocked(propertyService.getPropertyTree).mockResolvedValue({ properties: [untitledNode] });
 
       const wrapper = mountDialog(null);
