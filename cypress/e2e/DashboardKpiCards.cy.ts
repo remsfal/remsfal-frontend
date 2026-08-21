@@ -202,29 +202,14 @@ describe('Dashboard KPI Cards E2E Tests', () => {
         },
       }).as('getRentalAgreements');
 
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
-        statusCode: 200,
-        body: {
-          tenants: [
-            {
-              id: 'tenant-1', firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com', active: true,
-            },
-            {
-              id: 'tenant-2', firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@example.com', active: false,
-            },
-          ],
-        },
-      }).as('getTenants');
-
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait(['@getPropertyTree', '@getRentalAgreements', '@getTenants']);
+      cy.wait(['@getPropertyTree', '@getRentalAgreements']);
 
       // Only the still-current agreement contributes; the ended one (9999s) must be excluded.
       cy.contains('.p-card', 'Mieteinnahmen gesamt').should('contain.text', '1.000,00');
       cy.contains('.p-card', 'Heizkosten gesamt').should('contain.text', '100,00');
       cy.contains('.p-card', 'Betriebskosten gesamt').should('contain.text', '50,00');
 
-      // Only tenant-1 is active.
       cy.contains('.p-card', 'Aktive Mieter').should('contain.text', '1');
     });
 
@@ -246,13 +231,8 @@ describe('Dashboard KPI Cards E2E Tests', () => {
         },
       }).as('getRentalAgreements');
 
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
-        statusCode: 200,
-        body: { tenants: [] },
-      }).as('getTenants');
-
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait(['@getPropertyTree', '@getRentalAgreements', '@getTenants']);
+      cy.wait(['@getPropertyTree', '@getRentalAgreements']);
 
       // property-1 and building-1 are never referenced by a rental agreement -> fully vacant.
       cy.contains('.p-card', 'Leerstand Grundstück').should('contain.text', '1');
@@ -267,13 +247,8 @@ describe('Dashboard KPI Cards E2E Tests', () => {
         body: { rentalAgreements: [] },
       }).as('getRentalAgreements');
 
-      cy.intercept('GET', `/api/v1/projects/${projectId}/tenants`, {
-        statusCode: 200,
-        body: { tenants: [] },
-      }).as('getTenants');
-
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait(['@getRentalAgreements', '@getTenants']);
+      cy.wait('@getRentalAgreements');
 
       cy.get('a[href*="/agreements"]').should('be.visible');
       cy.contains('.p-card', 'Aktive Mieter').should('not.exist');
