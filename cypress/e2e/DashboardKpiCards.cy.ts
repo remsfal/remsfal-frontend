@@ -203,7 +203,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       }).as('getRentalAgreements');
 
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait(['@getPropertyTree', '@getRentalAgreements', '@getTenants']);
+      cy.wait(['@getPropertyTree', '@getRentalAgreements']);
 
       // Only the still-current agreement contributes; the ended one (9999s) must be excluded.
       cy.contains('.p-card', 'Mieteinnahmen gesamt').should('contain.text', '1.000,00');
@@ -232,7 +232,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       }).as('getRentalAgreements');
 
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait(['@getPropertyTree', '@getRentalAgreements', '@getTenants']);
+      cy.wait(['@getPropertyTree', '@getRentalAgreements']);
 
       // property-1 and building-1 are never referenced by a rental agreement -> fully vacant.
       cy.contains('.p-card', 'Leerstand Grundstück').should('contain.text', '1');
@@ -248,7 +248,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       }).as('getRentalAgreements');
 
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait(['@getRentalAgreements', '@getTenants']);
+      cy.wait('@getRentalAgreements');
 
       cy.get('a[href*="/agreements"]').should('be.visible');
       cy.contains('.p-card', 'Aktive Mieter').should('not.exist');
