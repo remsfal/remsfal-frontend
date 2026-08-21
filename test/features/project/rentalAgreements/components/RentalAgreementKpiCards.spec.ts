@@ -184,7 +184,7 @@ describe('RentalAgreementKpiCards', () => {
     const cards = wrapper.findAllComponents(KpiCard);
     const vacancyCards = new Map(
       cards
-        .map((card) => [card.props('title') as string, card.props('value') as number])
+        .map((card): [string, number] => [card.props('title') as string, card.props('value') as number])
         .filter(([title]) => title.startsWith('rentalAgreement.kpi.vacancyByType')),
     );
 
