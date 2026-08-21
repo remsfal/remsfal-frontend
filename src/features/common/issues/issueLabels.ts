@@ -59,6 +59,8 @@ export const getIssueTypeLabel = (
       return t('issueType.termination');
     case 'INQUIRY':
       return t('issueType.inquiry');
+    case 'SELF_SERVICE':
+      return t('issueType.selfService');
     default:
       return type ?? '—';
   }
@@ -80,6 +82,8 @@ export const getIssueTypeSeverity = (
       return 'danger';
     case 'INQUIRY':
       return 'info';
+    case 'SELF_SERVICE':
+      return 'secondary';
     default:
       return 'info';
   }
