@@ -54,6 +54,7 @@ describe('issueLabels', () => {
       ['MAINTENANCE', 'Wartung'],
       ['TERMINATION', 'Kündigung'],
       ['INQUIRY', 'Anfrage'],
+      ['SELF_SERVICE', 'Datensatzänderung'],
     ] as const)('maps %s to translated label', (type, expected) => {
       expect(getIssueTypeLabel(type, t)).toBe(expected);
     });
@@ -70,6 +71,7 @@ describe('issueLabels', () => {
       ['TASK', 'contrast'],
       ['DEFECT', 'warn'],
       ['MAINTENANCE', 'success'],
+      ['SELF_SERVICE', 'secondary'],
     ] as const)('maps %s to severity %s', (type, expected) => {
       expect(getIssueTypeSeverity(type)).toBe(expected);
     });
