@@ -7,7 +7,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import BaseCard from '@/components/common/BaseCard.vue';
 import { issueService, type IssueItemJson, type IssuePriority, type IssueStatus } from '@/services/IssueService';
-import { getIssuePriorityLabel } from '@/features/common/issues/issueLabels';
+import { getIssueTypeLabel } from '@/features/common/issues/issueLabels';
 import { useUserSessionStore } from '@/stores/UserSession';
 
 const props = defineProps<{ projectId: string }>();
@@ -16,8 +16,7 @@ const router = useRouter();
 const toast = useToast();
 const sessionStore = useUserSessionStore();
 
-const ACTIVE_STATUSES: IssueStatus[] = ['PENDING', 'OPEN', 'IN_PROGRESS'];
-const OPEN_STATUSES: IssueStatus[] = ['OPEN', 'IN_PROGRESS'];
+const OPEN_STATUSES: IssueStatus[] = ['PENDING', 'OPEN', 'IN_PROGRESS'];
 
 const PRIORITY_RANK: Record<IssuePriority, number> = {
   URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3, UNCLASSIFIED: 4,
@@ -48,10 +47,10 @@ async function loadUrgentIssues(projectId: string, assigneeId?: string): Promise
   }
 }
 
-async function loadRecentIssues(projectId: string, assigneeId: string): Promise<IssueItemJson[]> {
+async function loadRecentIssues(projectId: string): Promise<IssueItemJson[]> {
   try {
     const page = await issueService.getIssues(
-      projectId, ACTIVE_STATUSES, undefined, assigneeId, undefined, undefined, undefined, undefined, 5,
+      projectId, 'PENDING', undefined, undefined, undefined, undefined, undefined, undefined, 5,
     );
     return (page.issues ?? []).filter((issue): issue is IssueItemJson & { id: string } => !!issue.id);
   } catch {
@@ -65,7 +64,7 @@ async function loadData(projectId: string) {
   const assigneeId = sessionStore.user?.id;
   const [urgent, recent] = await Promise.all([
     loadUrgentIssues(projectId, assigneeId),
-    assigneeId ? loadRecentIssues(projectId, assigneeId) : Promise.resolve([]),
+    loadRecentIssues(projectId),
   ]);
   urgentIssues.value = urgent;
   recentIssues.value = recent;
@@ -81,7 +80,7 @@ onMounted(() => loadData(props.projectId));
 </script>
 
 <template>
-  <div class="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4" data-testid="issue-dashboard-cards">
+  <div class="mb-6 grid grid-cols-1 xl:grid-cols-2 gap-4" data-testid="issue-dashboard-cards">
     <BaseCard :loading="isLoading" :skeletonRows="5">
       <template #title>
         {{ t('projectMenu.issueManagement.mine') }}
@@ -105,9 +104,9 @@ onMounted(() => loadData(props.projectId));
               <span class="font-medium truncate">{{ slotProps.data.title }}</span>
             </template>
           </Column>
-          <Column field="priority" :header="t('issueDetails.fields.priority')">
+          <Column field="type" :header="t('issueDetails.fields.type')">
             <template #body="slotProps">
-              <span class="text-muted-color text-sm">{{ getIssuePriorityLabel(slotProps.data.priority, t) }}</span>
+              <span class="text-muted-color text-sm">{{ getIssueTypeLabel(slotProps.data.type, t) }}</span>
             </template>
           </Column>
         </DataTable>
@@ -137,9 +136,9 @@ onMounted(() => loadData(props.projectId));
               <span class="font-medium truncate">{{ slotProps.data.title }}</span>
             </template>
           </Column>
-          <Column field="priority" :header="t('issueDetails.fields.priority')">
+          <Column field="type" :header="t('issueDetails.fields.type')">
             <template #body="slotProps">
-              <span class="text-muted-color text-sm">{{ getIssuePriorityLabel(slotProps.data.priority, t) }}</span>
+              <span class="text-muted-color text-sm">{{ getIssueTypeLabel(slotProps.data.type, t) }}</span>
             </template>
           </Column>
         </DataTable>

@@ -450,6 +450,7 @@
   "issueType.maintenance": "Wartung",
   "issueType.termination": "Kündigung",
   "issueType.inquiry": "Anfrage",
+  "issueType.selfService": "Datensatzänderung",
   "inbox.filters.smart.urgent": "Dringend",
   "inbox.filters.smart.pendingApplications": "Ausstehende Anträge",
   "inbox.filters.smart.activeMaintenance": "Aktive Wartung",
