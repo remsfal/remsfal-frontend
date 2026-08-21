@@ -9,7 +9,7 @@ import BaseCard from '@/components/common/BaseCard.vue';
 import {toRentableUnitView, EntityType,
   type RentalUnitTreeNodeJson, type RentalUnitNodeDataJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType } from '../unitTypeIcons';
-import { useDashboardStore } from '@/stores/DashboardStore';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -19,13 +19,13 @@ const props = defineProps<{
 const router = useRouter();
 const { t } = useI18n();
 const items = ref<MenuItem[]>([]);
-const dashboardStore = useDashboardStore();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const fetchPathNodes = async (targetId: string | undefined): Promise<RentalUnitNodeDataJson[]> => {
   if (!targetId || !props.projectId) return [];
   try {
-    await dashboardStore.fetchRentalUnitTree(props.projectId);
-    const tree = dashboardStore.rentableUnitTree;
+    await rentableUnitsStore.fetchRentalUnitTree(props.projectId);
+    const tree = rentableUnitsStore.rentableUnitTree;
 
     const findPath = (
       nodes: RentalUnitTreeNodeJson[],

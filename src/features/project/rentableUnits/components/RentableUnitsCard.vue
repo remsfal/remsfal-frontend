@@ -6,12 +6,12 @@ import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import { useToast } from 'primevue/usetoast';
 import BaseCard from '@/components/common/BaseCard.vue';
 import RentableUnitsTable from './RentableUnitsTable.vue';
-import { useDashboardStore } from '@/stores/DashboardStore';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{ projectId: string }>();
 const { t } = useI18n();
 const toast = useToast();
-const dashboardStore = useDashboardStore();
+const rentableUnitsStore = useRentableUnitsStore();
 
 // --- Refs ---
 const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
@@ -21,8 +21,8 @@ const expandedKeys = ref<TreeTableExpandedKeys>({});
 // --- Functions ---
 async function fetchPropertyTree(projectId: string) {
   try {
-    await dashboardStore.fetchRentalUnitTree(projectId);
-    rentableUnitTree.value = dashboardStore.rentableUnitTree;
+    await rentableUnitsStore.fetchRentalUnitTree(projectId);
+    rentableUnitTree.value = rentableUnitsStore.rentableUnitTree;
     isLoading.value = false;
     expandAll();
   } catch {
@@ -55,7 +55,7 @@ function collapseAll() {
 
 function onNewRentableUnit(title: string) {
   isLoading.value = true;
-  dashboardStore.invalidate();
+  rentableUnitsStore.invalidate();
   fetchPropertyTree(props.projectId);
   toast.add({
     severity: 'success',

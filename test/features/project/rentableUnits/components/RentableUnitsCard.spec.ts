@@ -2,7 +2,7 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RentableUnitsCard from '@/features/project/rentableUnits/components/RentableUnitsCard.vue';
 import { type PropertyListJson, propertyService } from '@/features/project/rentableUnits/services/PropertyService';
-import { useDashboardStore } from '@/stores/DashboardStore';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 vi.mock('@/features/project/rentableUnits/services/PropertyService');
 
@@ -11,7 +11,7 @@ describe('RentableUnitsCard', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    useDashboardStore().$reset();
+    useRentableUnitsStore().$reset();
   });
 
   afterEach(() => {

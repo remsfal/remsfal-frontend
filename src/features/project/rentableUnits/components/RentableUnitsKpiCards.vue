@@ -7,13 +7,13 @@ import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
 import { type RentalUnitTreeNodeJson, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
-import { useDashboardStore } from '@/stores/DashboardStore';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<{ (e: 'update:unitIdsByType', idsByType: Record<UnitType, string[]>): void }>();
 const { t } = useI18n();
 const toast = useToast();
-const dashboardStore = useDashboardStore();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const isLoading = ref(true);
 
@@ -40,7 +40,7 @@ const unitAggregates = computed(() => {
     }),
     {} as Record<UnitType, UnitTypeAgg>,
   );
-  aggregate(dashboardStore.rentableUnitTree, acc);
+  aggregate(rentableUnitsStore.rentableUnitTree, acc);
   return acc;
 });
 
@@ -52,7 +52,7 @@ const kpis = computed(() =>
 
 async function fetchPropertyTree(projectId: string) {
   try {
-    await dashboardStore.fetchRentalUnitTree(projectId);
+    await rentableUnitsStore.fetchRentalUnitTree(projectId);
     isLoading.value = false;
     const idsByType = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
       (result, type) => ({ ...result, [type]: unitAggregates.value[type].ids }),

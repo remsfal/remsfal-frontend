@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import {propertyService,
   type RentalUnitTreeNodeJson,} from '@/features/project/rentableUnits/services/PropertyService';
 
-export const useDashboardStore = defineStore('dashboard', {
+export const useRentableUnitsStore = defineStore('rentable-units', {
   state: () => ({
     rentableUnitTree: [] as RentalUnitTreeNodeJson[],
     loadedProjectId: undefined as string | undefined,

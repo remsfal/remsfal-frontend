@@ -3,7 +3,7 @@ import { mount, VueWrapper, flushPromises } from '@vue/test-utils';
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 import type { PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
-import { useDashboardStore } from '@/stores/DashboardStore';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 vi.mock('@/features/project/rentableUnits/services/PropertyService', { spy: true });
 
@@ -30,7 +30,7 @@ describe('RentableUnitSelect.vue', () => {
   };
 
   beforeEach(async () => {
-    useDashboardStore().$reset();
+    useRentableUnitsStore().$reset();
     vi.spyOn(propertyService, 'getPropertyTree').mockResolvedValue(mockTree);
 
     wrapper = mount(RentableUnitSelect, {
@@ -104,7 +104,7 @@ describe('RentableUnitSelect.vue', () => {
   });
 
   it('logs an error when loading the property tree fails', async () => {
-    useDashboardStore().$reset();
+    useRentableUnitsStore().$reset();
     vi.mocked(propertyService.getPropertyTree).mockRejectedValue(new Error('network error'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

@@ -12,7 +12,7 @@ import { apartmentService } from '@/features/project/rentableUnits/services/Apar
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
-import { useDashboardStore } from '@/stores/DashboardStore';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const push = vi.fn();
 vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }));
@@ -91,7 +91,7 @@ describe('RentalAgreementUnitListCard', () => {
     ) as HTMLButtonElement | undefined;
 
   beforeEach(() => {
-    useDashboardStore().$reset();
+    useRentableUnitsStore().$reset();
     vi.mocked(propertyService.getProperty).mockResolvedValue({
       id: 'prop-1', title: 'Haupthaus', type: 'PROPERTY' 
     });

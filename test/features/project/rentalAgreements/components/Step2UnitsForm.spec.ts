@@ -4,7 +4,7 @@ import { flushPromises } from '@vue/test-utils';
 import Step2UnitsForm from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import type { SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import { propertyService, type PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
-import { useDashboardStore } from '@/stores/DashboardStore';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 vi.mock('@/features/project/rentableUnits/services/PropertyService', () => ({propertyService: {getPropertyTree: vi.fn(),},}));
 
@@ -62,7 +62,7 @@ describe('Step2UnitsForm', () => {
   };
 
   beforeEach(async () => {
-    useDashboardStore().$reset();
+    useRentableUnitsStore().$reset();
     vi.mocked(propertyService.getPropertyTree).mockResolvedValue(mockPropertyTree);
 
     wrapper = mount(Step2UnitsForm, {props: defaultProps,});
