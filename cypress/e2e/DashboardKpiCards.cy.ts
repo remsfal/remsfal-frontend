@@ -48,7 +48,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
     }).as('getInboxMessages');
   });
 
-  describe('IssueOverviewCards', () => {
+  describe('IssueDashboardCards', () => {
     beforeEach(() => {
       // The dashboard also mounts RentableUnitsKpiCards, so its endpoint must always be mocked.
       cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
@@ -59,7 +59,8 @@ describe('Dashboard KPI Cards E2E Tests', () => {
 
     it('renders the top urgent issues by priority and the current user\'s recent issues', () => {
       cy.intercept('GET', '/ticketing/v1/issues**', (req) => {
-        if (req.query.assigneeId) {
+        const status = new URL(req.url).searchParams.getAll('status');
+        if (status.length === 1 && status.includes('PENDING')) {
           req.reply({
             statusCode: 200,
             body: {
@@ -96,9 +97,9 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       // and has occasionally missed the default 5000ms requestTimeout.
       cy.wait(['@getIssues', '@getIssues'], { timeout: 10000 });
 
-      cy.get('[data-testid="issue-overview-cards"]').within(() => {
-        cy.get('[data-testid="issue-overview-urgent-row"]').first().should('contain.text', 'Urgent issue');
-        cy.get('[data-testid="issue-overview-recent-row"]').first().should('contain.text', 'My assigned issue');
+      cy.get('[data-testid="issue-dashboard-cards"]').within(() => {
+        cy.get('[data-testid="issue-dashboard-urgent-row"]').first().should('contain.text', 'Urgent issue');
+        cy.get('[data-testid="issue-dashboard-recent-row"]').first().should('contain.text', 'My assigned issue');
       });
     });
 
@@ -112,11 +113,11 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       cy.wait('@getUser');
       cy.wait('@getIssues', { timeout: 10000 });
 
-      cy.get('[data-testid="issue-overview-cards"]').within(() => {
-        cy.get('[data-testid="issue-overview-urgent-row"]').should('not.exist');
-        cy.get('[data-testid="issue-overview-recent-row"]').should('not.exist');
+      cy.get('[data-testid="issue-dashboard-cards"]').within(() => {
+        cy.get('[data-testid="issue-dashboard-urgent-row"]').should('not.exist');
+        cy.get('[data-testid="issue-dashboard-recent-row"]').should('not.exist');
       });
-      cy.get('[data-testid="issue-overview-cards"]').invoke('text').then((text) => {
+      cy.get('[data-testid="issue-dashboard-cards"]').invoke('text').then((text) => {
         expect(text.match(/Keine aktiven Aufgaben\./g)).to.have.length(2);
       });
     });
@@ -202,14 +203,13 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       }).as('getRentalAgreements');
 
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait(['@getPropertyTree', '@getRentalAgreements']);
+      cy.wait(['@getPropertyTree', '@getRentalAgreements', '@getTenants']);
 
       // Only the still-current agreement contributes; the ended one (9999s) must be excluded.
       cy.contains('.p-card', 'Mieteinnahmen gesamt').should('contain.text', '1.000,00');
       cy.contains('.p-card', 'Heizkosten gesamt').should('contain.text', '100,00');
       cy.contains('.p-card', 'Betriebskosten gesamt').should('contain.text', '50,00');
 
-      // Only tenant-1 is on the still-current agreement; the ended agreement's tenant is excluded.
       cy.contains('.p-card', 'Aktive Mieter').should('contain.text', '1');
     });
 
@@ -232,7 +232,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       }).as('getRentalAgreements');
 
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait(['@getPropertyTree', '@getRentalAgreements']);
+      cy.wait(['@getPropertyTree', '@getRentalAgreements', '@getTenants']);
 
       // property-1 and building-1 are never referenced by a rental agreement -> fully vacant.
       cy.contains('.p-card', 'Leerstand Grundstück').should('contain.text', '1');
@@ -248,7 +248,7 @@ describe('Dashboard KPI Cards E2E Tests', () => {
       }).as('getRentalAgreements');
 
       cy.visit(`/projects/${projectId}/dashboard`);
-      cy.wait('@getRentalAgreements');
+      cy.wait(['@getRentalAgreements', '@getTenants']);
 
       cy.get('a[href*="/agreements"]').should('be.visible');
       cy.contains('.p-card', 'Aktive Mieter').should('not.exist');
