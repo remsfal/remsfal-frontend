@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { mount, VueWrapper } from '@vue/test-utils';
+import { mount, flushPromises, VueWrapper } from '@vue/test-utils';
 import RentalDetailsForm from '@/features/project/rentalAgreements/components/RentalDetailsForm.vue';
 
 describe('RentalDetailsForm', () => {
@@ -130,5 +130,73 @@ describe('RentalDetailsForm', () => {
       .findAll('button')
       .find((btn) => btn.text() === 'Wöchentlich');
     expect(weeklyButton?.attributes('aria-pressed')).toBe('true');
+  });
+
+  it('emits submit with the entered values and resets the form', async () => {
+    const [firstDatePicker, lastDatePicker] = wrapper.findAllComponents({ name: 'DatePicker' });
+    await firstDatePicker.vm.$emit('update:modelValue', new Date('2024-01-01'));
+    await lastDatePicker.vm.$emit('update:modelValue', new Date('2024-12-31'));
+    await wrapper.vm.$nextTick();
+
+    const basicRentInput = wrapper.findComponent({ name: 'InputNumber' });
+    (basicRentInput.vm as unknown as { writeValue: (v: number) => void }).writeValue(500);
+    await wrapper.vm.$nextTick();
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    const emitted = wrapper.emitted('submit');
+    expect(emitted).toBeTruthy();
+    expect(emitted![0][0]).toEqual(expect.objectContaining({
+      basicRent: 500,
+      billingCycle: 'MONTHLY',
+      firstPaymentDate: '2024-01-01',
+      lastPaymentDate: '2024-12-31',
+    }));
+  });
+
+  it('does not emit submit when the form is submitted without a payment start date', async () => {
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.emitted('submit')).toBeFalsy();
+  });
+
+  it('emits submit with optional cost fields populated and basic rent left unset', async () => {
+    const [firstDatePicker] = wrapper.findAllComponents({ name: 'DatePicker' });
+    await firstDatePicker.vm.$emit('update:modelValue', new Date('2024-03-01'));
+    await wrapper.vm.$nextTick();
+
+    const [, operatingCostsInput, heatingCostsInput] = wrapper.findAllComponents({ name: 'InputNumber' });
+    (operatingCostsInput.vm as unknown as { writeValue: (v: number) => void }).writeValue(150);
+    (heatingCostsInput.vm as unknown as { writeValue: (v: number) => void }).writeValue(80);
+    await wrapper.vm.$nextTick();
+
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    const emitted = wrapper.emitted('submit');
+    expect(emitted).toBeTruthy();
+    expect(emitted![0][0]).toEqual(expect.objectContaining({
+      basicRent: undefined,
+      operatingCostsPrepayment: 150,
+      heatingCostsPrepayment: 80,
+      firstPaymentDate: '2024-03-01',
+    }));
+  });
+
+  it('shows a validation error and disables submit when the end date is before the start date', () => {
+    const wrapperWithInvalidOrder = mount(RentalDetailsForm, {
+      props: {
+        initialFirstPaymentDate: '2024-12-31',
+        initialLastPaymentDate: '2024-01-01',
+      },
+    });
+
+    expect(wrapperWithInvalidOrder.text()).toContain('Enddatum muss nach dem Startdatum liegen');
+    const submitButton = wrapperWithInvalidOrder
+      .findAll('button')
+      .find((btn) => btn.attributes('type') === 'submit');
+    expect(submitButton?.attributes('disabled')).toBeDefined();
   });
 });

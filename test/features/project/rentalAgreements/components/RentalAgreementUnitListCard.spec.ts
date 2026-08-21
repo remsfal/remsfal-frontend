@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import RentalAgreementUnitListCard from '@/features/project/rentalAgreements/components/RentalAgreementUnitListCard.vue';
 import AdjustRentDialog from '@/features/project/rentalAgreements/components/AdjustRentDialog.vue';
+import BaseDialog from '@/components/common/BaseDialog.vue';
 import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
@@ -290,5 +291,195 @@ describe('RentalAgreementUnitListCard', () => {
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
     expect(document.querySelector('.p-dialog')).toBeNull();
     consoleSpy.mockRestore();
+  });
+
+  it('navigates to the unit when Enter is pressed on the group header row', async () => {
+    mountCard();
+    await flushPromises();
+
+    const row = findGroupHeaderRow('Haupthaus');
+    const headerDiv = row?.querySelector('[role="button"]') as HTMLElement;
+    headerDiv.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await flushPromises();
+
+    expect(push).toHaveBeenCalledWith({
+      name: 'PropertyView',
+      params: { projectId: 'proj-1', unitId: 'prop-1' },
+    });
+  });
+
+  it('closes the AdjustRentDialog when it emits update:visible', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    const addBtn = wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen');
+    await addBtn?.trigger('click');
+    await flushPromises();
+    expect(wrapper.findComponent(AdjustRentDialog).props('visible')).toBe(true);
+
+    await wrapper.findComponent(AdjustRentDialog).vm.$emit('update:visible', false);
+    await flushPromises();
+
+    expect(wrapper.findComponent(AdjustRentDialog).props('visible')).toBe(false);
+  });
+
+  it('closes the remove-confirm dialog via the cancel button without removing the unit', async () => {
+    mountCard();
+    await flushPromises();
+
+    const row = findGroupHeaderRow('Haupthaus');
+    const deleteBtn = row?.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
+    deleteBtn.click();
+    await flushPromises();
+    expect(document.body.textContent).toContain('Bestätigung');
+
+    const cancelBtn = Array.from(document.querySelectorAll('.p-dialog button')).find(
+      (btn) => btn.textContent?.trim() === 'Abbrechen',
+    ) as HTMLButtonElement;
+    cancelBtn.click();
+    await flushPromises();
+
+    expect(rentalAgreementService.removeRentalUnit).not.toHaveBeenCalled();
+    expect(document.body.textContent).not.toContain('Bestätigung');
+  });
+
+  it('closes the remove-confirm dialog when BaseDialog itself emits update:visible', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    const row = findGroupHeaderRow('Haupthaus');
+    const deleteBtn = row?.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
+    deleteBtn.click();
+    await flushPromises();
+
+    const removeDialog = wrapper
+      .findAllComponents(BaseDialog)
+      .find((d) => d.vm.$attrs.visible === true);
+    expect(removeDialog).toBeTruthy();
+
+    await removeDialog!.vm.$emit('update:visible', false);
+    await flushPromises();
+
+    expect(document.body.textContent).not.toContain('Bestätigung');
+  });
+
+  it('does not call removeRentalUnit when the rental agreement has no id', async () => {
+    const agreementWithoutId: RentalAgreementJson = { propertyRents: [{ rentalUnitId: 'prop-1' }] };
+    mountCard(agreementWithoutId);
+    await flushPromises();
+
+    const row = findGroupHeaderRow('Haupthaus');
+    const deleteBtn = row?.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
+    deleteBtn.click();
+    await flushPromises();
+
+    const confirmDeleteBtn = document.querySelector('.p-dialog .pi-trash')?.closest('button') as HTMLButtonElement;
+    confirmDeleteBtn.click();
+    await flushPromises();
+
+    expect(rentalAgreementService.removeRentalUnit).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the raw unit id as title when the fetched unit has no title', async () => {
+    vi.mocked(apartmentService.getApartment).mockResolvedValue({ id: 'apt-1', type: 'APARTMENT' });
+
+    const agreement: RentalAgreementJson = { id: 'agreement-1', apartmentRents: [{ rentalUnitId: 'apt-1' }] };
+    const wrapper = mountCard(agreement);
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('apt-1');
+  });
+
+  it(
+    'sorts multiple rent periods for the same unit by payment start descending and formats amounts/dates',
+    async () => {
+      const agreement: RentalAgreementJson = {
+        id: 'agreement-1',
+        apartmentRents: [
+          {
+            rentalUnitId: 'apt-1',
+            firstPaymentDate: '2023-01-01',
+            lastPaymentDate: 'invalid-date',
+            basicRent: 500,
+            billingCycle: 'MONTHLY',
+          },
+          {
+            rentalUnitId: 'apt-1', firstPaymentDate: '2024-06-01', basicRent: 750, billingCycle: 'WEEKLY',
+          },
+        ],
+      };
+
+      const wrapper = mountCard(agreement);
+      await flushPromises();
+
+      expect(wrapper.text()).toContain('500,00');
+      expect(wrapper.text()).toContain('750,00');
+      expect(wrapper.text()).toContain('01.01.2023');
+      expect(wrapper.text()).toContain('01.06.2024');
+      expect(wrapper.text()).toContain('invalid-date');
+      expect(wrapper.text()).toContain('Monatlich');
+      expect(wrapper.text()).toContain('Wöchentlich');
+    },
+  );
+
+  it('sorts a payment period with no start date before/after a dated one deterministically', async () => {
+    const agreement: RentalAgreementJson = {
+      id: 'agreement-1',
+      apartmentRents: [
+        {
+          rentalUnitId: 'apt-1', basicRent: 300, billingCycle: 'MONTHLY'
+        },
+        {
+          rentalUnitId: 'apt-1', firstPaymentDate: '2024-01-01', basicRent: 500, billingCycle: 'MONTHLY'
+        },
+      ],
+    };
+
+    const wrapper = mountCard(agreement);
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('500,00');
+    expect(wrapper.text()).toContain('300,00');
+  });
+
+  it('shows an error toast with a non-Error rejection when removing a unit fails', async () => {
+    vi.mocked(rentalAgreementService.removeRentalUnit).mockRejectedValue('boom');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    mountCard();
+    await flushPromises();
+
+    const row = findGroupHeaderRow('Haupthaus');
+    const deleteBtn = row?.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
+    deleteBtn.click();
+    await flushPromises();
+    const confirmDeleteBtn = document.querySelector('.p-dialog .pi-trash')?.closest('button') as HTMLButtonElement;
+    confirmDeleteBtn.click();
+    await flushPromises();
+
+    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+    consoleSpy.mockRestore();
+  });
+
+  it('sorts groups with the same unit title by unit id when they belong to different units', async () => {
+    vi.mocked(storageService.getStorage).mockResolvedValue({
+      id: 'storage-1', title: 'Lager', type: 'STORAGE' 
+    });
+    vi.mocked(commercialService.getCommercial).mockResolvedValue({
+      id: 'comm-1', title: 'Lager', type: 'COMMERCIAL'
+    });
+
+    const agreement: RentalAgreementJson = {
+      id: 'agreement-1',
+      storageRents: [{ rentalUnitId: 'storage-1' }],
+      commercialRents: [{ rentalUnitId: 'comm-1' }],
+    };
+
+    mountCard(agreement);
+    await flushPromises();
+
+    const headerRows = Array.from(document.querySelectorAll('[role="button"]'));
+    const lagerRows = headerRows.filter((el) => el.textContent?.includes('Lager'));
+    expect(lagerRows).toHaveLength(2);
   });
 });

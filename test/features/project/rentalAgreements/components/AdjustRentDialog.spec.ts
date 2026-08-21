@@ -3,6 +3,8 @@ import { mount, flushPromises } from '@vue/test-utils';
 import TreeSelect from 'primevue/treeselect';
 import AdjustRentDialog, {type RentAdjustmentUnit,} from '@/features/project/rentalAgreements/components/AdjustRentDialog.vue';
 import RentalDetailsForm from '@/features/project/rentalAgreements/components/RentalDetailsForm.vue';
+import BaseDialog from '@/components/common/BaseDialog.vue';
+import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
@@ -139,6 +141,102 @@ describe('AdjustRentDialog', () => {
       expect(wrapper.emitted('update:rentalAgreement')?.[0]).toEqual([updatedAgreement]);
       expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
       expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false]);
+    });
+
+    it('treats a selected node without a title as active (empty title fallback)', async () => {
+      const untitledNode = { key: 'apt-3', data: { id: 'apt-3', type: 'APARTMENT' } };
+      vi.mocked(propertyService.getPropertyTree).mockResolvedValue({ properties: [untitledNode] });
+
+      const wrapper = mountDialog(null);
+      await flushPromises();
+      await wrapper.findComponent(TreeSelect).vm.$emit('node-select', untitledNode);
+      await flushPromises();
+
+      expect(wrapper.findComponent(RentalDetailsForm).exists()).toBe(true);
+    });
+
+    it('updates the tree selection via the RentableUnitSelect v-model and defaults excludeUnitIds when omitted', async () => {
+      const wrapper = mount(AdjustRentDialog, {
+        props: {
+          visible: true, projectId: 'proj-1', agreementId: 'agreement-1', unit: null,
+        },
+        attachTo: document.body,
+      });
+      await flushPromises();
+
+      const select = wrapper.findComponent(RentableUnitSelect);
+      expect(select.props('excludeUnitIds')).toEqual([]);
+
+      await select.vm.$emit('update:modelValue', 'apt-9');
+      await flushPromises();
+
+      expect(select.props('modelValue')).toBe('apt-9');
+    });
+
+    it('does not submit when the agreement id is missing', async () => {
+      vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
+        properties: [{
+          key: 'apt-2', data: {
+            id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5'
+          },
+        }],
+      });
+
+      const wrapper = mount(AdjustRentDialog, {
+        props: {
+          visible: true, projectId: 'proj-1', agreementId: undefined, unit: null, excludeUnitIds: [],
+        },
+        attachTo: document.body,
+      });
+      await flushPromises();
+      await wrapper.findComponent(TreeSelect).vm.$emit('node-select', {
+        key: 'apt-2',
+        data: {
+          id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5'
+        },
+      });
+      await flushPromises();
+
+      await wrapper.findComponent(RentalDetailsForm).vm.$emit('submit', { billingCycle: 'MONTHLY' });
+      await flushPromises();
+
+      expect(rentalAgreementService.addRent).not.toHaveBeenCalled();
+    });
+
+    it('shows an error toast when adding fails with a non-Error rejection', async () => {
+      vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
+        properties: [{
+          key: 'apt-2', data: {
+            id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5'
+          },
+        }],
+      });
+      vi.mocked(rentalAgreementService.addRent).mockRejectedValue('boom');
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const wrapper = mountDialog(null);
+      await flushPromises();
+      await wrapper.findComponent(TreeSelect).vm.$emit('node-select', {
+        key: 'apt-2',
+        data: {
+          id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5'
+        },
+      });
+      await flushPromises();
+      await wrapper.findComponent(RentalDetailsForm).vm.$emit('submit', { billingCycle: 'MONTHLY' });
+      await flushPromises();
+
+      expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      consoleSpy.mockRestore();
+    });
+
+    it('forwards BaseDialog update:visible events', async () => {
+      const wrapper = mountDialog(null);
+      await flushPromises();
+
+      await wrapper.findComponent(BaseDialog).vm.$emit('update:visible', false);
+
+      expect(wrapper.emitted('update:visible')?.[0]).toEqual([false]);
     });
 
     it('shows an error toast when adding fails', async () => {
