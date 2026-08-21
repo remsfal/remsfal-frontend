@@ -3,6 +3,7 @@ import { mount, VueWrapper } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
 import Step2UnitsForm from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import type { SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
+import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
 import { propertyService, type PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
 
 vi.mock('@/features/project/rentableUnits/services/PropertyService', () => ({propertyService: {getPropertyTree: vi.fn(),},}));
@@ -216,6 +217,138 @@ describe('Step2UnitsForm', () => {
 
     const unitCard = wrapper.find('.bg-gray-50');
     expect(unitCard.text()).toContain('1.234,50');
+  });
+
+  it('shows the rental details form once a unit is selected in the tree', async () => {
+    const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
+    await treeSelect.vm.$emit('node-select', {
+      key: 'apartment-1',
+      data: {
+        id: 'apartment-1', title: 'Apartment 101', type: 'APARTMENT' 
+      },
+    });
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.findComponent({ name: 'RentalDetailsForm' }).exists()).toBe(true);
+  });
+
+  it('clears the current unit and hides the rental details form when the selection is cleared', async () => {
+    const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
+    await treeSelect.vm.$emit('node-select', {
+      key: 'apartment-1',
+      data: {
+        id: 'apartment-1', title: 'Apartment 101', type: 'APARTMENT' 
+      },
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findComponent({ name: 'RentalDetailsForm' }).exists()).toBe(true);
+
+    await treeSelect.vm.$emit('node-select', null);
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.findComponent({ name: 'RentalDetailsForm' }).exists()).toBe(false);
+  });
+
+  it('falls back to "Unbenannt" when the selected node has no title', async () => {
+    const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
+    await treeSelect.vm.$emit('node-select', {
+      key: 'apartment-2',
+      data: { id: 'apartment-2', type: 'APARTMENT' },
+    });
+    await wrapper.vm.$nextTick();
+
+    const headings = wrapper.findAll('h4');
+    expect(headings.some((h) => h.text().includes('Unbenannt'))).toBe(true);
+  });
+
+  it('adds the selected unit to the list when the rental details form is submitted', async () => {
+    const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
+    await treeSelect.vm.$emit('node-select', {
+      key: 'apartment-1',
+      data: {
+        id: 'apartment-1', title: 'Apartment 101', type: 'APARTMENT' 
+      },
+    });
+    await wrapper.vm.$nextTick();
+
+    const detailsForm = wrapper.findComponent({ name: 'RentalDetailsForm' });
+    await detailsForm.vm.$emit('submit', {
+      basicRent: 500, billingCycle: 'MONTHLY', firstPaymentDate: '2024-01-01',
+    });
+    await wrapper.vm.$nextTick();
+
+    const emitted = wrapper.emitted('update:selectedUnits');
+    expect(emitted).toBeTruthy();
+    expect(emitted![0][0]).toEqual([
+      expect.objectContaining({
+        rentalUnitId: 'apartment-1',
+        unitType: 'APARTMENT',
+        unitTitle: 'Apartment 101',
+        basicRent: 500,
+        billingCycle: 'MONTHLY',
+        firstPaymentDate: '2024-01-01',
+      }),
+    ]);
+    expect(wrapper.findComponent({ name: 'RentalDetailsForm' }).exists()).toBe(false);
+  });
+
+  it('hides the rental details form without adding a unit when cancelled', async () => {
+    const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
+    await treeSelect.vm.$emit('node-select', {
+      key: 'apartment-1',
+      data: {
+        id: 'apartment-1', title: 'Apartment 101', type: 'APARTMENT' 
+      },
+    });
+    await wrapper.vm.$nextTick();
+
+    const detailsForm = wrapper.findComponent({ name: 'RentalDetailsForm' });
+    await detailsForm.vm.$emit('cancel');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.findComponent({ name: 'RentalDetailsForm' }).exists()).toBe(false);
+    expect(wrapper.emitted('update:selectedUnits')).toBeFalsy();
+  });
+
+  it('updates the selected node key via the RentableUnitSelect v-model', async () => {
+    const rentableSelect = wrapper.findComponent(RentableUnitSelect);
+    await rentableSelect.vm.$emit('update:modelValue', 'apartment-5');
+    await wrapper.vm.$nextTick();
+
+    expect(rentableSelect.props('modelValue')).toBe('apartment-5');
+  });
+
+  it('passes undefined initial dates to RentalDetailsForm when start/end of rental are null', async () => {
+    const wrapperNoDates = mount(Step2UnitsForm, {
+      props: {
+        ...defaultProps, startOfRental: null, endOfRental: null,
+      },
+    });
+    await flushPromises();
+
+    const treeSelect = wrapperNoDates.findComponent({ name: 'TreeSelect' });
+    await treeSelect.vm.$emit('node-select', {
+      key: 'apartment-1',
+      data: {
+        id: 'apartment-1', title: 'Apartment 101', type: 'APARTMENT' 
+      },
+    });
+    await wrapperNoDates.vm.$nextTick();
+
+    const detailsForm = wrapperNoDates.findComponent({ name: 'RentalDetailsForm' });
+    expect(detailsForm.props('initialFirstPaymentDate')).toBeUndefined();
+    expect(detailsForm.props('initialLastPaymentDate')).toBeUndefined();
+  });
+
+  it('does not show the basic rent line when basicRent is undefined', async () => {
+    const unitWithoutRent: SelectedUnit[] = [{
+      rentalUnitId: 'apartment-1', unitType: 'APARTMENT', unitTitle: 'Apartment 101', billingCycle: 'MONTHLY',
+    }];
+    await wrapper.setProps({ selectedUnits: unitWithoutRent });
+    await wrapper.vm.$nextTick();
+
+    const unitCard = wrapper.find('.bg-gray-50');
+    expect(unitCard.text()).not.toContain('Nettokaltmiete');
   });
 
   it('shows only rent fields that are defined', async () => {

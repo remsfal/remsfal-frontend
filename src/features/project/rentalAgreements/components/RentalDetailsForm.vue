@@ -26,10 +26,13 @@ export interface RentalDetails {
 
 // Props & Emits
 const props = defineProps<{
-  unitTitle: string;
-  unitType: string;
   initialFirstPaymentDate?: string;
   initialLastPaymentDate?: string;
+  initialBasicRent?: number;
+  initialOperatingCostsPrepayment?: number;
+  initialHeatingCostsPrepayment?: number;
+  initialBillingCycle?: 'MONTHLY' | 'WEEKLY';
+  submitLabel?: string;
 }>();
 
 const emit = defineEmits<{
@@ -74,14 +77,21 @@ const schema = z
 
 const resolver = zodResolver(schema);
 const initialValues = ref({
-  basicRent: null as number | null,
-  operatingCostsPrepayment: null as number | null,
-  heatingCostsPrepayment: null as number | null,
-  billingCycle: 'MONTHLY' as 'MONTHLY' | 'WEEKLY',
+  basicRent: (props.initialBasicRent ?? null) as number | null,
+  operatingCostsPrepayment: (props.initialOperatingCostsPrepayment ?? null) as number | null,
+  heatingCostsPrepayment: (props.initialHeatingCostsPrepayment ?? null) as number | null,
+  billingCycle: (props.initialBillingCycle ?? 'MONTHLY') as 'MONTHLY' | 'WEEKLY',
 });
 
 // Custom validation for dates
-const dateValidationError = computed(() => {
+const firstPaymentDateError = computed(() => {
+  if (!firstPaymentDateValue.value) {
+    return t('rentalAgreement.validation.paymentStartRequired');
+  }
+  return null;
+});
+
+const dateOrderError = computed(() => {
   if (!firstPaymentDateValue.value || !lastPaymentDateValue.value) return null;
   if (lastPaymentDateValue.value <= firstPaymentDateValue.value) {
     return t('rentalAgreement.validation.endAfterStart');
@@ -92,7 +102,7 @@ const dateValidationError = computed(() => {
 // Form submission
 function onSubmit(event: FormSubmitEvent) {
   const formState = event.states;
-  if (!event.valid || dateValidationError.value) return;
+  if (!event.valid || firstPaymentDateError.value || dateOrderError.value) return;
 
   emit('submit', {
     basicRent: formState.basicRent?.value || undefined,
@@ -116,148 +126,142 @@ function onSubmit(event: FormSubmitEvent) {
 </script>
 
 <template>
-  <div class="p-4 border rounded-lg bg-blue-50">
-    <h4 class="font-semibold mb-2">
-      {{ unitTitle }}
-    </h4>
-    <p class="text-sm text-gray-600 mb-4">
-      {{ t(`unitTypes.${unitType.toLowerCase()}`) }}
-    </p>
-
-    <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Basic Rent -->
-        <div class="flex flex-col gap-2">
-          <label for="basicRent" class="text-sm font-semibold">
-            {{ t('rentalAgreement.common.basicRent') }}
-          </label>
-          <InputNumber
-            name="basicRent"
-            :min="0"
-            :maxFractionDigits="2"
-            mode="currency"
-            currency="EUR"
-            locale="de-DE"
-            :class="{ 'p-invalid': $form.basicRent?.invalid && $form.basicRent?.touched }"
-            fluid
-            autofocus
-          />
-          <Message
-            v-if="$form.basicRent?.invalid && $form.basicRent?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.basicRent.error.message }}
-          </Message>
-        </div>
-
-        <!-- Billing Cycle -->
-        <div class="flex flex-col gap-2">
-          <label for="billingCycle" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.billingCycle') }} *
-          </label>
-          <SelectButton
-            name="billingCycle"
-            :options="billingCycleOptions"
-            optionLabel="label"
-            optionValue="value"
-            fluid
-            class="w-full"
-          />
-        </div>
-
-        <!-- Operating Costs -->
-        <div class="flex flex-col gap-2">
-          <label for="operatingCostsPrepayment" class="text-sm font-semibold">
-            {{ t('rentalAgreement.common.operatingCosts') }}
-          </label>
-          <InputNumber
-            name="operatingCostsPrepayment"
-            :min="0"
-            :maxFractionDigits="2"
-            mode="currency"
-            currency="EUR"
-            locale="de-DE"
-            :class="{
-              'p-invalid':
-                $form.operatingCostsPrepayment?.invalid && $form.operatingCostsPrepayment?.touched,
-            }"
-            fluid
-          />
-          <Message
-            v-if="$form.operatingCostsPrepayment?.invalid && $form.operatingCostsPrepayment?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.operatingCostsPrepayment.error.message }}
-          </Message>
-        </div>
-
-        <!-- Heating Costs -->
-        <div class="flex flex-col gap-2">
-          <label for="heatingCostsPrepayment" class="text-sm font-semibold">
-            {{ t('rentalAgreement.common.heatingCosts') }}
-          </label>
-          <InputNumber
-            name="heatingCostsPrepayment"
-            :min="0"
-            :maxFractionDigits="2"
-            mode="currency"
-            currency="EUR"
-            locale="de-DE"
-            :class="{
-              'p-invalid':
-                $form.heatingCostsPrepayment?.invalid && $form.heatingCostsPrepayment?.touched,
-            }"
-            fluid
-          />
-          <Message
-            v-if="$form.heatingCostsPrepayment?.invalid && $form.heatingCostsPrepayment?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.heatingCostsPrepayment.error.message }}
-          </Message>
-        </div>
-
-        <!-- First Payment Date -->
-        <div class="flex flex-col gap-2">
-          <label for="firstPaymentDate" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.firstPayment') }}
-          </label>
-          <DatePicker v-model="firstPaymentDateValue" dateFormat="dd.mm.yy" showIcon fluid />
-        </div>
-
-        <!-- Last Payment Date -->
-        <div class="flex flex-col gap-2">
-          <label for="lastPaymentDate" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step2.lastPayment') }}
-          </label>
-          <DatePicker v-model="lastPaymentDateValue" dateFormat="dd.mm.yy" showIcon fluid />
-          <Message v-if="dateValidationError" severity="error" size="small" variant="simple">
-            {{ dateValidationError }}
-          </Message>
-        </div>
+  <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Basic Rent -->
+      <div class="flex flex-col gap-2">
+        <label for="basicRent" class="text-sm font-semibold">
+          {{ t('rentalAgreement.common.basicRent') }}
+        </label>
+        <InputNumber
+          name="basicRent"
+          :min="0"
+          :maxFractionDigits="2"
+          mode="currency"
+          currency="EUR"
+          locale="de-DE"
+          :class="{ 'p-invalid': $form.basicRent?.invalid && $form.basicRent?.touched }"
+          fluid
+          autofocus
+        />
+        <Message
+          v-if="$form.basicRent?.invalid && $form.basicRent?.touched"
+          severity="error"
+          size="small"
+          variant="simple"
+        >
+          {{ $form.basicRent.error.message }}
+        </Message>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex justify-end gap-3 mt-6">
-        <Button
-          type="button"
-          :label="t('button.cancel')"
-          severity="secondary"
-          @click="emit('cancel')"
-        />
-        <Button
-          type="submit"
-          :label="t('rentalAgreement.step2.addUnit')"
-          icon="pi pi-plus"
-          :disabled="!!dateValidationError"
+      <!-- Billing Cycle -->
+      <div class="flex flex-col gap-2">
+        <label for="billingCycle" class="text-sm font-semibold">
+          {{ t('rentalAgreement.common.billingCycle') }} *
+        </label>
+        <SelectButton
+          name="billingCycle"
+          :options="billingCycleOptions"
+          optionLabel="label"
+          optionValue="value"
+          fluid
+          class="w-full"
         />
       </div>
-    </Form>
-  </div>
+
+      <!-- Operating Costs -->
+      <div class="flex flex-col gap-2">
+        <label for="operatingCostsPrepayment" class="text-sm font-semibold">
+          {{ t('rentalAgreement.common.operatingCosts') }}
+        </label>
+        <InputNumber
+          name="operatingCostsPrepayment"
+          :min="0"
+          :maxFractionDigits="2"
+          mode="currency"
+          currency="EUR"
+          locale="de-DE"
+          :class="{
+            'p-invalid':
+              $form.operatingCostsPrepayment?.invalid && $form.operatingCostsPrepayment?.touched,
+          }"
+          fluid
+        />
+        <Message
+          v-if="$form.operatingCostsPrepayment?.invalid && $form.operatingCostsPrepayment?.touched"
+          severity="error"
+          size="small"
+          variant="simple"
+        >
+          {{ $form.operatingCostsPrepayment.error.message }}
+        </Message>
+      </div>
+
+      <!-- Heating Costs -->
+      <div class="flex flex-col gap-2">
+        <label for="heatingCostsPrepayment" class="text-sm font-semibold">
+          {{ t('rentalAgreement.common.heatingCosts') }}
+        </label>
+        <InputNumber
+          name="heatingCostsPrepayment"
+          :min="0"
+          :maxFractionDigits="2"
+          mode="currency"
+          currency="EUR"
+          locale="de-DE"
+          :class="{
+            'p-invalid':
+              $form.heatingCostsPrepayment?.invalid && $form.heatingCostsPrepayment?.touched,
+          }"
+          fluid
+        />
+        <Message
+          v-if="$form.heatingCostsPrepayment?.invalid && $form.heatingCostsPrepayment?.touched"
+          severity="error"
+          size="small"
+          variant="simple"
+        >
+          {{ $form.heatingCostsPrepayment.error.message }}
+        </Message>
+      </div>
+
+      <!-- First Payment Date -->
+      <div class="flex flex-col gap-2">
+        <label for="firstPaymentDate" class="text-sm font-semibold">
+          {{ t('rentalAgreement.common.paymentStart') }} *
+        </label>
+        <DatePicker v-model="firstPaymentDateValue" dateFormat="dd.mm.yy" showIcon fluid />
+        <Message v-if="firstPaymentDateError" severity="error" size="small" variant="simple">
+          {{ firstPaymentDateError }}
+        </Message>
+      </div>
+
+      <!-- Last Payment Date -->
+      <div class="flex flex-col gap-2">
+        <label for="lastPaymentDate" class="text-sm font-semibold">
+          {{ t('rentalAgreement.common.paymentEnd') }}
+        </label>
+        <DatePicker v-model="lastPaymentDateValue" dateFormat="dd.mm.yy" showIcon fluid />
+        <Message v-if="dateOrderError" severity="error" size="small" variant="simple">
+          {{ dateOrderError }}
+        </Message>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-3 mt-6">
+      <Button
+        type="button"
+        :label="t('button.cancel')"
+        severity="secondary"
+        @click="emit('cancel')"
+      />
+      <Button
+        type="submit"
+        :label="submitLabel ?? t('rentalAgreement.step2.addUnit')"
+        icon="pi pi-plus"
+        :disabled="!!firstPaymentDateError || !!dateOrderError"
+      />
+    </div>
+  </Form>
 </template>

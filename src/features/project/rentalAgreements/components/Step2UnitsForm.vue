@@ -123,15 +123,17 @@ const canProceed = computed(() => {
     </div>
 
     <!-- Rental Details Form (shown when unit is selected) -->
-    <RentalDetailsForm
-      v-if="currentUnit"
-      :unitTitle="currentUnit.unitTitle"
-      :unitType="currentUnit.unitType"
-      :initialFirstPaymentDate="startOfRental ?? undefined"
-      :initialLastPaymentDate="endOfRental ?? undefined"
-      @submit="onRentalDetailsSubmit"
-      @cancel="onRentalDetailsCancel"
-    />
+    <div v-if="currentUnit" class="p-4 border rounded-lg bg-grey-600">
+      <h4 class="font-semibold mb-2">
+        {{ currentUnit.unitTitle }} ({{ t(`unitTypes.${currentUnit.unitType.toLowerCase()}`) }})
+      </h4>
+      <RentalDetailsForm
+        :initialFirstPaymentDate="startOfRental ?? undefined"
+        :initialLastPaymentDate="endOfRental ?? undefined"
+        @submit="onRentalDetailsSubmit"
+        @cancel="onRentalDetailsCancel"
+      />
+    </div>
 
     <!-- Saved Units (Compact Display) -->
     <div v-if="selectedUnits.length > 0" class="flex flex-col gap-2">
@@ -145,7 +147,7 @@ const canProceed = computed(() => {
       >
         <div class="flex-1">
           <p class="font-semibold">
-            {{ unit.unitTitle }}
+            {{ unit.unitTitle }} ({{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }})
           </p>
           <p class="text-sm text-gray-600">
             {{ t(`unitTypes.${unit.unitType.toLowerCase()}`) }}

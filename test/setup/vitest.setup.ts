@@ -89,6 +89,14 @@ Object.defineProperty(window, 'matchMedia', {
   },
 });
 
+// JSDOM does not implement scrollTo; Vue Router's scrollBehavior (src/router/index.ts) calls
+// it on every navigation, and the real router is registered globally below for all component
+// tests, so without this stub every test that navigates logs a "not implemented" warning.
+Object.defineProperty(window, 'scrollTo', {
+  writable: true,
+  value: vi.fn(),
+});
+
 config.global.plugins = [
   PrimeVue,
   ToastService,
