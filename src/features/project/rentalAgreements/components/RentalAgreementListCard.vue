@@ -109,32 +109,28 @@ onMounted(fetchRentalAgreements);
 
         <Column field="tenants" :header="t('projectTenancies.table.tenants')">
           <template #body="slotProps">
-            <div class="space-y-2">
-              <div
-                v-for="(tenant, index) in slotProps.data.tenants"
-                :key="`${tenant.id}-${index}`"
-                class="py-2"
-                :class="{ 'border-t': index !== 0 }"
-                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
-              >
-                {{ tenant.firstName }} {{ tenant.lastName }}
-              </div>
+            <div
+              v-for="(tenant, index) in slotProps.data.tenants"
+              :key="`${tenant.id}-${index}`"
+              class="py-2"
+              :class="{ 'border-t': index !== 0 }"
+              :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+            >
+              {{ tenant.firstName }} {{ tenant.lastName }}
             </div>
           </template>
         </Column>
 
         <Column field="rentalUnits" :header="t('projectTenancies.table.units')">
           <template #body="slotProps">
-            <div class="space-y-2">
-              <div
-                v-for="(unit, index) in slotProps.data.rentalUnits"
-                :key="`${unit.id}-${index}`"
-                class="py-2"
-                :class="{ 'border-t': index !== 0 }"
-                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
-              >
-                {{ unit.title || unit.location || 'N/A' }}
-              </div>
+            <div
+              v-for="(unit, index) in slotProps.data.rentalUnits"
+              :key="`${unit.id}-${index}`"
+              class="py-2"
+              :class="{ 'border-t': index !== 0 }"
+              :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+            >
+              {{ unit.title || unit.location || 'N/A' }}
             </div>
           </template>
         </Column>
@@ -146,16 +142,14 @@ onMounted(fetchRentalAgreements);
           bodyClass="hidden lg:table-cell"
         >
           <template #body="slotProps">
-            <div class="space-y-2">
-              <div
-                v-for="(unit, index) in slotProps.data.rentalUnits"
-                :key="`${unit.id}-${index}`"
-                class="py-2"
-                :class="{ 'border-t': index !== 0 }"
-                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
-              >
-                {{ formatCurrency(rentFor(slotProps.data, unit.id)?.basicRent) }}
-              </div>
+            <div
+              v-for="(unit, index) in slotProps.data.rentalUnits"
+              :key="`${unit.id}-${index}`"
+              class="py-2"
+              :class="{ 'border-t': index !== 0 }"
+              :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+            >
+              {{ formatCurrency(rentFor(slotProps.data, unit.id)?.basicRent) }}
             </div>
           </template>
         </Column>
@@ -167,16 +161,14 @@ onMounted(fetchRentalAgreements);
           bodyClass="hidden lg:table-cell"
         >
           <template #body="slotProps">
-            <div class="space-y-2">
-              <div
-                v-for="(unit, index) in slotProps.data.rentalUnits"
-                :key="`${unit.id}-${index}`"
-                class="py-2"
-                :class="{ 'border-t': index !== 0 }"
-                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
-              >
-                {{ formatCurrency(rentFor(slotProps.data, unit.id)?.operatingCostsPrepayment) }}
-              </div>
+            <div
+              v-for="(unit, index) in slotProps.data.rentalUnits"
+              :key="`${unit.id}-${index}`"
+              class="py-2"
+              :class="{ 'border-t': index !== 0 }"
+              :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+            >
+              {{ formatCurrency(rentFor(slotProps.data, unit.id)?.operatingCostsPrepayment) }}
             </div>
           </template>
         </Column>
@@ -188,16 +180,14 @@ onMounted(fetchRentalAgreements);
           bodyClass="hidden lg:table-cell"
         >
           <template #body="slotProps">
-            <div class="space-y-2">
-              <div
-                v-for="(unit, index) in slotProps.data.rentalUnits"
-                :key="`${unit.id}-${index}`"
-                class="py-2"
-                :class="{ 'border-t': index !== 0 }"
-                :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
-              >
-                {{ formatCurrency(rentFor(slotProps.data, unit.id)?.heatingCostsPrepayment) }}
-              </div>
+            <div
+              v-for="(unit, index) in slotProps.data.rentalUnits"
+              :key="`${unit.id}-${index}`"
+              class="py-2"
+              :class="{ 'border-t': index !== 0 }"
+              :style="index !== 0 ? { borderTopColor: 'var(--p-datatable-body-cell-border-color)' } : undefined"
+            >
+              {{ formatCurrency(rentFor(slotProps.data, unit.id)?.heatingCostsPrepayment) }}
             </div>
           </template>
         </Column>
