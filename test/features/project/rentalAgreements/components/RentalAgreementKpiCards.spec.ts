@@ -112,7 +112,7 @@ describe('RentalAgreementKpiCards', () => {
     await flushPromises();
 
     const cards = wrapper.findAllComponents(KpiCard);
-    expect(cards).toHaveLength(6);
+    expect(cards).toHaveLength(5);
 
     expect(cards[0]!.props('title')).toBe('rentalAgreement.kpi.totalRent');
     expect(cards[0]!.props('value')).toBe('1500 €');
@@ -132,10 +132,9 @@ describe('RentalAgreementKpiCards', () => {
     expect(cards[4]!.props('value')).toBe(2);
     expect(cards[4]!.props('icon')).toBe('pi pi-building');
 
-    // building-1 is rented by the still-current "future end" agreement, so no vacancy.
-    expect(cards[5]!.props('title')).toBe('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.building"}');
-    expect(cards[5]!.props('value')).toBe(0);
-    expect(cards[5]!.props('icon')).toBe('pi pi-home');
+    // building-1 is rented by the still-current "future end" agreement, so its vacancy is 0 -> no card.
+    const titles = cards.map((card) => card.props('title'));
+    expect(titles).not.toContain('rentalAgreement.kpi.vacancyByType-{"type":"unitTypes.building"}');
   });
 
   it('excludes container units (with children) from vacancy, but counts childless containers', async () => {

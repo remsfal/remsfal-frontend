@@ -91,8 +91,8 @@ function countVacant(unitIds: string[]): number {
 
 const vacancyByType = computed(() =>
   Object.entries(unitIdsByType.value)
-    .filter(([, ids]) => ids.length > 0)
-    .map(([type, ids]) => ({ type: type as UnitType, count: countVacant(ids) })),
+    .map(([type, ids]) => ({ type: type as UnitType, count: countVacant(ids) }))
+    .filter((vacancy) => vacancy.count > 0),
 );
 
 async function fetchData(projectId: string) {
@@ -161,7 +161,7 @@ onMounted(() => fetchData(props.projectId));
         :icon="getIconForUnitType(vacancy.type)"
         :title="t('rentalAgreement.kpi.vacancyByType', { type: t(`unitTypes.${vacancy.type.toLowerCase()}`) })"
         :value="vacancy.count"
-        :iconBackground="vacancy.count > 0 ? 'var(--color-orange-600)' : undefined"
+        iconBackground="var(--color-orange-600)"
       />
     </template>
   </div>
