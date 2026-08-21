@@ -6,9 +6,10 @@ import { useI18n } from 'vue-i18n';
 import Breadcrumb from 'primevue/breadcrumb';
 import type { MenuItem } from 'primevue/menuitem';
 import BaseCard from '@/components/common/BaseCard.vue';
-import {propertyService, toRentableUnitView, EntityType,
+import {toRentableUnitView, EntityType,
   type RentalUnitTreeNodeJson, type RentalUnitNodeDataJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType } from '../unitTypeIcons';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -18,12 +19,13 @@ const props = defineProps<{
 const router = useRouter();
 const { t } = useI18n();
 const items = ref<MenuItem[]>([]);
+const rentableUnitsStore = useRentableUnitsStore();
 
 const fetchPathNodes = async (targetId: string | undefined): Promise<RentalUnitNodeDataJson[]> => {
   if (!targetId || !props.projectId) return [];
   try {
-    const data = await propertyService.getPropertyTree(props.projectId);
-    const tree = (data.properties ?? []) as RentalUnitTreeNodeJson[];
+    await rentableUnitsStore.fetchRentalUnitTree(props.projectId);
+    const tree = rentableUnitsStore.rentableUnitTree;
 
     const findPath = (
       nodes: RentalUnitTreeNodeJson[],

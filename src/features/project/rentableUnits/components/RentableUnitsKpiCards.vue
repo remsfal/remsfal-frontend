@@ -5,17 +5,16 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
-import {propertyService,
-  type RentalUnitTreeNodeJson,
-  type UnitType,} from '@/features/project/rentableUnits/services/PropertyService';
+import { type RentalUnitTreeNodeJson, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<{ (e: 'update:unitIdsByType', idsByType: Record<UnitType, string[]>): void }>();
 const { t } = useI18n();
 const toast = useToast();
+const rentableUnitsStore = useRentableUnitsStore();
 
-const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
 const isLoading = ref(true);
 
 type UnitTypeAgg = { count: number; space: number; ids: string[] };
@@ -36,12 +35,12 @@ const unitAggregates = computed(() => {
   const acc = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
     (result, type) => ({
       ...result, [type]: {
-        count: 0, space: 0, ids: [] 
-      } 
+        count: 0, space: 0, ids: []
+      }
     }),
     {} as Record<UnitType, UnitTypeAgg>,
   );
-  aggregate(rentableUnitTree.value, acc);
+  aggregate(rentableUnitsStore.rentableUnitTree, acc);
   return acc;
 });
 
@@ -53,8 +52,8 @@ const kpis = computed(() =>
 
 async function fetchPropertyTree(projectId: string) {
   try {
-    const data = await propertyService.getPropertyTree(projectId);
-    rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
+    await rentableUnitsStore.fetchRentalUnitTree(projectId);
+    isLoading.value = false;
     const idsByType = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
       (result, type) => ({ ...result, [type]: unitAggregates.value[type].ids }),
       {} as Record<UnitType, string[]>,

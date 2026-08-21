@@ -3,7 +3,8 @@ import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import TreeSelect from 'primevue/treeselect';
 import type { TreeNode } from 'primevue/treenode';
-import { propertyService, type RentalUnitTreeNodeJson } from '../services/PropertyService';
+import type { RentalUnitTreeNodeJson } from '../services/PropertyService';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -19,6 +20,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const rawTree = ref<RentalUnitTreeNodeJson[]>([]);
 const isLoading = ref(false);
@@ -48,8 +50,8 @@ const propertyTree = computed<TreeNode[]>(() => transformTreeNodes(rawTree.value
 onMounted(async () => {
   isLoading.value = true;
   try {
-    const data = await propertyService.getPropertyTree(props.projectId);
-    rawTree.value = (data.properties || []) as RentalUnitTreeNodeJson[];
+    await rentableUnitsStore.fetchRentalUnitTree(props.projectId);
+    rawTree.value = rentableUnitsStore.rentableUnitTree;
   } catch (error) {
     console.error('Failed to load property tree:', error);
   } finally {

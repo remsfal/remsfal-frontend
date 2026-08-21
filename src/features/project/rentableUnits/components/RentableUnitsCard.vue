@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { propertyService, type RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
+import { type RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import { useToast } from 'primevue/usetoast';
 import BaseCard from '@/components/common/BaseCard.vue';
 import RentableUnitsTable from './RentableUnitsTable.vue';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{ projectId: string }>();
 const { t } = useI18n();
 const toast = useToast();
+const rentableUnitsStore = useRentableUnitsStore();
 
 // --- Refs ---
 const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
@@ -19,8 +21,9 @@ const expandedKeys = ref<TreeTableExpandedKeys>({});
 // --- Functions ---
 async function fetchPropertyTree(projectId: string) {
   try {
-    const data = await propertyService.getPropertyTree(projectId);
-    rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
+    await rentableUnitsStore.fetchRentalUnitTree(projectId);
+    rentableUnitTree.value = rentableUnitsStore.rentableUnitTree;
+    isLoading.value = false;
     expandAll();
   } catch {
     toast.add({
@@ -52,6 +55,7 @@ function collapseAll() {
 
 function onNewRentableUnit(title: string) {
   isLoading.value = true;
+  rentableUnitsStore.invalidate();
   fetchPropertyTree(props.projectId);
   toast.add({
     severity: 'success',

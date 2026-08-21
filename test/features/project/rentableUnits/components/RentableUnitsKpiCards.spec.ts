@@ -4,6 +4,7 @@ import Message from 'primevue/message';
 import RentableUnitsKpiCards from '@/features/project/rentableUnits/components/RentableUnitsKpiCards.vue';
 import KpiCard from '@/components/common/KpiCard.vue';
 import { type PropertyListJson, propertyService } from '@/features/project/rentableUnits/services/PropertyService';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 vi.mock('@/features/project/rentableUnits/services/PropertyService');
 
@@ -12,6 +13,7 @@ describe('RentableUnitsKpiCards', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    useRentableUnitsStore().$reset();
   });
 
   afterEach(() => {
