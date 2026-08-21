@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import UnitBreadcrumb from '@/features/project/rentableUnits/components/UnitBreadcrumb.vue';
 import { propertyService, type PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
+import { useDashboardStore } from '@/stores/DashboardStore';
 
 vi.mock('@/features/project/rentableUnits/services/PropertyService', () => ({
   propertyService: {getPropertyTree: vi.fn(),},
@@ -42,6 +43,7 @@ describe('UnitBreadcrumb.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPush.mockClear();
+    useDashboardStore().$reset();
   });
 
   const defaultProps = {
