@@ -8,8 +8,6 @@ import KpiCard from '@/components/common/KpiCard.vue';
 import { getIconForUnitType, type UnitType } from '@/features/project/rentableUnits';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
-import {tenantService,
-  type TenantItemJson,} from '@/features/project/rentalAgreements/services/TenantService';
 
 const props = withDefaults(
   defineProps<{ projectId: string; unitIdsByType?: Partial<Record<UnitType, string[]>> }>(),
@@ -19,7 +17,6 @@ const { t, n } = useI18n();
 const toast = useToast();
 
 const agreements = ref<RentalAgreementItemJson[]>([]);
-const tenants = ref<TenantItemJson[]>([]);
 const isLoading = ref(true);
 
 const today = new Date();
@@ -30,6 +27,9 @@ const hasData = computed(() => agreements.value.length > 0);
 const currentAgreements = computed(() =>
   agreements.value.filter((agreement) => !agreement.endOfRental || new Date(agreement.endOfRental) >= today),
 );
+
+const isAgreementActiveForTenantCount = (agreement: RentalAgreementItemJson): boolean =>
+  !agreement.endOfRental || new Date(agreement.endOfRental) > today;
 
 const totalBasicRent = computed(() =>
   currentAgreements.value.reduce((sum, agreement) => sum + (agreement.basicRent ?? 0), 0),
@@ -43,7 +43,17 @@ const totalOperatingCosts = computed(() =>
   currentAgreements.value.reduce((sum, agreement) => sum + (agreement.operatingCostsPrepayment ?? 0), 0),
 );
 
-const tenantCount = computed(() => tenants.value.filter((tenant) => tenant.active).length);
+const tenantCount = computed(() => {
+  const ids = new Set<string>();
+  agreements.value
+    .filter(isAgreementActiveForTenantCount)
+    .forEach((agreement) => {
+      agreement.tenants?.forEach((tenant) => {
+        if (tenant.id) ids.add(tenant.id);
+      });
+    });
+  return ids.size;
+});
 
 const rentedUnitIds = computed(() => {
   const ids = new Set<string>();
@@ -67,12 +77,8 @@ const vacancyByType = computed(() =>
 
 async function fetchData(projectId: string) {
   try {
-    const [agreementList, tenantList] = await Promise.all([
-      rentalAgreementService.getRentalAgreements(projectId),
-      tenantService.fetchTenants(projectId),
-    ]);
-    agreements.value = agreementList;
-    tenants.value = tenantList;
+    agreements.value = await rentalAgreementService.getRentalAgreements(projectId);
+    isLoading.value = false;
   } catch {
     toast.add({
       severity: 'error',
