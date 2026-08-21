@@ -23,7 +23,27 @@ describe('RentableUnitSelect.vue', () => {
               id: 'apartment-1', title: 'Apartment 101', type: 'APARTMENT',
             },
           },
+          {
+            key: 'building-1',
+            data: {
+              id: 'building-1', title: 'Building 1', type: 'BUILDING',
+            },
+            children: [
+              {
+                key: 'apartment-2',
+                data: {
+                  id: 'apartment-2', title: 'Apartment 201', type: 'APARTMENT',
+                },
+              },
+            ],
+          },
         ],
+      },
+      {
+        key: 'property-2',
+        data: {
+          id: 'property-2', title: 'Property 2', type: 'PROPERTY',
+        },
       },
     ],
   };
@@ -59,11 +79,35 @@ describe('RentableUnitSelect.vue', () => {
     expect(options[0]?.children?.[0]?.label).toBe('Apartment 101 (Wohnung)');
   });
 
-  it('marks PROPERTY containers as non-selectable', () => {
+  it('marks all nodes as selectable by default (leafNodeSelectionOnly unset)', () => {
     const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
-    const options = treeSelect.props('options') as Array<{ key: string; selectable: boolean }>;
+    const options = treeSelect.props('options') as Array<{
+      key: string; selectable: boolean;
+      children?: Array<{ key: string; selectable: boolean }>;
+    }>;
 
-    expect(options[0]?.selectable).toBe(false);
+    expect(options[0]?.selectable).toBe(true); // property-1 (has children)
+    expect(options[0]?.children?.[1]?.selectable).toBe(true); // building-1 (has children)
+    expect(options[1]?.selectable).toBe(true); // property-2 (childless)
+  });
+
+  it('when leafNodeSelectionOnly is true, only marks childless nodes as selectable', async () => {
+    await wrapper.setProps({ leafNodeSelectionOnly: true });
+
+    const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
+    const options = treeSelect.props('options') as Array<{
+      key: string; selectable: boolean;
+      children?: Array<{
+        key: string; selectable: boolean;
+        children?: Array<{ key: string; selectable: boolean }>;
+      }>;
+    }>;
+
+    expect(options[0]?.selectable).toBe(false); // property-1 (has children) -> not a leaf
+    expect(options[0]?.children?.[0]?.selectable).toBe(true); // apartment-1 (leaf)
+    expect(options[0]?.children?.[1]?.selectable).toBe(false); // building-1 (has children) -> not a leaf
+    expect(options[0]?.children?.[1]?.children?.[0]?.selectable).toBe(true); // apartment-2 (leaf)
+    expect(options[1]?.selectable).toBe(true); // property-2, childless Property -> leaf
   });
 
   it('marks unit ids passed via excludeUnitIds as non-selectable', async () => {

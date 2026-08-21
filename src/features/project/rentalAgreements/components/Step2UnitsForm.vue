@@ -117,13 +117,14 @@ const canProceed = computed(() => {
         v-model="selectedNodeKey"
         :projectId="projectId"
         :excludeUnitIds="selectedUnitIds"
+        leafNodeSelectionOnly
         inputId="unitSelector"
         @nodeSelect="onUnitSelected"
       />
     </div>
 
     <!-- Rental Details Form (shown when unit is selected) -->
-    <div v-if="currentUnit" class="p-4 border rounded-lg bg-grey-600">
+    <div v-if="currentUnit" class="p-4 border rounded-lg bg-gray-50">
       <h4 class="font-semibold mb-2">
         {{ currentUnit.unitTitle }} ({{ t(`unitTypes.${currentUnit.unitType.toLowerCase()}`) }})
       </h4>

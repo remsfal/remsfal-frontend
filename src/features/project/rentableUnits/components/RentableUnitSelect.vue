@@ -11,6 +11,7 @@ const props = defineProps<{
   excludeUnitIds?: string[];
   invalid?: boolean;
   inputId?: string;
+  leafNodeSelectionOnly?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -29,6 +30,7 @@ function transformTreeNodes(nodes: RentalUnitTreeNodeJson[]): TreeNode[] {
   return nodes.map((node) => {
     const unitType = node.data?.type ? t(`unitTypes.${node.data.type.toLowerCase()}`) : '';
     const title = node.data?.title || 'Unbenannt';
+    const isLeaf = !node.children || node.children.length === 0;
 
     return {
       key: node.key,
@@ -37,7 +39,7 @@ function transformTreeNodes(nodes: RentalUnitTreeNodeJson[]): TreeNode[] {
       children: node.children ? transformTreeNodes(node.children) : undefined,
       selectable:
         node.data?.type !== undefined &&
-        node.data.type !== 'PROPERTY' &&
+        (!props.leafNodeSelectionOnly || isLeaf) &&
         !excludedUnitIds.value.has(node.key),
     };
   });
