@@ -6,6 +6,7 @@ export type RentalAgreementListJson = ApiComponents['schemas']['RentalAgreementL
 export type RentalAgreementItemJson = ApiComponents['schemas']['RentalAgreementItemJson'];
 export type TenantJson = ApiComponents['schemas']['TenantJson'];
 export type RentalAgreementKeysJson = ApiComponents['schemas']['RentalAgreementKeysJson'];
+export type RentJson = ApiComponents['schemas']['RentJson'];
 
 /**
  * Service for managing rental agreements in the manager/property owner context.
@@ -102,6 +103,47 @@ export default class RentalAgreementService {
    */
   extractTenants(agreements: RentalAgreementJson[]): TenantJson[] {
     return agreements.flatMap(agreement => agreement.tenants ?? []);
+  }
+
+  /**
+   * Add a new rent for a rental unit of a rental agreement (used to adjust the rent).
+   */
+  async addRent(
+    projectId: string,
+    agreementId: string,
+    rentalUnitType: UnitType,
+    rentalUnitId: string,
+    rent: RentJson,
+  ): Promise<RentalAgreementJson> {
+    return apiClient.post(
+      '/api/v1/projects/{projectId}/rental-agreements/{agreementId}/{rentalUnitType}/{rentalUnitId}',
+      rent,
+      {
+        pathParams: {
+          projectId, agreementId, rentalUnitId, rentalUnitType: rentalUnitType.toLowerCase(),
+        },
+      },
+    ) as Promise<RentalAgreementJson>;
+  }
+
+  /**
+   * Remove a rental unit (and all of its rents) from a rental agreement.
+   * The rental unit itself is not deleted, only detached from this agreement.
+   */
+  async removeRentalUnit(
+    projectId: string,
+    agreementId: string,
+    rentalUnitType: UnitType,
+    rentalUnitId: string,
+  ): Promise<void> {
+    await apiClient.delete(
+      '/api/v1/projects/{projectId}/rental-agreements/{agreementId}/{rentalUnitType}/{rentalUnitId}',
+      {
+        pathParams: {
+          projectId, agreementId, rentalUnitId, rentalUnitType: rentalUnitType.toLowerCase(),
+        },
+      },
+    );
   }
 }
 

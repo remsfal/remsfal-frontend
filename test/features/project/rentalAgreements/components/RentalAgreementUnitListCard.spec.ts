@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import DataTable from 'primevue/datatable';
-import TreeSelect from 'primevue/treeselect';
 import RentalAgreementUnitListCard from '@/features/project/rentalAgreements/components/RentalAgreementUnitListCard.vue';
+import AdjustRentDialog from '@/features/project/rentalAgreements/components/AdjustRentDialog.vue';
 import type { RentalAgreementJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { rentalAgreementService } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
@@ -42,7 +41,10 @@ vi.mock('@/features/project/rentalAgreements/services/RentalAgreementService', a
   >();
   return {
     ...actual,
-    rentalAgreementService: { updateRentalAgreement: vi.fn() },
+    rentalAgreementService: {
+      removeRentalUnit: vi.fn(),
+      getRentalAgreement: vi.fn(),
+    },
   };
 });
 
@@ -56,24 +58,24 @@ const baseAgreement: RentalAgreementJson = {
   commercialRents: [{ rentalUnitId: 'comm-1' }],
 };
 
-const UNIT_TYPE_CASES: Array<{ unitId: string; type: UnitType; view: string }> = [
+const UNIT_TYPE_CASES: Array<{ unitId: string; type: UnitType; view: string; title: string }> = [
   {
-    unitId: 'prop-1', type: 'PROPERTY', view: 'PropertyView' 
+    unitId: 'prop-1', type: 'PROPERTY', view: 'PropertyView', title: 'Haupthaus'
   },
   {
-    unitId: 'site-1', type: 'SITE', view: 'SiteView' 
+    unitId: 'site-1', type: 'SITE', view: 'SiteView', title: 'Garten'
   },
   {
-    unitId: 'building-1', type: 'BUILDING', view: 'BuildingView' 
+    unitId: 'building-1', type: 'BUILDING', view: 'BuildingView', title: 'Gebäude A'
   },
   {
-    unitId: 'apt-1', type: 'APARTMENT', view: 'ApartmentView' 
+    unitId: 'apt-1', type: 'APARTMENT', view: 'ApartmentView', title: 'Wohnung 3'
   },
   {
-    unitId: 'storage-1', type: 'STORAGE', view: 'StorageView' 
+    unitId: 'storage-1', type: 'STORAGE', view: 'StorageView', title: 'Keller'
   },
   {
-    unitId: 'comm-1', type: 'COMMERCIAL', view: 'CommercialView' 
+    unitId: 'comm-1', type: 'COMMERCIAL', view: 'CommercialView', title: 'Laden'
   },
 ];
 
@@ -84,31 +86,37 @@ describe('RentalAgreementUnitListCard', () => {
       attachTo: document.body,
     });
 
-  const findDialogButton = (text: string) =>
-    Array.from(document.querySelectorAll('.p-dialog button')).find(
-      (btn) => btn.textContent?.trim() === text,
-    ) as HTMLButtonElement | undefined;
+  // Group header row for a unit renders its title inside a role="button" element
+  // alongside its "Miete anpassen"/"Einheit löschen" buttons in the same table row.
+  const findGroupHeaderRow = (title: string) => {
+    const titleEl = Array.from(document.querySelectorAll('[role="button"]')).find(
+      (el) => el.textContent?.includes(title),
+    ) as HTMLElement | undefined;
+    return titleEl?.closest('tr') as HTMLElement | undefined;
+  };
 
   beforeEach(() => {
     vi.mocked(propertyService.getProperty).mockResolvedValue({
-      id: 'prop-1', title: 'Haupthaus', type: 'PROPERTY' 
+      id: 'prop-1', title: 'Haupthaus', type: 'PROPERTY'
     });
+    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({ properties: [] });
     vi.mocked(siteService.getSite).mockResolvedValue({
-      id: 'site-1', title: 'Garten', type: 'SITE' 
+      id: 'site-1', title: 'Garten', type: 'SITE'
     });
     vi.mocked(buildingService.getBuilding).mockResolvedValue({
-      id: 'building-1', title: 'Gebäude A', type: 'BUILDING' 
+      id: 'building-1', title: 'Gebäude A', type: 'BUILDING'
     });
     vi.mocked(apartmentService.getApartment).mockResolvedValue({
-      id: 'apt-1', title: 'Wohnung 3', type: 'APARTMENT' 
+      id: 'apt-1', title: 'Wohnung 3', type: 'APARTMENT'
     });
     vi.mocked(storageService.getStorage).mockResolvedValue({
-      id: 'storage-1', title: 'Keller', type: 'STORAGE' 
+      id: 'storage-1', title: 'Keller', type: 'STORAGE'
     });
     vi.mocked(commercialService.getCommercial).mockResolvedValue({
-      id: 'comm-1', title: 'Laden', type: 'COMMERCIAL' 
+      id: 'comm-1', title: 'Laden', type: 'COMMERCIAL'
     });
-    vi.mocked(rentalAgreementService.updateRentalAgreement).mockResolvedValue(undefined);
+    vi.mocked(rentalAgreementService.removeRentalUnit).mockResolvedValue(undefined);
+    vi.mocked(rentalAgreementService.getRentalAgreement).mockResolvedValue(baseAgreement);
   });
 
   afterEach(() => {
@@ -153,15 +161,14 @@ describe('RentalAgreementUnitListCard', () => {
     consoleSpy.mockRestore();
   });
 
-  it.each(UNIT_TYPE_CASES)('navigates to $view on row click for a $type unit', async ({ unitId, type, view }) => {
-    const wrapper = mountCard();
+  it.each(UNIT_TYPE_CASES)('navigates to $view when the $title header row is clicked', async ({ unitId, view, title }) => {
+    mountCard();
     await flushPromises();
 
-    await wrapper.findComponent(DataTable).vm.$emit('rowSelect', {
-      data: {
-        id: unitId, title: 'x', type 
-      } 
-    });
+    const row = findGroupHeaderRow(title);
+    expect(row).toBeTruthy();
+    (row!.querySelector('[role="button"]') as HTMLElement).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await flushPromises();
 
     expect(push).toHaveBeenCalledWith({
       name: view,
@@ -169,8 +176,7 @@ describe('RentalAgreementUnitListCard', () => {
     });
   });
 
-  it('opens the add dialog and loads the property tree', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({ properties: [] });
+  it('opens AdjustRentDialog in add mode (unit=null) when "Wirtschaftseinheit hinzufügen" is clicked', async () => {
     const wrapper = mountCard();
     await flushPromises();
 
@@ -178,141 +184,61 @@ describe('RentalAgreementUnitListCard', () => {
     await addBtn?.trigger('click');
     await flushPromises();
 
-    expect(propertyService.getPropertyTree).toHaveBeenCalledWith('proj-1');
-  });
-
-  it('marks already-added units and PROPERTY containers as non-selectable in the tree', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        {
-          key: 'prop-1',
-          data: {
-            id: 'prop-1', type: 'PROPERTY', title: 'Haupthaus' 
-          },
-          children: [{
-            key: 'apt-2', data: {
-              id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5' 
-            } 
-          }],
-        },
-      ],
-    });
-
-    const wrapper = mountCard();
-    await flushPromises();
-
-    const addBtn = wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen');
-    await addBtn?.trigger('click');
-    await flushPromises();
-
-    const options = wrapper.findComponent(TreeSelect).props('options') as Array<{
-      key: string; selectable: boolean; children?: Array<{ key: string; selectable: boolean }>;
-    }>;
-    const propertyNode = options.find((node) => node.key === 'prop-1');
-    const apartmentNode = propertyNode?.children?.find((node) => node.key === 'apt-2');
-
-    expect(propertyNode?.selectable).toBe(false);
-    expect(apartmentNode?.selectable).toBe(true);
-  });
-
-  it('keeps the confirm-add button disabled until a unit is selected', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [{
-        key: 'apt-2', data: {
-          id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5' 
-        } 
-      }],
-    });
-
-    const wrapper = mountCard();
-    await flushPromises();
-    await wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen')?.trigger('click');
-    await flushPromises();
-
-    expect(findDialogButton('Hinzufügen')?.disabled).toBe(true);
-
-    await wrapper.findComponent(TreeSelect).vm.$emit('node-select', {
-      key: 'apt-2',
-      data: {
-        id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5'
-      },
-    });
-    await flushPromises();
-
-    expect(findDialogButton('Hinzufügen')?.disabled).toBe(false);
-  });
-
-  it('adds a unit: persists the extended rent array, emits update, shows success toast, closes dialog', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [{
-        key: 'apt-2', data: {
-          id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5' 
-        } 
-      }],
-    });
-
-    const wrapper = mountCard();
-    await flushPromises();
-    await wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen')?.trigger('click');
-    await flushPromises();
-    await wrapper.findComponent(TreeSelect).vm.$emit('node-select', {
-      key: 'apt-2',
-      data: {
-        id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5' 
-      },
-    });
-    await flushPromises();
-    findDialogButton('Hinzufügen')?.click();
-    await flushPromises();
-
-    expect(rentalAgreementService.updateRentalAgreement).toHaveBeenCalledWith(
-      'proj-1',
-      'agreement-1',
-      expect.objectContaining({apartmentRents: [{ rentalUnitId: 'apt-1' }, { rentalUnitId: 'apt-2' }],}),
+    const dialog = wrapper.findComponent(AdjustRentDialog);
+    expect(dialog.props('visible')).toBe(true);
+    expect(dialog.props('unit')).toBeNull();
+    expect(dialog.props('excludeUnitIds')).toEqual(
+      expect.arrayContaining(['prop-1', 'site-1', 'building-1', 'apt-1', 'storage-1', 'comm-1']),
     );
-    const emitted = wrapper.emitted('update:rentalAgreement');
-    expect(emitted).toBeTruthy();
-    expect((emitted![0][0] as RentalAgreementJson).apartmentRents).toEqual([
-      { rentalUnitId: 'apt-1' },
-      { rentalUnitId: 'apt-2' },
-    ]);
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
-  it('shows an error toast when adding a unit fails', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [{
-        key: 'apt-2', data: {
-          id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5' 
-        } 
-      }],
-    });
-    vi.mocked(rentalAgreementService.updateRentalAgreement).mockRejectedValue(new Error('network error'));
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  it('opens AdjustRentDialog in adjust mode with the clicked row as unit when "Miete anpassen" is clicked', async () => {
+    const wrapper = mountCard();
+    await flushPromises();
+
+    const row = findGroupHeaderRow('Haupthaus');
+    const adjustBtn = row?.querySelector('.pi-pencil')?.closest('button') as HTMLButtonElement;
+    adjustBtn.click();
+    await flushPromises();
+
+    const dialog = wrapper.findComponent(AdjustRentDialog);
+    expect(dialog.props('visible')).toBe(true);
+    expect(dialog.props('unit')).toEqual(expect.objectContaining({
+      unitId: 'prop-1', unitType: 'PROPERTY', unitTitle: 'Haupthaus',
+    }));
+  });
+
+  it('reacts to AdjustRentDialog emitting update:rentalAgreement by forwarding the update and reloading rows', async () => {
+    const updatedAgreement: RentalAgreementJson = {
+      ...baseAgreement,
+      apartmentRents: [{ rentalUnitId: 'apt-1' }, { rentalUnitId: 'apt-2' }],
+    };
+    vi.mocked(apartmentService.getApartment).mockImplementation((_projectId, unitId) =>
+      Promise.resolve(unitId === 'apt-2'
+        ? {
+          id: 'apt-2', title: 'Wohnung 5', type: 'APARTMENT' 
+        }
+        : {
+          id: 'apt-1', title: 'Wohnung 3', type: 'APARTMENT' 
+        }));
 
     const wrapper = mountCard();
     await flushPromises();
-    await wrapper.findAll('button').find((btn) => btn.text() === 'Wirtschaftseinheit hinzufügen')?.trigger('click');
-    await flushPromises();
-    await wrapper.findComponent(TreeSelect).vm.$emit('node-select', {
-      key: 'apt-2',
-      data: {
-        id: 'apt-2', type: 'APARTMENT', title: 'Wohnung 5' 
-      },
-    });
-    await flushPromises();
-    findDialogButton('Hinzufügen')?.click();
+
+    await wrapper.findComponent(AdjustRentDialog).vm.$emit('update:rentalAgreement', updatedAgreement);
     await flushPromises();
 
-    expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
-    consoleSpy.mockRestore();
+    const emitted = wrapper.emitted('update:rentalAgreement');
+    expect(emitted?.[0]).toEqual([updatedAgreement]);
+    expect(wrapper.text()).toContain('Wohnung 5');
   });
 
-  it('opens the remove-confirm dialog on trash click without triggering row navigation', async () => {
+  it('opens the remove-confirm dialog on delete-unit click without triggering row navigation', async () => {
     mountCard();
     await flushPromises();
 
-    const deleteBtn = document.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
+    const row = findGroupHeaderRow('Haupthaus');
+    const deleteBtn = row?.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
     expect(deleteBtn).toBeTruthy();
     deleteBtn.click();
     await flushPromises();
@@ -321,11 +247,15 @@ describe('RentalAgreementUnitListCard', () => {
     expect(document.body.textContent).toContain('Haupthaus');
   });
 
-  it('removes a unit: filters the rent array, persists, emits update, shows success toast', async () => {
+  it('removes a unit: calls the dedicated endpoint, refreshes the agreement, emits update, shows success toast', async () => {
+    const refreshedAgreement: RentalAgreementJson = { ...baseAgreement, propertyRents: [] };
+    vi.mocked(rentalAgreementService.getRentalAgreement).mockResolvedValue(refreshedAgreement);
+
     const wrapper = mountCard();
     await flushPromises();
 
-    const deleteBtn = document.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
+    const row = findGroupHeaderRow('Haupthaus');
+    const deleteBtn = row?.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
     deleteBtn.click();
     await flushPromises();
 
@@ -333,23 +263,24 @@ describe('RentalAgreementUnitListCard', () => {
     confirmDeleteBtn.click();
     await flushPromises();
 
-    expect(rentalAgreementService.updateRentalAgreement).toHaveBeenCalled();
-    const [, , updatedAgreement] = vi.mocked(rentalAgreementService.updateRentalAgreement).mock.calls[0]!;
-    expect((updatedAgreement as RentalAgreementJson).propertyRents).toEqual([]);
+    expect(rentalAgreementService.removeRentalUnit).toHaveBeenCalledWith('proj-1', 'agreement-1', 'PROPERTY', 'prop-1');
+    expect(rentalAgreementService.getRentalAgreement).toHaveBeenCalledWith('proj-1', 'agreement-1');
 
     const emitted = wrapper.emitted('update:rentalAgreement');
     expect(emitted).toBeTruthy();
+    expect((emitted![0][0] as RentalAgreementJson).propertyRents).toEqual([]);
     expect(toastSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
   it('shows an error toast when removing a unit fails and still closes the dialog', async () => {
-    vi.mocked(rentalAgreementService.updateRentalAgreement).mockRejectedValue(new Error('network error'));
+    vi.mocked(rentalAgreementService.removeRentalUnit).mockRejectedValue(new Error('network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     mountCard();
     await flushPromises();
 
-    const deleteBtn = document.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
+    const row = findGroupHeaderRow('Haupthaus');
+    const deleteBtn = row?.querySelector('.pi-trash')?.closest('button') as HTMLButtonElement;
     deleteBtn.click();
     await flushPromises();
     const confirmDeleteBtn = document.querySelector('.p-dialog .pi-trash')?.closest('button') as HTMLButtonElement;
