@@ -458,10 +458,12 @@ describe('ProjectTenancies E2E Tests', () => {
 
     cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
       cy.get('.p-datatable').should('be.visible');
-      cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 1);
-      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Apartment 101');
-      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'apt-101');
-      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Wohnung');
+      // Units are grouped by unit (rowGroupMode="subheader"): one group-header row per unit,
+      // plus one data row per rent entry for that unit.
+      cy.get('.p-datatable-tbody tr.p-datatable-row-group-header').should('have.length', 1);
+      cy.get('.p-datatable-tbody tr.p-datatable-row-group-header').first().should('contain', 'Apartment 101');
+      cy.get('.p-datatable-tbody tr.p-datatable-row-group-header').first().should('contain', 'Wohnung');
+      cy.get('.p-datatable-tbody tr[role="row"]:not(.p-datatable-row-group-header)').should('have.length', 1);
     });
   });
 
@@ -495,10 +497,18 @@ describe('ProjectTenancies E2E Tests', () => {
       },
     }).as('getPropertyTree');
 
-    cy.intercept('PATCH', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
-      statusCode: 200,
-      body: { id: 'agreement-1' },
-    }).as('updateRentalAgreement');
+    // Adding a unit posts a new rent entry to the rental-unit-scoped endpoint; the response
+    // is the full updated RentalAgreementJson (used directly, no follow-up GET).
+    cy.intercept('POST', `/api/v1/projects/${projectId}/rental-agreements/agreement-1/apartment/apt-999`, {
+      statusCode: 201,
+      body: {
+        id: 'agreement-1',
+        startOfRental: '2024-01-01',
+        endOfRental: '2024-12-31',
+        tenants: [],
+        apartmentRents: [{ rentalUnitId: 'apt-999', basicRent: 1200.0 }],
+      },
+    }).as('addRent');
 
     cy.intercept('GET', `/api/v1/projects/${projectId}/apartments/apt-999`, {
       statusCode: 200,
@@ -522,17 +532,24 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('.p-treeselect-overlay').should('be.visible');
     cy.get('.p-treeselect-overlay').contains('.p-tree-node-content', 'Neue Wohnung').click();
 
+    // Zahlungsbeginn (first payment date) is required before the submit button enables.
+    cy.get('[role="dialog"]').within(() => {
+      cy.contains('label', 'Zahlungsbeginn').parent().find('input').click();
+    });
+    cy.get('.p-datepicker-panel td[data-p-today="true"] span').first().click();
+    cy.get('.p-datepicker-panel').should('not.exist');
+
     cy.get('[role="dialog"]').contains('button', 'Hinzufügen').should('not.be.disabled').click();
 
-    cy.wait('@updateRentalAgreement');
+    cy.wait('@addRent');
     cy.wait('@getNewApartment');
 
     cy.get('.p-toast-message-success').should('be.visible');
     cy.get('[role="dialog"]').should('not.exist');
 
     cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
-      cy.get('.p-datatable-tbody tr[role="row"]').should('have.length', 1);
-      cy.get('.p-datatable-tbody tr[role="row"]').first().should('contain', 'Neue Wohnung');
+      cy.get('.p-datatable-tbody tr.p-datatable-row-group-header').should('have.length', 1);
+      cy.get('.p-datatable-tbody tr.p-datatable-row-group-header').first().should('contain', 'Neue Wohnung');
     });
   });
 
@@ -544,15 +561,20 @@ describe('ProjectTenancies E2E Tests', () => {
     });
     cy.intercept('GET', '/ticketing/v1/issues**', { statusCode: 200, body: { issues: [] } });
 
-    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
-      statusCode: 200,
-      body: {
-        id: 'agreement-1',
-        startOfRental: '2024-01-01',
-        endOfRental: '2024-12-31',
-        tenants: [],
-        apartmentRents: [{ rentalUnitId: 'apt-101', basicRent: 1200.0 }],
-      },
+    // The card refetches the rental agreement after a successful removal, so the GET stub
+    // needs to reflect that state change on its second call.
+    let unitRemoved = false;
+    cy.intercept('GET', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, (req) => {
+      req.reply({
+        statusCode: 200,
+        body: {
+          id: 'agreement-1',
+          startOfRental: '2024-01-01',
+          endOfRental: '2024-12-31',
+          tenants: [],
+          apartmentRents: unitRemoved ? [] : [{ rentalUnitId: 'apt-101', basicRent: 1200.0 }],
+        },
+      });
     }).as('getRentalAgreementDetails');
 
     cy.intercept('GET', `/api/v1/projects/${projectId}/apartments/apt-101`, {
@@ -560,10 +582,14 @@ describe('ProjectTenancies E2E Tests', () => {
       body: { title: 'Apartment 101' },
     }).as('getApartment101');
 
-    cy.intercept('PATCH', `/api/v1/projects/${projectId}/rental-agreements/agreement-1`, {
-      statusCode: 200,
-      body: { id: 'agreement-1' },
-    }).as('updateRentalAgreement');
+    cy.intercept(
+      'DELETE',
+      `/api/v1/projects/${projectId}/rental-agreements/agreement-1/apartment/apt-101`,
+      (req) => {
+        unitRemoved = true;
+        req.reply({ statusCode: 204 });
+      },
+    ).as('removeRentalUnit');
 
     cy.visit(`/projects/${projectId}/agreements/agreement-1`);
     cy.wait('@getRentalAgreementDetails');
@@ -572,7 +598,7 @@ describe('ProjectTenancies E2E Tests', () => {
     cy.get('[role="dialog"]').should('not.exist');
 
     cy.contains('.p-card-title', 'Wirtschaftseinheiten').parents('.p-card').within(() => {
-      cy.get('[aria-label="Löschen"]').click();
+      cy.contains('button', 'Einheit löschen').click();
     });
 
     cy.get('[role="dialog"]').should('be.visible')
@@ -581,7 +607,8 @@ describe('ProjectTenancies E2E Tests', () => {
 
     cy.get('[role="dialog"]').contains('button', 'Löschen').click();
 
-    cy.wait('@updateRentalAgreement');
+    cy.wait('@removeRentalUnit');
+    cy.wait('@getRentalAgreementDetails');
 
     cy.get('.p-toast-message-success').should('be.visible');
     cy.get('[role="dialog"]').should('not.exist');

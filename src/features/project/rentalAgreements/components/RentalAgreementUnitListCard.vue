@@ -314,6 +314,7 @@ async function confirmRemove() {
                 icon="pi pi-pencil"
                 :label="t('rentalAgreement.unitsCard.adjustRentButton')"
                 :disabled="saving"
+                :pt="{ label: { class: 'hidden sm:inline' } }"
                 @click.stop="openAdjustRentDialog(data)"
               />
               <Button
@@ -323,6 +324,7 @@ async function confirmRemove() {
                 icon="pi pi-trash"
                 :label="t('rentalAgreement.unitsCard.deleteUnitButton')"
                 :disabled="saving"
+                :pt="{ label: { class: 'hidden sm:inline' } }"
                 @click.stop="openRemoveDialog(data)"
               />
             </div>
