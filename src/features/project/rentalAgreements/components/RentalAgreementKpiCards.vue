@@ -21,7 +21,10 @@ function collectLeafUnitIds(nodes: RentalUnitTreeNodeJson[], acc: Partial<Record
     const type = node.data?.type;
     const isLeaf = !node.children || node.children.length === 0;
     if (type && isLeaf && node.data?.id) {
-      (acc[type] ??= []).push(node.data.id);
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+      acc[type].push(node.data.id);
     }
     if (node.children?.length) collectLeafUnitIds(node.children, acc);
   });
