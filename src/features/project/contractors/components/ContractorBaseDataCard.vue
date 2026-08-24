@@ -215,7 +215,7 @@ async function onSubmit(event: FormSubmitEvent) {
             </div>
 
             <div class="flex flex-col gap-1">
-              <label for="organization" class="font-medium">{{ t('contractor.detail.organization') }}</label>
+              <label for="organization" class="font-medium">{{ t('contractor.organization') }}</label>
               <OrganizationSelect
                 :modelValue="currentValues.organizationId"
                 inputId="organization"
