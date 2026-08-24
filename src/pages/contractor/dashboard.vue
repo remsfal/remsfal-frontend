@@ -7,10 +7,10 @@ meta:
 
 <script setup lang="ts">
 import ContractorDashboard from '@/views/contractor/ContractorDashboard.vue'
-import { QuotationRequestKpiCards } from '@/features/contractor/orderManagement'
+import { QuotationKpiCards } from '@/features/contractor/orderManagement'
 </script>
 
 <template>
-  <QuotationRequestKpiCards />
+  <QuotationKpiCards />
   <ContractorDashboard />
 </template>
