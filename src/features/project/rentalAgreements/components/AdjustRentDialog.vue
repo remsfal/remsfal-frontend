@@ -133,6 +133,7 @@ async function confirmSubmit(details: RentalDetails) {
           v-model="selectedNodeKey"
           :projectId="projectId"
           :excludeUnitIds="excludeUnitIds ?? []"
+          leafNodeSelectionOnly
           inputId="rentalAgreementUnitSelect"
           @nodeSelect="onNodeSelect"
         />

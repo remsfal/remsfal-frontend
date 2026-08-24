@@ -5,14 +5,34 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
-import { getIconForUnitType, type UnitType } from '@/features/project/rentableUnits';
+import {getIconForUnitType,
+  type RentalUnitTreeNodeJson,
+  type UnitType,} from '@/features/project/rentableUnits';
 import {rentalAgreementService,
   type RentalAgreementItemJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 const props = withDefaults(
-  defineProps<{ projectId: string; unitIdsByType?: Partial<Record<UnitType, string[]>> }>(),
-  { unitIdsByType: () => ({}) },
+  defineProps<{ projectId: string; rentableUnitTree?: RentalUnitTreeNodeJson[] }>(),
+  { rentableUnitTree: () => [] },
 );
+
+function collectLeafUnitIds(nodes: RentalUnitTreeNodeJson[], acc: Partial<Record<UnitType, string[]>>) {
+  nodes.forEach((node) => {
+    const type = node.data?.type;
+    const isLeaf = !node.children || node.children.length === 0;
+    if (type && isLeaf && node.data?.id) {
+      (acc[type] ??= []).push(node.data.id);
+    }
+    if (node.children?.length) collectLeafUnitIds(node.children, acc);
+  });
+}
+
+// Only leaf units (no sub-units) can be vacant/rentable; containers with children are excluded.
+const unitIdsByType = computed(() => {
+  const acc: Partial<Record<UnitType, string[]>> = {};
+  collectLeafUnitIds(props.rentableUnitTree, acc);
+  return acc;
+});
 const { t, n } = useI18n();
 const toast = useToast();
 
@@ -70,9 +90,9 @@ function countVacant(unitIds: string[]): number {
 }
 
 const vacancyByType = computed(() =>
-  Object.entries(props.unitIdsByType)
-    .filter(([, ids]) => ids.length > 0)
-    .map(([type, ids]) => ({ type: type as UnitType, count: countVacant(ids) })),
+  Object.entries(unitIdsByType.value)
+    .map(([type, ids]) => ({ type: type as UnitType, count: countVacant(ids) }))
+    .filter((vacancy) => vacancy.count > 0),
 );
 
 async function fetchData(projectId: string) {
@@ -141,7 +161,7 @@ onMounted(() => fetchData(props.projectId));
         :icon="getIconForUnitType(vacancy.type)"
         :title="t('rentalAgreement.kpi.vacancyByType', { type: t(`unitTypes.${vacancy.type.toLowerCase()}`) })"
         :value="vacancy.count"
-        :iconBackground="vacancy.count > 0 ? 'var(--color-orange-600)' : undefined"
+        iconBackground="var(--color-orange-600)"
       />
     </template>
   </div>
