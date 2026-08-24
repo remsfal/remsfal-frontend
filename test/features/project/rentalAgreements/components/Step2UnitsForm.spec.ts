@@ -4,7 +4,7 @@ import { flushPromises } from '@vue/test-utils';
 import Step2UnitsForm from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import type { SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
-import type { PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
+import type { PropertyListJson, RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 describe('Step2UnitsForm', () => {
@@ -62,7 +62,7 @@ describe('Step2UnitsForm', () => {
 
   beforeEach(async () => {
     useRentableUnitsStore().$reset();
-    useRentableUnitsStore().rentableUnitTree = mockPropertyTree.properties as PropertyListJson['properties'];
+    useRentableUnitsStore().rentableUnitTree = mockPropertyTree.properties as RentalUnitTreeNodeJson[];
 
     wrapper = mount(Step2UnitsForm, {props: defaultProps,});
 

@@ -116,6 +116,13 @@ describe('ProjectTenancies E2E Tests', () => {
       statusCode: 200,
       body: { issues: [] },
     }).as('getIssues');
+
+    // The project layout always loads the rentable-unit tree, regardless of which
+    // project page is shown, so this must be mocked by default for every test here.
+    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
+      statusCode: 200,
+      body: { properties: [] },
+    }).as('getProperties');
   });
 
   it('should display the rental agreements page with title', () => {

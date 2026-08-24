@@ -1,7 +1,7 @@
 import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import RentableUnitsCard from '@/features/project/rentableUnits/components/RentableUnitsCard.vue';
-import type { PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
+import type { RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 describe('RentableUnitsCard', () => {
@@ -26,7 +26,7 @@ describe('RentableUnitsCard', () => {
         },
         children: [],
       },
-    ] as PropertyListJson['properties'];
+    ] as RentalUnitTreeNodeJson[];
     store.loadedProjectId = '123';
 
     wrapper = mount(RentableUnitsCard, {
