@@ -10,7 +10,10 @@ import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 defineProps<{ projectId: string }>();
-const emit = defineEmits<{ (e: 'update:unitIdsByType', idsByType: Record<UnitType, string[]>): void }>();
+const emit = defineEmits<{
+  (e: 'update:unitIdsByType', idsByType: Record<UnitType, string[]>): void;
+  (e: 'update:rentableUnitTree', tree: RentalUnitTreeNodeJson[]): void;
+}>();
 const { t } = useI18n();
 const rentableUnitsStore = useRentableUnitsStore();
 const { rentableUnitTree, isLoading } = storeToRefs(rentableUnitsStore);
@@ -55,6 +58,7 @@ const unitIdsByType = computed<Record<UnitType, string[]>>(() =>
   ),
 );
 watch(unitIdsByType, (idsByType) => emit('update:unitIdsByType', idsByType), { immediate: true });
+watch(rentableUnitTree, (tree) => emit('update:rentableUnitTree', tree), { immediate: true });
 </script>
 
 <template>
