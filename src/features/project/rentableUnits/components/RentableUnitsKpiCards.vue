@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
 import { type RentalUnitTreeNodeJson, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
-const props = defineProps<{ projectId: string }>();
+defineProps<{ projectId: string }>();
 const emit = defineEmits<{ (e: 'update:unitIdsByType', idsByType: Record<UnitType, string[]>): void }>();
 const { t } = useI18n();
-const toast = useToast();
 const rentableUnitsStore = useRentableUnitsStore();
-
-const isLoading = ref(true);
+const { rentableUnitTree, isLoading } = storeToRefs(rentableUnitsStore);
 
 type UnitTypeAgg = { count: number; space: number; ids: string[] };
 
@@ -40,7 +38,7 @@ const unitAggregates = computed(() => {
     }),
     {} as Record<UnitType, UnitTypeAgg>,
   );
-  aggregate(rentableUnitsStore.rentableUnitTree, acc);
+  aggregate(rentableUnitTree.value, acc);
   return acc;
 });
 
@@ -50,28 +48,13 @@ const kpis = computed(() =>
     .filter((kpi) => kpi.count > 0),
 );
 
-async function fetchPropertyTree(projectId: string) {
-  try {
-    await rentableUnitsStore.fetchRentalUnitTree(projectId);
-    isLoading.value = false;
-    const idsByType = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
-      (result, type) => ({ ...result, [type]: unitAggregates.value[type].ids }),
-      {} as Record<UnitType, string[]>,
-    );
-    emit('update:unitIdsByType', idsByType);
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentableUnits.loadError'),
-      life: 6000,
-    });
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-onMounted(() => fetchPropertyTree(props.projectId));
+const unitIdsByType = computed<Record<UnitType, string[]>>(() =>
+  (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
+    (result, type) => ({ ...result, [type]: unitAggregates.value[type].ids }),
+    {} as Record<UnitType, string[]>,
+  ),
+);
+watch(unitIdsByType, (idsByType) => emit('update:unitIdsByType', idsByType), { immediate: true });
 </script>
 
 <template>

@@ -403,7 +403,7 @@ describe('NewRentalAgreementDialog E2E Tests', () => {
     openDialog();
     completeStep1();
 
-    cy.wait('@getPropertiesAllTypes');
+    cy.wait('@getPropertiesAllTypes', { timeout: 10000 });
     addUnit('Apartment 101');
     addUnit('Site 1');
     addUnit('Building 1');

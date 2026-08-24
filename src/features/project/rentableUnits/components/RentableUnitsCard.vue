@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { type RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
@@ -12,31 +13,12 @@ const props = defineProps<{ projectId: string }>();
 const { t } = useI18n();
 const toast = useToast();
 const rentableUnitsStore = useRentableUnitsStore();
+const { rentableUnitTree, isLoading } = storeToRefs(rentableUnitsStore);
 
 // --- Refs ---
-const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
-const isLoading = ref(true);
 const expandedKeys = ref<TreeTableExpandedKeys>({});
 
 // --- Functions ---
-async function fetchPropertyTree(projectId: string) {
-  try {
-    await rentableUnitsStore.fetchRentalUnitTree(projectId);
-    rentableUnitTree.value = rentableUnitsStore.rentableUnitTree;
-    isLoading.value = false;
-    expandAll();
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentableUnits.loadError'),
-      life: 6000,
-    });
-  } finally {
-    isLoading.value = false;
-  }
-}
-
 function expandAll() {
   const expandRecursive = (nodes: RentalUnitTreeNodeJson[], expanded: Record<string, boolean>) => {
     nodes.forEach((node) => {
@@ -53,10 +35,10 @@ function collapseAll() {
   expandedKeys.value = {};
 }
 
+watch(rentableUnitTree, () => expandAll(), { immediate: true });
+
 function onNewRentableUnit(title: string) {
-  isLoading.value = true;
   rentableUnitsStore.invalidate();
-  fetchPropertyTree(props.projectId);
   toast.add({
     severity: 'success',
     summary: 'Neue Einheit hinzugefügt',
@@ -64,9 +46,6 @@ function onNewRentableUnit(title: string) {
     life: 3000,
   });
 }
-
-// --- Lifecycle ---
-onMounted(() => fetchPropertyTree(props.projectId));
 
 // --- Expose for tests ---
 defineExpose({expandedKeys,});

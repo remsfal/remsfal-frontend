@@ -1,12 +1,10 @@
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
+import { mount, VueWrapper } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Message from 'primevue/message';
 import RentableUnitsKpiCards from '@/features/project/rentableUnits/components/RentableUnitsKpiCards.vue';
 import KpiCard from '@/components/common/KpiCard.vue';
-import { type PropertyListJson, propertyService } from '@/features/project/rentableUnits/services/PropertyService';
+import type { RentalUnitTreeNodeJson } from '@/features/project/rentableUnits/services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
-
-vi.mock('@/features/project/rentableUnits/services/PropertyService');
 
 describe('RentableUnitsKpiCards', () => {
   let wrapper: VueWrapper;
@@ -20,44 +18,41 @@ describe('RentableUnitsKpiCards', () => {
     wrapper?.unmount();
   });
 
-  it('renders one KpiCard per unit type present in the tree, aggregating count and space', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        {
-          key: 'property-1',
-          data: {
-            type: 'PROPERTY', title: 'Grundstück 1', space: 500 
-          },
-          children: [
-            {
-              key: 'building-1',
-              data: {
-                type: 'BUILDING', title: 'Gebäude 1', space: 200 
-              },
-              children: [
-                {
-                  key: 'apartment-1',
-                  data: {
-                    type: 'APARTMENT', title: 'Wohnung 1', space: 50 
-                  },
-                  children: [],
-                },
-                {
-                  key: 'apartment-2',
-                  data: {
-                    type: 'APARTMENT', title: 'Wohnung 2', space: 70 
-                  },
-                  children: [],
-                },
-              ],
-            },
-          ],
+  it('renders one KpiCard per unit type present in the tree, aggregating count and space', () => {
+    useRentableUnitsStore().rentableUnitTree = [
+      {
+        key: 'property-1',
+        data: {
+          type: 'PROPERTY', title: 'Grundstück 1', space: 500
         },
-      ],
-    } as PropertyListJson);
+        children: [
+          {
+            key: 'building-1',
+            data: {
+              type: 'BUILDING', title: 'Gebäude 1', space: 200
+            },
+            children: [
+              {
+                key: 'apartment-1',
+                data: {
+                  type: 'APARTMENT', title: 'Wohnung 1', space: 50
+                },
+                children: [],
+              },
+              {
+                key: 'apartment-2',
+                data: {
+                  type: 'APARTMENT', title: 'Wohnung 2', space: 70
+                },
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    ] as RentalUnitTreeNodeJson[];
 
     wrapper = mount(RentableUnitsKpiCards, { props: { projectId: '123' } });
-    await flushPromises();
 
     const cards = wrapper.findAllComponents(KpiCard);
     expect(cards).toHaveLength(3);
@@ -73,52 +68,44 @@ describe('RentableUnitsKpiCards', () => {
     expect(cards[2]!.props('title')).toBe('Wohnung');
     expect(cards[2]!.props('value')).toBe(2);
     expect(cards[2]!.props('subtext')).toBe('120 m²');
-
-    expect(propertyService.getPropertyTree).toHaveBeenCalledWith('123');
   });
 
-  it('does not render a card for unit types with no units', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        {
-          key: 'property-1',
-          data: {
-            type: 'PROPERTY', title: 'Grundstück 1', space: 500 
-          },
-          children: [],
+  it('does not render a card for unit types with no units', () => {
+    useRentableUnitsStore().rentableUnitTree = [
+      {
+        key: 'property-1',
+        data: {
+          type: 'PROPERTY', title: 'Grundstück 1', space: 500
         },
-      ],
-    } as PropertyListJson);
+        children: [],
+      },
+    ] as RentalUnitTreeNodeJson[];
 
     wrapper = mount(RentableUnitsKpiCards, { props: { projectId: '123' } });
-    await flushPromises();
 
     const titles = wrapper.findAllComponents(KpiCard).map((card) => card.props('title'));
     expect(titles).toEqual(['Grundstück']);
   });
 
-  it('ignores nodes without data/type and defaults missing space to 0', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({
-      properties: [
-        {
-          key: 'property-1',
-          data: {
-            type: 'PROPERTY', title: 'Grundstück 1', space: 500
-          },
-          children: [
-            // node without a `data` object at all: `type` is undefined, must not be counted
-            { key: 'unknown-1', children: [] },
-            // node with a type but no `space`: falls back to 0 instead of throwing
-            {
-              key: 'building-1', data: { type: 'BUILDING', title: 'Gebäude 1' }, children: [] 
-            },
-          ],
+  it('ignores nodes without data/type and defaults missing space to 0', () => {
+    useRentableUnitsStore().rentableUnitTree = [
+      {
+        key: 'property-1',
+        data: {
+          type: 'PROPERTY', title: 'Grundstück 1', space: 500
         },
-      ],
-    } as PropertyListJson);
+        children: [
+          // node without a `data` object at all: `type` is undefined, must not be counted
+          { key: 'unknown-1', children: [] },
+          // node with a type but no `space`: falls back to 0 instead of throwing
+          {
+            key: 'building-1', data: { type: 'BUILDING', title: 'Gebäude 1' }, children: []
+          },
+        ],
+      },
+    ] as RentalUnitTreeNodeJson[];
 
     wrapper = mount(RentableUnitsKpiCards, { props: { projectId: '123' } });
-    await flushPromises();
 
     const cards = wrapper.findAllComponents(KpiCard);
     expect(cards).toHaveLength(2);
@@ -128,11 +115,8 @@ describe('RentableUnitsKpiCards', () => {
     expect(cards[1]!.props('subtext')).toBe('0 m²');
   });
 
-  it('shows an empty-state message with a link to create rentable units when none exist', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue({properties: [],} as unknown as PropertyListJson);
-
+  it('shows an empty-state message with a link to create rentable units when none exist', () => {
     wrapper = mount(RentableUnitsKpiCards, { props: { projectId: '123' } });
-    await flushPromises();
 
     expect(wrapper.findComponent(KpiCard).exists()).toBe(false);
 
@@ -145,7 +129,7 @@ describe('RentableUnitsKpiCards', () => {
   });
 
   it('shows loading KpiCard placeholders while loading', () => {
-    vi.mocked(propertyService.getPropertyTree).mockReturnValue(new Promise(() => {}));
+    useRentableUnitsStore().isLoading = true;
 
     wrapper = mount(RentableUnitsKpiCards, { props: { projectId: '123' } });
 
@@ -153,18 +137,5 @@ describe('RentableUnitsKpiCards', () => {
     expect(cards).toHaveLength(6);
     expect(cards.every((card) => card.props('loading'))).toBe(true);
     expect(wrapper.findComponent({ name: 'Skeleton' }).exists()).toBe(true);
-  });
-
-  it('hides the loading placeholders after a failed fetch instead of loading forever', async () => {
-    vi.mocked(propertyService.getPropertyTree).mockRejectedValueOnce(new Error('Fetch failed'));
-
-    wrapper = mount(RentableUnitsKpiCards, {
-      props: { projectId: '123' },
-      global: { stubs: { RouterLink: true } },
-    });
-    await flushPromises();
-
-    expect(wrapper.findAllComponents(KpiCard).filter((card) => card.props('loading'))).toHaveLength(0);
-    expect(wrapper.findComponent(Message).exists()).toBe(true);
   });
 });

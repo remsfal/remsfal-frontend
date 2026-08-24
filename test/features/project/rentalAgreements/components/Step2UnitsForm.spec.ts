@@ -1,13 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
 import Step2UnitsForm from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import type { SelectedUnit } from '@/features/project/rentalAgreements/components/Step2UnitsForm.vue';
 import RentableUnitSelect from '@/features/project/rentableUnits/components/RentableUnitSelect.vue';
-import { propertyService, type PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
+import type { PropertyListJson } from '@/features/project/rentableUnits/services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
-
-vi.mock('@/features/project/rentableUnits/services/PropertyService', () => ({propertyService: {getPropertyTree: vi.fn(),},}));
 
 describe('Step2UnitsForm', () => {
   let wrapper: VueWrapper;
@@ -64,7 +62,7 @@ describe('Step2UnitsForm', () => {
 
   beforeEach(async () => {
     useRentableUnitsStore().$reset();
-    vi.mocked(propertyService.getPropertyTree).mockResolvedValue(mockPropertyTree);
+    useRentableUnitsStore().rentableUnitTree = mockPropertyTree.properties as PropertyListJson['properties'];
 
     wrapper = mount(Step2UnitsForm, {props: defaultProps,});
 
@@ -73,10 +71,6 @@ describe('Step2UnitsForm', () => {
 
   it('renders the component with title', () => {
     expect(wrapper.find('h3').text()).toBe('Mieteinheiten');
-  });
-
-  it('loads property tree on mount', () => {
-    expect(propertyService.getPropertyTree).toHaveBeenCalledWith('project-123');
   });
 
   it('shows TreeSelect for unit selection', () => {
