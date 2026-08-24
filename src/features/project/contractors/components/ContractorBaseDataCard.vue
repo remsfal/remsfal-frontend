@@ -12,6 +12,7 @@ import Message from 'primevue/message';
 import Button from 'primevue/button';
 import BaseCard from '@/components/common/BaseCard.vue';
 import PhoneInput from '@/components/common/PhoneInput.vue';
+import OrganizationSelect from '@/features/project/contractors/components/OrganizationSelect.vue';
 import { projectContractorService } from '@/services/ProjectContractorService';
 
 const props = defineProps<{ projectId: string; contractorId: string }>();
@@ -36,16 +37,20 @@ const schema = z.object({
 const resolver = zodResolver(schema);
 
 const serverValues = reactive({
-  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '',
+  organizationId: null as string | null,
 });
 const currentValues = reactive({
-  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '',
+  organizationId: null as string | null,
 });
 const initialValues = ref({
-  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '' 
+  companyName: '', email: '', phone: '', contactPerson: '', trade: '', remarks: '',
+  organizationId: null as string | null,
 });
 const formKey = ref(0);
 const isLoading = ref(true);
+const linkedOrganizationName = ref<string | null>(null);
 
 const isDirty = computed(() =>
   Object.keys(serverValues).some(
@@ -69,10 +74,12 @@ onMounted(async () => {
       contactPerson: c.contactPerson ?? '',
       trade: c.trade ?? '',
       remarks: c.remarks ?? '',
+      organizationId: c.organizationId ?? null,
     };
     Object.assign(serverValues, loaded);
     Object.assign(currentValues, loaded);
     initialValues.value = { ...loaded };
+    linkedOrganizationName.value = c.organization?.name ?? null;
     formKey.value++;
   } catch {
     // silently ignore — form stays empty
@@ -91,6 +98,7 @@ async function onSubmit(event: FormSubmitEvent) {
     contactPerson: currentValues.contactPerson || undefined,
     trade: currentValues.trade || undefined,
     remarks: currentValues.remarks || undefined,
+    organizationId: currentValues.organizationId || undefined,
   };
   try {
     const updated = await projectContractorService.updateContractor(props.projectId, props.contractorId, payload);
@@ -101,10 +109,12 @@ async function onSubmit(event: FormSubmitEvent) {
       contactPerson: updated.contactPerson ?? '',
       trade: updated.trade ?? '',
       remarks: updated.remarks ?? '',
+      organizationId: updated.organizationId ?? null,
     };
     Object.assign(serverValues, saved);
     Object.assign(currentValues, saved);
     initialValues.value = { ...saved };
+    linkedOrganizationName.value = updated.organization?.name ?? null;
     formKey.value++;
     toast.add({
       severity: 'success', summary: t('contractor.detail.saveSuccess'), life: 3000 
@@ -202,6 +212,18 @@ async function onSubmit(event: FormSubmitEvent) {
                 fluid
                 @update:modelValue="(v) => (currentValues.trade = v as string)"
               />
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="organization" class="font-medium">{{ t('contractor.detail.organization') }}</label>
+              <OrganizationSelect
+                :modelValue="currentValues.organizationId"
+                inputId="organization"
+                @update:modelValue="(v) => (currentValues.organizationId = v)"
+              />
+              <small v-if="linkedOrganizationName" class="text-muted-color">
+                {{ t('contractor.detail.organizationLinked', [linkedOrganizationName]) }}
+              </small>
             </div>
           </div>
 

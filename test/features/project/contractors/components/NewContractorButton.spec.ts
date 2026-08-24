@@ -160,6 +160,7 @@ describe('NewContractorButton', () => {
       contactPerson: undefined,
       trade: undefined,
       remarks: undefined,
+      organizationId: undefined,
     });
   });
 

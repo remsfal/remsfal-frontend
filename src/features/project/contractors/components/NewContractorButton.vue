@@ -12,6 +12,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import PhoneInput from '@/components/common/PhoneInput.vue';
+import OrganizationSelect from '@/features/project/contractors/components/OrganizationSelect.vue';
 import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
 
 const props = defineProps<{ projectId: string }>();
@@ -24,6 +25,7 @@ const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
 const visible = ref(false);
 const phone = ref('');
+const organizationId = ref<string | null>(null);
 const initialValues = ref({
   companyName: '', email: '', contactPerson: '', trade: '', remarks: ''
 });
@@ -52,6 +54,7 @@ function resetForm() {
     companyName: '', email: '', contactPerson: '', trade: '', remarks: ''
   };
   phone.value = '';
+  organizationId.value = null;
 }
 
 const onSubmit = async (event: FormSubmitEvent) => {
@@ -67,6 +70,7 @@ const onSubmit = async (event: FormSubmitEvent) => {
     contactPerson: s.contactPerson?.value?.trim() || undefined,
     trade: s.trade?.value?.trim() || undefined,
     remarks: s.remarks?.value?.trim() || undefined,
+    organizationId: organizationId.value || undefined,
   };
 
   try {
@@ -170,6 +174,15 @@ const onSubmit = async (event: FormSubmitEvent) => {
         <div class="flex flex-col gap-1">
           <label for="trade" class="font-semibold">{{ t('contractor.new.trade') }}</label>
           <InputText id="trade" name="trade" fluid />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="organization" class="font-semibold">{{ t('contractor.new.organization') }}</label>
+          <OrganizationSelect
+            :modelValue="organizationId"
+            inputId="organization"
+            @update:modelValue="(v) => (organizationId = v)"
+          />
         </div>
 
         <div class="flex flex-col gap-1">

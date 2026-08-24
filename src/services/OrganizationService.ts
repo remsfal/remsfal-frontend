@@ -19,6 +19,14 @@ export class OrganizationService {
     return apiClient.get('/api/v1/organizations/contractors', {params: { limit, offset },});
   }
 
+  async searchOrganizations(name: string, limit = 20, offset = 0): Promise<OrganizationListJson> {
+    return apiClient.get('/api/v1/organizations/search', {
+      params: {
+        name, limit, offset 
+      } 
+    });
+  }
+
   async createOrganization(data: OrganizationJson): Promise<void> {
     await apiClient.post('/api/v1/organizations', data);
   }
