@@ -20,7 +20,27 @@ describe('RentableUnitSelect.vue', () => {
             id: 'apartment-1', title: 'Apartment 101', type: 'APARTMENT',
           },
         },
+        {
+          key: 'building-1',
+          data: {
+            id: 'building-1', title: 'Building 1', type: 'BUILDING',
+          },
+          children: [
+            {
+              key: 'apartment-2',
+              data: {
+                id: 'apartment-2', title: 'Apartment 201', type: 'APARTMENT',
+              },
+            },
+          ],
+        },
       ],
+    },
+    {
+      key: 'property-2',
+      data: {
+        id: 'property-2', title: 'Property 2', type: 'PROPERTY',
+      },
     },
   ];
 
@@ -50,11 +70,35 @@ describe('RentableUnitSelect.vue', () => {
     expect(options[0]?.children?.[0]?.label).toBe('Apartment 101 (Wohnung)');
   });
 
-  it('marks PROPERTY containers as non-selectable', () => {
+  it('marks all nodes as selectable by default (leafNodeSelectionOnly unset)', () => {
     const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
-    const options = treeSelect.props('options') as Array<{ key: string; selectable: boolean }>;
+    const options = treeSelect.props('options') as Array<{
+      key: string; selectable: boolean;
+      children?: Array<{ key: string; selectable: boolean }>;
+    }>;
+
+    expect(options[0]?.selectable).toBe(true);
+    expect(options[0]?.children?.[1]?.selectable).toBe(true);
+    expect(options[1]?.selectable).toBe(true);
+  });
+
+  it('when leafNodeSelectionOnly is true, only marks childless nodes as selectable', async () => {
+    await wrapper.setProps({ leafNodeSelectionOnly: true });
+
+    const treeSelect = wrapper.findComponent({ name: 'TreeSelect' });
+    const options = treeSelect.props('options') as Array<{
+      key: string; selectable: boolean;
+      children?: Array<{
+        key: string; selectable: boolean;
+        children?: Array<{ key: string; selectable: boolean }>;
+      }>;
+    }>;
 
     expect(options[0]?.selectable).toBe(false);
+    expect(options[0]?.children?.[0]?.selectable).toBe(true);
+    expect(options[0]?.children?.[1]?.selectable).toBe(false);
+    expect(options[0]?.children?.[1]?.children?.[0]?.selectable).toBe(true);
+    expect(options[1]?.selectable).toBe(true);
   });
 
   it('marks unit ids passed via excludeUnitIds as non-selectable', async () => {
