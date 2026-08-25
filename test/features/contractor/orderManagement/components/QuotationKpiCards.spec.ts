@@ -84,7 +84,7 @@ describe('QuotationKpiCards', () => {
     await flushPromises();
 
     expect(wrapper.findComponent(KpiCard).exists()).toBe(false);
-    expect(wrapper.text()).toContain('Sie haben noch keine eingehenden Angebotsanfragen.');
+    expect(wrapper.text()).toContain('Sie haben keine eingehenden Angebotsanfragen.');
 
     const link = wrapper.findComponent({ name: 'RouterLink' });
     expect(link.exists()).toBe(true);
@@ -97,7 +97,7 @@ describe('QuotationKpiCards', () => {
     await flushPromises();
 
     expect(wrapper.findComponent(KpiCard).exists()).toBe(false);
-    expect(wrapper.text()).toContain('Sie haben noch keine eingehenden Angebotsanfragen.');
+    expect(wrapper.text()).toContain('Sie haben keine eingehenden Angebotsanfragen.');
   });
 
   it('shows an error toast and does not throw when the fetch fails', async () => {
