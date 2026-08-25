@@ -18,6 +18,7 @@ import {useRentableUnitForm,
 import { propertyService } from '@/features/project/rentableUnits/services/PropertyService';
 import type { PropertyJson } from '@/features/project/rentableUnits/services/PropertyService';
 import { showSavingErrorToast } from '@/helper/viewHelper';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -26,6 +27,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const toast = useToast();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const usageOptions = [
   { label: 'Keine Auswahl', value: null },
@@ -188,8 +190,9 @@ async function onSubmit(event: FormSubmitEvent) {
       location: payload.location || '',
       plotArea: payload.plotArea ?? null,
     });
+    rentableUnitsStore.invalidate();
     toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('property.saveSuccess'), life: 3000 
+      severity: 'success', summary: t('success.saved'), detail: t('property.saveSuccess'), life: 3000
     });
   } catch (err) {
     console.error('Fehler beim Speichern der Grundstücksdaten:', err);

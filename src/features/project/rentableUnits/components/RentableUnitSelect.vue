@@ -8,7 +8,6 @@ import type { RentalUnitTreeNodeJson } from '../services/PropertyService';
 import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
-  projectId: string;
   modelValue: string | null;
   excludeUnitIds?: string[];
   invalid?: boolean;

@@ -11,14 +11,13 @@ import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/R
 
 defineProps<{ projectId: string }>();
 const emit = defineEmits<{
-  (e: 'update:unitIdsByType', idsByType: Record<UnitType, string[]>): void;
   (e: 'update:rentableUnitTree', tree: RentalUnitTreeNodeJson[]): void;
 }>();
 const { t } = useI18n();
 const rentableUnitsStore = useRentableUnitsStore();
 const { rentableUnitTree, isLoading } = storeToRefs(rentableUnitsStore);
 
-type UnitTypeAgg = { count: number; space: number; ids: string[] };
+type UnitTypeAgg = { count: number; space: number };
 
 function aggregate(nodes: RentalUnitTreeNodeJson[], acc: Record<UnitType, UnitTypeAgg>) {
   nodes.forEach((node) => {
@@ -26,7 +25,6 @@ function aggregate(nodes: RentalUnitTreeNodeJson[], acc: Record<UnitType, UnitTy
     if (type) {
       acc[type].count += 1;
       acc[type].space += node.data?.space ?? 0;
-      if (node.data?.id) acc[type].ids.push(node.data.id);
     }
     if (node.children?.length) aggregate(node.children, acc);
   });
@@ -34,11 +32,7 @@ function aggregate(nodes: RentalUnitTreeNodeJson[], acc: Record<UnitType, UnitTy
 
 const unitAggregates = computed(() => {
   const acc = (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
-    (result, type) => ({
-      ...result, [type]: {
-        count: 0, space: 0, ids: []
-      }
-    }),
+    (result, type) => ({ ...result, [type]: { count: 0, space: 0 } }),
     {} as Record<UnitType, UnitTypeAgg>,
   );
   aggregate(rentableUnitTree.value, acc);
@@ -51,13 +45,6 @@ const kpis = computed(() =>
     .filter((kpi) => kpi.count > 0),
 );
 
-const unitIdsByType = computed<Record<UnitType, string[]>>(() =>
-  (Object.keys(UNIT_TYPE_ICONS) as UnitType[]).reduce(
-    (result, type) => ({ ...result, [type]: unitAggregates.value[type].ids }),
-    {} as Record<UnitType, string[]>,
-  ),
-);
-watch(unitIdsByType, (idsByType) => emit('update:unitIdsByType', idsByType), { immediate: true });
 watch(rentableUnitTree, (tree) => emit('update:rentableUnitTree', tree), { immediate: true });
 </script>
 
