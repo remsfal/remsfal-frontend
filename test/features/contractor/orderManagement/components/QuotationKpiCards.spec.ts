@@ -78,17 +78,13 @@ describe('QuotationKpiCards', () => {
     expect(titles).toEqual(['Angefragt']);
   });
 
-  it('shows an empty-state message with a link when there are no requests at all', async () => {
+  it('shows an empty-state message when there are no requests at all', async () => {
     vi.spyOn(quotationRequestService, 'getContractorQuotationRequests').mockResolvedValue({items: [],});
     const wrapper = mountCard();
     await flushPromises();
 
     expect(wrapper.findComponent(KpiCard).exists()).toBe(false);
     expect(wrapper.text()).toContain('Sie haben keine eingehenden Angebotsanfragen.');
-
-    const link = wrapper.findComponent({ name: 'RouterLink' });
-    expect(link.exists()).toBe(true);
-    expect(link.props('to')).toEqual({ name: 'ContractorOrdersOpen' });
   });
 
   it('handles undefined items from the API gracefully as an empty state', async () => {
