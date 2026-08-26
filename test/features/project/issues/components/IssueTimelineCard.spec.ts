@@ -25,14 +25,6 @@ vi.mock('@/features/project/issues/services/IssueTimelineService', async () => {
 
 const createTimelineList = (timelines: TimelineJson[]): TimelineListJson => ({ timelines });
 
-const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
-  timelineId: 'timeline-1',
-  purpose: 'MESSAGE_SENT',
-  message: '',
-  createdAt: '2026-01-02T10:00:00.000Z',
-  ...overrides,
-});
-
 const mountTimelineCard = async (issueId = 'issue-1') => {
   const { default: IssueTimelineCard } = await import(
     '@/features/project/issues/components/IssueTimelineCard.vue'
