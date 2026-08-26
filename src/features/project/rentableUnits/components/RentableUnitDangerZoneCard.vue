@@ -10,6 +10,7 @@ import { apartmentService } from '@/features/project/rentableUnits/services/Apar
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -20,6 +21,7 @@ const props = defineProps<{
 const { t } = useI18n();
 const toast = useToast();
 const router = useRouter();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const unitTypeLabel = computed(() => t(`unitTypes.${props.unitType.toLowerCase()}`));
 
@@ -45,6 +47,7 @@ async function deleteUnit(): Promise<void> {
         await siteService.deleteSite(props.projectId, props.unitId);
         break;
     }
+    rentableUnitsStore.invalidate();
     toast.add({
       severity: 'success',
       summary: t('success.saved'),

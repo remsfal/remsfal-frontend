@@ -18,6 +18,7 @@ import {useRentableUnitForm,
 import { buildingService } from '@/features/project/rentableUnits/services/BuildingService';
 import type { BuildingJson } from '@/features/project/rentableUnits/services/BuildingService';
 import { showSavingErrorToast } from '@/helper/viewHelper';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -26,6 +27,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const toast = useToast();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const schema = z.object({
   ...createBaseRentableUnitSchema(t),
@@ -172,8 +174,9 @@ async function onSubmit(event: FormSubmitEvent) {
       usableSpace: payload.usableSpace ?? null,
       heatingSpace: payload.heatingSpace ?? null,
     });
+    rentableUnitsStore.invalidate();
     toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('building.saveSuccess'), life: 3000 
+      severity: 'success', summary: t('success.saved'), detail: t('building.saveSuccess'), life: 3000
     });
   } catch (err) {
     console.error('Fehler beim Speichern der Gebäudedaten:', err);

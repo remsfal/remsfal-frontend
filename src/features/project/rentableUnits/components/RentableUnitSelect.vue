@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import TreeSelect from 'primevue/treeselect';
 import type { TreeNode } from 'primevue/treenode';
-import { propertyService, type RentalUnitTreeNodeJson } from '../services/PropertyService';
+import type { RentalUnitTreeNodeJson } from '../services/PropertyService';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
-  projectId: string;
   modelValue: string | null;
   excludeUnitIds?: string[];
   invalid?: boolean;
@@ -20,9 +21,8 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-
-const rawTree = ref<RentalUnitTreeNodeJson[]>([]);
-const isLoading = ref(false);
+const rentableUnitsStore = useRentableUnitsStore();
+const { rentableUnitTree: rawTree, isLoading } = storeToRefs(rentableUnitsStore);
 
 const excludedUnitIds = computed(() => new Set(props.excludeUnitIds ?? []));
 
@@ -46,18 +46,6 @@ function transformTreeNodes(nodes: RentalUnitTreeNodeJson[]): TreeNode[] {
 }
 
 const propertyTree = computed<TreeNode[]>(() => transformTreeNodes(rawTree.value));
-
-onMounted(async () => {
-  isLoading.value = true;
-  try {
-    const data = await propertyService.getPropertyTree(props.projectId);
-    rawTree.value = (data.properties || []) as RentalUnitTreeNodeJson[];
-  } catch (error) {
-    console.error('Failed to load property tree:', error);
-  } finally {
-    isLoading.value = false;
-  }
-});
 
 function onNodeSelect(node: TreeNode) {
   emit('nodeSelect', node);

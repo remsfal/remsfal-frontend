@@ -18,6 +18,7 @@ import {useRentableUnitForm,
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import type { StorageJson } from '@/features/project/rentableUnits/services/StorageService';
 import { showSavingErrorToast } from '@/helper/viewHelper';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -26,6 +27,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const toast = useToast();
+const rentableUnitsStore = useRentableUnitsStore();
 
 const schema = z.object({
   ...createBaseRentableUnitSchema(t),
@@ -107,8 +109,9 @@ async function onSubmit(event: FormSubmitEvent) {
       heatingSpace: payload.heatingSpace ?? null,
       heated: payload.heated,
     });
+    rentableUnitsStore.invalidate();
     toast.add({
-      severity: 'success', summary: t('success.saved'), detail: t('storage.saveSuccess'), life: 3000 
+      severity: 'success', summary: t('success.saved'), detail: t('storage.saveSuccess'), life: 3000
     });
   } catch (err) {
     console.error('Fehler beim Speichern des Lagers:', err);

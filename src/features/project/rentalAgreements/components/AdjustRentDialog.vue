@@ -131,7 +131,6 @@ async function confirmSubmit(details: RentalDetails) {
         </label>
         <RentableUnitSelect
           v-model="selectedNodeKey"
-          :projectId="projectId"
           :excludeUnitIds="excludeUnitIds ?? []"
           leafNodeSelectionOnly
           inputId="rentalAgreementUnitSelect"

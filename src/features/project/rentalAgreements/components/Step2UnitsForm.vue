@@ -115,7 +115,6 @@ const canProceed = computed(() => {
       </label>
       <RentableUnitSelect
         v-model="selectedNodeKey"
-        :projectId="projectId"
         :excludeUnitIds="selectedUnitIds"
         leafNodeSelectionOnly
         inputId="unitSelector"

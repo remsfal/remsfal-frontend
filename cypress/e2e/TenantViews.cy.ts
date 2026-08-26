@@ -108,6 +108,11 @@ describe('Tenant Views E2E Tests', () => {
         ],
       },
     }).as('getTenants');
+
+    cy.intercept('GET', `/api/v1/projects/${projectId}/properties`, {
+      statusCode: 200,
+      body: { properties: [] },
+    }).as('getProperties');
   });
 
   describe('TenantListView', () => {
