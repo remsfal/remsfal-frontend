@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import Breadcrumb from 'primevue/breadcrumb';
 import type { MenuItem } from 'primevue/menuitem';
 import BaseCard from '@/components/common/BaseCard.vue';
-import {propertyService, toRentableUnitView, EntityType,
+import {toRentableUnitView, EntityType,
   type RentalUnitTreeNodeJson, type RentalUnitNodeDataJson,} from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType } from '../unitTypeIcons';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 const props = defineProps<{
   projectId: string;
@@ -17,42 +19,36 @@ const props = defineProps<{
 
 const router = useRouter();
 const { t } = useI18n();
-const items = ref<MenuItem[]>([]);
+const rentableUnitsStore = useRentableUnitsStore();
+const { rentableUnitTree } = storeToRefs(rentableUnitsStore);
 
-const fetchPathNodes = async (targetId: string | undefined): Promise<RentalUnitNodeDataJson[]> => {
-  if (!targetId || !props.projectId) return [];
-  try {
-    const data = await propertyService.getPropertyTree(props.projectId);
-    const tree = (data.properties ?? []) as RentalUnitTreeNodeJson[];
-
-    const findPath = (
-      nodes: RentalUnitTreeNodeJson[],
-      target: string,
-      currentPath: RentalUnitTreeNodeJson[],
-    ): RentalUnitTreeNodeJson[] | null => {
-      for (const node of nodes) {
-        if (node.key === target) return [...currentPath, node];
-        if (node.children?.length) {
-          const found = findPath(node.children, target, [...currentPath, node]);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-
-    const resultNodes = findPath(tree, targetId, []) ?? [];
-    return resultNodes.map((node) => ({
-      ...node.data,
-      title: node.data?.title || 'Unbenannt',
-      id: node.key,
-      type: node.data?.type ?? EntityType.Property,
-    }));
-  } catch {
-    return [];
+function findPath(
+  nodes: RentalUnitTreeNodeJson[],
+  target: string,
+  currentPath: RentalUnitTreeNodeJson[],
+): RentalUnitTreeNodeJson[] | null {
+  for (const node of nodes) {
+    if (node.key === target) return [...currentPath, node];
+    if (node.children?.length) {
+      const found = findPath(node.children, target, [...currentPath, node]);
+      if (found) return found;
+    }
   }
-};
+  return null;
+}
 
-const mapNodesToItems = (nodes: RentalUnitNodeDataJson[]): MenuItem[] => {
+const pathNodes = computed<RentalUnitNodeDataJson[]>(() => {
+  if (!props.unitId) return [];
+  const resultNodes = findPath(rentableUnitTree.value, props.unitId, []) ?? [];
+  return resultNodes.map((node) => ({
+    ...node.data,
+    title: node.data?.title || 'Unbenannt',
+    id: node.key,
+    type: node.data?.type ?? EntityType.Property,
+  }));
+});
+
+function mapNodesToItems(nodes: RentalUnitNodeDataJson[]): MenuItem[] {
   return nodes.map((node) => ({
     label: node.title,
     id: node.id,
@@ -64,11 +60,10 @@ const mapNodesToItems = (nodes: RentalUnitNodeDataJson[]): MenuItem[] => {
       } as Parameters<typeof router.push>[0]);
     },
   }));
-};
+}
 
-const loadBreadcrumbs = async () => {
-  const pathNodes = await fetchPathNodes(props.unitId);
-  const resultItems = mapNodesToItems(pathNodes);
+const items = computed<MenuItem[]>(() => {
+  const resultItems = mapNodesToItems(pathNodes.value);
 
   const lastItem = resultItems.at(-1);
   if (lastItem && lastItem.id === props.unitId) {
@@ -84,10 +79,8 @@ const loadBreadcrumbs = async () => {
     }),
   });
 
-  items.value = resultItems;
-};
-
-onMounted(() => { loadBreadcrumbs(); });
+  return resultItems;
+});
 </script>
 
 <template>
