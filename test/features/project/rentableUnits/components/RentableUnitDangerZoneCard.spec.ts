@@ -7,6 +7,7 @@ import { apartmentService } from '@/features/project/rentableUnits/services/Apar
 import { commercialService } from '@/features/project/rentableUnits/services/CommercialService';
 import { storageService } from '@/features/project/rentableUnits/services/StorageService';
 import { siteService } from '@/features/project/rentableUnits/services/SiteService';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
 vi.mock('@/features/project/rentableUnits/services/PropertyService');
 vi.mock('@/features/project/rentableUnits/services/BuildingService');
@@ -30,6 +31,7 @@ describe('RentableUnitDangerZoneCard.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPush.mockClear();
+    useRentableUnitsStore().$reset();
   });
 
   const defaultProps = {
@@ -51,6 +53,8 @@ describe('RentableUnitDangerZoneCard.vue', () => {
 
   it('calls propertyService.deleteProperty for PROPERTY type', async () => {
     vi.mocked(propertyService.deleteProperty).mockResolvedValue(undefined);
+    const store = useRentableUnitsStore();
+    store.loadedProjectId = 'proj-1';
 
     const wrapper = mount(RentableUnitDangerZoneCard, {
       props: defaultProps,
@@ -62,6 +66,7 @@ describe('RentableUnitDangerZoneCard.vue', () => {
 
     expect(propertyService.deleteProperty).toHaveBeenCalledWith('proj-1', 'unit-1');
     expect(mockPush).toHaveBeenCalledWith({ name: 'RentableUnits', params: { projectId: 'proj-1' } });
+    expect(store.loadedProjectId).toBeUndefined();
   });
 
   it('calls buildingService.deleteBuilding for BUILDING type', async () => {
@@ -141,6 +146,8 @@ describe('RentableUnitDangerZoneCard.vue', () => {
 
   it('does not navigate when deletion fails', async () => {
     vi.mocked(propertyService.deleteProperty).mockRejectedValue(new Error('Server error'));
+    const store = useRentableUnitsStore();
+    store.loadedProjectId = 'proj-1';
 
     const wrapper = mount(RentableUnitDangerZoneCard, {
       props: defaultProps,
@@ -151,5 +158,6 @@ describe('RentableUnitDangerZoneCard.vue', () => {
     await flushPromises();
 
     expect(mockPush).not.toHaveBeenCalled();
+    expect(store.loadedProjectId).toBe('proj-1');
   });
 });

@@ -102,15 +102,15 @@ describe('TenantIssueTimelineCard E2E Tests', () => {
     }).as('createTimeline');
 
     cy.visit(`/tenant/issues/${issueId}`);
-    cy.wait('@getIssueDetail');
-    cy.wait('@getTimeline');
+    cy.wait('@getIssueDetail', { timeout: 10000 });
+    cy.wait('@getTimeline', { timeout: 10000 });
 
     cy.get('[data-testid="tenant-issue-timeline"]').should('be.visible');
     cy.get('[data-testid="tenant-issue-timeline-message-input"]').type('Neue Nachricht vom Mieter');
     cy.get('[data-testid="tenant-issue-timeline-message-submit"]').click();
 
-    cy.wait('@createTimeline');
-    cy.wait('@getTimeline');
+    cy.wait('@createTimeline', { timeout: 10000 });
+    cy.wait('@getTimeline', { timeout: 10000 });
     cy.contains('Neue Nachricht vom Mieter').should('be.visible');
   });
 

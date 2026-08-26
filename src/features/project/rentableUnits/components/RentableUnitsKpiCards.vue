@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { RouterLink } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'primevue/usetoast';
 import Message from 'primevue/message';
 import KpiCard from '@/components/common/KpiCard.vue';
-import {propertyService,
-  type RentalUnitTreeNodeJson,
-  type UnitType,} from '@/features/project/rentableUnits/services/PropertyService';
+import { type RentalUnitTreeNodeJson, type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 import { getIconForUnitType, UNIT_TYPE_ICONS } from '../unitTypeIcons';
+import { useRentableUnitsStore } from '@/features/project/rentableUnits/stores/RentableUnitsStore';
 
-const props = defineProps<{ projectId: string }>();
-const emit = defineEmits<{ (e: 'update:rentableUnitTree', tree: RentalUnitTreeNodeJson[]): void }>();
+defineProps<{ projectId: string }>();
+const emit = defineEmits<{
+  (e: 'update:rentableUnitTree', tree: RentalUnitTreeNodeJson[]): void;
+}>();
 const { t } = useI18n();
-const toast = useToast();
-
-const rentableUnitTree = ref<RentalUnitTreeNodeJson[]>([]);
-const isLoading = ref(true);
+const rentableUnitsStore = useRentableUnitsStore();
+const { rentableUnitTree, isLoading } = storeToRefs(rentableUnitsStore);
 
 type UnitTypeAgg = { count: number; space: number };
 
@@ -46,24 +45,7 @@ const kpis = computed(() =>
     .filter((kpi) => kpi.count > 0),
 );
 
-async function fetchPropertyTree(projectId: string) {
-  try {
-    const data = await propertyService.getPropertyTree(projectId);
-    rentableUnitTree.value = data.properties as RentalUnitTreeNodeJson[];
-    emit('update:rentableUnitTree', rentableUnitTree.value);
-  } catch {
-    toast.add({
-      severity: 'error',
-      summary: t('error.general'),
-      detail: t('rentableUnits.loadError'),
-      life: 6000,
-    });
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-onMounted(() => fetchPropertyTree(props.projectId));
+watch(rentableUnitTree, (tree) => emit('update:rentableUnitTree', tree), { immediate: true });
 </script>
 
 <template>
