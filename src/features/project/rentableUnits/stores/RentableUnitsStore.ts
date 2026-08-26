@@ -25,7 +25,7 @@ export const useRentableUnitsStore = defineStore('rentable-units', {
       const promise = (async () => {
         try {
           const data = await propertyService.getPropertyTree(projectId);
-          if (this.requestId !== requestId) return; // superseded by a newer fetch or invalidate()
+          if (this.requestId !== requestId) return this.loadingPromise;
           this.rentableUnitTree = (data.properties ?? []) as RentalUnitTreeNodeJson[];
           this.loadedProjectId = projectId;
         } finally {
