@@ -4,10 +4,10 @@ import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import IssueDetailsCard from '../components/IssueDetailsCard.vue';
 import IssueDescriptionCard from '../components/IssueDescriptionCard.vue';
-import IssueAttachmentCard from '../components/IssueAttachmentCard.vue';
+import IssueTimelineCard from '../components/IssueTimelineCard.vue';
 import IssueRelationshipsCard from '../components/IssueRelationshipsCard.vue';
 import IssueOrderManagementCard from '../components/IssueOrderManagementCard.vue';
-import { issueService, type IssueAttachmentJson, type IssueJson } from '@/services/IssueService';
+import { issueService, type IssueJson } from '@/services/IssueService';
 
 /* Props */
 const props = defineProps<{ projectId: string; issueId: string }>();
@@ -36,7 +36,6 @@ type IssueUI = {
 const loadingFetch = ref(false);
 const issueDetailsData = ref<IssueUI | null>(null);
 const description = ref('');
-const attachments = ref<IssueAttachmentJson[]>([]);
 const relations = ref<{
   relatedTo: string[];
   duplicateOf: string[];
@@ -74,7 +73,6 @@ const fetchIssue = async () => {
       visibleToTenants: issue.visibleToTenants ?? false,
     };
     description.value = issue.description ?? '';
-    attachments.value = issue.attachments ?? [];
     relations.value = {
       relatedTo: issue.relatedTo ?? [],
       duplicateOf: issue.duplicateOf ?? [],
@@ -100,10 +98,6 @@ const handleDetailsSaved = () => {
 
 const handleDescriptionSaved = () => {
   fetchIssue(); // refresh after saving description
-};
-
-const handleAttachmentsSaved = () => {
-  fetchIssue(); // refresh after attachment changes
 };
 
 const handleRelationshipsSaved = () => {
@@ -141,11 +135,9 @@ watch(
     @saved="handleDescriptionSaved"
   />
 
-  <!-- Issue Attachment Card -->
-  <IssueAttachmentCard
-    :attachments="attachments"
+  <!-- Issue Timeline Card -->
+  <IssueTimelineCard
     :issueId="issueId"
-    @saved="handleAttachmentsSaved"
   />
 
   <!-- Issue Relationships Card -->

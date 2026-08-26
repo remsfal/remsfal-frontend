@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Image from 'primevue/image';
-import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
+import type { TimelineJson } from '@/features/project/issues/services/IssueTimelineService';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -62,7 +62,7 @@ const getTimelineAttachmentDownloadUrl = (issueId: string, attachmentId: string,
   const encodedIssueId = encodeURIComponent(issueId);
   const encodedAttachmentId = encodeURIComponent(attachmentId);
   const encodedFileName = encodeURIComponent(fileName || attachmentId);
-  return `/ticketing/v1/tenant-relations/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+  return `/ticketing/v1/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
 };
 
 const isImageAttachment = (attachment: TimelineAttachmentView) => {
@@ -122,7 +122,7 @@ const openAttachmentDownload = (downloadUrl: string) => {
       {{ formatTimelineDate(item.createdAt) || '-' }}
     </span>
     <article
-      data-testid="tenant-issue-timeline-entry"
+      data-testid="issue-timeline-entry"
       class="flex-1 rounded-lg border border-gray-200 bg-white p-4"
     >
       <div class="mb-2 flex flex-wrap items-center justify-between gap-2">

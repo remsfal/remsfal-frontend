@@ -48,7 +48,11 @@ async function handleConfirm() {
 
     const trimmedReason = reason.value.trim();
     if (trimmedReason) {
-      await issueTimelineService.createTimelineEntry(props.issueId, 'STATUS_CHANGED', trimmedReason);
+      await issueTimelineService.createTimelineEntryWithAttachments(
+        props.issueId,
+        { purpose: 'STATUS_CHANGED', message: trimmedReason },
+        [],
+      );
     }
 
     showDialog.value = false;
