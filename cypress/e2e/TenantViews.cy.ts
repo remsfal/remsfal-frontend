@@ -419,11 +419,12 @@ describe('Tenant Views E2E Tests', () => {
       // Error message should be displayed
       cy.get('.p-message-error').should('be.visible');
 
-      // Submitting with an invalid required field must not persist changes
+      // Save button must be disabled while a required field is invalid,
+      // so no changes can be persisted
       cy.get('input[name="firstName"]')
         .closest('.p-card')
         .contains('button', /speichern|save/i)
-        .click();
+        .should('be.disabled');
       cy.get('@updateTenant.all').should('have.length', 0);
     });
 
