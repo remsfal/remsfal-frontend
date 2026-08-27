@@ -113,61 +113,46 @@ components:
           type: number
           format: float
     ChatMessageJson:
-      description: A single chat message
+      description: An internal chat message between project members for an issue
       type: object
       properties:
-        messageId:
+        issueId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
-        sessionId:
+        messageId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
         senderId:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/UUID"
-        contentType:
+        senderName:
           type: string
-        content:
-          type: string
-        url:
+          readOnly: true
+        message:
           type: string
         createdAt:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/Instant"
         modifiedAt:
+          readOnly: true
+          type: string
           $ref: "#/components/schemas/Instant"
+      required:
+      - message
     ChatMessageListJson:
-      description: A list of chat messages
+      description: A list of internal issue chat messages
       type: object
       properties:
         messages:
           type: array
           items:
             $ref: "#/components/schemas/ChatMessageJson"
-    ChatSessionJson:
-      description: A chat session
-      type: object
-      properties:
-        sessionId:
-          $ref: "#/components/schemas/UUID"
-        projectId:
-          $ref: "#/components/schemas/UUID"
-        issueId:
-          $ref: "#/components/schemas/UUID"
-        createdAt:
-          $ref: "#/components/schemas/Instant"
-        modifiedAt:
-          $ref: "#/components/schemas/Instant"
-    ChatSessionListJson:
-      description: A list of chat sessions
-      type: object
-      required:
-      - size
-      properties:
-        size:
-          type: integer
-          format: int32
-          description: Number of chat sessions in the list
-        chatSessions:
-          type: array
-          items:
-            $ref: "#/components/schemas/ChatSessionJson"
+          description: Chat messages
+          readOnly: true
     CoTenantJson:
       description: Tenant information in a rental agreement
       type: object
@@ -2251,170 +2236,13 @@ paths:
           description: Attachment not found
       security:
       - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats:
+  /ticketing/v1/issues/{issueId}/chat:
     get:
-      summary: Get all chat sessions for an issue
+      summary: Get all internal chat messages for an issue
       parameters:
-      - description: ID of the task
+      - description: ID of the issue
         required: true
         name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Chat sessions retrieved
-          content:
-            application/json:
-              schema: {}
-        "404":
-          description: Project or task not found
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-    post:
-      summary: Create a new chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "201":
-          description: Chat session created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ChatSessionJson"
-        "400":
-          description: Invalid input
-        "404":
-          description: Project or task not found
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}:
-    get:
-      summary: Get chat session details
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Chat session details retrieved
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-    delete:
-      summary: Delete chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Chat session deleted
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/messages:
-    post:
-      summary: Send a chat message in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ChatMessageJson"
-        required: true
-      responses:
-        "201":
-          description: Chat message sent
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ChatMessageJson"
-        "400":
-          description: Invalid input
-        "403":
-          description: Chat session is closed or archived
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-      security:
-      - SecurityScheme: []
-    get:
-      summary: Get chat logs in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
@@ -2423,95 +2251,22 @@ paths:
           description: Chat messages retrieved
           content:
             application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, or chat session not found"
-        "401":
-          description: No user authentication provided via session cookie
-        "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/upload:
-    post:
-      summary: Send a file in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              required:
-              - file
-              type: object
-              properties:
-                file:
-                  description: One or more files to send in the chat session
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-        required: true
-      responses:
-        "201":
-          description: File sent
-          content:
-            application/json:
               schema:
-                type: object
-                properties:
-                  fileId:
-                    $ref: "#/components/schemas/UUID"
-                  fileUrl:
-                    type: string
-                  sessionId:
-                    $ref: "#/components/schemas/UUID"
-                  createdAt:
-                    $ref: "#/components/schemas/Instant"
-                  sender:
-                    $ref: "#/components/schemas/UUID"
-        "400":
-          description: Invalid input
-        "403":
-          description: Chat session is closed or archived
-        "404":
-          description: "Project, task, or chat session not found"
+                $ref: "#/components/schemas/ChatMessageListJson"
         "401":
           description: No user authentication provided via session cookie
+        "403":
+          description: User does not have permission to access this issue's chat
+        "404":
+          description: Issue not found
       security:
       - SecurityScheme: []
-  /ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/{messageId}:
-    put:
-      summary: Update a chat message in a chat session
+    post:
+      summary: Create a new internal chat message for an issue
       parameters:
-      - description: ID of the task
+      - description: ID of the issue
         required: true
         name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: The chat message ID
-        required: true
-        name: messageId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
         in: path
         schema:
           $ref: "#/components/schemas/UUID"
@@ -2522,94 +2277,23 @@ paths:
               $ref: "#/components/schemas/ChatMessageJson"
         required: true
       responses:
-        "200":
-          description: Chat message updated
+        "201":
+          description: Chat message created
+          headers:
+            Location:
+              description: URL of the new chat message
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: "#/components/schemas/ChatMessageJson"
         "400":
           description: Invalid input
-        "403":
-          description: Chat session is closed or archived
-        "404":
-          description: "Project, task, chat session, or chat message not found"
-        "401":
-          description: No user authentication provided via session cookie
-      security:
-      - SecurityScheme: []
-    get:
-      summary: Get a chat message in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: The chat message ID
-        required: true
-        name: messageId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Chat message retrieved
-          content:
-            application/json:
-              schema: {}
-            application/octet-stream: {}
-        "400":
-          description: Invalid input
-        "404":
-          description: "Project, task, chat session, or chat message not found"
         "401":
           description: No user authentication provided via session cookie
         "403":
-          description: Not Allowed
-      security:
-      - SecurityScheme: []
-    delete:
-      summary: Delete a chat message in a chat session
-      parameters:
-      - description: ID of the task
-        required: true
-        name: issueId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: The chat message ID to delete
-        required: true
-        name: messageId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - description: ID of the chat session
-        required: true
-        name: sessionId
-        in: path
-        schema:
-          $ref: "#/components/schemas/UUID"
-      responses:
-        "200":
-          description: Chat message deleted
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: Invalid input
-        "403":
-          description: Chat session is closed or archived
+          description: User does not have permission to access this issue's chat
         "404":
-          description: "Project, task, chat session, or chat message not found"
-        "401":
-          description: No user authentication provided via session cookie
+          description: Issue not found
       security:
       - SecurityScheme: []
   /ticketing/v1/issues/{issueId}/orders:
