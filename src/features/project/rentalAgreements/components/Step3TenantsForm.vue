@@ -139,7 +139,13 @@ const onTenantFormCancel = () => {
     </div>
 
     <!-- Tenant Form (shown when adding new tenant) -->
-    <TenantForm v-if="showTenantForm" @submit="onTenantFormSubmit" @cancel="onTenantFormCancel" />
+    <TenantForm
+      v-if="showTenantForm"
+      :heading="t('rentalAgreement.step3.newTenantDetails')"
+      :submitLabel="t('rentalAgreement.step3.addTenantToList')"
+      @submit="onTenantFormSubmit"
+      @cancel="onTenantFormCancel"
+    />
 
     <!-- Selected Tenants List (Compact Display) -->
     <div v-if="tenants.length > 0" class="flex flex-col gap-2">
