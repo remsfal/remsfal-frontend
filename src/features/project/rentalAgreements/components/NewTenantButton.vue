@@ -106,7 +106,13 @@ function onCancel() {
         />
       </div>
 
-      <TenantForm v-if="showTenantForm" @submit="onSubmit" @cancel="onCancel" />
+      <TenantForm
+        v-if="showTenantForm"
+        :heading="t('rentalAgreement.step3.newTenantDetails')"
+        :submitLabel="t('rentalAgreement.step3.addTenantToList')"
+        @submit="onSubmit"
+        @cancel="onCancel"
+      />
     </div>
   </BaseDialog>
 </template>

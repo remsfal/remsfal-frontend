@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toISODateString } from '@/helper/dataHelper';
 
@@ -13,13 +13,28 @@ import type { FormSubmitEvent } from '@primevue/forms';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 
+// Components
+import PhoneInput from '@/components/common/PhoneInput.vue';
+
 // Types
 import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Props & Emits
-defineProps<{
-  initialTenant?: TenantJson | null;
-}>();
+const props = withDefaults(
+  defineProps<{
+    initialValues?: Partial<TenantJson> | null;
+    mode?: 'create' | 'edit';
+    submitLabel: string;
+    showCancel?: boolean;
+    heading?: string;
+  }>(),
+  {
+    initialValues: null,
+    mode: 'create',
+    showCancel: true,
+    heading: undefined,
+  },
+);
 
 const emit = defineEmits<{
   submit: [tenant: TenantJson];
@@ -28,271 +43,289 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-// State
-const dateOfBirthValue = ref<Date | null>(null);
+const phoneRegex = /^\+[1-9]\d{4,14}$/;
 
-// Zod Schema
+// Zod Schema (name/email/place of birth only; phone numbers are handled outside the
+// PrimeVue Form via PhoneInput, which does not integrate with the Form's `name` binding)
 const schema = z.object({
   firstName: z.string().trim().min(1, { message: t('validation.required') }),
   lastName: z.string().trim().min(1, { message: t('validation.required') }),
-  email: z.email({ message: t('validation.email') }).or(z.literal('')),
-  mobilePhoneNumber: z
+  email: z
     .string()
     .trim()
-    .regex(/^\+[1-9]\d{4,14}$/, { message: t('validation.phone') })
+    .email({ message: t('validation.email') })
+    .optional()
     .or(z.literal('')),
-  businessPhoneNumber: z
-    .string()
-    .trim()
-    .regex(/^\+[1-9]\d{4,14}$/, { message: t('validation.phone') })
-    .or(z.literal('')),
-  privatePhoneNumber: z
-    .string()
-    .trim()
-    .regex(/^\+[1-9]\d{4,14}$/, { message: t('validation.phone') })
-    .or(z.literal('')),
-  placeOfBirth: z.string().trim().or(z.literal('')),
+  placeOfBirth: z.string().trim().optional().or(z.literal('')),
 });
 
 const resolver = zodResolver(schema);
-const initialValues = ref({
-  firstName: '',
-  lastName: '',
-  email: '',
-  mobilePhoneNumber: '',
-  businessPhoneNumber: '',
-  privatePhoneNumber: '',
-  placeOfBirth: '',
-});
+
+const initialValues = computed(() => ({
+  firstName: props.initialValues?.firstName ?? '',
+  lastName: props.initialValues?.lastName ?? '',
+  email: props.initialValues?.email ?? '',
+  placeOfBirth: props.initialValues?.placeOfBirth ?? '',
+}));
+
+const serverDateOfBirth = props.initialValues?.dateOfBirth
+  ? new Date(props.initialValues.dateOfBirth)
+  : null;
+const dateOfBirthValue = ref<Date | null>(serverDateOfBirth);
+const dateOfBirthDirty = computed(
+  () => toISODateString(dateOfBirthValue.value) !== toISODateString(serverDateOfBirth),
+);
+
+const serverPhones = {
+  mobile: props.initialValues?.mobilePhoneNumber ?? '',
+  business: props.initialValues?.businessPhoneNumber ?? '',
+  private: props.initialValues?.privatePhoneNumber ?? '',
+};
+const currentPhones = reactive({ ...serverPhones });
+
+const phoneDirty = computed(
+  () =>
+    currentPhones.mobile !== serverPhones.mobile ||
+    currentPhones.business !== serverPhones.business ||
+    currentPhones.private !== serverPhones.private,
+);
+
+function phoneFieldError(val: string) {
+  return val && !phoneRegex.test(val) ? t('validation.phone') : null;
+}
+const mobilePhoneError = computed(() => phoneFieldError(currentPhones.mobile));
+const businessPhoneError = computed(() => phoneFieldError(currentPhones.business));
+const privatePhoneError = computed(() => phoneFieldError(currentPhones.private));
+const hasPhoneError = computed(
+  () => !!mobilePhoneError.value || !!businessPhoneError.value || !!privatePhoneError.value,
+);
+
+function isSubmitDisabled($form: Record<string, { valid?: boolean; dirty?: boolean } | undefined>) {
+  if (hasPhoneError.value) return true;
+
+  if (props.mode !== 'edit') {
+    // Create mode: require the mandatory fields to be both valid and dirty,
+    // so the button isn't enabled before any interaction.
+    return (
+      !$form.firstName?.valid ||
+      !$form.firstName?.dirty ||
+      !$form.lastName?.valid ||
+      !$form.lastName?.dirty
+    );
+  }
+
+  const requiredValid = !!$form.firstName?.valid && !!$form.lastName?.valid;
+  if (!requiredValid) return true;
+
+  const fieldDirty = ['firstName', 'lastName', 'email', 'placeOfBirth'].some(
+    key => $form[key]?.dirty,
+  );
+  return !(fieldDirty || phoneDirty.value || dateOfBirthDirty.value);
+}
 
 // Form submission
 function onSubmit(event: FormSubmitEvent) {
   const formState = event.states;
-  if (!event.valid) return;
+  if (!event.valid || hasPhoneError.value) return;
 
   emit('submit', {
-    firstName: formState.firstName?.value.trim(),
-    lastName: formState.lastName?.value.trim(),
+    id: props.initialValues?.id,
+    firstName: formState.firstName?.value?.trim() || '',
+    lastName: formState.lastName?.value?.trim() || '',
     email: formState.email?.value?.trim() || undefined,
-    mobilePhoneNumber: formState.mobilePhoneNumber?.value?.trim() || undefined,
-    businessPhoneNumber: formState.businessPhoneNumber?.value?.trim() || undefined,
-    privatePhoneNumber: formState.privatePhoneNumber?.value?.trim() || undefined,
     placeOfBirth: formState.placeOfBirth?.value?.trim() || undefined,
     dateOfBirth: toISODateString(dateOfBirthValue.value) || undefined,
+    mobilePhoneNumber: currentPhones.mobile || undefined,
+    businessPhoneNumber: currentPhones.business || undefined,
+    privatePhoneNumber: currentPhones.private || undefined,
   });
-
-  // Reset form
-  initialValues.value = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    mobilePhoneNumber: '',
-    businessPhoneNumber: '',
-    privatePhoneNumber: '',
-    placeOfBirth: '',
-  };
-  dateOfBirthValue.value = null;
 }
 </script>
 
 <template>
-  <div class="p-4 border rounded-lg bg-gray-50">
-    <h4 class="font-semibold mb-4">
-      {{ t('rentalAgreement.step3.newTenantDetails') }}
+  <div :class="mode === 'create' ? 'p-4 border rounded-lg bg-gray-50' : undefined">
+    <h4 v-if="heading" class="font-semibold mb-4">
+      {{ heading }}
     </h4>
 
     <Form v-slot="$form" :initialValues :resolver @submit="onSubmit">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- First Name -->
-        <div class="flex flex-col gap-2">
-          <label for="firstName" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.firstName') }} *
-          </label>
-          <InputText
-            name="firstName"
-            type="text"
-            :placeholder="t('rentalAgreement.step3.firstName')"
-            :class="{ 'p-invalid': $form.firstName?.invalid && $form.firstName?.touched }"
-            fluid
-            autofocus
+      <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- First Name -->
+          <div class="flex flex-col gap-1">
+            <label for="firstName" class="font-medium">
+              {{ t('tenantForm.firstName') }} *
+            </label>
+            <InputText
+              id="firstName"
+              name="firstName"
+              type="text"
+              :placeholder="t('tenantForm.firstName')"
+              :class="{ 'p-invalid': $form.firstName?.invalid }"
+              fluid
+              autofocus
+            />
+            <Message
+              v-if="$form.firstName?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ $form.firstName.error?.message }}
+            </Message>
+          </div>
+
+          <!-- Last Name -->
+          <div class="flex flex-col gap-1">
+            <label for="lastName" class="font-medium">
+              {{ t('tenantForm.lastName') }} *
+            </label>
+            <InputText
+              id="lastName"
+              name="lastName"
+              type="text"
+              :placeholder="t('tenantForm.lastName')"
+              :class="{ 'p-invalid': $form.lastName?.invalid }"
+              fluid
+            />
+            <Message
+              v-if="$form.lastName?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ $form.lastName.error?.message }}
+            </Message>
+          </div>
+
+          <!-- Email -->
+          <div class="flex flex-col gap-1">
+            <label for="email" class="font-medium">
+              {{ t('tenantForm.email') }}
+            </label>
+            <InputText
+              id="email"
+              name="email"
+              type="email"
+              :placeholder="t('tenantForm.email')"
+              :class="{ 'p-invalid': $form.email?.invalid }"
+              fluid
+            />
+            <Message
+              v-if="$form.email?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ $form.email.error?.message }}
+            </Message>
+          </div>
+
+          <!-- Mobile Phone -->
+          <div class="flex flex-col gap-1">
+            <label for="mobile-phone" class="font-medium">
+              {{ t('tenantForm.mobilePhone') }}
+            </label>
+            <PhoneInput
+              inputId="mobile-phone"
+              :modelValue="currentPhones.mobile"
+              @update:modelValue="(v) => (currentPhones.mobile = v)"
+            />
+            <Message
+              v-if="mobilePhoneError && currentPhones.mobile"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ mobilePhoneError }}
+            </Message>
+          </div>
+
+          <!-- Business Phone -->
+          <div class="flex flex-col gap-1">
+            <label for="business-phone" class="font-medium">
+              {{ t('tenantForm.businessPhone') }}
+            </label>
+            <PhoneInput
+              inputId="business-phone"
+              :modelValue="currentPhones.business"
+              @update:modelValue="(v) => (currentPhones.business = v)"
+            />
+            <Message
+              v-if="businessPhoneError && currentPhones.business"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ businessPhoneError }}
+            </Message>
+          </div>
+
+          <!-- Private Phone -->
+          <div class="flex flex-col gap-1">
+            <label for="private-phone" class="font-medium">
+              {{ t('tenantForm.privatePhone') }}
+            </label>
+            <PhoneInput
+              inputId="private-phone"
+              :modelValue="currentPhones.private"
+              @update:modelValue="(v) => (currentPhones.private = v)"
+            />
+            <Message
+              v-if="privatePhoneError && currentPhones.private"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ privatePhoneError }}
+            </Message>
+          </div>
+
+          <!-- Place of Birth -->
+          <div class="flex flex-col gap-1">
+            <label for="placeOfBirth" class="font-medium">
+              {{ t('tenantForm.placeOfBirth') }}
+            </label>
+            <InputText
+              id="placeOfBirth"
+              name="placeOfBirth"
+              type="text"
+              :placeholder="t('tenantForm.placeOfBirth')"
+              fluid
+            />
+          </div>
+
+          <!-- Date of Birth -->
+          <div class="flex flex-col gap-1">
+            <label for="dateOfBirth" class="font-medium">
+              {{ t('tenantForm.dateOfBirth') }}
+            </label>
+            <DatePicker
+              v-model="dateOfBirthValue"
+              inputId="dateOfBirth"
+              dateFormat="dd.mm.yy"
+              showIcon
+              fluid
+            />
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end gap-3">
+          <Button
+            v-if="showCancel"
+            type="button"
+            :label="t('button.cancel')"
+            severity="secondary"
+            @click="emit('cancel')"
           />
-          <Message
-            v-if="$form.firstName?.invalid && $form.firstName?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.firstName.error.message }}
-          </Message>
-        </div>
-
-        <!-- Last Name -->
-        <div class="flex flex-col gap-2">
-          <label for="lastName" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.lastName') }} *
-          </label>
-          <InputText
-            name="lastName"
-            type="text"
-            :placeholder="t('rentalAgreement.step3.lastName')"
-            :class="{ 'p-invalid': $form.lastName?.invalid && $form.lastName?.touched }"
-            fluid
+          <Button
+            type="submit"
+            :label="submitLabel"
+            :icon="mode === 'edit' ? 'pi pi-save' : 'pi pi-check'"
+            :disabled="isSubmitDisabled($form)"
           />
-          <Message
-            v-if="$form.lastName?.invalid && $form.lastName?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.lastName.error.message }}
-          </Message>
         </div>
-
-        <!-- Email -->
-        <div class="flex flex-col gap-2">
-          <label for="email" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.email') }}
-          </label>
-          <InputText
-            name="email"
-            type="email"
-            :placeholder="t('rentalAgreement.step3.email')"
-            :class="{ 'p-invalid': $form.email?.invalid && $form.email?.touched }"
-            fluid
-          />
-          <Message
-            v-if="$form.email?.invalid && $form.email?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.email.error.message }}
-          </Message>
-        </div>
-
-        <!-- Mobile Phone -->
-        <div class="flex flex-col gap-2">
-          <label for="mobilePhoneNumber" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.mobilePhone') }}
-          </label>
-          <InputText
-            name="mobilePhoneNumber"
-            type="tel"
-            placeholder="+491234567890"
-            :class="{
-              'p-invalid': $form.mobilePhoneNumber?.invalid && $form.mobilePhoneNumber?.touched,
-            }"
-            fluid
-          />
-          <Message
-            v-if="$form.mobilePhoneNumber?.invalid && $form.mobilePhoneNumber?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.mobilePhoneNumber.error.message }}
-          </Message>
-        </div>
-
-        <!-- Business Phone -->
-        <div class="flex flex-col gap-2">
-          <label for="businessPhoneNumber" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.businessPhone') }}
-          </label>
-          <InputText
-            name="businessPhoneNumber"
-            type="tel"
-            placeholder="+491234567890"
-            :class="{
-              'p-invalid':
-                $form.businessPhoneNumber?.invalid && $form.businessPhoneNumber?.touched,
-            }"
-            fluid
-          />
-          <Message
-            v-if="$form.businessPhoneNumber?.invalid && $form.businessPhoneNumber?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.businessPhoneNumber.error.message }}
-          </Message>
-        </div>
-
-        <!-- Private Phone -->
-        <div class="flex flex-col gap-2">
-          <label for="privatePhoneNumber" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.privatePhone') }}
-          </label>
-          <InputText
-            name="privatePhoneNumber"
-            type="tel"
-            placeholder="+491234567890"
-            :class="{
-              'p-invalid': $form.privatePhoneNumber?.invalid && $form.privatePhoneNumber?.touched,
-            }"
-            fluid
-          />
-          <Message
-            v-if="$form.privatePhoneNumber?.invalid && $form.privatePhoneNumber?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.privatePhoneNumber.error.message }}
-          </Message>
-        </div>
-
-        <!-- Place of Birth -->
-        <div class="flex flex-col gap-2">
-          <label for="placeOfBirth" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.placeOfBirth') }}
-          </label>
-          <InputText
-            name="placeOfBirth"
-            type="text"
-            :placeholder="t('rentalAgreement.step3.placeOfBirth')"
-            :class="{ 'p-invalid': $form.placeOfBirth?.invalid && $form.placeOfBirth?.touched }"
-            fluid
-          />
-          <Message
-            v-if="$form.placeOfBirth?.invalid && $form.placeOfBirth?.touched"
-            severity="error"
-            size="small"
-            variant="simple"
-          >
-            {{ $form.placeOfBirth.error.message }}
-          </Message>
-        </div>
-
-        <!-- Date of Birth -->
-        <div class="flex flex-col gap-2">
-          <label for="dateOfBirth" class="text-sm font-semibold">
-            {{ t('rentalAgreement.step3.dateOfBirth') }}
-          </label>
-          <DatePicker v-model="dateOfBirthValue" dateFormat="dd.mm.yy" showIcon fluid />
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex justify-end gap-3 mt-6">
-        <Button
-          type="button"
-          :label="t('button.cancel')"
-          severity="secondary"
-          @click="emit('cancel')"
-        />
-        <Button
-          type="submit"
-          :label="t('rentalAgreement.step3.addTenantToList')"
-          icon="pi pi-check"
-          :disabled="
-            !$form.firstName?.valid ||
-              !$form.firstName?.dirty ||
-              !$form.lastName?.valid ||
-              !$form.lastName?.dirty
-          "
-        />
       </div>
     </Form>
   </div>
