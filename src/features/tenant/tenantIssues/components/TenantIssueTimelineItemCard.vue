@@ -5,6 +5,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import { getAttachmentTypeLabel, openAttachmentDownload, useTimelineAttachments } from '@/composables/useTimelineAttachments';
+import { formatTimelineDate, getTimelineTitle } from '@/composables/useTimelineItemTitle';
 
 const props = defineProps<{
   item: TimelineJson;
@@ -12,37 +13,6 @@ const props = defineProps<{
 }>();
 
 const { t, locale } = useI18n();
-
-const formatTimelineDate = (value?: string) => {
-  if (!value) { return null; }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) { return value; }
-  return date.toLocaleString(locale.value);
-};
-
-const getIssueNumber = (issueId: string) => issueId.split('-').pop() || issueId;
-
-const getTimelineTitle = (timelineItem: TimelineJson) => {
-  const senderName = timelineItem.senderName?.trim() || t('common.notSet');
-
-  switch (timelineItem.purpose) {
-    case 'ISSUE_CREATED':
-      return t('tenantIssues.timeline.issueCreatedTitle', {
-        issueNumber: getIssueNumber(timelineItem.issueId ?? props.issueId),
-        senderName,
-      });
-    case 'MESSAGE_SENT':
-      return t('tenantIssues.timeline.tenantMessageTitle', { senderName });
-    case 'APPOINTMENT_REQUESTED':
-      return t('tenantIssues.timeline.appointmentRequestedTitle', { senderName });
-    case 'APPOINTMENT_SCHEDULED':
-      return t('tenantIssues.timeline.appointmentScheduledTitle', { senderName });
-    case 'STATUS_CHANGED':
-      return t('tenantIssues.timeline.statusChangedTitle');
-    default:
-      return t('tenantIssues.timeline.entryFallbackTitle');
-  }
-};
 
 const {
   attachments: timelineAttachments,
@@ -58,7 +28,7 @@ const {
   },
 });
 
-const formattedDate = computed(() => formatTimelineDate(props.item.createdAt));
+const formattedDate = computed(() => formatTimelineDate(props.item.createdAt, locale.value));
 </script>
 
 <template>
@@ -72,7 +42,7 @@ const formattedDate = computed(() => formatTimelineDate(props.item.createdAt));
     >
       <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
         <p class="text-lg font-semibold text-gray-900">
-          {{ getTimelineTitle(item) }}
+          {{ getTimelineTitle(t, item, issueId) }}
         </p>
       </div>
       <p v-if="item.message" class="text-gray-700 text-left whitespace-pre-line">
