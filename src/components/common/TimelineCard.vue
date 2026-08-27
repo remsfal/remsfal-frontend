@@ -20,7 +20,7 @@ interface Props {
   sendButtonLabel: string;
   sendErrorMessage: string;
   isBlocked?: UseTimelineOptions['isBlocked'];
-  sendPurpose?: string;
+  sendPurpose?: UseTimelineOptions['sendPurpose'];
   watchSource?: UseTimelineOptions['watchSource'];
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;

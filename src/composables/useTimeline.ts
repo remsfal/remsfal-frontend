@@ -6,8 +6,10 @@ import type { components as ticketingComponents } from '@/services/api/ticketing
 
 export type TimelineJson = ticketingComponents['schemas']['TimelineJson'];
 
+type TimelinePurpose = NonNullable<TimelineJson['purpose']>;
+
 export interface TimelineSendPayload {
-  purpose: string;
+  purpose: TimelinePurpose;
   message?: string;
 }
 
@@ -15,7 +17,7 @@ export interface UseTimelineOptions {
   load: () => Promise<TimelineJson[]>;
   send: (payload: TimelineSendPayload, files: File[]) => Promise<void>;
   watchSource?: WatchSource;
-  sendPurpose?: string;
+  sendPurpose?: TimelinePurpose;
   isBlocked?: (items: TimelineJson[]) => boolean;
   sendErrorMessage: string;
   loadErrorLogLabel?: string;

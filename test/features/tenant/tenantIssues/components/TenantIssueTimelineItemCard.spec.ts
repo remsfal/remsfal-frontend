@@ -107,7 +107,7 @@ describe('TenantIssueTimelineItemCard component', () => {
       'issue id/ä',
     );
 
-    expect(entryCardProps(wrapper).attachments[0].downloadUrl).toBe(
+    expect(entryCardProps(wrapper).attachments?.[0]?.downloadUrl).toBe(
       '/ticketing/v1/tenant-relations/issues/issue%20id%2F%C3%A4/attachments/att%20id%2F1/file%20name%20%231.pdf',
     );
   });
