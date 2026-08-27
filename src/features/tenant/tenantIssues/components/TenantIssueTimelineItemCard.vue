@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Image from 'primevue/image';
+import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
-import { getAttachmentTypeLabel, openAttachmentDownload, useTimelineAttachments } from '@/composables/useTimelineAttachments';
-import { formatTimelineDate, getTimelineTitle } from '@/composables/useTimelineItemTitle';
+
+interface TimelineAttachmentView {
+  attachmentId: string;
+  contentType?: string;
+  downloadUrl: string;
+  fileName?: string;
+}
 
 const props = defineProps<{
   item: TimelineJson;
@@ -14,27 +19,101 @@ const props = defineProps<{
 
 const { t, locale } = useI18n();
 
-const {
-  attachments: timelineAttachments,
-  imageAttachments: timelineImageAttachments,
-  nonImageAttachments: timelineNonImageAttachments,
-} = useTimelineAttachments({
-  attachments: () => props.item.attachments,
-  buildDownloadUrl: (attachmentId, fileName) => {
-    const encodedIssueId = encodeURIComponent(props.issueId);
-    const encodedAttachmentId = encodeURIComponent(attachmentId);
-    const encodedFileName = encodeURIComponent(fileName || attachmentId);
-    return `/ticketing/v1/tenant-relations/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
-  },
+const imageFileExtensions = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
+
+const formatTimelineDate = (value?: string) => {
+  if (!value) { return null; }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) { return value; }
+  return date.toLocaleString(locale.value);
+};
+
+const getIssueNumber = (issueId: string) => issueId.split('-').pop() || issueId;
+
+const getTimelineTitle = (timelineItem: TimelineJson) => {
+  const senderName = timelineItem.senderName?.trim() || t('common.notSet');
+
+  switch (timelineItem.purpose) {
+    case 'ISSUE_CREATED':
+      return t('tenantIssues.timeline.issueCreatedTitle', {
+        issueNumber: getIssueNumber(timelineItem.issueId ?? props.issueId),
+        senderName,
+      });
+    case 'MESSAGE_SENT':
+      return t('tenantIssues.timeline.tenantMessageTitle', { senderName });
+    case 'APPOINTMENT_REQUESTED':
+      return t('tenantIssues.timeline.appointmentRequestedTitle', { senderName });
+    case 'APPOINTMENT_SCHEDULED':
+      return t('tenantIssues.timeline.appointmentScheduledTitle', { senderName });
+    case 'STATUS_CHANGED':
+      return t('tenantIssues.timeline.statusChangedTitle');
+    default:
+      return t('tenantIssues.timeline.entryFallbackTitle');
+  }
+};
+
+const getTimelineAttachmentDownloadUrl = (issueId: string, attachmentId: string, fileName?: string) => {
+  const encodedIssueId = encodeURIComponent(issueId);
+  const encodedAttachmentId = encodeURIComponent(attachmentId);
+  const encodedFileName = encodeURIComponent(fileName || attachmentId);
+  return `/ticketing/v1/tenant-relations/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+};
+
+const isImageAttachment = (attachment: TimelineAttachmentView) => {
+  if (attachment.contentType?.startsWith('image/')) {
+    return true;
+  }
+
+  const fileName = attachment.fileName?.trim().toLowerCase();
+  if (!fileName || !fileName.includes('.')) {
+    return false;
+  }
+
+  const extension = fileName.split('.').pop();
+  return extension ? imageFileExtensions.has(extension) : false;
+};
+
+const timelineAttachments = computed<TimelineAttachmentView[]>(() => {
+  return (props.item.attachments ?? []).flatMap((attachment) => {
+    const attachmentId = attachment.attachmentId;
+    if (!attachmentId) {
+      return [];
+    }
+
+    const fileName = attachment.fileName;
+    return [{
+      attachmentId,
+      contentType: attachment.contentType,
+      downloadUrl: getTimelineAttachmentDownloadUrl(props.issueId, attachmentId, fileName),
+      fileName,
+    }];
+  });
 });
 
-const formattedDate = computed(() => formatTimelineDate(props.item.createdAt, locale.value));
+const timelineImageAttachments = computed(() => timelineAttachments.value.filter(isImageAttachment));
+const timelineNonImageAttachments = computed(() =>
+  timelineAttachments.value.filter((attachment) => !isImageAttachment(attachment)),
+);
+
+const getAttachmentTypeLabel = (attachment: TimelineAttachmentView) => {
+  const fileName = attachment.fileName?.trim().toLowerCase();
+  if (!fileName || !fileName.includes('.')) {
+    return 'FILE';
+  }
+
+  const extension = fileName.split('.').pop();
+  return extension ? extension.toUpperCase() : 'FILE';
+};
+
+const openAttachmentDownload = (downloadUrl: string) => {
+  window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+};
 </script>
 
 <template>
   <div class="mb-2 flex items-start gap-3">
     <span class="w-40 shrink-0 text-sm text-gray-500">
-      {{ formattedDate || '-' }}
+      {{ formatTimelineDate(item.createdAt) || '-' }}
     </span>
     <article
       data-testid="tenant-issue-timeline-entry"
@@ -42,7 +121,7 @@ const formattedDate = computed(() => formatTimelineDate(props.item.createdAt, lo
     >
       <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
         <p class="text-lg font-semibold text-gray-900">
-          {{ getTimelineTitle(t, item, issueId) }}
+          {{ getTimelineTitle(item) }}
         </p>
       </div>
       <p v-if="item.message" class="text-gray-700 text-left whitespace-pre-line">
