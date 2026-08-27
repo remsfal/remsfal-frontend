@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
+import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
 import Timeline from 'primevue/timeline';
@@ -9,37 +12,102 @@ import BaseCard from '@/components/common/BaseCard.vue';
 import CardSkeletonRows from '@/components/common/CardSkeletonRows.vue';
 import TenantIssueTimelineItemCard from './TenantIssueTimelineItemCard.vue';
 import { tenantTimelineService, type TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
-import { useTimelineEntries } from '@/composables/useTimelineEntries';
 
 const props = defineProps<{ issueId: string; }>();
 
 const { t } = useI18n();
+const toast = useToast();
 
+const loading = ref(false);
+const error = ref(false);
+const timelines = ref<TimelineJson[]>([]);
+const messageText = ref('');
+const selectedFiles = ref<File[]>([]);
+const fileUploadKey = ref(0);
+const sendingMessage = ref(false);
 const blockingStatusMessages = new Set(['CLOSED', 'REJECTED']);
-
-const {
-  loading,
-  error,
-  timelines,
-  messageText,
-  fileUploadKey,
-  sendingMessage,
-  canSendMessage,
-  onFilesSelected,
-  submitMessage,
-} = useTimelineEntries<TimelineJson>({
-  issueId: () => props.issueId,
-  loadEntries: async (issueId) => (await tenantTimelineService.getTimelineEntries(issueId)).timelines ?? [],
-  sendMessage: (issueId, message, files) =>
-    tenantTimelineService.createTimelineEntryWithAttachments(issueId, {
-      purpose: 'MESSAGE_SENT',
-      ...(message ? { message } : {}),
-    }, files),
-  isBlocked: (currentTimelines) => currentTimelines.some((timeline) =>
+const isClosedByTimeline = computed(() =>
+  timelines.value.some((timeline) =>
     timeline.purpose === 'STATUS_CHANGED' && blockingStatusMessages.has(timeline.message?.trim().toUpperCase() ?? ''),
   ),
-  createErrorToastDetail: 'tenantIssues.timeline.createError',
+);
+
+const canSendMessage = computed(
+  () => (messageText.value.trim().length > 0 || selectedFiles.value.length > 0) &&
+    !sendingMessage.value &&
+    !isClosedByTimeline.value,
+);
+
+const fetchTimelines = async () => {
+  loading.value = true;
+  error.value = false;
+  try {
+    const timelineResponse = await tenantTimelineService.getTimelineEntries(props.issueId);
+    timelines.value = timelineResponse.timelines ?? [];
+  } catch (fetchError) {
+    console.error('Error fetching issue timeline:', fetchError);
+    timelines.value = [];
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const mergeSelectedFiles = (currentFiles: File[], newFiles: File[]) => {
+  const uniqueFiles = new Map<string, File>();
+
+  [...currentFiles, ...newFiles].forEach((file) => {
+    const fileKey = `${file.name}-${file.size}-${file.lastModified}`;
+    uniqueFiles.set(fileKey, file);
+  });
+
+  return Array.from(uniqueFiles.values());
+};
+
+const onFilesSelected = (event: FileUploadSelectEvent) => {
+  const files = Array.isArray(event.files) ? event.files : [];
+  selectedFiles.value = mergeSelectedFiles(selectedFiles.value, files as File[]);
+};
+
+const submitMessage = async () => {
+  const trimmedMessage = messageText.value.trim();
+  const hasAttachments = selectedFiles.value.length > 0;
+  if ((!trimmedMessage && !hasAttachments) || sendingMessage.value || isClosedByTimeline.value) { return; }
+
+  sendingMessage.value = true;
+
+  try {
+    await tenantTimelineService.createTimelineEntryWithAttachments(props.issueId, {
+      purpose: 'MESSAGE_SENT',
+      ...(trimmedMessage ? { message: trimmedMessage } : {}),
+    }, selectedFiles.value);
+    messageText.value = '';
+    selectedFiles.value = [];
+    fileUploadKey.value += 1;
+    await fetchTimelines();
+  } catch (submitError) {
+    console.error('Error creating timeline entry:', submitError);
+    toast.add({
+      severity: 'error',
+      summary: t('error.general'),
+      detail: t('tenantIssues.timeline.createError'),
+      life: 4000,
+    });
+  } finally {
+    sendingMessage.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchTimelines();
 });
+
+watch(
+  () => props.issueId,
+  () => {
+    fetchTimelines();
+  },
+);
 </script>
 
 <template>
