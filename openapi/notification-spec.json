@@ -296,35 +296,6 @@
           }
         }
       },
-      "ContractorEmployeeJson" : {
-        "description" : "A contractor employee",
-        "type" : "object",
-        "properties" : {
-          "contractorId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "userId" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "responsibility" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "email" : {
-            "type" : "string",
-            "maxLength" : 255
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "active" : {
-            "type" : "boolean"
-          },
-          "user" : {
-            "$ref" : "#/components/schemas/UserModel"
-          }
-        }
-      },
       "ContractorJson" : {
         "description" : "A contractor",
         "type" : "object",
@@ -2332,23 +2303,6 @@
             "readOnly" : true,
             "type" : "string",
             "$ref" : "#/components/schemas/LocalDateTime"
-          }
-        }
-      },
-      "UserModel" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "$ref" : "#/components/schemas/UUID"
-          },
-          "email" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "active" : {
-            "type" : "boolean"
           }
         }
       }
