@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Image from 'primevue/image';
-import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-interface TimelineAttachmentView {
-  attachmentId: string;
-  contentType?: string;
-  downloadUrl: string;
-  fileName?: string;
-}
+import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
+import { getAttachmentTypeLabel, openAttachmentDownload, useTimelineAttachments } from '@/composables/useTimelineAttachments';
 
 const props = defineProps<{
   item: TimelineJson;
@@ -18,8 +12,6 @@ const props = defineProps<{
 }>();
 
 const { t, locale } = useI18n();
-
-const imageFileExtensions = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
 
 const formatTimelineDate = (value?: string) => {
   if (!value) { return null; }
@@ -52,68 +44,27 @@ const getTimelineTitle = (timelineItem: TimelineJson) => {
   }
 };
 
-const getTimelineAttachmentDownloadUrl = (issueId: string, attachmentId: string, fileName?: string) => {
-  const encodedIssueId = encodeURIComponent(issueId);
-  const encodedAttachmentId = encodeURIComponent(attachmentId);
-  const encodedFileName = encodeURIComponent(fileName || attachmentId);
-  return `/ticketing/v1/tenant-relations/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
-};
-
-const isImageAttachment = (attachment: TimelineAttachmentView) => {
-  if (attachment.contentType?.startsWith('image/')) {
-    return true;
-  }
-
-  const fileName = attachment.fileName?.trim().toLowerCase();
-  if (!fileName || !fileName.includes('.')) {
-    return false;
-  }
-
-  const extension = fileName.split('.').pop();
-  return extension ? imageFileExtensions.has(extension) : false;
-};
-
-const timelineAttachments = computed<TimelineAttachmentView[]>(() => {
-  return (props.item.attachments ?? []).flatMap((attachment) => {
-    const attachmentId = attachment.attachmentId;
-    if (!attachmentId) {
-      return [];
-    }
-
-    const fileName = attachment.fileName;
-    return [{
-      attachmentId,
-      contentType: attachment.contentType,
-      downloadUrl: getTimelineAttachmentDownloadUrl(props.issueId, attachmentId, fileName),
-      fileName,
-    }];
-  });
+const {
+  attachments: timelineAttachments,
+  imageAttachments: timelineImageAttachments,
+  nonImageAttachments: timelineNonImageAttachments,
+} = useTimelineAttachments({
+  attachments: () => props.item.attachments,
+  buildDownloadUrl: (attachmentId, fileName) => {
+    const encodedIssueId = encodeURIComponent(props.issueId);
+    const encodedAttachmentId = encodeURIComponent(attachmentId);
+    const encodedFileName = encodeURIComponent(fileName || attachmentId);
+    return `/ticketing/v1/tenant-relations/issues/${encodedIssueId}/attachments/${encodedAttachmentId}/${encodedFileName}`;
+  },
 });
 
-const timelineImageAttachments = computed(() => timelineAttachments.value.filter(isImageAttachment));
-const timelineNonImageAttachments = computed(() =>
-  timelineAttachments.value.filter((attachment) => !isImageAttachment(attachment)),
-);
-
-const getAttachmentTypeLabel = (attachment: TimelineAttachmentView) => {
-  const fileName = attachment.fileName?.trim().toLowerCase();
-  if (!fileName || !fileName.includes('.')) {
-    return 'FILE';
-  }
-
-  const extension = fileName.split('.').pop();
-  return extension ? extension.toUpperCase() : 'FILE';
-};
-
-const openAttachmentDownload = (downloadUrl: string) => {
-  window.open(downloadUrl, '_blank', 'noopener,noreferrer');
-};
+const formattedDate = computed(() => formatTimelineDate(props.item.createdAt));
 </script>
 
 <template>
   <div class="mb-2 flex items-start gap-3">
     <span class="w-40 shrink-0 text-sm text-gray-500">
-      {{ formatTimelineDate(item.createdAt) || '-' }}
+      {{ formattedDate || '-' }}
     </span>
     <article
       data-testid="tenant-issue-timeline-entry"
