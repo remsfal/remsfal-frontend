@@ -4334,16 +4334,6 @@ export interface components {
       /** Format: float */
       space?: number;
     };
-    /** @description A contractor employee */
-    ContractorEmployeeJson: {
-      contractorId?: components["schemas"]["UUID"];
-      userId?: components["schemas"]["UUID"];
-      responsibility?: string;
-      email?: string;
-      name?: string;
-      active?: boolean;
-      user?: components["schemas"]["UserModel"];
-    };
     /** @description A contractor */
     ContractorJson: {
       organizationId?: components["schemas"]["UUID"];
@@ -5131,12 +5121,6 @@ export interface components {
       additionalEmails?: string[];
       readonly registeredDate?: components["schemas"]["LocalDate"];
       readonly lastLoginDate?: components["schemas"]["LocalDateTime"];
-    };
-    UserModel: {
-      id?: components["schemas"]["UUID"];
-      email?: string;
-      name?: string;
-      active?: boolean;
     };
   };
   responses: never;
