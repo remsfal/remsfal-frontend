@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
+import { shallowMount } from '@vue/test-utils';
 import i18n from '@/i18n/i18n';
 import type { TimelineJson } from '@/features/project/issues/services/IssueTimelineService';
 import IssueTimelineItemCard from '@/features/project/issues/components/IssueTimelineItemCard.vue';
+import TimelineEntryCard from '@/components/common/TimelineEntryCard.vue';
 
 const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   timelineId: 'timeline-1',
@@ -12,133 +13,82 @@ const makeTimeline = (overrides: Partial<TimelineJson> = {}): TimelineJson => ({
   ...overrides,
 });
 
-const mountItemCard = (item: TimelineJson, issueId = 'issue-1') => {
-  return mount(IssueTimelineItemCard, {
-    props: {
-      item,
-      issueId,
-    },
-  });
-};
+const mountItemCard = (item: TimelineJson, issueId = 'issue-1') =>
+  shallowMount(IssueTimelineItemCard, { props: { item, issueId } });
+
+const entryCardProps = (wrapper: ReturnType<typeof mountItemCard>) =>
+  wrapper.getComponent(TimelineEntryCard).props();
 
 describe('IssueTimelineItemCard component', () => {
-  it.each([
-    {
-      name: 'renders non-image attachment tile and opens download',
-      attachment: {
-        attachmentId: 'att-1',
-        fileName: 'report.pdf',
-        contentType: 'application/pdf',
-      },
-      expectedUrl:
-        '/ticketing/v1/issues/issue-1/attachments/att-1/report.pdf',
-      expectedLabel: 'PDF',
-    },
-    {
-      name: 'falls back to attachment id when filename is missing',
-      attachment: { attachmentId: 'fallback-att', contentType: 'application/pdf' },
-      expectedUrl:
-        '/ticketing/v1/issues/issue-1/attachments/fallback-att/fallback-att',
-      expectedLabel: 'FILE',
-    },
-  ])('$name', async ({ attachment, expectedUrl, expectedLabel }) => {
-    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-    const wrapper = mountItemCard(makeTimeline({ attachments: [attachment] }));
+  it('passes date, message and testId through to TimelineEntryCard', () => {
+    const props = entryCardProps(mountItemCard(makeTimeline({ message: 'Hallo' })));
 
-    expect(wrapper.text()).toContain(expectedLabel);
-    await wrapper.get('button.cursor-pointer').trigger('click');
-
-    expect(openSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
-    openSpy.mockRestore();
+    expect(props.date).toBe('2026-01-02T10:00:00.000Z');
+    expect(props.message).toBe('Hallo');
+    expect(props.testId).toBe('issue-timeline-entry');
   });
 
-  it('renders image attachments and triggers download from image action button', async () => {
-    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+  it('renders purpose-based titles including fallback', () => {
+    const titleFor = (overrides: Partial<TimelineJson>) =>
+      entryCardProps(mountItemCard(makeTimeline(overrides))).title;
+
+    expect(titleFor({
+      purpose: 'ISSUE_CREATED',
+      senderName: 'Alex',
+      issueId: 'issue-1',
+    })).toBe(
+      i18n.global.t('tenantIssues.timeline.issueCreatedTitle', { issueNumber: '1', senderName: 'Alex' }),
+    );
+    expect(titleFor({ purpose: 'MESSAGE_SENT', senderName: 'Alex' })).toBe(
+      i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: 'Alex' }),
+    );
+    expect(titleFor({ purpose: 'APPOINTMENT_REQUESTED', senderName: 'Alex' })).toBe(
+      i18n.global.t('tenantIssues.timeline.appointmentRequestedTitle', { senderName: 'Alex' }),
+    );
+    expect(titleFor({ purpose: 'APPOINTMENT_SCHEDULED', senderName: 'Alex' })).toBe(
+      i18n.global.t('tenantIssues.timeline.appointmentScheduledTitle', { senderName: 'Alex' }),
+    );
+    expect(titleFor({ purpose: 'STATUS_CHANGED' })).toBe(i18n.global.t('tenantIssues.timeline.statusChangedTitle'));
+    expect(titleFor({ purpose: 'UNKNOWN_PURPOSE' as TimelineJson['purpose'] })).toBe(
+      i18n.global.t('tenantIssues.timeline.entryFallbackTitle'),
+    );
+  });
+
+  it('shows the manager title and strips the "Verwalter " prefix for manager-sent messages', () => {
+    const title = entryCardProps(
+      mountItemCard(makeTimeline({ purpose: 'MESSAGE_SENT', senderName: 'Verwalter Alex' })),
+    ).title;
+
+    expect(title).toBe(i18n.global.t('tenantIssues.timeline.managerMessageTitle', { senderName: 'Alex' }));
+  });
+
+  it('builds attachment download URLs, falling back to the attachment id as filename', () => {
     const wrapper = mountItemCard(
       makeTimeline({
         attachments: [
           {
-            attachmentId: 'img-1',
-            fileName: 'photo.jpg',
-            contentType: 'image/jpeg',
+            attachmentId: 'att-1',
+            fileName: 'report.pdf',
+            contentType: 'application/pdf',
           },
+          { attachmentId: 'fallback-att', contentType: 'application/pdf' },
         ],
       }),
     );
 
-    await wrapper.get('button.p-button').trigger('click');
-
-    expect(openSpy).toHaveBeenCalledWith(
-      '/ticketing/v1/issues/issue-1/attachments/img-1/photo.jpg',
-      '_blank',
-      'noopener,noreferrer',
-    );
-    openSpy.mockRestore();
-  });
-
-  it('treats image extensions as images even without content type', () => {
-    const wrapper = mountItemCard(
-      makeTimeline({ attachments: [{ attachmentId: 'img-ext-1', fileName: 'photo.webp' }] }),
-    );
-
-    expect(wrapper.find('img').exists()).toBe(true);
-    expect(wrapper.text()).not.toContain('WEBP');
-  });
-
-  it('shows FILE label for attachments without extension and ignores attachments without id', () => {
-    const wrapper = mountItemCard(
-      makeTimeline({
-        attachments: [
-          { attachmentId: 'file-1', fileName: 'README' },
-          { fileName: 'missing-id.txt' },
-        ],
+    expect(entryCardProps(wrapper).attachments).toEqual([
+      expect.objectContaining({
+        attachmentId: 'att-1',
+        downloadUrl: '/ticketing/v1/issues/issue-1/attachments/att-1/report.pdf',
       }),
-    );
-
-    expect(wrapper.text()).toContain('FILE');
-    expect(wrapper.findAll('button.cursor-pointer')).toHaveLength(1);
+      expect.objectContaining({
+        attachmentId: 'fallback-att',
+        downloadUrl: '/ticketing/v1/issues/issue-1/attachments/fallback-att/fallback-att',
+      }),
+    ]);
   });
 
-  it('renders purpose-based titles including fallback', () => {
-    const wrappers = [
-      mountItemCard(
-        makeTimeline({
-          purpose: 'ISSUE_CREATED',
-          senderName: 'Alex',
-          issueId: 'issue-1',
-        }),
-      ),
-      mountItemCard(makeTimeline({ purpose: 'MESSAGE_SENT', senderName: 'Alex' })),
-      mountItemCard(makeTimeline({ purpose: 'APPOINTMENT_REQUESTED', senderName: 'Alex' })),
-      mountItemCard(makeTimeline({ purpose: 'APPOINTMENT_SCHEDULED', senderName: 'Alex' })),
-      mountItemCard(makeTimeline({ purpose: 'STATUS_CHANGED' })),
-      mountItemCard(makeTimeline({ purpose: 'UNKNOWN_PURPOSE' as TimelineJson['purpose'] })),
-      mountItemCard(makeTimeline({ purpose: undefined })),
-    ];
-
-    const text = wrappers.map((wrapper) => wrapper.text()).join(' | ');
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.issueCreatedTitle', {
-      issueNumber: '1',
-      senderName: 'Alex',
-    }));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: 'Alex' }));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.appointmentRequestedTitle', { senderName: 'Alex' }));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.appointmentScheduledTitle', { senderName: 'Alex' }));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.statusChangedTitle'));
-    expect(text).toContain(i18n.global.t('tenantIssues.timeline.entryFallbackTitle'));
-  });
-
-  it('renders fallback date placeholder when createdAt is missing', () => {
-    const wrapper = mountItemCard(makeTimeline({ createdAt: undefined }));
-
-    expect(wrapper.find('[data-testid="issue-timeline-entry"]').text()).toContain(
-      i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: i18n.global.t('common.notSet') }),
-    );
-    expect(wrapper.find('.w-40').text()).toContain('-');
-  });
-
-  it('encodes issue, attachment and filename in generated download URL', async () => {
-    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+  it('encodes issue, attachment and filename in the generated download URL', () => {
     const wrapper = mountItemCard(
       makeTimeline({
         attachments: [{
@@ -150,13 +100,8 @@ describe('IssueTimelineItemCard component', () => {
       'issue id/ä',
     );
 
-    await wrapper.get('button.cursor-pointer').trigger('click');
-
-    expect(openSpy).toHaveBeenCalledWith(
+    expect(entryCardProps(wrapper).attachments?.[0]?.downloadUrl).toBe(
       '/ticketing/v1/issues/issue%20id%2F%C3%A4/attachments/att%20id%2F1/file%20name%20%231.pdf',
-      '_blank',
-      'noopener,noreferrer',
     );
-    openSpy.mockRestore();
   });
 });
