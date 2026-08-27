@@ -5236,37 +5236,20 @@ export interface components {
       /** Format: float */
       space?: number;
     };
-    /** @description A single chat message */
+    /** @description An internal chat message between project members for an issue */
     ChatMessageJson: {
-      messageId?: components["schemas"]["UUID"];
-      sessionId?: components["schemas"]["UUID"];
-      senderId?: components["schemas"]["UUID"];
-      contentType?: string;
-      content?: string;
-      url?: string;
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
+      readonly issueId?: components["schemas"]["UUID"];
+      readonly messageId?: components["schemas"]["UUID"];
+      readonly senderId?: components["schemas"]["UUID"];
+      readonly senderName?: string;
+      message: string;
+      readonly createdAt?: components["schemas"]["Instant"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
     };
-    /** @description A list of chat messages */
+    /** @description A list of internal issue chat messages */
     ChatMessageListJson: {
-      messages?: components["schemas"]["ChatMessageJson"][];
-    };
-    /** @description A chat session */
-    ChatSessionJson: {
-      sessionId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      issueId?: components["schemas"]["UUID"];
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-    };
-    /** @description A list of chat sessions */
-    ChatSessionListJson: {
-      /**
-       * Format: int32
-       * @description Number of chat sessions in the list
-       */
-      size: number;
-      chatSessions?: components["schemas"]["ChatSessionJson"][];
+      /** @description Chat messages */
+      readonly messages?: components["schemas"]["ChatMessageJson"][];
     };
     /** @description Tenant information in a rental agreement */
     CoTenantJson: {

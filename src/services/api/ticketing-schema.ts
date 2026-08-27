@@ -642,256 +642,21 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/ticketing/v1/issues/{issueId}/chats": {
+  "/ticketing/v1/issues/{issueId}/chat": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Get all chat sessions for an issue */
+    /** Get all internal chat messages for an issue */
     get: {
       parameters: {
         query?: never;
         header?: never;
         path: {
-          /** @description ID of the task */
+          /** @description ID of the issue */
           issueId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat sessions retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project or task not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Create a new chat session */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat session created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ChatSessionJson"];
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project or task not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get chat session details */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat session details retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    /** Delete chat session */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat session deleted */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get chat logs in a chat session */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
         };
         cookie?: never;
       };
@@ -903,15 +668,8 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": unknown;
+            "application/json": components["schemas"]["ChatMessageListJson"];
           };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
         };
         /** @description No user authentication provided via session cookie */
         401: {
@@ -920,14 +678,14 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description Not Allowed */
+        /** @description User does not have permission to access this issue's chat */
         403: {
           headers: {
             [name: string]: unknown;
           };
           content?: never;
         };
-        /** @description Project, task, or chat session not found */
+        /** @description Issue not found */
         404: {
           headers: {
             [name: string]: unknown;
@@ -937,16 +695,14 @@ export interface paths {
       };
     };
     put?: never;
-    /** Send a chat message in a chat session */
+    /** Create a new internal chat message for an issue */
     post: {
       parameters: {
         query?: never;
         header?: never;
         path: {
-          /** @description ID of the task */
+          /** @description ID of the issue */
           issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
         };
         cookie?: never;
       };
@@ -956,9 +712,11 @@ export interface paths {
         };
       };
       responses: {
-        /** @description Chat message sent */
+        /** @description Chat message created */
         201: {
           headers: {
+            /** @description URL of the new chat message */
+            Location?: unknown;
             [name: string]: unknown;
           };
           content: {
@@ -979,14 +737,14 @@ export interface paths {
           };
           content?: never;
         };
-        /** @description Chat session is closed or archived */
+        /** @description User does not have permission to access this issue's chat */
         403: {
           headers: {
             [name: string]: unknown;
           };
           content?: never;
         };
-        /** @description Project, task, or chat session not found */
+        /** @description Issue not found */
         404: {
           headers: {
             [name: string]: unknown;
@@ -996,274 +754,6 @@ export interface paths {
       };
     };
     delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/upload": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Send a file in a chat session */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @description One or more files to send in the chat session */
-            file: string[];
-          };
-        };
-      };
-      responses: {
-        /** @description File sent */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              fileId?: components["schemas"]["UUID"];
-              fileUrl?: string;
-              sessionId?: components["schemas"]["UUID"];
-              createdAt?: components["schemas"]["Instant"];
-              sender?: components["schemas"]["UUID"];
-            };
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Chat session is closed or archived */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, or chat session not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/ticketing/v1/issues/{issueId}/chats/{sessionId}/messages/{messageId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get a chat message in a chat session */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The chat message ID */
-          messageId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat message retrieved */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-            "application/octet-stream": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Not Allowed */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or chat message not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /** Update a chat message in a chat session */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The chat message ID */
-          messageId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ChatMessageJson"];
-        };
-      };
-      responses: {
-        /** @description Chat message updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Chat session is closed or archived */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or chat message not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    post?: never;
-    /** Delete a chat message in a chat session */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the task */
-          issueId: components["schemas"]["UUID"];
-          /** @description The chat message ID to delete */
-          messageId: components["schemas"]["UUID"];
-          /** @description ID of the chat session */
-          sessionId: components["schemas"]["UUID"];
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Chat message deleted */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": unknown;
-          };
-        };
-        /** @description Invalid input */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description No user authentication provided via session cookie */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Chat session is closed or archived */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Project, task, chat session, or chat message not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
     options?: never;
     head?: never;
     patch?: never;
@@ -4275,37 +3765,20 @@ export interface components {
       /** Format: float */
       space?: number;
     };
-    /** @description A single chat message */
+    /** @description An internal chat message between project members for an issue */
     ChatMessageJson: {
-      messageId?: components["schemas"]["UUID"];
-      sessionId?: components["schemas"]["UUID"];
-      senderId?: components["schemas"]["UUID"];
-      contentType?: string;
-      content?: string;
-      url?: string;
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
+      readonly issueId?: components["schemas"]["UUID"];
+      readonly messageId?: components["schemas"]["UUID"];
+      readonly senderId?: components["schemas"]["UUID"];
+      readonly senderName?: string;
+      message: string;
+      readonly createdAt?: components["schemas"]["Instant"];
+      readonly modifiedAt?: components["schemas"]["Instant"];
     };
-    /** @description A list of chat messages */
+    /** @description A list of internal issue chat messages */
     ChatMessageListJson: {
-      messages?: components["schemas"]["ChatMessageJson"][];
-    };
-    /** @description A chat session */
-    ChatSessionJson: {
-      sessionId?: components["schemas"]["UUID"];
-      projectId?: components["schemas"]["UUID"];
-      issueId?: components["schemas"]["UUID"];
-      createdAt?: components["schemas"]["Instant"];
-      modifiedAt?: components["schemas"]["Instant"];
-    };
-    /** @description A list of chat sessions */
-    ChatSessionListJson: {
-      /**
-       * Format: int32
-       * @description Number of chat sessions in the list
-       */
-      size: number;
-      chatSessions?: components["schemas"]["ChatSessionJson"][];
+      /** @description Chat messages */
+      readonly messages?: components["schemas"]["ChatMessageJson"][];
     };
     /** @description Tenant information in a rental agreement */
     CoTenantJson: {
