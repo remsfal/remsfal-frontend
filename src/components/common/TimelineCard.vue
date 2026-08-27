@@ -51,7 +51,7 @@ const {
   watchSource: props.watchSource,
   loadErrorLogLabel: props.loadErrorLogLabel,
   sendErrorLogLabel: props.sendErrorLogLabel,
-  sendErrorMessage: props.sendErrorMessage,
+  sendErrorMessage: () => props.sendErrorMessage,
 });
 </script>
 
@@ -95,6 +95,7 @@ const {
         </template>
       </Timeline>
       <div class="mb-4 flex flex-col gap-2">
+        <label :for="`${testIdPrefix}-message`" class="sr-only">{{ messagePlaceholder }}</label>
         <Textarea
           :id="`${testIdPrefix}-message`"
           v-model="messageText"

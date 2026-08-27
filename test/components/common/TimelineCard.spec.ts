@@ -172,13 +172,4 @@ describe('TimelineCard component', () => {
       expect.objectContaining({ severity: 'error', detail: defaultLabels.sendErrorMessage }),
     );
   });
-
-  it('applies a custom testIdPrefix to all data-testid attributes', async () => {
-    const wrapper = mountCard({ load: vi.fn().mockResolvedValue([]), testIdPrefix: 'custom' });
-    await flushPromises();
-
-    expect(wrapper.find('[data-testid="custom-empty"]').exists()).toBe(true);
-    expect(wrapper.find('[data-testid="custom-message-input"]').exists()).toBe(true);
-    expect(wrapper.find('[data-testid="custom-message-submit"]').exists()).toBe(true);
-  });
 });

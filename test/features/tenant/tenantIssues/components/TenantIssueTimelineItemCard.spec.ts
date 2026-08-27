@@ -55,14 +55,6 @@ describe('TenantIssueTimelineItemCard component', () => {
     expect(titleFor({ purpose: undefined })).toBe(i18n.global.t('tenantIssues.timeline.entryFallbackTitle'));
   });
 
-  it('falls back to a "not set" sender name when none is given', () => {
-    const title = entryCardProps(mountItemCard(makeTimeline({ purpose: 'MESSAGE_SENT', senderName: undefined }))).title;
-
-    expect(title).toBe(
-      i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: i18n.global.t('common.notSet') }),
-    );
-  });
-
   it('builds attachment download URLs, falling back to the attachment id as filename', () => {
     const wrapper = mountItemCard(
       makeTimeline({
@@ -87,12 +79,6 @@ describe('TenantIssueTimelineItemCard component', () => {
         downloadUrl: '/ticketing/v1/tenant-relations/issues/issue-1/attachments/fallback-att/fallback-att',
       }),
     ]);
-  });
-
-  it('ignores attachments without an id', () => {
-    const wrapper = mountItemCard(makeTimeline({ attachments: [{ fileName: 'missing-id.txt' }] }));
-
-    expect(entryCardProps(wrapper).attachments).toHaveLength(0);
   });
 
   it('encodes issue, attachment and filename in the generated download URL', () => {

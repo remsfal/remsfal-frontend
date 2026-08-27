@@ -19,7 +19,7 @@ export interface UseTimelineOptions {
   watchSource?: WatchSource;
   sendPurpose?: TimelinePurpose;
   isBlocked?: (items: TimelineJson[]) => boolean;
-  sendErrorMessage: string;
+  sendErrorMessage: () => string;
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
 }
@@ -91,7 +91,7 @@ export function useTimeline(options: UseTimelineOptions) {
       toast.add({
         severity: 'error',
         summary: t('error.general'),
-        detail: options.sendErrorMessage,
+        detail: options.sendErrorMessage(),
         life: 4000,
       });
     } finally {
@@ -109,7 +109,6 @@ export function useTimeline(options: UseTimelineOptions) {
     error,
     items,
     messageText,
-    selectedFiles,
     fileUploadKey,
     sending,
     canSubmit,
