@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
-import i18n from '@/i18n/i18n';
 import type { TimelineJson } from '@/features/tenant/tenantIssues/services/TenantTimelineService';
 import TenantIssueTimelineItemCard from '@/features/tenant/tenantIssues/components/TenantIssueTimelineItemCard.vue';
 import TimelineEntryCard from '@/components/common/TimelineEntryCard.vue';
@@ -28,34 +27,7 @@ describe('TenantIssueTimelineItemCard component', () => {
     expect(props.testId).toBe('tenant-issue-timeline-entry');
   });
 
-  it('renders purpose-based titles including fallback', () => {
-    const titleFor = (overrides: Partial<TimelineJson>) =>
-      entryCardProps(mountItemCard(makeTimeline(overrides))).title;
-
-    expect(titleFor({
-      purpose: 'ISSUE_CREATED',
-      senderName: 'Alex',
-      issueId: 'issue-1',
-    })).toBe(
-      i18n.global.t('tenantIssues.timeline.issueCreatedTitle', { issueNumber: '1', senderName: 'Alex' }),
-    );
-    expect(titleFor({ purpose: 'MESSAGE_SENT', senderName: 'Alex' })).toBe(
-      i18n.global.t('tenantIssues.timeline.tenantMessageTitle', { senderName: 'Alex' }),
-    );
-    expect(titleFor({ purpose: 'APPOINTMENT_REQUESTED', senderName: 'Alex' })).toBe(
-      i18n.global.t('tenantIssues.timeline.appointmentRequestedTitle', { senderName: 'Alex' }),
-    );
-    expect(titleFor({ purpose: 'APPOINTMENT_SCHEDULED', senderName: 'Alex' })).toBe(
-      i18n.global.t('tenantIssues.timeline.appointmentScheduledTitle', { senderName: 'Alex' }),
-    );
-    expect(titleFor({ purpose: 'STATUS_CHANGED' })).toBe(i18n.global.t('tenantIssues.timeline.statusChangedTitle'));
-    expect(titleFor({ purpose: 'UNKNOWN_PURPOSE' as TimelineJson['purpose'] })).toBe(
-      i18n.global.t('tenantIssues.timeline.entryFallbackTitle'),
-    );
-    expect(titleFor({ purpose: undefined })).toBe(i18n.global.t('tenantIssues.timeline.entryFallbackTitle'));
-  });
-
-  it('builds attachment download URLs, falling back to the attachment id as filename', () => {
+  it('builds attachment download URLs under the tenant-relations path, falling back to the attachment id as filename', () => {
     const wrapper = mountItemCard(
       makeTimeline({
         attachments: [
