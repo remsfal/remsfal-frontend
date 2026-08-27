@@ -144,7 +144,7 @@ describe('TenantIssueTimelineCard component', () => {
       expect.objectContaining({ message: 'Neue Nachricht' }),
       [],
     );
-    expect((wrapper.get('#tenant-timeline-message').element as HTMLTextAreaElement).value).toBe('');
+    expect((wrapper.get('#tenant-issue-timeline-message').element as HTMLTextAreaElement).value).toBe('');
     expect(wrapper.get('[data-testid="tenant-issue-timeline-message-submit"]').attributes('disabled')).toBeDefined();
   });
 
