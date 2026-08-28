@@ -137,7 +137,8 @@ function editStep(stepValue: string) {
 const reporterName = computed(() => {
   const firstName = userSessionStore.user?.firstName || '';
   const lastName = userSessionStore.user?.lastName || '';
-  return `${firstName} ${lastName}`.trim() || 'Unbekannt';
+  const fullName = `${firstName} ${lastName}`.trim();
+  return fullName || userSessionStore.user?.email || '';
 });
 
 // Generate Issue Title
