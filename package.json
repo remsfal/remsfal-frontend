@@ -113,7 +113,7 @@
     "vitest": "^4.1.9",
     "vue-eslint-parser": "^10.4.0",
     "vue-i18n-extract": "^2.0.7",
-    "vue-tsc": "^3.2.5",
+    "vue-tsc": "^3.3.11",
     "workbox-build": "^7.4.1",
     "workbox-window": "^7.4.1"
   },
