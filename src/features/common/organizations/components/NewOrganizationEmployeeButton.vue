@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import EmployeeRoleSelect from '@/features/common/organizations/components/EmployeeRoleSelect.vue';
-import { type OrganizationEmployeeJson, type EmployeeRole, organizationService } from '@/services/OrganizationService';
+import { type OrganizationEmployeeWritableJson, type EmployeeRole, organizationService } from '@/services/OrganizationService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 
 const props = defineProps<{ organizationId: string }>();
@@ -53,7 +53,7 @@ const onSubmit = (event: FormSubmitEvent) => {
 const addEmployee = async (email: string, employeeRole: EmployeeRole) => {
   visible.value = false;
 
-  const employee: OrganizationEmployeeJson = {
+  const employee: OrganizationEmployeeWritableJson = {
     email,
     employeeRole,
   };

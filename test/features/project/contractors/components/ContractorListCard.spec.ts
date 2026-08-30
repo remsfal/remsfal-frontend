@@ -5,11 +5,11 @@ import { projectContractorService } from '@/services/ProjectContractorService';
 
 const mockContractors = [
   {
-    id: 'c-1', companyName: 'Alpha Bau GmbH', email: 'alpha@bau.de',
+    id: 'c-1', name: 'Alpha Bau GmbH', email: 'alpha@bau.de',
     phone: '+491511', trade: 'Bauarbeiten', contactPerson: 'Alice',
   },
   {
-    id: 'c-2', companyName: 'Beta Elektro GmbH', email: 'beta@elektro.de',
+    id: 'c-2', name: 'Beta Elektro GmbH', email: 'beta@elektro.de',
     phone: '+491522', trade: 'Elektrik', contactPerson: 'Bob',
   },
 ];
@@ -64,7 +64,7 @@ describe('ContractorListCard', () => {
     expect(wrapper.text()).toContain('Keine Auftragnehmer vorhanden.');
   });
 
-  it('sorts contractors by companyName', async () => {
+  it('sorts contractors by name', async () => {
     const wrapper = mountCard();
     await flushPromises();
     const text = wrapper.text();
@@ -102,7 +102,7 @@ describe('ContractorListCard', () => {
   });
 
   it('does not navigate when contractor has no id', async () => {
-    vi.spyOn(projectContractorService, 'getContractors').mockResolvedValue({contractors: [{ companyName: 'No ID GmbH' }],});
+    vi.spyOn(projectContractorService, 'getContractors').mockResolvedValue({contractors: [{ name: 'No ID GmbH' }],});
     const wrapper = mountCard();
     await flushPromises();
 
@@ -113,9 +113,9 @@ describe('ContractorListCard', () => {
     expect(pushMock).not.toHaveBeenCalled();
   });
 
-  it('handles contractors without companyName in sort', async () => {
+  it('handles contractors without name in sort', async () => {
     vi.spyOn(projectContractorService, 'getContractors')
-      .mockResolvedValue({contractors: [{ id: 'c-1' }, { id: 'c-2', companyName: 'Alpha Bau' }]});
+      .mockResolvedValue({contractors: [{ id: 'c-1' }, { id: 'c-2', name: 'Alpha Bau' }]});
     const wrapper = mountCard();
     await flushPromises();
     expect(wrapper.exists()).toBe(true);

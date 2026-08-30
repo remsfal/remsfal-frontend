@@ -1,14 +1,15 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable, type Writable } from '@/services/ApiClient';
 import { type UnitType } from '@/features/project/rentableUnits/services/PropertyService';
 
 export type IssueCategory = ApiComponents['schemas']['IssueCategory'];
 export type IssueStatus = ApiComponents['schemas']['IssueStatus'];
 export type IssueType = ApiComponents['schemas']['IssueType'];
 export type IssuePriority = ApiComponents['schemas']['IssuePriority'];
-export type IssueJson = ApiComponents['schemas']['IssueJson'];
-export type IssueItemJson = ApiComponents['schemas']['IssueItemJson'];
-export type IssueListJson = ApiComponents['schemas']['IssueListJson'];
-export type IssueAttachmentJson = ApiComponents['schemas']['IssueAttachmentJson'];
+export type IssueJson = Readable<ApiComponents['schemas']['IssueJson']>;
+export type IssueWritableJson = Writable<ApiComponents['schemas']['IssueJson']>;
+export type IssueItemJson = Readable<ApiComponents['schemas']['IssueItemJson']>;
+export type IssueListJson = Readable<ApiComponents['schemas']['IssueListJson']>;
+export type IssueAttachmentJson = Readable<ApiComponents['schemas']['IssueAttachmentJson']>;
 export type IssueRelationType = 'related-to' | 'blocks' | 'blocked-by' | 'duplicate-of' | 'children';
 export type IssueRelationGroup = IssueRelationType | 'parent';
 
@@ -51,11 +52,11 @@ class IssueService {
     return apiClient.get('/ticketing/v1/issues/{issueId}', { pathParams: { issueId } }) as Promise<IssueJson>;
   }
 
-  async createProjectIssue(body: Partial<IssueJson>): Promise<IssueJson> {
+  async createProjectIssue(body: IssueWritableJson): Promise<IssueJson> {
     return apiClient.post('/ticketing/v1/issues', body) as Promise<IssueJson>;
   }
 
-  async updateIssue(issueId: string, body: Partial<IssueJson>): Promise<IssueJson> {
+  async updateIssue(issueId: string, body: IssueWritableJson): Promise<IssueJson> {
     return apiClient.patch('/ticketing/v1/issues/{issueId}', body, { pathParams: { issueId } }) as Promise<IssueJson>;
   }
 

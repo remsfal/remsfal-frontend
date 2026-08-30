@@ -14,11 +14,15 @@ import type {
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
 } from 'vue-router'
+import type {
+  _ExtractParamParserType,
+} from 'vue-router/experimental'
 
 declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers:
-      | never
+    _ParamParsers: {}
+    RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
+    _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
   }
 }
 
@@ -325,11 +329,15 @@ declare module 'vue-router/auto-routes' {
         | 'LandingPage'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/contractor/account-data.vue': {
       routes:
         | 'ContractorAccountData'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/contractor/account-settings.vue': {
@@ -337,11 +345,15 @@ declare module 'vue-router/auto-routes' {
         | 'ContractorAccountSettings'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/contractor/dashboard.vue': {
       routes:
         | 'ContractorDashboard'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/contractor/orders/closed.vue': {
@@ -349,11 +361,15 @@ declare module 'vue-router/auto-routes' {
         | 'ContractorOrdersClosed'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/contractor/orders/ongoing.vue': {
       routes:
         | 'ContractorOrdersOngoing'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/contractor/orders/open.vue': {
@@ -361,17 +377,23 @@ declare module 'vue-router/auto-routes' {
         | 'ContractorOrdersOpen'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/contractor/organizations/[organizationId].vue': {
       routes:
         | 'ContractorOrganizationSettings'
       views:
         | never
+      pathParamNames:
+        | 'organizationId'
     }
     'src/pages/contractor/organizations/new.vue': {
       routes:
         | 'ContractorOrganizations'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/manager/account-data.vue': {
@@ -379,11 +401,15 @@ declare module 'vue-router/auto-routes' {
         | 'ManagerAccountData'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/manager/account-settings.vue': {
       routes:
         | 'ManagerAccountSettings'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/manager/contractors/index.vue': {
@@ -391,17 +417,23 @@ declare module 'vue-router/auto-routes' {
         | 'ManagerContractorList'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/manager/contractors/[organizationId].vue': {
       routes:
         | 'ManagerContractorDetail'
       views:
         | never
+      pathParamNames:
+        | 'organizationId'
     }
     'src/pages/manager/dashboard.vue': {
       routes:
         | 'ManagerDashboard'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/manager/inbox.vue': {
@@ -409,17 +441,23 @@ declare module 'vue-router/auto-routes' {
         | 'Inbox'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/manager/organizations/[organizationId].vue': {
       routes:
         | 'ManagerOrganizationSettings'
       views:
         | never
+      pathParamNames:
+        | 'organizationId'
     }
     'src/pages/manager/organizations/new.vue': {
       routes:
         | 'ManagerOrganizations'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/manager/projects.vue': {
@@ -427,11 +465,15 @@ declare module 'vue-router/auto-routes' {
         | 'ProjectSelection'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/projects/[projectId]/agreements/index.vue': {
       routes:
         | 'RentalAgreementView'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/projects/[projectId]/agreements/[agreementId].vue': {
@@ -439,11 +481,15 @@ declare module 'vue-router/auto-routes' {
         | 'RentalAgreementDetails'
       views:
         | never
+      pathParamNames:
+        | 'agreementId'
     }
     'src/pages/projects/[projectId]/chat.vue': {
       routes:
         | 'ProjectChatView'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/projects/[projectId]/contractors/index.vue': {
@@ -451,17 +497,23 @@ declare module 'vue-router/auto-routes' {
         | 'ProjectContractorList'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/projects/[projectId]/contractors/[contractorId].vue': {
       routes:
         | 'ProjectContractorDetail'
       views:
         | never
+      pathParamNames:
+        | 'contractorId'
     }
     'src/pages/projects/[projectId]/dashboard.vue': {
       routes:
         | 'ProjectDashboard'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/projects/[projectId]/issues/index.vue': {
@@ -469,17 +521,23 @@ declare module 'vue-router/auto-routes' {
         | 'IssueOverview'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/projects/[projectId]/issues/[issueId].vue': {
       routes:
         | 'IssueDetails'
       views:
         | never
+      pathParamNames:
+        | 'issueId'
     }
     'src/pages/projects/[projectId]/settings.vue': {
       routes:
         | 'ProjectSettings'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/projects/[projectId]/tenants/index.vue': {
@@ -487,17 +545,23 @@ declare module 'vue-router/auto-routes' {
         | 'TenantList'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/projects/[projectId]/tenants/[tenantId].vue': {
       routes:
         | 'TenantDetail'
       views:
         | never
+      pathParamNames:
+        | 'tenantId'
     }
     'src/pages/projects/[projectId]/units/index.vue': {
       routes:
         | 'RentableUnits'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/projects/[projectId]/units/apartment/[unitId].vue': {
@@ -505,41 +569,55 @@ declare module 'vue-router/auto-routes' {
         | 'ApartmentView'
       views:
         | never
+      pathParamNames:
+        | 'unitId'
     }
     'src/pages/projects/[projectId]/units/building/[unitId].vue': {
       routes:
         | 'BuildingView'
       views:
         | never
+      pathParamNames:
+        | 'unitId'
     }
     'src/pages/projects/[projectId]/units/commercial/[unitId].vue': {
       routes:
         | 'CommercialView'
       views:
         | never
+      pathParamNames:
+        | 'unitId'
     }
     'src/pages/projects/[projectId]/units/property/[unitId].vue': {
       routes:
         | 'PropertyView'
       views:
         | never
+      pathParamNames:
+        | 'unitId'
     }
     'src/pages/projects/[projectId]/units/site/[unitId].vue': {
       routes:
         | 'SiteView'
       views:
         | never
+      pathParamNames:
+        | 'unitId'
     }
     'src/pages/projects/[projectId]/units/storage/[unitId].vue': {
       routes:
         | 'StorageView'
       views:
         | never
+      pathParamNames:
+        | 'unitId'
     }
     'src/pages/tenant/account-data.vue': {
       routes:
         | 'TenantAccountData'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/tenant/dashboard.vue': {
@@ -547,11 +625,15 @@ declare module 'vue-router/auto-routes' {
         | 'TenantDashboard'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/tenant/issues/index.vue': {
       routes:
         | 'TenantIssues'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/tenant/issues/[issueId].vue': {
@@ -559,6 +641,8 @@ declare module 'vue-router/auto-routes' {
         | 'TenantIssueDetails'
       views:
         | never
+      pathParamNames:
+        | 'issueId'
     }
   }
 

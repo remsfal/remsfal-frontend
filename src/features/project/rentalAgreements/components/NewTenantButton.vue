@@ -6,7 +6,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue';
 import TenantForm from './TenantForm.vue';
 import TenantSelect from './TenantSelect.vue';
 import type { TenantItemJson } from '../services/TenantService';
-import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { TenantJson, TenantWritableJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 const props = defineProps<{
   projectId: string;
@@ -15,7 +15,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  newTenant: [tenant: TenantJson];
+  newTenant: [tenant: TenantWritableJson];
 }>();
 
 const { t } = useI18n();
@@ -34,7 +34,7 @@ function confirmExistingTenant() {
   const tenant = selectedExistingTenant.value;
   if (!tenant || isSelectedTenantAlreadyAdded.value) return;
 
-  const tenantForRental: TenantJson = {
+  const tenantForRental: TenantWritableJson = {
     firstName: tenant.firstName,
     lastName: tenant.lastName,
     email: tenant.email,
@@ -55,7 +55,19 @@ function openDialog() {
 }
 
 function onSubmit(tenant: TenantJson) {
-  emit('newTenant', tenant);
+  // TenantForm is shared with the edit flow and always emits the full TenantJson;
+  // this dialog only ever creates a new tenant, so id/userId (readOnly) are omitted here.
+  emit('newTenant', {
+    firstName: tenant.firstName,
+    lastName: tenant.lastName,
+    email: tenant.email,
+    mobilePhoneNumber: tenant.mobilePhoneNumber,
+    businessPhoneNumber: tenant.businessPhoneNumber,
+    privatePhoneNumber: tenant.privatePhoneNumber,
+    address: tenant.address,
+    placeOfBirth: tenant.placeOfBirth,
+    dateOfBirth: tenant.dateOfBirth,
+  });
   visible.value = false;
   showTenantForm.value = false;
 }

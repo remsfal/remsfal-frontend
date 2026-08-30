@@ -12,7 +12,7 @@ async function loadAddress(): Promise<AddressJson | undefined> {
 }
 
 async function saveAddress(addr: AddressJson): Promise<void> {
-  await userService.updateUser({ address: addr });
+  await userService.updateAddress(addr);
 }
 </script>
 

@@ -12,7 +12,7 @@ import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { z } from 'zod';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 import PhoneInput from '@/components/common/PhoneInput.vue';
-import { type ContractorJson, projectContractorService } from '@/services/ProjectContractorService';
+import { type ContractorWritableJson, projectContractorService } from '@/services/ProjectContractorService';
 
 const props = defineProps<{ projectId: string }>();
 const emit = defineEmits<(e: 'newContractor', companyName: string) => void>();
@@ -60,8 +60,8 @@ const onSubmit = async (event: FormSubmitEvent) => {
   const s = event.states;
   const companyName = s.companyName?.value?.trim() ?? '';
 
-  const contractor: ContractorJson = {
-    companyName,
+  const contractor: ContractorWritableJson = {
+    name: companyName,
     email: s.email?.value?.trim() || undefined,
     phone: phone.value || undefined,
     contactPerson: s.contactPerson?.value?.trim() || undefined,

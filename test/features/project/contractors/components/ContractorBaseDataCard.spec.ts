@@ -6,7 +6,7 @@ import { projectContractorService } from '@/services/ProjectContractorService';
 
 const mockContractor = {
   id: 'c-1',
-  companyName: 'Test GmbH',
+  name: 'Test GmbH',
   email: 'test@test.de',
   phone: '+4930123456',
   contactPerson: 'Max Muster',

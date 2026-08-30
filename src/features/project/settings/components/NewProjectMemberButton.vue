@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import ProjectMemberRoleSelect from '@/features/project/settings/components/ProjectMemberRoleSelect.vue';
-import { type ProjectMemberJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
+import { type ProjectMemberWritableJson, type MemberRole, projectMemberService } from '@/services/ProjectMemberService';
 import BaseDialog from '@/components/common/BaseDialog.vue';
 
 const props = defineProps<{ projectId: string }>();
@@ -54,7 +54,7 @@ const onSubmit = (event: FormSubmitEvent) => {
 const addMember = async (email: string, role: MemberRole) => {
   visible.value = false;
 
-  const member: ProjectMemberJson = {
+  const member: ProjectMemberWritableJson = {
     email,
     role,
   };
