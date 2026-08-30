@@ -121,6 +121,14 @@ describe('ContractorListCard', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
+  it('handles the second contractor missing a name in sort', async () => {
+    vi.spyOn(projectContractorService, 'getContractors')
+      .mockResolvedValue({contractors: [{ id: 'c-1', name: 'Alpha Bau' }, { id: 'c-2' }]});
+    const wrapper = mountCard();
+    await flushPromises();
+    expect(wrapper.exists()).toBe(true);
+  });
+
   it('re-fetches contractors when NewContractorButton emits newContractor', async () => {
     const wrapper = mountCard();
     await flushPromises();
