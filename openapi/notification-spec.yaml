@@ -1665,6 +1665,10 @@ components:
     TenantJson:
       type: object
       description: Tenant information in a rental agreement
+      required:
+      - id
+      - firstName
+      - lastName
       properties:
         id:
           readOnly: true
@@ -1718,9 +1722,6 @@ components:
           readOnly: true
           type: string
           $ref: "#/components/schemas/UUID"
-      required:
-      - firstName
-      - lastName
     TenantListJson:
       description: A list of tenants for a project
       type: object
