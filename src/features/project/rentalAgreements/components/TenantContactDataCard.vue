@@ -54,18 +54,11 @@ onMounted(() => {
   loadTenant();
 });
 
-async function onSubmit(tenant: TenantJson) {
-  // id/userId are server-assigned (readOnly) and must not be sent in the update body —
-  // the tenant is already identified by props.tenantId in the request path.
+async function onSubmit(tenant: TenantWritableJson) {
+  // TenantForm never emits id/userId (server-assigned) — the tenant is already
+  // identified by props.tenantId in the request path.
   const updatedTenant: TenantWritableJson = {
-    firstName: tenant.firstName,
-    lastName: tenant.lastName,
-    email: tenant.email,
-    mobilePhoneNumber: tenant.mobilePhoneNumber,
-    businessPhoneNumber: tenant.businessPhoneNumber,
-    privatePhoneNumber: tenant.privatePhoneNumber,
-    placeOfBirth: tenant.placeOfBirth,
-    dateOfBirth: tenant.dateOfBirth,
+    ...tenant,
     address: serverAddress.value,
   };
 

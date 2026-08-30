@@ -14,7 +14,6 @@ import StepPanel from 'primevue/steppanel';
 // Services & Types
 import {rentalAgreementService,
   type RentalAgreementWritableJson,
-  type TenantJson,
   type TenantWritableJson,
   type RentJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import type { SelectedUnit } from './Step2UnitsForm.vue';
@@ -47,7 +46,7 @@ const formState = ref<{
   startOfRental: string | null;
   endOfRental: string | null;
   selectedUnits: SelectedUnit[];
-  tenants: TenantJson[];
+  tenants: TenantWritableJson[];
 }>({
   startOfRental: null,
   endOfRental: null,

@@ -54,20 +54,9 @@ function openDialog() {
   visible.value = true;
 }
 
-function onSubmit(tenant: TenantJson) {
-  // TenantForm is shared with the edit flow and always emits the full TenantJson;
-  // this dialog only ever creates a new tenant, so id/userId (readOnly) are omitted here.
-  emit('newTenant', {
-    firstName: tenant.firstName,
-    lastName: tenant.lastName,
-    email: tenant.email,
-    mobilePhoneNumber: tenant.mobilePhoneNumber,
-    businessPhoneNumber: tenant.businessPhoneNumber,
-    privatePhoneNumber: tenant.privatePhoneNumber,
-    address: tenant.address,
-    placeOfBirth: tenant.placeOfBirth,
-    dateOfBirth: tenant.dateOfBirth,
-  });
+function onSubmit(tenant: TenantWritableJson) {
+  // TenantForm never emits id/userId (server-assigned); this dialog only creates new tenants.
+  emit('newTenant', tenant);
   visible.value = false;
   showTenantForm.value = false;
 }
