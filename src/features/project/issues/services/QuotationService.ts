@@ -1,7 +1,7 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type QuotationJson = ApiComponents['schemas']['QuotationJson'];
-export type QuotationListJson = ApiComponents['schemas']['QuotationListJson'];
+export type QuotationJson = Readable<ApiComponents['schemas']['QuotationJson']>;
+export type QuotationListJson = Readable<ApiComponents['schemas']['QuotationListJson']>;
 
 class QuotationService {
   async getQuotations(issueId: string): Promise<QuotationListJson> {

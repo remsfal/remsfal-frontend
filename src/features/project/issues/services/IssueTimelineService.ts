@@ -1,7 +1,7 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type TimelineJson = ApiComponents['schemas']['TimelineJson'];
-export type TimelineListJson = ApiComponents['schemas']['TimelineListJson'];
+export type TimelineJson = Readable<ApiComponents['schemas']['TimelineJson']>;
+export type TimelineListJson = Readable<ApiComponents['schemas']['TimelineListJson']>;
 
 class IssueTimelineService {
   async getTimelineEntries(issueId: string): Promise<TimelineListJson> {

@@ -21,12 +21,12 @@ describe('ProjectContractorDetailView', () => {
   beforeEach(() => {
     vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({
       id: 'c-1',
-      companyName: 'Test GmbH',
+      name: 'Test GmbH',
       address: {
         street: 'Teststr. 1', zip: '10115', city: 'Berlin', province: 'Berlin', countryCode: 'DE'
       },
     });
-    vi.spyOn(projectContractorService, 'updateContractor').mockResolvedValue({ id: 'c-1', companyName: 'Test GmbH' });
+    vi.spyOn(projectContractorService, 'updateContractor').mockResolvedValue({ id: 'c-1', name: 'Test GmbH' });
   });
 
   const mountView = () =>
@@ -79,7 +79,7 @@ describe('ProjectContractorDetailView', () => {
   });
 
   it('loadAddress returns undefined when contractor has no address', async () => {
-    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({ id: 'c-1', companyName: 'Test GmbH' });
+    vi.spyOn(projectContractorService, 'getContractor').mockResolvedValue({ id: 'c-1', name: 'Test GmbH' });
     const wrapper = mountView();
     const addressCard = wrapper.findComponent({ name: 'AddressCard' });
     const { loadAddress } = addressCard.props();

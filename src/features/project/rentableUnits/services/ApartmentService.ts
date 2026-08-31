@@ -1,6 +1,6 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type ApartmentJson = ApiComponents['schemas']['ApartmentJson'];
+export type ApartmentJson = Readable<ApiComponents['schemas']['ApartmentJson']>;
 
 export default class ApartmentService {
   // Create a new apartment

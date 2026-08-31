@@ -38,9 +38,9 @@
     "stylelint": "stylelint '{src,public}/**/*.{vue,css,scss}'",
     "stylelint:fix": "stylelint --fix '{src,public}/**/*.{vue,css,scss}'",
     "openapi": "run-p openapi:ticketing openapi:platform openapi:notification",
-    "openapi:ticketing": "openapi-typescript openapi/ticketing-spec.json -o src/services/api/ticketing-schema.ts",
-    "openapi:platform": "openapi-typescript openapi/platform-spec.json -o src/services/api/platform-schema.ts",
-    "openapi:notification": "openapi-typescript openapi/notification-spec.json -o src/services/api/notification-schema.ts"
+    "openapi:ticketing": "openapi-typescript openapi/ticketing-spec.json --read-write-markers -o src/services/api/ticketing-schema.ts",
+    "openapi:platform": "openapi-typescript openapi/platform-spec.json --read-write-markers -o src/services/api/platform-schema.ts",
+    "openapi:notification": "openapi-typescript openapi/notification-spec.json --read-write-markers -o src/services/api/notification-schema.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.2.0",

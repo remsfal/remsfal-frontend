@@ -4,7 +4,7 @@ import type {AxiosError,
   AxiosRequestConfig,
   InternalAxiosRequestConfig,
   AxiosResponse} from 'axios';
-import type { paths as ticketingPaths, components as ticketingComponents } from './api/ticketing-schema';
+import type { paths as ticketingPaths, components as ticketingComponents, Readable, Writable } from './api/ticketing-schema';
 import type { paths as platformPaths, components as platformComponents } from './api/platform-schema';
 import type { paths as notificationPaths, components as notificationComponents } from './api/notification-schema';
 import { useEventBus } from '@/stores/EventStore';
@@ -14,6 +14,11 @@ import { authService } from '@/services/AuthService';
 export type ApiPaths = ticketingPaths & platformPaths & notificationPaths;
 // Combine all OpenAPI components
 export type ApiComponents = ticketingComponents & platformComponents & notificationComponents;
+
+// Re-exported so services can build response/request types without importing a specific *-schema.ts file.
+// $Read/$Write markers (from --read-write-markers codegen) resolve identically across all three generated
+// schema files, so any one of them serves as the canonical source.
+export type { Readable, Writable };
 
 /**
  * Extend AxiosRequestConfig to support a `pathParams` object for URL placeholder substitution.
@@ -236,7 +241,7 @@ type RequestBody<P extends keyof ApiPaths, M extends HttpMethod> =
   P extends keyof ApiPaths
     ? M extends keyof ApiPaths[P]
       ? ApiPaths[P][M] extends { requestBody?: { content: { 'application/json': infer Body } } }
-        ? Body
+        ? Writable<Body>
         : never
       : never
     : never;
@@ -266,7 +271,7 @@ type ResponseType<P extends keyof ApiPaths, M extends HttpMethod> =
   P extends keyof ApiPaths
     ? M extends keyof ApiPaths[P]
       ? ApiPaths[P][M] extends { responses: { 200: { content: { 'application/json': infer Res } } } }
-        ? Res
+        ? Readable<Res>
         : ApiPaths[P][M] extends { responses: { 204: unknown } }
           ? void
           : ApiPaths[P][M] extends { responses: { 200: unknown } }
