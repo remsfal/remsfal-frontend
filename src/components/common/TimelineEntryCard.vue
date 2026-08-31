@@ -28,8 +28,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { locale } = useI18n();
 
-const imageFileExtensions = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg']);
-
 const formattedDate = computed(() => {
   if (!props.date) return null;
   const date = new Date(props.date);
@@ -37,24 +35,13 @@ const formattedDate = computed(() => {
   return date.toLocaleString(locale.value);
 });
 
-const isImageAttachment = (attachment: TimelineAttachmentView) => {
-  if (attachment.contentType?.startsWith('image/')) {
-    return true;
-  }
+const imageAttachments = computed(() => props.attachments.filter(
+  attachment => attachment.contentType?.startsWith('image/')
+));
 
-  const fileName = attachment.fileName?.trim().toLowerCase();
-  if (!fileName || !fileName.includes('.')) {
-    return false;
-  }
-
-  const extension = fileName.split('.').pop();
-  return extension ? imageFileExtensions.has(extension) : false;
-};
-
-const imageAttachments = computed(() => props.attachments.filter(isImageAttachment));
-const nonImageAttachments = computed(() =>
-  props.attachments.filter((attachment) => !isImageAttachment(attachment)),
-);
+const nonImageAttachments = computed(() => props.attachments.filter(
+  attachment => !attachment.contentType?.startsWith('image/')
+));
 
 const getAttachmentTypeLabel = (attachment: TimelineAttachmentView) => {
   const fileName = attachment.fileName?.trim().toLowerCase();

@@ -7,31 +7,34 @@ import Timeline from 'primevue/timeline';
 import BaseCard from '@/components/common/BaseCard.vue';
 import CardSkeletonRows from '@/components/common/CardSkeletonRows.vue';
 import { useTimeline, type UseTimelineOptions, type TimelineJson } from '@/composables/useTimeline';
+import { useI18n } from 'vue-i18n';
 
 interface Props {
   load: UseTimelineOptions['load'];
   send: UseTimelineOptions['send'];
   title: string;
-  emptyText: string;
-  loadErrorText: string;
-  messagePlaceholder: string;
-  uploadButtonLabel: string;
-  uploadEmptyText: string;
-  sendButtonLabel: string;
-  sendErrorMessage: string;
   isBlocked?: UseTimelineOptions['isBlocked'];
   sendPurpose?: UseTimelineOptions['sendPurpose'];
   watchSource?: UseTimelineOptions['watchSource'];
   loadErrorLogLabel?: string;
   sendErrorLogLabel?: string;
-  testIdPrefix?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), { testIdPrefix: 'timeline' });
+const props = defineProps<Props>();
 
 defineSlots<{
   item(props: { item: TimelineJson }): unknown;
 }>();
+
+const testIdPrefix = 'timeline';
+const { t } = useI18n();
+const emptyText = t('tenantIssues.timeline.empty');
+const loadErrorText = t('tenantIssues.timeline.loadError');
+const messagePlaceholder = t('tenantIssues.timeline.messagePlaceholder');
+const uploadButtonLabel = t('tenantIssues.timeline.uploadButton');
+const uploadEmptyText = t('tenantIssues.timeline.uploadEmpty');
+const sendButtonLabel = t('tenantIssues.timeline.sendMessage');
+const sendErrorMessage = t('tenantIssues.timeline.createError');
 
 const {
   loading,
@@ -51,14 +54,14 @@ const {
   watchSource: props.watchSource,
   loadErrorLogLabel: props.loadErrorLogLabel,
   sendErrorLogLabel: props.sendErrorLogLabel,
-  sendErrorMessage: () => props.sendErrorMessage,
+  sendErrorMessage: () => sendErrorMessage,
 });
 </script>
 
 <template>
   <BaseCard>
     <template #title>
-      <span class="text-xl font-semibold">{{ title }}</span>
+      <span class="text-xl font-semibold">{{ props.title }}</span>
     </template>
     <template #content>
       <CardSkeletonRows
@@ -102,6 +105,7 @@ const {
           :data-testid="`${testIdPrefix}-message-input`"
           rows="3"
           :placeholder="messagePlaceholder"
+          :disabled="loading || error || sending"
         />
         <div class="flex flex-col gap-1">
           <FileUpload
@@ -115,6 +119,7 @@ const {
             accept="image/*,video/*,application/pdf"
             :maxFileSize="10485760"
             :fileLimit="10"
+            :disabled="loading || error || sending"
             @select="onFilesSelected"
           >
             <template #empty>

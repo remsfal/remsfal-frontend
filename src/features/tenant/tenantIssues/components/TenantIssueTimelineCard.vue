@@ -25,13 +25,6 @@ const isBlocked = (items: TimelineJson[]) =>
     :isBlocked="isBlocked"
     testIdPrefix="tenant-issue-timeline"
     :title="t('tenantIssues.timeline.title')"
-    :emptyText="t('tenantIssues.timeline.empty')"
-    :loadErrorText="t('tenantIssues.timeline.loadError')"
-    :messagePlaceholder="t('tenantIssues.timeline.messagePlaceholder')"
-    :uploadButtonLabel="t('tenantIssues.timeline.uploadButton')"
-    :uploadEmptyText="t('tenantIssues.timeline.uploadEmpty')"
-    :sendButtonLabel="t('tenantIssues.timeline.sendMessage')"
-    :sendErrorMessage="t('tenantIssues.timeline.createError')"
     loadErrorLogLabel="Error fetching issue timeline:"
     sendErrorLogLabel="Error creating timeline entry:"
   >
