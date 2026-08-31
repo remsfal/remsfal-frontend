@@ -23,7 +23,6 @@ const isBlocked = (items: TimelineJson[]) =>
     :send="(payload, files) => tenantTimelineService.createTimelineEntryWithAttachments(issueId, payload, files)"
     :watchSource="() => props.issueId"
     :isBlocked="isBlocked"
-    testIdPrefix="tenant-issue-timeline"
     :title="t('tenantIssues.timeline.title')"
     loadErrorLogLabel="Error fetching issue timeline:"
     sendErrorLogLabel="Error creating timeline entry:"

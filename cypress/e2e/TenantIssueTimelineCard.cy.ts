@@ -105,9 +105,9 @@ describe('TenantIssueTimelineCard E2E Tests', () => {
     cy.wait('@getIssueDetail', { timeout: 10000 });
     cy.wait('@getTimeline', { timeout: 10000 });
 
-    cy.get('[data-testid="tenant-issue-timeline"]').should('be.visible');
-    cy.get('[data-testid="tenant-issue-timeline-message-input"]').type('Neue Nachricht vom Mieter');
-    cy.get('[data-testid="tenant-issue-timeline-message-submit"]').click();
+    cy.get('[data-testid="timeline"]').should('be.visible');
+    cy.get('[data-testid="timeline-message-input"]').type('Neue Nachricht vom Mieter');
+    cy.get('[data-testid="timeline-message-submit"]').click();
 
     cy.wait('@createTimeline', { timeout: 10000 });
     cy.wait('@getTimeline', { timeout: 10000 });
@@ -121,7 +121,7 @@ describe('TenantIssueTimelineCard E2E Tests', () => {
     cy.wait('@getIssueDetail');
     cy.wait('@getTimeline');
 
-    cy.get('[data-testid="tenant-issue-timeline-empty"]').should('be.visible');
+    cy.get('[data-testid="timeline-empty"]').should('be.visible');
   });
 
   it('shows error state when timeline request fails', () => {
@@ -138,7 +138,7 @@ describe('TenantIssueTimelineCard E2E Tests', () => {
     cy.wait('@getIssueDetail');
     cy.wait('@getTimelineError');
 
-    cy.get('[data-testid="tenant-issue-timeline-error"]').should('be.visible');
+    cy.get('[data-testid="timeline-error"]').should('be.visible');
   });
 
   ['CLOSED', 'REJECTED'].forEach((statusMessage) => {
@@ -156,8 +156,8 @@ describe('TenantIssueTimelineCard E2E Tests', () => {
       cy.wait('@getIssueDetail');
       cy.wait('@getTimeline');
 
-      cy.get('[data-testid="tenant-issue-timeline-message-input"]').type('Sollte blockiert sein');
-      cy.get('[data-testid="tenant-issue-timeline-message-submit"]').should('be.disabled');
+      cy.get('[data-testid="timeline-message-input"]').type('Sollte blockiert sein');
+      cy.get('[data-testid="timeline-message-submit"]').should('be.disabled');
     });
   });
 
