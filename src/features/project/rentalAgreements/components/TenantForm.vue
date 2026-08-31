@@ -17,7 +17,7 @@ import { z } from 'zod';
 import PhoneInput from '@/components/common/PhoneInput.vue';
 
 // Types
-import type { TenantJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type { TenantJson, TenantWritableJson } from '@/features/project/rentalAgreements/services/RentalAgreementService';
 
 // Props & Emits
 const props = withDefaults(
@@ -37,7 +37,9 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  submit: [tenant: TenantJson];
+  // `id` is passed separately (rather than embedded in `tenant`) because TenantJson.id is
+  // required by the schema, but this form has no id yet in create mode.
+  submit: [tenant: TenantWritableJson, id: string | undefined];
   cancel: [];
 }>();
 
@@ -129,7 +131,6 @@ function onSubmit(event: FormSubmitEvent) {
   if (!event.valid || hasPhoneError.value) return;
 
   emit('submit', {
-    id: props.initialValues?.id,
     firstName: formState.firstName?.value?.trim() || '',
     lastName: formState.lastName?.value?.trim() || '',
     email: formState.email?.value?.trim() || undefined,
@@ -138,7 +139,7 @@ function onSubmit(event: FormSubmitEvent) {
     mobilePhoneNumber: currentPhones.mobile || undefined,
     businessPhoneNumber: currentPhones.business || undefined,
     privatePhoneNumber: currentPhones.private || undefined,
-  });
+  }, props.initialValues?.id);
 }
 </script>
 

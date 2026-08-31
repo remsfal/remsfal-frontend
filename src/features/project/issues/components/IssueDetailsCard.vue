@@ -12,7 +12,7 @@ import MemberAutoComplete from '@/components/MemberAutoComplete.vue';
 import RentalAgreementSelect from '@/features/project/rentalAgreements/components/RentalAgreementSelect.vue';
 import IssueAcceptButton from './IssueAcceptButton.vue';
 import IssueRejectButton from './IssueRejectButton.vue';
-import { issueService, type IssueJson, type IssueStatus, type IssueType, type IssuePriority }
+import { issueService, type IssueJson, type IssueWritableJson, type IssueStatus, type IssueType, type IssuePriority }
   from '@/services/IssueService';
 import { type RentalAgreementItemJson }
   from '@/features/project/rentalAgreements/services/RentalAgreementService';
@@ -221,7 +221,7 @@ const handleSave = async () => {
   loadingSave.value = true;
 
   try {
-    const payload: Partial<IssueJson> = {};
+    const payload: IssueWritableJson = {};
     if (title.value !== originalTitle.value) payload.title = title.value;
     if (status.value !== originalStatus.value)
       payload.status = status.value as IssueJson["status"];

@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, VueWrapper } from '@vue/test-utils';
 import { flushPromises } from '@vue/test-utils';
 import Step3TenantsForm from '@/features/project/rentalAgreements/components/Step3TenantsForm.vue';
-import type { TenantJson as TenantItem } from '@/features/project/rentalAgreements/services/RentalAgreementService';
+import type {TenantJson as TenantItem,
+  TenantWritableJson,} from '@/features/project/rentalAgreements/services/RentalAgreementService';
 import { tenantService } from '@/features/project/rentalAgreements/services/TenantService';
 
 vi.mock('@/features/project/rentalAgreements/services/TenantService', () => ({
@@ -28,6 +29,14 @@ describe('Step3TenantsForm', () => {
       email: 'erika@example.com',
     },
   ];
+
+  // The `tenants` prop never carries an id (it's the writable, not-yet-created shape),
+  // so already-selected existing tenants are represented without it here.
+  const mockTenantsAsEntries: TenantWritableJson[] = mockTenants.map(
+    ({ firstName, lastName, email, mobilePhoneNumber }) => ({
+      firstName, lastName, email, mobilePhoneNumber,
+    }),
+  );
 
   const defaultProps = {
     projectId: 'project-123',
@@ -95,7 +104,7 @@ describe('Step3TenantsForm', () => {
     await addButton?.trigger('click');
     await wrapper.vm.$nextTick();
 
-    const newTenant: TenantItem = {
+    const newTenant: TenantWritableJson = {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
@@ -106,13 +115,13 @@ describe('Step3TenantsForm', () => {
     await wrapper.vm.$nextTick();
 
     expect(wrapper.emitted('update:tenants')).toBeTruthy();
-    const emittedTenants = wrapper.emitted('update:tenants')?.[0]?.[0] as TenantItem[];
+    const emittedTenants = wrapper.emitted('update:tenants')?.[0]?.[0] as TenantWritableJson[];
     expect(emittedTenants).toHaveLength(1);
     expect(emittedTenants[0]).toEqual(newTenant);
   });
 
   it('displays selected tenants in the list', async () => {
-    await wrapper.setProps({tenants: mockTenants,});
+    await wrapper.setProps({tenants: mockTenantsAsEntries,});
 
     await wrapper.vm.$nextTick();
 
@@ -123,7 +132,7 @@ describe('Step3TenantsForm', () => {
   });
 
   it('removes tenant from list when trash button is clicked', async () => {
-    await wrapper.setProps({tenants: mockTenants,});
+    await wrapper.setProps({tenants: mockTenantsAsEntries,});
 
     await wrapper.vm.$nextTick();
 
@@ -133,9 +142,9 @@ describe('Step3TenantsForm', () => {
     await deleteButtons[0].trigger('click');
 
     expect(wrapper.emitted('update:tenants')).toBeTruthy();
-    const emittedTenants = wrapper.emitted('update:tenants')?.[0]?.[0] as TenantItem[];
+    const emittedTenants = wrapper.emitted('update:tenants')?.[0]?.[0] as TenantWritableJson[];
     expect(emittedTenants).toHaveLength(1);
-    expect(emittedTenants[0].id).toBe('2');
+    expect(emittedTenants[0].firstName).toBe('Erika');
   });
 
   it('shows validation message when no tenants are selected', async () => {
@@ -145,7 +154,7 @@ describe('Step3TenantsForm', () => {
   });
 
   it('hides validation message when tenants are selected', async () => {
-    await wrapper.setProps({tenants: mockTenants,});
+    await wrapper.setProps({tenants: mockTenantsAsEntries,});
 
     await wrapper.vm.$nextTick();
 
@@ -163,7 +172,7 @@ describe('Step3TenantsForm', () => {
   });
 
   it('enables next button when tenants are selected', async () => {
-    await wrapper.setProps({tenants: mockTenants,});
+    await wrapper.setProps({tenants: mockTenantsAsEntries,});
 
     await wrapper.vm.$nextTick();
 
@@ -180,7 +189,7 @@ describe('Step3TenantsForm', () => {
   });
 
   it('emits next event when next button is clicked', async () => {
-    await wrapper.setProps({tenants: mockTenants,});
+    await wrapper.setProps({tenants: mockTenantsAsEntries,});
 
     await wrapper.vm.$nextTick();
 
@@ -197,19 +206,19 @@ describe('Step3TenantsForm', () => {
     await autoComplete.vm.$emit('update:modelValue', mockTenants[0]);
 
     expect(wrapper.emitted('update:tenants')).toBeTruthy();
-    const emittedTenants = wrapper.emitted('update:tenants')?.[0]?.[0] as TenantItem[];
+    const emittedTenants = wrapper.emitted('update:tenants')?.[0]?.[0] as TenantWritableJson[];
     expect(emittedTenants).toHaveLength(1);
-    expect(emittedTenants[0].id).toBe('1');
+    expect(emittedTenants[0].firstName).toBe('Max');
   });
 
   it('does not add duplicate tenants', async () => {
-    await wrapper.setProps({tenants: [mockTenants[0]],});
+    await wrapper.setProps({tenants: [mockTenantsAsEntries[0]],});
 
     await wrapper.vm.$nextTick();
 
     const autoComplete = wrapper.findComponent({ name: 'AutoComplete' });
 
-    // Try to select the same tenant again
+    // Try to select the same tenant again (same email as the one already in the list)
     await autoComplete.vm.$emit('update:modelValue', mockTenants[0]);
 
     // Should not emit update:tenants since tenant is already in list
@@ -219,7 +228,7 @@ describe('Step3TenantsForm', () => {
   });
 
   it('formats date of birth correctly', async () => {
-    const tenantWithBirthday: TenantItem = {
+    const tenantWithBirthday: TenantWritableJson = {
       firstName: 'Test',
       lastName: 'User',
       dateOfBirth: '1990-01-15',
