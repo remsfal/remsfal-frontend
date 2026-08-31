@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Image from 'primevue/image';
+import { formatDateTime } from '@/helper/dataHelper';
 
 export interface TimelineAttachmentView {
   attachmentId: string;
@@ -28,12 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { locale } = useI18n();
 
-const formattedDate = computed(() => {
-  if (!props.date) return null;
-  const date = new Date(props.date);
-  if (Number.isNaN(date.getTime())) return props.date;
-  return date.toLocaleString(locale.value);
-});
+const formattedDate = computed(() => formatDateTime(props.date, locale.value));
 
 const imageAttachments = computed(() => props.attachments.filter(
   attachment => attachment.contentType?.startsWith('image/')
