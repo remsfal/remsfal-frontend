@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import BaseCard from '@/components/common/BaseCard.vue';
 import Skeleton from 'primevue/skeleton';
-import { tenantService, type TenantJson } from '../services/TenantService';
+import { tenantService, type TenantJson, type TenantWritableJson } from '../services/TenantService';
 import TenantForm from './TenantForm.vue';
 
 const props = defineProps<{
@@ -54,10 +54,11 @@ onMounted(() => {
   loadTenant();
 });
 
-async function onSubmit(tenant: TenantJson) {
-  const updatedTenant: TenantJson = {
+async function onSubmit(tenant: TenantWritableJson) {
+  // TenantForm never emits id/userId (server-assigned) — the tenant is already
+  // identified by props.tenantId in the request path.
+  const updatedTenant: TenantWritableJson = {
     ...tenant,
-    id: props.tenantId,
     address: serverAddress.value,
   };
 

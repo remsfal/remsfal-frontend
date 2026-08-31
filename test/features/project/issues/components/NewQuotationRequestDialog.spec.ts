@@ -16,8 +16,8 @@ const BaseDialogStub = {
 };
 
 const mockContractors = [
-  { id: 'c-1', companyName: 'Alpha Bau GmbH' },
-  { id: 'c-2', companyName: 'Beta Elektro GmbH' },
+  { id: 'c-1', name: 'Alpha Bau GmbH' },
+  { id: 'c-2', name: 'Beta Elektro GmbH' },
 ];
 const mockProject = {
   title: 'Projekt 1',
@@ -101,7 +101,7 @@ describe('NewQuotationRequestDialog', () => {
 
   it('calls createQuotationRequest with correct payload on valid submit', async () => {
     const wrapper = mountDialog();
-    const selectedContractors = [{ id: 'c-1', companyName: 'Alpha Bau GmbH' }];
+    const selectedContractors = [{ id: 'c-1', name: 'Alpha Bau GmbH' }];
 
     const form = wrapper.findComponent(Form);
     await form.vm.$emit('submit', {
@@ -132,7 +132,7 @@ describe('NewQuotationRequestDialog', () => {
       valid: true,
       states: {
         scopeOfWork: { value: 'Reparatur' },
-        contractors: { value: [{ id: 'c-1', companyName: 'Alpha Bau GmbH' }] },
+        contractors: { value: [{ id: 'c-1', name: 'Alpha Bau GmbH' }] },
       },
     });
     await flushPromises();

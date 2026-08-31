@@ -18,7 +18,7 @@ const isLoading = ref(true);
 
 const sortedContractors = computed(() =>
   [...contractors.value].sort((a, b) =>
-    (a.companyName ?? '').localeCompare(b.companyName ?? ''),
+    (a.name ?? '').localeCompare(b.name ?? ''),
   ),
 );
 
@@ -67,7 +67,7 @@ function onTableRowClick(event: { data: ContractorJson }) {
           <template #empty>
             <span class="text-muted-color">{{ t('contractor.list.empty') }}</span>
           </template>
-          <Column field="companyName" :header="t('contractor.list.columnName')" />
+          <Column field="name" :header="t('contractor.list.columnName')" />
           <Column field="email" :header="t('contractor.list.columnEmail')" />
           <Column field="phone" :header="t('contractor.list.columnPhone')" />
           <Column field="trade" :header="t('contractor.list.columnTrade')" />

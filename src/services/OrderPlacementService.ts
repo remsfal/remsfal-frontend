@@ -1,7 +1,7 @@
-import { apiClient, type ApiComponents } from '@/services/ApiClient';
+import { apiClient, type ApiComponents, type Readable } from '@/services/ApiClient';
 
-export type OrderPlacementJson = ApiComponents['schemas']['OrderPlacementJson'];
-export type OrderPlacementListJson = ApiComponents['schemas']['OrderPlacementListJson'];
+export type OrderPlacementJson = Readable<ApiComponents['schemas']['OrderPlacementJson']>;
+export type OrderPlacementListJson = Readable<ApiComponents['schemas']['OrderPlacementListJson']>;
 
 class OrderPlacementService {
   async placeOrder(issueId: string, quotationId: string): Promise<OrderPlacementJson> {

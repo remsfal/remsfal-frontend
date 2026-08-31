@@ -2,11 +2,8 @@
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { ref, onMounted } from 'vue';
-import type { components } from '@/services/api/ticketing-schema'; 
-import { contractorService } from '@/services/ContractorService'; 
-
-type IssueListJson = components['schemas']['IssueListJson'];
-type IssueItemJson = components['schemas']['IssueItemJson'];
+import { contractorService } from '@/services/ContractorService';
+import type { IssueListJson, IssueItemJson } from '@/services/IssueService';
 
 const isLoading = ref(false);
 const issues = ref<IssueItemJson[]>([]);
