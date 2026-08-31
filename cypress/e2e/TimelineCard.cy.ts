@@ -45,7 +45,7 @@ function setupAuthIntercepts() {
 const scenarios: Scenario[] = [
   {
     name: 'tenant issue timeline',
-    testIdPrefix: 'tenant-issue-timeline',
+    testIdPrefix: 'timeline',
     timelineBase: `/ticketing/v1/tenant-relations/issues/${issueId}`,
     attachmentBase: `/ticketing/v1/tenant-relations/issues/${issueId}/attachments`,
     visitPath: () => `/tenant/issues/${issueId}`,
@@ -64,7 +64,7 @@ const scenarios: Scenario[] = [
   },
   {
     name: 'manager issue timeline',
-    testIdPrefix: 'issue-timeline',
+    testIdPrefix: 'timeline',
     timelineBase: `/ticketing/v1/issues/${issueId}`,
     attachmentBase: `/ticketing/v1/issues/${issueId}/attachments`,
     visitPath: () => `/projects/${projectId}/issues/${issueId}`,
@@ -241,8 +241,8 @@ describe('TimelineCard E2E Tests (tenant-only blocking behavior)', () => {
       cy.wait('@getIssueDetail');
       cy.wait('@getTimeline');
 
-      cy.get('[data-testid="tenant-issue-timeline-message-input"]').type('Sollte blockiert sein');
-      cy.get('[data-testid="tenant-issue-timeline-message-submit"]').should('be.disabled');
+      cy.get('[data-testid="timeline-message-input"]').type('Sollte blockiert sein');
+      cy.get('[data-testid="timeline-message-submit"]').should('be.disabled');
     });
   });
 });
