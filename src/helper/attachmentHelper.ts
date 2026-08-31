@@ -9,7 +9,7 @@ export function isImageAttachment(attachment: AttachmentLike): boolean {
 
 export function getAttachmentTypeLabel(attachment: AttachmentLike): string {
   const fileName = attachment.fileName?.trim().toLowerCase();
-  if (!fileName || !fileName.includes('.')) {
+  if (!fileName?.includes('.')) {
     return 'FILE';
   }
 
