@@ -2,9 +2,9 @@ import { computed, onMounted, ref, watch, type Ref, type WatchSource } from 'vue
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import type { FileUploadSelectEvent } from 'primevue/fileupload';
-import type { components as ticketingComponents } from '@/services/api/ticketing-schema';
+import type { components as ticketingComponents, Readable } from '@/services/api/ticketing-schema';
 
-export type TimelineJson = ticketingComponents['schemas']['TimelineJson'];
+export type TimelineJson = Readable<ticketingComponents['schemas']['TimelineJson']>;
 
 type TimelinePurpose = NonNullable<TimelineJson['purpose']>;
 

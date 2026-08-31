@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Image from 'primevue/image';
 import { formatDateTime } from '@/helper/dataHelper';
+import { isImageAttachment, getAttachmentTypeLabel } from '@/helper/attachmentHelper';
 
 export interface TimelineAttachmentView {
   attachmentId: string;
@@ -31,23 +32,9 @@ const { locale } = useI18n();
 
 const formattedDate = computed(() => formatDateTime(props.date, locale.value));
 
-const imageAttachments = computed(() => props.attachments.filter(
-  attachment => attachment.contentType?.startsWith('image/')
-));
+const imageAttachments = computed(() => props.attachments.filter(isImageAttachment));
 
-const nonImageAttachments = computed(() => props.attachments.filter(
-  attachment => !attachment.contentType?.startsWith('image/')
-));
-
-const getAttachmentTypeLabel = (attachment: TimelineAttachmentView) => {
-  const fileName = attachment.fileName?.trim().toLowerCase();
-  if (!fileName || !fileName.includes('.')) {
-    return 'FILE';
-  }
-
-  const extension = fileName.split('.').pop();
-  return extension ? extension.toUpperCase() : 'FILE';
-};
+const nonImageAttachments = computed(() => props.attachments.filter((attachment) => !isImageAttachment(attachment)));
 
 const openAttachmentDownload = (downloadUrl: string) => {
   window.open(downloadUrl, '_blank', 'noopener,noreferrer');
